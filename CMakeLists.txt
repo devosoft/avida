@@ -246,6 +246,7 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cPhenPlastUtil.cc
   ${MAIN_DIR}/cPlasticPhenotype.cc
   ${MAIN_DIR}/cPopulation.cc
+  ${MAIN_DIR}/cPopulationResources.cc
   ${MAIN_DIR}/cPopulationCell.cc
   ${MAIN_DIR}/cPopulationInterface.cc
   ${MAIN_DIR}/cReaction.cc
@@ -255,7 +256,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cResource.cc
   ${MAIN_DIR}/cResourceHistory.cc
   ${MAIN_DIR}/cResourceDefLib.cc
-  ${MAIN_DIR}/cSpatialRes.cc
   ${MAIN_DIR}/cResourceElement.cc
   ${MAIN_DIR}/cStats.cc
   ${MAIN_DIR}/cTaskLib.cc

@@ -25,71 +25,10 @@
 #include "cResourceElement.h"
 #include "cWorld.h"
 
-
 const double cPopulationResources::UPDATE_STEP(1.0 / 10000.0);
-const double cPopulationResources::EPSILON (1.0e-15);
+const double cPopulationResources::EPSILON(1.0e-15);
 const int cPopulationResources::PRECALC_DISTANCE(100);
 
-
-void FlowMatter(cResourceElement &elem1, cResourceElement &elem2,
-                double inxdiffuse, 
-                double inydiffuse, double inxgravity, double inygravity,
-                int xdist, int ydist, double dist) {
-
-  /* Routine to calculate the amount of flow from one Element to another.
-     Amount of flow is a function of:
-
-       1) Amount of material in each cell (will try to equalize)
-       2) Distance between each cell
-       3) x and y "gravity"
-
-     This method only effect the delta amount of each element.  The State
-     method will need to be called at the end of each time step to complete
-     the movement of material.
-  */
-
-  double  diff, flowamt, xgravity, xdiffuse, ygravity,  ydiffuse;
-
-  if (((elem1.amount == 0.0) && (elem2.amount == 0.0)) && (dist < 0.0)) return;
-  diff = (elem1.amount - elem2.amount);
-  if (xdist != 0) {
-
-    /* if there is material to be effected by x gravity */
-
-    if (((xdist>0) && (inxgravity>0.0)) || ((xdist<0) && (inxgravity<0.0))) {
-      xgravity = elem1.amount * fabs(inxgravity)/3.0;
-    } else {
-      xgravity = -elem2.amount * fabs(inxgravity)/3.0;
-    }
-    
-    /* Diffusion uses the diffusion constant x half the difference (as the 
-       elements attempt to equalize) / the number of possible neighbors (8) */
-
-    xdiffuse = inxdiffuse * diff / 16.0;
-  } else {
-    xdiffuse = 0.0;
-    xgravity = 0.0;
-  }  
-  if (ydist != 0) {
-
-    /* if there is material to be effected by y gravity */
-
-    if (((ydist>0) && (inygravity>0.0)) || ((ydist<0) && (inygravity<0.0))) {
-      ygravity = elem1.amount * fabs(inygravity)/3.0;
-    } else {
-      ygravity = -elem2.amount * fabs(inygravity)/3.0;
-    }
-    ydiffuse = inydiffuse * diff / 16.0;
-  } else {
-    ydiffuse = 0.0;
-    ygravity = 0.0;
-  }  
-
-  flowamt = ((xdiffuse + ydiffuse + xgravity + ygravity)/
-             (fabs(xdist*1.0) + fabs(ydist*1.0)))/dist;
-  elem1.delta -= flowamt;
-  elem2.delta += flowamt;
-}
 
 cPopulationResources::cPopulationResources(int num_resources)
   : update_time(0.0)
@@ -130,6 +69,13 @@ const cPopulationResources &cPopulationResources::operator=(const cPopulationRes
   return *this;
 }
 
+cPopulationResources::~cPopulationResources()
+{
+  for (int i = 0; i < resources.GetSize(); i++) {
+    delete resources[i]; 
+  }
+}
+
 void cPopulationResources::SetSize(int num_resources)
 {
   resource_names.ResizeClear(num_resources);
@@ -168,28 +114,54 @@ void cPopulationResources::SetSize(int num_resources)
   //DO spacial resources need to be set to zero?
 }
 
-cPopulationResources::~cPopulationResources()
+// --- PRIVATE METHODS --- //
+void cPopulationResources::DoUpdates(cAvidaContext& ctx, bool global_only) const
 {
-  for (int i = 0; i < resources.GetSize(); i++) {
-    delete resources[i]; 
+  assert(update_time >= -EPSILON);
+  
+  // Determine how many update steps have progressed
+  int num_steps = (int) (update_time / UPDATE_STEP);
+  
+  // Preserve remainder of update_time
+  update_time -=  num_steps * UPDATE_STEP;
+  
+  
+  while (num_steps > PRECALC_DISTANCE) {
+    for (int i = 0; i < resource_count.GetSize(); i++) {
+      if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+        resource_count[i] *= decay_precalc(i, PRECALC_DISTANCE);
+        resource_count[i] += inflow_precalc(i, PRECALC_DISTANCE);
+      }
+    }
+    num_steps -= PRECALC_DISTANCE;
   }
-}
-
-void cPopulationResources::SetCellResources(int cell_id, const Apto::Array<double> & res)
-{
-  assert(resource_count.GetSize() == res.GetSize());
-
+  
   for (int i = 0; i < resource_count.GetSize(); i++) {
-     if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
-        // Set global quantity of resource
-    } else {
-      resources[i]->SetCellAmount(cell_id, res[i]);
-
-      /* Ideally the state of the cell's resource should not be set till
-         the end of the update so that all processes (inflow, outflow, 
-         diffision, gravity and organism demand) have the same weight.  However
-         waiting can cause problems with negative resources so we allow
-         the organism demand to work immediately on the state of the resource */ 
+    if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+      resource_count[i] *= decay_precalc(i, num_steps);
+      resource_count[i] += inflow_precalc(i, num_steps);
+    }
+  }
+  
+  if (global_only) return;
+  
+  // If one (or more) complete update has occured update the spatial resources
+  while (m_spatial_update > m_last_updated) {
+    m_last_updated++;
+    for (int i = 0; i < resource_count.GetSize(); i++) {
+      if (geometry[i] != nGeometry::GLOBAL && geometry[i] != nGeometry::PARTIAL) {
+        if (geometry[i] == nGeometry::DYNAMIC) resources[i]->UpdateDynamicRes(ctx);
+        else {
+          resources[i]->Source(inflow_rate[i]);
+          resources[i]->Sink(decay_rate[i]);
+          if (resources[i]->GetCellListSize() > 0) {
+            resources[i]->CellInflow();
+            resources[i]->CellOutflow();
+          }
+          resources[i]->FlowAll();
+          resources[i]->StateAll();
+        }
+      }
     }
   }
 }
@@ -216,6 +188,422 @@ cString cPopulationResources::GetGeometryName(const int& in_geometry)
   }
 }
 
+const Apto::Array<int> & cPopulationResources::GetResourceGeometries() const
+{
+  return geometry;
+}
+
+void cPopulationResources::UpdateResources(cAvidaContext& ctx, const Apto::Array<double> & res_change)
+{
+  Modify(ctx, res_change);
+}
+
+void cPopulationResources::SetInflow(const cString& name, const double _inflow)
+{
+  int id = GetResourceCountID(name);
+  if (id == -1) return;
+
+  inflow_rate[id] = _inflow;
+  double step_inflow = _inflow * UPDATE_STEP;
+  double step_decay = pow(decay_rate[id], UPDATE_STEP);
+
+  inflow_precalc(id, 0) = 0.0;
+  for (int i = 1; i <= PRECALC_DISTANCE; i++) {
+    inflow_precalc(id, i) = inflow_precalc(id, i-1) * step_decay + step_inflow;
+  }
+}
+
+void cPopulationResources::SetDecay(const cString& name, const double _decay)
+{
+  int id = GetResourceCountID(name);
+  if (id == -1) return;
+
+  decay_rate[id] = _decay;
+  double step_decay = pow(_decay, UPDATE_STEP);
+  decay_precalc(id, 0) = 1.0;
+  for (int i = 1; i <= PRECALC_DISTANCE; i++) {
+    decay_precalc(id, i)  = decay_precalc(id, i-1) * step_decay;
+  }
+}
+
+double cPopulationResources::GetDecay(const cString& name)
+{
+  int id = GetResourceCountID(name);
+  if (id == -1) return -1;
+  
+  return decay_rate[id];
+}
+
+void cPopulationResources::Modify(cAvidaContext& ctx, int res_index, double change)
+{
+  assert(res_index < resource_count.GetSize());
+
+  DoUpdates(ctx);
+  resource_count[res_index] += change;
+  assert(resource_count[res_index] >= 0.0);
+}
+
+// diffusion resources
+const Apto::Array< Apto::Array<double> >& cPopulationResources::GetDiffusionResVals(cAvidaContext& ctx)
+{
+  const int num_resources = resources.GetSize();
+  if (num_resources > 0) {
+    const int num_cells = resources[0]->GetSize();
+    DoUpdates(ctx);
+    for (int i = 0; i < num_resources; i++) {
+      for (int j = 0; j < num_cells; j++) {
+        curr_diffusion_res_val[i][j] = resources[i]->GetAmount(j);
+      }
+    }
+  }
+  return curr_diffusion_res_val;
+}
+
+// dynamic resources
+void cPopulationResources::ResetDynamicRes(cAvidaContext& ctx, cWorld* world, int res_id)
+{
+  assert(res_id >= 0 && res_id < resource_count.GetSize());
+  assert(resources[res_id]->GetSize() > 0);
+  int worldx = resources[res_id]->GetX();
+  int worldy = resources[res_id]->GetY();
+  
+  resources[res_id]->ResetDynamicRes(ctx, worldx, worldy);
+}
+
+// deme resources
+// Write spatial data to a file that can easily be read into Matlab
+void cPopulationResources::PrintDemeSpatialResData(const cPopulationResources& res, const int i, const int deme_id, cAvidaContext&) const {
+  const char* tmpResName = res.GetResName(i);
+  cString tmpfilename = cStringUtil::Stringf( "deme_spatial_resource_%s.m", tmpResName );
+  cDataFile& df = m_world->GetDataFile(tmpfilename);
+  cString UpdateStr = cStringUtil::Stringf( "deme_%07i_%s_%07i = [ ...", deme_id, static_cast<const char*>(res.GetResName(i)), m_world->GetStats().GetUpdate() );
+  
+  df.WriteRaw(UpdateStr);
+  
+  const cResource& sp_res = res.GetResource(i);
+  int gridsize = sp_res.GetSize();
+  
+  for (int j = 0; j < gridsize; j++) {
+    df.WriteBlockElement(sp_res.GetAmount(j), j, m_world->GetPopulation().GetWorldX());
+  }
+  df.WriteRaw("];");
+  df.Endl();
+}
+
+// --- PUBLIC METHODS --- //
+void cPopulationResources::SetCellResources(int cell_id, const Apto::Array<double> & res)
+{
+  assert(resource_count.GetSize() == res.GetSize());
+
+  for (int i = 0; i < resource_count.GetSize(); i++) {
+     if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+        // Set global quantity of resource
+    } else {
+      resources[i]->SetCellAmount(cell_id, res[i]);
+
+      /* Ideally the state of the cell's resource should not be set till
+         the end of the update so that all processes (inflow, outflow, 
+         diffision, gravity and organism demand) have the same weight.  However
+         waiting can cause problems with negative resources so we allow
+         the organism demand to work immediately on the state of the resource */ 
+    }
+  }
+}
+
+const Apto::Array<double> & cPopulationResources::GetResources(cAvidaContext& ctx) const
+{
+  DoUpdates(ctx); 
+  return resource_count;
+}
+ 
+const Apto::Array<double> & cPopulationResources::GetFrozenResources(cAvidaContext& ctx, int cell_id) const
+// This differs from GetCellResources by leaving out DoUpdates which is
+// useful inside methods that repeatedly call this before cells can change.
+{
+  int num_resources = resource_count.GetSize();
+  
+  for (int i = 0; i < num_resources; i++) {
+    if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) curr_grid_res_val[i] = resource_count[i];
+    else if (geometry[i] == nGeometry::DYNAMIC) curr_grid_res_val[i] = resources[i]->GetAmount(cell_id);
+    else curr_grid_res_val[i] = resources[i]->GetAmount(cell_id);
+  }
+  return curr_grid_res_val;
+}
+
+const Apto::Array<double> & cPopulationResources::GetCellResources(int cell_id, cAvidaContext& ctx) const
+  // Get amount of the resource for a given cell in the grid.  If it is a
+  // global resource pass out the entire content of that resource.
+{
+  DoUpdates(ctx);
+  return GetFrozenResources(ctx, cell_id);
+}
+
+void cPopulationResources::UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
+{
+  ModifyCell(ctx, res_change, cell_id);
+}
+
+void cPopulationResources::UpdateResStats(cAvidaContext& ctx) 
+{
+  cStats& stats = m_world->GetStats();
+  stats.SetResources(GetResources(ctx)); 
+//  stats.SetSpatialRes(GetSpatialRes(ctx));
+  stats.SetResourceGeometries(GetResourceGeometries());
+}
+
+void cPopulationResources::ReinitializeResources(cAvidaContext& ctx, double additional_resource)
+{
+  for(int i = 0; i < resource_names.GetSize(); i++) {
+    Set(ctx, i, resource_initial[i] + additional_resource); //will cause problem if more than one resource is used. -- why?  each resource is stored separately (BDC)
+
+    // Additionally, set any initial values given by the CELL command
+    resources[i]->ResetResourceCounts();
+    if (additional_resource != 0.0) {
+      resources[i]->RateAll(additional_resource);
+      resources[i]->StateAll();
+    }
+
+  } //End going through the resources
+}
+
+void cPopulationResources::ResizeSpatialGrids(int in_x, int in_y, int geometry)
+{
+  for (int i = 0; i < resource_count.GetSize(); i++) {
+    resources[i]->ResizeClear(in_x, in_y, geometry);
+    curr_diffusion_res_val[i].Resize(in_x * in_y);
+    resources[i]->ResizeClear(in_x, in_y, geometry);
+  }
+}
+
+void cPopulationResources::Set(cAvidaContext& ctx, int res_index, double new_level)
+{
+  assert(res_index < resource_count.GetSize());
+  DoUpdates(ctx);
+  if (geometry[res_index] == nGeometry::GLOBAL || geometry[res_index]==nGeometry::PARTIAL) resource_count[res_index] = new_level;
+  else if (geometry[res_index] == nGeometry::DYNAMIC) {
+    for (int i = 0; i < resources[res_index]->GetSize(); i++) {
+      resources[res_index]->SetCellAmount(i, new_level/resources[res_index]->GetSize());
+    }
+  }
+  else {
+    for (int i = 0; i < resources[res_index]->GetSize(); i++) {
+      resources[res_index]->SetCellAmount(i, new_level/resources[res_index]->GetSize());
+    }
+  }
+}
+
+void cPopulationResources::SetResource(cAvidaContext& ctx, int res_index, double new_level)
+{
+  Set(ctx, res_index, new_level);
+}
+
+void cPopulationResources::SetResource(cAvidaContext& ctx, const cString res_name, double new_level)
+{
+  cResourceDef* res = m_world->GetPopulation().GetEnvironment().GetResDefLib().GetResDef(res_name);
+  if (res != NULL) SetResource(ctx, res->GetIndex(), new_level);
+}
+
+/* This method sets the inflow of the named resource.
+ * It changes this value in the environment, then updates it in the
+ * actual population's resource count.
+ */
+void cPopulationResources::SetResourceInflow(const cString res_name, double new_level)
+{
+  m_world->GetPopulation().GetEnvironment().SetResourceInflow(res_name, new_level);
+  SetInflow(res_name, new_level);
+}
+
+/* This method sets the outflow of the named resource.
+ * It changes this value in the enviroment, then updates the
+ * decay rate in the resource count (to 1 - the given outflow, as
+ * outflow is different than decay).
+ */
+void cPopulationResources::SetResourceOutflow(const cString res_name, double new_level)
+{
+  m_world->GetPopulation().GetEnvironment().SetResourceOutflow(res_name, new_level);
+  SetDecay(res_name, 1 - new_level);
+}
+
+double cPopulationResources::Get(cAvidaContext& ctx, int res_index) const
+{
+  assert(res_index < resource_count.GetSize());
+  DoUpdates(ctx);
+  if (geometry[res_index] == nGeometry::GLOBAL || geometry[res_index]==nGeometry::PARTIAL) resource_count[res_index];
+  else if (geometry[res_index] == nGeometry::DYNAMIC) resources[res_index]->SumAll();
+  //else return spacial resource sum
+  return resources[res_index]->SumAll();
+}
+
+/* 
+ * TODO: This is a duplicate of GetResourceCountID()
+ * Follow the same steps to get rid of it.
+ */
+int cPopulationResources::GetResourceByName(cString name) const
+{
+  int result = -1;
+  for (int i = 0; i < resource_names.GetSize(); i++)
+  {
+    if (resource_names[i] == name) result = i;
+  }
+  return result;
+}
+
+/*
+ * This is unnecessary now that a resource has an index
+ * TODO: 
+ *  - Change name to GetResourceCountIndex
+ *  - Fix anything that breaks by just using the index of the resource (not id)
+ *  - Get rid of this function
+ */
+int cPopulationResources::GetResourceCountID(const cString& res_name)
+{
+    for (int i = 0; i < resource_names.GetSize(); i++) {
+      if (resource_names[i] == res_name) return i;
+    }
+    cerr << "Error: Unknown resource '" << res_name << "'." << endl;
+    return -1;
+}
+
+double cPopulationResources::GetInflow(const cString& name)
+{
+  int id = GetResourceCountID(name);
+  if (id == -1) return -1;
+  
+  return inflow_rate[id];
+}
+
+double cPopulationResources::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const
+// This differs from GetFrozenCellResources by only pulling for res of interest.
+{
+  double res_val = 0;
+  if (geometry[res_id] == nGeometry::GLOBAL || geometry[res_id]==nGeometry::PARTIAL) res_val = resource_count[res_id];
+  else if (geometry[res_id] == nGeometry::DYNAMIC) res_val = resources[res_id]->GetAmount(cell_id);
+  else res_val = resources[res_id]->GetAmount(cell_id);
+  return res_val;
+}
+
+double cPopulationResources::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const
+// This differs from GetCellResources by only pulling for res of interest.
+{
+  DoUpdates(ctx);
+  return GetFrozenCellResVal(ctx, cell_id, res_id);
+}
+
+void cPopulationResources::Update(double in_time) 
+{ 
+  update_time += in_time;
+  spatial_update_time += in_time;
+}
+
+void cPopulationResources::UpdateResource(cAvidaContext& ctx, int res_index, double change)
+{
+  Modify(ctx, res_index, change);
+}
+
+void cPopulationResources::UpdateResource(const int Verbosity, cWorld* world) {
+  const cResourceDefLib & resource_lib = m_world->GetPopulation().GetEnvironment().GetResDefLib();
+  int global_res_index = -1;
+  int deme_res_index = -1;
+  int num_deme_res = 0;
+  
+  //setting size of global and deme-level resources
+  for(int i = 0; i < resource_lib.GetSize(); i++) {
+    cResourceDef* res = resource_lib.GetResDef(i);
+    if (res->GetDemeResource())
+      num_deme_res++;
+  }
+  
+  for(int i = 0; i < m_world->GetPopulation().GetNumDemes(); i++) {
+    cPopulationResources tmp_deme_res_count(num_deme_res);
+    m_world->GetPopulation().GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
+  }
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResourceDef* res = resource_lib.GetResDef(i);
+    if (!res->GetDemeResource()) {
+      global_res_index++;
+      const double decay = 1.0 - res->GetOutflow();
+      if (!res->IsSpatial()) {
+        SetupGlobalRes(m_world, global_res_index, res->GetName(), res->GetInitial(),
+                                 res->GetInflow(), decay, res->GetGeometry(), m_world->GetVerbosity());
+      }
+      else {
+        if (res->IsDynamic()) {
+          SetupDynamicRes(m_world, global_res_index, res, m_world->GetVerbosity());
+        }
+        else if (res->IsDiffusion()) {
+          SetupDiffusionRes(m_world, global_res_index, res->GetName(), res->GetInitial(), res->GetInflow(), decay,
+                                      res->GetGeometry(), res->GetXDiffuse(),
+                                      res->GetXGravity(), res->GetYDiffuse(),
+                                      res->GetYGravity(), res->GetInflowX1(),
+                                      res->GetInflowX2(), res->GetInflowY1(),
+                                      res->GetInflowY2(), res->GetOutflowX1(),
+                                      res->GetOutflowX2(), res->GetOutflowY1(),
+                                      res->GetOutflowY2(), res->GetCellListPtr(),
+                                      res->GetCellIdListPtr(), m_world->GetVerbosity());
+        }
+        else
+          cerr<< "ERROR: Spatial resource \"" << res->GetName() <<"\"is not a diffusion or dynamic resource.  Exit";
+        exit(1);
+      }
+    } else if (res->GetDemeResource()) {
+      deme_res_index++;
+      for(int j = 0; j < m_world->GetPopulation().GetNumDemes(); j++) {
+        m_world->GetPopulation().GetDeme(j).SetupDemeRes(deme_res_index, res, Verbosity, world);
+        // could add deme resources to global resource stats here
+      }
+    } else {
+      cerr<< "ERROR: Resource \"" << res->GetName() <<"\"is not a global or deme resource.  Exit";
+      exit(1);
+    }
+  }  
+}
+
+void cPopulationResources::Modify(cAvidaContext& ctx, const Apto::Array<double> & res_change)
+{
+  assert(resource_count.GetSize() == res_change.GetSize());
+
+  DoUpdates(ctx);
+  for (int i = 0; i < resource_count.GetSize(); i++) {
+    resource_count[i] += res_change[i];
+    assert(resource_count[i] >= 0.0);
+  }
+}
+
+void cPopulationResources::ModifyCell(cAvidaContext& ctx, const Apto::Array<double> & res_change, int cell_id)
+{
+  assert(resource_count.GetSize() == res_change.GetSize());
+  
+  DoUpdates(ctx);
+  for (int i = 0; i < resource_count.GetSize(); i++) {
+    if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+      resource_count[i] += res_change[i];
+      assert(resource_count[i] >= 0.0);
+    }
+    else if (geometry[i] == nGeometry::DYNAMIC) {
+      double temp = resources[i]->Element(cell_id).GetAmount();
+      if (resources[i]->Element(cell_id).GetAmount() != temp) resources[i]->SetModified(true);
+      assert(resources[i]->Element(cell_id).GetAmount() >= 0.0);
+    }
+    else {
+      double temp = resources[i]->Element(cell_id).GetAmount();
+      resources[i]->Rate(cell_id, res_change[i]);
+      /* Ideally the state of the cell's resource should not be set till
+       the end of the update so that all processes (inflow, outflow,
+       diffision, gravity and organism demand) have the same weight.  However
+       waiting can cause problems with negative resources so we allow
+       the organism demand to work immediately on the state of the resource */
+      
+      resources[i]->State(cell_id);
+      if(resources[i]->Element(cell_id).GetAmount() != temp){
+        resources[i]->SetModified(true);
+      }
+      assert(resources[i]->Element(cell_id).GetAmount() >= 0.0);
+    }
+  }
+}
+
+// --- GLOBAL RESOURCES --- //
 void cPopulationResources::SetupGlobalRes(cWorld* world, const int& res_index, const cString& name, const double& initial, const double& inflow, const double& decay,
 				const int& in_geometry, const int& verbosity_level)
 {
@@ -260,6 +648,7 @@ void cPopulationResources::SetupGlobalRes(cWorld* world, const int& res_index, c
   }
 }
 
+// --- DIFFUSION RESOURCES --- //
 void cPopulationResources::SetupDiffusionRes(cWorld* world, const int& res_index, const cString& name, const double& initial, const double& inflow, const double& decay,
 				const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
 				const double& in_ydiffuse, const double& in_ygravity,
@@ -359,6 +748,7 @@ void cPopulationResources::SetupDiffusionRes(cWorld* world, const int& res_index
   resources[res_index]->SetOutflowY2(in_outflowY2);
 }
 
+// --- DYNAMIC RESOURCES --- //
 void cPopulationResources::SetupDynamicRes(cWorld* world, const int& res_index, cResourceDef* res_def, const int& verbosity_level)
 {
   assert(res_index >= 0 && res_index < resource_count.GetSize());
@@ -379,293 +769,37 @@ void cPopulationResources::SetupDynamicRes(cWorld* world, const int& res_index, 
   geometry[res_index] = res_def->GetGeometry();
 }
 
-void cPopulationResources::ResetDynamicRes(cAvidaContext& ctx, cWorld* world, int res_id)
+void cPopulationResources::SetDynamicResPlatVarInflow(const cString res_name, const double mean, const double variance, const int type)
 {
-  assert(res_id >= 0 && res_id < resource_count.GetSize());
-  assert(resources[res_id]->GetSize() > 0);
-  int worldx = resources[res_id]->GetX();
-  int worldy = resources[res_id]->GetY();
+  const cResourceDefLib & resource_lib = m_world->GetPopulation().GetEnvironment().GetResDefLib();
+  int global_res_index = -1;
   
-  resources[res_id]->ResetDynamicRes(ctx, worldx, worldy);
-}
-
-void cPopulationResources::SetDynamicResPlateauInflow(const int& res_id, const double& inflow)
-{
-  assert(res_id >= 0 && res_id < resource_count.GetSize());
-  assert(resources[res_id]->GetSize() > 0);
-  resources[res_id]->GetResDef()->SetPlateauInflow(inflow);
-}
-
-void cPopulationResources::SetDynamicResPlateauOutflow(const int& res_id, const double& outflow) 
-{
-  assert(res_id >= 0 && res_id < resource_count.GetSize());
-  assert(resources[res_id]->GetSize() > 0);
-  resources[res_id]->GetResDef()->SetPlateauOutflow(outflow);
-}
-
-void cPopulationResources::SetDynamicResConeInflow(const int& res_id, const double& inflow) 
-{
-  assert(res_id >= 0 && res_id < resource_count.GetSize());
-  assert(resources[res_id]->GetSize() > 0);
-  resources[res_id]->GetResDef()->SetConeInflow(inflow);
-}
-
-void cPopulationResources::SetDynamicResConeOutflow(const int& res_id, const double& outflow)
-{
-  assert(res_id >= 0 && res_id < resource_count.GetSize());
-  assert(resources[res_id]->GetSize() > 0);
-  resources[res_id]->GetResDef()->SetConeOutflow(outflow);
-}
-
-void cPopulationResources::SetDynamicResInflow(const int& res_id, const double& inflow) 
-{
-  assert(res_id >= 0 && res_id < resource_count.GetSize());
-  assert(resources[res_id]->GetSize() > 0);
-  resources[res_id]->GetResDef()->SetDynamicResInflow(inflow);
-}
-
-void cPopulationResources::SetDynamicResPlatVarInflow(const int& res_id, const double& mean, const double& variance, const int& type)
-{
-  assert(res_id >= 0 && res_id < resource_count.GetSize());
-  assert(resources[res_id]->GetSize() > 0);
-  resources[res_id]->SetPlatVarInflow(mean, variance, type);
-}
-
-void cPopulationResources::SetPredatoryResource(const int& res_id, const double& odds, const int& juvsper) 
-{
-  assert(res_id >= 0 && res_id < resource_count.GetSize());
-  assert(resources[res_id]->GetSize() > 0);
-  resources[res_id]->GetResDef()->SetPredatoryResource(odds, juvsper);
-}
-
-void cPopulationResources::SetProbabilisticResource(cAvidaContext& ctx, const int& res_id, const double& initial, const double& inflow, 
-                                              const double& outflow, const double& lambda, const double& theta, const int& x, const int& y, const int& count) 
-{
-  assert(res_id >= 0 && res_id < resource_count.GetSize());
-  assert(resources[res_id]->GetSize() > 0);
-  resources[res_id]->GetResDef()->SetProbabilisticResource(ctx, initial, inflow, outflow, lambda, theta, x, y, count);
-  resources[res_id]->BuildProbabilisticRes(ctx, lambda, theta, x, y, count);
-}
-
-/*
- * This is unnecessary now that a resource has an index
- * TODO: 
- *  - Change name to GetResourceCountIndex
- *  - Fix anything that breaks by just using the index of the resource (not id)
- *  - Get rid of this function
- */
-int cPopulationResources::GetResourceCountID(const cString& res_name)
-{
-    for (int i = 0; i < resource_names.GetSize(); i++) {
-      if (resource_names[i] == res_name) return i;
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResourceDef* res = resource_lib.GetResDef(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+    resources[global_res_index]->SetPlatVarInflow(mean, variance, type);
     }
-    cerr << "Error: Unknown resource '" << res_name << "'." << endl;
-    return -1;
+  } 
 }
 
-double cPopulationResources::GetInflow(const cString& name)
+void cPopulationResources::SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob)
 {
-  int id = GetResourceCountID(name);
-  if (id == -1) return -1;
+  const cResourceDefLib & resource_lib = m_world->GetPopulation().GetEnvironment().GetResDefLib();
+  int global_res_index = -1;
   
-  return inflow_rate[id];
-}
-
-void cPopulationResources::SetInflow(const cString& name, const double _inflow)
-{
-  int id = GetResourceCountID(name);
-  if (id == -1) return;
-
-  inflow_rate[id] = _inflow;
-  double step_inflow = _inflow * UPDATE_STEP;
-  double step_decay = pow(decay_rate[id], UPDATE_STEP);
-
-  inflow_precalc(id, 0) = 0.0;
-  for (int i = 1; i <= PRECALC_DISTANCE; i++) {
-    inflow_precalc(id, i) = inflow_precalc(id, i-1) * step_decay + step_inflow;
-  }
-}
-
-double cPopulationResources::GetDecay(const cString& name)
-{
-  int id = GetResourceCountID(name);
-  if (id == -1) return -1;
-  
-  return decay_rate[id];
-}
-
-void cPopulationResources::SetDecay(const cString& name, const double _decay)
-{
-  int id = GetResourceCountID(name);
-  if (id == -1) return;
-
-  decay_rate[id] = _decay;
-  double step_decay = pow(_decay, UPDATE_STEP);
-  decay_precalc(id, 0) = 1.0;
-  for (int i = 1; i <= PRECALC_DISTANCE; i++) {
-    decay_precalc(id, i)  = decay_precalc(id, i-1) * step_decay;
-  }
-}
-
-void cPopulationResources::Update(double in_time) 
-{ 
-  update_time += in_time;
-  spatial_update_time += in_time;
- }
-
- 
-const Apto::Array<double> & cPopulationResources::GetResources(cAvidaContext& ctx) const
-{
-  DoUpdates(ctx); 
-  return resource_count;
-}
- 
-const Apto::Array<double> & cPopulationResources::GetCellResources(int cell_id, cAvidaContext& ctx) const
-  // Get amount of the resource for a given cell in the grid.  If it is a
-  // global resource pass out the entire content of that resource.
-{
-  DoUpdates(ctx);
-  return GetFrozenResources(ctx, cell_id);
-}
-
-const Apto::Array<double> & cPopulationResources::GetFrozenResources(cAvidaContext& ctx, int cell_id) const
-// This differs from GetCellResources by leaving out DoUpdates which is
-// useful inside methods that repeatedly call this before cells can change.
-{
-  int num_resources = resource_count.GetSize();
-  
-  for (int i = 0; i < num_resources; i++) {
-    if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) curr_grid_res_val[i] = resource_count[i];
-    else if (geometry[i] == nGeometry::DYNAMIC) curr_grid_res_val[i] = resources[i]->GetAmount(cell_id);
-    else curr_grid_res_val[i] = resources[i]->GetAmount(cell_id);
-  }
-  return curr_grid_res_val;
-}
-
-double cPopulationResources::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const
-// This differs from GetCellResources by only pulling for res of interest.
-{
-  DoUpdates(ctx);
-  return GetFrozenCellResVal(ctx, cell_id, res_id);
-}
-
-double cPopulationResources::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const
-// This differs from GetFrozenCellResources by only pulling for res of interest.
-{
-  double res_val = 0;
-  if (geometry[res_id] == nGeometry::GLOBAL || geometry[res_id]==nGeometry::PARTIAL) res_val = resource_count[res_id];
-  else if (geometry[res_id] == nGeometry::DYNAMIC) res_val = resources[res_id]->GetAmount(cell_id);
-  else res_val = resources[res_id]->GetAmount(cell_id);
-  return res_val;
-}
-
-const Apto::Array<int> & cPopulationResources::GetResourceGeometries() const
-{
-  return geometry;
-}
-
-const Apto::Array< Apto::Array<double> >& cPopulationResources::GetDiffusionResVals(cAvidaContext& ctx)
-{
-  const int num_resources = resources.GetSize();
-  if (num_resources > 0) {
-    const int num_cells = resources[0]->GetSize();
-    DoUpdates(ctx);
-    for (int i = 0; i < num_resources; i++) {
-      for (int j = 0; j < num_cells; j++) {
-        curr_diffusion_res_val[i][j] = resources[i]->GetAmount(j);
-      }
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResourceDef* res = resource_lib.GetResDef(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetPredatoryResource(odds, juvsper, detection_prob);
+      res->SetHabitat(5);
+      m_world->GetPopulation().GetEnvironment().AddHabitat(5);
+      resources[global_res_index]->GetResDef()->SetPredatoryResource(odds, juvsper);
+      break;
     }
   }
-  return curr_diffusion_res_val;
-}
-
-void cPopulationResources::Modify(cAvidaContext& ctx, const Apto::Array<double> & res_change)
-{
-  assert(resource_count.GetSize() == res_change.GetSize());
-
-  DoUpdates(ctx);
-  for (int i = 0; i < resource_count.GetSize(); i++) {
-    resource_count[i] += res_change[i];
-    assert(resource_count[i] >= 0.0);
-  }
-}
-
-void cPopulationResources::Modify(cAvidaContext& ctx, int res_index, double change)
-{
-  assert(res_index < resource_count.GetSize());
-
-  DoUpdates(ctx);
-  resource_count[res_index] += change;
-  assert(resource_count[res_index] >= 0.0);
-}
-
-void cPopulationResources::ModifyCell(cAvidaContext& ctx, const Apto::Array<double> & res_change, int cell_id)
-{
-  assert(resource_count.GetSize() == res_change.GetSize());
-  
-  DoUpdates(ctx);
-  for (int i = 0; i < resource_count.GetSize(); i++) {
-    if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
-      resource_count[i] += res_change[i];
-      assert(resource_count[i] >= 0.0);
-    }
-    else if (geometry[i] == nGeometry::DYNAMIC) {
-      double temp = resources[i]->Element(cell_id).GetAmount();
-      if (resources[i]->Element(cell_id).GetAmount() != temp) resources[i]->SetModified(true);
-      assert(resources[i]->Element(cell_id).GetAmount() >= 0.0);
-    }
-    else {
-      double temp = resources[i]->Element(cell_id).GetAmount();
-      resources[i]->Rate(cell_id, res_change[i]);
-      /* Ideally the state of the cell's resource should not be set till
-       the end of the update so that all processes (inflow, outflow,
-       diffision, gravity and organism demand) have the same weight.  However
-       waiting can cause problems with negative resources so we allow
-       the organism demand to work immediately on the state of the resource */
-      
-      resources[i]->State(cell_id);
-      if(resources[i]->Element(cell_id).GetAmount() != temp){
-        resources[i]->SetModified(true);
-      }
-      assert(resources[i]->Element(cell_id).GetAmount() >= 0.0);
-    }
-  }
-}
-
-double cPopulationResources::Get(cAvidaContext& ctx, int res_index) const
-{
-  assert(res_index < resource_count.GetSize());
-  DoUpdates(ctx);
-  if (geometry[res_index] == nGeometry::GLOBAL || geometry[res_index]==nGeometry::PARTIAL) resource_count[res_index];
-  else if (geometry[res_index] == nGeometry::DYNAMIC) resources[res_index]->SumAll();
-  //else return spacial resource sum
-  return resources[res_index]->SumAll();
-}
-
-void cPopulationResources::Set(cAvidaContext& ctx, int res_index, double new_level)
-{
-  assert(res_index < resource_count.GetSize());
-  DoUpdates(ctx);
-  if (geometry[res_index] == nGeometry::GLOBAL || geometry[res_index]==nGeometry::PARTIAL) resource_count[res_index] = new_level;
-  else if (geometry[res_index] == nGeometry::DYNAMIC) {
-    for (int i = 0; i < resources[res_index]->GetSize(); i++) {
-      resources[res_index]->SetCellAmount(i, new_level/resources[res_index]->GetSize());
-    }
-  }
-  else {
-    for (int i = 0; i < resources[res_index]->GetSize(); i++) {
-      resources[res_index]->SetCellAmount(i, new_level/resources[res_index]->GetSize());
-    }
-  }
-}
-
-void cPopulationResources::ResizeSpatialGrids(int in_x, int in_y, int geometry)
-{
-  for (int i = 0; i < resource_count.GetSize(); i++) {
-    resources[i]->ResizeClear(in_x, in_y, geometry);
-    curr_diffusion_res_val[i].Resize(in_x * in_y);
-    resources[i]->ResizeClear(in_x, in_y, geometry);
-  }
+  m_has_predatory_res = true; 
 }
 
 int cPopulationResources::GetCurrPeakX(cAvidaContext& ctx, int res_id) const
@@ -715,313 +849,6 @@ int cPopulationResources::GetMaxUsedY(int res_id)
   return resources[res_id]->GetMaxUsedY();
 }
 
-///// Private Methods /////////
-void cPopulationResources::DoUpdates(cAvidaContext& ctx, bool global_only) const
-{
-  assert(update_time >= -EPSILON);
-  
-  // Determine how many update steps have progressed
-  int num_steps = (int) (update_time / UPDATE_STEP);
-  
-  // Preserve remainder of update_time
-  update_time -=  num_steps * UPDATE_STEP;
-  
-  
-  while (num_steps > PRECALC_DISTANCE) {
-    for (int i = 0; i < resource_count.GetSize(); i++) {
-      if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
-        resource_count[i] *= decay_precalc(i, PRECALC_DISTANCE);
-        resource_count[i] += inflow_precalc(i, PRECALC_DISTANCE);
-      }
-    }
-    num_steps -= PRECALC_DISTANCE;
-  }
-  
-  for (int i = 0; i < resource_count.GetSize(); i++) {
-    if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
-      resource_count[i] *= decay_precalc(i, num_steps);
-      resource_count[i] += inflow_precalc(i, num_steps);
-    }
-  }
-  
-  if (global_only) return;
-  
-  // If one (or more) complete update has occured update the spatial resources
-  while (m_spatial_update > m_last_updated) {
-    m_last_updated++;
-    for (int i = 0; i < resource_count.GetSize(); i++) {
-      if (geometry[i] != nGeometry::GLOBAL && geometry[i] != nGeometry::PARTIAL) {
-        if (geometry[i] == nGeometry::DYNAMIC) resources[i]->UpdateDynamicRes(ctx);
-        else {
-          resources[i]->Source(inflow_rate[i]);
-          resources[i]->Sink(decay_rate[i]);
-          if (resources[i]->GetCellListSize() > 0) {
-            resources[i]->CellInflow();
-            resources[i]->CellOutflow();
-          }
-          resources[i]->FlowAll();
-          resources[i]->StateAll();
-        }
-      }
-    }
-  }
-}
-
-void cPopulationResources::ReinitializeResources(cAvidaContext& ctx, double additional_resource)
-{
-  for(int i = 0; i < resource_names.GetSize(); i++) {
-    Set(ctx, i, resource_initial[i] + additional_resource); //will cause problem if more than one resource is used. -- why?  each resource is stored separately (BDC)
-
-    // Additionally, set any initial values given by the CELL command
-    resources[i]->ResetResourceCounts();
-    if (additional_resource != 0.0) {
-      resources[i]->RateAll(additional_resource);
-      resources[i]->StateAll();
-    }
-
-  } //End going through the resources
-}
-
-/* 
- * TODO: This is a duplicate of GetResourceCountID()
- * Follow the same steps to get rid of it.
- */
-int cPopulationResources::GetResourceByName(cString name) const
-{
-  int result = -1;
-  for (int i = 0; i < resource_names.GetSize(); i++)
-  {
-    if (resource_names[i] == name) result = i;
-  }
-  return result;
-}
-
-void cPopulationResources::PrintDemeResource(cAvidaContext& ctx) { 
-  cStats& stats = m_world->GetStats();
-  const int num_demes = m_world->GetPopulation().GetNumDemes();
-  cDataFile & df_resources = m_world->GetDataFile("deme_resources.dat");
-  df_resources.WriteComment("Avida deme resource data");
-  df_resources.WriteTimeStamp();
-  df_resources.Write(stats.GetUpdate(), "update");
-  
-  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-    cDeme & cur_deme = m_world->GetPopulation().GetDeme(deme_id);
-    
-    cur_deme.UpdateDemeRes(ctx); 
-    const cPopulationResources& res = m_world->GetPopulation().GetDeme(deme_id).GetDemeResourceCount();
-    for(int j = 0; j < res.GetSize(); j++) {
-      const char * tmp = res.GetResName(j);
-      df_resources.Write(res.Get(ctx, j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
-      if ((res.GetResourceGeometries())[j] != nGeometry::GLOBAL && (res.GetResourceGeometries())[j] != nGeometry::PARTIAL) {
-        PrintDemeSpatialResData(res, j, deme_id, ctx);
-      }
-    }
-  }
-  df_resources.Endl();
-}
-
-//Write deme global resource levels to a file that can be easily read into Matlab.
-//Each time this runs, a Matlab array is created that contains an array.  Each row in the array contains <deme id> <res level 0> ... <res level n>
-void cPopulationResources::PrintDemeGlobalResources(cAvidaContext& ctx) { 
-  const int num_demes = m_world->GetPopulation().GetNumDemes();
-  cDataFile & df = m_world->GetDataFile("deme_global_resources.dat");
-  df.WriteComment("Avida deme resource data");
-  df.WriteTimeStamp();
-  
-  cString UpdateStr = cStringUtil::Stringf( "deme_global_resources_%07i = [ ...", m_world->GetStats().GetUpdate());
-  df.WriteRaw(UpdateStr);
-  
-  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-    cDeme & cur_deme = m_world->GetPopulation().GetDeme(deme_id);
-    cur_deme.UpdateDemeRes(ctx);
-    
-    const cPopulationResources & res = m_world->GetPopulation().GetDeme(deme_id).GetDemeResourceCount();
-    const int num_res = res.GetSize();
-    
-    df.WriteBlockElement(deme_id, 0, num_res + 1);
-    
-    for(int r = 0; r < num_res; r++) {
-      if (!res.IsSpatial(r)) {
-        df.WriteBlockElement(res.Get(ctx, r), r + 1, num_res + 1);
-      }
-      
-    } //End iterating through resources
-    
-  } //End iterating through demes
-  
-  df.WriteRaw("];");
-  df.Endl();
-}
-
-
-void cPopulationResources::UpdateResStats(cAvidaContext& ctx) 
-{
-  cStats& stats = m_world->GetStats();
-  stats.SetResources(GetResources(ctx)); 
-  stats.SetSpatialRes(GetSpatialRes(ctx));
-  stats.SetResourceGeometries(GetResourceGeometries());
-}
-
-// Write spatial data to a file that can easily be read into Matlab
-void cPopulationResources::PrintDemeSpatialResData(const cPopulationResources& res, const int i, const int deme_id, cAvidaContext&) const {
-  const char* tmpResName = res.GetResName(i);
-  cString tmpfilename = cStringUtil::Stringf( "deme_spatial_resource_%s.m", tmpResName );
-  cDataFile& df = m_world->GetDataFile(tmpfilename);
-  cString UpdateStr = cStringUtil::Stringf( "deme_%07i_%s_%07i = [ ...", deme_id, static_cast<const char*>(res.GetResName(i)), m_world->GetStats().GetUpdate() );
-  
-  df.WriteRaw(UpdateStr);
-  
-  const cResource& sp_res = res.GetResource(i);
-  int gridsize = sp_res.GetSize();
-  
-  for (int j = 0; j < gridsize; j++) {
-    df.WriteBlockElement(sp_res.GetAmount(j), j, m_world->GetPopulation().GetWorldX());
-  }
-  df.WriteRaw("];");
-  df.Endl();
-}
-
-
-void cPopulationResources::UpdateResources(cAvidaContext& ctx, const Apto::Array<double> & res_change)
-{
-  Modify(ctx, res_change);
-}
-
-void cPopulationResources::UpdateResource(cAvidaContext& ctx, int res_index, double change)
-{
-  Modify(ctx, res_index, change);
-}
-
-void cPopulationResources::UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
-{
-  ModifyCell(ctx, res_change, cell_id);
-}
-
-void cPopulationResources::UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
-{
-  m_world->GetPopulation().GetDeme(m_world->GetPopulation().GetCell(cell_id).GetDemeID()).ModifyDemeResCount(ctx, res_change, cell_id);
-}
-
-void cPopulationResources::SetResource(cAvidaContext& ctx, int res_index, double new_level)
-{
-  Set(ctx, res_index, new_level);
-}
-
-/* This version of SetResource takes the name of the resource.
- * If a resource by this name does not exist, it does nothing.
- * Otherwise, it sets the resource to the new level, 
- * calling the index version of SetResource().
- */
-void cPopulationResources::SetResource(cAvidaContext& ctx, const cString res_name, double new_level)
-{
-  cResourceDef* res = m_world->GetPopulation().GetEnvironment().GetResDefLib().GetResDef(res_name);
-  if (res != NULL) SetResource(ctx, res->GetIndex(), new_level);
-}
-
-/* This method sets the inflow of the named resource.
- * It changes this value in the environment, then updates it in the
- * actual population's resource count.
- */
-void cPopulationResources::SetResourceInflow(const cString res_name, double new_level)
-{
-  m_world->GetPopulation().GetEnvironment().SetResourceInflow(res_name, new_level);
-  SetInflow(res_name, new_level);
-}
-
-/* This method sets the outflow of the named resource.
- * It changes this value in the enviroment, then updates the
- * decay rate in the resource count (to 1 - the given outflow, as 
- * outflow is different than decay).
- */
-void cPopulationResources::SetResourceOutflow(const cString res_name, double new_level)
-{
-  m_world->GetPopulation().GetEnvironment().SetResourceOutflow(res_name, new_level);
-  SetDecay(res_name, 1 - new_level);
-}
-
-/* This method sets a deme resource to the same level across
- * all demes.  If a resource by the given name does not exist,
- * it does nothing.
- */
-void cPopulationResources::SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level)
-{
-  cResourceDef* res = m_world->GetPopulation().GetEnvironment().GetResDefLib().GetResDef(res_name);
-  if (res != NULL) {
-    int num_demes = m_world->GetPopulation().GetNumDemes();
-    for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
-      cDeme& deme = m_world->GetPopulation().GetDeme(deme_id);
-      deme.SetResource(ctx, res->GetIndex(), new_level);
-    }
-  }
-}
-
-/* This method sets the inflow for the named deme resource in a specific deme. 
- * It changes the value in the environment, then updates it in the specified deme's
- * resource count.
- * 
- * ATTENTION: This leads to the rather bizzare consequence that the inflow rate
- * in the environment may not match the inflow rate in each deme's resource count.
- * This is not my own decision, simply a reflection of how the SetDemeResourceInflow
- * action (for which I am writing this as a helper) works.  Unless you have a specific
- * reason NOT to change the inflow for all demes, it is probably best to use
- * cPopulationResources::SetDemeResourceInflow() -- blw
- */
-void cPopulationResources::SetSingleDemeResourceInflow(int deme_id, const cString res_name, double new_level)
-{
-  m_world->GetPopulation().GetEnvironment().SetResourceInflow(res_name, new_level);
-  m_world->GetPopulation().GetDeme(deme_id).GetDemeResources().SetInflow(res_name, new_level);
-}
-
-/* This method sets the inflow for the named deme resource across ALL demes. 
- * It changes the value in the environment, then updates it in the deme resource
- * counts.
- *
- * This maintains the connection between the enviroment value and the resource
- * count values, unlike cPopulationResources::SetSingleDemeResourceInflow()
- */
-void cPopulationResources::SetDemeResourceInflow(const cString res_name, double new_level)
-{
-  m_world->GetPopulation().GetEnvironment().SetResourceInflow(res_name, new_level);
-  int num_demes = m_world->GetPopulation().GetNumDemes();
-  for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
-    m_world->GetPopulation().GetDeme(deme_id).GetDemeResources().SetInflow(res_name, new_level);
-  }
-}
-
-/* This method sets the outflow for the named deme resource in a specific deme. 
- * It changes the value in the environment, then updates the decay rate in the 
- * specified deme's resource count.
- * 
- * ATTENTION: This leads to the rather bizzare consequence that the outflow rate
- * in the environment may not match the decay (1-outflow) rate in each deme's resource count.
- * This is not my own decision, simply a reflection of how the SetDemeResourceOutflow
- * action (for which I am writing this as a helper) works.  Unless you have a specific
- * reason NOT to change the outflow for all demes, it is probably best to use
- * cPopulationResources::SetDemeResourceOutflow() -- blw
- */
-void cPopulationResources::SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level)
-{
-  m_world->GetPopulation().GetEnvironment().SetResourceOutflow(res_name, new_level);
-  m_world->GetPopulation().GetDeme(deme_id).GetDemeResources().SetDecay(res_name, 1 - new_level);
-}
-
-/* This method sets the outflow for the named deme resource across ALL demes. 
- * It changes the value in the environment, then updates the decay rate in the 
- * deme resource counts.
- *
- * This maintains the connection between the enviroment value and the resource
- * count values, unlike cPopulationResources::SetSingleDemeResourceOutflow()
- */
-void cPopulationResources::SetDemeResourceOutflow(const cString res_name, double new_level)
-{
-  m_world->GetPopulation().GetEnvironment().SetResourceOutflow(res_name, new_level);
-  int num_demes = m_world->GetPopulation().GetNumDemes();
-  for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
-    m_world->GetPopulation().GetDeme(deme_id).GetDemeResources().SetDecay(res_name, 1 - new_level);
-  }
-}
-
-
 /* This routine is designed to change resource definitions in the middle of a run */
 void cPopulationResources::UpdateDynamicRes(cAvidaContext& ctx, cWorld* world, const cString res_name)
 {
@@ -1032,39 +859,6 @@ void cPopulationResources::UpdateDynamicRes(cAvidaContext& ctx, cWorld* world, c
       ResetDynamicRes(ctx, world, res_def->GetID());
     } 
   }
-}
-
-void cPopulationResources::SetDynamicResPlatVarInflow(const cString res_name, const double mean, const double variance, const int type)
-{
-  const cResourceDefLib & resource_lib = m_world->GetPopulation().GetEnvironment().GetResDefLib();
-  int global_res_index = -1;
-  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    if (!res->GetDemeResource()) global_res_index++;
-    if (res->GetName() == res_name) {
-      SetDynamicResPlatVarInflow(global_res_index, mean, variance, type);
-    }
-  } 
-}
-
-void cPopulationResources::SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob)
-{
-  const cResourceDefLib & resource_lib = m_world->GetPopulation().GetEnvironment().GetResDefLib();
-  int global_res_index = -1;
-  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    if (!res->GetDemeResource()) global_res_index++;
-    if (res->GetName() == res_name) {
-      res->SetPredatoryResource(odds, juvsper, detection_prob);
-      res->SetHabitat(5);
-      m_world->GetPopulation().GetEnvironment().AddHabitat(5);
-      SetPredatoryResource(global_res_index, odds, juvsper);
-      break;
-    }
-  }
-  m_has_predatory_res = true; 
 }
 
 void cPopulationResources::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per)
@@ -1138,79 +932,161 @@ void cPopulationResources::ExecutePredatoryResource(cAvidaContext& ctx, const in
   }
 }
 
-void cPopulationResources::UpdateResource(const int Verbosity, cWorld* world) {
-  const cResourceDefLib & resource_lib = m_world->GetPopulation().GetEnvironment().GetResDefLib();
-  int global_res_index = -1;
-  int deme_res_index = -1;
-  int num_deme_res = 0;
-  
-  //setting size of global and deme-level resources
-  for(int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    if (res->GetDemeResource())
-      num_deme_res++;
-  }
-  
-  for(int i = 0; i < m_world->GetPopulation().GetNumDemes(); i++) {
-    cPopulationResources tmp_deme_res_count(num_deme_res);
-    m_world->GetPopulation().GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
-  }
-  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    if (!res->GetDemeResource()) {
-      global_res_index++;
-      const double decay = 1.0 - res->GetOutflow();
-      if (!res->IsSpatial()) {
-        SetupGlobalRes(m_world, global_res_index, res->GetName(), res->GetInitial(),
-                                 res->GetInflow(), decay, res->GetGeometry(), m_world->GetVerbosity());
-      }
-      else {
-        if (res->IsDynamic()) {
-          SetupDynamicRes(m_world, global_res_index, res, m_world->GetVerbosity());
-        }
-        else if (res->IsDiffusion()) {
-          SetupDiffusionRes(m_world, global_res_index, res->GetName(), res->GetInitial(), res->GetInflow(), decay,
-                                      res->GetGeometry(), res->GetXDiffuse(),
-                                      res->GetXGravity(), res->GetYDiffuse(),
-                                      res->GetYGravity(), res->GetInflowX1(),
-                                      res->GetInflowX2(), res->GetInflowY1(),
-                                      res->GetInflowY2(), res->GetOutflowX1(),
-                                      res->GetOutflowX2(), res->GetOutflowY1(),
-                                      res->GetOutflowY2(), res->GetCellListPtr(),
-                                      res->GetCellIdListPtr(), m_world->GetVerbosity());
-        }
-        else
-          cerr<< "ERROR: Spatial resource \"" << res->GetName() <<"\"is not a diffusion or dynamic resource.  Exit";
-        exit(1);
-      }
-    } else if (res->GetDemeResource()) {
-      deme_res_index++;
-      for(int j = 0; j < m_world->GetPopulation().GetNumDemes(); j++) {
-        m_world->GetPopulation().GetDeme(j).SetupDemeRes(deme_res_index, res, Verbosity, world);
-        // could add deme resources to global resource stats here
-      }
-    } else {
-      cerr<< "ERROR: Resource \"" << res->GetName() <<"\"is not a global or deme resource.  Exit";
-      exit(1);
-    }
-  }  
+// --- DEME RESOURCES --- //
+const Apto::Array<double>& cPopulationResources::GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) {
+  return m_world->GetPopulation().GetDeme(deme_id).GetDemeResourceCount().GetCellResources(m_world->GetPopulation().GetDeme(deme_id).GetRelativeCellID(cell_id), ctx);
 }
 
-
-/*!	Modify current level of the HGT resource.
+/* This method sets a deme resource to the same level across
+ * all demes.  If a resource by the given name does not exist,
+ * it does nothing.
  */
+void cPopulationResources::SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level)
+{
+  cResourceDef* res = m_world->GetPopulation().GetEnvironment().GetResDefLib().GetResDef(res_name);
+  if (res != NULL) {
+    int num_demes = m_world->GetPopulation().GetNumDemes();
+    for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
+      cDeme& deme = m_world->GetPopulation().GetDeme(deme_id);
+      deme.SetResource(ctx, res->GetIndex(), new_level);
+    }
+  }
+}
+
+/* This method sets the inflow for the named deme resource across ALL demes. 
+ * It changes the value in the environment, then updates it in the deme resource
+ * counts.
+ *
+ * This maintains the connection between the enviroment value and the resource
+ * count values, unlike cPopulationResources::SetSingleDemeResourceInflow()
+ */
+void cPopulationResources::SetDemeResourceInflow(const cString res_name, double new_level)
+{
+  m_world->GetPopulation().GetEnvironment().SetResourceInflow(res_name, new_level);
+  int num_demes = m_world->GetPopulation().GetNumDemes();
+  for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
+    m_world->GetPopulation().GetDeme(deme_id).GetDemeResources().SetInflow(res_name, new_level);
+  }
+}
+
+/* This method sets the inflow for the named deme resource in a specific deme.
+ * It changes the value in the environment, then updates it in the specified deme's
+ * resource count.
+ * 
+ * ATTENTION: This leads to the rather bizzare consequence that the inflow rate
+ * in the environment may not match the inflow rate in each deme's resource count.
+ * This is not my own decision, simply a reflection of how the SetDemeResourceInflow
+ * action (for which I am writing this as a helper) works.  Unless you have a specific
+ * reason NOT to change the inflow for all demes, it is probably best to use
+ * cPopulationResources::SetDemeResourceInflow() -- blw
+ */
+void cPopulationResources::SetSingleDemeResourceInflow(int deme_id, const cString res_name, double new_level)
+{
+  m_world->GetPopulation().GetEnvironment().SetResourceInflow(res_name, new_level);
+  m_world->GetPopulation().GetDeme(deme_id).GetDemeResources().SetInflow(res_name, new_level);
+}
+
+/* This method sets the outflow for the named deme resource across ALL demes.
+ * It changes the value in the environment, then updates the decay rate in the 
+ * deme resource counts.
+ *
+ * This maintains the connection between the enviroment value and the resource
+ * count values, unlike cPopulationResources::SetSingleDemeResourceOutflow()
+ */
+void cPopulationResources::SetDemeResourceOutflow(const cString res_name, double new_level)
+{
+  m_world->GetPopulation().GetEnvironment().SetResourceOutflow(res_name, new_level);
+  int num_demes = m_world->GetPopulation().GetNumDemes();
+  for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
+    m_world->GetPopulation().GetDeme(deme_id).GetDemeResources().SetDecay(res_name, 1 - new_level);
+  }
+}
+
+/* This method sets the outflow for the named deme resource in a specific deme. 
+ * It changes the value in the environment, then updates the decay rate in the 
+ * specified deme's resource count.
+ * 
+ * ATTENTION: This leads to the rather bizzare consequence that the outflow rate
+ * in the environment may not match the decay (1-outflow) rate in each deme's resource count.
+ * This is not my own decision, simply a reflection of how the SetDemeResourceOutflow
+ * action (for which I am writing this as a helper) works.  Unless you have a specific
+ * reason NOT to change the outflow for all demes, it is probably best to use
+ * cPopulationResources::SetDemeResourceOutflow() -- blw
+ */
+void cPopulationResources::SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level)
+{
+  m_world->GetPopulation().GetEnvironment().SetResourceOutflow(res_name, new_level);
+  m_world->GetPopulation().GetDeme(deme_id).GetDemeResources().SetDecay(res_name, 1 - new_level);
+}
+
+void cPopulationResources::UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
+{
+  m_world->GetPopulation().GetDeme(m_world->GetPopulation().GetCell(cell_id).GetDemeID()).ModifyDemeResCount(ctx, res_change, cell_id);
+}
+
+void cPopulationResources::PrintDemeResource(cAvidaContext& ctx) {
+  cStats& stats = m_world->GetStats();
+  const int num_demes = m_world->GetPopulation().GetNumDemes();
+  cDataFile & df_resources = m_world->GetDataFile("deme_resources.dat");
+  df_resources.WriteComment("Avida deme resource data");
+  df_resources.WriteTimeStamp();
+  df_resources.Write(stats.GetUpdate(), "update");
+  
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cDeme & cur_deme = m_world->GetPopulation().GetDeme(deme_id);
+    
+    cur_deme.UpdateDemeRes(ctx); 
+    const cPopulationResources& res = m_world->GetPopulation().GetDeme(deme_id).GetDemeResourceCount();
+    for(int j = 0; j < res.GetSize(); j++) {
+      const char * tmp = res.GetResName(j);
+      df_resources.Write(res.Get(ctx, j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
+      if ((res.GetResourceGeometries())[j] != nGeometry::GLOBAL && (res.GetResourceGeometries())[j] != nGeometry::PARTIAL) {
+        PrintDemeSpatialResData(res, j, deme_id, ctx);
+      }
+    }
+  }
+  df_resources.Endl();
+}
+
+//Write deme global resource levels to a file that can be easily read into Matlab.
+//Each time this runs, a Matlab array is created that contains an array.  Each row in the array contains <deme id> <res level 0> ... <res level n>
+void cPopulationResources::PrintDemeGlobalResources(cAvidaContext& ctx) { 
+  const int num_demes = m_world->GetPopulation().GetNumDemes();
+  cDataFile & df = m_world->GetDataFile("deme_global_resources.dat");
+  df.WriteComment("Avida deme resource data");
+  df.WriteTimeStamp();
+  
+  cString UpdateStr = cStringUtil::Stringf( "deme_global_resources_%07i = [ ...", m_world->GetStats().GetUpdate());
+  df.WriteRaw(UpdateStr);
+  
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cDeme & cur_deme = m_world->GetPopulation().GetDeme(deme_id);
+    cur_deme.UpdateDemeRes(ctx);
+    
+    const cPopulationResources & res = m_world->GetPopulation().GetDeme(deme_id).GetDemeResourceCount();
+    const int num_res = res.GetSize();
+    
+    df.WriteBlockElement(deme_id, 0, num_res + 1);
+    
+    for(int r = 0; r < num_res; r++) {
+      if (!res.IsSpatial(r)) {
+        df.WriteBlockElement(res.Get(ctx, r), r + 1, num_res + 1);
+      }
+      
+    } //End iterating through resources
+    
+  } //End iterating through demes
+  
+  df.WriteRaw("];");
+  df.Endl();
+}
+
+// --- DYNAMIC RESOURCES --- //
+
+/*!	Modify current level of the HGT resource. */
 void cPopulationResources::AdjustHGTResource(cAvidaContext& ctx, double delta)
 {
   if (m_hgt_resid != -1) {
     Modify(ctx, m_hgt_resid, delta);
   }
-}
-
-const Apto::Array<double>& cPopulationResources::GetDemeResources(int deme_id, cAvidaContext& ctx) {
-  return m_world->GetPopulation().GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx);
-}
-
-const Apto::Array<double>& cPopulationResources::GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) {
-  return m_world->GetPopulation().GetDeme(deme_id).GetDemeResourceCount().GetCellResources(m_world->GetPopulation().GetDeme(deme_id).GetRelativeCellID(cell_id), ctx);
 }

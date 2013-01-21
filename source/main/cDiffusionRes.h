@@ -39,6 +39,8 @@ private:
   /* instead of creating a new array use the existing one from cResource */
   Apto::Array<cCellResource> *cell_list_ptr;
   
+  void FlowMatter(cResourceElement&, cResourceElement&, double, double, double, double, int, int, double);
+
 public:
   cDiffusionRes();
   cDiffusionRes(double inxdiffuse, double inydiffuse, double inxgravity, double inygravity);

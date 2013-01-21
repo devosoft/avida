@@ -288,6 +288,66 @@ void cDiffusionRes::FlowAll() {
   }
 }
 
+void FlowMatter(cResourceElement &elem1, cResourceElement &elem2,
+                double inxdiffuse, 
+                double inydiffuse, double inxgravity, double inygravity,
+                int xdist, int ydist, double dist) {
+
+  /* Routine to calculate the amount of flow from one Element to another.
+     Amount of flow is a function of:
+
+       1) Amount of material in each cell (will try to equalize)
+       2) Distance between each cell
+       3) x and y "gravity"
+
+     This method only effect the delta amount of each element.  The State
+     method will need to be called at the end of each time step to complete
+     the movement of material.
+  */
+
+  double  diff, flowamt, xgravity, xdiffuse, ygravity,  ydiffuse;
+
+  if (((elem1.GetAmount() == 0.0) && (elem2.GetAmount() == 0.0)) && (dist < 0.0)) return;
+  diff = (elem1.GetAmount() - elem2.GetAmount());
+  if (xdist != 0) {
+
+    /* if there is material to be effected by x gravity */
+
+    if (((xdist>0) && (inxgravity>0.0)) || ((xdist<0) && (inxgravity<0.0))) {
+      xgravity = elem1.GetAmount() * fabs(inxgravity)/3.0;
+    } else {
+      xgravity = -elem2.GetAmount() * fabs(inxgravity)/3.0;
+    }
+    
+    /* Diffusion uses the diffusion constant x half the difference (as the 
+       elements attempt to equalize) / the number of possible neighbors (8) */
+
+    xdiffuse = inxdiffuse * diff / 16.0;
+  } else {
+    xdiffuse = 0.0;
+    xgravity = 0.0;
+  }  
+  if (ydist != 0) {
+
+    /* if there is material to be effected by y gravity */
+
+    if (((ydist>0) && (inygravity>0.0)) || ((ydist<0) && (inygravity<0.0))) {
+      ygravity = elem1.GetAmount() * fabs(inygravity)/3.0;
+    } else {
+      ygravity = -elem2.GetAmount() * fabs(inygravity)/3.0;
+    }
+    ydiffuse = inydiffuse * diff / 16.0;
+  } else {
+    ydiffuse = 0.0;
+    ygravity = 0.0;
+  }  
+
+  flowamt = ((xdiffuse + ydiffuse + xgravity + ygravity)/
+             (fabs(xdist*1.0) + fabs(ydist*1.0)))/dist;
+  elem1.Rate(-1 * flowamt);
+  elem2.Rate(flowamt);
+}
+
 /* Total up all the resources in each cell */
 
 double cDiffusionRes::SumAll() const{
