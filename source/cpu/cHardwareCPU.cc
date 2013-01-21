@@ -3910,7 +3910,7 @@ bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid, cAvi
   cPopulation& pop = m_world->GetPopulation();
   
   const Apto::Array<double> & res_count = pop.GetResources().GetCellResources(cell_id, ctx) +
-  pop.GetResources().GetDemeCellResources(pop.GetCell(cell_id).GetDemeID(), cell_id, ctx);
+  m_organism->GetOrgInterface().GetDemeCellResources(pop.GetCell(cell_id).GetDemeID(), cell_id, ctx);
   
   // Make sure we have the resource requested
   if (resid >= res_count.GetSize()) return false;

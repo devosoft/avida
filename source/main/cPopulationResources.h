@@ -28,6 +28,7 @@
 
 #include "nGeometry.h"
 #include "tMatrix.h"
+#include "cPopulationInterface.h"
 #include "cResource.h"
 #include "cString.h"
 
@@ -38,6 +39,8 @@ class cWorld;
 class cPopulationResources
 {
 private:
+  cPopulationInterface* m_interface;             // Interface back to the population.
+
   mutable Apto::Array<cString> resource_names;
   mutable Apto::Array<double> resource_initial;   // Initial quantity of each resource
   mutable Apto::Array<double> resource_count;     // Current quantity of each resource
@@ -183,8 +186,6 @@ public:
   void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
 
   // deme resources
-  const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx);
-
   void SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level);
   void SetDemeResourceInflow(const cString res_name, double new_level);
   void SetSingleDemeResourceInflow(int deme_id, const cString res_name, double new_level);

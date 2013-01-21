@@ -297,9 +297,6 @@ void cPopulation::SetupCellGrid()
                          m_world->GetConfig().SCALE_FREE_ALPHA.Get(), m_world->GetConfig().SCALE_FREE_ZERO_APPEAL.Get(),
                          m_world->GetRandom());
         break;
-      case nGeometry::DYNAMIC:
-        build_grid(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y);
-        break;
       default:
         assert(false);
     }
@@ -338,31 +335,29 @@ void cPopulation::SetupCellGrid()
     }
     
     if (!res->GetDemeResource()) {
-      m_world->GetStats().SetResourceName(global_res_index, res->GetName());
       global_res_index++;
+      m_world->GetStats().SetResourceName(global_res_index, res->GetName());
       const double decay = 1.0 - res->GetOutflow();
       if (!res->IsSpatial()) {
         m_pop_res.SetupGlobalRes(m_world, global_res_index, res->GetName(), res->GetInitial(),
-                                      res->GetInflow(), decay, res->GetGeometry(), m_world->GetVerbosity());
-      }
-      else {
+                                 res->GetInflow(), decay, res->GetGeometry(), m_world->GetVerbosity());
+      } else {
         if (res->IsDynamic()) {
           m_pop_res.SetupDynamicRes(m_world, global_res_index, res, m_world->GetVerbosity());
-        }
-        else if (res->IsDiffusion()) {
+        } else if (res->IsDiffusion()) {
           m_pop_res.SetupDiffusionRes(m_world, global_res_index, res->GetName(), res->GetInitial(), res->GetInflow(), decay,
-                                           res->GetGeometry(), res->GetXDiffuse(),
-                                           res->GetXGravity(), res->GetYDiffuse(),
-                                           res->GetYGravity(), res->GetInflowX1(),
-                                           res->GetInflowX2(), res->GetInflowY1(),
-                                           res->GetInflowY2(), res->GetOutflowX1(),
-                                           res->GetOutflowX2(), res->GetOutflowY1(),
-                                           res->GetOutflowY2(), res->GetCellListPtr(),
-                                           res->GetCellIdListPtr(), m_world->GetVerbosity());
-        }
-        else
+                                      res->GetGeometry(), res->GetXDiffuse(),
+                                      res->GetXGravity(), res->GetYDiffuse(),
+                                      res->GetYGravity(), res->GetInflowX1(),
+                                      res->GetInflowX2(), res->GetInflowY1(),
+                                      res->GetInflowY2(), res->GetOutflowX1(),
+                                      res->GetOutflowX2(), res->GetOutflowY1(),
+                                      res->GetOutflowY2(), res->GetCellListPtr(),
+                                      res->GetCellIdListPtr(), m_world->GetVerbosity());
+        } else {
           m_world->GetDriver().Feedback().Error("Spatial resource \"%s\"is not a diffusion or dynamic resource.", (const char*)res->GetName());
-        m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
+          m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
+        }
       }
     } else if (res->GetDemeResource()) {
       deme_res_index++;
