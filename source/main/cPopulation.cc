@@ -175,7 +175,7 @@ public:
 
 cPopulation::cPopulation(cWorld* world)  
 : m_world(world)
-, m_pop_res(0)
+, m_pop_res(this, 0)
 , m_scheduler(NULL)
 , birth_chamber(world)
 , print_mini_trace_genomes(false)
@@ -312,13 +312,14 @@ void cPopulation::SetupCellGrid()
   
   for (int i = 0; i < resource_lib.GetSize(); i++) if (resource_lib.GetResDef(i)->GetDemeResource()) num_deme_res++;
   
-  cPopulationResources tmp_res_count(resource_lib.GetSize() - num_deme_res);
-  m_pop_res = tmp_res_count;
+  cPopulationResources m_pop_res(this, resource_lib.GetSize() - num_deme_res);
   m_pop_res.ResizeSpatialGrids(world_x, world_y, geometry);
+  m_pop_res.SetX(world_x);
+  m_pop_res.SetY(world_y);
   
   for(int i = 0; i < GetNumDemes(); i++) {
-    cPopulationResources tmp_deme_res_count(num_deme_res);
-    GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
+    cPopulationResources tmp_deme_res_count(this, num_deme_res);
+//    GetDeme(i).SetDemeResourceCount(tmp_deme_res_count); // APW
     GetDeme(i).ResizeSpatialGrids(deme_size_x, deme_size_y, geometry);
   }
   

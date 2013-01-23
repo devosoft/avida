@@ -46,11 +46,13 @@ public:
   cResource(const cString& _name, int _id);
   cResource(const cString& _name, int _id, int inworld_x, int inworld_y, int ingeometry);
   cResource(int inworld_x, int inworld_y, int ingeometry);
+  const cResource& operator=(const cResource &resource);
   
-  virtual ~cResource() { ; }
+  virtual ~cResource() = 0;
+
+  void ResizeClear(int size_x, int size_y, int geometry);
 
   inline cResourceDef* GetResDef() { return m_world->GetEnvironment().GetResDefLib().GetResDef(m_id); }
-  inline void SetResDef(cResourceDef new_def) { m_world->GetEnvironment().GetResDefLib().SetResDef(new_def, m_id); }
   
   cResourceElement& Element(int x) { return grid[x]; }
   Apto::Array<cResourceElement>& GetElements() { return grid; }
@@ -75,7 +77,6 @@ public:
   virtual int GetCellListSize() const { return 0; }
 
   virtual void SetCellList(Apto::Array<cCellResource> *in_cell_list_ptr) { ; }
-  virtual void ResizeClear(int size_x, int size_y, int geometry) { ; }
   virtual void StateAll() { ; }
   virtual void Rate(int x, double ratein) const { ; }
   virtual void Rate(int x, int y, double ratein) const { ; }

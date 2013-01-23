@@ -28,19 +28,27 @@
 
 #include "nGeometry.h"
 #include "tMatrix.h"
-#include "cPopulationInterface.h"
 #include "cResource.h"
 #include "cString.h"
 
 class cAvidaContext;
 class cResourceDef;
+class cResourcePopulationInterface;
 class cWorld;
 
 class cPopulationResources
 {
 private:
-  cPopulationInterface* m_interface;             // Interface back to the population.
+  // A few constants to describe update process...
+  static const double UPDATE_STEP;                // Fraction of an update per step
+  static const double EPSILON;                    // Tolorance for round off errors
+  static const int PRECALC_DISTANCE;              // Number of steps to precalculate
 
+private:
+  cWorld* m_world;
+  cResourcePopulationInterface* m_interface;
+
+  mutable Apto::Array<cResource*> resources;     // The actual resources in the world
   mutable Apto::Array<cString> resource_names;
   mutable Apto::Array<double> resource_initial;   // Initial quantity of each resource
   mutable Apto::Array<double> resource_count;     // Current quantity of each resource
@@ -49,15 +57,16 @@ private:
   tMatrix<double> decay_precalc;                  // Precalculation of decay values
   tMatrix<double> inflow_precalc;                 // Precalculation of inflow values
   Apto::Array<int> geometry;                      // Spatial layout of each resource
-  mutable Apto::Array<cResource* > resources;     // The actual resources in the world
   mutable Apto::Array<double> curr_grid_res_val;
   mutable Apto::Array< Apto::Array<double> > curr_diffusion_res_val;
   int verbosity;
   Apto::Array< Apto::Array<int> > cell_lists;
 
   // Setup the update process to use lazy evaluation...
-  cWorld* m_world;
-  mutable double update_time;                     // Portion of an update compleated...
+  mutable double update_time;                     // Portion of an update completed...
+  int worldx;
+  int worldy;
+  
   mutable double spatial_update_time;
   mutable int m_last_updated;
   mutable int m_spatial_update;
@@ -65,11 +74,8 @@ private:
 
   int m_hgt_resid; //!< HGT resource ID.
 
-  // A few constants to describe update process...
-  static const double UPDATE_STEP;                // Fraction of an update per step
-  static const double EPSILON;                    // Tolorance for round off errors
-  static const int PRECALC_DISTANCE;              // Number of steps to precalculate
 
+private:
   // PRIVATE POPULATION RESOURCE METHODS //
   void DoUpdates(cAvidaContext& ctx, bool global_only = false) const;         // Update resource count based on update time
   cString GetGeometryName(const int& in_geometry);
@@ -99,12 +105,14 @@ private:
   // deme resources
   void PrintDemeSpatialResData(const cPopulationResources& res, const int i, const int deme_id, cAvidaContext& ctx) const;
 
-public:
-  cPopulationResources(int num_resources = 0);
   cPopulationResources(const cPopulationResources&);
+  const cPopulationResources& operator=(const cPopulationResources&);
+
+
+public:
+  cPopulationResources(cResourcePopulationInterface* pop, int num_resources = 0);
   ~cPopulationResources();
 
-  const cPopulationResources& operator=(const cPopulationResources&);
 
   // PUBLIC POPULATION RESOURCE METHODS //
   // the pop res object & operations on all resources
@@ -112,11 +120,15 @@ public:
   void SetCellResources(int cell_id, const Apto::Array<double> & res);
   void SetSpatialUpdate(int update) { m_spatial_update = update; }
 
+  void SetX(int x) { worldx = x; }
+  void SetY(int y) { worldy = y; }
+
   int GetSize(void) const { return resource_count.GetSize(); }
   const Apto::Array<double>& GetResources(cAvidaContext& ctx) const; 
   const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const;
   const Apto::Array<Apto::Array<int> >& GetCellIdLists() const { return cell_lists; }
   const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const;
+  const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) const;
   
   void UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
   void UpdateResStats(cAvidaContext& ctx);

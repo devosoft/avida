@@ -47,11 +47,15 @@ using namespace AvidaTools;
 
 
 cTestCPU::cTestCPU(cAvidaContext& ctx, cWorld* world)
+  :   m_resource_count(this, 0)
+  , m_faced_cell_resource_count(this, 0)
+  , m_deme_resource_count(this, 0)
+  , m_cell_resource_count(this, 0)
 {
   m_world = world;
-	m_use_manual_inputs = false;
+  m_use_manual_inputs = false;
   InitResources(ctx);
-}  
+}
 
  
 void cTestCPU::InitResources(cAvidaContext& ctx, int res_method, cResourceHistory* res, int update, int cpu_cycle_offset)

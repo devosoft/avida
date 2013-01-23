@@ -22,7 +22,10 @@
 #include "cPopulationResources.h"
 
 #include "cDeme.h"
+#include "cDynamicRes.h"
+#include "cDiffusionRes.h"
 #include "cResourceElement.h"
+#include "cResourcePopulationInterface.h"
 #include "cWorld.h"
 
 const double cPopulationResources::UPDATE_STEP(1.0 / 10000.0);
@@ -30,8 +33,9 @@ const double cPopulationResources::EPSILON(1.0e-15);
 const int cPopulationResources::PRECALC_DISTANCE(100);
 
 
-cPopulationResources::cPopulationResources(int num_resources)
-  : update_time(0.0)
+cPopulationResources::cPopulationResources(cResourcePopulationInterface* pop, int num_resources)
+  : m_interface(pop)
+  , update_time(0.0)
   , spatial_update_time(0.0)
   , m_last_updated(0)
   , m_spatial_update(0)
@@ -39,34 +43,6 @@ cPopulationResources::cPopulationResources(int num_resources)
   , m_hgt_resid(-1)
 {
   if (num_resources > 0) SetSize(num_resources);
-}
-
-cPopulationResources::cPopulationResources(const cPopulationResources &rc) {
-  *this = rc;
-}
-
-const cPopulationResources &cPopulationResources::operator=(const cPopulationResources &rc) {
-  SetSize(rc.GetSize());
-  resource_names = rc.resource_names;
-  resource_initial = rc.resource_initial;  
-  resource_count = rc.resource_count;
-  decay_rate = rc.decay_rate;
-  inflow_rate = rc.inflow_rate;
-  decay_precalc = rc.decay_precalc;
-  inflow_precalc = rc.inflow_precalc;
-  geometry = rc.geometry;
-  
-  for (int i = 0; i < rc.resources.GetSize(); i++) { 
-    *(resources[i]) = *(rc.resources[i]);
-  }
-  
-  curr_grid_res_val = rc.curr_grid_res_val;
-  curr_diffusion_res_val = rc.curr_diffusion_res_val;
-  update_time = rc.update_time;
-  spatial_update_time = rc.spatial_update_time;
-  cell_lists = rc.cell_lists;
-
-  return *this;
 }
 
 cPopulationResources::~cPopulationResources()
@@ -78,26 +54,20 @@ cPopulationResources::~cPopulationResources()
 
 void cPopulationResources::SetSize(int num_resources)
 {
+  for (int i = 0; i < resources.GetSize(); i++) delete resources[i];
+  resources.ResizeClear(num_resources);
   resource_names.ResizeClear(num_resources);
   resource_initial.ResizeClear(num_resources);
   resource_count.ResizeClear(num_resources);
   decay_rate.ResizeClear(num_resources);
   inflow_rate.ResizeClear(num_resources);
-  if(num_resources > 0) {
+  if (num_resources > 0) {
     decay_precalc.ResizeClear(num_resources, PRECALC_DISTANCE+1);
     inflow_precalc.ResizeClear(num_resources, PRECALC_DISTANCE+1);
   }
   geometry.ResizeClear(num_resources);
   
-  for (int i = 0; i < resources.GetSize(); i++) {
-    delete resources[i]; 
-  }
-  
-  resources.ResizeClear(num_resources);
-  
-  for(int i = 0; i < num_resources; i++){
-    resources[i] = new cResource; 
-  }
+  for (int i = 0; i < num_resources; i++) resources[i] = new cDiffusionRes(); //APW
     
   curr_grid_res_val.ResizeClear(num_resources);
   curr_diffusion_res_val.ResizeClear(num_resources);
@@ -111,7 +81,6 @@ void cPopulationResources::SetSize(int num_resources)
   inflow_precalc.SetAll(0.0);
   geometry.SetAll(nGeometry::GLOBAL);
   curr_grid_res_val.SetAll(0.0);
-  //DO spacial resources need to be set to zero?
 }
 
 // --- PRIVATE METHODS --- //
@@ -287,7 +256,7 @@ void cPopulationResources::PrintDemeSpatialResData(const cPopulationResources& r
   int gridsize = sp_res.GetSize();
   
   for (int j = 0; j < gridsize; j++) {
-    df.WriteBlockElement(sp_res.GetAmount(j), j, m_interface->GetWorldX());
+    df.WriteBlockElement(sp_res.GetAmount(j), j, worldx);
   }
   df.WriteRaw("];");
   df.Endl();
@@ -341,6 +310,12 @@ const Apto::Array<double> & cPopulationResources::GetCellResources(int cell_id, 
   return GetFrozenResources(ctx, cell_id);
 }
 
+const Apto::Array<double>& cPopulationResources::GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) const
+{
+  int deme_cell_id = m_interface->GetDeme(deme_id).GetRelativeCellID(cell_id);
+  return GetCellResources(deme_cell_id, ctx);
+}
+
 void cPopulationResources::UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
 {
   ModifyCell(ctx, res_change, cell_id);
@@ -365,7 +340,6 @@ void cPopulationResources::ReinitializeResources(cAvidaContext& ctx, double addi
       resources[i]->RateAll(additional_resource);
       resources[i]->StateAll();
     }
-
   } //End going through the resources
 }
 
@@ -516,8 +490,8 @@ void cPopulationResources::UpdateResource(const int Verbosity, cWorld* world) {
   }
   
   for(int i = 0; i < m_interface->GetNumDemes(); i++) {
-    cPopulationResources tmp_deme_res_count(num_deme_res);
-    m_interface->GetDeme(i)->SetDemeResourceCount(tmp_deme_res_count);
+    cPopulationResources tmp_deme_res_count(m_interface, num_deme_res); // APW
+//    m_interface->GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
   }
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
@@ -551,7 +525,7 @@ void cPopulationResources::UpdateResource(const int Verbosity, cWorld* world) {
     } else if (res->GetDemeResource()) {
       deme_res_index++;
       for(int j = 0; j < m_interface->GetNumDemes(); j++) {
-        m_interface->GetDeme(j)->SetupDemeRes(deme_res_index, res, Verbosity, world);
+        m_interface->GetDeme(j).SetupDemeRes(deme_res_index, res, Verbosity, world);
         // could add deme resources to global resource stats here
       }
     } else {
@@ -697,22 +671,24 @@ void cPopulationResources::SetupDiffusionRes(cWorld* world, const int& res_index
   
 
   /* recource_count gets only the values for global resources */
-
+  
   resource_names[res_index] = name;
   resource_initial[res_index] = initial;
+
+  delete resources[res_index];
+  resources[res_index] = new cDiffusionRes();
+  
   if (in_geometry == nGeometry::GLOBAL) {
     resource_count[res_index] = initial;
 	resources[res_index]->RateAll(0);
-  } 
+  }
   else if (in_geometry == nGeometry::PARTIAL) {
-	  resource_count[res_index]=initial;
-
-	  resources[res_index]->RateAll(0);
-	  // want to set list of cell ids here
-	   cell_lists[res_index].Resize(in_cell_id_list_ptr->GetSize());
-	  for (int i = 0; i < in_cell_id_list_ptr->GetSize(); i++)
-		  cell_lists[res_index][i] = (*in_cell_id_list_ptr)[i];
-
+    resource_count[res_index]=initial;    
+    resources[res_index]->RateAll(0);
+    // want to set list of cell ids here
+    cell_lists[res_index].Resize(in_cell_id_list_ptr->GetSize());
+    for (int i = 0; i < in_cell_id_list_ptr->GetSize(); i++)
+      cell_lists[res_index][i] = (*in_cell_id_list_ptr)[i];
   }
   else {
     resource_count[res_index] = 0; 
@@ -765,9 +741,11 @@ void cPopulationResources::SetupDynamicRes(cWorld* world, const int& res_index, 
   resource_names[res_index] = res_def->GetName();
   resource_initial[res_index] = res_def->GetInitial();
   resource_count[res_index] = 0;
+
   delete resources[res_index];
-  resources[res_index] = new cResource();
-  
+  resources[res_index] = new cDynamicRes(m_world, *res_def, m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get());
+  m_world->GetEnvironment().GetResDefLib().SetResDef(*res_def, res_index);
+
   geometry[res_index] = res_def->GetGeometry();
 }
 
@@ -865,7 +843,7 @@ void cPopulationResources::UpdateDynamicRes(cAvidaContext& ctx, cWorld* world, c
 
 void cPopulationResources::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per)
 {
-  cPopulationCell* cell = m_interface->GetCell(cell_id);
+  cPopulationCell& cell = m_interface->GetCell(cell_id);
   const int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
   
   const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
@@ -880,8 +858,8 @@ void cPopulationResources::ExecutePredatoryResource(cAvidaContext& ctx, const in
     }
   }
   
-  if (m_world->GetConfig().USE_AVATARS.Get() && cell->HasAV()) {
-    Apto::Array<cOrganism*> cell_avs = cell->GetCellAVs();
+  if (m_world->GetConfig().USE_AVATARS.Get() && cell.HasAV()) {
+    Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();
     
     // on den, kill juvs only
     if (cell_has_den) {
@@ -921,8 +899,8 @@ void cPopulationResources::ExecutePredatoryResource(cAvidaContext& ctx, const in
       }
     }
   }
-  else if (!m_world->GetConfig().USE_AVATARS.Get() && cell->IsOccupied()) {
-    cOrganism* target_org = cell->GetOrganism();
+  else if (!m_world->GetConfig().USE_AVATARS.Get() && cell.IsOccupied()) {
+    cOrganism* target_org = cell.GetOrganism();
     // if not avatars, a juv will be killed regardless of whether it is on a den
     // an adult would only be targeted off of a den
     if (target_org->GetPhenotype().GetTimeUsed() < juv_age || !cell_has_den) {
@@ -944,7 +922,7 @@ void cPopulationResources::SetDemeResource(cAvidaContext& ctx, const cString res
   if (res != NULL) {
     int num_demes = m_interface->GetNumDemes();
     for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
-      m_interface->GetDeme(deme_id)->SetResource(ctx, res->GetIndex(), new_level);
+      m_interface->GetDeme(deme_id).SetResource(ctx, res->GetIndex(), new_level);
     }
   }
 }
@@ -961,7 +939,7 @@ void cPopulationResources::SetDemeResourceInflow(const cString res_name, double 
   m_world->GetEnvironment().SetResourceInflow(res_name, new_level);
   int num_demes = m_interface->GetNumDemes();
   for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
-    m_interface->GetDeme(deme_id)->GetDemeResources().SetInflow(res_name, new_level);
+    m_interface->GetDeme(deme_id).GetDemeResources().SetInflow(res_name, new_level);
   }
 }
 
@@ -979,7 +957,7 @@ void cPopulationResources::SetDemeResourceInflow(const cString res_name, double 
 void cPopulationResources::SetSingleDemeResourceInflow(int deme_id, const cString res_name, double new_level)
 {
   m_world->GetEnvironment().SetResourceInflow(res_name, new_level);
-  m_interface->GetDeme(deme_id)->GetDemeResources().SetInflow(res_name, new_level);
+  m_interface->GetDeme(deme_id).GetDemeResources().SetInflow(res_name, new_level);
 }
 
 /* This method sets the outflow for the named deme resource across ALL demes.
@@ -994,7 +972,7 @@ void cPopulationResources::SetDemeResourceOutflow(const cString res_name, double
   m_world->GetEnvironment().SetResourceOutflow(res_name, new_level);
   int num_demes = m_interface->GetNumDemes();
   for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
-    m_interface->GetDeme(deme_id)->GetDemeResources().SetDecay(res_name, 1 - new_level);
+    m_interface->GetDeme(deme_id).GetDemeResources().SetDecay(res_name, 1 - new_level);
   }
 }
 
@@ -1012,12 +990,12 @@ void cPopulationResources::SetDemeResourceOutflow(const cString res_name, double
 void cPopulationResources::SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level)
 {
   m_world->GetEnvironment().SetResourceOutflow(res_name, new_level);
-  m_interface->GetDeme(deme_id)->GetDemeResources().SetDecay(res_name, 1 - new_level);
+  m_interface->GetDeme(deme_id).GetDemeResources().SetDecay(res_name, 1 - new_level);
 }
 
 void cPopulationResources::UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
 {
-  m_interface->GetDeme(m_interface->GetCell(cell_id)->GetDemeID())->ModifyDemeResCount(ctx, res_change, cell_id);
+  m_interface->GetDeme(m_interface->GetCell(cell_id).GetDemeID()).ModifyDemeResCount(ctx, res_change, cell_id);
 }
 
 void cPopulationResources::PrintDemeResource(cAvidaContext& ctx) {
@@ -1029,9 +1007,9 @@ void cPopulationResources::PrintDemeResource(cAvidaContext& ctx) {
   df_resources.Write(stats.GetUpdate(), "update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-    m_interface->GetDeme(deme_id)->UpdateDemeRes(ctx);
+    m_interface->GetDeme(deme_id).UpdateDemeRes(ctx);
     
-    const cPopulationResources& res = m_interface->GetDeme(deme_id)->GetDemeResourceCount();
+    const cPopulationResources& res = m_interface->GetDeme(deme_id).GetDemeResourceCount();
     for(int j = 0; j < res.GetSize(); j++) {
       const char * tmp = res.GetResName(j);
       df_resources.Write(res.Get(ctx, j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
@@ -1055,9 +1033,9 @@ void cPopulationResources::PrintDemeGlobalResources(cAvidaContext& ctx) {
   df.WriteRaw(UpdateStr);
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-    m_interface->GetDeme(deme_id)->UpdateDemeRes(ctx);
+    m_interface->GetDeme(deme_id).UpdateDemeRes(ctx);
     
-    const cPopulationResources & res = m_interface->GetDeme(deme_id)->GetDemeResourceCount();
+    const cPopulationResources & res = m_interface->GetDeme(deme_id).GetDemeResourceCount();
     const int num_res = res.GetSize();
     
     df.WriteBlockElement(deme_id, 0, num_res + 1);

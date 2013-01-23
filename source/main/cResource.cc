@@ -26,13 +26,13 @@
 cResource::cResource(const cString & _name, int _id, int inworld_x, int inworld_y, int ingeometry)
   : m_name(_name), m_id(_id), m_initial(0.0), m_modified(false)
 {
-  int i;
- 
+  m_name = _name;
+  m_id = _id;
   world_x = inworld_x;
   world_y = inworld_y;
   geometry = ingeometry;
   num_cells = world_x * world_y;
-  for (i = 0; i < GetSize(); i++) {
+  for (int i = 0; i < GetSize(); i++) {
     cResourceElement tmpelem;
     grid[i] = tmpelem;
   } 
@@ -41,13 +41,11 @@ cResource::cResource(const cString & _name, int _id, int inworld_x, int inworld_
 cResource::cResource(int inworld_x, int inworld_y, int ingeometry)
 : grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
 {
-  int i;
- 
   world_x = inworld_x;
   world_y = inworld_y;
   geometry = ingeometry;
   num_cells = world_x * world_y;
-  for (i = 0; i < GetSize(); i++) {
+  for (int i = 0; i < GetSize(); i++) {
     cResourceElement tmpelem;
     Element(i) = tmpelem;
   } 
@@ -58,6 +56,33 @@ cResource::cResource() : m_modified(false)
   geometry = nGeometry::GLOBAL;
 }
 
+cResource::~cResource() { ; }
+
+
+const cResource &cResource::operator=(const cResource &res) {
+  m_name = res.m_name;
+  m_id = res.m_id;
+  world_x = res.world_x;
+  world_y = res.world_y;
+  geometry = res.geometry;
+  num_cells = world_x * world_y;
+  for (int i = 0; i < GetSize(); i++) {
+    cResourceElement tmpelem;
+    grid[i] = tmpelem;
+  } 
+  return *this;
+}
+
+void cResource::ResizeClear(int x_size, int y_size, int geometry)
+{
+  grid.ResizeClear(x_size * y_size);
+  SetGeometry(geometry);
+  for (int i = 0; i < GetSize(); i++) {
+    cResourceElement tmpelem;
+    Element(i) = tmpelem;
+   } 
+   if (geometry != nGeometry::GLOBAL && geometry != nGeometry::DYNAMIC) SetPointers();
+}
 
 double cResource::GetAmount(int x) const {
   if (x >= 0 && x < grid.GetSize()) {

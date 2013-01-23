@@ -32,40 +32,36 @@ using namespace AvidaTools;
 /* Setup a single diffusion resource with known flows */
 
 cDiffusionRes::cDiffusionRes(double inxdiffuse, double inydiffuse, double inxgravity, double inygravity)
+  : cResource()
 {
   xdiffuse = inxdiffuse;
   ydiffuse = inydiffuse;
   xgravity = inxgravity;
   ygravity = inygravity;
+  for (int i = 0; i < GetSize(); i++) {
+    cResourceElement tmpelem;
+    Element(i) = tmpelem;
+  } 
   SetPointers();
 }
 
 /* Setup a single diffusion resource using default flow amounts  */
 
 cDiffusionRes::cDiffusionRes()
+  : cResource()
 {
   xdiffuse = 1.0;
   ydiffuse = 1.0;
   xgravity = 0.0;
   ygravity = 0.0;
+  for (int i = 0; i < GetSize(); i++) {
+    cResourceElement tmpelem;
+    Element(i) = tmpelem;
+   } 
   SetPointers();
 }
 
 cDiffusionRes::~cDiffusionRes() { ; }
-
-
-void cDiffusionRes::ResizeClear(int x_size, int y_size, int geometry)
-{
-  int i;
- 
-  GetElements().ResizeClear(x_size * y_size);
-  SetGeometry(geometry);
-  for (i = 0; i < GetSize(); i++) {
-    cResourceElement tmpelem;
-    Element(i) = tmpelem;
-   } 
-   SetPointers();
-}
 
 void cDiffusionRes::SetPointers()
 {
@@ -254,10 +250,7 @@ void cDiffusionRes::RateAll(double ratein) {
    with the total of the resource */
 
 void cDiffusionRes::StateAll() {
-
-  int i;
- 
-  for (i = 0; i < GetSize(); i++) {
+  for (int i = 0; i < GetSize(); i++) {
     Element(i).State();
   } 
 }
@@ -288,7 +281,7 @@ void cDiffusionRes::FlowAll() {
   }
 }
 
-void FlowMatter(cResourceElement &elem1, cResourceElement &elem2,
+void cDiffusionRes::FlowMatter(cResourceElement &elem1, cResourceElement &elem2,
                 double inxdiffuse, 
                 double inydiffuse, double inxgravity, double inygravity,
                 int xdist, int ydist, double dist) {

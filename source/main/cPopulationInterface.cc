@@ -52,7 +52,7 @@ namespace std
 #endif
 
 
-cPopulationInterface::cPopulationInterface(cWorld* world) 
+cPopulationInterface::cPopulationInterface(cWorld* world)
 : m_world(world)
 , m_cell_id(-1)
 , m_deme_id(-1)
@@ -64,13 +64,13 @@ cPopulationInterface::cPopulationInterface(cWorld* world)
 }
 
 cPopulationInterface::~cPopulationInterface() {
-	if(m_hgt_support) {
-		delete m_hgt_support;
-	}
+  if (m_hgt_support) {
+    delete m_hgt_support;
+  }
 }
 
 cOrganism* cPopulationInterface::GetOrganism() {
-	return GetCell()->GetOrganism();
+  return GetCell()->GetOrganism();
 }
 
 const Apto::Array<cOrganism*, Apto::Smart>& cPopulationInterface::GetLiveOrgList() const {
@@ -102,19 +102,11 @@ int cPopulationInterface::GetCellYPosition()
 }
 
 cPopulationCell* cPopulationInterface::GetCellFaced() {
-	return &GetCell()->GetCellFaced();
+  return &GetCell()->GetCellFaced();
 }
 
 cDeme* cPopulationInterface::GetDeme() {
   return &m_world->GetPopulation().GetDeme(m_deme_id);
-}
-
-cDeme* cPopulationInterface::GetDeme(int deme_id) {
-  return &m_world->GetPopulation().GetDeme(m_deme_id);
-}
-
-int cPopulationInterface::GetNumDemes() {
-  return m_world->GetPopulation().GetNumDemes();
 }
 
 int cPopulationInterface::GetCellData() {
@@ -402,12 +394,6 @@ const Apto::Array<double>& cPopulationInterface::GetDemeResources(int deme_id, c
   return GetCellResources(deme_cell_id, ctx);
 }
 
-const Apto::Array<double>& cPopulationInterface::GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx)
-{
-  int deme_cell_id = m_world->GetPopulation().GetDeme(deme_id).GetRelativeCellID(cell_id);
-  return GetCellResources(deme_cell_id, ctx);
-}
-
 const Apto::Array< Apto::Array<int> >& cPopulationInterface::GetCellIdLists()
 {
 	return m_world->GetPopulation().GetResources().GetCellIdLists();
@@ -454,7 +440,14 @@ void cPopulationInterface::Die(cAvidaContext& ctx)
   m_world->GetPopulation().KillOrganism(cell, ctx);
 }
 
-void cPopulationInterface::KillCellID(int target, cAvidaContext& ctx) 
+void cPopulationInterface::KillOrganism(cAvidaContext& ctx, int cell_id)
+{
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  m_world->GetPopulation().KillOrganism(cell, ctx);
+}
+
+
+void cPopulationInterface::KillCellID(int target, cAvidaContext& ctx)
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(target);
   m_world->GetPopulation().KillOrganism(cell, ctx); 
@@ -1277,7 +1270,6 @@ void cPopulationInterface::ReceiveHGTDonation(const InstructionSequence& fragmen
 	m_hgt_support->_pending.push_back(fragment);
 }
 
-
 bool cPopulationInterface::Move(cAvidaContext& ctx, int src_id, int dest_id)
 {
   return m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, -1);
@@ -1291,10 +1283,6 @@ void cPopulationInterface::AddLiveOrg()
 void cPopulationInterface::RemoveLiveOrg() 
 {
   m_world->GetPopulation().RemoveLiveOrg(GetOrganism());
-}
-
-void cPopulationInterface::KillOrganism(cAvidaContext& ctx, int cell_id) {
-  m_world->GetPopulation().KillOrganism(ctx, cell_id);
 }
 
 bool cPopulationInterface::HasOpinion(cOrganism* in_organism)
@@ -1801,11 +1789,6 @@ int cPopulationInterface::GetAVFacedCellID(int av_num)//** GetCellXPosition()
     return m_avatars[av_num].av_faced_cell;
   }
   return -1;
-}
-
-int cPopulationInterface::GetWorldX()
-{
-  return m_world->GetPopulation().GetWorldX();
 }
 
 // Returns the number of cells neighboring the avatar's

@@ -55,8 +55,6 @@ public:
   int GetCellID() { return -1; }
   int GetDemeID() { return -1; }
   cDeme* GetDeme() { return 0; }
-  cDeme* GetDeme(int deme_id) { return 0; }
-  int GetNumDemes() { return 1; }
   void SetCellID(int) { ; }
   void SetDemeID(int) { ; }
   
@@ -69,7 +67,6 @@ public:
 
   int GetCellXPosition() { return -1; }
   int GetCellYPosition() { return -1; }
-  int GetWorldX() { return -1; }
   
   int GetCellData() { return -1; }
   int GetCellDataOrgID() { return -1; }
@@ -111,7 +108,6 @@ public:
   const Apto::Array<double>& GetFacedCellResources(cAvidaContext& ctx); 
   double GetFacedResourceVal(cAvidaContext& ctx, int res_id);
   const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
-  const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx);
   const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx);
   const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
   double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);

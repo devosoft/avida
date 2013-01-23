@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4A65713116A8A5F700EFFC5C /* cDynamicRes.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A65712F16A8A5F600EFFC5C /* cDynamicRes.cc */; };
 		4A65713C16A9EC8200EFFC5C /* cPopulationResources.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A65713A16A9EC7800EFFC5C /* cPopulationResources.cc */; };
+		4A8F3D9616AF26D300B6747C /* cResourcePopulationInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A8F3D9416AF26D300B6747C /* cResourcePopulationInterface.cc */; };
 		4A9B676315404DBD005AE9B9 /* Avida2Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7038918C13BBA88800606079 /* Avida2Driver.cc */; };
 		4A9B676515404DD1005AE9B9 /* Types.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C0588314CF106200AB38C5 /* Types.cc */; };
 		4A9B676615404DFC005AE9B9 /* GenomeLoader.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708D3E3214A429DF00204169 /* GenomeLoader.cc */; };
@@ -264,6 +265,8 @@
 		4A65713016A8A5F700EFFC5C /* cDynamicRes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cDynamicRes.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		4A65713A16A9EC7800EFFC5C /* cPopulationResources.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cPopulationResources.cc; sourceTree = "<group>"; };
 		4A65713B16A9EC7C00EFFC5C /* cPopulationResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cPopulationResources.h; sourceTree = "<group>"; };
+		4A8F3D9416AF26D300B6747C /* cResourcePopulationInterface.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cResourcePopulationInterface.cc; sourceTree = "<group>"; };
+		4A8F3D9516AF26D300B6747C /* cResourcePopulationInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cResourcePopulationInterface.h; sourceTree = "<group>"; };
 		4ABC70211350AF3000EB56AA /* dynamic_res.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = dynamic_res.html; sourceTree = "<group>"; };
 		4AC3D9F2144E087000CAEA62 /* cOrgSensor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cOrgSensor.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		4AC3D9F3144E087000CAEA62 /* cOrgSensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSensor.h; sourceTree = "<group>"; };
@@ -1705,6 +1708,8 @@
 				70B0872608F5E82D00FC65FE /* cResourceElement.cc */,
 				709A1E540EB69DA6006090AF /* cResourceHistory.h */,
 				709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */,
+				4A8F3D9516AF26D300B6747C /* cResourcePopulationInterface.h */,
+				4A8F3D9416AF26D300B6747C /* cResourcePopulationInterface.cc */,
 				70310E690EDD09260044971B /* cStateGrid.h */,
 				70B0872B08F5E82D00FC65FE /* cStats.cc */,
 				70B0871B08F5E81000FC65FE /* cStats.h */,
@@ -2122,6 +2127,7 @@
 				4A9B676315404DBD005AE9B9 /* Avida2Driver.cc in Sources */,
 				4A65713116A8A5F700EFFC5C /* cDynamicRes.cc in Sources */,
 				4A65713C16A9EC8200EFFC5C /* cPopulationResources.cc in Sources */,
+				4A8F3D9616AF26D300B6747C /* cResourcePopulationInterface.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

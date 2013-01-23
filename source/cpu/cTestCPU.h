@@ -26,6 +26,7 @@
 #include <fstream>
 
 #include "cPopulationResources.h"
+#include "cResourcePopulationInterface.h"
 #include "cString.h"
 #include "cCPUTestInfo.h"
 #include "cWorld.h"
@@ -40,7 +41,7 @@ class cResourceHistory;
 using namespace Avida;
 
 
-class cTestCPU
+class cTestCPU : public cResourcePopulationInterface
 {
 public:
 
@@ -113,6 +114,12 @@ public:
   // Used by cTestCPUInterface to get/update resources
   void ModifyResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   cPopulationResources& GetResourceCount() { return m_resource_count; }
+  
+  cPopulationCell& GetCell(int cell_id) { ; }
+  cDeme& GetDeme(int deme_id) { ; }
+  int GetNumDemes() const { ; }
+//  const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) const { ; }
+  void KillOrganism(cAvidaContext& ctx, int cell_id) { ; }
 };
 
 

@@ -73,13 +73,10 @@ public:
   int GetDemeID() { return m_deme_id; }
   //! Retrieve the deme in which this organism lives.
   cDeme* GetDeme();
-  cDeme* GetDeme(int deme_id);
-  int GetNumDemes();
   void SetCellID(int in_id) { m_cell_id = in_id; }
   void SetDemeID(int in_id) { m_deme_id = in_id; }
   int GetCellXPosition();
   int GetCellYPosition();
-  int GetWorldX();
   
   int GetCellData();
   int GetCellDataOrgID();
@@ -124,7 +121,6 @@ public:
   double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
   double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
   const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
-  const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx);
   const Apto::Array< Apto::Array<int> >& GetCellIdLists();
   int GetCurrPeakX(cAvidaContext& ctx, int res_id); 
   int GetCurrPeakY(cAvidaContext& ctx, int res_id);

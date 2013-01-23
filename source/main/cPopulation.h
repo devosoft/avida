@@ -30,6 +30,7 @@
 #include "cOrgInterface.h"
 #include "cPopulationInterface.h"
 #include "cPopulationResources.h"
+#include "cResourcePopulationInterface.h"
 #include "cString.h"
 #include "cWorld.h"
 #include "tList.h"
@@ -59,7 +60,7 @@ public:
 typedef Apto::SmartPtr<cPopulationOrgStatProvider, Apto::InternalRCObject> cPopulationOrgStatProviderPtr;
 
 
-class cPopulation : public Data::ArgumentedProvider
+class cPopulation : public Data::ArgumentedProvider, public cResourcePopulationInterface
 {
 private:
   // Components...
@@ -169,7 +170,7 @@ public:
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
   void KillOrganism(cAvidaContext& ctx, int in_cell) { KillOrganism(cell_array[in_cell], ctx); } 
   
-  // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
+  // @WRE 2007/07/05 Helper function to take care of side effects of Avidian
   // movement that cannot be directly handled in cHardwareCPU.cc
   bool MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id, int avatar_cell);
 
@@ -374,7 +375,7 @@ public:
 
   // -------- Population mixing support --------
   //! Mix all organisms in the population.
-  void MixPopulation(cAvidaContext& ctx); 
+  void MixPopulation(cAvidaContext& ctx);
 
 private:
   void SetupCellGrid();

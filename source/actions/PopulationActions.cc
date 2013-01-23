@@ -1760,8 +1760,7 @@ public:
           adjusted_amount = 0;
         }
         
-        cPopulationResources res = deme.GetDemeResourceCount();
-        const int resid = res.GetResourceByName(m_resname);
+        const int resid = deme.GetDemeResourceCount().GetResourceByName(m_resname);
         
         if(resid == -1)
         {
@@ -1770,14 +1769,14 @@ public:
           continue;
         }
         
-        if(res.IsSpatial(resid)) {
+        if(deme.GetDemeResourceCount().IsSpatial(resid)) {
           for (int c = 0; c < deme.GetWidth() * deme.GetHeight(); c++) {
             deme.AdjustSpatialResource(ctx, c, resid, -1 * deme.GetSpatialResource(c, resid, ctx) * adjusted_amount); 
           } //End iterating through all cells
         }
         else
         {
-          deme.AdjustResource(ctx, resid, -1 * res.Get(ctx, resid) * adjusted_amount);
+          deme.AdjustResource(ctx, resid, -1 * deme.GetDemeResourceCount().Get(ctx, resid) * adjusted_amount);
         }
         
       } //End if deme is treatable

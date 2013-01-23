@@ -66,13 +66,10 @@ public:
   virtual cPopulationCell* GetCell(int cell_id) = 0;
   virtual int GetDemeID() = 0;
   virtual cDeme* GetDeme() = 0;
-  virtual cDeme* GetDeme(int deme_id) = 0;
-  virtual int GetNumDemes() = 0;
   virtual void SetCellID(int in_id) = 0;
   virtual void SetDemeID(int in_id) = 0;
   virtual int GetCellXPosition() = 0;
   virtual int GetCellYPosition() = 0;
-  virtual int GetWorldX() = 0;
   
   virtual int GetCellData() = 0;
   virtual int GetCellDataOrgID() = 0;
@@ -117,7 +114,6 @@ public:
   virtual const Apto::Array<double>& GetFacedCellResources(cAvidaContext& ctx) = 0; 
   virtual double GetFacedResourceVal(cAvidaContext& ctx, int res_id) = 0;
   virtual const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) = 0; 
-  virtual const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) = 0;
   virtual const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) = 0;
   virtual double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) = 0;
   virtual double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) = 0;

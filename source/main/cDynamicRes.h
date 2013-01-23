@@ -33,9 +33,7 @@ class cWorld;
 class cDynamicRes : public cResource
 {
 public:
-  cDynamicRes();
-  cDynamicRes(cWorld* world);
-  cDynamicRes(cWorld* world, cResourceDef& res_def);
+  cDynamicRes(cWorld* world, cResourceDef& res_def, int worldx, int worldy);
 
   virtual ~cDynamicRes();
   

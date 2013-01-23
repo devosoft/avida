@@ -266,7 +266,7 @@ public:
   double GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext& ctx) const;
   void AdjustSpatialResource(cAvidaContext& ctx, int rel_cellid, int resource_id, double amount);
   void AdjustResource(cAvidaContext& ctx, int resource_id, double amount);
-  void SetDemeResourceCount(const cPopulationResources in_res) { deme_resource_count = in_res; }
+//  void SetDemeResourceCount(const cPopulationResources in_res) { deme_resource_count = in_res; } //APW
   void ResizeSpatialGrids(const int in_x, const int in_y, const int geometry) { deme_resource_count.ResizeSpatialGrids(in_x, in_y, geometry); }
   void ModifyDemeResCount(cAvidaContext& ctx, const Apto::Array<double> & res_change, const int absolute_cell_id);
   double GetCellEnergy(int absolute_cell_id, cAvidaContext& ctx) const; 

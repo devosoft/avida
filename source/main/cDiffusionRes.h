@@ -46,7 +46,6 @@ public:
   cDiffusionRes(double inxdiffuse, double inydiffuse, double inxgravity, double inygravity);
   virtual ~cDiffusionRes();
   
-  void ResizeClear(int x_size, int y_size, int geometry);
   void SetPointers();
   void CheckRanges();
   void SetCellList(Apto::Array<cCellResource> *in_cell_list_ptr);

@@ -31,8 +31,9 @@
 
 using namespace Avida;
 
-cDynamicRes::cDynamicRes(cWorld* world, cResourceDef& res_def)
-  : m_world(world)
+cDynamicRes::cDynamicRes(cWorld* world, cResourceDef& res_def, int worldx, int worldy)
+  : cResource()
+  , m_world(world)
   , m_res_def(res_def)
   , m_initial(false)
   , m_move_y_scaler(0.5)
@@ -57,14 +58,8 @@ cDynamicRes::cDynamicRes(cWorld* world, cResourceDef& res_def)
   , m_max_usedx(-1)
   , m_max_usedy(-1)
 {
-  SetResDef(res_def);
-  ResetDynamicRes(m_world->GetDefaultContext(), GetX(), GetY());
-}
-
-cDynamicRes::cDynamicRes(cWorld* world)
-  : m_res_def(*GetResDef())
-{
-  cDynamicRes(world, *GetResDef());
+  m_world->GetEnvironment().GetOutputSize();
+  ResetDynamicRes(m_world->GetDefaultContext(), worldx, worldy);
 }
 
 cDynamicRes::~cDynamicRes() { ; }
@@ -773,6 +768,11 @@ void cDynamicRes::generateHills(cAvidaContext& ctx)
 
 void cDynamicRes::ResetDynamicRes(cAvidaContext& ctx, int worldx, int worldy)
 {
+  for (int i = 0; i < GetSize(); i++) {
+    cResourceElement tmpelem;
+    Element(i) = tmpelem;
+  } 
+
   if ((m_res_def.GetMoveSpeed() >= (2 * (m_res_def.GetHaloInnerRadius() + m_res_def.GetHaloWidth()))) && ((m_res_def.GetHaloInnerRadius() + m_res_def.GetHaloWidth()) != 0)
       && m_res_def.GetMoveSpeed() != 0) {
     m_world->GetDriver().Feedback().Error("Move speed greater or equal to 2*Radius");
