@@ -148,6 +148,7 @@
 
 
 - (void) duplicateFreezerAtURL:(NSURL*)url;
+- (BOOL) saveFreezerAsAtURL:(NSURL*)url;
 - (Avida::Viewer::FreezerPtr) freezer;
 
 

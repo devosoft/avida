@@ -874,6 +874,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
         }
 
         [self duplicateFreezerAtURL:fileURL];
+      } else {
+        return;
       }
     }
       break;
@@ -899,6 +901,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
           // cannot open already open workspace
           return;
         }
+      } else {
+        return;
       }
     }
       break;
@@ -1001,6 +1005,51 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) duplicateFreezerAtURL:(NSURL*)url {
   Apto::String path = [[url path] cStringUsingEncoding:NSASCIIStringEncoding];
   freezer->DuplicateFreezerAt(path);
+}
+
+- (BOOL) saveFreezerAsAtURL:(NSURL*)fileURL {
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+
+  NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
+  
+  assert([urls count] != 0);
+  
+  NSURL* userDocumentsURL = [urls objectAtIndex:0];
+  NSURL* defaultFreezerURL = [NSURL URLWithString:@"default.avidaedworkspace" relativeToURL:userDocumentsURL];
+
+  if ([[defaultFreezerURL absoluteURL] isEqual:[fileURL absoluteURL]] ||
+      ([defaultFreezerURL isFileURL] && [fileURL isFileURL] && [[defaultFreezerURL path] isEqual:[fileURL path]])) {
+    // cannot duplicate to the default freezer
+    return NO;
+  }
+  
+  if ([app isWorkspaceOpenForURL:fileURL]) {
+    // cannot open already open workspace
+    return NO;
+  }
+
+  [self duplicateFreezerAtURL:fileURL];
+  
+  freezerURL = fileURL;
+  Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
+  freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
+  [self setupFreezer];
+  [outlineFreezer reloadData];
+  [outlineFreezer expandItem:freezerConfigs];
+  [outlineFreezer expandItem:freezerGenomes];
+  [outlineFreezer expandItem:freezerWorlds];
+  
+  NSString* workspaceName = [[freezerURL lastPathComponent] stringByDeletingPathExtension];
+  [self.window setTitle:[NSString stringWithFormat:@"Avida-ED : %@ Workspace", workspaceName]];
+  
+  
+  // Hide freezer extension
+  NSDictionary* fileAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:NSFileExtensionHidden];
+  [fileManager setAttributes:fileAttrs ofItemAtPath:[freezerURL path] error:nil];
+  
+  isDefaultFreezer = false;
+
+  return YES;
 }
 
 - (Avida::Viewer::FreezerPtr) freezer {
@@ -1169,7 +1218,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [alert addButtonWithTitle:@"Configuration"];
     [alert addButtonWithTitle:@"Cancel"];
     [alert setMessageText:@"What would you like to save to the freezer?"];
-    [alert setInformativeText:@"Population saves organisms and experiment history.\nConfiguration saves the experiment settings only."];
+    [alert setInformativeText:@"Configuration saves the experiment settings only.\nPopulation saves organisms and experiment history."];
     [alert setAlertStyle:NSWarningAlertStyle];
     sheetActive = YES;
     [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(saveRunToFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
@@ -1180,7 +1229,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [alert addButtonWithTitle:@"Configuration"];
     [alert addButtonWithTitle:@"Cancel"];
     [alert setMessageText:@"What would you like to save to the freezer?"];
-    [alert setInformativeText:@"Population saves organisms and experiment history.\nOrganism saves the currently selected organism.\nConfiguration saves the experiment settings only."];
+    [alert setInformativeText:@"Configuration saves the experiment settings only.\n\nPopulation saves organisms and experiment history."];
     [alert setAlertStyle:NSWarningAlertStyle];
     if ([popViewStatView selectedOrgGenome] != nil) {
       [[alert.buttons objectAtIndex:0] setKeyEquivalent:@""];
@@ -1871,7 +1920,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
         [alert addButtonWithTitle:@"Configation"];
         [alert addButtonWithTitle:@"Cancel"];
         [alert setMessageText:@"What would you like to save to the freezer?"];
-        [alert setInformativeText:@"Population saves organisms and experiment history.\nConfigation saves the experiment settings only."];
+        [alert setInformativeText:@"Configation saves the experiment settings only.\nPopulation saves organisms and experiment history."];
         [alert setAlertStyle:NSWarningAlertStyle];
         sheetActive = YES;
         [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(saveRunToFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];

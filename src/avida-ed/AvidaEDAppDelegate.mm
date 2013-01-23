@@ -99,17 +99,17 @@
   if ([saveDlg runModal] == NSOKButton) {
     NSURL* fileURL = [saveDlg URL];
     NSWindowController* cur_ctrl = [[[NSApplication sharedApplication] mainWindow] windowController];
-    if (cur_ctrl != nil && [cur_ctrl respondsToSelector:@selector(duplicateFreezerAtURL:)]) {
-      [(AvidaEDController*)cur_ctrl duplicateFreezerAtURL:fileURL];
+    if (cur_ctrl != nil && [cur_ctrl respondsToSelector:@selector(saveFreezerAsAtURL:)]) {
+      [(AvidaEDController*)cur_ctrl saveFreezerAsAtURL:fileURL];
     }
     
-    AvidaEDController* new_ctrl = [[AvidaEDController alloc] initWithAppDelegate:self inWorkspace:fileURL];
-    if (new_ctrl == nil) {
-      NSLog(@"Error loading AvidaED-MainWindow NIB");
-    } else {
-      [windows addObject:new_ctrl];
-    }
-  }  
+//    AvidaEDController* new_ctrl = [[AvidaEDController alloc] initWithAppDelegate:self inWorkspace:fileURL];
+//    if (new_ctrl == nil) {
+//      NSLog(@"Error loading AvidaED-MainWindow NIB");
+//    } else {
+//      [windows addObject:new_ctrl];
+//    }
+  }
 }
 
 
@@ -140,7 +140,7 @@
   
   if (item_action == @selector(duplicateAvidaEDWorkspace:)) {
     NSWindowController* ctrl = [[[NSApplication sharedApplication] mainWindow] windowController];
-    if (ctrl == nil || ![ctrl respondsToSelector:@selector(duplicateFreezerAtURL:)]) return NO;
+    if (ctrl == nil || ![ctrl respondsToSelector:@selector(saveFreezerAsAtURL:)]) return NO;
   }
   
   return YES;

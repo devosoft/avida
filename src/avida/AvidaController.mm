@@ -53,8 +53,13 @@
 // --------------------------------------------------------------------------------------------------------------
 
 - (void) workspaceSelectionCancelled {
-  
+  if (workspace == nil) {
+    [[NSApplication sharedApplication] terminate:self];
+  }
 }
 
+- (void) workspaceSelected:(ACWorkspace*)selectedWorkspace {
+  
+}
 
 @end
