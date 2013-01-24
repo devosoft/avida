@@ -38,13 +38,7 @@ void cBirthSelectionHandler::GetWaitingOffspringTaskData(int task_id, float resu
 }
 
 
-void cBirthSelectionHandler::PrintWaitingMatingTypeData(cWorld*, const cString&)
-{
-  return;
-}
-
-
-void cBirthSelectionHandler::PrintBirthChamber(const cString&, cWorld*)
+void cBirthSelectionHandler::PrintBirthChamber(const cString&)
 {
   return;
 }

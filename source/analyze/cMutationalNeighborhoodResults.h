@@ -22,9 +22,10 @@
 #ifndef cMutationalNeighborhoodResults_h
 #define cMutationalNeighborhoodResults_h
 
-#ifndef cMutationalNeighborhood_h
+#include "avida/output/Types.h"
+
 #include "cMutationalNeighborhood.h"
-#endif
+
 
 class cMutationalNeighborhoodResults
 {
@@ -50,7 +51,7 @@ public:
     m_src.m_rwlock.ReadUnlock();
   }
   
-  inline void PrintStats(cDataFile& df, int update = -1) const { m_src.PrintStats(df, update); }
+  inline void PrintStats(Avida::Output::File& df, int update = -1) const { m_src.PrintStats(df, update); }
   
   inline int GetTargetTask() const { return m_src.GetTargetTask(); }
   

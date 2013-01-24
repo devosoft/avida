@@ -23,6 +23,7 @@
 #include "apto/core/FileSystem.h"
 #include "avida/Avida.h"
 #include "avida/core/World.h"
+#include "avida/output/Manager.h"
 #include "avida/util/CmdLine.h"
 
 #include "cAvidaConfig.h"
@@ -65,7 +66,7 @@ int main(int argc, char * argv[])
   cout << endl;
 
   if (world->GetConfig().VERBOSITY.Get() > VERBOSE_NORMAL)
-    cout << "Data Directory: " << world->GetDataFileManager().GetTargetDir() << endl;
+    cout << "Data Directory: " << Avida::Output::Manager::Of(new_world)->OutputPath() << endl;
 
   cout << endl;
   

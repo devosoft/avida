@@ -47,6 +47,7 @@ namespace Avida {
   private:
     WorldFacetPtr m_data_manager;
     WorldFacetPtr m_environment;
+    WorldFacetPtr m_output_manager;
     WorldFacetPtr m_systematics;
     
     Apto::Map<WorldFacetID, WorldFacetPtr> m_facets;
@@ -63,6 +64,7 @@ namespace Avida {
     // Specific built-in facet accessors
     LIB_EXPORT inline WorldFacetPtr DataManager() const { return m_data_manager; }
     LIB_EXPORT inline WorldFacetPtr Environment() const { return m_environment; }
+    LIB_EXPORT inline WorldFacetPtr OutputManager() const { return m_output_manager; }
     LIB_EXPORT inline WorldFacetPtr Systematics() const { return m_systematics; }
     
     // Actions
@@ -110,6 +112,7 @@ namespace Avida {
   {
     LIB_EXPORT extern const WorldFacetID DataManagerFacetID;
     LIB_EXPORT extern const WorldFacetID EnvironmentFacetID;
+    LIB_EXPORT extern const WorldFacetID OutputManagerFacetID;
     LIB_EXPORT extern const WorldFacetID SystematicsFacetID;
   };
 };

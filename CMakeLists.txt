@@ -267,7 +267,18 @@ LIST(APPEND AVIDA_CORE_SOURCES ${MAIN_SOURCES})
 LIST(APPEND ALL_INC_DIRS ${MAIN_DIR})
 
 
-# The core viewer directory
+# The output directory
+SET(OUTPUT_DIR ${PROJECT_SOURCE_DIR}/source/output)
+SET(OUTPUT_SOURCES
+  ${OUTPUT_DIR}/File.cc
+  ${OUTPUT_DIR}/Manager.cc
+  ${OUTPUT_DIR}/Socket.cc
+)
+SOURCE_GROUP(output FILES ${OUTPUT_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${OUTPUT_SOURCES})
+
+
+# The systematics directory
 SET(SYSTEMATICS_DIR ${PROJECT_SOURCE_DIR}/source/systematics)
 SET(SYSTEMATICS_SOURCES
   ${SYSTEMATICS_DIR}/Arbiter.cc
@@ -291,8 +302,6 @@ SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cArgContainer.cc
   ${TOOLS_DIR}/cArgSchema.cc
   ${TOOLS_DIR}/cBitArray.cc
-  ${TOOLS_DIR}/cDataFile.cc
-  ${TOOLS_DIR}/cDataFileManager.cc
   ${TOOLS_DIR}/cDataManager_Base.cc
   ${TOOLS_DIR}/cFile.cc
   ${TOOLS_DIR}/cHistogram.cc

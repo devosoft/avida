@@ -47,8 +47,8 @@ using namespace AvidaTools;
 
 
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
-: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL), m_minitracer(NULL), m_minitrace_file(null_str)
-, m_microtrace(false), m_topnavtrace(false)
+: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
+, m_minitrace(false), m_microtrace(false), m_topnavtrace(false)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts()) , m_has_energy_costs(m_inst_set->HasEnergyCosts())
 , m_has_res_costs(m_inst_set->HasResCosts()), m_has_fem_res_costs(m_inst_set->HasFemResCosts())
 , m_has_female_costs(m_inst_set->HasFemaleCosts()), m_has_choosy_female_costs(m_inst_set->HasChoosyFemaleCosts())
@@ -1415,12 +1415,10 @@ void cHardwareBase::InsertGenomeFragment(const InstructionSequence& fragment) {
 	wh.Adjust();
 }
 
-void cHardwareBase::SetMiniTrace(const cString& filename, const int gen_id, const cString& genotype)
+void cHardwareBase::SetMiniTrace(const cString& filename)
 {
-  cHardwareTracer* minitracer = new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename));
-  m_minitracer = minitracer; 
-  m_minitrace_file = filename;
-  SetupMiniTraceFileHeader(filename, gen_id, genotype);
+  m_tracer = HardwareTracerPtr(new cHardwareStatusPrinter(m_world->GetNewWorld(), (const char*)filename, true));
+  m_minitrace = true;
 }
 
 void cHardwareBase::RecordMicroTrace(const Instruction& cur_inst)
@@ -1451,19 +1449,15 @@ void cHardwareBase::RecordNavTrace(bool use_avatar)
 
 void cHardwareBase::DeleteMiniTrace(bool print_reacs)
 {
-  if (m_minitracer != NULL) {
-    if (print_reacs) PrintMiniTraceReactions();    
-    delete m_minitracer;
-    m_minitracer = NULL;
-    bool success = m_world->GetDataFileManager().Remove(m_minitrace_file);
-    assert(success);
-    (void)success;
+  if (m_minitrace) {
+    if (print_reacs) PrintMiniTraceReactions();
+    m_tracer = HardwareTracerPtr(NULL);
   }
 }
 
 void cHardwareBase::PrintMiniTraceReactions()
 {
-  if (m_minitracer != NULL) {
+  if (m_minitrace) {
     m_world->GetStats().PrintMiniTraceReactions(m_organism);    
   }
 }

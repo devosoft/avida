@@ -24,6 +24,7 @@
 #include "avida/Avida.h"
 
 #include "avida/core/WorldDriver.h"
+#include "avida/output/File.h"
 #include "avida/systematics/Group.h"
 
 #include "cAction.h"
@@ -111,29 +112,30 @@ public:
     
     m_world->GetAnalyze().GetJobQueue().Execute();
 
-    cDataFile& outfile = m_world->GetDataFile(m_filename);
-    outfile.WriteComment("Landscape analysis.  Distance results are grouped by update/depth.");
+    Avida::Output::FilePtr df;
+    if (ctx.GetAnalyzeMode()) df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_filename);
+    else df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
+    df->WriteComment("Landscape analysis.  Distance results are grouped by update/depth.");
     for (int i = 0; i < depths.GetSize(); i++) {
       for (int dist = 1; dist <= batches.GetSize(); dist++) {
         land = batches[dist - 1].Pop();
 
-        outfile.Write(update, "update");
-        outfile.Write(depths[i], "tree depth");
-        outfile.Write(dist, "distance");
-        outfile.Write(land->GetProbDead(), "fractional mutations lethal");
-        outfile.Write(land->GetProbNeg(), "fractional mutations detrimental");
-        outfile.Write(land->GetProbNeut(), "fractional mutations neutral");
-        outfile.Write(land->GetProbPos(), "fractional mutations beneficial");
-        outfile.Write(land->GetNumTrials(), "number of trials");
-        outfile.Write(land->GetNumFound(), "number found");
-        outfile.Write(land->GetAveFitness(), "average fitness");
-        outfile.Write(land->GetAveSqrFitness(), "average sqr fitness");
-        outfile.Endl();
+        df->Write(update, "update");
+        df->Write(depths[i], "tree depth");
+        df->Write(dist, "distance");
+        df->Write(land->GetProbDead(), "fractional mutations lethal");
+        df->Write(land->GetProbNeg(), "fractional mutations detrimental");
+        df->Write(land->GetProbNeut(), "fractional mutations neutral");
+        df->Write(land->GetProbPos(), "fractional mutations beneficial");
+        df->Write(land->GetNumTrials(), "number of trials");
+        df->Write(land->GetNumFound(), "number found");
+        df->Write(land->GetAveFitness(), "average fitness");
+        df->Write(land->GetAveSqrFitness(), "average sqr fitness");
+        df->Endl();
         
         delete land;
       }
     }
-    if (ctx.GetAnalyzeMode()) m_world->GetDataFileManager().Remove(m_filename);
   }
   
 private:
@@ -261,29 +263,19 @@ public:
         jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::Process));
       }
       jobqueue.Execute();
-    } else {
-//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-//        m_world->GetDriver().NotifyComment("Full Landscaping...");
-//      
-//      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetSequence(),
-//                            m_world->GetHardwareManager().GetInstSet());
-//      m_batch.PushRear(land);
-//      land->SetDistance(m_dist);
-//      land->Process(ctx);
-//      update = m_world->GetStats().GetUpdate();      
-    }
-    
-    cDataFile& df = m_world->GetDataFile(m_sfilename);
-    while ((land = m_batch.Pop())) {
-      land->PrintStats(df, update);
-      if (m_efilename.GetSize()) land->PrintEntropy(m_world->GetDataFile(m_efilename));
-      if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFile(m_cfilename));
-      delete land;
-    }
-    if (ctx.GetAnalyzeMode()) {
-      m_world->GetDataFileManager().Remove(m_sfilename);
-      if (m_efilename.GetSize()) m_world->GetDataFileManager().Remove(m_efilename);
-      if (m_cfilename.GetSize()) m_world->GetDataFileManager().Remove(m_cfilename);
+
+      Avida::Output::FilePtr sf = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_sfilename);
+      Avida::Output::FilePtr ef;
+      if (m_efilename.GetSize()) ef = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_efilename);
+      Avida::Output::FilePtr cf;
+      if (m_cfilename.GetSize()) cf = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_cfilename);
+      
+      while ((land = m_batch.Pop())) {
+        land->PrintStats(*sf, update);
+        if (m_efilename.GetSize()) land->PrintEntropy(*ef);
+        if (m_cfilename.GetSize()) land->PrintSiteCount(*cf);
+        delete land;
+      }
     }
   }
 };
@@ -309,7 +301,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cDataFile& sdf = m_world->GetDataFile(m_filename);
+    Avida::Output::FilePtr sdf = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_filename);
     
     if (ctx.GetAnalyzeMode()) {
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
@@ -326,41 +318,13 @@ public:
         // Create datafile for genotype landscape (${name}.land)
         cString gfn(genotype->GetName());
         gfn += ".land";
-        cDataFile& gdf = m_world->GetDataFile(gfn);
+        Avida::Output::FilePtr gdf = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)gfn);
         
         // Create the landscape object and process the dump
         cLandscape land(m_world, genotype->GetGenome());
-        land.ProcessDump(ctx, gdf);
-        land.PrintStats(sdf, -1);
-        
-        // Remove the completed datafile
-        m_world->GetDataFileManager().Remove(gfn);
+        land.ProcessDump(ctx, *gdf);
+        land.PrintStats(*sdf, -1);
       }
-      
-      // Batch complete, close overall landscape stats file as well
-      m_world->GetDataFileManager().Remove(m_filename);
-
-    } else {
-//    
-//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-//        m_world->GetDriver().NotifyComment("Dumping Landscape...");
-//      
-//      // Get the current best genotype
-//      const InstructionSequence& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetSequence();
-//
-//      // Create datafile for genotype landscape (best-${update}.land)
-//      cString gfn("best-");
-//      gfn += m_world->GetStats().GetUpdate();
-//      gfn += ".land";
-//      cDataFile& gdf = m_world->GetDataFile(gfn);
-//
-//      // Create the landscape object and process the dump
-//      cLandscape land(m_world, best_genome, inst_set);
-//      land.ProcessDump(ctx, gdf);
-//      land.PrintStats(sdf, m_world->GetStats().GetUpdate());
-//
-//      // Remove the completed datafile
-//      m_world->GetDataFileManager().Remove(gfn);
     }
   }
 };
@@ -414,27 +378,16 @@ public:
         jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::ProcessDelete));
       }
       jobqueue.Execute();
-    } else {
-//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-//        m_world->GetDriver().NotifyComment("Deletion Landscaping...");
-//      
-//      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetSequence(),
-//                            m_world->GetHardwareManager().GetInstSet());
-//      m_batch.PushRear(land);
-//      land->SetDistance(m_dist);
-//      land->ProcessDelete(ctx);
-//      update = m_world->GetStats().GetUpdate();      
-    }
-    
-    cDataFile& df = m_world->GetDataFile(m_sfilename);
-    while ((land = m_batch.Pop())) {
-      land->PrintStats(df, update);
-      if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFile(m_cfilename));
-      delete land;
-    }
-    if (ctx.GetAnalyzeMode()) {
-      m_world->GetDataFileManager().Remove(m_sfilename);
-      if (m_cfilename.GetSize()) m_world->GetDataFileManager().Remove(m_cfilename);
+
+      Avida::Output::FilePtr sf = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_sfilename);
+      Avida::Output::FilePtr cf;
+      if (m_cfilename.GetSize()) cf = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_cfilename);
+      
+      while ((land = m_batch.Pop())) {
+        land->PrintStats(*sf, update);
+        if (m_cfilename.GetSize()) land->PrintSiteCount(*cf);
+        delete land;
+      }
     }
   }
 };
@@ -488,27 +441,17 @@ public:
         jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::ProcessInsert));
       }
       jobqueue.Execute();
-    } else {
-//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-//        m_world->GetDriver().NotifyComment("Insertion Landscaping...");
-//      
-//      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetSequence(),
-//                            m_world->GetHardwareManager().GetInstSet());
-//      m_batch.PushRear(land);
-//      land->SetDistance(m_dist);
-//      land->ProcessInsert(ctx);
-//      update = m_world->GetStats().GetUpdate();      
-    }
     
-    cDataFile& df = m_world->GetDataFile(m_sfilename);
-    while ((land = m_batch.Pop())) {
-      land->PrintStats(df, update);
-      if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFile(m_cfilename));
-      delete land;
-    }
-    if (ctx.GetAnalyzeMode()) {
-      m_world->GetDataFileManager().Remove(m_sfilename);
-      if (m_cfilename.GetSize()) m_world->GetDataFileManager().Remove(m_cfilename);
+      Avida::Output::FilePtr sf = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_sfilename);
+      Avida::Output::FilePtr cf;
+      if (m_cfilename.GetSize()) cf = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_cfilename);
+      
+      while ((land = m_batch.Pop())) {
+        land->PrintStats(*sf, update);
+        if (m_cfilename.GetSize()) land->PrintSiteCount(*cf);
+        delete land;
+      }
+
     }
   }
 };
@@ -534,7 +477,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cDataFile& df = m_world->GetDataFile(m_filename);
+    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_filename);
 
     if (ctx.GetAnalyzeMode()) {
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
@@ -549,16 +492,8 @@ public:
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
         cLandscape land(m_world, genotype->GetGenome());
-        land.PredictWProcess(ctx, df);
+        land.PredictWProcess(ctx, *df);
       }
-      m_world->GetDataFileManager().Remove(m_filename);
-    } else {
-//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-//        m_world->GetDriver().NotifyComment("Predicting W Landscape...");
-//      
-//      const InstructionSequence& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetSequence();
-//      cLandscape land(m_world, best_genome, inst_set);
-//      land.PredictWProcess(ctx, df, m_world->GetStats().GetUpdate());
     }
   }
 };
@@ -584,7 +519,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cDataFile& df = m_world->GetDataFile(m_filename);
+    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_filename);
 
     if (ctx.GetAnalyzeMode()) {
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
@@ -599,16 +534,8 @@ public:
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
         cLandscape land(m_world, genotype->GetGenome());
-        land.PredictNuProcess(ctx, df);
+        land.PredictNuProcess(ctx, *df);
       }
-      m_world->GetDataFileManager().Remove(m_filename);
-    } else {
-//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-//        m_world->GetDriver().NotifyComment("Predicting Nu Landscape...");
-//      
-//      const InstructionSequence& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetSequence();
-//      cLandscape land(m_world, best_genome, inst_set);
-//      land.PredictNuProcess(ctx, df, m_world->GetStats().GetUpdate());
     }
   }
 };
@@ -663,25 +590,13 @@ public:
         jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::RandomProcess));
       }
       jobqueue.Execute();
-    } else {
-//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-//        m_world->GetDriver().NotifyComment("Random Landscaping...");
-//
-//      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetSequence(),
-//                            m_world->GetHardwareManager().GetInstSet());
-//      m_batch.PushRear(land);
-//      land->SetDistance(m_dist);
-//      land->SetTrials(m_trials);
-//      land->RandomProcess(ctx);
-//      update = m_world->GetStats().GetUpdate();      
+      Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_filename);
+      while ((land = m_batch.Pop())) {
+        land->PrintStats(*df, update);
+        delete land;
+      }
     }
     
-    cDataFile& df = m_world->GetDataFile(m_filename);
-    while ((land = m_batch.Pop())) {
-      land->PrintStats(df, update);
-      delete land;
-    }
-    if (ctx.GetAnalyzeMode()) m_world->GetDataFileManager().Remove(m_filename);
   }
 };
 
@@ -732,24 +647,12 @@ public:
         jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::SampleProcess));
       }
       jobqueue.Execute();
-    } else {
-//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-//        m_world->GetDriver().NotifyComment("Sample Landscaping...");
-//
-//      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetSequence(),
-//                            m_world->GetHardwareManager().GetInstSet());
-//      m_batch.PushRear(land);
-//      land->SetTrials(m_trials);
-//      land->SampleProcess(ctx);
-//      update = m_world->GetStats().GetUpdate();      
+      Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_filename);
+      while ((land = m_batch.Pop())) {
+        land->PrintStats(*df, update);
+        delete land;
+      }
     }
-    
-    cDataFile& df = m_world->GetDataFile(m_filename);
-    while ((land = m_batch.Pop())) {
-      land->PrintStats(df, update);
-      delete land;
-    }
-    if (ctx.GetAnalyzeMode()) m_world->GetDataFileManager().Remove(m_filename);
   }
 };
 
@@ -783,21 +686,13 @@ public:
         ctx.Driver().Feedback().Notify("Calculating Hill Climb...");
       }
       
-      cDataFile& df = m_world->GetDataFile(m_filename);
+      Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_filename);
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
         cLandscape land(m_world, genotype->GetGenome());
-        land.HillClimb(ctx, df);
+        land.HillClimb(ctx, *df);
       }
-      m_world->GetDataFileManager().Remove(m_filename);
-    } else {
-//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-//        m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
-//      
-//      const InstructionSequence& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetSequence();
-//      cLandscape land(m_world, best_genome, inst_set);
-//      land.HillClimb(ctx, m_world->GetDataFile(m_filename));
     }
   }
 };
@@ -855,29 +750,19 @@ public:
         jobqueue.AddJob(new tAnalyzeJob<cMutationalNeighborhood>(mutn, &cMutationalNeighborhood::Process));
       }
       jobqueue.Execute();
-    } else {
-//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-//        m_world->GetDriver().NotifyComment("Calculating Mutational Neighborhood...");
-//      
-//      const InstructionSequence& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetSequence();
-//      mutn = new cMutationalNeighborhood(m_world, best_genome, inst_set, m_target);
-//
-//      m_batch.PushRear(new sBatchEntry(mutn, m_world->GetStats().GetUpdate()));
-//      mutn->Process(ctx);
     }
     
     cMutationalNeighborhoodResults* results = NULL;
     sBatchEntry* entry = NULL;
-    cDataFile& df = m_world->GetDataFile(m_filename);
-    df.WriteComment("IMPORTANT: Mutational Neighborhood is *EXPERIMENTAL*");
-    df.WriteComment("Output data and format is subject to change in future releases.");
+    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_filename);
+    df->WriteComment("IMPORTANT: Mutational Neighborhood is *EXPERIMENTAL*");
+    df->WriteComment("Output data and format is subject to change in future releases.");
     while ((entry = m_batch.Pop())) {
       results = new cMutationalNeighborhoodResults(entry->mutn);
-      results->PrintStats(df, entry->depth);
+      results->PrintStats(*df, entry->depth);
       delete results;
       delete entry;
     }
-    if (ctx.GetAnalyzeMode()) m_world->GetDataFileManager().Remove(m_filename);
   }
 };
 
@@ -934,27 +819,12 @@ public:
         m_batch.PushRear(land);
       }
       jobqueue.Execute();
-    } else {
-//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-//        m_world->GetDriver().NotifyComment("Pair Testing Landscape...");
-//      
-//      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetSequence(),
-//                            m_world->GetHardwareManager().GetInstSet());
-//      m_batch.PushRear(land);
-//      if (m_sample_size) {
-//        land->SetTrials(m_sample_size);        
-//        land->TestPairs(ctx);
-//      } else land->TestAllPairs(ctx);
-//      
-//      update = m_world->GetStats().GetUpdate();      
-    }
-    
-    cDataFile& df = m_world->GetDataFile(m_filename);
-    while ((land = m_batch.Pop())) {
-      land->PrintStats(df, update);
-      delete land;
-    }
-    if (ctx.GetAnalyzeMode()) m_world->GetDataFileManager().Remove(m_filename);
+      Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_filename);
+      while ((land = m_batch.Pop())) {
+        land->PrintStats(*df, update);
+        delete land;
+      }
+    }    
   }
 };
 
@@ -983,7 +853,7 @@ private:
     
     inline cOrganism* GetOrganism() { return m_org; }
     inline int GetCellID() { return m_cell; }
-    inline void PrintLand(cDataFile& df, int update) { if (m_land) m_land->PrintStats(df, update); else df.Endl(); }
+    inline void PrintLand(Avida::Output::File& df, int update) { if (m_land) m_land->PrintStats(df, update); else df.Endl(); }
     
     void Process(cAvidaContext& ctx)
     {
@@ -1040,7 +910,7 @@ public:
         jobqueue.AddJob(new tAnalyzeJob<cPopOrgData>(orgdata, &cPopOrgData::Process));
       }
 
-      cDataFile& df = m_world->GetDataFile(filename);
+      Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_filename);
       cTestCPU* testcpu = (m_save_genotypes) ? m_world->GetHardwareManager().CreateTestCPU(ctx) : NULL;
       while ((orgdata = batch.Pop())) {
         cOrganism* organism = orgdata->GetOrganism();
@@ -1057,15 +927,15 @@ public:
         else name.Set("%03d-no_name-u%i-c%i", seq->GetSize(), update, orgdata->GetCellID());
 
         
-        df.Write(orgdata->GetCellID(), "Cell ID");
-        df.Write(name, "Organism Name");
+        df->Write(orgdata->GetCellID(), "Cell ID");
+        df->Write(name, "Organism Name");
         
-        df.Write(seq->GetSize(),"Genome Length");
-        df.Write(organism->GetTestFitness(ctx), "Fitness (test-cpu)");
-        df.Write(phenotype.GetFitness(), "Fitness (actual)");
-        df.Write(organism->GetLineageLabel(), "Lineage Label");
-        df.Write(phenotype.GetNeutralMetric(), "Neutral Metric");
-        orgdata->PrintLand(df, update);
+        df->Write(seq->GetSize(),"Genome Length");
+        df->Write(organism->GetTestFitness(ctx), "Fitness (test-cpu)");
+        df->Write(phenotype.GetFitness(), "Fitness (actual)");
+        df->Write(organism->GetLineageLabel(), "Lineage Label");
+        df->Write(phenotype.GetNeutralMetric(), "Neutral Metric");
+        orgdata->PrintLand(*df, update);
         
         // save into archive
         if (m_save_genotypes) {
@@ -1074,7 +944,6 @@ public:
         }
       }
       delete testcpu;
-      m_world->GetDataFileManager().Remove(filename);
     }
   }
 };

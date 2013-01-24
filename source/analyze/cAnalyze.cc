@@ -26,6 +26,8 @@
 
 #include "avida/core/Types.h"
 #include "avida/core/WorldDriver.h"
+#include "avida/output/File.h"
+#include "avida/output/Manager.h"
 
 #include "avida/private/util/GenomeLoader.h"
 
@@ -45,7 +47,6 @@
 #include "cAnalyzeTreeStats_Gamma.h"
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
-#include "cDataFile.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
@@ -1786,12 +1787,11 @@ void cAnalyze::CommandTrace(cString cur_string)
       break;
     
     // Build the hardware status printer for tracing.
-    ofstream& trace_fp = m_world->GetDataFileOFStream(filename);
-    cHardwareStatusPrinter trace_printer(trace_fp);
+    HardwareTracerPtr tracer(new cHardwareStatusPrinter(m_world->GetNewWorld(), (const char*)filename));
     
     // Build the test info for printing.
     cCPUTestInfo test_info;  
-    test_info.SetTraceExecution(&trace_printer);
+    test_info.SetTraceExecution(tracer);
     if (use_manual_inputs)
       test_info.UseManualInputs(manual_inputs);
     else
@@ -1805,8 +1805,6 @@ void cAnalyze::CommandTrace(cString cur_string)
     }
     
     testcpu->TestGenome(m_ctx, test_info, genotype->GetGenome());
-    
-    m_world->GetDataFileManager().Remove(filename);
   }
   
   delete testcpu;
@@ -1822,7 +1820,8 @@ void cAnalyze::CommandPrintTasks(cString cur_string)
   cString filename("tasks.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
   
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -1843,7 +1842,8 @@ void cAnalyze::CommandPrintTasksQuality(cString cur_string)
   cString filename("tasksquality.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
   
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -1883,10 +1883,10 @@ void cAnalyze::CommandDetail(cString cur_string)
     CommandDetail_Header(cout, file_type, output_it);
     CommandDetail_Body(cout, file_type, output_it);
   } else {
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
+    ofstream& fp = df->OFStream();
     CommandDetail_Header(fp, file_type, output_it);
     CommandDetail_Body(fp, file_type, output_it);
-		m_world->GetDataFileManager().Remove(filename);
 	}
   
   // And clean up...
@@ -1929,7 +1929,8 @@ void cAnalyze::CommandDetailTimeline(cString cur_string)
     CommandDetail_Header(cout, file_type, output_it, time_step);
     CommandDetail_Body(cout, file_type, output_it, time_step, max_time);
   } else {
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+    ofstream& fp = df->OFStream();
     CommandDetail_Header(fp, file_type, output_it, time_step);
     CommandDetail_Body(fp, file_type, output_it, time_step, max_time);
   }
@@ -2108,9 +2109,12 @@ void cAnalyze::CommandDetailAverage(cString cur_string)
   cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(cur_string, output_list);
   
   // check if file is already in use.
-  bool file_active = m_world->GetDataFileManager().IsOpen(filename);
+  Avida::Output::ManagerPtr omgr = Avida::Output::Manager::Of(m_world->GetNewWorld());
+  Avida::Output::OutputID oid = omgr->OutputIDFromPath((const char*)filename);
+  bool file_active = omgr->IsOpen(oid);
   
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), oid);
+  ofstream& fp = df->OFStream();
   
   // if it's a new file print out the header
   if (file_active == false) {
@@ -2147,7 +2151,8 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
   while (file_extension.Find('.') != -1) file_extension.Pop('.');
   if (file_extension == "html") file_type = FILE_TYPE_HTML;
   
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   cAnalyzeGenotype* first_genotype = batch[cur_batch].List().GetFirst();
   
   // Write out the header on the file
@@ -2241,7 +2246,8 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
   
   
   // Setup the file...
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   cAnalyzeGenotype* first_genotype = batch[cur_batch].List().GetFirst();
   
   // Determine the file type...
@@ -2349,7 +2355,8 @@ void cAnalyze::CommandHistogram(cString cur_string)
     CommandHistogram_Header(cout, file_type, output_it);
     CommandHistogram_Body(cout, file_type, output_it);
   } else {
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+    ofstream& fp = df->OFStream();
     CommandHistogram_Header(fp, file_type, output_it);
     CommandHistogram_Body(fp, file_type, output_it);
   }
@@ -2587,7 +2594,8 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
     phenotype_table.Set(phen_id, phenotype_stats);
   }
     
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   fp << "# 1: Number of organisms of this phenotype" << endl
     << "# 2: Number of genotypes of this phenotye" << endl
@@ -2635,9 +2643,6 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
     
     fp << endl;
   }
-  
-  m_world->GetDataFileManager().Remove(filename);
-  
 }
 
 
@@ -2728,15 +2733,15 @@ void cAnalyze::CommandPrintDiversity(cString cur_string)
   }
   
   // Print out the results...
-  cDataFile & df = m_world->GetDataFile(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   
   for (int i = 0; i < num_tasks; i++) {
-    df.Write(i,                    "# 1: Task ID");
-    df.Write(task_count[i],        "# 2: Number of organisms performing task");
-    df.Write(task_gen_count[i],    "# 3: Number of genotypes performing task");
-    df.Write(task_gen_dist[i],     "# 4: Average distance between genotypes performing task");
-    df.Write(task_site_entropy[i], "# 5: Total per-site entropy of genotypes performing task");
-    df.Endl();
+    df->Write(i,                    "# 1: Task ID");
+    df->Write(task_count[i],        "# 2: Number of organisms performing task");
+    df->Write(task_gen_count[i],    "# 3: Number of genotypes performing task");
+    df->Write(task_gen_dist[i],     "# 4: Average distance between genotypes performing task");
+    df->Write(task_site_entropy[i], "# 5: Total per-site entropy of genotypes performing task");
+    df->Endl();
   }
 }
 
@@ -2765,7 +2770,8 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   }
   
   filename.Set("%s%s", static_cast<const char*>(directory), static_cast<const char*>(filename));
-  ofstream& cpx_fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& cpx_fp = df->OFStream();
   
   cpx_fp << "# Legend:" << endl;
   cpx_fp << "# 1: Genotype ID" << endl;
@@ -3186,9 +3192,6 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
     
     given_genotypes.push_back(genotype);
   }
-    
-  m_world->GetDataFileManager().Remove(filename);
-  return;
 }
 
 
@@ -3206,7 +3209,8 @@ void cAnalyze::CommandPrintDistances(cString cur_string)
     filename = "edit_distance.dat";
   }
   
-  ofstream & fout = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fout = df->OFStream();
   
   fout << "# All pairs edit distance" << endl;
   fout << "# 1: Num organism pairs" << endl;
@@ -3274,8 +3278,6 @@ void cAnalyze::CommandPrintDistances(cString cur_string)
        << dist_max << " "
        << ((double) threshold_pair_count) / (double) pair_count << " "
        << endl;
-
-  return;
 }
 
 
@@ -3290,7 +3292,8 @@ void cAnalyze::CommandPrintTreeStats(cString cur_string)
   cString filename("tree_stats.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
 
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
 
   fp << "# Legend:" << endl;
   fp << "# 1: Average cumulative stemminess" << endl;
@@ -3315,7 +3318,8 @@ void cAnalyze::CommandPrintCumulativeStemminess(cString cur_string)
   cString filename("cumulative_stemminess.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
   
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   fp << "# Legend:" << endl;
   fp << "# 1: Average cumulative stemminess" << endl;
@@ -3366,7 +3370,8 @@ void cAnalyze::CommandPrintGamma(cString cur_string)
   // int furcation_time_convention = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 1;
   int furcation_time_convention = 1;
   
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   fp << "# Legend:" << endl;
   fp << "# 1: Pybus-Harvey gamma statistic" << endl;
@@ -3379,7 +3384,8 @@ void cAnalyze::CommandPrintGamma(cString cur_string)
   fp << endl;
 
   if(lineage_thru_time_fname != ""){
-    ofstream& ltt_fp = m_world->GetDataFileOFStream(lineage_thru_time_fname);
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)lineage_thru_time_fname);
+    ofstream& ltt_fp = df->OFStream();
 
     ltt_fp << "# Legend:" << endl;
     ltt_fp << "# 1: num_lineages" << endl;
@@ -3421,7 +3427,8 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   }
   
   filename.Set("%s%s", static_cast<const char*>(directory), static_cast<const char*>(filename));
-  ofstream& cpx_fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& cpx_fp = df->OFStream();
   
   cpx_fp << "# Legend:" << endl;
   cpx_fp << "# 1: Genotype ID" << endl;
@@ -3461,10 +3468,8 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     // Choose two genotypes for each task
     
     genotype = batch_it.Next();
-    if (genotype == NULL) {
-      m_world->GetDataFileManager().Remove(filename);
-      return;
-    }
+    if (genotype == NULL) return;
+
     genotype->Recalculate(m_ctx, &test_info);
     int num_tasks = genotype->GetNumTasks();
     vector< vector<cAnalyzeGenotype *> > genotype_class(num_tasks);
@@ -3745,9 +3750,6 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     cpx_fp << endl;
     given_genotypes.push_back(genotype);
   }
-  
-  m_world->GetDataFileManager().Remove(filename);
-  return;
 }
 
 /* prints grid with what the fitness of an org in each range box would be given the resource levels
@@ -3761,7 +3763,8 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
   // what file to write data to
   cString filename("resourcefitmap.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
 
   int f1=-1, f2=-1, rangecount[2]={0,0}, threshcount[2]={0,0};
   double f1Max = 0.0, f1Min = 0.0, f2Max = 0.0, f2Min = 0.0;
@@ -3980,7 +3983,6 @@ void cAnalyze::CommandPairwiseEntropy(cString cur_string)
     filename.Set("%spairdata.%s.dat", static_cast<const char*>(directory),
                  static_cast<const char*>(genName));
     
-    // @DMB -- ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     if (m_world->GetVerbosity() >= VERBOSE_ON)
       cout << "\t\t...with filename:  " << filename << endl;
@@ -3996,7 +3998,6 @@ void cAnalyze::CommandPairwiseEntropy(cString cur_string)
         cout << pairdata[i][j] << " ";
       cout << endl;
     }
-    m_world->GetDataFileManager().Remove(filename);
     genotype = batch_it.Next();
   }
 }
@@ -4175,20 +4176,20 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   
   if (filename == "none") return;
   
-  cDataFile & df = m_world->GetDataFile(filename);
-  df.WriteComment( "Mate selection information" );
-  df.WriteTimeStamp();  
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteComment( "Mate selection information" );
+  df->WriteTimeStamp();  
   
-  df.Write(fail_frac,       "Average fraction failed");
-  df.Write(match_fail_frac, "Average fraction of mate matches failed");
-  df.Write(sample_size, "Total number of crossovers tested");
-  df.Write(total_matches_tested, "Number of crossovers with matching mate IDs");
-  df.Write(gen_count, "Number of genotypes in test batch");
-  df.Write(org_count, "Number of organisms in test batch");
-  df.Write(num_mate_groups, "Number of distinct mate IDs");
-  df.Write(max_group_size, "Size of the largest distinct mate ID group");
-  df.Write(mate_id_entropy, "Diversity of mate IDs (entropy)");
-  df.Endl();
+  df->Write(fail_frac,       "Average fraction failed");
+  df->Write(match_fail_frac, "Average fraction of mate matches failed");
+  df->Write(sample_size, "Total number of crossovers tested");
+  df->Write(total_matches_tested, "Number of crossovers with matching mate IDs");
+  df->Write(gen_count, "Number of genotypes in test batch");
+  df->Write(org_count, "Number of organisms in test batch");
+  df->Write(num_mate_groups, "Number of distinct mate IDs");
+  df->Write(max_group_size, "Size of the largest distinct mate ID group");
+  df->Write(mate_id_entropy, "Diversity of mate IDs (entropy)");
+  df->Endl();
 }
 
 
@@ -4255,9 +4256,9 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
   }
   
   // Open up the file and prepare it for output.
-  cDataFile & df = m_world->GetDataFile(filename);
-  df.WriteComment( "An analyze of expected complexity changes between parent and offspring" );
-  df.WriteTimeStamp();  
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteComment( "An analyze of expected complexity changes between parent and offspring" );
+  df->WriteTimeStamp();  
   
   // Next check the appropriate number of organisms, perform mutations, and
   // store the results.
@@ -4443,38 +4444,38 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     
     
     // Output the results.
-    df.Write(num_mutations, "Number of mutational differences between original organism and mutant.");
-    df.Write(complexity_change, "Complexity difference between original organism and mutant.");
-    df.Write(start_complexity, "Total complexity of initial organism.");
-    df.Write(end_complexity, "Total complexity of mutant.");
+    df->Write(num_mutations, "Number of mutational differences between original organism and mutant.");
+    df->Write(complexity_change, "Complexity difference between original organism and mutant.");
+    df->Write(start_complexity, "Total complexity of initial organism.");
+    df->Write(end_complexity, "Total complexity of mutant.");
     
     // Broken down complexity info
-    df.Write(total_info_lack, "Num sites with no info at all.");
-    df.Write(total_info_kept, "Num sites with info, but no change.");
-    df.Write(total_info_new, "Num sites with new info (prev. none).");
-    df.Write(total_info_share, "Num sites with newly shared info.");
-    df.Write(total_info_lost, "Num sites with lost info.");
-    df.Write(total_info_plost, "Num sites with parital lost info.");
-    df.Write(total_info_shift, "Num sites with shift in info.");
-    df.Write(total_info_pshift, "Num sites with partial shift in info.");
+    df->Write(total_info_lack, "Num sites with no info at all.");
+    df->Write(total_info_kept, "Num sites with info, but no change.");
+    df->Write(total_info_new, "Num sites with new info (prev. none).");
+    df->Write(total_info_share, "Num sites with newly shared info.");
+    df->Write(total_info_lost, "Num sites with lost info.");
+    df->Write(total_info_plost, "Num sites with parital lost info.");
+    df->Write(total_info_shift, "Num sites with shift in info.");
+    df->Write(total_info_pshift, "Num sites with partial shift in info.");
     
     // Start and End task counts...
     for (int i = 0; i < start_task_counts.GetSize(); i++) {
-      df.Write(start_task_counts[i], cStringUtil::Stringf("Start task %d", i));
+      df->Write(start_task_counts[i], cStringUtil::Stringf("Start task %d", i));
     }
     
     for (int i = 0; i < end_task_counts.GetSize(); i++) {
-      df.Write(end_task_counts[i], cStringUtil::Stringf("End task %d", i));
+      df->Write(end_task_counts[i], cStringUtil::Stringf("End task %d", i));
     }
     
-    df.Write(start_fitness, "Fitness of initial organism.");
-    df.Write(end_fitness, "Fitness of mutant.");
-    df.Write(start_length, "Length of initial organism.");
-    df.Write(end_length, "Length of mutant.");
-    df.Write(start_gest, "Gestation Time of initial organism.");
-    df.Write(end_gest, "Gestation Time of mutant.");
-    df.Write(genotype->GetID(), "ID of initial genotype.");
-    df.Endl();
+    df->Write(start_fitness, "Fitness of initial organism.");
+    df->Write(end_fitness, "Fitness of mutant.");
+    df->Write(start_length, "Length of initial organism.");
+    df->Write(end_length, "Length of mutant.");
+    df->Write(start_gest, "Gestation Time of initial organism.");
+    df->Write(end_gest, "Gestation Time of mutant.");
+    df->Write(genotype->GetID(), "ID of initial genotype.");
+    df->Endl();
   }
 }
 
@@ -4489,9 +4490,9 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
   if (cur_string.GetSize() > 0) max_knockouts = cur_string.PopWord().AsInt();
   
   // Open up the data file...
-  cDataFile & df = m_world->GetDataFile(filename);
-  df.WriteComment( "Analysis of knockouts in genomes" );
-  df.WriteTimeStamp();  
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteComment( "Analysis of knockouts in genomes" );
+  df->WriteTimeStamp();  
   
   
   // Loop through all of the genotypes in this batch...
@@ -4605,16 +4606,16 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
     }
     
     // Output data...
-    df.Write(genotype->GetID(), "Genotype ID");
-    df.Write(dead_count, "Count of lethal knockouts");
-    df.Write(neg_count,  "Count of detrimental knockouts");
-    df.Write(neut_count, "Count of neutral knockouts");
-    df.Write(pos_count,  "Count of beneficial knockouts");
-    df.Write(pair_dead_count, "Count of lethal knockouts after paired knockout tests.");
-    df.Write(pair_neg_count,  "Count of detrimental knockouts after paired knockout tests.");
-    df.Write(pair_neut_count, "Count of neutral knockouts after paired knockout tests.");
-    df.Write(pair_pos_count,  "Count of beneficial knockouts after paired knockout tests.");
-    df.Endl();
+    df->Write(genotype->GetID(), "Genotype ID");
+    df->Write(dead_count, "Count of lethal knockouts");
+    df->Write(neg_count,  "Count of detrimental knockouts");
+    df->Write(neut_count, "Count of neutral knockouts");
+    df->Write(pos_count,  "Count of beneficial knockouts");
+    df->Write(pair_dead_count, "Count of lethal knockouts after paired knockout tests.");
+    df->Write(pair_neg_count,  "Count of detrimental knockouts after paired knockout tests.");
+    df->Write(pair_neut_count, "Count of neutral knockouts after paired knockout tests.");
+    df->Write(pair_pos_count,  "Count of beneficial knockouts after paired knockout tests.");
+    df->Endl();
   }
 }
 
@@ -4717,7 +4718,8 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     } else {   //  if (file_type == FILE_TYPE_HTML) {
       filename.Set("%stasksites.%s.html", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
     }
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
+    ofstream& fp = df->OFStream();
     
     // Construct linked filenames...
     cString next_file("");
@@ -4918,7 +4920,6 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     
     delete [] col_pass_count;
     delete [] col_fail_count;
-    m_world->GetDataFileManager().Remove(filename);  // Close the data file object
   }
 }
 
@@ -4985,7 +4986,8 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
     cout << endl;
   }
   
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   // printing the headers
   // not done by default since many dumps may be analyzed at the same time
@@ -5310,9 +5312,9 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
   cString filename("analyze_modularity.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
   
-  cDataFile & df = m_world->GetDataFile(filename);
-  df.WriteComment( "Modularity Analysis" );
-  df.WriteTimeStamp();
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteComment( "Modularity Analysis" );
+  df->WriteTimeStamp();
   
   // Determine which phenotypic traits we're working with
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
@@ -5447,12 +5449,12 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
     double ave_sites = ((double) site_count) / (double) trait_count;
     
     // Write the results to file...
-    df.Write(PM,          "Physical Modularity");
-    df.Write(trait_count, "Number of traits used in calculation");
-    df.Write(ave_sites,   "Average num sites associated with traits");
-    df.Write(base_length, "Genome length");
-    df.Write(ave_dist,    "Average Distance between trait sites");
-    df.Endl();
+    df->Write(PM,          "Physical Modularity");
+    df->Write(trait_count, "Number of traits used in calculation");
+    df->Write(ave_sites,   "Average num sites associated with traits");
+    df->Write(base_length, "Genome length");
+    df->Write(ave_dist,    "Average Distance between trait sites");
+    df->Endl();
   }
   
   // @CAO CONTINUE HERE
@@ -5487,12 +5489,12 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
   if (cur_string.GetSize() != 0) log10_step_size_pr_fail = cur_string.PopWord().AsDouble();
   
   // Output is one line per organism in the current batch with columns.
-  cDataFile & df = m_world->GetDataFile(filename);
-  df.WriteComment( "Redundancy calculated by changing the probability of instruction failure" );
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteComment( "Redundancy calculated by changing the probability of instruction failure" );
   cString s;
   s.Set("%i replicates at each chance of instruction failure", replicates);
-  df.WriteComment(s);
-  df.WriteTimeStamp();
+  df->WriteComment(s);
+  df->WriteTimeStamp();
 
   // Loop through all of the genotypes in this batch...
 
@@ -5537,9 +5539,9 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
   
     if (baseline_fitness > 0) {
       // Write information for this 
-      df.Write(genotype->GetName(), "genotype name");
-      df.Write(genotype->GetID(), "genotype id");
-      df.Write(baseline_fitness, "fitness");
+      df->Write(genotype->GetName(), "genotype name");
+      df->Write(genotype->GetID(), "genotype id");
+      df->Write(baseline_fitness, "fitness");
       
       // Run the organism the specified number of replicates
       for (double log10_fc = log10_start_pr_fail; log10_fc <= log10_end_pr_fail; log10_fc += log10_step_size_pr_fail) {
@@ -5564,13 +5566,13 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
         
         if (mode == 0) {
           s.Set("Avg fitness when inst prob fail %.3g", fc);
-          df.Write(avg_fitness/replicates, s);
+          df->Write(avg_fitness/replicates, s);
         } else {
           s.Set("Fraction of replicates with reduced fitness at inst prob fail %.3g", fc);
-          df.Write(chance/replicates, s);
+          df->Write(chance/replicates, s);
         }
       }
-      df.Endl();
+      df->Endl();
     }
   }
 }
@@ -5617,7 +5619,8 @@ void cAnalyze::CommandMapMutations(cString cur_string)
     if (m_world->GetVerbosity() >= VERBOSE_ON) {
       cout << "  Using filename \"" << filename << "\"" << endl;
     }
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+    ofstream& fp = df->OFStream();
     
     // Calculate the stats for the genotype we're working with...
     genotype->Recalculate(m_ctx);
@@ -5862,7 +5865,8 @@ void cAnalyze::CommandMapDepth(cString cur_string)
   
   cout << "max_depth = " << max_depth << endl;
   
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   cout << "Output to " << filename << endl;
   Apto::Array<int> depth_array(max_depth+1);
@@ -5948,16 +5952,16 @@ void cAnalyze::CommandHamming(cString cur_string)
   double ave_dist = (double) total_dist / (double) total_count;
   cout << " ave distance = " << ave_dist << endl;
   
-  cDataFile & df = m_world->GetDataFile(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   
-  df.WriteComment( "Hamming distance information" );
-  df.WriteTimeStamp();  
+  df->WriteComment( "Hamming distance information" );
+  df->WriteTimeStamp();  
   
-  df.Write(batch[batch1].Name(), "Name of First Batch");
-  df.Write(batch[batch2].Name(), "Name of Second Batch");
-  df.Write(ave_dist,             "Average Hamming Distance");
-  df.Write(total_count,          "Total Pairs Test");
-  df.Endl();
+  df->Write(batch[batch1].Name(), "Name of First Batch");
+  df->Write(batch[batch2].Name(), "Name of Second Batch");
+  df->Write(ave_dist,             "Average Hamming Distance");
+  df->Write(total_count,          "Total Pairs Test");
+  df->Endl();
 }
 
 void cAnalyze::CommandLevenstein(cString cur_string)
@@ -6025,16 +6029,16 @@ void cAnalyze::CommandLevenstein(cString cur_string)
   double ave_dist = (double) total_dist / (double) total_count;
   cout << " ave distance = " << ave_dist << endl;
   
-  cDataFile & df = m_world->GetDataFile(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   
-  df.WriteComment( "Levenstein distance information" );
-  df.WriteTimeStamp();  
+  df->WriteComment( "Levenstein distance information" );
+  df->WriteTimeStamp();  
   
-  df.Write(batch[batch1].Name(), "Name of First Batch");
-  df.Write(batch[batch2].Name(), "Name of Second Batch");
-  df.Write(ave_dist,             "Average Levenstein Distance");
-  df.Write(total_count,          "Total Pairs Test");
-  df.Endl();
+  df->Write(batch[batch1].Name(), "Name of First Batch");
+  df->Write(batch[batch2].Name(), "Name of Second Batch");
+  df->Write(ave_dist,             "Average Levenstein Distance");
+  df->Write(total_count,          "Total Pairs Test");
+  df->Endl();
 }
 
 void cAnalyze::CommandSpecies(cString cur_string)
@@ -6155,16 +6159,16 @@ void cAnalyze::CommandSpecies(cString cur_string)
   double ave_dist = (double) total_fail / (double) total_count;
   cout << "  ave distance = " << ave_dist  << " in " << total_count << " tests." << endl; 
   
-  cDataFile& df = m_world->GetDataFile(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   
-  df.WriteComment( "Species information" );
-  df.WriteTimeStamp();  
+  df->WriteComment( "Species information" );
+  df->WriteTimeStamp();  
   
-  df.Write(batch[batch1].Name(), "Name of First Batch");
-  df.Write(batch[batch2].Name(), "Name of Second Batch");
-  df.Write(ave_dist,             "Average Species Distance");
-  df.Write(total_count,          "Total Recombinants tested");
-  df.Endl();
+  df->Write(batch[batch1].Name(), "Name of First Batch");
+  df->Write(batch[batch2].Name(), "Name of Second Batch");
+  df->Write(ave_dist,             "Average Species Distance");
+  df->Write(total_count,          "Total Recombinants tested");
+  df->Endl();
 }
 
 void cAnalyze::CommandRecombine(cString cur_string)
@@ -6510,7 +6514,8 @@ void cAnalyze::AnalyzeNewInfo(cString cur_string)
   
   cString newinfo_fn;
   newinfo_fn.Set("%s%s.newinfo.dat", static_cast<const char*>(directory), "lineage");
-  ofstream& newinfo_fp = m_world->GetDataFileOFStream(newinfo_fn);
+  Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)newinfo_fn);
+  ofstream& newinfo_fp = df->OFStream();
   
   newinfo_fp << "# Legend:" << endl;
   newinfo_fp << "# 1:Child Genotype ID" << endl;
@@ -6525,10 +6530,8 @@ void cAnalyze::AnalyzeNewInfo(cString cur_string)
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * parent_genotype = batch_it.Next();
-  if (parent_genotype == NULL) {
-    m_world->GetDataFileManager().Remove(newinfo_fn);
-    return;
-  }
+  if (parent_genotype == NULL) return;
+
   cAnalyzeGenotype * child_genotype = NULL;
   double I_P_E; // Information of parent about environment
   double H_P_E = AnalyzeEntropy(parent_genotype, mu);
@@ -6570,9 +6573,6 @@ void cAnalyze::AnalyzeNewInfo(cString cur_string)
     parent_genotype = child_genotype;
     I_P_E = I_C_E;
   }
-  
-  m_world->GetDataFileManager().Remove(newinfo_fn);
-  return;
 }
 
 
@@ -6586,7 +6586,8 @@ void cAnalyze::WriteClone(cString cur_string)
   if (cur_string.GetSize() != 0) num_cells = cur_string.PopWord().AsInt();
   
   
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   // Start up again at update zero...
   fp << "0 ";
@@ -6649,7 +6650,8 @@ void cAnalyze::WriteInjectEvents(cString cur_string)
   if (cur_string.GetSize() != 0) start_cell = cur_string.PopWord().AsInt();
   if (cur_string.GetSize() != 0) lineage = cur_string.PopWord().AsInt();
   
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   int org_count = 0;
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -6706,7 +6708,8 @@ void cAnalyze::WriteCompetition(cString cur_string)
     return;
   }
   
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   // Count the number of organisms in each batch...
   cAnalyzeGenotype * genotype = NULL;
@@ -6836,7 +6839,8 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
   cString & last_seq = sequences[num_sequences - 1];
   
   // Print out the header...
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   fp << "# " << sequences[0] << endl;
   fp << "# " << sequences[num_sequences - 1] << endl;
   fp << "# ";
@@ -7004,7 +7008,8 @@ void cAnalyze::AnalyzeInstructions(cString cur_string)
   const int num_insts = inst_set.GetSize();
   
   // Setup the file...
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   // Determine the file type...
   int file_type = FILE_TYPE_TEXT;
@@ -7154,7 +7159,8 @@ void cAnalyze::AnalyzeInstPop(cString cur_string)
   const int num_insts = inst_set.GetSize();
   
   // Setup the file...
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   for (int i = 0; i < num_insts; i++) {
     Instruction cur_inst(i);
@@ -7205,24 +7211,6 @@ void cAnalyze::AnalyzeInstPop(cString cur_string)
   
 }
 
-void cAnalyze::AnalyzeBranching(cString cur_string)
-{
-  if (m_world->GetVerbosity() >= VERBOSE_ON) {
-    cout << "Analyzing branching patterns in batch " << cur_batch << endl;
-  }
-  else cout << "Analyzeing Branches..." << endl;
-  
-  // Load in the variables...
-  cString filename("branch_analyze.dat");
-  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-  
-  // Setup the file...
-  //ofstream& fp = m_world->GetDataFileOFStream(filename);
-  
-  // UNFINISHED!
-  // const int num_insts = inst_set.GetSize();
-}
-
 void cAnalyze::AnalyzeMutationTraceback(cString cur_string)
 {
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
@@ -7264,7 +7252,8 @@ void cAnalyze::AnalyzeMutationTraceback(cString cur_string)
   prev_inst.SetAll(-1);  // -1 indicates never changed.
   
   // Open the output file...
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);
   
@@ -7393,7 +7382,8 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
   } else {
     lineage_filename.Set("%s%s.complexity.dat", static_cast<const char*>(directory), "nonlineage");
   }
-  ofstream& lineage_fp = m_world->GetDataFileOFStream(lineage_filename);
+  Avida::Output::FilePtr lineage_df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)lineage_filename);
+  ofstream& lineage_fp = lineage_df->OFStream();
   
   while ((genotype = batch_it.Next()) != NULL) {
     if (m_world->GetVerbosity() >= VERBOSE_ON) {
@@ -7403,7 +7393,8 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     // Construct this filename...
     cString filename;
     filename.Set("%s%s.complexity.dat", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
+    ofstream& fp = df->OFStream();
     
     lineage_fp << genotype->GetID() << " ";
     
@@ -7507,7 +7498,6 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
       seq[line_num].SetOp(cur_inst);
     }
     
-    m_world->GetDataFileManager().Remove(filename);
     
     lineage_fp << endl;
     
@@ -7522,8 +7512,6 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     }
     if(genotype == NULL) { break; }
   }
-  
-  m_world->GetDataFileManager().Remove(lineage_filename);
   
   delete testcpu;
 }
@@ -7627,12 +7615,12 @@ void cAnalyze::AnalyzeFitnessLandscapeTwoSites(cString cur_string)
         // Construct filename for this site combination
         cString fl_filename;
         fl_filename.Set("%s%s_FitLand_sites-%d_and_%d.dat", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()), site1, site2);
-        cDataFile & fit_land_fp = m_world->GetDataFile(fl_filename);
-        fit_land_fp.WriteComment( "Two-site fitness landscape, all possible instructions" );
-        fit_land_fp.WriteComment( cStringUtil::Stringf("Site 1: %d Site 2: %d", site1, site2) );
-        fit_land_fp.WriteComment( "Rows #- instruction, site 1" );
-        fit_land_fp.WriteComment( "Columns #- instruction, site 2" );
-        fit_land_fp.WriteTimeStamp();
+        Avida::Output::FilePtr fit_land_fp = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)fl_filename);
+        fit_land_fp->WriteComment( "Two-site fitness landscape, all possible instructions" );
+        fit_land_fp->WriteComment( cStringUtil::Stringf("Site 1: %d Site 2: %d", site1, site2) );
+        fit_land_fp->WriteComment( "Rows #- instruction, site 1" );
+        fit_land_fp->WriteComment( "Columns #- instruction, site 2" );
+        fit_land_fp->WriteTimeStamp();
 
         // get current instructions at site 1 and site 2
         int curr_inst1 = base_seq[site1].GetOp();
@@ -7654,16 +7642,13 @@ void cAnalyze::AnalyzeFitnessLandscapeTwoSites(cString cur_string)
             double mod_fitness = test_genotype.GetFitness();
              
             // write to file
-            fit_land_fp.Write(mod_fitness, cStringUtil::Stringf("Instruction, site 2: %d ", mod_inst2));
+            fit_land_fp->Write(mod_fitness, cStringUtil::Stringf("Instruction, site 2: %d ", mod_inst2));
           }
-          fit_land_fp.Endl();
+          fit_land_fp->Endl();
         }   
         // Reset the mod_genome back to the original sequence.
         seq[site1].SetOp(curr_inst1);
         seq[site2].SetOp(curr_inst2);
-        
-        // close file
-        m_world->GetDataFileManager().Remove(fl_filename);
       }
     }
   }  
@@ -7729,11 +7714,9 @@ void cAnalyze::AnalyzeLineageComplexitySitesN(cString cur_string)
     // Construct filename
     cString filename_2s;
     filename_2s.Set("complexity.dat");
-    cDataFile & fp_2s = m_world->GetDataFile(filename_2s);
-    fp_2s.WriteComment( "Lineage Complexity Analysis" );
-    fp_2s.WriteTimeStamp();
-//    m_world->GetDataFileManager().Remove(filename_2s);
-
+    Avida::Output::FilePtr fp_2s = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename_2s);
+    fp_2s->WriteComment( "Lineage Complexity Analysis" );
+    fp_2s->WriteTimeStamp();
 
   // analyze each genotype in the batch
   while ((genotype = batch_it.Next()) != NULL) {
@@ -7872,17 +7855,15 @@ void cAnalyze::AnalyzeLineageComplexitySitesN(cString cur_string)
 
     //write to file
 
-    fp_2s.Write(genotype->GetID(),           "Genotype ID");
-    fp_2s.Write(genotype->GetFitness(),      "Genotype Fitness");
-    fp_2s.Write(gen_length,                  "Genotype Length");
-    fp_2s.Write(posmut,                      "Positive Mutations");
-    fp_2s.Write(posneutmut,                  "Positive and Neutral Mutations");
-    fp_2s.Write(entropy,                     "Entropy");
-    fp_2s.Write(complexity,                  "Complexity");
-    fp_2s.Endl();
-
+    fp_2s->Write(genotype->GetID(),           "Genotype ID");
+    fp_2s->Write(genotype->GetFitness(),      "Genotype Fitness");
+    fp_2s->Write(gen_length,                  "Genotype Length");
+    fp_2s->Write(posmut,                      "Positive Mutations");
+    fp_2s->Write(posneutmut,                  "Positive and Neutral Mutations");
+    fp_2s->Write(entropy,                     "Entropy");
+    fp_2s->Write(complexity,                  "Complexity");
+    fp_2s->Endl();
   }
-  m_world->GetDataFileManager().Remove(filename_2s);
 
   delete testcpu;
 }
@@ -7988,9 +7969,9 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
   // create file for batch summary
   cString summary_filename;
   summary_filename.Set("%scomplexity_batch_summary.dat", static_cast<const char*>(directory));
-  cDataFile & summary_fp = m_world->GetDataFile(summary_filename);
-  summary_fp.WriteComment( "One, Two Site Entropy/Complexity Analysis" );
-  summary_fp.WriteTimeStamp();  
+  Avida::Output::FilePtr summary_fp = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)summary_filename);
+  summary_fp->WriteComment( "One, Two Site Entropy/Complexity Analysis" );
+  summary_fp->WriteTimeStamp();
   
   // analyze each genotype in the batch
   while ((genotype = batch_it.Next()) != NULL) {
@@ -8013,11 +7994,11 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
     // Construct filename
     cString filename_2s;
     filename_2s.Set("%s%s.twosite.complexity.dat", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
-    cDataFile & fp_2s = m_world->GetDataFile(filename_2s);
-    fp_2s.WriteComment( "One, Two Site Entropy/Complexity Analysis" );
-    fp_2s.WriteComment( "NOTE: mutual information = (col 6 + col 8) - (col 9)" );
-    fp_2s.WriteComment( "NOTE: possible negative mutual information-- is this real? " );
-    fp_2s.WriteTimeStamp();
+    Avida::Output::FilePtr fp_2s = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename_2s);
+    fp_2s->WriteComment( "One, Two Site Entropy/Complexity Analysis" );
+    fp_2s->WriteComment( "NOTE: mutual information = (col 6 + col 8) - (col 9)" );
+    fp_2s->WriteComment( "NOTE: possible negative mutual information-- is this real? " );
+    fp_2s->WriteTimeStamp();
         
     int updateBorn = -1;
     updateBorn = genotype->GetUpdateBorn();
@@ -8372,17 +8353,17 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
         genome_ds_mut_info_bits += mutual_information_bits;
         
         // write output to file
-        fp_2s.Write(line_num1,                    "Site 1 in genome");
-        fp_2s.Write(line_num2,                    "Site 2 in genome");
-        fp_2s.Write(cur_inst1,                    "Current Instruction, Site 1");
-        fp_2s.Write(cur_inst2,                    "Current Instruction, Site 2");
-        fp_2s.Write(entropy_ss_mers[line_num1],   "Entropy (MERS), Site 1 -- single site mut-sel balance");
-        fp_2s.Write(entropy_ss_site1_mers,        "Entropy (MERS), Site 1 -- TWO site mut-sel balance");
-        fp_2s.Write(entropy_ss_mers[line_num2],   "Entropy (MERS), Site 2 -- single site mut-sel balance");
-        fp_2s.Write(entropy_ss_site2_mers,        "Entropy (MERS), Site 2 -- TWO site mut-sel balance");
-        fp_2s.Write(entropy_ds_mers,              "Joint Entropy (MERS), Site 1 & 2 -- TWO site mut-sel balance");
-        fp_2s.Write(mutual_information_mers,      "Mutual Information (MERS), Site 1 & 2 -- TWO site mut-sel balance");
-        fp_2s.Endl();
+        fp_2s->Write(line_num1,                    "Site 1 in genome");
+        fp_2s->Write(line_num2,                    "Site 2 in genome");
+        fp_2s->Write(cur_inst1,                    "Current Instruction, Site 1");
+        fp_2s->Write(cur_inst2,                    "Current Instruction, Site 2");
+        fp_2s->Write(entropy_ss_mers[line_num1],   "Entropy (MERS), Site 1 -- single site mut-sel balance");
+        fp_2s->Write(entropy_ss_site1_mers,        "Entropy (MERS), Site 1 -- TWO site mut-sel balance");
+        fp_2s->Write(entropy_ss_mers[line_num2],   "Entropy (MERS), Site 2 -- single site mut-sel balance");
+        fp_2s->Write(entropy_ss_site2_mers,        "Entropy (MERS), Site 2 -- TWO site mut-sel balance");
+        fp_2s->Write(entropy_ds_mers,              "Joint Entropy (MERS), Site 1 & 2 -- TWO site mut-sel balance");
+        fp_2s->Write(mutual_information_mers,      "Mutual Information (MERS), Site 1 & 2 -- TWO site mut-sel balance");
+        fp_2s->Endl();
                     
         // Reset the mod_genome back to the original sequence.
         seq[line_num1].SetOp(cur_inst1);
@@ -8391,25 +8372,22 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
       }// end line 2
     }// end line 1
     
-    // cleanup file for this genome
-    m_world->GetDataFileManager().Remove(filename_2s);
-    
     // calculate the two site complexity
     // (2 site complexity) = (1 site complexity) + (total 2 site mutual info)
     genome_ds_complexity_mers = genome_ss_complexity_mers + genome_ds_mut_info_mers;
     genome_ds_complexity_bits = genome_ss_complexity_bits + genome_ds_mut_info_bits;
         
-    summary_fp.Write(genotype->GetID(),           "Genotype ID");
-    summary_fp.Write(genotype->GetFitness(),      "Genotype Fitness");
-    summary_fp.Write(genome_ss_entropy_mers,      "Entropy (single-site) MERS");
-    summary_fp.Write(genome_ss_complexity_mers,   "Complexity (single-site) MERS");
-    summary_fp.Write(genome_ds_mut_info_mers,     "Mutual Information MERS");
-    summary_fp.Write(genome_ds_complexity_mers,   "Complexity (two-site) MERS");
-    summary_fp.Write(genome_ss_entropy_bits,      "Entropy (single-site) BITS");
-    summary_fp.Write(genome_ss_complexity_bits,   "Complexity (single-site) BITS");
-    summary_fp.Write(genome_ds_mut_info_bits,     "Mutual Information BITS");
-    summary_fp.Write(genome_ds_complexity_bits,   "Complexity (two-site) BITS");
-    summary_fp.Endl();
+    summary_fp->Write(genotype->GetID(),           "Genotype ID");
+    summary_fp->Write(genotype->GetFitness(),      "Genotype Fitness");
+    summary_fp->Write(genome_ss_entropy_mers,      "Entropy (single-site) MERS");
+    summary_fp->Write(genome_ss_complexity_mers,   "Complexity (single-site) MERS");
+    summary_fp->Write(genome_ds_mut_info_mers,     "Mutual Information MERS");
+    summary_fp->Write(genome_ds_complexity_mers,   "Complexity (two-site) MERS");
+    summary_fp->Write(genome_ss_entropy_bits,      "Entropy (single-site) BITS");
+    summary_fp->Write(genome_ss_complexity_bits,   "Complexity (single-site) BITS");
+    summary_fp->Write(genome_ds_mut_info_bits,     "Mutual Information BITS");
+    summary_fp->Write(genome_ds_complexity_bits,   "Complexity (two-site) BITS");
+    summary_fp->Endl();
         
     // Always grabs the first one
     // Skip i-1 times, so that the beginning of the loop will grab the ith one
@@ -8422,8 +8400,6 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
     }
     if(genotype == NULL) { break; }
   }
-  
-  m_world->GetDataFileManager().Remove(summary_filename);
   
   delete testcpu;
 }
@@ -8439,7 +8415,8 @@ void cAnalyze::AnalyzePopComplexity(cString cur_string)
   // Construct filename...
   cString filename;
   filename.Set("%spop%s.complexity.dat", static_cast<const char*>(directory), static_cast<const char*>(file));
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
   
   //////////////////////////////////////////////////////////
   // Loop through all of the genotypes in this batch ...
@@ -8481,21 +8458,18 @@ void cAnalyze::AnalyzePopComplexity(cString cur_string)
     genotype = batch_it.Next();
   }
 
-// Calculate complexity
-for (int line_num = 0; line_num < seq_length; line_num ++) {
-  double entropy = 0.0;
-  for (int inst_num = 0; inst_num < num_insts; inst_num ++) {
-    if (inst_stat(line_num, inst_num) == 0) continue;
-    float prob = (float) (inst_stat(line_num, inst_num)) / (float) (actural_samples);
-    entropy += prob * log((double) 1.0/prob) / log((double) num_insts);
+  // Calculate complexity
+  for (int line_num = 0; line_num < seq_length; line_num ++) {
+    double entropy = 0.0;
+    for (int inst_num = 0; inst_num < num_insts; inst_num ++) {
+      if (inst_stat(line_num, inst_num) == 0) continue;
+      float prob = (float) (inst_stat(line_num, inst_num)) / (float) (actural_samples);
+      entropy += prob * log((double) 1.0/prob) / log((double) num_insts);
+    }
+    double complexity = 1 - entropy;
+    fp << complexity << " ";
   }
-  double complexity = 1 - entropy;
-  fp << complexity << " ";
-}
-fp << endl;
-
-m_world->GetDataFileManager().Remove(filename);
-return;
+  fp << endl;
 }
 
 
@@ -8529,7 +8503,8 @@ void cAnalyze::MutationRevert(cString cur_string)
   
 	
 	//Request a file
-	ofstream& FOT = m_world->GetDataFileOFStream(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& FOT = df->OFStream();
 	/*
    FOT output per line
    ID
@@ -9003,7 +8978,8 @@ void cAnalyze::BatchRename(cString cur_string)
 
 void cAnalyze::CloseFile(cString cur_string)
 {
-  m_world->GetDataFileManager().Remove(cur_string.PopWord());
+  Avida::Output::ManagerPtr omgr = Avida::Output::Manager::Of(m_world->GetNewWorld());
+  omgr->Close(omgr->OutputIDFromPath((const char*)cur_string.PopWord()));
 }
 
 
@@ -9848,7 +9824,6 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("ANALYZE_MUTS", &cAnalyze::AnalyzeMuts);
   AddLibraryDef("ANALYZE_INSTRUCTIONS", &cAnalyze::AnalyzeInstructions);
   AddLibraryDef("ANALYZE_INST_POP", &cAnalyze::AnalyzeInstPop);
-  AddLibraryDef("ANALYZE_BRANCHING", &cAnalyze::AnalyzeBranching);
   AddLibraryDef("ANALYZE_MUTATION_TRACEBACK",
                 &cAnalyze::AnalyzeMutationTraceback);
   AddLibraryDef("ANALYZE_MATE_SELECTION", &cAnalyze::AnalyzeMateSelection);

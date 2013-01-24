@@ -135,8 +135,8 @@ public:
   void HardwareReset(cAvidaContext& ctx);
   void NotifyDeath(cAvidaContext& ctx);
 
-  void PrintStatus(std::ostream& fp, const cString& next_name);
-  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name);
+  void PrintStatus(std::ostream& fp);
+  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp);
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success);
   void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;
   void Fault(int fault_loc, int fault_type, cString fault_desc="");

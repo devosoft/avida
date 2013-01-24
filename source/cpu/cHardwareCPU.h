@@ -249,8 +249,8 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype) { (void)filename, (void)gen_id, (void)genotype; }
-  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) { (void)ctx, (void)fp, (void)next_name; }
+  void SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype) { (void)df, (void)gen_id, (void)genotype; }
+  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp) { (void)ctx, (void)fp; }
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) { (void)fp, (void)exec_success; }
 
   // --------  Stack Manipulation...  --------
