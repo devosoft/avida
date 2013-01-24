@@ -37,6 +37,7 @@
   
   IBOutlet NSPathControl* pathControl;
   IBOutlet NSArrayController* workspaceArrayCtlr;
+  IBOutlet NSMutableDictionary* workspaceDict;
   IBOutlet NSButton* openBtn;
 }
 

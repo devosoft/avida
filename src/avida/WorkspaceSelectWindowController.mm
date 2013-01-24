@@ -34,7 +34,7 @@
 
 
 @interface WorkspaceSelectWindowController ()
-
+- (BOOL) loadWorkspaceWithURL:(NSURL*)workspaceURL;
 @end
 
 
@@ -70,31 +70,70 @@
   NSOpenPanel* openDlg = [NSOpenPanel openPanel];
   [openDlg setCanChooseFiles:YES];
   [openDlg setAllowedFileTypes:[ACWorkspace fileTypes]];
+  [openDlg setTitle:@"Open Workspace..."];
+  [openDlg setPrompt:@"Open Workspace"];
   
   // Display the dialog.  If the OK button was pressed, process the files.
   if ([openDlg runModal] == NSFileHandlingPanelOKButton) {
     NSArray* files = [openDlg URLs];
     NSURL* workspaceURL = [files objectAtIndex:0];
     
-    ACWorkspace* workspace = [[ACWorkspace alloc] initWithURL:workspaceURL];
-    if (workspace) {
-      [avidaCtlr workspaceSelected:workspace];
-      return;
-    }
+    if (![self loadWorkspaceWithURL:workspaceURL]) [self showWindow:sender];
+  } else {
+    [self showWindow:sender];
   }
-  
-  [self showWindow:sender];
 }
 
 
 - (IBAction) openWorkspace:(id)sender {
-  
+  //@TODO
 }
 
 
 
 - (IBAction) newWorkspace:(id)sender {
+  [self close];
+
+  NSSavePanel* saveDlg = [NSSavePanel savePanel];
+  [saveDlg setCanCreateDirectories:YES];
+  [saveDlg setAllowedFileTypes:[ACWorkspace fileTypes]];
+  [saveDlg setTitle:@"Create Workspace..."];
+  [saveDlg setPrompt:@"Create Workspace"];
   
+  // Display the dialog.  If the OK button was pressed, process the files.
+  if ([saveDlg runModal] == NSFileHandlingPanelOKButton) {
+    NSURL* workspaceURL = [saveDlg URL];
+    
+    // Attempt to lookup the workspace in already opened spaces
+    ACWorkspace* workspace = [workspaceDict objectForKey:workspaceURL];
+
+    // If already loaded, must wipe it out prior to creating a new..
+    if (workspace) {
+      NSWorkspace* nsworkspace = [NSWorkspace sharedWorkspace];
+      
+      void (^completionHandler)(NSDictionary*, NSError*) = ^(NSDictionary* newURLs, NSError* error) {
+        (void)newURLs;
+        
+        if (error == nil) {
+          // No error means successful deletion of the old workspace. Remove from list, create a new one...
+          [workspaceArrayCtlr removeObject:workspace];
+          
+          if (![self loadWorkspaceWithURL:workspaceURL]) [self showWindow:sender];
+        } else {
+          // Error occurred, notify user and return to the selection window
+          NSAlert* errAlert = [NSAlert alertWithError:error];
+          [errAlert runModal];
+          [self showWindow:sender];
+        }
+      };
+      
+      [nsworkspace recycleURLs:@[workspaceURL] completionHandler:completionHandler];
+    } else {
+      if (![self loadWorkspaceWithURL:workspaceURL]) [self showWindow:sender];
+    }
+  } else {
+    [self showWindow:sender];
+  }
 }
 
 
@@ -108,16 +147,48 @@
   
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSArray* knownWorkspaces = [userDefaults arrayForKey:PrefKeyWorkspaceURLs];
+  workspaceDict = [NSMutableDictionary dictionaryWithCapacity:[knownWorkspaces count]];
   
   // Load all known workspaces
   for (NSData* urlData in knownWorkspaces) {
     NSURL* workspaceURL = (NSURL*)[NSUnarchiver unarchiveObjectWithData:urlData];
+    
     if (workspaceURL) {
+      // If already loaded, ignore
+      if ([workspaceDict objectForKey:workspaceURL] != nil) continue;
+
+      // Attempt to load the workspace object
       ACWorkspace* workspace = [[ACWorkspace alloc] initWithURL:workspaceURL];
       
-      [workspaceArrayCtlr addObject:workspace];
+      if (workspace) {
+        [workspaceDict setObject:workspace forKey:workspaceURL];
+        [workspaceArrayCtlr addObject:workspace];
+      }
     }
   }
 }
+
+
+// WorkspaceSelectWindowController ()
+// --------------------------------------------------------------------------------------------------------------
+
+- (BOOL) loadWorkspaceWithURL:(NSURL*)workspaceURL {
+  ACWorkspace* workspace = [[ACWorkspace alloc] initWithURL:workspaceURL];
+  if (workspace) {
+    // Add newly loaded workspace to the selection list
+    [workspaceDict setObject:workspace forKey:workspaceURL];
+    [workspaceArrayCtlr addObject:workspace];
+    
+    // Write known workspaces to preferences
+    // @TODO
+    
+    // Notify the controller that a workspace has been selected
+    [avidaCtlr workspaceSelected:workspace];
+    return YES;
+  }
+  
+  return NO;
+}
+
 
 @end
