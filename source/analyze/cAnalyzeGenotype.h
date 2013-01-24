@@ -211,10 +211,6 @@ private:
   void CheckPhenPlast() const;
   void SummarizePhenotypicPlasticity(const cPhenPlastGenotype& pp) const;
   
-  static tDataCommandManager<cAnalyzeGenotype>* buildDataCommandManager();
-
-
-
 public:
   cAnalyzeGenotype(cWorld* world, const Genome& genome);
   cAnalyzeGenotype(const cAnalyzeGenotype& _gen);

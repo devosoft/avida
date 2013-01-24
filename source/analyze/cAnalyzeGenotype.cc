@@ -39,7 +39,6 @@
 #include "cWorld.h"
 
 #include "tDataCommandManager.h"
-#include "tDMSingleton.h"
 
 
 #include <cmath>
@@ -158,15 +157,12 @@ cAnalyzeGenotype::~cAnalyzeGenotype()
 }
 
 
+typedef Apto::SingletonHolder<tDataCommandManager<cAnalyzeGenotype>, Apto::CreateWithNew, Apto::DestroyAtExit, Apto::ThreadSafe> cAnalyzeGenotypeDataCommandManagerSingleton;
+
+
 void cAnalyzeGenotype::Initialize()
 {
-  tDMSingleton<tDataCommandManager<cAnalyzeGenotype> >::Initialize(&cAnalyzeGenotype::buildDataCommandManager);
-}
-
-
-tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager()
-{
-  tDataCommandManager<cAnalyzeGenotype>* dcm = new tDataCommandManager<cAnalyzeGenotype>;
+  tDataCommandManager<cAnalyzeGenotype>* dcm = &cAnalyzeGenotypeDataCommandManagerSingleton::Instance();
   
   // A basic macro to link a keyword to a description and Get and Set methods in cAnalyzeGenotype.
 #define ADD_GDATA(TYPE, KEYWORD, DESC, GET, SET, COMP, NSTR, HSTR)                                \
@@ -314,14 +310,12 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   ADD_GDATA(int (),     "dom_id",       "Dominant Genotype ID",            GetID,         SetID,         0, 0, 0);
   ADD_GDATA(cString (), "dom_sequence", "Dominant Genotype Sequence",      GetSequence,   SetNULL,       0, "(N/A)", "");
   
-  
-  return dcm;
 #undef ADD_GDATA
 }
 
 tDataCommandManager<cAnalyzeGenotype>& cAnalyzeGenotype::GetDataCommandManager()
 {
-  return tDMSingleton<tDataCommandManager<cAnalyzeGenotype> >::GetInstance();
+  return cAnalyzeGenotypeDataCommandManagerSingleton::Instance();
 }
 
 

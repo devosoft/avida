@@ -23,6 +23,7 @@
 #define cActionLibrary_h
 
 #include "avida/core/Feedback.h"
+#include "apto/core/Singleton.h"
 
 #include "cAction.h"
 #include "tObjectFactory.h"
@@ -35,6 +36,8 @@ using namespace Avida;
 
 class cActionLibrary
 {
+  friend class Apto::CreateWithNew<cActionLibrary>;
+  
 private:
   typedef const cString (*ClassDescFunction)();
   

@@ -21,6 +21,7 @@
 
 #include "cActionLibrary.h"
 
+
 #include "DriverActions.h"
 #include "EnvironmentActions.h"
 #include "LandscapeActions.h"
@@ -28,32 +29,24 @@
 #include "PrintActions.h"
 #include "SaveLoadActions.h"
 
-#include "tDMSingleton.h"
+
+typedef Apto::SingletonHolder<cActionLibrary, Apto::CreateWithNew, Apto::DestroyAtExit, Apto::ThreadSafe> cActionLibrarySingleton;
 
 
-cActionLibrary* cActionLibrary::buildDefaultActionLibrary()
+void cActionLibrary::Initialize()
 {
-  cActionLibrary* actlib = new cActionLibrary();
-
+  cActionLibrary* actlib = &cActionLibrarySingleton::Instance();
   RegisterDriverActions(actlib);
   RegisterEnvironmentActions(actlib);
   RegisterLandscapeActions(actlib);
   RegisterPopulationActions(actlib);
   RegisterPrintActions(actlib);
   RegisterSaveLoadActions(actlib);
-  
-  return actlib;
-}
-
-
-void cActionLibrary::Initialize()
-{
-  tDMSingleton<cActionLibrary>::Initialize(&cActionLibrary::buildDefaultActionLibrary);
 }
 
 cActionLibrary& cActionLibrary::GetInstance()
 {
-  return tDMSingleton<cActionLibrary>::GetInstance();
+  return cActionLibrarySingleton::Instance();
 }
 
 
