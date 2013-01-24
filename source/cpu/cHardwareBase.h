@@ -72,7 +72,6 @@ protected:
   int m_inst_cost;
   int m_female_cost;
   Apto::Array<int> m_inst_ft_cost;
-  Apto::Array<double> m_inst_energy_cost;
   Apto::Array<double> m_inst_res_cost;
   Apto::Array<double> m_inst_fem_res_cost;
   Apto::Array<int> m_thread_inst_cost;
@@ -84,7 +83,6 @@ protected:
     bool m_has_any_costs:1;
     bool m_has_costs:1;
     bool m_has_ft_costs:1;
-    bool m_has_energy_costs:1;
     bool m_has_res_costs:1;
     bool m_has_fem_res_costs:1;
     bool m_has_female_costs:1;
@@ -120,9 +118,6 @@ private:
 public:
   cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set);
   virtual ~cHardwareBase() { ; }
-  
-  // interrupt types
-  enum interruptTypes {MSG_INTERRUPT = 0, MOVE_INTERRUPT};
   
   // --------  Organism  ---------
   cOrganism* GetOrganism() { return m_organism; }
@@ -204,11 +199,6 @@ public:
   virtual int GetNumThreads() const = 0;
   virtual int GetCurThread() const = 0;
   
-  // interrupt current thread
-  virtual bool InterruptThread(int interruptType) { return false; }
-  virtual int GetThreadMessageTriggerType(int _index) { return -1; }
-  
-  
   // --------  Parasite Stuff  --------
   virtual bool ParasiteInfectHost(Systematics::UnitPtr bu) = 0;
   
@@ -226,14 +216,6 @@ public:
   virtual void InheritState(cHardwareBase&) { ; }
   
   
-  // --------  Alarm  --------
-  virtual bool Jump_To_Alarm_Label(int) { return false; }
-  
-
-	// -------- Synchronization --------
-  //! Called when the organism that owns this CPU has received a flash from a neighbor.
-  virtual void ReceiveFlash();	
-	
 	// -------- HGT --------
 	//! Retrieve a genome fragment extending downstream from the read head.
 	virtual InstructionSequence GetGenomeFragment(unsigned int downstream);
@@ -260,13 +242,6 @@ protected:
   inline void CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false)
     { if (m_implicit_repro_active) checkImplicitRepro(ctx, exec_last_inst); }
   virtual bool Inst_Repro(cAvidaContext& ctx);
-
-  
-  // --------  Execution Speed Instruction  --------
-  bool Inst_DoubleEnergyUsage(cAvidaContext& ctx);
-  bool Inst_HalveEnergyUsage(cAvidaContext& ctx);
-  bool Inst_DefaultEnergyUsage(cAvidaContext& ctx);
-	
 
   
   // --------  Mutation Helper Methods  --------

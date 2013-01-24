@@ -21,9 +21,9 @@
 
 #include "cPopulationResources.h"
 
-#include "cDeme.h"
 #include "cDynamicRes.h"
 #include "cDiffusionRes.h"
+#include "cPopulationCell.h"
 #include "cResourceElement.h"
 #include "cResourcePopulationInterface.h"
 #include "cWorld.h"
@@ -242,25 +242,6 @@ void cPopulationResources::ResetDynamicRes(cAvidaContext& ctx, cWorld* world, in
   resources[res_id]->ResetDynamicRes(ctx, worldx, worldy);
 }
 
-// deme resources
-// Write spatial data to a file that can easily be read into Matlab
-void cPopulationResources::PrintDemeSpatialResData(const cPopulationResources& res, const int i, const int deme_id, cAvidaContext&) const {
-  const char* tmpResName = res.GetResName(i);
-  cString tmpfilename = cStringUtil::Stringf( "deme_spatial_resource_%s.m", tmpResName );
-  cDataFile& df = m_world->GetDataFile(tmpfilename);
-  cString UpdateStr = cStringUtil::Stringf( "deme_%07i_%s_%07i = [ ...", deme_id, static_cast<const char*>(res.GetResName(i)), m_world->GetStats().GetUpdate() );
-  
-  df.WriteRaw(UpdateStr);
-  
-  const cResource& sp_res = res.GetResource(i);
-  int gridsize = sp_res.GetSize();
-  
-  for (int j = 0; j < gridsize; j++) {
-    df.WriteBlockElement(sp_res.GetAmount(j), j, worldx);
-  }
-  df.WriteRaw("];");
-  df.Endl();
-}
 
 // --- PUBLIC METHODS --- //
 void cPopulationResources::SetCellResources(int cell_id, const Apto::Array<double> & res)
@@ -308,12 +289,6 @@ const Apto::Array<double> & cPopulationResources::GetCellResources(int cell_id, 
 {
   DoUpdates(ctx);
   return GetFrozenResources(ctx, cell_id);
-}
-
-const Apto::Array<double>& cPopulationResources::GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) const
-{
-  int deme_cell_id = m_interface->GetDeme(deme_id).GetRelativeCellID(cell_id);
-  return GetCellResources(deme_cell_id, ctx);
 }
 
 void cPopulationResources::UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
@@ -479,60 +454,37 @@ void cPopulationResources::UpdateResource(cAvidaContext& ctx, int res_index, dou
 void cPopulationResources::UpdateResource(const int Verbosity, cWorld* world) {
   const cResourceDefLib & resource_lib = m_world->GetEnvironment().GetResDefLib();
   int global_res_index = -1;
-  int deme_res_index = -1;
-  int num_deme_res = 0;
   
-  //setting size of global and deme-level resources
-  for(int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    if (res->GetDemeResource())
-      num_deme_res++;
-  }
   
-  for(int i = 0; i < m_interface->GetNumDemes(); i++) {
-    cPopulationResources tmp_deme_res_count(m_interface, num_deme_res); // APW
-//    m_interface->GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
-  }
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     cResourceDef* res = resource_lib.GetResDef(i);
-    if (!res->GetDemeResource()) {
-      global_res_index++;
-      const double decay = 1.0 - res->GetOutflow();
-      if (!res->IsSpatial()) {
-        SetupGlobalRes(m_world, global_res_index, res->GetName(), res->GetInitial(),
-                                 res->GetInflow(), decay, res->GetGeometry(), m_world->GetVerbosity());
+    global_res_index++;
+    const double decay = 1.0 - res->GetOutflow();
+    if (!res->IsSpatial()) {
+      SetupGlobalRes(m_world, global_res_index, res->GetName(), res->GetInitial(),
+                               res->GetInflow(), decay, res->GetGeometry(), m_world->GetVerbosity());
+    }
+    else {
+      if (res->IsDynamic()) {
+        SetupDynamicRes(m_world, global_res_index, res, m_world->GetVerbosity());
       }
-      else {
-        if (res->IsDynamic()) {
-          SetupDynamicRes(m_world, global_res_index, res, m_world->GetVerbosity());
-        }
-        else if (res->IsDiffusion()) {
-          SetupDiffusionRes(m_world, global_res_index, res->GetName(), res->GetInitial(), res->GetInflow(), decay,
-                                      res->GetGeometry(), res->GetXDiffuse(),
-                                      res->GetXGravity(), res->GetYDiffuse(),
-                                      res->GetYGravity(), res->GetInflowX1(),
-                                      res->GetInflowX2(), res->GetInflowY1(),
-                                      res->GetInflowY2(), res->GetOutflowX1(),
-                                      res->GetOutflowX2(), res->GetOutflowY1(),
-                                      res->GetOutflowY2(), res->GetCellListPtr(),
-                                      res->GetCellIdListPtr(), m_world->GetVerbosity());
-        }
-        else
-          cerr<< "ERROR: Spatial resource \"" << res->GetName() <<"\"is not a diffusion or dynamic resource.  Exit";
-        exit(1);
+      else if (res->IsDiffusion()) {
+        SetupDiffusionRes(m_world, global_res_index, res->GetName(), res->GetInitial(), res->GetInflow(), decay,
+                                    res->GetGeometry(), res->GetXDiffuse(),
+                                    res->GetXGravity(), res->GetYDiffuse(),
+                                    res->GetYGravity(), res->GetInflowX1(),
+                                    res->GetInflowX2(), res->GetInflowY1(),
+                                    res->GetInflowY2(), res->GetOutflowX1(),
+                                    res->GetOutflowX2(), res->GetOutflowY1(),
+                                    res->GetOutflowY2(), res->GetCellListPtr(),
+                                    res->GetCellIdListPtr(), m_world->GetVerbosity());
       }
-    } else if (res->GetDemeResource()) {
-      deme_res_index++;
-      for(int j = 0; j < m_interface->GetNumDemes(); j++) {
-        m_interface->GetDeme(j).SetupDemeRes(deme_res_index, res, Verbosity, world);
-        // could add deme resources to global resource stats here
-      }
-    } else {
-      cerr<< "ERROR: Resource \"" << res->GetName() <<"\"is not a global or deme resource.  Exit";
+      else
+        cerr<< "ERROR: Spatial resource \"" << res->GetName() <<"\"is not a diffusion or dynamic resource.  Exit";
       exit(1);
     }
-  }  
+  }
 }
 
 void cPopulationResources::Modify(cAvidaContext& ctx, const Apto::Array<double> & res_change)
@@ -756,7 +708,7 @@ void cPopulationResources::SetDynamicResPlatVarInflow(const cString res_name, co
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     cResourceDef* res = resource_lib.GetResDef(i);
-    if (!res->GetDemeResource()) global_res_index++;
+    global_res_index++;
     if (res->GetName() == res_name) {
     resources[global_res_index]->SetPlatVarInflow(mean, variance, type);
     }
@@ -770,7 +722,7 @@ void cPopulationResources::SetPredatoryResource(const cString res_name, const do
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     cResourceDef* res = resource_lib.GetResDef(i);
-    if (!res->GetDemeResource()) global_res_index++;
+    global_res_index++;
     if (res->GetName() == res_name) {
       res->SetPredatoryResource(odds, juvsper, detection_prob);
       res->SetHabitat(5);
@@ -912,146 +864,7 @@ void cPopulationResources::ExecutePredatoryResource(cAvidaContext& ctx, const in
   }
 }
 
-/* This method sets a deme resource to the same level across
- * all demes.  If a resource by the given name does not exist,
- * it does nothing.
- */
-void cPopulationResources::SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level)
-{
-  cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(res_name);
-  if (res != NULL) {
-    int num_demes = m_interface->GetNumDemes();
-    for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
-      m_interface->GetDeme(deme_id).SetResource(ctx, res->GetIndex(), new_level);
-    }
-  }
-}
 
-/* This method sets the inflow for the named deme resource across ALL demes. 
- * It changes the value in the environment, then updates it in the deme resource
- * counts.
- *
- * This maintains the connection between the enviroment value and the resource
- * count values, unlike cPopulationResources::SetSingleDemeResourceInflow()
- */
-void cPopulationResources::SetDemeResourceInflow(const cString res_name, double new_level)
-{
-  m_world->GetEnvironment().SetResourceInflow(res_name, new_level);
-  int num_demes = m_interface->GetNumDemes();
-  for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
-    m_interface->GetDeme(deme_id).GetDemeResources().SetInflow(res_name, new_level);
-  }
-}
-
-/* This method sets the inflow for the named deme resource in a specific deme.
- * It changes the value in the environment, then updates it in the specified deme's
- * resource count.
- * 
- * ATTENTION: This leads to the rather bizzare consequence that the inflow rate
- * in the environment may not match the inflow rate in each deme's resource count.
- * This is not my own decision, simply a reflection of how the SetDemeResourceInflow
- * action (for which I am writing this as a helper) works.  Unless you have a specific
- * reason NOT to change the inflow for all demes, it is probably best to use
- * cPopulationResources::SetDemeResourceInflow() -- blw
- */
-void cPopulationResources::SetSingleDemeResourceInflow(int deme_id, const cString res_name, double new_level)
-{
-  m_world->GetEnvironment().SetResourceInflow(res_name, new_level);
-  m_interface->GetDeme(deme_id).GetDemeResources().SetInflow(res_name, new_level);
-}
-
-/* This method sets the outflow for the named deme resource across ALL demes.
- * It changes the value in the environment, then updates the decay rate in the 
- * deme resource counts.
- *
- * This maintains the connection between the enviroment value and the resource
- * count values, unlike cPopulationResources::SetSingleDemeResourceOutflow()
- */
-void cPopulationResources::SetDemeResourceOutflow(const cString res_name, double new_level)
-{
-  m_world->GetEnvironment().SetResourceOutflow(res_name, new_level);
-  int num_demes = m_interface->GetNumDemes();
-  for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
-    m_interface->GetDeme(deme_id).GetDemeResources().SetDecay(res_name, 1 - new_level);
-  }
-}
-
-/* This method sets the outflow for the named deme resource in a specific deme. 
- * It changes the value in the environment, then updates the decay rate in the 
- * specified deme's resource count.
- * 
- * ATTENTION: This leads to the rather bizzare consequence that the outflow rate
- * in the environment may not match the decay (1-outflow) rate in each deme's resource count.
- * This is not my own decision, simply a reflection of how the SetDemeResourceOutflow
- * action (for which I am writing this as a helper) works.  Unless you have a specific
- * reason NOT to change the outflow for all demes, it is probably best to use
- * cPopulationResources::SetDemeResourceOutflow() -- blw
- */
-void cPopulationResources::SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level)
-{
-  m_world->GetEnvironment().SetResourceOutflow(res_name, new_level);
-  m_interface->GetDeme(deme_id).GetDemeResources().SetDecay(res_name, 1 - new_level);
-}
-
-void cPopulationResources::UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
-{
-  m_interface->GetDeme(m_interface->GetCell(cell_id).GetDemeID()).ModifyDemeResCount(ctx, res_change, cell_id);
-}
-
-void cPopulationResources::PrintDemeResource(cAvidaContext& ctx) {
-  cStats& stats = m_world->GetStats();
-  const int num_demes = m_interface->GetNumDemes();
-  cDataFile & df_resources = m_world->GetDataFile("deme_resources.dat");
-  df_resources.WriteComment("Avida deme resource data");
-  df_resources.WriteTimeStamp();
-  df_resources.Write(stats.GetUpdate(), "update");
-  
-  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-    m_interface->GetDeme(deme_id).UpdateDemeRes(ctx);
-    
-    const cPopulationResources& res = m_interface->GetDeme(deme_id).GetDemeResourceCount();
-    for(int j = 0; j < res.GetSize(); j++) {
-      const char * tmp = res.GetResName(j);
-      df_resources.Write(res.Get(ctx, j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
-      if ((res.GetResourceGeometries())[j] != nGeometry::GLOBAL && (res.GetResourceGeometries())[j] != nGeometry::PARTIAL) {
-        PrintDemeSpatialResData(res, j, deme_id, ctx);
-      }
-    }
-  }
-  df_resources.Endl();
-}
-
-//Write deme global resource levels to a file that can be easily read into Matlab.
-//Each time this runs, a Matlab array is created that contains an array.  Each row in the array contains <deme id> <res level 0> ... <res level n>
-void cPopulationResources::PrintDemeGlobalResources(cAvidaContext& ctx) { 
-  const int num_demes = m_interface->GetNumDemes();
-  cDataFile & df = m_world->GetDataFile("deme_global_resources.dat");
-  df.WriteComment("Avida deme resource data");
-  df.WriteTimeStamp();
-  
-  cString UpdateStr = cStringUtil::Stringf( "deme_global_resources_%07i = [ ...", m_world->GetStats().GetUpdate());
-  df.WriteRaw(UpdateStr);
-  
-  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-    m_interface->GetDeme(deme_id).UpdateDemeRes(ctx);
-    
-    const cPopulationResources & res = m_interface->GetDeme(deme_id).GetDemeResourceCount();
-    const int num_res = res.GetSize();
-    
-    df.WriteBlockElement(deme_id, 0, num_res + 1);
-    
-    for(int r = 0; r < num_res; r++) {
-      if (!res.IsSpatial(r)) {
-        df.WriteBlockElement(res.Get(ctx, r), r + 1, num_res + 1);
-      }
-      
-    } //End iterating through resources
-    
-  } //End iterating through demes
-  
-  df.WriteRaw("];");
-  df.Endl();
-}
 
 // --- DYNAMIC RESOURCES --- //
 

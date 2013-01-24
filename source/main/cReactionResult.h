@@ -42,17 +42,11 @@ private:
   double energy_add;
   double bonus_add;
   double bonus_mult;
-  double germline_add;
-  double germline_mult;
   Apto::Array<cString> insts_triggered;
   bool lethal;
   bool sterilize;
   bool active_reaction;
   bool used_env_resource;
-
-  double deme_add_bonus; //!< Additive bonus applied to the deme as a result of this reaction.
-  double deme_mult_bonus; //!< Multiplicative bonus applied to the deme as a result of this reaction.
-  bool active_deme_reaction; //!< Whether this reaction result includes a deme merit component.
 
   inline void ActivateReaction();
 
@@ -65,7 +59,6 @@ public:
   ~cReactionResult() { ; }
 
   bool GetActive() const { return active_reaction; }
-  bool GetActiveDeme() const { return active_deme_reaction; }
   void Invalidate() { active_reaction = false; }
 
 
@@ -80,10 +73,6 @@ public:
   void AddEnergy(double value);
   void AddBonus(double value, int id);
   void MultBonus(double value);
-  void AddDemeBonus(double value);
-  void MultDemeBonus(double value);
-  void AddGermline(double value);
-  void MultGermline(double value);
 
   void AddInst(const cString& inst);
 
@@ -105,10 +94,6 @@ public:
   Apto::Array<cString>& GetInstArray() { return insts_triggered; }
   bool UsedEnvResource() { return used_env_resource; }
   bool IsEnvResource() { return used_env_resource; }
-  double GetAddDemeBonus() { return deme_add_bonus; }
-  double GetMultDemeBonus() { return deme_mult_bonus; }
-  double GetAddGermline() { return germline_add; }
-  double GetMultGermline() { return germline_mult; }
 };
 
 #endif

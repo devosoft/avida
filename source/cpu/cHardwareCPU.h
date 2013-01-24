@@ -69,7 +69,6 @@ protected:
   private:
     int m_id;
     int m_promoter_inst_executed;
-    int m_messageTriggerType;
   public:
     int reg[NUM_REGISTERS];
     cHeadCPU heads[NUM_HEADS];
@@ -92,8 +91,6 @@ protected:
     int GetPromoterInstExecuted() { return m_promoter_inst_executed; }
     void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
     void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
-    void setMessageTriggerType(int value) { m_messageTriggerType = value; }
-    int getMessageTriggerType() { return m_messageTriggerType; }
   };
 
 
@@ -296,7 +293,6 @@ public:
   int GetNumThreads() const     { return m_threads.GetSize(); }
   int GetCurThread() const      { return m_cur_thread; }
   const cLocalThread& GetThread(int _index) const { return m_threads[_index]; }
-  int GetThreadMessageTriggerType(int _index) { return m_threads[_index].getMessageTriggerType(); }
 
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
@@ -340,9 +336,6 @@ private:
   bool Inst_IfNotAboveResLevel(cAvidaContext& ctx);
   bool Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx);
   
-  bool Inst_IfGerm(cAvidaContext& ctx);
-  bool Inst_IfSoma(cAvidaContext& ctx);  
-
   // Probabilistic ifs.
   bool Inst_IfP0p125(cAvidaContext& ctx);
   bool Inst_IfP0p25(cAvidaContext& ctx);
@@ -458,24 +451,18 @@ private:
   bool Inst_MaxAlloc(cAvidaContext& ctx);
   bool Inst_MaxAllocMoveWriteHead(cAvidaContext& ctx);
   bool Inst_Transposon(cAvidaContext& ctx);
-  bool Inst_ReproDeme(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_ReproSex(cAvidaContext& ctx);
-  bool Inst_ReproGermFlag(cAvidaContext& ctx);
   bool Inst_TaskPutRepro(cAvidaContext& ctx);
   bool Inst_TaskPutResetInputsRepro(cAvidaContext& ctx);
   bool Inst_ConditionalRepro(cAvidaContext& ctx);
   bool Inst_Sterilize(cAvidaContext& ctx);
 
-  bool Inst_SpawnDeme(cAvidaContext& ctx);
   bool Inst_Kazi(cAvidaContext& ctx);
   bool Inst_Kazi5(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
   bool Inst_Poison(cAvidaContext& ctx);
   bool Inst_Suicide(cAvidaContext& ctx);
-  bool Inst_RelinquishEnergyToFutureDeme(cAvidaContext& ctx);
-  bool Inst_RelinquishEnergyToNeighborOrganisms(cAvidaContext& ctx);
-  bool Inst_RelinquishEnergyToOrganismsInDeme(cAvidaContext& ctx);
 
   // I/O and Sensory
   bool Inst_TaskGet(cAvidaContext& ctx);
@@ -524,9 +511,6 @@ private:
 
   // Donation
   void DoDonate(cOrganism * to_org);
-  void DoEnergyDonate(cOrganism* to_org);
-  void DoEnergyDonatePercent(cOrganism* to_org, const double frac_energy_given);
-  void DoEnergyDonateAmount(cOrganism* to_org, const double amount);
   bool Inst_DonateRandom(cAvidaContext& ctx);
   bool Inst_DonateKin(cAvidaContext& ctx);
   bool Inst_DonateEditDist(cAvidaContext& ctx);
@@ -537,24 +521,6 @@ private:
   bool Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx);
   bool Inst_DonateGreenBeardSameLocus(cAvidaContext& ctx);
   bool Inst_DonateNULL(cAvidaContext& ctx);
-  bool Inst_DonateFacing(cAvidaContext& ctx);
-  bool Inst_ReceiveDonatedEnergy(cAvidaContext& ctx);
-  bool Inst_DonateEnergy(cAvidaContext& ctx);
-  bool Inst_UpdateMetabolicRate(cAvidaContext& ctx);
-  bool Inst_DonateEnergyFaced(cAvidaContext& ctx);
-  bool Inst_DonateEnergyFaced1(cAvidaContext& ctx);
-  bool Inst_DonateEnergyFaced2(cAvidaContext& ctx);
-  bool Inst_DonateEnergyFaced5(cAvidaContext& ctx);
-  bool Inst_DonateEnergyFaced10(cAvidaContext& ctx);
-  bool Inst_DonateEnergyFaced20(cAvidaContext& ctx);
-  bool Inst_DonateEnergyFaced50(cAvidaContext& ctx);
-  bool Inst_DonateEnergyFaced100(cAvidaContext& ctx);
-  bool Inst_RotateToMostNeedy(cAvidaContext& ctx);
-  bool Inst_RequestEnergy(cAvidaContext& ctx);
-  bool Inst_RequestEnergyFlagOn(cAvidaContext& ctx);
-  bool Inst_RequestEnergyFlagOff(cAvidaContext& ctx);
-  bool Inst_IncreaseEnergyDonation(cAvidaContext& ctx);
-  bool Inst_DecreaseEnergyDonation(cAvidaContext& ctx);
 
   void DoResourceDonatePercent(cAvidaContext& ctx, const int to_cell, const int resource_id, const double frac_resource_given); 
   void DoResourceDonateAmount(cAvidaContext& ctx, const int to_cell, const int resource_id, const double amount); 
@@ -704,7 +670,6 @@ private:
 
 
 
-  bool Inst_Sleep(cAvidaContext& ctx);
   bool Inst_GetUpdate(cAvidaContext& ctx);
 
   //// Promoter Model ////
@@ -747,34 +712,6 @@ private:
   bool Inst_MaskOffLower8Bits_defaultAX(cAvidaContext& ctx);
   bool Inst_MaskOffLower4Bits(cAvidaContext& ctx);
   bool Inst_MaskOffLower4Bits_defaultAX(cAvidaContext& ctx);
-
-  //// Messaging ////
-  bool Inst_SendMessage(cAvidaContext& ctx);
-  bool SendMessage(cAvidaContext& ctx, int messageType = 0);
-  bool Inst_RetrieveMessage(cAvidaContext& ctx);
-  bool BroadcastX(cAvidaContext& ctx, int depth);
-  bool Inst_Broadcast1(cAvidaContext& ctx);
-  bool Inst_Broadcast2(cAvidaContext& ctx);
-  bool Inst_Broadcast4(cAvidaContext& ctx);
-  bool Inst_Broadcast8(cAvidaContext& ctx);
-
-  // Active messaging //
-  bool Inst_SendMessageInterruptType0(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType1(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType2(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType3(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType4(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType5(cAvidaContext& ctx);
-  bool Inst_START_Handler(cAvidaContext& ctx);
-  bool Inst_End_Handler(cAvidaContext& ctx);
-
-  //// Alarm ////
-  bool Inst_Alarm_MSG_local(cAvidaContext& ctx);
-  bool Inst_Alarm_MSG_multihop(cAvidaContext& ctx);
-  bool Inst_Alarm_MSG_Bit_Cons24_local(cAvidaContext& ctx);
-  bool Inst_Alarm_MSG_Bit_Cons24_multihop(cAvidaContext& ctx);
-  bool Inst_Alarm_Label(cAvidaContext& ctx);
-  bool Jump_To_Alarm_Label(int jump_label);
 
 
   // -------- Reputation support --------
@@ -827,43 +764,12 @@ private:
   //// Placebo ////
   bool Inst_Skip(cAvidaContext& ctx);
 
-  // @BDC Additions for pheromones
-  bool Inst_PheroOn(cAvidaContext& ctx);
-  bool Inst_PheroOff(cAvidaContext& ctx);
-  bool Inst_PheroToggle(cAvidaContext& ctx);
-  bool DoSenseFacing(cAvidaContext& ctx, int conversion_method, double base);
-  bool Inst_SenseLog2Facing(cAvidaContext& ctx);
-  bool Inst_SenseUnitFacing(cAvidaContext& ctx);
-  bool Inst_SenseMult100Facing(cAvidaContext& ctx);
-  bool Inst_SenseTarget(cAvidaContext& ctx);
-  bool Inst_SenseTargetFaced(cAvidaContext& ctx);
-  bool DoSensePheromone(cAvidaContext& ctx, int cellid);
-  bool DoSensePheromoneInDemeGlobal(cAvidaContext& ctx, tRegisters REG_DEFAULT);
-  bool DoSensePheromoneGlobal(cAvidaContext& ctx, tRegisters REG_DEFAULT);
-  bool Inst_SensePheromone(cAvidaContext& ctx);
-  bool Inst_SensePheromoneFaced(cAvidaContext& ctx);
-  bool Inst_SensePheromoneInDemeGlobal(cAvidaContext& ctx);
-  bool Inst_SensePheromoneGlobal(cAvidaContext& ctx);
-  bool Inst_SensePheromoneGlobal_defaultAX(cAvidaContext& ctx);
-  bool Inst_Exploit(cAvidaContext& ctx);
-  bool Inst_ExploitForward5(cAvidaContext& ctx);
-  bool Inst_ExploitForward3(cAvidaContext& ctx);
-  bool Inst_Explore(cAvidaContext& ctx);
-  bool Inst_MoveTarget(cAvidaContext& ctx);
-  bool Inst_MoveTargetForward5(cAvidaContext& ctx);
-  bool Inst_MoveTargetForward3(cAvidaContext& ctx);
-  bool Inst_SuperMove(cAvidaContext& ctx);
-  bool Inst_IfTarget(cAvidaContext& ctx);
-  bool Inst_IfNotTarget(cAvidaContext& ctx);
-  bool Inst_IfPheromone(cAvidaContext& ctx);
-  bool Inst_IfNotPheromone(cAvidaContext& ctx);
-  bool Inst_DropPheromone(cAvidaContext& ctx);
 
   // -------- Opinion support --------
 public:
   /* These instructions interact with the "opinion" support in cOrganism.h.  The
   idea is that we're enabling organisms to express an opinion about *something*,
-  where that something is defined by the particular tasks and/or (deme) fitness function
+  where that something is defined by the particular tasks and/or fitness function
   in use.  This may have to be extended in the future to support different kinds of
   opinions that can be expressed during the same experiment, and possibly augmented
   with a "strength" of that opinion (but not right now).
@@ -888,9 +794,6 @@ public:
   bool Inst_CollectCellData(cAvidaContext& ctx);
   //! Detect if this cell's data has changed since the last collection.
   bool Inst_IfCellDataChanged(cAvidaContext& ctx);
-  bool Inst_KillCellEvent(cAvidaContext& ctx);
-  bool Inst_KillFacedCellEvent(cAvidaContext& ctx);
-  bool Inst_CollectCellDataAndKillEvent(cAvidaContext& ctx);
   bool Inst_ReadCellData(cAvidaContext& ctx);
   bool Inst_ReadFacedCellData(cAvidaContext& ctx);
   bool Inst_ReadFacedCellDataOrgID(cAvidaContext& ctx);
@@ -899,7 +802,7 @@ public:
   bool Inst_MarkCellWithVitality(cAvidaContext& ctx);
   bool Inst_GetResStored(cAvidaContext& ctx);
   bool Inst_GetID(cAvidaContext& ctx);
-  bool Inst_GetFacedVitalityDiff(cAvidaContext& ctx); 
+  bool Inst_GetFacedVitalityDiff(cAvidaContext& ctx);
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);  
   bool Inst_AttackFacedOrg(cAvidaContext& ctx); 
   bool Inst_GetAttackOdds(cAvidaContext& ctx);
@@ -907,31 +810,6 @@ public:
 private:
   std::pair<bool, int> m_last_cell_data; //<! If cell data has been previously collected, and it's value.
 
-  // -------- Synchronization primitives --------
-public:
-  //! Called when the owning organism receives a flash from a neighbor.
-  virtual void ReceiveFlash();
-  //! Sends a "flash" to all neighboring organisms.
-  bool Inst_Flash(cAvidaContext& ctx);
-  //! Test if this organism has ever received a flash.
-  bool Inst_IfRecvdFlash(cAvidaContext& ctx);
-  //! Get if & when this organism last received a flash.
-  bool Inst_FlashInfo(cAvidaContext& ctx);
-  //! Get if (but not when) this organism last received a flash.
-  bool Inst_FlashInfoB(cAvidaContext& ctx);  
-  //! Reset the information this organism has regarding receiving a flash.
-  bool Inst_ResetFlashInfo(cAvidaContext& ctx);  
-  //! Reset the entire CPU.
-  bool Inst_HardReset(cAvidaContext& ctx);
-  //! Current "time": the number of cycles this CPU has been "alive."
-  bool Inst_GetCycles(cAvidaContext& ctx);
-
-private:
-  /*! Used to track the last flash received; first=whether we've received a flash, 
-  second= #cycles since we've received a flash, or 0 if we haven't. */
-  std::pair<unsigned int, unsigned int> m_flash_info;
-  //! Cycle timer; counts the number of cycles this virtual CPU has executed.
-  unsigned int m_cycle_counter;	
 
   // -------- Neighborhood-sensing support --------
 public:	
@@ -967,28 +845,10 @@ public:
   bool Inst_GetTolerance(cAvidaContext& ctx);
   bool Inst_GetGroupTolerance(cAvidaContext& ctx);
 
-  // -------- Network creation support --------
-public:
-  //! Create a link to the currently-faced cell.
-  bool Inst_CreateLinkByFacing(cAvidaContext& ctx);
-  //! Create a link to the cell specified by xy-coordinates.
-  bool Inst_CreateLinkByXY(cAvidaContext& ctx);
-  //! Create a link to the cell specified by index.
-  bool Inst_CreateLinkByIndex(cAvidaContext& ctx);
-  //! Broadcast a message in the communication network.
-  bool Inst_NetworkBroadcast1(cAvidaContext& ctx);
-  //! Unicast a message in the communication network.
-  bool Inst_NetworkUnicast(cAvidaContext& ctx);
-  //! Rotate the current active link by the contents of register ?BX?.
-  bool Inst_NetworkRotate(cAvidaContext& ctx);
-  //! Select the current active link from the contents of register ?BX?.
-  bool Inst_NetworkSelect(cAvidaContext& ctx);
-
 
   // -------- Division of labor support --------
   bool Inst_GetTimeUsed(cAvidaContext& ctx);
-  bool Inst_DonateResToDeme(cAvidaContext& ctx);
-  // If there is a penalty for switching tasks, call this function and 
+  // If there is a penalty for switching tasks, call this function and
   // the additional cycle cost will be added.
   void IncrementTaskSwitchingCost(int cost);
   int GetTaskSwitchingCost() { return m_task_switching_cost; }
@@ -997,14 +857,7 @@ public:
   // Apply point mutations to a genome, where the mutation rate
   // depends on the task last performed
   bool Inst_ApplyVaryingPointMutations(cAvidaContext& ctx);
-  // Apply point mutations to a genome in the deme with the same 
-  // germ/soma status
-  bool Inst_ApplyPointMutationsGroupGS(cAvidaContext& ctx);
-  // Apply point mutations to a genome in the deme at random
-  bool Inst_ApplyPointMutationsGroupRandom(cAvidaContext& ctx);
 
-  bool Inst_JoinGermline(cAvidaContext& ctx);
-  bool Inst_ExitGermline(cAvidaContext& ctx);
   bool Inst_RepairPointMutOn(cAvidaContext& ctx);
   bool Inst_RepairPointMutOff(cAvidaContext& ctx);
 

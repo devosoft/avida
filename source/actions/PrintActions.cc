@@ -46,7 +46,6 @@
 #include "cHardwareManager.h"
 #include "cHistogram.h"
 #include "cInstSet.h"
-#include "cMigrationMatrix.h"
 #include "cOrganism.h"
 #include "cPhenPlastGenotype.h"
 #include "cPhenPlastUtil.h"
@@ -84,13 +83,9 @@ void Process(cAvidaContext&) { m_world->GetStats().METHOD(m_filename); }        
 }                                                                                         /* 13 */ \
 
 STATS_OUT_FILE(PrintAverageData,            average.dat         );
-STATS_OUT_FILE(PrintDemeAverageData,        deme_average.dat    );
 STATS_OUT_FILE(PrintErrorData,              error.dat           );
 STATS_OUT_FILE(PrintVarianceData,           variance.dat        );
 STATS_OUT_FILE(PrintCountData,              count.dat           );
-STATS_OUT_FILE(PrintMessageData,            message.dat         );
-STATS_OUT_FILE(PrintMessageLog,             message_log.dat     );
-STATS_OUT_FILE(PrintInterruptData,          interrupt.dat       );
 STATS_OUT_FILE(PrintTotalsData,             totals.dat          );
 STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
 STATS_OUT_FILE(PrintThreadsData,            threads.dat         );
@@ -124,64 +119,20 @@ STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
 STATS_OUT_FILE(PrintInternalTasksData,      in_tasks.dat        );
 STATS_OUT_FILE(PrintInternalTasksQualData,  in_tasks_quality.dat);
-STATS_OUT_FILE(PrintSleepData,              sleep.dat           );
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
-STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
-STATS_OUT_FILE(PrintDemeGermlineSequestration, deme_germ.dat);
-STATS_OUT_FILE(PrintDemeOrgGermlineSequestration, deme_org_germ.dat);
-STATS_OUT_FILE(PrintDemeGLSFounders, deme_gls_founders.dat);
-STATS_OUT_FILE(PrintDemeReactionDiversityReplicationData, deme_rx_repl.dat );
-STATS_OUT_FILE(PrintDemeGermResourcesData, deme_germ_res.dat );
-STATS_OUT_FILE(PrintWinningDeme, deme_winners.dat);
-STATS_OUT_FILE(PrintDemeTreatableReplicationData,    deme_repl_treatable.dat       );
-STATS_OUT_FILE(PrintDemeUntreatableReplicationData,  deme_repl_untreatable.dat       );
-STATS_OUT_FILE(PrintDemeTreatableCount,     deme_treatable.dat       );
 
 
-STATS_OUT_FILE(PrintDemeCompetitionData,    deme_compete.dat);
-STATS_OUT_FILE(PrintDemeNetworkData,        deme_network.dat);
-STATS_OUT_FILE(PrintDemeNetworkTopology,    deme_network_topology.dat);
-STATS_OUT_FILE(PrintDemeFoundersData,       deme_founders.dat   );
-STATS_OUT_FILE(PrintPerDemeTasksData,       per_deme_tasks.dat      );
-STATS_OUT_FILE(PrintPerDemeTasksExeData,    per_deme_tasks_exe.dat  );
-STATS_OUT_FILE(PrintAvgDemeTasksExeData,    avg_deme_tasks_exe.dat  );
-STATS_OUT_FILE(PrintAvgTreatableDemeTasksExeData, avg_treatable_deme_tasks_exe.dat  );
-STATS_OUT_FILE(PrintAvgUntreatableDemeTasksExeData, avg_untreatable_deme_tasks_exe.dat  );
-STATS_OUT_FILE(PrintPerDemeReactionData,    per_deme_reactions.dat  );
-STATS_OUT_FILE(PrintDemeTasksData,          deme_tasks.dat      );
-STATS_OUT_FILE(PrintDemeTasksExeData,       deme_tasks_exe.dat  );
-STATS_OUT_FILE(PrintDemesTasksData,         demes_tasks.dat); //@JJB**
-STATS_OUT_FILE(PrintDemesReactionsData,     demes_reactions.dat); //@JJB**
-STATS_OUT_FILE(PrintDemesFitnessData,       demes_fitness.dat); //@JJB**
-STATS_OUT_FILE(PrintDemeReactionData,       deme_reactions.dat  );
-STATS_OUT_FILE(PrintDemeOrgTasksData,       deme_org_tasks.dat      );
-STATS_OUT_FILE(PrintDemeOrgTasksExeData,    deme_org_tasks_exe.dat  );
-STATS_OUT_FILE(PrintDemeOrgReactionData,    deme_org_reactions.dat  );
-STATS_OUT_FILE(PrintDemeCurrentTaskExeData,	deme_cur_task_exe.dat	);
-STATS_OUT_FILE(PrintDemeMigrationSuicidePoints,	deme_mig_suicide_points.dat	);
 STATS_OUT_FILE(PrintMultiProcessData,       multiprocess.dat);
 STATS_OUT_FILE(PrintProfilingData,          profiling.dat);
 STATS_OUT_FILE(PrintOrganismLocation,       location.dat);
 
-STATS_OUT_FILE(PrintCurrentTaskCounts,      curr_task_counts.dat);
-STATS_OUT_FILE(PrintGermlineData,           germline.dat        );
-STATS_OUT_FILE(PrintPredicatedMessages,     messages.dat        );
 STATS_OUT_FILE(PrintCellData,               cell_data.dat       );
-STATS_OUT_FILE(PrintConsensusData,          consensus.dat       );
-STATS_OUT_FILE(PrintSimpleConsensusData,    simple_consensus.dat);
 STATS_OUT_FILE(PrintCurrentOpinions,        opinions.dat        );
-STATS_OUT_FILE(PrintOpinionsSetPerDeme,     opinions_set.dat    );
-STATS_OUT_FILE(PrintPerDemeGenPerFounderData,   deme_gen_between_founders.dat );
-STATS_OUT_FILE(PrintSynchronizationData,    sync.dat            );
-STATS_OUT_FILE(PrintDetailedSynchronizationData, sync-detail.dat);
+
 // @WRE: Added output event for collected visit counts
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
-STATS_OUT_FILE(PrintFlowRateTuples,         flow_rate_tuples.dat        );
 STATS_OUT_FILE(PrintDynamicMaxMinData,	    maxmin.dat			);
 STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
-STATS_OUT_FILE(PrintMigrationData,          migration.dat);
-STATS_OUT_FILE(PrintAgePolyethismData,      age_polyethism.dat);
-STATS_OUT_FILE(PrintIntrinsicTaskSwitchingCostData, intrinsic_task_switching_cost.dat);
 STATS_OUT_FILE(PrintDenData, den_data.dat);
 
 //mating type/male-female stats data
@@ -231,8 +182,6 @@ POP_OUT_FILE(PrintPhenotypeData,       phenotype_count.dat );
 POP_OUT_FILE(PrintHostPhenotypeData,      host_phenotype_count.dat );
 POP_OUT_FILE(PrintParasitePhenotypeData,  parasite_phenotype_count.dat );
 POP_OUT_FILE(PrintPhenotypeStatus,     phenotype_status.dat);
-POP_OUT_FILE(PrintDemeTestamentStats,  deme_testament.dat  );
-POP_OUT_FILE(PrintCurrentMeanDemeDensity,  deme_currentMeanDensity.dat  );
 
 
 class cActionPrintResourceData : public cAction
@@ -3088,162 +3037,8 @@ public:
   }
 };
 
-/*! Calculate and print average edit distance of organisms within and among demes.
- 
- Parameters:
- sample_size: Number of organism pairs to sample
- filename: File in which to output stats
- */
-class cActionPrintEditDistance : public cAction {
-public:
-  cActionPrintEditDistance(cWorld* world, const cString& args, Feedback&)
-	: cAction(world, args)
-	, m_sample_size(-1)
-	, m_filename("edit_distance.dat") {
-    cString largs(args);
-		if(largs.GetSize()) { m_sample_size = static_cast<unsigned int>(largs.PopWord().AsInt()); }
-    if(largs.GetSize()) {	m_filename = largs.PopWord();	}
-  }
-  
-  static const cString GetDescription() { return "Arguments: [sample size [filename]]"; }
-  
-	/*! Calculate our various edit distances.
-	 
-	 We have two different measures that we want to look at:
-	 1) population-wide genetic variance
-	 2) within-deme genetic variance	 
-	 */
-  void Process(cAvidaContext& ctx) {
-		assert(m_world->GetPopulation().GetNumDemes() > 0);
-    
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-		
-		// within deme edit distance:
-		cDoubleSum within_deme_ed;
-		std::vector<cOrganism*> organisms;
-		organisms.reserve(m_world->GetPopulation().GetNumOrganisms());
-		
-		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-			cDeme& deme = m_world->GetPopulation().GetDeme(i);
-			for(int j=0; j<deme.GetSize(); ++j) {
-				cOrganism* org = deme.GetOrganism(j);
-				if(org != 0) {
-					organisms.push_back(org);
-				}
-			}
-			within_deme_ed.Add(average_edit_distance(organisms, ctx));
-			organisms.clear();
-		}
-		
-		// among deme edit distance:
-		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
-			cOrganism* org = m_world->GetPopulation().GetCell(i).GetOrganism();
-			if(org != 0) {
-				organisms.push_back(org);
-			}
-		}
-		double among_deme_ed = average_edit_distance(organisms, ctx);		
-		
-		df->Write(m_world->GetStats().GetUpdate(), "Update [update]");
-		df->Write(within_deme_ed.Average(), "Mean deme edit distance [deme]");
-		df->Write(among_deme_ed, "Mean population edit distance [population]");
-		df->Endl();
-	}
-  
-protected:
-	//! Calculate the average edit distance of the given container of organisms.
-	double average_edit_distance(std::vector<cOrganism*> organisms, cAvidaContext& ctx) {
-		std::random_shuffle(organisms.begin(), organisms.end(), ctx.GetRandom());
-		if(organisms.size() % 2) {
-			organisms.pop_back();
-		}
-		
-		unsigned int sample_pairs = organisms.size()/2;
-		if(m_sample_size > 0) {
-			sample_pairs = std::min(m_sample_size, sample_pairs);
-		}
-		
-		cDoubleSum edit_distance;
-		for(unsigned int i=0; i<sample_pairs; ++i) {
-			cOrganism* a = organisms.back();
-			organisms.pop_back();
-			cOrganism* b = organisms.back();
-			organisms.pop_back();
-      
-      ConstInstructionSequencePtr a_seq, b_seq;
-      a_seq.DynamicCastFrom(a->GetGenome().Representation());
-      b_seq.DynamicCastFrom(b->GetGenome().Representation());
-			edit_distance.Add(InstructionSequence::FindEditDistance(*a_seq, *b_seq));
-		}
-		
-		return edit_distance.Average();
-	}
-	
-private:
-	unsigned int m_sample_size; //!< Number of pairs of organisms to sample for diversity calculation.
-  cString m_filename; //!< Filename in which to write the various edit distances.
-};
 
 
-class cActionDumpEnergyGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpEnergyGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_energy.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    for (int i = 0; i < m_world->GetPopulation().GetWorldY(); i++) {
-      for (int j = 0; j < m_world->GetPopulation().GetWorldX(); j++) {
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(i * m_world->GetPopulation().GetWorldX() + j);
-        double cell_energy = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().GetStoredEnergy() : 0.0;
-        fp << cell_energy << " ";
-      }
-      fp << endl;
-    }
-  }
-};
-
-class cActionDumpExecutionRatioGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpExecutionRatioGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_exe_ratio.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    for (int i = 0; i < m_world->GetPopulation().GetWorldY(); i++) {
-      for (int j = 0; j < m_world->GetPopulation().GetWorldX(); j++) {
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(i * m_world->GetPopulation().GetWorldX() + j);
-        double cell_executionRatio = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().GetEnergyUsageRatio() : 1.0;
-        fp << cell_executionRatio << " ";
-      }
-      fp << endl;
-    }
-  }
-};
 
 class cActionDumpCellDataGrid : public cAction
 {
@@ -3623,36 +3418,6 @@ public:
 };
 
 
-class cActionDumpSleepGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpSleepGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_sleep.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    for (int i = 0; i < m_world->GetPopulation().GetWorldY(); i++) {
-      for (int j = 0; j < m_world->GetPopulation().GetWorldX(); j++) {
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(i * m_world->GetPopulation().GetWorldX() + j);
-        double cell_energy = (cell.IsOccupied()) ? cell.GetOrganism()->IsSleeping() : 0.0;
-        fp << cell_energy << " ";
-      }
-      fp << endl;
-    }
-  }
-};
-
 
 class cActionDumpGenomeLengthGrid : public cAction
 {
@@ -4022,75 +3787,7 @@ public:
   }
 };
 
-class cActionDumpOffspringMigrationCounts : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpOffspringMigrationCounts(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("counts_offspring_migration.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    int num_demes = (&m_world->GetPopulation())->GetNumDemes();
-    cMigrationMatrix* mig_mat = &m_world->GetMigrationMatrix();
-    
-    for(int row = 0; row < num_demes; row++){
-      for(int col = 0; col < num_demes; col++){
-        if((col+1) >= num_demes)
-          fp << mig_mat->GetOffspringCountAt(row,col);
-        else
-          fp << mig_mat->GetOffspringCountAt(row,col) << ",";
-      }
-      fp << endl;
-    }
-    mig_mat->ResetOffspringCounts();
-  }
-};
 
-class cActionDumpParasiteMigrationCounts : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpParasiteMigrationCounts(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("counts_parasite_migration.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    int num_demes = (&m_world->GetPopulation())->GetNumDemes();
-    cMigrationMatrix* mig_mat = &m_world->GetMigrationMatrix();
-    
-    for(int row = 0; row < num_demes; row++){
-      for(int col = 0; col < num_demes; col++){
-        if((col+1) >= num_demes)
-          fp << mig_mat->GetParasiteCountAt(row,col);
-        else
-          fp << mig_mat->GetParasiteCountAt(row,col) << ",";
-      }
-      fp << endl;
-    }
-    mig_mat->ResetParasiteCounts();
-  }
-};
 
 //Dump the reaction grid from the last gestation cycle, so skip the
 //test cpu, and just use what the phenotype has.
@@ -4486,175 +4183,6 @@ public:
   }
 };
 
-class cActionPrintDemeAllStats : public cAction
-{
-public:
-  cActionPrintDemeAllStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    m_world->GetPopulation().PrintDemeAllStats(ctx);
-  }
-};
-
-class cActionPrintDemeFitness : public cAction
-{
-public:
-  cActionPrintDemeFitness(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  
-  void Process(cAvidaContext& ctx) {
-    m_world->GetPopulation().PrintDemeFitness();
-  }
-};
-
-class cActionPrintDemeLifeFitness : public cAction
-{
-public:
-  cActionPrintDemeLifeFitness(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  
-  void Process(cAvidaContext& ctx) {
-    m_world->GetPopulation().PrintDemeLifeFitness();
-  }
-};
-
-class cActionPrintDemeTasks : public cAction
-{
-public:
-  cActionPrintDemeTasks(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  
-  void Process(cAvidaContext& ctx) {
-    m_world->GetPopulation().PrintDemeTasks();
-  }
-};
-
-class cActionPrintDemesTotalAvgEnergy : public cAction {
-public:
-	cActionPrintDemesTotalAvgEnergy(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-	static const cString GetDescription() { return "No Arguments"; }
-  
-	void Process(cAvidaContext& ctx) {
-		m_world->GetPopulation().PrintDemeTotalAvgEnergy(ctx); 
-	}
-};
-
-class cActionPrintDemeEnergySharingStats : public cAction
-{
-public:
-  cActionPrintDemeEnergySharingStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext&)
-  {
-    m_world->GetPopulation().PrintDemeEnergySharingStats();
-  }
-};
-
-class cActionPrintDemeEnergyDistributionStats : public cAction
-{
-public:
-  cActionPrintDemeEnergyDistributionStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    m_world->GetPopulation().PrintDemeEnergyDistributionStats(ctx); 
-  }
-};
-
-class cActionPrintDemeDonorStats : public cAction
-{
-public:
-  cActionPrintDemeDonorStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext&)
-  {
-    m_world->GetPopulation().PrintDemeDonor();
-  }
-};
-
-
-class cActionPrintDemeSpacialEnergy : public cAction
-{
-public:
-  cActionPrintDemeSpacialEnergy(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext&)
-  {
-    m_world->GetPopulation().PrintDemeSpatialEnergyData();
-  }
-};
-
-class cActionPrintDemeSpacialSleep : public cAction
-{
-public:
-  cActionPrintDemeSpacialSleep(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext&)
-  {
-    m_world->GetPopulation().PrintDemeSpatialSleepData();
-  }
-};
-
-class cActionPrintDemeResources : public cAction
-{
-public:
-  cActionPrintDemeResources(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    m_world->GetPopulation().GetResources().PrintDemeResource(ctx); 
-  }
-};
-
-class cActionPrintDemeGlobalResources : public cAction
-{
-public:
-  cActionPrintDemeGlobalResources(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    m_world->GetPopulation().GetResources().PrintDemeGlobalResources(ctx); 
-  }
-};
-
-class cActionSaveDemeFounders : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionSaveDemeFounders(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("deme_founders-%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    m_world->GetPopulation().DumpDemeFounders(df->OFStream());
-  }
-};
 
 class cActionSetVerbose : public cAction
 {
@@ -4698,45 +4226,6 @@ public:
   }
 };
 
-class cActionPrintNumOrgsInDeme : public cAction
-{
-public:
-  cActionPrintNumOrgsInDeme(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext&)
-  {
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_org_count.dat");
-    df->WriteComment("Avida deme resource data");
-    df->WriteTimeStamp();
-    
-    cString UpdateStr = cStringUtil::Stringf( "deme_global_resources_%07i = [ ...", m_world->GetStats().GetUpdate());
-    df->WriteRaw(UpdateStr);
-    
-    for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
-      cDeme& deme = m_world->GetPopulation().GetDeme(d);
-      df->WriteBlockElement(d, 0, 2);
-      df->WriteBlockElement(deme.GetOrgCount(), 1, 2);
-    }
-    
-    df->WriteRaw("];");
-    df->Endl();
-  }
-};
-
-//@JJB**
-class cActionPrintDemesMeritsData : public cAction
-{
-public:
-  cActionPrintDemesMeritsData(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    m_world->GetPopulation().PrintDemesMeritsData();
-  }
-};
 
 class cActionPrintDebug : public cAction
 {
@@ -5048,14 +4537,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   
   // Stats Out Files
   action_lib->Register<cActionPrintAverageData>("PrintAverageData");
-  action_lib->Register<cActionPrintDemeAverageData>("PrintDemeAverageData");
-  action_lib->Register<cActionPrintFlowRateTuples>("PrintFlowRateTuples");
   action_lib->Register<cActionPrintErrorData>("PrintErrorData");
   action_lib->Register<cActionPrintVarianceData>("PrintVarianceData");
   action_lib->Register<cActionPrintCountData>("PrintCountData");
-  action_lib->Register<cActionPrintMessageData>("PrintMessageData");
-  action_lib->Register<cActionPrintMessageLog>("PrintMessageLog");
-  action_lib->Register<cActionPrintInterruptData>("PrintInterruptData");
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintThreadsData>("PrintThreadsData");
   action_lib->Register<cActionPrintTasksData>("PrintTasksData");
@@ -5104,7 +4588,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintInstructionData>("PrintInstructionData");
   action_lib->Register<cActionPrintInternalTasksData>("PrintInternalTasksData");
   action_lib->Register<cActionPrintInternalTasksQualData>("PrintInternalTasksQualData");
-  action_lib->Register<cActionPrintSleepData>("PrintSleepData");
   action_lib->Register<cActionPrintCompetitionData>("PrintCompetitionData");
   action_lib->Register<cActionPrintDynamicMaxMinData>("PrintDynamicMaxMinData");
   action_lib->Register<cActionPrintMaleAverageData>("PrintMaleAverageData");
@@ -5123,84 +4606,13 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintHostPhenotypeData>("PrintHostPhenotypeData");
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
   
-  action_lib->Register<cActionPrintDemeTestamentStats>("PrintDemeTestamentStats");
-	action_lib->Register<cActionPrintCurrentMeanDemeDensity>("PrintCurrentMeanDemeDensity");
   
-	action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
-	action_lib->Register<cActionPrintCellData>("PrintCellData");
-	action_lib->Register<cActionPrintConsensusData>("PrintConsensusData");
-	action_lib->Register<cActionPrintSimpleConsensusData>("PrintSimpleConsensusData");
-	action_lib->Register<cActionPrintCurrentOpinions>("PrintCurrentOpinions");
-	action_lib->Register<cActionPrintOpinionsSetPerDeme>("PrintOpinionsSetPerDeme");
-	action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
-  action_lib->Register<cActionPrintCurrentMeanDemeDensity>("PrintCurrentMeanDemeDensity");
-  
-  action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
   action_lib->Register<cActionPrintCellData>("PrintCellData");
-  action_lib->Register<cActionPrintConsensusData>("PrintConsensusData");
-  action_lib->Register<cActionPrintSimpleConsensusData>("PrintSimpleConsensusData");
-  action_lib->Register<cActionPrintCurrentOpinions>("PrintCurrentOpinions");
-  action_lib->Register<cActionPrintOpinionsSetPerDeme>("PrintOpinionsSetPerDeme");
-  action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
-  action_lib->Register<cActionPrintDetailedSynchronizationData>("PrintDetailedSynchronizationData");
   
   action_lib->Register<cActionPrintDonationStats>("PrintDonationStats");
     
   // kabooms output file
   action_lib->Register<cActionPrintKaboom>("PrintKaboom");
-  
-  // deme output files
-  action_lib->Register<cActionPrintDemeAllStats>("PrintDemeAllStats");
-  action_lib->Register<cActionPrintDemeAllStats>("PrintDemeStats"); //duplicate of previous
-  action_lib->Register<cActionPrintDemesTotalAvgEnergy>("PrintDemesTotalAvgEnergy");
-  action_lib->Register<cActionPrintDemeEnergySharingStats>("PrintDemeEnergySharingStats");
-  action_lib->Register<cActionPrintDemeEnergyDistributionStats>("PrintDemeEnergyDistributionStats");
-  action_lib->Register<cActionPrintDemeDonorStats>("PrintDemeDonorStats");
-  action_lib->Register<cActionPrintDemeSpacialEnergy>("PrintDemeSpacialEnergyStats");
-  action_lib->Register<cActionPrintDemeSpacialSleep>("PrintDemeSpacialSleepStats");
-  action_lib->Register<cActionPrintDemeResources>("PrintDemeResourceStats");
-  action_lib->Register<cActionPrintDemeGlobalResources>("PrintDemeGlobalResources");
-  action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
-  action_lib->Register<cActionPrintDemeGermlineSequestration>("PrintDemeGermlineSequestration");
-  action_lib->Register<cActionPrintDemeOrgGermlineSequestration>("PrintDemeOrgGermlineSequestration");
-  action_lib->Register<cActionPrintDemeGLSFounders>("PrintDemeGLSFounders");
-  action_lib->Register<cActionPrintDemeReactionDiversityReplicationData>("PrintDemeReactionDiversityReplicationData");
-  action_lib->Register<cActionPrintDemeGermResourcesData>("PrintDemeGermResourcesData");
-  action_lib->Register<cActionPrintWinningDeme>("PrintWinningDeme");
-  action_lib->Register<cActionPrintDemeTreatableReplicationData>("PrintDemeTreatableReplicationData");
-  action_lib->Register<cActionPrintDemeUntreatableReplicationData>("PrintDemeUntreatableReplicationData");
-  action_lib->Register<cActionPrintDemeTreatableCount>("PrintDemeTreatableCount");
-  action_lib->Register<cActionPrintDemeFitness>("PrintDemeFitnessData");
-  action_lib->Register<cActionPrintDemeLifeFitness>("PrintDemeLifeFitnessData");
-  action_lib->Register<cActionPrintDemeTasks>("PrintDemeTasksData");
-  
-  action_lib->Register<cActionPrintDemeCompetitionData>("PrintDemeCompetitionData");
-  action_lib->Register<cActionPrintDemeNetworkData>("PrintDemeNetworkData");
-  action_lib->Register<cActionPrintDemeNetworkTopology>("PrintDemeNetworkTopology");
-  action_lib->Register<cActionPrintDemeFoundersData>("PrintDemeFoundersData");
-  action_lib->Register<cActionPrintGermlineData>("PrintGermlineData");
-  action_lib->Register<cActionSaveDemeFounders>("SaveDemeFounders");
-  action_lib->Register<cActionPrintPerDemeTasksData>("PrintPerDemeTasksData");
-  action_lib->Register<cActionPrintPerDemeTasksExeData>("PrintPerDemeTasksExeData");
-  action_lib->Register<cActionPrintAvgDemeTasksExeData>("PrintAvgDemeTasksExeData");
-  action_lib->Register<cActionPrintAvgTreatableDemeTasksExeData>("PrintAvgTreatableDemeTasksExeData");
-  action_lib->Register<cActionPrintAvgUntreatableDemeTasksExeData>("PrintAvgUntreatableDemeTasksExeData");
-  action_lib->Register<cActionPrintPerDemeReactionData>("PrintPerDemeReactionData");
-  action_lib->Register<cActionPrintDemeTasksData>("PrintDemeTasksData");
-  action_lib->Register<cActionPrintDemeTasksExeData>("PrintDemeTasksExeData");
-  action_lib->Register<cActionPrintDemeReactionData>("PrintDemeReactionData");
-  action_lib->Register<cActionPrintDemeOrgTasksData>("PrintDemeOrgTasksData");
-  action_lib->Register<cActionPrintDemeOrgTasksExeData>("PrintDemeOrgTasksExeData");
-  action_lib->Register<cActionPrintDemeOrgReactionData>("PrintDemeOrgReactionData");
-  action_lib->Register<cActionPrintDemeCurrentTaskExeData>("PrintDemeCurrentTaskExeData");
-  action_lib->Register<cActionPrintCurrentTaskCounts>("PrintCurrentTaskCounts");
-  action_lib->Register<cActionPrintPerDemeGenPerFounderData>("PrintPerDemeGenPerFounderData");
-  action_lib->Register<cActionPrintDemeMigrationSuicidePoints>("PrintDemeMigrationSuicidePoints");
-  
-  action_lib->Register<cActionPrintDemesTasksData>("PrintDemesTasksData"); //@JJB**
-  action_lib->Register<cActionPrintDemesReactionsData>("PrintDemesReactionsData"); //@JJB**
-  action_lib->Register<cActionPrintDemesMeritsData>("PrintDemesMeritsData"); //@JJB**
-  action_lib->Register<cActionPrintDemesFitnessData>("PrintDemesFitnessData"); //@JJB**
   
   action_lib->Register<cActionPrintMultiProcessData>("PrintMultiProcessData");
   action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
@@ -5208,8 +4620,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintOrgLocData>("PrintOrgLocData");
   action_lib->Register<cActionPrintPreyFlockingData>("PrintPreyFlockingData");
   action_lib->Register<cActionPrintOrgGuardData>("PrintOrgGuardData");
-  action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
-  action_lib->Register<cActionPrintIntrinsicTaskSwitchingCostData>("PrintIntrinsicTaskSwitchingCostData");
   action_lib->Register<cActionPrintDenData>("PrintDenData");
 
   
@@ -5226,8 +4636,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintHostDepthHistogram>("PrintHostDepthHistogram");
   action_lib->Register<cActionEcho>("Echo");
   action_lib->Register<cActionPrintGenotypeAbundanceHistogram>("PrintGenotypeAbundanceHistogram");
-  //  action_lib->Register<cActionPrintSpeciesAbundanceHistogram>("PrintSpeciesAbundanceHistogram");
-  //  action_lib->Register<cActionPrintLineageTotals>("PrintLineageTotals");
   action_lib->Register<cActionPrintLineageCounts>("PrintLineageCounts");
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
   action_lib->Register<cActionPrintDominantGroupGenotypes>("PrintDominantGroupGenotypes");
@@ -5265,22 +4673,16 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpHostTaskGridComma>("DumpHostTaskGridComma");
   action_lib->Register<cActionDumpParasiteTaskGridComma>("DumpParasiteTaskGridComma");
   action_lib->Register<cActionDumpParasiteVirulenceGrid>("DumpParasiteVirulenceGrid");
-  action_lib->Register<cActionDumpOffspringMigrationCounts>("DumpOffspringMigrationCounts"); 
-  action_lib->Register<cActionDumpParasiteMigrationCounts>("DumpParasiteMigrationCounts"); 
   
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
-  action_lib->Register<cActionDumpEnergyGrid>("DumpEnergyGrid");
-  action_lib->Register<cActionDumpExecutionRatioGrid>("DumpExecutionRatioGrid");
   action_lib->Register<cActionDumpCellDataGrid>("DumpCellDataGrid");
-  action_lib->Register<cActionDumpSleepGrid>("DumpSleepGrid");
   action_lib->Register<cActionDumpGenomeLengthGrid>("DumpGenomeLengthGrid");
   action_lib->Register<cActionDumpGenotypeGrid>("DumpGenotypeGrid");
   action_lib->Register<cActionDumpParasiteGenotypeGrid>("DumpParasiteGenotypeGrid");
   
   action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");
-  action_lib->Register<cActionPrintMigrationData>("PrintMigrationData");
   
   action_lib->Register<cActionPrintReputationData>("PrintReputationData");
   action_lib->Register<cActionPrintDirectReciprocityData>("PrintDirectReciprocityData");
@@ -5301,9 +4703,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetVerbose>("SetVerbose");
   action_lib->Register<cActionSetVerbose>("VERBOSE");
   
-  action_lib->Register<cActionPrintNumOrgsInDeme>("PrintNumOrgsInDeme");
   action_lib->Register<cActionCalcConsensus>("CalcConsensus");
-  action_lib->Register<cActionPrintEditDistance>("PrintEditDistance");
   
   //@CHC: Mating type-related actions	
   action_lib->Register<cActionPrintMatingTypeHistogram>("PrintMatingTypeHistogram");

@@ -62,7 +62,6 @@ cResourceDef::cResourceDef(const cString & _name, int _id)
   , xgravity(0.0)
   , ydiffuse(1.0)
   , ygravity(0.0)
-  , deme_resource(false)
   , energy_resource(false)
   , m_peakx(-1)
   , m_peaky(-1)
@@ -135,19 +134,6 @@ void cResourceDef::UpdateCellResource(cCellResource *_CellResourcePtr, double _i
   _CellResourcePtr->SetInitial(_initial);
   _CellResourcePtr->SetInflow(_inflow);
   _CellResourcePtr->SetOutflow(_outflow);
-}
-
-/* Set if the resource is going to be accessable by demes */
-bool cResourceDef::SetDemeResource(cString _deme_resource) {
-  _deme_resource.ToLower();\
-  if ((_deme_resource == "false") || (_deme_resource == "0")) {
-    deme_resource = false;
-    return true;
-  } else if ((_deme_resource == "true") || (_deme_resource == "1")) {
-    deme_resource = true;
-    return true;
-  }
-  return false;
 }
 
 /* Set if the resource is a energy resource */

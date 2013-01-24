@@ -64,7 +64,6 @@ protected:
   cHardwareManager* m_hw_mgr;
   Apto::SmartPtr<cPopulation, Apto::InternalRCObject> m_pop;
   Apto::SmartPtr<cStats, Apto::InternalRCObject> m_stats;
-  cMigrationMatrix* m_mig_mat;  
   WorldDriver* m_driver;
   
   Data::ManagerPtr m_data_mgr;
@@ -94,7 +93,6 @@ public:
   cAvidaContext& GetDefaultContext() { return *m_ctx; }
   cEnvironment& GetEnvironment() { return *m_env; }
   cHardwareManager& GetHardwareManager() { return *m_hw_mgr; }
-  cMigrationMatrix& GetMigrationMatrix(){ return *m_mig_mat; };
   cPopulation& GetPopulation() { return *m_pop; }
   Apto::Random& GetRandom() { return m_rng; }
   Apto::Random& GetRandomSample() { return m_srng; }

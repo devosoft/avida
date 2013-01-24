@@ -27,7 +27,6 @@
 #include "cArgSchema.h"
 #include "cEnvironment.h"
 #include "cOrganism.h"
-#include "cMigrationMatrix.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
@@ -152,29 +151,6 @@ public:
   }
 };
 
-/* Change the amount of a particular deme resource */
-
-class cActionSetDemeResource : public cAction
-	{
-	private:
-		cString m_res_name;
-		double m_res_count;
-		
-	public:
-		cActionSetDemeResource(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_res_count(0.0)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_res_name = largs.PopWord();
-			if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
-		}
-		
-		static const cString GetDescription() { return "Arguments: <string res_name> <double res_count>"; }
-		
-		void Process(cAvidaContext& ctx)
-		{    
-      m_world->GetPopulation().GetResources().SetDemeResource(ctx, m_res_name, m_res_count);
-		}
-	};
 
 /* Zero out all resources */
 
@@ -759,43 +735,7 @@ public:
   }
 };
 
-/* Set the inflow of a given deme.  Currently only works for global (deme) resources.
- 
- Parameters:
- deme id - the deme whose resource to set
- name - the name of the resource
- inflow - value to set as amount of resource added
- 
- */
 
-class cActionSetDemeResourceInflow : public cAction
-  {
-  private:
-    int m_demeid;
-    cString m_name;
-    double m_inflow;
-    
-  public:
-    cActionSetDemeResourceInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_demeid(-1), m_name(""), m_inflow(0.0)
-    {
-      cString largs(args);
-      if (largs.GetSize()) m_demeid = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_name = largs.PopWord();
-      if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
-      
-      assert(m_inflow >= 0);
-      assert(m_demeid >= 0);
-      assert(m_demeid < m_world->GetConfig().NUM_DEMES.Get());
-      
-    }
-    
-    static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <double inflow>"; }
-    
-    void Process(cAvidaContext&)
-    {
-      m_world->GetPopulation().GetResources().SetSingleDemeResourceInflow(m_demeid, m_name, m_inflow);
-    }
-  };
 
 
 class cActionSetResourceOutflow : public cAction
@@ -822,42 +762,6 @@ public:
   }
 };
 
-/* Set the outflow (decay) of a given deme.  Currently only works for global (deme) resources.
- 
-Parameters:
-   deme id - the deme whose resource to set
-   name - the name of the resource
-   outflow - value to set as percentage of the resource decayed continuously
- 
-*/
-
-class cActionSetDemeResourceOutflow : public cAction
-  {
-  private:
-    int m_demeid;
-    cString m_name;
-    double m_outflow;
-    
-  public:
-    cActionSetDemeResourceOutflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_demeid(-1), m_name(""), m_outflow(0.0)
-    {
-      cString largs(args);
-      if (largs.GetSize()) m_demeid = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_name = largs.PopWord();
-      if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
-      assert(m_demeid >= 0);
-      assert(m_outflow <= 1.0);
-      assert(m_outflow >= 0.0);
-      assert(m_demeid < m_world->GetConfig().NUM_DEMES.Get());
-    }
-    
-    static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <double outflow>"; }
-    
-    void Process(cAvidaContext&)
-    {
-      m_world->GetPopulation().GetResources().SetSingleDemeResourceOutflow(m_demeid, m_name, m_outflow);
-    }
-  };
 
 
 class cActionSetEnvironmentInputs : public cAction
@@ -963,78 +867,6 @@ public:
   }
 };
 
-/* Merge a specified resource across demes into a specifed global resource.
- * 
- * Sums the resource across demes, zeroes out the deme resource,
- * and starts up the global resource with the summed level.  Inflow and outflow
- * are also appropriately merged.
- *
- * The global resource must already be defined in the environment file.
- */
- 
-class cActionMergeResourceAcrossDemes : public cAction
-{
-private:
-  cString m_deme_res_name;
-  cString m_global_res_name;
-  Feedback& m_feedback;
-  
-public:
-  cActionMergeResourceAcrossDemes(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_deme_res_name(""), m_global_res_name(""), m_feedback(feedback)
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_deme_res_name = largs.PopWord();
-    if (largs.GetSize()) m_global_res_name = largs.PopWord();
-  }
-  
-  static const cString GetDescription() {return "Arguments: <string deme_res_name> <string global_res_name>"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    cResourceDef* deme_res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_deme_res_name);
-    cResourceDef* global_res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_global_res_name);
-    
-    if (deme_res != NULL && global_res != NULL) {
-      cPopulation& pop = m_world->GetPopulation();
-      int num_demes = pop.GetNumDemes();
-    
-      // Sum the resource across demes
-      double res_total = 0.0;
-      for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
-        cDeme& deme = pop.GetDeme(deme_id);
-        res_total += deme.GetDemeResourceCount().Get(ctx, deme_res->GetIndex());
-      }
-      
-      // Set global resource to deme sum level
-      pop.GetResources().SetResource(ctx, m_global_res_name, res_total);
-      
-      // Set deme resource to zero
-      pop.GetResources().SetDemeResource(ctx, m_deme_res_name, 0.0);
-            
-      // Find the total inflow across demes
-      double inflow_total = 0.0;
-      for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
-        cDeme& deme = pop.GetDeme(deme_id);
-        inflow_total += deme.GetDemeResources().GetInflow(m_deme_res_name);
-      }
-      
-      // Set global inflow to deme sum level
-      pop.GetResources().SetResourceInflow(m_global_res_name, inflow_total);
-      
-      // For each deme, set deme inflow to 0
-      pop.GetResources().SetDemeResourceInflow(m_deme_res_name, 0.0);
-      
-      // Find the deme outflow level
-      double outflow = deme_res->GetOutflow();
-      
-      // Set global outflow to deme level (since outflow is percentage, no sum here)
-      pop.GetResources().SetResourceOutflow(m_global_res_name, outflow);
-      
-      // For each deme, set deme outflow to 0
-      pop.GetResources().SetDemeResourceOutflow(m_deme_res_name, 0.0);
-    }
-  }
-};
 
 /**
  Sets resource availiblity to seasonal
@@ -1163,29 +995,6 @@ public:
 };
 
 
-/**
-Sets energy model config value NumInstBefore0Energy 
- */
-
-class cActionSetNumInstBefore0Energy : public cAction
-{
-private:
-  int newValue;
-
-public:
-  cActionSetNumInstBefore0Energy(cWorld* world, const cString& args, Feedback&) : cAction(world, args), newValue(0)
-  {
-    cString largs(args);
-    if (largs.GetSize()) newValue = largs.PopWord().AsInt();
-  }
-  
-  static const cString GetDescription() { return "Arguments: <int new_value>"; }
-  
-  void Process(cAvidaContext&)
-  {
-    m_world->GetConfig().NUM_CYCLES_EXC_BEFORE_0_ENERGY.Set(newValue);
-  }
-};
 
 class cActionSetTaskArgDouble : public cAction
 {
@@ -1285,255 +1094,8 @@ class cActionSetOptimizeMinMax : public cAction
     }
   };
 
-// For deme input/output, an event (SetDemeIOGrid) that sets listed cells deme input/output bool status to true
-// allowing organism's to complete deme-IO in those cells. Does not support and there is not yet an event to turn cells "off". @JJB
-class cActionSetDemeIOGrid: public cAction
-{
-public:
-  Apto::Array<int> cell_list;
-  cString inputOutput;
 
-public:
-  cActionSetDemeIOGrid(cWorld* world, const cString& args, Feedback&) :
-    cAction(world, args)
-  , cell_list(0)
-  , inputOutput("none")
-  {
-    cString largs(args);
-    inputOutput = largs.Pop(':');
-    cString cell_list_str = largs.Pop(':');
-    cell_list = cStringUtil::ReturnArray(cell_list_str);
-  }
 
-  static const cString GetDescription() { return "Arguments: <Input/Output>:<cell id list>"; }
-
-  void Process(cAvidaContext& ctx)
-  {
-    const int num_demes = m_world->GetPopulation().GetNumDemes();
-    const int deme_size = m_world->GetConfig().WORLD_X.Get() * (m_world->GetConfig().WORLD_Y.Get() / num_demes);
-    if (inputOutput == "Input") {
-      int cell_id;
-      for (int i = 0; i < cell_list.GetSize(); i++) {
-        for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-          cell_id = cell_list[i] + deme_id * deme_size;
-          m_world->GetPopulation().GetCell(cell_id).SetCanInput(true);
-        }
-      }
-    } else if (inputOutput == "Output") {
-      int cell_id;
-      for (int i = 0; i < cell_list.GetSize(); i++) {
-        for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-          cell_id = cell_list[i] + deme_id * deme_size;
-          m_world->GetPopulation().GetCell(cell_id).SetCanOutput(true);
-        }
-      }
-    }
-  }
-};
-
-//@JJB**
-//class cActionSendOrgInterruptMessage : public cAction
-//{
-//private:
-//  Apto::Array<int> cell_list;
-//public:
-//  cActionSendOrgInterruptMessage(cWorld* world, const cString& args, Feedback&) :
-//    cAction(world, args)
-//  , cell_list(0)
-//  {
-//    cString largs(args);
-//
-//  }
-//};
-
-//@JJB**
-//class cActionSendAvatarsInterruptMessage : public cAction
-//{
-//private:
-//  Apto::Array<int> cell_list;
-//public:
-//  cActionSendAvatarsInterruptMessage(cWorld* world, const cString& args, Feedback&) :
-//    cAction(world, args)
-//  , cell_list(0)
-//  {
-//    cString largs(args);
-//  }
-//};
-
-class cActionDelayedDemeEvent : public cAction
-{
-private:
-  int m_x1, m_y1, m_x2, m_y2; // bounding box of event in deme
-  int m_delay; // deme age when event occurs
-  int m_duration; // length of event; subverted when deme is reset
-  bool m_static_pos;
-  int m_total_events; // total number of unique event to create; they may overlab
-  bool m_static_position;
-  
-public:
-  cActionDelayedDemeEvent(cWorld* world, const cString& args, Feedback&) : 
-    cAction(world, args)
-  , m_x1(-1)
-  , m_y1(-1)
-  , m_x2(-1)
-  , m_y2(-1)
-  , m_delay(-1)
-  , m_duration(-1)
-  , m_total_events(1)
-  , m_static_position(true)
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_x1 = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_y1 = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_x2 = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_y2 = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_delay = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_duration = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_static_position = static_cast<bool>(largs.PopWord().AsInt());
-    if (largs.GetSize()) m_total_events = largs.PopWord().AsInt();
-  }
-  
-  static const cString GetDescription() { return "Arguments: <int x1> <int y1> <int x2> <int y2> <int delay> <int duraion> <bool static_position> <int total_events>"; }
-  
-  void Process(cAvidaContext&)
-  {
-    cPopulation& pop = m_world->GetPopulation();
-    int numDemes = pop.GetNumDemes();
-    for(int i = 0; i < numDemes; i++) {
-      pop.GetDeme(i).SetCellEvent(m_x1, m_y1, m_x2, m_y2, m_delay, m_duration, m_static_position, m_total_events);
-    }
-  }
-};
-
-class cActionDelayedDemeEventsPerSlots : public cAction
-{
-private:
-  int m_x1, m_y1, m_x2, m_y2; // bounding box of event in deme
-  int m_delay; // deme age when event occurs
-  int m_duration; // length of event; subverted when deme is reset
-  int m_total_slots; // total number of slots
-  int m_total_events_per_slot_max; // maximum number of unique event to create per slot; they may overlab
-  int m_total_events_per_slot_min; // minimum number of unique event to create per slot; they may overlab
-  int m_tolal_event_flow_levels; // total number of evenly spaced event flow levels; not all flow levels will be represented in a single deme
-  bool m_static_position;
-  
-public:
-  cActionDelayedDemeEventsPerSlots(cWorld* world, const cString& args, Feedback&) : 
-    cAction(world, args)
-  , m_x1(-1)
-  , m_y1(-1)
-  , m_x2(-1)
-  , m_y2(-1)
-  , m_delay(-1)
-  , m_duration(-1)
-  , m_total_slots(1)
-  , m_total_events_per_slot_max(1)
-  , m_total_events_per_slot_min(1)
-  , m_tolal_event_flow_levels(1)
-  , m_static_position(true)
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_x1 = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_y1 = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_x2 = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_y2 = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_delay = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_duration = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_static_position = static_cast<bool>(largs.PopWord().AsInt());
-    if (largs.GetSize()) m_total_slots = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_total_events_per_slot_max = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_total_events_per_slot_min = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_tolal_event_flow_levels = largs.PopWord().AsInt();
-  }
-  
-  static const cString GetDescription() { return "Arguments: <int x1> <int y1> <int x2> <int y2> <int delay> <int duraion> <bool static_position> <int total_slots_per_deme> <int total_events_per_slot_max> <int total_events_per_slot_min> <int tolal_event_flow_levels>"; }
-  
-  void Process(cAvidaContext&)
-  {
-    cPopulation& pop = m_world->GetPopulation();
-    int numDemes = pop.GetNumDemes();
-    for(int i = 0; i < numDemes; i++) {
-      pop.GetDeme(i).SetCellEventSlots(m_x1, m_y1, m_x2, m_y2, m_delay, m_duration, m_static_position, m_total_slots, m_total_events_per_slot_max, m_total_events_per_slot_min, m_tolal_event_flow_levels);
-    }
-  }
-};
-
-class cActionSetFracDemeTreatable : public cAction {
-private:
-	double factionTreatable; // total number of unique event to create; they may overlab
-	
-public:
-	cActionSetFracDemeTreatable(cWorld* world, const cString& args, Feedback&) : cAction(world, args), factionTreatable(0.0) {
-		cString largs(args);
-		if (largs.GetSize()) factionTreatable = largs.PopWord().AsDouble();
-	}
-	
-	static const cString GetDescription() { return "Arguments: <double factionTreatable>"; }
-	
-	void Process(cAvidaContext& ctx) {
-		cPopulation& pop = m_world->GetPopulation();
-		int numDemes = pop.GetNumDemes();
-		for(int i = 0; i < numDemes; i++) {
-			if(ctx.GetRandom().P(factionTreatable))
-				pop.GetDeme(i).setTreatable(true);
-			else
-				pop.GetDeme(i).setTreatable(false);
-		}
-	}
-};
-
-class cActionSetMigrationMatrix : public cAction
-{
-private:
-    cString m_fname;
-    
-public:
-    cActionSetMigrationMatrix(cWorld* world, const cString& args, Feedback&) : cAction(world, args) 
-    {
-        cString largs(args);
-        if (largs.GetSize()) m_fname = largs.PopWord();
-    }
-    
-    static const cString GetDescription() { return "Arguments: <string filename>"; }
-    
-    void Process(cAvidaContext& ctx)
-    {
-        cUserFeedback feedback;
-        bool count_parasites,count_offspring = false;
-        if(m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get() > 0.0)
-          count_parasites = true;
-        if(m_world->GetConfig().DEMES_MIGRATION_RATE.Get() > 0.0)
-          count_offspring = true;
-        assert(m_world->GetMigrationMatrix().Load(m_world->GetPopulation().GetNumDemes(), m_fname, m_world->GetWorkingDir(),count_parasites,count_offspring,true,feedback));
-    }
-};
-
-class cActionAlterMigrationConnection : public cAction
-{
-private:
-    int from_deme, to_deme;
-    double alter_amount;
-    
-public:
-  cActionAlterMigrationConnection(cWorld* world, const cString& args, Feedback&) : cAction(world, args) 
-  {
-    cString largs(args);
-    if (largs.GetSize()) from_deme = largs.PopWord().AsInt();
-    if (largs.GetSize()) to_deme = largs.PopWord().AsInt();
-    if (largs.GetSize()) alter_amount = largs.PopWord().AsDouble();
-    
-    assert(from_deme >= 0 && from_deme < m_world->GetPopulation().GetNumDemes());
-    assert(to_deme >= 0 && to_deme < m_world->GetPopulation().GetNumDemes());
-    
-  }
-  
-  static const cString GetDescription() { return "Arguments: <int from_deme> <int to_deme> <double alter_amount>"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    assert(m_world->GetMigrationMatrix().AlterConnectionWeight(from_deme, to_deme, alter_amount));
-  }
-};
 
 class cActionSetConfig : public cAction
 {
@@ -1564,17 +1126,12 @@ public:
 
 void RegisterEnvironmentActions(cActionLibrary* action_lib)
 {
-  action_lib->Register<cActionSetFracDemeTreatable>("SetFracDemeTreatable");
-  action_lib->Register<cActionDelayedDemeEvent>("DelayedDemeEvent");
-  action_lib->Register<cActionDelayedDemeEventsPerSlots>("DelayedDemeEventsPerSlots");
   action_lib->Register<cActionInjectResource>("InjectResource");
   action_lib->Register<cActionInjectScaledResource>("InjectScaledResource");
   action_lib->Register<cActionOutflowScaledResource>("OutflowScaledResource");
   action_lib->Register<cActionSetResource>("SetResource");
-  action_lib->Register<cActionSetDemeResource>("SetDemeResource");
   action_lib->Register<cZeroResources>("ZeroResources");
   action_lib->Register<cActionSetCellResource>("SetCellResource");
-  action_lib->Register<cActionMergeResourceAcrossDemes>("MergeResourceAcrossDemes");
   action_lib->Register<cActionChangeEnvironment>("ChangeEnvironment");
   action_lib->Register<cActionSetDynamicResource>("SetDynamicResource");
   action_lib->Register<cActionSetDynamicResPlateauInflow>("SetDynamicResPlateauInflow");
@@ -1595,8 +1152,6 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionSetResourceInflow>("SetResourceInflow");
   action_lib->Register<cActionSetResourceOutflow>("SetResourceOutflow");
-  action_lib->Register<cActionSetDemeResourceInflow>("SetDemeResourceInflow");
-  action_lib->Register<cActionSetDemeResourceOutflow>("SetDemeResourceOutflow");
 
   action_lib->Register<cActionSetEnvironmentInputs>("SetEnvironmentInputs");
   action_lib->Register<cActionSetEnvironmentRandomMask>("SetEnvironmentRandomMask");
@@ -1605,19 +1160,11 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetSeasonalResource1Kyears_1To_1>("SetSeasonalResource1Kyears_1To_1");
   action_lib->Register<cActionSetSeasonalResource10Kyears_1To_1>("SetSeasonalResource10Kyears_1To_1");
   action_lib->Register<cActionSetPeriodicResource>("SetPeriodicResource");
-  action_lib->Register<cActionSetNumInstBefore0Energy>("SetNumInstBefore0Energy");
 
   action_lib->Register<cActionSetTaskArgInt>("SetTaskArgInt");
   action_lib->Register<cActionSetTaskArgDouble>("SetTaskArgDouble");
   action_lib->Register<cActionSetTaskArgString>("SetTaskArgString");
   action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
 
-  action_lib->Register<cActionSetDemeIOGrid>("SetDemeIOGrid");
-  //action_lib->Register<cActionSendOrgInterruptMessage>("SendOrgInterruptMessage");
-  //action_lib->Register<cActionSendAvatarsInterruptMessage>("SendAvatarsInterruptMessage");
-  
-  action_lib->Register<cActionSetMigrationMatrix>("SetMigrationMatrix");
-  action_lib->Register<cActionAlterMigrationConnection>("AlterMigrationConnection");
-  
   action_lib->Register<cActionSetConfig>("SetConfig");
 };

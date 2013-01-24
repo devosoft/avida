@@ -39,7 +39,6 @@ namespace Avida {
 };
 
 class cAvidaContext;
-class cDeme;
 class cOrganism;
 class cOrgMessage;
 class cOrgSinkMessage;
@@ -64,10 +63,7 @@ public:
   virtual int GetCellID() = 0;
   virtual cPopulationCell* GetCell() = 0;
   virtual cPopulationCell* GetCell(int cell_id) = 0;
-  virtual int GetDemeID() = 0;
-  virtual cDeme* GetDeme() = 0;
   virtual void SetCellID(int in_id) = 0;
-  virtual void SetDemeID(int in_id) = 0;
   virtual int GetCellXPosition() = 0;
   virtual int GetCellYPosition() = 0;
   
@@ -113,7 +109,6 @@ public:
   virtual double GetResourceVal(cAvidaContext& ctx, int res_id) = 0;
   virtual const Apto::Array<double>& GetFacedCellResources(cAvidaContext& ctx) = 0; 
   virtual double GetFacedResourceVal(cAvidaContext& ctx, int res_id) = 0;
-  virtual const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) = 0; 
   virtual const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) = 0;
   virtual double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) = 0;
   virtual double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) = 0;
@@ -127,37 +122,18 @@ public:
   virtual cPopulationResources* GetResourceCount() = 0;
   virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
   virtual void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
-  virtual void UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
-  virtual void Die(cAvidaContext& ctx) = 0; 
+  virtual void Die(cAvidaContext& ctx) = 0;
   virtual void KillCellID(int target, cAvidaContext& ctx) = 0; 
   virtual void Kaboom(int distance, cAvidaContext& ctx) = 0; 
-  virtual void SpawnDeme(cAvidaContext& ctx) = 0; 
   virtual int ReceiveValue() = 0;
   virtual bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;
   virtual bool TestOnDivide() = 0;
-  virtual bool SendMessage(cOrgMessage& msg) = 0;
-  virtual bool BroadcastMessage(cOrgMessage& msg, int depth) = 0;
-  virtual bool BcastAlarm(int jump_jabel, int bcast_range) = 0;
-  virtual void DivideOrgTestamentAmongDeme(double value) = 0;
-  virtual void SendFlash() = 0;
 
   virtual int GetStateGridID(cAvidaContext& ctx) = 0;
   virtual void RotateToGreatestReputation() =0;
   virtual void RotateToGreatestReputationWithDifferentTag(int tag) =0;
   virtual void RotateToGreatestReputationWithDifferentLineage(int line) =0;	
-
-  virtual void CreateLinkByFacing(double weight=1.0) = 0;
-  virtual void CreateLinkByXY(int x, int y, double weight=1.0) = 0;
-  virtual void CreateLinkByIndex(int idx, double weight=1.0) = 0;
-  virtual bool NetworkBroadcast(cOrgMessage& msg) = 0;
-  virtual bool NetworkUnicast(cOrgMessage& msg) = 0;
-  virtual bool NetworkRotate(int x) = 0;
-  virtual bool NetworkSelect(int x) = 0;
-
-  virtual int GetNextDemeInput(cAvidaContext& ctx) = 0;
-  virtual void DoDemeInput(int value) = 0;
-  virtual void DoDemeOutput(cAvidaContext& ctx, int value) = 0;
 
   virtual void DoHGTDonation(cAvidaContext& ctx) = 0;
   virtual void DoHGTConjugation(cAvidaContext& ctx) = 0;
@@ -244,9 +220,6 @@ public:
   virtual const Apto::Array<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0) = 0;
   virtual double GetAVFacedResourceVal(cAvidaContext& ctx, int res_id, int av_num = 0) = 0;
   virtual void UpdateAVResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, int av_num = 0) = 0;
-
-  virtual void BeginSleep() = 0;
-  virtual void EndSleep() = 0;
 };
 
 #endif

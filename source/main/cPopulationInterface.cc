@@ -26,7 +26,6 @@
 #include "avida/core/Feedback.h"
 #include "avida/systematics/Unit.h"
 
-#include "cDeme.h"
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
@@ -55,7 +54,6 @@ namespace std
 cPopulationInterface::cPopulationInterface(cWorld* world)
 : m_world(world)
 , m_cell_id(-1)
-, m_deme_id(-1)
 , m_prevseen_cell_id(-1)
 , m_prev_task_cell(-1)
 , m_num_task_cells(0)
@@ -87,26 +85,22 @@ cPopulationCell* cPopulationInterface::GetCell(int cell_id) {
 
 int cPopulationInterface::GetCellXPosition()
 {
-  const int absolute_cell_ID = GetCellID();
-  const int deme_id = GetDemeID();
-  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);
-  return pos.first;
+  assert(false);
+//  const int absolute_cell_ID = GetCellID();
+//  std::pair<int, int> pos = m_world->GetPopulation().GetCellPosition(absolute_cell_ID);
+//  return pos.first;
 }
 
 int cPopulationInterface::GetCellYPosition()
 {
-  const int absolute_cell_ID = GetCellID();
-  const int deme_id = GetDemeID();
-  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);
-  return pos.second;
+  assert(false);
+//  const int absolute_cell_ID = GetCellID();
+//  std::pair<int, int> pos = m_world->GetPopulation().GetCellPosition(absolute_cell_ID);
+//  return pos.second;
 }
 
 cPopulationCell* cPopulationInterface::GetCellFaced() {
   return &GetCell()->GetCellFaced();
-}
-
-cDeme* cPopulationInterface::GetDeme() {
-  return &m_world->GetPopulation().GetDeme(m_deme_id);
 }
 
 int cPopulationInterface::GetCellData() {
@@ -388,12 +382,6 @@ cPopulationResources* cPopulationInterface::GetResourceCount()
   return &m_world->GetPopulation().GetResources();
 }
 
-const Apto::Array<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvidaContext& ctx)
-{
-  int deme_cell_id = m_world->GetPopulation().GetDeme(deme_id).GetRelativeCellID(m_cell_id);
-  return GetCellResources(deme_cell_id, ctx);
-}
-
 const Apto::Array< Apto::Array<int> >& cPopulationInterface::GetCellIdLists()
 {
 	return m_world->GetPopulation().GetResources().GetCellIdLists();
@@ -429,12 +417,7 @@ void cPopulationInterface::UpdateResources(cAvidaContext& ctx, const Apto::Array
   return m_world->GetPopulation().GetResources().UpdateCellResources(ctx, res_change, m_cell_id);
 }
 
-void cPopulationInterface::UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change)
-{
-  return m_world->GetPopulation().GetResources().UpdateDemeCellResources(ctx, res_change, m_cell_id);
-}
-
-void cPopulationInterface::Die(cAvidaContext& ctx) 
+void cPopulationInterface::Die(cAvidaContext& ctx)
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   m_world->GetPopulation().KillOrganism(cell, ctx);
@@ -457,16 +440,6 @@ void cPopulationInterface::Kaboom(int distance, cAvidaContext& ctx)
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   m_world->GetPopulation().Kaboom(cell, ctx, distance); 
-}
-
-void cPopulationInterface::SpawnDeme(cAvidaContext& ctx) 
-{
-  // const int num_demes = m_world->GetPopulation().GetNumDemes();
-	
-  // Spawn the current deme; no target ID will put it into a random deme.
-  const int deme_id = m_world->GetPopulation().GetCell(m_cell_id).GetDemeID();
-	
-  m_world->GetPopulation().SpawnDeme(deme_id, ctx); 
 }
 
 int cPopulationInterface::ReceiveValue()
@@ -508,194 +481,7 @@ bool cPopulationInterface::TestOnDivide()
 }
 
 
-/*! Internal-use method to consolidate message-sending code.
- */
-bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell) //**
-{
-  bool dropped = false;
-  bool lost = false;
 
-  static const double drop_prob = m_world->GetConfig().NET_DROP_PROB.Get();
-  if ((drop_prob > 0.0) && m_world->GetRandom().P(drop_prob)) {
-    // message dropped
-    GetDeme()->messageDropped();
-    GetDeme()->messageSendFailed();
-    dropped = true;
-  }
-
-  if (!m_world->GetConfig().NEURAL_NETWORKING.Get() || m_world->GetConfig().USE_AVATARS.Get() != 2) {
-    // Not using neural networking avatars..
-    // Fail if the cell we're facing is not occupied.
-    if(!rcell.IsOccupied()) lost = true;
-  } else {
-    // If neural networking with avatars check for input avatars in this cell
-    if (!rcell.GetNumAVInputs()) lost = true;
-    // If self communication is not allowed, must check for an input avatar for another organism
-    else if (!m_world->GetConfig().SELF_COMMUNICATION.Get()) {
-      lost = true;
-      cOrganism* sender = GetOrganism();
-      for (int i = 0; i < rcell.GetNumAVInputs(); i++) {
-        if (sender != rcell.GetCellInputAVs()[i]) lost = false;
-      }
-    }
-  }
-
-  if (lost) GetDeme()->messageSendFailed();
-
-  // record this message, regardless of whether it's actually received.
-  if(m_world->GetConfig().NET_LOG_MESSAGES.Get()) m_world->GetStats().LogMessage(msg, dropped, lost);
-
-  if(dropped || lost) return false;
-
-  if (!m_world->GetConfig().NEURAL_NETWORKING.Get() || m_world->GetConfig().USE_AVATARS.Get() != 2) {
-    // Not using neural networking avatars..
-    cOrganism* recvr = rcell.GetOrganism();
-    assert(recvr != 0);
-    recvr->ReceiveMessage(msg);
-    m_world->GetStats().SentMessage(msg);
-    GetDeme()->MessageSuccessfullySent();
-  } else {
-    // If using neural networking avatars, message must be sent to all orgs with input avatars in the cell. @JJB
-    cOrganism* sender = GetOrganism();
-    for (int i = 0; i < rcell.GetNumAVInputs(); i++) {
-      cOrganism* recvr = rcell.GetCellInputAVs()[i];
-      assert(recvr != 0);
-      if ((sender != recvr) || m_world->GetConfig().SELF_COMMUNICATION.Get()) {
-        recvr->ReceiveMessage(msg);
-        m_world->GetStats().SentMessage(msg);
-        GetDeme()->MessageSuccessfullySent();
-      }
-    }
-  }
-  return true;
-}
-
-bool cPopulationInterface::SendMessage(cOrgMessage& msg, int cellid) {
-  cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
-  if (m_world->GetConfig().NEURAL_NETWORKING.Get() && m_world->GetConfig().USE_AVATARS.Get() == 2) {
-    msg.SetTransCellID(cellid);
-  }
-  return SendMessage(msg, cell);
-}
-
-/*! Send a message to the faced organism, failing if this cell does not have 
- neighbors or if the cell currently faced is not occupied.
- */
-bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
-  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(cell.IsOccupied()); // This organism; sanity.
-
-  if (m_world->GetConfig().USE_AVATARS.Get() == 2 && m_world->GetConfig().NEURAL_NETWORKING.Get()) {
-    //assert(m_avatars);
-    bool message_sent = false;
-    for (int i = 0; i < GetNumAV(); i++) {
-      if (m_avatars[i].av_output) {
-        message_sent = (message_sent || SendMessage(msg, m_avatars[i].av_cell_id));
-      }
-    }
-    return message_sent;
-  } else {
-    cPopulationCell* rcell = cell.ConnectionList().GetFirst();
-    assert(rcell != 0); // Cells should never be null.	
-    return SendMessage(msg, *rcell);
-  }
-}
-
-
-/*! Send a message to the faced organism, failing if this cell does not have 
- neighbors or if the cell currently faced is not occupied. */
-bool cPopulationInterface::BroadcastMessage(cOrgMessage& msg, int depth) {
-  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(cell.IsOccupied()); // This organism; sanity.
-	
-	// Get the set of cells that are within range.
-	std::set<cPopulationCell*> cell_set;
-	cell.GetNeighboringCells(cell_set, depth);
-	
-	// Remove this cell from the set!
-	cell_set.erase(&cell);
-	
-	// Now, send a message towards each cell:
-	for(std::set<cPopulationCell*>::iterator i=cell_set.begin(); i!=cell_set.end(); ++i) {
-		SendMessage(msg, **i);
-	}
-	return true;
-}
-
-
-bool cPopulationInterface::BcastAlarm(int jump_label, int bcast_range) {
-  bool successfully_sent(false);
-  cPopulationCell& scell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(scell.IsOccupied()); // This organism; sanity.
-	
-  const int ALARM_SELF = m_world->GetConfig().ALARM_SELF.Get(); // does an alarm affect the sender; 0=no  non-0=yes
-  
-  if(bcast_range > 1) { // multi-hop messaging
-    cDeme& deme = m_world->GetPopulation().GetDeme(GetDemeID());
-    for(int i = 0; i < deme.GetSize(); i++) {
-      int possible_receiver_id = deme.GetCellID(i);
-      cPopulationCell& rcell = m_world->GetPopulation().GetCell(possible_receiver_id);
-			
-      if(rcell.IsOccupied() && possible_receiver_id != GetCellID()) {
-        //check distance
-        pair<int, int> sender_pos = deme.GetCellPosition(GetCellID());
-        pair<int, int> possible_receiver_pos = deme.GetCellPosition(possible_receiver_id);
-        int hop_distance = max( abs(sender_pos.first  - possible_receiver_pos.first),
-															 abs(sender_pos.second - possible_receiver_pos.second));
-        if(hop_distance <= bcast_range) {
-          // send alarm to organisms
-          cOrganism* recvr = rcell.GetOrganism();
-          assert(recvr != NULL);
-          recvr->moveIPtoAlarmLabel(jump_label);
-          successfully_sent = true;
-        }
-      }
-    }
-  } else { // single hop messaging
-    for(int i = 0; i < scell.ConnectionList().GetSize(); i++) {
-      cPopulationCell* rcell = scell.ConnectionList().GetPos(i);
-      assert(rcell != NULL); // Cells should never be null.
-			
-      // Fail if the cell we're facing is not occupied.
-      if(!rcell->IsOccupied())
-        continue;
-      cOrganism* recvr = rcell->GetOrganism();
-      assert(recvr != NULL);
-      recvr->moveIPtoAlarmLabel(jump_label);
-      successfully_sent = true;
-    }
-  }
-  
-  if(ALARM_SELF) {
-    scell.GetOrganism()->moveIPtoAlarmLabel(jump_label);
-  }
-  return successfully_sent;
-}
-
-void cPopulationInterface::DivideOrgTestamentAmongDeme(double value){
-  cDeme* deme = GetDeme();
-  for(int i = 0; i < deme->GetSize(); i++) {
-    cPopulationCell& cell = deme->GetCell(i);
-    if(cell.IsOccupied()) {
-      cOrganism* org = cell.GetOrganism();
-      org->GetPhenotype().EnergyTestament(value/deme->GetOrgCount());
-    }
-  }
-}
-
-/*! Send a flash to all neighboring organisms. */
-void cPopulationInterface::SendFlash() {
-  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(cell.IsOccupied());
-	
-  for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
-    cPopulationCell* neighbor = cell.ConnectionList().GetFirst();
-    if(neighbor->IsOccupied()) {
-      neighbor->GetOrganism()->ReceiveFlash();
-    }
-    cell.ConnectionList().CircNext();
-  }
-}
 
 int cPopulationInterface::GetStateGridID(cAvidaContext& ctx)
 {
@@ -870,109 +656,6 @@ void cPopulationInterface::RotateToGreatestReputationWithDifferentLineage(int li
 			
 		}
 	}	
-}
-
-/*! Link this organism's cell to the cell it is currently facing.
- */
-void cPopulationInterface::CreateLinkByFacing(double weight) {
-	cDeme* deme = GetDeme(); assert(deme);
-	cPopulationCell* this_cell = GetCell(); assert(this_cell);
-	cPopulationCell* that_cell = GetCellFaced(); assert(that_cell);
-	deme->GetNetwork().Connect(*this_cell, *that_cell, weight);
-}
-
-/*! Link this organism's cell to the cell with coordinates (x,y).
- */
-void cPopulationInterface::CreateLinkByXY(int x, int y, double weight) {
-	cDeme* deme = GetDeme(); assert(deme);
-	cPopulationCell* this_cell = GetCell(); assert(this_cell);
-	// the static casts here are to fix a problem with -2^31 being sent in as a 
-	// cell coordinate.  the problem is that a 2s-complement int can hold a negative
-	// number whose absolute value is too large for the int to hold.  when this happens,
-	// abs returns the value unmodified.
-	int cellx = std::abs(static_cast<long long int>(x)) % deme->GetWidth();
-	int celly = std::abs(static_cast<long long int>(y)) % deme->GetHeight();
-	assert(cellx >= 0);
-	assert(cellx < deme->GetWidth());
-	assert(celly >= 0);
-	assert(celly < deme->GetHeight());
-	deme->GetNetwork().Connect(*this_cell, deme->GetCell(cellx, celly), weight);
-}
-
-/*! Link this organism's cell to the cell with index idx.
- */
-void cPopulationInterface::CreateLinkByIndex(int idx, double weight) {
-	cDeme* deme = GetDeme(); assert(deme);
-	cPopulationCell* this_cell = GetCell(); assert(this_cell);
-	// the static casts here are to fix a problem with -2^31 being sent in as a 
-	// cell coordinate.  the problem is that a 2s-complement int can hold a negative
-	// number whose absolute value is too large for the int to hold.  when this happens,
-	// abs returns the value unmodified.
-	int that_cell = std::abs(static_cast<long long int>(idx)) % deme->GetSize();
-	assert(that_cell >= 0);
-	assert(that_cell < deme->GetSize());
-	deme->GetNetwork().Connect(*this_cell, deme->GetCell(that_cell), weight);
-}
-
-/*! Broadcast a message to all organisms that are connected by this network.
- */
-bool cPopulationInterface::NetworkBroadcast(cOrgMessage& msg) {	
-	cDeme* deme = GetDeme(); assert(deme);
-	cPopulationCell* this_cell = GetCell(); assert(this_cell);
-	deme->GetNetwork().BroadcastToNeighbors(*this_cell, msg, this);
-	return true;
-}
-
-/*! Unicast a message to the current selected organism.
- */
-bool cPopulationInterface::NetworkUnicast(cOrgMessage& msg) {
-	cDeme* deme = GetDeme(); assert(deme);
-	cPopulationCell* this_cell = GetCell(); assert(this_cell);
-	deme->GetNetwork().Unicast(*this_cell, msg, this);
-	return true;
-}
-
-/*! Rotate to select a new network link.
- */
-bool cPopulationInterface::NetworkRotate(int x) {
-	cDeme* deme = GetDeme(); assert(deme);
-	cPopulationCell* this_cell = GetCell(); assert(this_cell);
-	deme->GetNetwork().Rotate(*this_cell, x);
-	return true;
-}
-
-/*! Select a new network link.
- */
-bool cPopulationInterface::NetworkSelect(int x) {
-	cDeme* deme = GetDeme(); assert(deme);
-	cPopulationCell* this_cell = GetCell(); assert(this_cell);
-	deme->GetNetwork().Select(*this_cell, x);
-	return true;
-}
-
-// If the cell is turned on for deme input, retrieves the deme's next input value. @JJB
-int cPopulationInterface::GetNextDemeInput(cAvidaContext& ctx)
-{
-  if (m_world->GetPopulation().GetCell(m_cell_id).GetCanInput()) {
-    return GetDeme()->GetNextDemeInput(ctx);
-  }
-  return -1;
-}
-
-// If the cell is turned on for deme input, adds the value to the deme's input buffer. @JJB
-void cPopulationInterface::DoDemeInput(int value)
-{
-  if (m_world->GetPopulation().GetCell(m_cell_id).GetCanInput()) {
-    GetDeme()->DoDemeInput(value);
-  }
-}
-
-// If the cell is turned on for deme output, adds the value to the deme's output buffer. @JJB
-void cPopulationInterface::DoDemeOutput(cAvidaContext& ctx, int value)
-{
-  if (m_world->GetPopulation().GetCell(m_cell_id).GetCanOutput()) {
-    GetDeme()->DoDemeOutput(ctx, value);
-  }
 }
 
 
@@ -1806,11 +1489,9 @@ int cPopulationInterface::GetAVNumNeighbors(int av_num)
 
     const int cell_id = m_avatars[av_num].av_cell_id;
     const int x_size = m_world->GetConfig().WORLD_X.Get();
-    const int y_size = m_world->GetConfig().WORLD_Y.Get() / m_world->GetConfig().NUM_DEMES.Get();
-    const int deme_size = x_size * y_size;
-    int deme_cell = cell_id % deme_size;
-    int x = deme_cell % x_size;
-    int y = deme_cell / x_size;
+    const int y_size = m_world->GetConfig().WORLD_Y.Get();
+    int x = cell_id % x_size;
+    int y = cell_id / x_size;
 
     // Is the cell on a corner..
     if (x == 0 || x == (x_size - 1)) {
@@ -1989,25 +1670,15 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
 
   // If the avatar exists..
   if (av_num < GetNumAV()) {
-    // Convert the cell id into a deme x,y position
     const int x_size = m_world->GetConfig().WORLD_X.Get();
-    const int y_size = m_world->GetConfig().WORLD_Y.Get() / m_world->GetConfig().NUM_DEMES.Get();
-    const int deme_size = x_size * y_size;
+    const int y_size = m_world->GetConfig().WORLD_Y.Get();
 
     const int old_cell_id = m_avatars[av_num].av_cell_id;
     const int facing = m_avatars[av_num].av_facing;
 
-    const int deme_id = old_cell_id / deme_size;
-    const int old_deme_cell = old_cell_id % deme_size;
+    int x = old_cell_id % x_size;
+    int y = old_cell_id / x_size;
 
-    int x = old_deme_cell % x_size;
-    int y = old_deme_cell / x_size;
-
-    // If this happens to be an avatar in a single cell world, it can't face any cell beyond its own
-    if (deme_size == 1) {
-      m_avatars[av_num].av_faced_cell = m_avatars[av_num].av_cell_id;
-      return;
-    }
 
     bool off_the_edge_facing = false;
     // If a bounded grid, do checks for facing off the edge of a bounded world grid..
@@ -2208,9 +1879,7 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
       }
     }
 
-    // Convert the x,y deme coordinates back into a cell id
-    const int new_deme_cell = y * x_size + x;
-    const int new_cell_id = deme_id * deme_size + new_deme_cell;
+    const int new_cell_id = y * x_size + x;
 
     // Store the faced cell id
     m_avatars[av_num].av_faced_cell = new_cell_id;
@@ -2236,7 +1905,7 @@ bool cPopulationInterface::MoveAV(cAvidaContext& ctx, int av_num)
     int src_id = m_avatars[av_num].av_cell_id;
     int dest_id = m_avatars[av_num].av_faced_cell;
     int true_cell = m_cell_id;
-    if (m_world->GetConfig().NEURAL_NETWORKING.Get() || m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell)) {
+    if (m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell)) {
       return SetAVCellID(m_avatars[av_num].av_faced_cell, av_num);
     }
   }
@@ -2362,16 +2031,3 @@ void cPopulationInterface::UpdateAVResources(cAvidaContext& ctx, const Apto::Arr
   }
 }
 
-void cPopulationInterface::BeginSleep()
-{
-  if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1)
-    m_world->GetPopulation().AddBeginSleep(m_cell_id, m_world->GetStats().GetUpdate());
-  GetDeme()->IncSleepingCount();
-}
-
-void cPopulationInterface::EndSleep()
-{
-  if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1)
-    m_world->GetPopulation().AddEndSleep(m_cell_id, m_world->GetStats().GetUpdate());
-  GetDeme()->DecSleepingCount();
-}

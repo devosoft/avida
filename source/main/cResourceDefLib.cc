@@ -73,24 +73,13 @@ cResourceDef* cResourceDefLib::AddResourceDef(const cString& res_name)
   return new_resource;
 }
 
-/* This assigns an index to a resource within its own type (deme vs. non-deme)
+/* This assigns an index to a resource within its own type
  * If the resource already has a positive id nothing will be assigned.
  * (Enforced by cResource::SetIndex())
- *
- * Population resource counts include all non-deme resources, regardless of geometry.
- * Deme resource counts include all deme resources, regardless of geometry.
  */
 void cResourceDefLib::SetResourceIndex(cResourceDef* res)
 {
-  bool is_deme = res->GetDemeResource();
-  
-  if (is_deme) {
-    res->SetIndex(m_num_deme_resources);
-    m_num_deme_resources++;
-  }
-  else {
-    res->SetIndex(m_resource_array.GetSize() - 1 - m_num_deme_resources);
-  }
+  res->SetIndex(m_resource_array.GetSize() - 1);
 }
 
 void cResourceDefLib::SetResDef(cResourceDef new_def, cString& res_name)

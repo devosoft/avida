@@ -49,20 +49,18 @@ using namespace AvidaTools;
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
 : m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
 , m_minitrace(false), m_microtrace(false), m_topnavtrace(false)
-, m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts()) , m_has_energy_costs(m_inst_set->HasEnergyCosts())
+, m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
 , m_has_res_costs(m_inst_set->HasResCosts()), m_has_fem_res_costs(m_inst_set->HasFemResCosts())
 , m_has_female_costs(m_inst_set->HasFemaleCosts()), m_has_choosy_female_costs(m_inst_set->HasChoosyFemaleCosts())
 , m_has_post_costs(inst_set->HasPostCosts())
 {
 	m_task_switching_cost=0;
-	int switch_cost =  world->GetConfig().TASK_SWITCH_PENALTY.Get();
-	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs | m_has_res_costs | m_has_fem_res_costs | switch_cost | m_has_female_costs | 
+	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_res_costs | m_has_fem_res_costs | m_has_female_costs |
                      m_has_choosy_female_costs | m_has_post_costs);
   m_implicit_repro_active = (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() ||
-                             m_world->GetConfig().IMPLICIT_REPRO_END.Get() ||
-                             m_world->GetConfig().IMPLICIT_REPRO_ENERGY.Get());
+                             m_world->GetConfig().IMPLICIT_REPRO_END.Get());
 	
   assert(m_organism != NULL);
 }
@@ -84,11 +82,6 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
   if (m_has_ft_costs) {
     m_inst_ft_cost.Resize(num_inst_cost);
     for (int i = 0; i < num_inst_cost; i++) m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
-  }
-  
-  if (m_has_energy_costs) {
-    m_inst_energy_cost.Resize(num_inst_cost);
-    for (int i = 0; i < num_inst_cost; i++) m_inst_energy_cost[i] = m_inst_set->GetEnergyCost(Instruction(i));
   }
   
   if (m_has_res_costs) {
@@ -1187,8 +1180,7 @@ void cHardwareBase::checkImplicitRepro(cAvidaContext& ctx, bool exec_last_inst)
   if( (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() && (m_organism->GetPhenotype().GetTimeUsed() >= m_world->GetConfig().IMPLICIT_REPRO_TIME.Get()))
      || (m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() && (m_organism->GetPhenotype().GetCPUCyclesUsed() >= m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get()))
      || (m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() && (m_organism->GetPhenotype().GetCurBonus() >= m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get()))
-     || (m_world->GetConfig().IMPLICIT_REPRO_END.Get() && exec_last_inst)
-     || (m_world->GetConfig().IMPLICIT_REPRO_ENERGY.Get() && (m_organism->GetPhenotype().GetStoredEnergy() >= m_world->GetConfig().IMPLICIT_REPRO_ENERGY.Get())) )
+     || (m_world->GetConfig().IMPLICIT_REPRO_END.Get() && exec_last_inst))
   {
     Inst_Repro(ctx);
   }
@@ -1203,66 +1195,15 @@ bool cHardwareBase::Inst_Repro(cAvidaContext&)
 }
 
 
-bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext&)
-{
-  cPhenotype& phenotype = m_organism->GetPhenotype();
-  phenotype.DoubleEnergyUsage();
-  double newOrgMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
-  m_organism->UpdateMerit(newOrgMerit);
-  return true;
-}
-
-bool cHardwareBase::Inst_HalveEnergyUsage(cAvidaContext&)
-{
-  cPhenotype& phenotype = m_organism->GetPhenotype();
-  phenotype.HalveEnergyUsage();
-  double newOrgMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
-  m_organism->UpdateMerit(newOrgMerit);
-  return true;
-}
-
-bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext&)
-{
-  cPhenotype& phenotype = m_organism->GetPhenotype();
-  phenotype.DefaultEnergyUsage();
-  double newOrgMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
-  m_organism->UpdateMerit(newOrgMerit);
-  return true;
-}
-
 
 // This method will test to see if all costs have been paid associated
 // with executing an instruction and only return true when that instruction
 // should proceed.
 bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const Instruction& cur_inst, const int thread_id)
 { 
-  if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
-    // TODO:  Get rid of magic number. check avaliable energy first
-    double energy_req = m_inst_energy_cost[cur_inst.GetOp()] * (m_organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
-    
-    if (energy_req > 0.0) {
-      if (m_organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
-        m_inst_energy_cost[cur_inst.GetOp()] = 0.0;
-        // subtract energy used from current org energy.
-        m_organism->GetPhenotype().ReduceEnergy(energy_req);  
-        
-        // tracking sleeping organisms
-        if (m_inst_set->ShouldSleep(cur_inst)) m_organism->SetSleeping(true);
-      } else {
-        m_organism->GetPhenotype().SetToDie();
-        return false; // no more, your died...  (evil laugh)
-      }
-    }
-  }
-  
   // If task switching costs need to be paid off...
   if (m_task_switching_cost > 0) { 
     m_task_switching_cost--;
-    // update deme level stats
-    cDeme* deme = m_organism->GetOrgInterface().GetDeme();
-    if(deme != NULL) {
-      deme->IncNumSwitchingPenalties(1);
-    }
     return false;
   }
   
@@ -1341,9 +1282,6 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const Instruct
     if (m_active_thread_costs[thread_id] == 1) m_active_thread_costs[thread_id] = 0;
   }
   
-  if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
-    m_inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); // reset instruction energy cost
-  }
   return true;
 }
 
@@ -1388,13 +1326,6 @@ void cHardwareBase::SingleProcess_SetPostCPUCosts(cAvidaContext&, const Instruct
   return;
 }
 
-//! Called when the organism that owns this CPU has received a flash from a neighbor.
-void cHardwareBase::ReceiveFlash()
-{
-  // @TODO - this method should not be here
-  // Method cHardwareBase::ReceiveFlash must be overriden
-  exit(1);
-}
 
 /*! Retrieve a fragment of this organism's genome that extends downstream from the read head.
  */

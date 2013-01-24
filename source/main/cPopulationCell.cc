@@ -29,7 +29,6 @@
 #include "cWorld.h"
 #include "cEnvironment.h"
 #include "cPopulation.h"
-#include "cDeme.h"
 
 #include <cmath>
 #include <iterator>
@@ -43,7 +42,6 @@ cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
 , m_hardware(in_cell.m_hardware)
 , m_inputs(in_cell.m_inputs)
 , m_cell_id(in_cell.m_cell_id)
-, m_deme_id(in_cell.m_deme_id)
 , m_cell_data(in_cell.m_cell_data)
 , m_spec_state(in_cell.m_spec_state)
 , m_can_input(false)
@@ -73,7 +71,6 @@ void cPopulationCell::operator=(const cPopulationCell& in_cell)
 		m_hardware = in_cell.m_hardware;
 		m_inputs = in_cell.m_inputs;
 		m_cell_id = in_cell.m_cell_id;
-		m_deme_id = in_cell.m_deme_id;
 		m_cell_data = in_cell.m_cell_data;
 		m_spec_state = in_cell.m_spec_state;
     m_can_input = in_cell.m_can_input;
@@ -106,7 +103,6 @@ void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates& in_r
   m_cell_id = in_id;
   m_x = x;
   m_y = y;
-  m_deme_id = -1;
   m_cell_data.contents = 0;
   m_cell_data.org_id = -1;
   m_cell_data.update = -1;
@@ -272,22 +268,10 @@ void cPopulationCell::InsertOrganism(cOrganism* new_org, cAvidaContext& ctx)
 	
   // Adjust the organism's attributes to match this cell.
   m_organism->GetOrgInterface().SetCellID(m_cell_id);
-  m_organism->GetOrgInterface().SetDemeID(m_deme_id);
 	
   // If this organism is new, set the previously-seen cell id
   if(m_organism->GetOrgInterface().GetPrevSeenCellID() == -1) {
     m_organism->GetOrgInterface().SetPrevSeenCellID(m_cell_id);
-  }
-  
-  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get() > 0.0) {
-    // uptake all the cells energy
-    double uptake_energy = UptakeCellEnergy(1.0, ctx); 
-    if(uptake_energy != 0.0) {
-      // update energy and merit
-      cPhenotype& phenotype = m_organism->GetPhenotype();
-      phenotype.ReduceEnergy(-1.0 * uptake_energy);
-      phenotype.SetMerit(cMerit(phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio())));
-    }
   }
 }
 
@@ -297,24 +281,9 @@ cOrganism * cPopulationCell::RemoveOrganism(cAvidaContext& ctx)
 	
   // For the moment, the cell doesn't keep track of much...
   cOrganism * out_organism = m_organism;
-  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get() > 0.0
-		 && m_world->GetConfig().FRAC_ENERGY_DECAY_AT_DEME_BIRTH.Get() != 1.0) { // hack
-    m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, m_organism->GetPhenotype().GetStoredEnergy() * m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get(), ctx);
-  }
   m_organism = NULL;
   m_hardware = NULL;
   return out_organism;
-}
-
-double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext& ctx) {
-  assert(0.0 <= frac_to_uptake);
-  assert(frac_to_uptake <= 1.0);
-	
-  double cell_energy = m_world->GetPopulation().GetDeme(m_deme_id).GetAndClearCellEnergy(m_cell_id, ctx); 
-  double uptakeAmount = cell_energy * frac_to_uptake;
-  cell_energy -= uptakeAmount;
-  m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, cell_energy, ctx);
-  return uptakeAmount;
 }
 
 
@@ -379,8 +348,6 @@ bool cPopulationCell::HasOutputAV(cOrganism* org)
 {
   // No output avatars
   if (!HasOutputAV()) return false;
-  // If org can talk to itself, any avatar in the cell works
-  if (m_world->GetConfig().SELF_COMMUNICATION.Get()) return true;
 
   // If no self-messaging, is there an output avatar for another organism in the cell
   for (int i = 0; i < GetNumAVOutputs(); i++) {

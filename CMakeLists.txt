@@ -216,7 +216,6 @@ SET(MAIN_DIR ${PROJECT_SOURCE_DIR}/source/main)
 SET(MAIN_SOURCES
   ${MAIN_DIR}/cAvidaConfig.cc
   ${MAIN_DIR}/cBirthChamber.cc
-  ${MAIN_DIR}/cBirthDemeHandler.cc
   ${MAIN_DIR}/cBirthEntry.cc
   ${MAIN_DIR}/cBirthGenomeSizeHandler.cc
   ${MAIN_DIR}/cBirthGlobalHandler.cc
@@ -226,9 +225,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cBirthSelectionHandler.cc
   ${MAIN_DIR}/cBirthMatingTypeGlobalHandler.cc
   ${MAIN_DIR}/cContextPhenotype.cc
-  ${MAIN_DIR}/cDeme.cc
-  ${MAIN_DIR}/cDemeNetwork.cc
-  ${MAIN_DIR}/cDemeCellEvent.cc
   ${MAIN_DIR}/cDiffusionRes.cc
   ${MAIN_DIR}/cDynamicRes.cc
   ${MAIN_DIR}/cEnvironment.cc

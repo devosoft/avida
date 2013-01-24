@@ -63,7 +63,6 @@ private:
   // Actual CPU resources.
   cPopulationResources m_resource_count;
   cPopulationResources m_faced_cell_resource_count;
-  cPopulationResources m_deme_resource_count;
   cPopulationResources m_cell_resource_count;
     
 
@@ -104,8 +103,7 @@ public:
   inline double GetFacedResourceVal(cAvidaContext& ctx, int res_id);
   inline const Apto::Array<double>& GetAVFacedResources(cAvidaContext& ctx);
   double GetAVFacedResourceVal(cAvidaContext& ctx, int res_id);
-  inline const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
-  inline const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
+  inline const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx);
   inline const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id); 
   inline double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
   inline double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
@@ -116,9 +114,6 @@ public:
   cPopulationResources& GetResourceCount() { return m_resource_count; }
   
   cPopulationCell& GetCell(int cell_id) { ; }
-  cDeme& GetDeme(int deme_id) { ; }
-  int GetNumDemes() const { ; }
-//  const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) const { ; }
   void KillOrganism(cAvidaContext& ctx, int cell_id) { ; }
 };
 
@@ -174,11 +169,6 @@ inline double cTestCPU::GetAVFacedResourceVal(cAvidaContext& ctx, int res_id)
 {
   const Apto::Array<double>& faced_res = m_faced_cell_resource_count.GetResources(ctx);
   return faced_res[res_id];
-}
-
-inline const Apto::Array<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext& ctx)
-{
-    return m_deme_resource_count.GetResources(ctx); 
 }
 
 inline const Apto::Array<double>& cTestCPU::GetCellResources(int, cAvidaContext& ctx)

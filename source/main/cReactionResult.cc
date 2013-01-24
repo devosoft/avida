@@ -60,15 +60,10 @@ void cReactionResult::ActivateReaction()
   energy_add = 0.0;
   bonus_add = 0.0;
   bonus_mult = 1.0;
-  germline_add = 0.0;
-  germline_mult = 1.0;
   insts_triggered.Resize(0);
   lethal = false;
   sterilize = false;
   used_env_resource = true;
-  deme_add_bonus = 0.0;
-  deme_mult_bonus = 1.0;
-  active_deme_reaction = false;
 
   // And finally note that this is indeed already active.
   active_reaction = true;
@@ -150,32 +145,6 @@ void cReactionResult::MultBonus(double value)
 {
   ActivateReaction();
   bonus_mult *= value;
-}
-
-void cReactionResult::AddDemeBonus(double value)
-{
-  ActivateReaction();
-  active_deme_reaction = true;
-  deme_add_bonus += value;
-}
-
-void cReactionResult::MultDemeBonus(double value)
-{
-  ActivateReaction();
-  active_deme_reaction = true;
-  deme_mult_bonus *= value;
-}
-
-void cReactionResult::AddGermline(double value)
-{
-  ActivateReaction();
-  germline_add += value;
-}
-
-void cReactionResult::MultGermline(double value)
-{
-  ActivateReaction();
-  germline_mult *= value;
 }
 
 

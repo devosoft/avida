@@ -102,9 +102,6 @@ private:
   // dynamic resources
   void ResetDynamicRes(cAvidaContext& ctx, cWorld* world, int res_id);
 
-  // deme resources
-  void PrintDemeSpatialResData(const cPopulationResources& res, const int i, const int deme_id, cAvidaContext& ctx) const;
-
   cPopulationResources(const cPopulationResources&);
   const cPopulationResources& operator=(const cPopulationResources&);
 
@@ -128,7 +125,6 @@ public:
   const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const;
   const Apto::Array<Apto::Array<int> >& GetCellIdLists() const { return cell_lists; }
   const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const;
-  const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) const;
   
   void UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
   void UpdateResStats(cAvidaContext& ctx);
@@ -197,17 +193,6 @@ public:
   void UpdateDynamicRes(cAvidaContext& ctx, cWorld* world, const cString res_name);
   void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
 
-  // deme resources
-  void SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level);
-  void SetDemeResourceInflow(const cString res_name, double new_level);
-  void SetSingleDemeResourceInflow(int deme_id, const cString res_name, double new_level);
-  void SetDemeResourceOutflow(const cString res_name, double new_level);
-  void SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level);
-  
-  void UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
-  
-  void PrintDemeResource(cAvidaContext& ctx);
-  void PrintDemeGlobalResources(cAvidaContext& ctx); 
 
   // -------- HGT support --------
   int& GetHGTResidID() { return m_hgt_resid; }

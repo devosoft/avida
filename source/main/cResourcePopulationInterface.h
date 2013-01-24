@@ -26,7 +26,6 @@
 #include "avida/core/Types.h"
 
 class cAvidaContext;
-class cDeme;
 class cPopulationCell;
 
 class cResourcePopulationInterface
@@ -36,9 +35,6 @@ public:
   virtual ~cResourcePopulationInterface();
 
   virtual cPopulationCell& GetCell(int cell_id) = 0;
-  virtual cDeme& GetDeme(int deme_id) = 0;
-  virtual int GetNumDemes() const = 0;
-//  virtual const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) const = 0;
   virtual void KillOrganism(cAvidaContext& ctx, int cell_id) = 0;
 };
 

@@ -32,7 +32,6 @@
 #include "cPopulationCell.h"
 
 class cAvidaContext;
-class cDeme;
 class cPopulation;
 class cOrgMessage;
 class cOrganism;
@@ -45,7 +44,6 @@ class cPopulationInterface : public cOrgInterface
 private:
   cWorld* m_world;
   int m_cell_id;
-  int m_deme_id;
   
   int m_prevseen_cell_id;	// Previously-seen cell's ID
   int m_prev_task_cell;		// Cell ID of previous task
@@ -70,11 +68,7 @@ public:
   cPopulationCell* GetCell(int cell_id);
   //! Retrieve the cell currently faced by this organism.
   cPopulationCell* GetCellFaced();
-  int GetDemeID() { return m_deme_id; }
-  //! Retrieve the deme in which this organism lives.
-  cDeme* GetDeme();
   void SetCellID(int in_id) { m_cell_id = in_id; }
-  void SetDemeID(int in_id) { m_deme_id = in_id; }
   int GetCellXPosition();
   int GetCellYPosition();
   
@@ -120,7 +114,6 @@ public:
   const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
   double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
   double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
-  const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const Apto::Array< Apto::Array<int> >& GetCellIdLists();
   int GetCurrPeakX(cAvidaContext& ctx, int res_id); 
   int GetCurrPeakY(cAvidaContext& ctx, int res_id);
@@ -129,29 +122,15 @@ public:
   cPopulationResources* GetResourceCount();
   void TriggerDoUpdates(cAvidaContext& ctx);
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  void UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  void Die(cAvidaContext& ctx); 
+  void Die(cAvidaContext& ctx);
   void KillCellID(int target, cAvidaContext& ctx); 
   void Kaboom(int distance, cAvidaContext& ctx); 
-  void SpawnDeme(cAvidaContext& ctx); 
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
   bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide();
-  //! Send a message to the faced organism.
-  bool SendMessage(cOrgMessage& msg);
-  //! Send a message to the organism in the given cell.
-  bool SendMessage(cOrgMessage& msg, cPopulationCell& rcell);
-  //! Send a message to the cell with the given cell id.
-  bool SendMessage(cOrgMessage& msg, int cellid);	
-  //! Broadcast a message.
-  bool BroadcastMessage(cOrgMessage& msg, int depth);
-  bool BcastAlarm(int jump_label, int bcast_range);  
-  void DivideOrgTestamentAmongDeme(double value);
-  //! Send a flash to all neighboring organisms.
-  void SendFlash();
 
   int GetStateGridID(cAvidaContext& ctx);
 	
@@ -161,27 +140,6 @@ public:
   void RotateToGreatestReputation();
   void RotateToGreatestReputationWithDifferentTag(int tag);
   void RotateToGreatestReputationWithDifferentLineage(int line);
-
-  // -------- Network creation support --------
-public:
-  //! Link this organism's cell to the cell it is currently facing.
-  void CreateLinkByFacing(double weight=1.0);
-  //! Link this organism's cell to the cell with coordinates (x,y).
-  void CreateLinkByXY(int x, int y, double weight=1.0);
-  //! Link this organism's cell to the cell with index idx.
-  void CreateLinkByIndex(int idx, double weight=1.0);
-  //! Broadcast a message to all organisms that are connected by this network.
-  bool NetworkBroadcast(cOrgMessage& msg);
-  //! Unicast a message to the current selected organism.
-  bool NetworkUnicast(cOrgMessage& msg);
-  //! Rotate to select a new network link.
-  bool NetworkRotate(int x);
-  //! Select a new network link.
-  bool NetworkSelect(int x);
-
-  int GetNextDemeInput(cAvidaContext& ctx);
-  void DoDemeInput(int value);
-  void DoDemeOutput(cAvidaContext& ctx, int value);
 
   // -------- HGT support --------
 public:

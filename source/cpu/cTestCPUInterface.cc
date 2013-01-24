@@ -74,11 +74,6 @@ double cTestCPUInterface::GetFacedResourceVal(cAvidaContext& ctx, int res_id)
   return m_testcpu->GetFacedResourceVal(ctx, res_id);
 }
 
-const Apto::Array<double>& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaContext& ctx)
-{
-  return m_testcpu->GetDemeResources(deme_id, ctx); 
-}
-
 const Apto::Array<double>& cTestCPUInterface::GetCellResources(int cell_id, cAvidaContext& ctx)
 {
   return m_testcpu->GetCellResources(cell_id, ctx); 

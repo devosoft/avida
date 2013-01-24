@@ -37,7 +37,6 @@
 #include "cEnvironment.h"
 #include "cEventList.h"
 #include "cHardwareManager.h"
-#include "cMigrationMatrix.h"  
 #include "cInstSet.h"
 #include "cPopulation.h"
 #include "cStats.h"
@@ -51,7 +50,7 @@ using namespace AvidaTools;
 
 cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)
   : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(NULL)
-  , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_mig_mat(NULL), m_driver(NULL), m_data_mgr(NULL)
+  , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_driver(NULL), m_data_mgr(NULL)
   , m_own_driver(false)
 {
 }
@@ -80,8 +79,6 @@ cWorld::~cWorld()
   delete m_event_list; m_event_list = NULL;
   delete m_hw_mgr; m_hw_mgr = NULL;
 
-  delete m_mig_mat; 
-  
   // Delete Last
   delete m_conf; m_conf = NULL;
 
@@ -121,24 +118,11 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback, const Apto::Map<Ap
 
   m_env = new cEnvironment(this);
     
-  m_mig_mat = new cMigrationMatrix(); 
-  
   
   // Initialize the default environment...
   // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
   if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir, *feedback, defs)) {
     success = false;
-  }
-    
-  if(m_conf->DEMES_MIGRATION_METHOD.Get() == 4){     
-    bool count_parasites,count_offspring = false;
-    if(m_conf->DEMES_PARASITE_MIGRATION_RATE.Get() > 0.0)
-      count_parasites = true;
-    if(m_conf->DEMES_MIGRATION_RATE.Get() > 0.0)
-      count_offspring = true;
-    
-    if(!m_mig_mat->Load(m_conf->NUM_DEMES.AsString().AsInt(), m_conf->MIGRATION_FILE.Get(), m_working_dir,count_parasites,count_offspring,false,*feedback))
-      success = false;
   }
   
   

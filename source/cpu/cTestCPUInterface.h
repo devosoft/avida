@@ -53,10 +53,7 @@ public:
   cPopulationCell* GetCell() { return NULL; }
 	cPopulationCell* GetCell(int) { return NULL; }
   int GetCellID() { return -1; }
-  int GetDemeID() { return -1; }
-  cDeme* GetDeme() { return 0; }
   void SetCellID(int) { ; }
-  void SetDemeID(int) { ; }
   
   int GetAVCellID() { return -1; }
   void SetAVCellID(int) { ; }
@@ -107,7 +104,6 @@ public:
   double GetResourceVal(cAvidaContext& ctx, int res_id);
   const Apto::Array<double>& GetFacedCellResources(cAvidaContext& ctx); 
   double GetFacedResourceVal(cAvidaContext& ctx, int res_id);
-  const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx);
   const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
   double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
@@ -123,12 +119,10 @@ public:
   void TriggerDoUpdates(cAvidaContext&) { }
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateAVResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  void UpdateDemeResources(cAvidaContext&, const Apto::Array<double>&) { ; }
   
   void Die(cAvidaContext& ctx) { ; } 
   void KillCellID(int target, cAvidaContext& ctx) { ; } 
   void Kaboom(int distance, cAvidaContext& ctx);
-  void SpawnDeme(cAvidaContext& ctx) { ; }
   cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - todo: receive message
   bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) { return false; } // @DMB - todo: validate message
   int ReceiveValue();
@@ -144,7 +138,6 @@ public:
   bool SendMessage(cOrganism*, cOrgMessage&) { return false; }
 	bool BroadcastMessage(cOrgMessage&, int) { return false; }
 	bool BcastAlarm(int, int) { return false; }
-  void DivideOrgTestamentAmongDeme(double) { ; }
 	void SendFlash() { ; }
   
   int GetNortherly() { return 0; }
@@ -170,10 +163,6 @@ public:
 	bool NetworkRotate(int) { return false; }
 	//! Select a new network link.
 	bool NetworkSelect(int) { return false; }	
-
-  int GetNextDemeInput(cAvidaContext&) { return -1; }
-  void DoDemeInput(int) { ; }
-  void DoDemeOutput(cAvidaContext& ctx, int) { ; }
 
 	//! HGT donation (does nothing).
 	void DoHGTDonation(cAvidaContext&) { ; }

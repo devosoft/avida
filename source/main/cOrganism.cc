@@ -27,7 +27,6 @@
 
 #include "cAvidaContext.h"
 #include "cContextPhenotype.h"
-#include "cDeme.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
@@ -166,13 +165,9 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_sent_active(false)
   , m_test_receive_pos(0)
   , m_pher_drop(false)
-  , frac_energy_donating(m_world->GetConfig().ENERGY_SHARING_PCT.Get())
   , m_max_executed(-1)
   , m_is_running(false)
-  , m_is_sleeping(false)
   , m_is_dead(false)
-  , killed_event(false)
-  , m_msg(0)
   , m_opinion(0)
   , m_neighborhood(0)
   , m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
@@ -251,8 +246,7 @@ cOrganism::~cOrganism()
   delete m_hardware;
   delete m_interface;
   
-  if(m_msg) delete m_msg;
-  if(m_opinion) delete m_opinion;  
+  if (m_opinion) delete m_opinion;
   if (m_neighborhood) delete m_neighborhood;
   delete m_org_display;
   delete m_queued_display_data;
@@ -415,10 +409,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
                          bool is_parasite, 
                          cContextPhenotype* context_phenotype)
 {  
-  const int deme_id = m_interface->GetDemeID();
   const Apto::Array<double> & global_resource_count = m_interface->GetResources(ctx);
-  const Apto::Array<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx);
-  const Apto::Array< Apto::Array<int> > & cell_id_lists = m_interface->GetCellIdLists();
   
   tList<tBuffer<int> > other_input_list;
   tList<tBuffer<int> > other_output_list;
@@ -452,43 +443,15 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   
   Apto::Array<double> global_res_change(global_resource_count.GetSize());
   global_res_change.SetAll(0.0);
-  Apto::Array<double> deme_res_change(deme_resource_count.GetSize());
-  deme_res_change.SetAll(0.0);
   Apto::Array<cString> insts_triggered;
   
-  tBuffer<int>* received_messages_point = &m_received_messages;
-  if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
   
   cTaskContext taskctx(this, input_buffer, output_buffer, other_input_list, other_output_list,
-                       m_hardware->GetExtendedMemory(), on_divide, received_messages_point);
+                       m_hardware->GetExtendedMemory(), on_divide);
   
-  //combine global and deme resource counts
-  Apto::Array<double> globalAndDeme_resource_count = global_resource_count + deme_resource_count;
-  Apto::Array<double> globalAndDeme_res_change = global_res_change + deme_res_change;
   
-  // set any resource amount to 0 if a cell cannot access this resource
-  int cell_id=GetCellID();
-  if (cell_id_lists.GetSize())
-  {
-    for (int i=0; i<cell_id_lists.GetSize(); i++)
-    {
-      // if cell_id_lists have been set then we have to check if this cell is in the list
-      if (cell_id_lists[i].GetSize()) {
-        int j;
-        for (j=0; j<cell_id_lists[i].GetSize(); j++)
-        {
-          if (cell_id==cell_id_lists[i][j])
-            break;
-        }
-        if (j==cell_id_lists[i].GetSize())
-          globalAndDeme_resource_count[i]=0;
-      }
-    }
-  }
-  
-  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, 
-                                               m_phenotype.GetCurRBinsAvail(), globalAndDeme_res_change, 
-                                               insts_triggered, is_parasite, context_phenotype);
+  m_phenotype.TestOutput(ctx, taskctx, global_resource_count, m_phenotype.GetCurRBinsAvail(), global_res_change,
+                         insts_triggered, is_parasite, context_phenotype);
   
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -496,25 +459,9 @@ void cOrganism::doOutput(cAvidaContext& ctx,
     if (m_phenotype.GetMerit().GetDouble() < cur_merit) m_interface->UpdateMerit(cur_merit);
   }
   
-  //disassemble global and deme resource counts 
-  for (int i = 0; i < global_res_change.GetSize(); i++) global_res_change[i] = globalAndDeme_res_change[i];
-  for (int i = 0; i < deme_res_change.GetSize(); i++) deme_res_change[i] = globalAndDeme_res_change[i + global_res_change.GetSize()];
-  
-  if(m_world->GetConfig().ENERGY_ENABLED.Get() && m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1 && task_completed) {
-    m_phenotype.RefreshEnergy();
-    m_phenotype.ApplyToEnergyStore();
-    double newMerit = m_phenotype.ConvertEnergyToMerit(m_phenotype.GetStoredEnergy() * m_phenotype.GetEnergyUsageRatio());
-    m_interface->UpdateMerit(newMerit);
-    if(GetPhenotype().GetMerit().GetDouble() == 0.0) {
-      GetPhenotype().SetToDie();
-    }
-  }
   m_interface->UpdateResources(ctx, global_res_change);
 
-  //update deme resources
-  m_interface->UpdateDemeResources(ctx, deme_res_change);
-
-  for (int i = 0; i < insts_triggered.GetSize(); i++) 
+  for (int i = 0; i < insts_triggered.GetSize(); i++)
     m_hardware->ProcessBonusInst(ctx, m_hardware->GetInstSet().GetInst(insts_triggered[i]));
 }
 
@@ -526,9 +473,6 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
                          cContextPhenotype* context_phenotype)
 {  
   //Avatar output has to be seperate from doOutput to ensure avatars, not the true orgs, are triggering reactions
-  //  const int deme_id = m_interface->GetDemeID();
-  //  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx); //todo: DemeAVResources
-  const Apto::Array< Apto::Array<int> > & cell_id_lists = m_interface->GetCellIdLists();
   
   tList<tBuffer<int> > other_input_list;
   tList<tBuffer<int> > other_output_list;
@@ -563,45 +507,16 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   Apto::Array<double> avatar_res_change(m_world->GetEnvironment().GetResDefLib().GetSize());
   avatar_res_change.SetAll(0.0);
 
-  //  tArray<double> deme_res_change(deme_resource_count.GetSize());
-  //  deme_res_change.SetAll(0.0);
-
   Apto::Array<cString> insts_triggered;
   
-  tBuffer<int>* received_messages_point = &m_received_messages;
-  if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
-  
   cTaskContext taskctx(this, input_buffer, output_buffer, other_input_list, other_output_list,
-                       m_hardware->GetExtendedMemory(), on_divide, received_messages_point);
+                       m_hardware->GetExtendedMemory(), on_divide);
   
-  //combine global and deme resource counts
   const Apto::Array<double>& av_res_count = m_interface->GetAVResources(ctx);
-  Apto::Array<double> avatarAndDeme_res_count = av_res_count; // + deme_resource_count;
-  Apto::Array<double> avatarAndDeme_res_change = avatar_res_change; // + deme_res_change;
   
-  // set any resource amount to 0 if a cell cannot access this resource
-  int cell_id = m_interface->GetAVCellID();
-  if (cell_id_lists.GetSize())
-  {
-	  for (int i = 0; i < cell_id_lists.GetSize(); i++)
-	  {
-		  // if cell_id_lists have been set then we have to check if this cell is in the list
-		  if (cell_id_lists[i].GetSize()) {
-			  int j = 0;
-			  for (j = 0; j < cell_id_lists[i].GetSize(); j++)
-			  {
-				  if (cell_id == cell_id_lists[i][j])
-					  break;
-			  }
-			  if (j == cell_id_lists[i].GetSize())
-				  avatarAndDeme_res_count[i] = 0;
-		  }
-	  }
-  }
   
-  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, avatarAndDeme_res_count, 
-                                               m_phenotype.GetCurRBinsAvail(), avatarAndDeme_res_change, 
-                                               insts_triggered, is_parasite, context_phenotype);
+  m_phenotype.TestOutput(ctx, taskctx, av_res_count, m_phenotype.GetCurRBinsAvail(), avatar_res_change, insts_triggered,
+                         is_parasite, context_phenotype);
   
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -609,22 +524,8 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
     if (m_phenotype.GetMerit().GetDouble() < cur_merit) m_interface->UpdateMerit(cur_merit);
   }
   
-  //disassemble avatar and deme resource counts
-  for (int i = 0; i < avatar_res_change.GetSize(); i++) avatar_res_change[i] = avatarAndDeme_res_change[i];
-//  deme_res_change = avatarAndDeme_res_change.Subset(avatar_res_change.GetSize(), avatarAndDeme_res_change.GetSize());
   
-  if(m_world->GetConfig().ENERGY_ENABLED.Get() && m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1 && task_completed) {
-    m_phenotype.RefreshEnergy();
-    m_phenotype.ApplyToEnergyStore();
-    double newMerit = m_phenotype.ConvertEnergyToMerit(m_phenotype.GetStoredEnergy() * m_phenotype.GetEnergyUsageRatio());
-		m_interface->UpdateMerit(newMerit);
-		if(GetPhenotype().GetMerit().GetDouble() == 0.0) {
-			GetPhenotype().SetToDie();
-		}
-  }
   m_interface->UpdateAVResources(ctx, avatar_res_change);
-  //update deme resources
-//  m_interface->UpdateDemeResources(ctx, deme_res_change);
   
   for (int i = 0; i < insts_triggered.GetSize(); i++) 
     m_hardware->ProcessBonusInst(ctx, m_hardware->GetInstSet().GetInst(insts_triggered[i]));
@@ -660,12 +561,6 @@ void cOrganism::HardwareReset(cAvidaContext& ctx)
 
 void cOrganism::NotifyDeath(cAvidaContext& ctx)
 {
-  // Update Sleeping State
-  if (m_is_sleeping) {
-    m_is_sleeping = false;
-    GetDeme()->DecSleepingCount();
-  }
-  
   // Return currently stored internal resources to the world
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get() && m_world->GetConfig().RETURN_STORED_ON_DEATH.Get()) {
   	if (m_world->GetConfig().USE_AVATARS.Get()) m_interface->UpdateAVResources(ctx, GetRBins());
@@ -931,117 +826,6 @@ void cOrganism::NewTrial()
 }
 
 
-/*! Called as the bottom-half of a successfully sent message.
- */
-void cOrganism::MessageSent(cAvidaContext&, cOrgMessage& msg) {
-	// check to see if we should store it:
-	const int bsize = m_world->GetConfig().MESSAGE_SEND_BUFFER_SIZE.Get();
-  
-	if((bsize > 0) || (bsize == -1)) {
-		// yep; store it:
-		m_msg->sent.push_back(msg);
-		// and set the receiver-pointer of this message to NULL.  We don't want to
-		// walk this list later thinking that the receivers are still around.
-		m_msg->sent.back().SetReceiver(0);
-		// if our buffer is too large, chop off old messages:
-		while((bsize != -1) && (static_cast<int>(m_msg->sent.size()) > bsize)) {
-			m_msg->sent.pop_front();
-		}
-	}	
-}
-
-
-/*! Send a message to the currently faced organism.  Stat-tracking is done over
- in cPopulationInterface.  Remember that this code WILL be called from within the
- test CPU!  (Also, BroadcastMessage funnels down to code in the population interface
- too, so this way all the message sending code is in the same place.)
- */
-bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg)
-{
-  assert(m_interface);
-  InitMessaging();
-
-  // check to see if we've performed any tasks:
-  if (m_world->GetConfig().CHECK_TASK_ON_SEND.Get()) {
-    DoOutput(ctx, static_cast<int>(msg.GetData()));
-  }
-  // if we sent the message:
-  if(m_interface->SendMessage(msg)) {
-    MessageSent(ctx, msg);
-    return true;
-  }
-  // importantly, m_interface->SendMessage() fails if we're running in the test CPU.
-  return false;
-}
-
-
-/*! Broadcast a message to all organisms out to the given depth.
- */
-bool cOrganism::BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg, int depth) {
-  assert(m_interface);
-  InitMessaging();
-	
-	// if we broadcasted the message:
-	if(m_interface->BroadcastMessage(msg, depth)) {
-		MessageSent(ctx, msg);
-    return true;
-  }
-	
-	// Again, m_interface->BroadcastMessage() fails if we're running in the test CPU.
-	return false;
-}
-
-
-/*! Called when this organism receives a message from another.
- */
-void cOrganism::ReceiveMessage(cOrgMessage& msg)
-{
-  InitMessaging();
-	// don't store more messages than we're configured to.
-	const int bsize = m_world->GetConfig().MESSAGE_RECV_BUFFER_SIZE.Get();
-	if((bsize != -1) && (bsize <= static_cast<int>(m_msg->received.size()))) {
-		switch (m_world->GetConfig().MESSAGE_RECV_BUFFER_BEHAVIOR.Get()) {
-			case 0: // drop oldest message
-				m_msg->received.pop_front();
-				break;
-			case 1: // drop this message
-				return;
-			default: // error
-        m_world->GetDriver().Feedback().Error("MESSAGE_RECV_BUFFER_BEHAVIOR is set to an invalid value.");
-        m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
-				assert(false);
-		}
-	}
-  
-	msg.SetReceiver(this);
-	m_msg->received.push_back(msg);
-  
-  if (m_world->GetConfig().ACTIVE_MESSAGES_ENABLED.Get() > 0) {
-    // then create new thread and load its registers
-    m_hardware->InterruptThread(cHardwareBase::MSG_INTERRUPT);
-  }
-}
-
-
-/*! Called to when this organism tries to load its CPU with the contents of a
- previously-received message.  In a change from previous versions, pop the message
- off the front.
- 
- \return A pair (b, msg): if b is true, then msg was received; if b is false, then msg was not received.
- */
-std::pair<bool, cOrgMessage> cOrganism::RetrieveMessage() {
-  InitMessaging();
-	std::pair<bool, cOrgMessage> ret = std::make_pair(false, cOrgMessage());	
-	
-	if(m_msg->received.size() > 0) {
-		ret.second = m_msg->received.front();
-		ret.first = true;
-		m_msg->received.pop_front();
-	}
-	
-	return ret;
-}
-
 bool cOrganism::Move(cAvidaContext& ctx)
 {
   assert(m_interface);
@@ -1094,30 +878,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
   // Check to make sure the organism is alive after the move
   if (m_phenotype.GetToDelete()) return false;
   
-  // updates movement predicates
-  m_world->GetStats().Move(*this);
   
-  // Pheromone drop stuff
-  double pher_amount = 0; // this is used in the logging
-  int drop_mode = -1;
-  
-  // If organism is dropping pheromones, mark the appropriate cell(s)
-  if (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1 && GetPheromoneStatus() == true) {
-    pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
-    drop_mode = m_world->GetConfig().PHEROMONE_DROP_MODE.Get();
-    
-    cDeme* deme = GetDeme();
-    
-    if (drop_mode == 0) {
-      deme->AddPheromone(fromcellID, pher_amount / 2, ctx); 
-      deme->AddPheromone(destcellID, pher_amount / 2, ctx); 
-    } else if(drop_mode == 1) {
-      deme->AddPheromone(fromcellID, pher_amount, ctx); 
-    } else if(drop_mode == 2) {
-      deme->AddPheromone(destcellID, pher_amount, ctx); 
-    }
-  } // End laying pheromone
-    
   // don't trigger reactions on move if you're not supposed to! 
   const cEnvironment& env = m_world->GetEnvironment();
   const int num_tasks = env.GetNumTasks();
@@ -1126,41 +887,14 @@ bool cOrganism::Move(cAvidaContext& ctx)
         env.GetTask(i).GetDesc() == "move_neutral_gradient" || \
         env.GetTask(i).GetDesc() == "move_down_gradient" || \
         env.GetTask(i).GetDesc() == "move_not_up_gradient" || \
-        env.GetTask(i).GetDesc() == "move_to_right_side" || \
-        env.GetTask(i).GetDesc() == "move_to_left_side" || \
-        env.GetTask(i).GetDesc() == "move" || \
-        env.GetTask(i).GetDesc() == "movetotarget" || \
-        env.GetTask(i).GetDesc() == "movetoevent" || \
-        env.GetTask(i).GetDesc() == "movebetweenevent" || \
-        env.GetTask(i).GetDesc() == "move_to_event") {
+        env.GetTask(i).GetDesc() == "move") {
       DoOutput(ctx);
       break;
     }
   }
   
-  if (m_world->GetConfig().ACTIVE_MESSAGES_ENABLED.Get() > 0) {
-    // then create new thread and load its registers
-    m_hardware->InterruptThread(cHardwareBase::MOVE_INTERRUPT);
-  }
   return true;    
 } //End cOrganism::Move()
-
-bool cOrganism::BcastAlarmMSG(cAvidaContext& ctx, int jump_label, int bcast_range) {
-  assert(m_interface);
-  
-  // If we're able to succesfully send an alarm...
-  if(m_interface->BcastAlarm(jump_label, bcast_range)) {
-    // check to see if we've performed any tasks...
-    DoOutput(ctx);
-    return true;
-  }
-  return false;
-}
-
-void cOrganism::moveIPtoAlarmLabel(int jump_label) {
-  // move IP to alarm_label
-  m_hardware->Jump_To_Alarm_Label(jump_label);
-}
 
 
 /*! Called to set this organism's opinion, which remains valid until a new opinion
@@ -1241,27 +975,6 @@ void cOrganism::CopyParentFT(cAvidaContext& ctx) {
     else if (m_parent_ft > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
     SetForageTarget(ctx, m_parent_ft);
   }
-}
-
-/*! Called when an organism receives a flash from a neighbor. */
-void cOrganism::ReceiveFlash() {
-  m_hardware->ReceiveFlash();
-}
-
-/*! Called by the "flash" instruction. */
-void cOrganism::SendFlash(cAvidaContext& ctx) {
-  assert(m_interface);
-  
-  // Check to see if we should lose the flash:
-  if((m_world->GetConfig().SYNC_FLASH_LOSSRATE.Get() > 0.0) &&
-     (m_world->GetRandom().P(m_world->GetConfig().SYNC_FLASH_LOSSRATE.Get()))) {
-    return;
-  }
-  
-  // Flash not lost; continue.
-  m_interface->SendFlash();
-  m_world->GetStats().SentFlash(*this);
-  DoOutput(ctx);
 }
 
 
@@ -1509,22 +1222,6 @@ bool cOrganism::CanReceiveString(int string_tag, int)
 	}
 	return val;
 	
-}
-
-bool cOrganism::IsInterrupted()
-{
-  for (int k = 0; k< GetHardware().GetNumThreads(); ++k) if (GetHardware().GetThreadMessageTriggerType(k) != -1) return true;
-  return false;
-}
-
-void cOrganism::DonateResConsumedToDeme()
-{
-	cDeme* deme = m_interface->GetDeme();
-	
-	if(deme) {
-		deme->AddResourcesConsumed(m_phenotype.GetResourcesConsumed());
-	}	
-	return;
 }
 
 bool cOrganism::MoveAV(cAvidaContext& ctx)

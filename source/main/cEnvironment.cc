@@ -172,7 +172,6 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedba
       else if (var_value=="mult") new_process->SetType(nReaction::PROCTYPE_MULT);
       else if (var_value=="pow") new_process->SetType(nReaction::PROCTYPE_POW);
       else if (var_value=="lin") new_process->SetType(nReaction::PROCTYPE_LIN);
-      else if (var_value=="energy") new_process->SetType(nReaction::PROCTYPE_ENERGY);
       else if (var_value=="enzyme") new_process->SetType(nReaction::PROCTYPE_ENZYME);
       else if (var_value=="exp") new_process->SetType(nReaction::PROCTYPE_EXP);
       else {
@@ -223,16 +222,6 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedba
       if (!AssertInputBool(var_value, "sterilize", var_type, feedback))
         return false;
       new_process->SetSterile(var_value.AsInt());
-    }
-    else if (var_name == "deme") {
-      if (!AssertInputDouble(var_value, "demefrac", var_type, feedback))
-        return false;
-      new_process->SetDemeFraction(var_value.AsDouble());
-    }
-    else if (var_name == "germline") {
-      if (!AssertInputBool(var_value, "germline", var_type, feedback))
-        return false;
-      new_process->SetIsGermline(var_value.AsInt());
     }
     else if (var_name == "detect") {
       cResourceDef* test_resource = resource_lib.GetResDef(var_value);
@@ -556,24 +545,9 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
         isspatial = true;
         isdiffusion = true;
       }
-      else if (var_name == "deme") {
-        if (!new_resource->SetDemeResource( var_value )) {
-          feedback.Error("in %s, %s must be true or false", (const char*)var_type, (const char*)var_value);
-          return false;
-        }
-      }
       else if (var_name == "collectable") {
         if (!AssertInputBool(var_value, "collectable", var_type, feedback)) return false;
         new_resource->SetCollectable(var_value.AsInt());
-      }
-      else if (var_name == "energy") {
-        if (!new_resource->SetEnergyResource( var_value )) {
-          feedback.Error("in %s, %s must be true or false", (const char*)var_type, (const char*)var_value);
-          return false;
-        } else if (m_world->GetConfig().ENERGY_ENABLED.Get() == 0) {
-          feedback.Error("energy resources can not be used without the energy model");
-          return false;
-        }
       }
       else if (var_name == "hgt") {
         // this resource is for HGT -- corresponds to genome fragments present in cells.
@@ -606,8 +580,7 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
          || (new_resource->GetXDiffuse() != 1.0)
          || (new_resource->GetXGravity() != 0.0)
          || (new_resource->GetYDiffuse() != 1.0)
-         || (new_resource->GetYGravity() != 0.0)
-         || (new_resource->GetDemeResource() != false))) {
+         || (new_resource->GetYGravity() != 0.0))) {
           feedback.Error("misconfigured HGT resource: %s", (const char*)name);
           return false;
         }
@@ -867,7 +840,6 @@ bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
       this_resource->SetXGravity(0.0);
       this_resource->SetYDiffuse(0.0);
       this_resource->SetYGravity(0.0);
-      this_resource->SetDemeResource("false");
     } else {
       this_resource = resource_lib.GetResDef(name);
     }
@@ -1391,17 +1363,6 @@ bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_re
         }
       }
     }
-    // If being called as a deme reaction..
-    else {
-      tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
-      while (reaction_it.Next() != NULL) {
-        int react_id = reaction_it.Get()->GetID();
-        if (reaction_count[react_id] == 0) {
-          satisfied = false;
-          break;
-        }
-      }
-    }
     
     if (satisfied == false) continue;
     
@@ -1672,84 +1633,47 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     
     double bonus = consumed * cur_process->GetValue();
     
-    if (!cur_process->GetIsGermline())
-    {
-      // normal bonus
-      double deme_bonus = 0;
-      
-      // How much of this bonus belongs to the deme, and how much belongs to the organism?
-      if (cur_process->GetDemeFraction()) {
-        deme_bonus = cur_process->GetDemeFraction() * bonus;
-        bonus = (1-cur_process->GetDemeFraction()) * bonus;
+    // Take care of the organism's bonus:
+    switch (cur_process->GetType()) {
+      case nReaction::PROCTYPE_ADD:
+        result.AddBonus(bonus, reaction_id);
+        break;
+      case nReaction::PROCTYPE_MULT:
+        result.MultBonus(bonus);
+        break;
+      case nReaction::PROCTYPE_POW:
+        result.MultBonus(pow(2.0, bonus));
+        break;
+      case nReaction::PROCTYPE_LIN:
+        result.AddBonus(bonus * task_count, reaction_id);
+        break;
+      case nReaction::PROCTYPE_ENERGY:
+        result.AddEnergy(bonus);
+        break;
+      case nReaction::PROCTYPE_ENZYME: //@JEB -- experimental
+      {
+        const int res_id = in_resource->GetID();
+        assert(cur_process->GetMaxFraction() != 0);
+        assert(resource_count[res_id] != 0);
+        // double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetMaxFraction());
+        double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetKsubM());
+        result.AddBonus( reward , reaction_id);
+        break;
       }
-      
-      // Take care of the organism's bonus:
-      switch (cur_process->GetType()) {
-        case nReaction::PROCTYPE_ADD:
-          result.AddBonus(bonus, reaction_id);
-          result.AddDemeBonus(deme_bonus);
-          break;
-        case nReaction::PROCTYPE_MULT:
-          result.MultBonus(bonus);
-          // @JEB: since deme_bonus is ZERO by default this will cause
-          // a problem if we unintentionally multiply the deme's bonus
-          // when we do not make a deme reaction, i.e. deme=0!
-          // Other cases ADD zero, so they don't necessarily need this check.
-          if (cur_process->GetDemeFraction()) result.MultDemeBonus(deme_bonus);
-          break;
-        case nReaction::PROCTYPE_POW:
-          result.MultBonus(pow(2.0, bonus));
-          result.MultDemeBonus(pow(2.0, deme_bonus));
-          break;
-        case nReaction::PROCTYPE_LIN:
-          result.AddBonus(bonus * task_count, reaction_id);
-          break;
-        case nReaction::PROCTYPE_ENERGY:
-          result.AddEnergy(bonus);
-          assert(deme_bonus == 0.0);
-          break;
-        case nReaction::PROCTYPE_ENZYME: //@JEB -- experimental
-        {
-          const int res_id = in_resource->GetID();
-          assert(cur_process->GetMaxFraction() != 0);
-          assert(resource_count[res_id] != 0);
-          // double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetMaxFraction());
-          double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetKsubM());
-          result.AddBonus( reward , reaction_id);
-          break;
-        }
-        case nReaction::PROCTYPE_EXP: //@JEB -- experimental
-        {
-          // Cumulative rewards are Value * integral (exp (-MaxFraction * TaskCount))
-          // Evaluate to get stepwise amount to add per task executed.
-          assert(task_count >= 1);
-          const double decay = cur_process->GetMaxFraction();
-          const double value = cur_process->GetValue();
-          result.AddBonus( value * (1.0 / decay) * ( exp((task_count-1) * decay) - exp(task_count * decay)), reaction_id );
-          break;
-        }
-          
-        default:
-          assert(false);  // Should not get here!
-          break;
+      case nReaction::PROCTYPE_EXP: //@JEB -- experimental
+      {
+        // Cumulative rewards are Value * integral (exp (-MaxFraction * TaskCount))
+        // Evaluate to get stepwise amount to add per task executed.
+        assert(task_count >= 1);
+        const double decay = cur_process->GetMaxFraction();
+        const double value = cur_process->GetValue();
+        result.AddBonus( value * (1.0 / decay) * ( exp((task_count-1) * decay) - exp(task_count * decay)), reaction_id );
+        break;
       }
-    } else {  // if (cur_process->GetIsGermline())
-      // @JEB -- this process changes germline propensities, not bonus
-      switch (cur_process->GetType()) {
-        case nReaction::PROCTYPE_ADD:
-          result.AddGermline(bonus);
-          break;
-        case nReaction::PROCTYPE_MULT:
-          result.MultGermline(bonus);
-          break;
-        case nReaction::PROCTYPE_POW:
-          result.MultGermline(pow(2.0, bonus));
-          break;
-          
-        default:
-          assert(false);  // Should not get here!
-          break;
-      }
+        
+      default:
+        assert(false);  // Should not get here!
+        break;
     }
     
     // Determine detection events

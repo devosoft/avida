@@ -57,7 +57,6 @@ private:
   Apto::Array<int> m_inputs;                 // Environmental Inputs...
 
   int m_cell_id;           // Unique id for position of cell in population.
-  int m_deme_id;           // ID of the deme that this cell is part of.  
 
   struct {
     int contents;
@@ -93,10 +92,8 @@ public:
   void operator=(const cPopulationCell& in_cell);
 
   void Setup(cWorld* world, int in_id, const cMutationRates& in_rates, int x, int y);
-  void SetDemeID(int in_id) { m_deme_id = in_id; }
   void Rotate(cPopulationCell& new_facing);
 
-  //@AWC -- This is, admittedly, a hack to get migration between demes working under local copy...
   void SetMigrant() {m_migrant = true;} //@AWC -- this cell will contain a migrant genome
   void UnsetMigrant() {m_migrant = false;} //@AWC -- unset the migrant flag
   bool IsMigrant() {return m_migrant;} //@AWC -- does this contain a migrant genome?
@@ -126,7 +123,6 @@ public:
   void ResetInputs(cAvidaContext& ctx);
 
   inline int GetID() const { return m_cell_id; }
-  inline int GetDemeID() const { return m_deme_id; }
   inline int GetCellData() const { return m_cell_data.contents; }
   inline int GetCellDataOrgID() const { return m_cell_data.org_id; }
   inline int GetCellDataUpdate() const { return m_cell_data.update; }

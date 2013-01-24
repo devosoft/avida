@@ -53,10 +53,6 @@
 class cWorld;
 class cOrganism;
 class cOrgMessage;
-class cOrgMessagePredicate;
-class cOrgMovementPredicate;
-class cDeme;
-class cGermline;
 
 using namespace Avida;
 
@@ -278,32 +274,6 @@ private:
   int num_orgs_replicated;
 
 
-  // --------  Deme Stats  ---------
-  Apto::Stat::Accumulator<int> sum_deme_age;
-  Apto::Stat::Accumulator<int> sum_deme_birth_count;
-  Apto::Stat::Accumulator<int> sum_deme_last_birth_count;
-  Apto::Stat::Accumulator<int> sum_deme_org_count;
-  Apto::Stat::Accumulator<int> sum_deme_last_org_count;
-  Apto::Stat::Accumulator<int> sum_deme_generation;
-  Apto::Stat::Accumulator<int> sum_deme_gestation_time;
-  cDoubleSum sum_deme_normalized_time_used;
-  cDoubleSum sum_deme_merit;
-  cDoubleSum sum_deme_generations_per_lifetime;
-  int m_num_occupied_demes;
-
-  Apto::Stat::Accumulator<int> sum_deme_events_killed;
-  Apto::Stat::Accumulator<int> sum_deme_events_kill_attempts;
-
-  cDoubleSum EnergyTestamentToFutureDeme;
-  cDoubleSum EnergyTestamentToNeighborOrganisms;
-  cDoubleSum EnergyTestamentToDemeOrganisms;
-  cDoubleSum EnergyTestamentAcceptedByOrganisms;
-  cDoubleSum EnergyTestamentAcceptedByDeme;
-
-  //(event flow rate, (deme pop size, events killed))
-  std::map<int, flow_rate_tuple > flow_rate_tuples;
-
-
   // --------  Speculative Execution Stats  ---------
   int m_spec_total;
   int m_spec_num;
@@ -458,26 +428,6 @@ public:
   cDoubleSum& SumExeSize()       { return sum_exe_size; }
   cDoubleSum& SumMemSize()       { return sum_mem_size; }
 
-  //deme
-  Apto::Stat::Accumulator<int>& SumDemeAge()          { return sum_deme_age; }
-  Apto::Stat::Accumulator<int>& SumDemeBirthCount()   { return sum_deme_birth_count; }
-  Apto::Stat::Accumulator<int>& SumDemeLastBirthCount()   { return sum_deme_last_birth_count; }
-  Apto::Stat::Accumulator<int>& SumDemeOrgCount()     { return sum_deme_org_count; }
-  Apto::Stat::Accumulator<int>& SumDemeLastOrgCount()     { return sum_deme_last_org_count; }
-  Apto::Stat::Accumulator<int>& SumDemeGeneration()   { return sum_deme_generation; }
-  Apto::Stat::Accumulator<int>& SumDemeGestationTime()   { return sum_deme_gestation_time; }
-  cDoubleSum& SumDemeNormalizedTimeUsed()   { return sum_deme_normalized_time_used; }
-  cDoubleSum& SumDemeMerit()   { return sum_deme_merit; }
-  cDoubleSum& SumDemeGenerationsPerLifetime()   { return sum_deme_generations_per_lifetime; }
-
-  Apto::Stat::Accumulator<int>& SumDemeEventsKilled()          { return sum_deme_events_killed; }
-  Apto::Stat::Accumulator<int>& SumDemeAttemptsToKillEvents()          { return sum_deme_events_kill_attempts; }
-
-  cDoubleSum& SumEnergyTestamentToFutureDeme() { return EnergyTestamentToFutureDeme;}
-  cDoubleSum& SumEnergyTestamentToNeighborOrganisms() { return EnergyTestamentToNeighborOrganisms; }
-  cDoubleSum& SumEnergyTestamentToDemeOrganisms() { return EnergyTestamentToDemeOrganisms; }
-  cDoubleSum& SumEnergyTestamentAcceptedByOrganisms() { return EnergyTestamentAcceptedByOrganisms; }
-  cDoubleSum& SumEnergyTestamentAcceptedByDeme() { return EnergyTestamentAcceptedByDeme; }
 
   //pred-prey
   cDoubleSum& SumPreyFitness()       { return sum_prey_fitness; }
@@ -531,8 +481,7 @@ public:
   Apto::Array<Apto::Stat::Accumulator<int> >& InstFemaleExeCountsForInstSet(const cString& inst_set) { return m_is_female_exe_inst_map[inst_set]; }
   void ZeroMTInst();
   
-  std::map<int, flow_rate_tuple >&  FlowRateTuples() { return flow_rate_tuples; }
-
+ 
 
   // And constant versions of the above...
   const cDoubleSum& SumFitness() const       { return sum_fitness; }
@@ -554,26 +503,6 @@ public:
   const cDoubleSum& SumExeSize() const       { return sum_exe_size; }
   const cDoubleSum& SumMemSize() const       { return sum_mem_size; }
 
-  //deme
-  const Apto::Stat::Accumulator<int>& SumDemeAge() const          { return sum_deme_age; }
-  const Apto::Stat::Accumulator<int>& SumDemeBirthCount() const   { return sum_deme_birth_count; }
-  const Apto::Stat::Accumulator<int>& SumDemeLastBirthCount() const   { return sum_deme_last_birth_count; }
-  const Apto::Stat::Accumulator<int>& SumDemeOrgCount() const     { return sum_deme_org_count; }
-  const Apto::Stat::Accumulator<int>& SumDemeLastOrgCount() const     { return sum_deme_last_org_count; }
-  const Apto::Stat::Accumulator<int>& SumDemeGeneration() const   { return sum_deme_generation; }
-  const Apto::Stat::Accumulator<int>& SumDemeGestationTime() const  { return sum_deme_generation; }
-  const cDoubleSum& SumDemeNormalizedTimeUsed() const  { return sum_deme_normalized_time_used; }
-  const cDoubleSum& SumDemeMerit()  const  { return sum_deme_merit; }
-  const cDoubleSum& SumDemeGenerationsPerLifetime() const  { return sum_deme_generations_per_lifetime; }
-
-  const Apto::Stat::Accumulator<int>& SumDemeEventsKilled() const          { return sum_deme_events_killed; }
-  const Apto::Stat::Accumulator<int>& SumDemeAttemptsToKillEvents() const  { return sum_deme_events_kill_attempts; }
-
-  const cDoubleSum& SumEnergyTestamentToFutureDeme() const { return EnergyTestamentToFutureDeme;}
-  const cDoubleSum& SumEnergyTestamentToNeighborOrganisms() const { return EnergyTestamentToNeighborOrganisms; }
-  const cDoubleSum& SumEnergyTestamentToDemeOrganisms() const { return EnergyTestamentToDemeOrganisms; }
-  const cDoubleSum& SumEnergyTestamentAcceptedByOrganisms() const { return EnergyTestamentAcceptedByOrganisms; }
-  const cDoubleSum& SumEnergyTestamentAcceptedByDeme() const { return EnergyTestamentAcceptedByDeme; }
 
   //pred-prey
   const cDoubleSum& SumPreyFitness() const       { return sum_prey_fitness; }
@@ -597,8 +526,7 @@ public:
   const cDoubleSum& SumTopPredGeneration() const    { return sum_tpred_generation; }
   const cDoubleSum& SumTopPredSize() const          { return sum_tpred_size; }
 
-  const std::map<int, flow_rate_tuple >&  FlowRateTuples() const { return flow_rate_tuples; }
-
+  
   void IncResamplings() { ++num_resamplings; }
   void IncFailedResamplings() { ++num_failedResamplings; }
 
@@ -790,8 +718,6 @@ public:
 
   // Public calls to output data files (for events)
   void PrintAverageData(const cString& filename);
-  void PrintDemeAverageData(const cString& filename);
-  void PrintFlowRateTuples(const cString& filename);
   void PrintErrorData(const cString& filename);
   void PrintVarianceData(const cString& filename);
   void PrintParasiteData(const cString& filename);
@@ -815,8 +741,6 @@ public:
 
   void PrintCountData(const cString& filename);
   void PrintThreadsData(const cString& filename);
-  void PrintMessageData(const cString& filename);
-  void PrintInterruptData(const cString& filename);
   void PrintTotalsData(const cString& filename);
   void PrintTasksData(const cString& filename);
   void PrintHostTasksData(const cString& filename);
@@ -843,12 +767,10 @@ public:
   void PrintSenseExeData(const cString& filename);
   void PrintInternalTasksData(const cString& filename);
   void PrintInternalTasksQualData(const cString& filename);
-  void PrintSleepData(const cString& filename);
   void PrintCompetitionData(const cString& filename);
   void PrintCellVisitsData(const cString& filename);
   void PrintExtendedTimeData(const cString& filename);
   void PrintNumOrgsKilledData(const cString& filename);
-  void PrintMigrationData(const cString& filename);
   void PrintGroupsFormedData(const cString& filename);
   void PrintGroupIds(const cString& filename);
   void PrintTargets(const cString& filename);
@@ -882,71 +804,12 @@ public:
     void IncJuvKilled() { juv_killed++; }
 
   
-  // deme predicate stats
-  void IncEventCount(int x, int y);
-  void IncPredSat(int cell_id);
-  void PrintPredSatFracDump(const cString& filename);
-
-	void AddDemeResourceThresholdPredicate(cString& name);
-	void IncDemeResourceThresholdPredicate(cString& name);
-	void PrintDemeResourceThresholdPredicate(const cString& filename);
-
-  void addOrgLocations(std::vector<std::pair<int, int> >);
-  void PrintDemeRepOrgLocation(const cString& filename);
-
   // ----------- Sexual selection output -----------
 public:
   void PrintSuccessfulMates(cString& filename);
   // ----------- End sexual selection output -----------
 
-  // -------- Messaging support --------
-public:
-  //! Type for a list of pointers to message predicates.
-  typedef std::vector<cOrgMessagePredicate*> message_pred_ptr_list;
 
-  //! Called for every message successfully sent anywhere in the population.
-  void SentMessage(const cOrgMessage& msg);
-  //! Adds a predicate that will be evaluated for each message.
-  void AddMessagePredicate(cOrgMessagePredicate* predicate);
-  //! Removes a predicate.
-  void RemoveMessagePredicate(cOrgMessagePredicate* predicate);
-  //! Prints information regarding messages that "passed" their predicate.
-  void PrintPredicatedMessages(const cString& filename);
-  //! Log a message.
-  void LogMessage(const cOrgMessage& msg, bool dropped, bool lost);
-  //! Prints logged messages.
-  void PrintMessageLog(const cString& filename);
-
-protected:
-  /*! List of all active message predicates.  The idea here is that the predicates,
-  rather than cStats / cOrgMessage / etc., do the tracking of particular messages
-  of interest. */
-  message_pred_ptr_list m_message_predicates;
-  //! Type to store logged messages.
-  struct message_log_entry_t {
-    message_log_entry_t(int u, int de, int s, int d, int t, unsigned int md, unsigned int ml, bool dr, bool l)
-      :	update(u), deme(de), src_cell(s), dst_cell(d), transmit_cell(t), msg_data(md), msg_label(ml), dropped(dr), lost(l) {
-    }
-    int update, deme, src_cell, dst_cell, transmit_cell;
-    unsigned int msg_data, msg_label;
-    bool dropped, lost;
-  };
-  typedef std::vector<message_log_entry_t> message_log_t; //!< Type for message log.
-  message_log_t m_message_log; //!< Log for messages.
-
-  // -------- End messaging support --------
-
-
-  // -------- Movement support -------------
-public:
-  //! Type for a list of pointers to movement predicates.
-  typedef std::vector<cOrgMovementPredicate*> movement_pred_ptr_list;
-  void Move(cOrganism& org);
-  void AddMovementPredicate(cOrgMovementPredicate* predicate);
-protected:
-  movement_pred_ptr_list m_movement_predicates;
-  // -------- End movement support --------
-  
   // -------- Tolerance support --------
 public:
   void PushToleranceInstExe(int tol_inst); 
@@ -955,120 +818,6 @@ public:
   void ZeroToleranceInst(); 
 
 
-  // -------- Deme replication support --------
-public:
-  //! Called immediately prior to deme replacement.
-  void DemePreReplication(cDeme& source_deme, cDeme& target_deme);
-  //! Called immediately after deme replacement.
-  void DemePostReplication(cDeme& source_deme, cDeme& target_deme);
-  //! Called immediately prior to germline replacement.
-  void GermlineReplication(cGermline& source_germline, cGermline& target_germline);
-  //! Print statistics about deme replication.
-  void PrintDemeReplicationData(const cString& filename);
-  //! Print statistics regarding germline sequestration
-  void PrintDemeGermlineSequestration(const cString& filename);
-  //! Print germline sequestration for every individual in every deme
-  void PrintDemeOrgGermlineSequestration(const cString& filename);
-  //! Print genotype IDs and genotypes for GLS deme founders
-  void PrintDemeGLSFounders(const cString& filename);
-  //! Track GLS Deme Founder Data
-  typedef std::map<std::pair<int, int>, std::vector<std::pair<int, std::string> > > t_gls_founder_map;
-  void TrackDemeGLSReplication(int source_deme_id, int target_deme_id,   std::vector<std::pair<int, std::string> > founders);
-
-
-	void PrintDemeTreatableReplicationData(const cString& filename);
-	void PrintDemeUntreatableReplicationData(const cString& filename);
-	void PrintDemeTreatableCount(const cString& filename);
-
-  //! Print statistics about germlines.
-  void PrintGermlineData(const cString& filename);
-  //! Accessor for average "generation" of germlines.
-  double GetAveGermlineGeneration() const { return m_germline_generation.Average(); }
-  /*! Typedef of a data structure to track deme founders.
-    * Map of deme id -> {founder genotype id_0, id_1,... id_{deme propagule size}} */
-  typedef std::map<int, std::vector<int> > t_founder_map;
-  //! Print the genotype IDs for the founders of demes that have recently been "born."
-  void PrintDemeFoundersData(const cString& filename);
-
-  void PrintPerDemeTasksData(const cString& filename);
-  void PrintPerDemeTasksExeData(const cString& filename);
-  void PrintAvgDemeTasksExeData(const cString& filename);
-  void PrintAvgTreatableDemeTasksExeData(const cString& filename);
-  void PrintAvgUntreatableDemeTasksExeData(const cString& filename);
-  void PrintPerDemeReactionData(const cString& filename);
-  void PrintDemeTasksData(const cString& filename);
-  void PrintDemeTasksExeData(const cString& filename);
-  void PrintDemeReactionData(const cString& filename);
-  void PrintDemeOrgTasksData(const cString& filename);
-  void PrintDemeOrgTasksExeData(const cString& filename);
-  void PrintDemeOrgReactionData(const cString& filename);
-  void PrintDemeCurrentTaskExeData(const cString& filename);
-  void PrintCurrentTaskCounts(const cString& filename);
-  void PrintPerDemeGenPerFounderData(const cString& filename);
-	void PrintDemeMigrationSuicidePoints(const cString& filename);
-	void PrintDemeReactionDiversityReplicationData(const cString& filename);
-  void PrintWinningDeme(const cString& filename);
-  void PrintDemeGermResourcesData(const cString& filename);
-
-  void PrintDemesTasksData(const cString& filename); //@JJB**
-  void PrintDemesReactionsData(const cString& filename); //@JJB**
-  void PrintDemesFitnessData(const cString& filename); //@JJB**
-
-  void IncNumOccupiedDemes() { m_num_occupied_demes++; }
-  void ClearNumOccupiedDemes() { m_num_occupied_demes = 0; }
-  int GetNumOccupiedDemes() { return m_num_occupied_demes; }
-
-
-
-protected:
-  int m_deme_num_repls; //!< Number of deme replications since last PrintDemeReplicationData.
-	int m_total_deme_num_repls; //!< Total number of deme replications ever.
-  cDoubleSum m_deme_gestation_time; //!< Gestation time for demes - mean age at deme replication.
-  cDoubleSum m_deme_births; //!< Mean number of births in replicated demes.
-  cDoubleSum m_deme_merit; //!< Mean merit of replicated demes.
-  cDoubleSum m_deme_generation; //!< Mean generation of replicated demes.
-	cDoubleSum m_deme_density; //!< Mean density of replicated demes.
-  cDoubleSum m_germline_generation; //!< Mean germline generation of replicated germlines
-  std::deque<double> m_ave_germ_mut; //!< Mean number of mutations that occurred as a result of damage related to performing metabolic work (does not include mutations that occur as part of replication).
-  std::deque<double> m_var_germ_mut;
-  std::deque<double> m_ave_soma_mut; 
-  std::deque<double> m_var_soma_mut;
-  std::deque<double> m_ave_germ_size;
-  std::deque<double> m_ave_germ_percent;
-  std::deque<double> m_ave_soma_work; 
-  std::deque<double> m_var_soma_work;
-  std::deque<double> m_ave_germ_work; 
-  std::deque<double> m_var_germ_work;
-
-  t_gls_founder_map m_gls_deme_founders; //! Data structure to track the founders of gls demes.
-  
-
-	int m_deme_num_repls_treatable; //!< Number of deme replications in treatable demes since last PrintDemeReplicationData.
-  cDoubleSum m_deme_gestation_time_treatable; //!< Gestation time for treatable demes - mean age at deme replication.
-  cDoubleSum m_deme_births_treatable; //!< Mean number of births in replicated treatable demes.
-  cDoubleSum m_deme_merit_treatable; //!< Mean merit of replicated treatable demes.
-  cDoubleSum m_deme_generation_treatable; //!< Mean generation of replicated treatable demes.
-	cDoubleSum m_deme_density_treatable; //!< Mean density of replicated treatable demes.
-
-	int m_deme_num_repls_untreatable; //!< Number of deme replications in untreatable demes since last PrintDemeReplicationData.
-  cDoubleSum m_deme_gestation_time_untreatable; //!< Gestation time for untreatable demes - mean age at deme replication.
-  cDoubleSum m_deme_births_untreatable; //!< Mean number of births in replicated untreatable demes.
-  cDoubleSum m_deme_merit_untreatable; //!< Mean merit of replicated untreatable demes.
-  cDoubleSum m_deme_generation_untreatable; //!< Mean generation of replicated untreatable demes.
-	cDoubleSum m_deme_density_untreatable; //!< Mean density of replicated untreatable demes.
-
-	t_founder_map m_deme_founders; //!< Data structure to track the founders of demes.
-
-
-  // -------- Deme competition support --------
-public:
-  //! Called immediately prior to deme competition.
-  void CompeteDemes(const std::vector<double>& fitness);
-  //! Print data regarding deme competition.
-  void PrintDemeCompetitionData(const cString& filename);
-
-private:
-  std::vector<double> m_deme_fitness; //!< Fitness of each deme during last deme competition.
 
 	// -------- Cell data support --------
 public:
@@ -1079,74 +828,7 @@ public:
 public:
 	//! Prints the current opinions of all organisms in the population.
 	void PrintCurrentOpinions(const cString& filename);
-	//! Prints the average number of organism with set opinions
-	void PrintOpinionsSetPerDeme(const cString& filename);
 
-	// -------- Synchronization support --------
-public:
-	typedef std::vector<int> CellFlashes; //!< Typedef for a list of cell IDs.
-	typedef std::map<int, CellFlashes> DemeFlashes; //!< Typedef for cell IDs (in this deme) -> list of cell IDs.
-	typedef std::map<int, DemeFlashes> PopulationFlashes; //!< Typedef for deme IDs -> flashes in that deme.
-  //! Called immediately after an organism has issued a "flash" to its neighbors.
-  void SentFlash(cOrganism& organism);
-	//! Retrieve the cell ID -> flash time map.
-	const PopulationFlashes& GetFlashTimes() { return m_flash_times; }
-  //! Print statistics about synchronization flashes.
-  void PrintSynchronizationData(const cString& filename);
-  //! Print detailed information regarding synchronization flashes.
-  void PrintDetailedSynchronizationData(const cString& filename);
-protected:
-  int m_flash_count; //!< Number of flashes that have occured since last PrintSynchronizationData.
-	PopulationFlashes m_flash_times; //!< For tracking flashes that have occurred throughout this population.
-
-	// -------- Consensus support --------
-public:
-	struct ConsensusRecord {
-		ConsensusRecord(int u, int d, cOrganism::Opinion c, int cell) : update(u), deme_id(d), consensus(c), cell_id(cell) {
-		}
-		int update;
-		int deme_id;
-		cOrganism::Opinion consensus;
-		int cell_id;
-	};
-
-	typedef std::vector<ConsensusRecord> Consensi; //!< Typedef for a map of update -> Consensus records.
-	//! Called when a deme reaches consensus.
-	void ConsensusReached(const cDeme& deme, cOrganism::Opinion consensus, int cellid);
-	//! Print information about demes that have reached consensus.
-	void PrintConsensusData(const cString& filename);
-	//! Print "simple" (summary) consensus information.
-	void PrintSimpleConsensusData(const cString& filename);
-protected:
-	Consensi m_consensi; //!< Tracks when demes have reached consensus.
-
-// ----------Division of Labor support --------
-protected:
-	typedef std::deque<double> dblq;
-	dblq m_switching;
-	dblq m_deme_diversity;
-	dblq m_shannon_div;
-  dblq m_shannon_div_norm;
-	dblq m_num_orgs_perf_reaction;
-  dblq m_percent_reproductives;
-  int m_resource_print_thresh;
-
-public:
-	void IncDemeReactionDiversityReplicationData(double deme_div, double switch_pen,  \
-																							  double shannon_div, double num_orgs_perf_reaction, double per_repro) {
-		m_switching.push_back(switch_pen); m_deme_diversity.push_back(deme_div);
-		m_shannon_div.push_back(shannon_div);
-		m_num_orgs_perf_reaction.push_back(num_orgs_perf_reaction);
-    double norm_shan = shannon_div / (log((double)num_orgs_perf_reaction));
-    m_shannon_div_norm.push_back(norm_shan);
-    m_percent_reproductives.push_back(per_repro);
-
-	}
-	void PrintIntrinsicTaskSwitchingCostData(const cString& filename);
-	void PrintAgePolyethismData(const cString& filename);
-	void AgeTaskEvent(int org_id, int task_id, int org_age);
-	//! Get number of deme replications
-	int GetNumDemeReplications() { return m_total_deme_num_repls; }
   //! Add a task time tracking event
   void AddTaskSwitchTime(int t1, int t2, int time); 
   
@@ -1183,22 +865,6 @@ protected:
 	cDoubleSum m_perfect_match_org;
 	std::map <int, int> m_tags;
 
-	// -------- Deme network support --------
-public:
-	typedef std::map<std::string, double> network_stats_t; //!< Structure to hold statistics for one network.
-	typedef std::map<std::string, cDoubleSum> avg_network_stats_t; //!< Structure to hold average statistics for many networks.
-
-	//! Track named network stats.
-	void NetworkTopology(const network_stats_t& ns);
-
-	//! Print network statistics.
-	void PrintDemeNetworkData(const cString& filename);
-
-	//! Print the topologies of all demes.
-	void PrintDemeNetworkTopology(const cString& filename);
-
-protected:
-	avg_network_stats_t m_network_stats; //!< Network statistics.
 
 	// -------- HGT support --------
 private:

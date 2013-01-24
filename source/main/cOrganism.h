@@ -103,10 +103,7 @@ private:
 
   int m_max_executed;      // Max number of instruction executed before death.  
   bool m_is_running;       // Does this organism have the CPU?
-  bool m_is_sleeping;      // Is this organism sleeping?
   bool m_is_dead;          // Is this organism dead?
-
-  bool killed_event;
 
   cOrganism(); // @not_implemented
   cOrganism(const cOrganism&); // @not_implemented
@@ -180,12 +177,7 @@ public:
   void SetRunning(bool in_running) { m_is_running = in_running; }
   bool IsRunning() { return m_is_running; }
 
-  inline void SetSleeping(bool in_sleeping);
-  bool IsSleeping() { return m_is_sleeping; }
-
   bool IsDead() { return m_is_dead; }
-
-  bool IsInterrupted();
 
   bool GetPheromoneStatus() { return m_pher_drop; }
   void TogglePheromone() { m_pher_drop = (m_pher_drop == true) ? false : true; }
@@ -219,8 +211,6 @@ public:
 
   int GetCellID() { return m_interface->GetCellID(); }
   int GetAVCellID() { return m_interface->GetAVCellID(); }
-  int GetDemeID() { return m_interface->GetDemeID(); }
-  cDeme* GetDeme() { return m_interface->GetDeme(); }
 
   int GetCellData() { return m_interface->GetCellData(); }
   int GetCellDataOrgID() { return m_interface->GetCellDataOrgID(); }
@@ -250,7 +240,6 @@ public:
   void Die(cAvidaContext& ctx) { m_interface->Die(ctx); m_is_dead = true; } 
   void KillCellID(int target, cAvidaContext& ctx) { m_interface->KillCellID(target, ctx); } 
   void Kaboom(int dist, cAvidaContext& ctx) { m_interface->Kaboom(dist,ctx);} 
-  void SpawnDeme(cAvidaContext& ctx) { m_interface->SpawnDeme(ctx); }
   bool GetSentActive() { return m_sent_active; }
   void SendValue(int value) { m_sent_active = true; m_sent_value = value; }
   int RetrieveSentValue() { m_sent_active = false; return m_sent_value; }
@@ -376,48 +365,6 @@ public:
   double GetNeutralMax() const;
 
 
-  // -------- Messaging support --------
-public:
-  typedef std::deque<cOrgMessage> message_list_type; //!< Container-type for cOrgMessages.
-
-  //! Called when this organism attempts to send a message.
-  bool SendMessage(cAvidaContext& ctx, cOrgMessage& msg);
-  //! Called when this organism attempts to broadcast a message.
-  bool BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg, int depth);
-  //! Called when this organism has been sent a message.
-  void ReceiveMessage(cOrgMessage& msg);
-  //! Called when this organism attempts to move a received message into its CPU.
-  std::pair<bool, cOrgMessage> RetrieveMessage();
-  //! Returns the list of all messsages received by this organism.
-  const message_list_type& GetReceivedMessages() { InitMessaging(); return m_msg->received; }
-  //! Returns the list of all messages sent by this organism.
-  const message_list_type& GetSentMessages() { InitMessaging(); return m_msg->sent; }
-  //! Use at your own rish; clear all the message buffers.
-  void FlushMessageBuffers() { InitMessaging(); m_msg->sent.clear(); m_msg->received.clear(); }
-  int PeekAtNextMessageType() { InitMessaging(); return m_msg->received.front().GetMessageType(); }
-
-private:
-  /*! Contains all the different data structures needed to support messaging within
-  cOrganism.  Inspired by cNetSupport (above), the idea is to minimize impact on
-  organisms that DON'T use messaging. */
-  struct cMessagingSupport
-  {
-    cMessagingSupport() : retrieve_index(0) { }
-
-    message_list_type sent; //!< List of all messages sent by this organism.
-    message_list_type received; //!< List of all messages received by this organism.
-    message_list_type::size_type retrieve_index; //!< Index of next message that can be retrieved.
-  };
-
-  /*! This member variable is lazily initialized whenever any of the messaging
-  methods are used.  (My kingdom for boost::shared_ptr.) */
-  cMessagingSupport* m_msg;
-
-  //! Called to check for (and initialize) messaging support within this organism.
-  inline void InitMessaging() { if(!m_msg) m_msg = new cMessagingSupport(); }	
-  //! Called as the bottom-half of a successfully sent message.
-  void MessageSent(cAvidaContext& ctx, cOrgMessage& msg);
-  // -------- End of messaging support --------
 
   // -------- Movement TEMP --------
 public:
@@ -434,15 +381,6 @@ public:
 public:
   bool Move(cAvidaContext& ctx);
 
-
-  /***** context switch********/
-  bool BcastAlarmMSG(cAvidaContext& ctx, int jump_label, int bcast_range);
-  void moveIPtoAlarmLabel(int jump_label);
-
-  void DivideOrgTestamentAmongDeme(double value) { m_interface->DivideOrgTestamentAmongDeme(value); }
-
-  void SetEventKilled() { killed_event = true; }
-  bool GetEventKilled() { return killed_event; }
 
 
   // -------- Opinion support --------
@@ -485,13 +423,6 @@ private:
   // -------- End of opinion support --------
 
 
-  // -------- Synchronization support --------
-public:
-  //! Called when a neighboring organism issues a "flash" instruction.    
-  void ReceiveFlash();
-  //! Sends a "flash" to all neighboring organisms.
-  void SendFlash(cAvidaContext& ctx);
-  // -------- End of synchronization support --------	
 
 
   // -------- Neighborhood support --------
@@ -695,17 +626,12 @@ public:
 
   // -------- Division of Labor support --------
 public:
-  void DonateResConsumedToDeme(); //! donate consumed resources to the deme.
   int GetNumOfPointMutationsApplied() {return m_num_point_mut; } //! number of point mutations applied to org.
   void IncPointMutations(int n) {m_num_point_mut+=n;} 
-  void JoinGermline() {m_phenotype.is_germ_cell = true;}
-  void ExitGermline() {m_phenotype.is_germ_cell = false;}
   void RepairPointMutOn() {m_repair = true;}
   void RepairPointMutOff() {m_repair = false;}
-  bool IsGermline() { return m_phenotype.is_germ_cell; }
 private: 
   int m_num_point_mut;
-//  bool m_germline;
   bool m_repair;
 	
 	// -------- Avatar support --------
@@ -828,14 +754,6 @@ inline double cOrganism::GetTestColonyFitness(cAvidaContext& ctx) const {
   return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, SystematicsGroup("genotype"))->GetColonyFitness();
 }
 
-
-inline void cOrganism::SetSleeping(bool sleeping)
-{
-  m_is_sleeping = sleeping;
-
-  if (sleeping) m_interface->BeginSleep();
-  else m_interface->EndSleep();
-}
 
 
 #endif

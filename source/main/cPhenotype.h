@@ -82,7 +82,6 @@ private:
   // 1. These are values calculated at the last divide (of self or offspring)
   cMerit merit;             // Relative speed of CPU
   double executionRatio;    //  ratio of current execution merit over base execution merit
-  double energy_store;      // Amount of energy.  Determines relative speed of CPU when turned on.
   int genome_length;        // Number of instructions in genome.
   int bonus_instruction_count; // Number of times MERIT_BONUS_INT is in genome.
   int copied_size;          // Instructions copied into genome.
@@ -95,17 +94,6 @@ private:
 
   // 2. These are "in progress" variables, updated as the organism operates
   double cur_bonus;                           // Current Bonus
-  double cur_energy_bonus;                    // Current energy bonus
-  double energy_tobe_applied;                 // Energy that has not yet been added to energy store.
-  double energy_testament;
-  double energy_received_buffer;              // Energy received through donation, but not yet applied to energy store
-  double total_energy_donated;                // Tota amount of energy that has been donated
-  double total_energy_received;               // Total amount of energy received through donations
-  double total_energy_applied;                // Total amount of received energy applied to energy store
-  int num_energy_requests;                    // Number of times organism has requested energy
-  int num_energy_donations;                   // Number of times energy has been donated
-  int num_energy_receptions;                  // Number of times organism has received energy donations
-  int num_energy_applications;                // Number of times organism has applied donated energy to its energy store
   int cur_num_errors;                         // Total instructions executed illeagally.
   int cur_num_donates;                        // Number of donations so far
 
@@ -144,7 +132,6 @@ private:
   tList<int> m_tolerance_offspring_own;        // record of previous updates tolerance has been decreased towards org's own offspring 
   tList<int> m_tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group 
   Apto::Array<pair<int,int> > m_intolerances;        // caches temporary values of the intolerance and the update
-  double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
   int mating_type;                            // Organism's phenotypic sex @CHC
   int mate_preference;                        // Organism's mating preference @CHC
@@ -159,7 +146,6 @@ private:
   // 3. These mark the status of "in progress" variables at the last divide.
   double last_merit_base;         // Either constant or based on genome length.
   double last_bonus;
-  double last_energy_bonus;
   int last_num_errors;
   int last_num_donates;
 
@@ -183,7 +169,6 @@ private:
 
   double last_fitness;            // Used to determine sterilization.
   int last_cpu_cycles_used;
-  double cur_child_germline_propensity;   // chance of child being a germline cell; @JEB
   
   int last_mating_display_a;                   // value of organism's last mating display A trait
   int last_mating_display_b;                   // value of organism's last mating display B trait
@@ -211,8 +196,7 @@ private:
   Apto::Array<int> testCPU_inst_count;	  // Instruction exection counter as calculated by Test CPU
   int last_task_id; // id of the previous task
   int num_new_unique_reactions; // count the number of new unique reactions this organism has performed.
-  double res_consumed; // amount of resources consumed since the organism last turned them over to the deme.
-  bool is_germ_cell; // records whether or not the organism is part of the germline.
+  double res_consumed; // amount of resources consumed since the organism last turned them over to the ...
   int last_task_time; // time at which the previous task was performed
   
   
@@ -244,12 +228,7 @@ private:
   bool is_donor_shadedgb_last; // Did this org's parent shaded_gb_donate? 
   Apto::Array<bool> is_donor_locus; // Did this org target a donation at a specific locus.
   Apto::Array<bool> is_donor_locus_last; // Did this org's parent target a donation at a specific locus.
-  bool is_energy_requestor; // Has this organism requested energy?
-  bool is_energy_donor; // Has this organism donated energy?
-  bool is_energy_receiver;  // Has this organism received an energy donation?
-  bool has_used_donated_energy; // Has the organism actively used an energy donation?
-  bool has_open_energy_request; // Does the organism have an energy request that hasn't been answered?
-  int num_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)? 
+  int num_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)?
   int num_thresh_gb_donations_last; // Num times this org's parent thresh_donated? 
   int num_quanta_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)? 
   int num_quanta_thresh_gb_donations_last; // Num times this org's parent thresh_donated? 
@@ -295,14 +274,12 @@ private:
   int child_copied_size; // Instruction copied into child.
 
   // 7. Information that is set once (when organism was born)
-  double permanent_germline_propensity;
   
 
   inline void SetInstSetSize(int inst_set_size);
   inline void SetGroupAttackInstSetSize(int num_group_attack_inst);
   
 public:
-  cPhenotype() : m_world(NULL), m_reaction_result(NULL) { ; } // Will not construct a valid cPhenotype! Only exists to support incorrect cDeme Apto::Array usage.
   cPhenotype(cWorld* world, int parent_generation, int num_nops);
 
 
@@ -310,8 +287,6 @@ public:
   cPhenotype& operator=(const cPhenotype&); 
   ~cPhenotype();
   
-  enum energy_levels {ENERGY_LEVEL_LOW = 0, ENERGY_LEVEL_MEDIUM, ENERGY_LEVEL_HIGH};
-	
   void ResetMerit();
   void Sterilize();
   // Run when being setup *as* and offspring.
@@ -359,7 +334,6 @@ public:
 
   /////////////////////  Accessors -- Retrieving  ////////////////////
   const cMerit & GetMerit() const { assert(initialized == true); return merit; }
-  double GetEnergyUsageRatio() const { assert(initialized == true); return executionRatio; }
   int GetGenomeLength() const { assert(initialized == true); return genome_length; }
   int GetCopiedSize() const { assert(initialized == true); return copied_size; }
   int GetExecutedSize() const { assert(initialized == true); return executed_size; }
@@ -372,12 +346,6 @@ public:
   int    GetCurBonusInstCount() const { assert(bonus_instruction_count >= 0); return bonus_instruction_count; }
 
   double GetCurMeritBase() const { assert(initialized == true); return CalcSizeMerit(); }
-  double GetStoredEnergy() const { return energy_store; }
-  double GetEnergyBonus() const { assert(initialized == true); return cur_energy_bonus; }
-  int GetDiscreteEnergyLevel() const;
-  double GetEnergyInBufferAmount() const { return energy_received_buffer; }
-  
-  double ConvertEnergyToMerit(double energy) const;
   
   //@MRR Organism-specific birth tracking
   double GetGMuExecTimeBorn() const {return gmu_exec_time_born;}
@@ -477,7 +445,6 @@ public:
   const Apto::Array< Apto::Array<int> >& GetLastTopPredGroupAttackInstCount() const { assert(initialized == true); return last_top_pred_group_attack_count; }
 
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
-  double GetPermanentGermlinePropensity() const { assert(initialized == true); return permanent_germline_propensity; }
   const Apto::Array<int>& GetLastCollectSpecCounts() const { assert(initialized == true); return last_collect_spec_counts; }
   int GetLastCollectSpecCount(int spec_id) const { assert(initialized == true); return last_collect_spec_counts[spec_id]; }
 
@@ -524,11 +491,6 @@ public:
   bool IsDonorPosition(int pos) const {assert(initialized == true); return is_donor_locus.GetSize() > pos ? is_donor_locus[pos] : 0; }
   bool IsDonorPositionLast(int pos) const {assert(initialized == true); return is_donor_locus_last.GetSize() > pos ? is_donor_locus_last[pos] : 0; }
   
-  bool IsEnergyRequestor() const { assert(initialized == true); return is_energy_requestor; }
-  bool IsEnergyDonor() const { assert(initialized == true); return is_energy_donor; }
-  bool IsEnergyReceiver() const { assert(initialized == true); return is_energy_receiver; }
-  bool HasUsedEnergyDonation() const { assert(initialized == true); return has_used_donated_energy; }
-  bool HasOpenEnergyRequest() const { assert(initialized == true); return has_open_energy_request; }
   bool IsReceiver() const { assert(initialized == true); return is_receiver; }
   bool IsReceiverLast() const { assert(initialized == true); return is_receiver_last; }
   bool IsReceiverRand() const { assert(initialized == true); return is_receiver_rand; }
@@ -569,13 +531,10 @@ public:
   ////////////////////  Accessors -- Modifying  ///////////////////
   void SetMerit(const cMerit& in_merit) { merit = in_merit; }
   void SetFitness(const double in_fit) { fitness = in_fit; }
-  void ReduceEnergy(const double cost);
-  void SetEnergy(const double value);
   void SetGestationTime(int in_time) { gestation_time = in_time; }
   void SetTimeUsed(int in_time) { time_used = in_time; }
   void SetTrialTimeUsed(int in_time) { trial_time_used = in_time; }
   void SetGeneration(int in_generation) { generation = in_generation; }
-  void SetPermanentGermlinePropensity(double _in) { permanent_germline_propensity = _in; }
   void SetFault(const cString& in_fault) { fault_desc = in_fault; }
   void SetNeutralMetric(double _in){ neutral_metric = _in; }
   void SetLifeFitness(double _in){ life_fitness = _in; }
@@ -588,19 +547,6 @@ public:
   void SetToDie() { to_die = true; }
   void SetToDelete() { to_delete = true; }
   void SetTestCPUInstCount(const Apto::Array<int>& in_counts) { testCPU_inst_count = in_counts; }
-  void IncreaseEnergyDonated(double amount) { assert(amount >=0); total_energy_donated += amount; }
-  void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
-  void IncreaseEnergyApplied(double amount) { assert(amount >=0); total_energy_applied += amount; }
-  void IncreaseNumEnergyRequests() { num_energy_requests++; }
-  void IncreaseNumEnergyDonations() { num_energy_donations++; }
-  void IncreaseNumEnergyApplications() { num_energy_applications++; }
-  void IncreaseNumEnergyReceptions() { num_energy_receptions++; }
-  double GetAmountEnergyDonated() { return total_energy_donated; }
-  double GetAmountEnergyReceived() { return total_energy_received; }
-  double GetAmountEnergyApplied() { return total_energy_applied; }
-  int GetNumEnergyDonations() { return num_energy_donations; }
-  int GetNumEnergyReceptions() { return num_energy_receptions; }
-  int GetNumEnergyApplications() { return num_energy_applications; }
   
   void SetReactionCount(int index, int val) { cur_reaction_count[index] = val; }
   void SetStolenReactionCount(int index, int val) { cur_stolen_reaction_count[index] = val; }
@@ -638,13 +584,7 @@ public:
   void SetIsReceiverQuantaThreshGb() { SetIsReceiver(); is_receiver_quanta_threshgb = true; } 
   void SetIsReceiverShadedGb() { SetIsReceiver(); is_receiver_shadedgb = true; }
   void SetIsReceiverGBSameLocus() { SetIsReceiver(); is_receiver_gb_same_locus = true; }
-  void SetIsEnergyRequestor() { is_energy_requestor = true; }
-  void SetIsEnergyDonor() { is_energy_donor = true; }
-  void SetIsEnergyReceiver() { is_energy_receiver = true; }
-  bool& SetBornParentGroup() { return born_parent_group; } 
-  void SetHasUsedDonatedEnergy() {has_used_donated_energy = true; }
-  void SetHasOpenEnergyRequest() { has_open_energy_request = true; }
-  void ClearHasOpenEnergyRequest() { has_open_energy_request = false; }
+  bool& SetBornParentGroup() { return born_parent_group; }
   void ClearIsMultiThread() { is_multi_thread = false; }
   
   void SetCurBonus(double _bonus) { cur_bonus = _bonus; }
@@ -689,10 +629,6 @@ public:
   bool& ChildFertile() { assert(initialized == true); return child_fertile; }
   bool& IsMultiThread() { assert(initialized == true); return is_multi_thread; }
   
-  void DoubleEnergyUsage();
-  void HalveEnergyUsage();
-  void DefaultEnergyUsage();
-	
   // --- Support for Division of Labor --- //
   int GetLastTaskID() const { return last_task_id; }
   int  GetNumNewUniqueReactions() const {assert(initialized == true);  return num_new_unique_reactions; }
@@ -706,12 +642,6 @@ public:
   void UpdateParasiteTasks() { last_para_tasks = cur_para_tasks; cur_para_tasks.SetAll(0); return; }
   
 
-  void RefreshEnergy();
-  void ApplyToEnergyStore();
-  void EnergyTestament(const double value); //! external energy given to organism
-  void ApplyDonatedEnergy();
-  void ReceiveDonatedEnergy(const double value);
-  double ExtractParentEnergy();
   
   // Compare two phenotypes and determine an ordering (arbitrary, but consistant among phenotypes).
   static int Compare(const cPhenotype* lhs, const cPhenotype* rhs);

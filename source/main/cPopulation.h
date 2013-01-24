@@ -26,7 +26,6 @@
 #include "avida/data/Provider.h"
 
 #include "cBirthChamber.h"
-#include "cDeme.h"
 #include "cOrgInterface.h"
 #include "cPopulationInterface.h"
 #include "cPopulationResources.h"
@@ -83,8 +82,6 @@ private:
   Apto::Array<cPopulationOrgStatProviderPtr> m_org_stat_providers;
   
   
-  Apto::Array<pair<int,int>, Apto::Smart>* sleep_log;
-  
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
   Apto::Array<int, Apto::Smart> minitrace_queue;
@@ -109,8 +106,6 @@ private:
   int pop_enforce;
   int num_top_pred_organisms;
   
-  Apto::Array<cDeme> deme_array;            // Deme structure of the population.
- 
   // Outside interactions...
   bool sync_events;   // Do we need to sync up the event list with population?
 	
@@ -178,72 +173,6 @@ public:
   void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance=0); 
   void SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx); 
 
-  // Deme-related methods
-  //! Compete all demes with each other based on the given competition type.
-  void CompeteDemes(cAvidaContext& ctx, int competition_type);
-  
-  //! Compete all demes with each other based on the given vector of fitness values.
-  void CompeteDemes(const std::vector<double>& calculated_fitness, cAvidaContext& ctx); 
-
-  //! Replicate all demes based on the given replication trigger.
-  void ReplicateDemes(int rep_trigger, cAvidaContext& ctx);
-
-  //! Helper method to replicate deme
-  void ReplicateDeme(cDeme & source_deme, cAvidaContext& ctx);
-
-  //! Helper method that replaces a target deme with the given source deme.
-  void ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx); 
-  
-  //! Helper method that replaces a target deme with a given source deme using
-  // the germ line flagged by the organisms. 
-  void ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx);
-  
-  //! Helper method that seeds a deme from the given genome.
-  void SeedDeme(cDeme& deme, Genome& genome, Systematics::Source src, cAvidaContext& ctx); 
-
-  //! Helper method that seeds a deme from the given genotype.
-  void SeedDeme(cDeme& _deme, Systematics::GroupPtr bg, Systematics::Source src, cAvidaContext& ctx); 
-  
-  //! Helper method that seeds a target deme from the organisms in the source deme.
-  bool SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx); 
-
-  //! Helper method that determines the cell into which an organism will be placed during deme replication.
-  int DemeSelectInjectionCell(cDeme& deme, int sequence=0);
-  
-  //! Helper method that performs any post-injection fixups on the cell in the given deme.
-  void DemePostInjection(cDeme& deme, cPopulationCell& cell);
-  
-  void DivideDemes(cAvidaContext& ctx); 
-  void ResetDemes();
-  void CopyDeme(int deme1_id, int deme2_id, cAvidaContext& ctx); 
-  void SpawnDeme(int deme1_id, cAvidaContext& ctx, int deme2_id=-1); 
-  void AddDemePred(cString type, int times);
-
-  void CheckImplicitDemeRepro(cDeme& deme, cAvidaContext& ctx);
-  
-  // Deme-related stats methods
-  void PrintDemeAllStats(cAvidaContext& ctx); 
-  void PrintDemeTestamentStats(const cString& filename);
-  void PrintCurrentMeanDemeDensity(const cString& filename);
-  void PrintDemeEnergySharingStats();
-  void PrintDemeEnergyDistributionStats(cAvidaContext& ctx); 
-  void PrintDemeOrganismEnergyDistributionStats();
-  void PrintDemeDonor();
-  void PrintDemeFitness();
-  void PrintDemeGestationTime();
-  void PrintDemeInstructions();
-  void PrintDemeLifeFitness();
-  void PrintDemeMerit();
-  void PrintDemeMutationRate();
-  void PrintDemeReceiver();
-  void PrintDemeSpatialEnergyData() const;
-  void PrintDemeSpatialSleepData() const;
-  void PrintDemeTasks();
-  void PrintDemeTotalAvgEnergy(cAvidaContext& ctx);
-  void PrintDemesMeritsData(); //@JJB**
-
-  // Print deme founders
-  void DumpDemeFounders(ofstream& fp);
   
   // Print donation stats
   void PrintDonationStats();
@@ -287,8 +216,6 @@ public:
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
   int GetWorldY() const { return world_y; }
-  int GetNumDemes() const { return deme_array.GetSize(); }
-  cDeme& GetDeme(int i) { return deme_array[i]; }
 
   cPopulationCell& GetCell(int in_num) { return cell_array[in_num]; }
 
@@ -321,11 +248,6 @@ public:
   void PrintPhenotypeStatus(const cString& filename);
 
   bool UpdateMerit(int cell_id, double new_merit);
-
-  void AddBeginSleep(int cellID, int start_time);
-  void AddEndSleep(int cellID, int end_time);
- 
-  const Apto::Array<pair<int,int>, Apto::Smart>& getCellSleepLog(int i) const { return sleep_log[i]; }
 
   // Trials and genetic algorithm @JEB
   void NewTrial(cAvidaContext& ctx);
@@ -387,26 +309,19 @@ private:
   void PositionAge(cPopulationCell& parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void PositionEnergyUsed(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
-  cPopulationCell& PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok = true);
-  cPopulationCell& PositionDemeRandom(int deme_id, cPopulationCell& parent_cell, bool parent_ok = true);
-  int UpdateEmptyCellIDArray(int deme_id = -1);
   Apto::Array<int>& GetEmptyCellIDArray() { return empty_cell_id_array; }
   void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
   int FindRandEmptyCell();
   
   // Update statistics collecting...
-  void UpdateDemeStats(cAvidaContext& ctx); 
-  void UpdateOrganismStats(cAvidaContext& ctx); 
+  void UpdateOrganismStats(cAvidaContext& ctx);
   void UpdateFTOrgStats(cAvidaContext& ctx); 
   void UpdateMaleFemaleOrgStats(cAvidaContext& ctx);
   
   void InjectClone(int cell_id, cOrganism& orig_org, Systematics::Source src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   
-  //! Helper method that adds a founder organism to a deme, and sets up its phenotype
-  void SeedDeme_InjectDemeFounder(int _cell_id, Systematics::GroupPtr bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL, int lineage_label=0, bool reset=false); 
-  
-  void CCladeSetupOrganism(cOrganism* organism); 
+  void CCladeSetupOrganism(cOrganism* organism);
 	
   // Must be called to activate *any* organism in the population.
   bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true, bool is_inject = false);

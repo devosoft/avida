@@ -128,7 +128,6 @@ void Avida2Driver::Run()
       cout << "Gen: " << setw(9) << setprecision(7) << stats.SumGeneration().Average() << "  ";
       cout << "Fit: " << setw(9) << setprecision(7) << stats.GetAveFitness() << "  ";
       cout << "Orgs: " << setw(6) << population.GetNumOrganisms() << "  ";
-      if (m_world->GetPopulation().GetNumDemes() > 1) cout << "Demes: " << setw(4) << stats.GetNumOccupiedDemes() << " ";
       if (m_world->GetVerbosity() == VERBOSE_ON || m_world->GetVerbosity() == VERBOSE_DETAILS) {
         cout << "Merit: " << setw(9) << setprecision(7) << stats.GetAveMerit() << "  ";
         cout << "Thrd: " << setw(6) << stats.GetNumThreads() << "  ";

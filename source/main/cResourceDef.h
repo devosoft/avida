@@ -77,7 +77,6 @@ private:
   double xgravity;
   double ydiffuse;
   double ygravity;
-  bool deme_resource;
   bool org_resources;
   bool energy_resource;  // only implemented for spacial resource
 
@@ -135,7 +134,6 @@ public:
   void SetCellIdList(Apto::Array<int>& id_list); //SLG partial resources
   cCellResource* GetCellResourcePtr(int _id);
   void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial, double _inflow, double _outflow);
-  bool SetDemeResource(cString _deme_resource);
   bool SetEnergyResource(cString _energy_resource);
   bool SetGeometry(cString _geometry);
 
@@ -154,7 +152,6 @@ public:
   void SetOutflow(double _outflow) { outflow = _outflow; }
   void SetSpatial(bool _spatial) { isspatial = _spatial; }
 
-  bool GetDemeResource() const { return deme_resource; }
   bool GetEnergyResource() const { return energy_resource; }
   bool GetHGTMetabolize() const { return hgt_metabolize; }
   bool GetCollectable() { return collectable; }

@@ -35,13 +35,12 @@ class cResourceDefLib
 private:
   Apto::Array<cResourceDef*> m_resource_array;
   mutable cResourceHistory* m_initial_levels;
-  int m_num_deme_resources;
   
   cResourceDefLib(const cResourceDefLib&); // @not_implemented
   cResourceDefLib& operator=(const cResourceDefLib&); // @not_implemented
   
 public:
-  cResourceDefLib() : m_initial_levels(NULL), m_num_deme_resources(0) { ; }
+  cResourceDefLib() : m_initial_levels(NULL) { ; }
   ~cResourceDefLib();
   
   int GetSize() const { return m_resource_array.GetSize(); }

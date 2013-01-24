@@ -287,18 +287,7 @@ private:
   double Task_MoveNeutralGradient(cTaskContext& ctx) const;
   double Task_MoveDownGradient(cTaskContext& ctx) const;
   double Task_MoveNotUpGradient(cTaskContext& ctx) const;
-  double Task_MoveToRightSide(cTaskContext& ctx) const;
-  double Task_MoveToLeftSide(cTaskContext& ctx) const;
 
-  // BDC Movement tasks
-  double Task_Move(cTaskContext& ctx) const;
-  double Task_MoveToTarget(cTaskContext& ctx) const;
-  double Task_MoveToMovementEvent(cTaskContext& ctx) const;
-  double Task_MoveBetweenMovementEvent(cTaskContext& ctx) const;
-
-  // movement
-  double Task_MoveToEvent(cTaskContext& ctx) const;
-  double Task_EventKilled(cTaskContext& ctx) const;
 
   // State Grid Tasks
   void Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);

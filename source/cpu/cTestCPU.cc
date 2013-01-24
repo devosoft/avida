@@ -51,7 +51,6 @@ using namespace AvidaTools;
 cTestCPU::cTestCPU(cAvidaContext& ctx, cWorld* world)
   :   m_resource_count(this, 0)
   , m_faced_cell_resource_count(this, 0)
-  , m_deme_resource_count(this, 0)
   , m_cell_resource_count(this, 0)
 {
   m_world = world;
@@ -62,8 +61,6 @@ cTestCPU::cTestCPU(cAvidaContext& ctx, cWorld* world)
  
 void cTestCPU::InitResources(cAvidaContext& ctx, int res_method, cResourceHistory* res, int update, int cpu_cycle_offset)
 {  
-  //FOR DEMES
-  m_deme_resource_count.SetSize(0);
 
   m_res_method = (eTestCPUResourceMethod)res_method;
   // Make sure it's valid
@@ -409,7 +406,7 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString fil
   	
   	df->WriteComment(        "Resources Collected: Name\t\tTotal\t\tAvailable");
   	for (int i = 0; i < rbins_total.GetSize(); i++) {
-  		df.WriteComment(c.Set("                %d : %s\t\t%f\t\t%f\t\t", i,
+  		df->WriteComment(c.Set("                %d : %s\t\t%f\t\t%f\t\t", i,
   		                      static_cast<const char*>(env.GetResDefLib().GetResDef(i)->GetName()),
   		                      rbins_total[i], rbins_avail[i]));
   	}

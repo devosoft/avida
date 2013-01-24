@@ -49,8 +49,6 @@ private:
   double conversion;     // Conversion factor.
   double lethal;		 // Lethality of reaction
   bool sterilize; //!< Whether performance of this reaction sterilizes the organism.
-  double deme_fraction; //!< Fraction of process reward that is applied to the organism's deme.
-  bool is_germline;         // Apply reward to germline propensity instead of bonus?
   cString match_string;	 // Bit string to match if this is a match string reaction
   cString inst;           // Instruction to be triggered if reaction successful.
   bool depletable;       // Does completing consume resource?
@@ -81,8 +79,6 @@ public:
     , conversion(1.0)
     , lethal(0)
     , sterilize(false)
-    , deme_fraction(0.0)
-    , is_germline(false)
     , depletable(true)
     , internal(false)
     , m_ppmethod(DEFAULT)
@@ -106,9 +102,7 @@ public:
   bool GetDepletable() const { return depletable; }
   double GetLethal() const { return lethal; }
   bool GetSterilize() const { return sterilize; }
-  double GetDemeFraction() const { return deme_fraction; }
   ePHENPLAST_BONUS_METHOD GetPhenPlastBonusMethod() const { return m_ppmethod; }
-  bool GetIsGermline() const { return is_germline; }
   cResourceDef* GetDetect() const { return detect; }
   double GetDetectionThreshold() const { return detection_threshold; }
   double GetDetectionError() const { return detection_error; }
@@ -128,8 +122,6 @@ public:
   void SetDepletable(bool _in) { depletable = _in; }
   void SetLethal(double _in) { lethal = _in; }
   void SetSterile(int _in) { sterilize = _in; }
-  void SetDemeFraction(double _in) { assert(_in>=0.0); assert(_in<=1.0); deme_fraction = _in; }
-  void SetIsGermline(bool _in) { is_germline = _in; }
   void SetPhenPlastBonusMethod(ePHENPLAST_BONUS_METHOD _in) { m_ppmethod = _in; }
   void SetDetect(cResourceDef* _in) { detect = _in; }
   void SetDetectionThreshold(double _in) { detection_threshold = _in; }

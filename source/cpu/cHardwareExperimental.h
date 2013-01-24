@@ -441,7 +441,6 @@ private:
   bool Inst_TaskOutput(cAvidaContext& ctx);
   bool Inst_TaskOutputZero(cAvidaContext& ctx);
   bool Inst_TaskOutputExpire(cAvidaContext& ctx);
-  bool Inst_DemeIO(cAvidaContext& ctx);
 
   // Head-based Instructions
   bool Inst_HeadAlloc(cAvidaContext& ctx);
