@@ -117,7 +117,7 @@ namespace Avida {
       
       
     public:
-      GenotypeArbiter(World* world, int threshold);
+      GenotypeArbiter(Universe* universe, int threshold);
       ~GenotypeArbiter();
       
       // Arbiter Interface Methods
@@ -152,9 +152,9 @@ namespace Avida {
       void PrintListStatus();
       
     private:
-      void setupProvidedData(World* world);
+      void setupProvidedData(Universe* universe);
       template <class T> Data::PackagePtr packageData(const T&) const;
-      Data::ProviderPtr activateProvider(World*);
+      Data::ProviderPtr activateProvider(Universe*);
       
       unsigned int hashGenome(const InstructionSequence& genome) const;
       Apto::String nameGenotype(int size);

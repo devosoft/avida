@@ -27,15 +27,16 @@
 #include "avida/output/Manager.h"
 
 
-Avida::Output::Socket::Socket(World* world, const OutputID& output_id) : m_world(world), m_output_id(output_id), m_is_static(false)
+Avida::Output::Socket::Socket(Universe* universe, const OutputID& output_id)
+  : m_universe(universe), m_output_id(output_id), m_is_static(false)
 {
-  Output::Manager::Of(m_world)->RegisterSocket(m_output_id, this);
+  Output::Manager::Of(m_universe)->RegisterSocket(m_output_id, this);
 }
 
 
 Avida::Output::Socket::~Socket()
 {
-  if (!m_is_static) Output::Manager::Of(m_world)->UnregisterSocket(m_output_id);
+  if (!m_is_static) Output::Manager::Of(m_universe)->UnregisterSocket(m_output_id);
 }
 
 
@@ -43,7 +44,7 @@ bool Avida::Output::Socket::registerAsStatic()
 {
   SocketPtr thisPtr(this);
   this->AddReference();
-  bool success = Output::Manager::Of(m_world)->RegisterStaticSocket(m_output_id, thisPtr);
+  bool success = Output::Manager::Of(m_universe)->RegisterStaticSocket(m_output_id, thisPtr);
   if (success) m_is_static = true;
   return success;
 }

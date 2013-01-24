@@ -23,7 +23,7 @@
 #include "cHardwareBase.h"
 
 #include "avida/core/Feedback.h"
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 
 #include "cAvidaContext.h"
 #include "cCodeLabel.h"

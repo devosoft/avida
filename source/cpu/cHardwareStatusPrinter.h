@@ -37,8 +37,8 @@ protected:
   bool m_minitracer;
 
 public:
-  cHardwareStatusPrinter(Avida::World* world, const Apto::String& filename, bool minitracer = false)
-    : m_file(Avida::Output::File::CreateWithPath(world, filename)), m_minitracer(minitracer) { ; }
+  cHardwareStatusPrinter(Avida::Universe* universe, const Apto::String& filename, bool minitracer = false)
+    : m_file(Avida::Output::File::CreateWithPath(universe, filename)), m_minitracer(minitracer) { ; }
 
   virtual void TraceHardware(cAvidaContext& ctx, cHardwareBase& hardware, bool bonus, bool mini, int exec_success);
   virtual void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism);

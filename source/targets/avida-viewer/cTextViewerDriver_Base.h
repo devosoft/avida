@@ -22,7 +22,7 @@
 #define cTextViewerDriver_Base_h
 
 #include "avida/core/Feedback.h"
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 
 #include <sstream>
 #include <iostream>
@@ -34,7 +34,7 @@ class cWorld;
 using namespace Avida;
 
 
-class cTextViewerDriver_Base : public WorldDriver {
+class cTextViewerDriver_Base : public UniverseDriver {
 protected:
   cWorld* m_world;
   cView_Base* m_view;

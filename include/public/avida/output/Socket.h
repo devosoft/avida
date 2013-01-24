@@ -38,14 +38,14 @@ namespace Avida {
     class Socket : public Apto::RefCountObject<Apto::ThreadSafe>
     {
     protected:
-      World* m_world;
+      Universe* m_universe;
       OutputID m_output_id;
 
     private:
       bool m_is_static;
 
     public:
-      LIB_EXPORT Socket(World* world, const OutputID& output_id);
+      LIB_EXPORT Socket(Universe* universe, const OutputID& output_id);
       LIB_EXPORT virtual ~Socket() = 0;
       
       LIB_EXPORT virtual void Flush() = 0;

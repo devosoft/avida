@@ -1,5 +1,5 @@
 /*
- *  core/WorldDriver.h
+ *  core/UniverseDriver.h
  *  avida-core
  *
  *  Created by David on 12/10/05.
@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef AvidaCoreWorldDriver_h
-#define AvidaCoreWorldDriver_h
+#ifndef AvidaCoreUniverseDriver_h
+#define AvidaCoreUniverseDriver_h
 
 #include "apto/platform.h"
 #include "avida/core/GlobalObject.h"
@@ -32,13 +32,13 @@
 
 namespace Avida {  
   
-  // WorldDriver - protocol defining the interface for objects that drive world execution
+  // UniverseDriver - protocol defining the interface for objects that drive world execution
   // --------------------------------------------------------------------------------------------------------------
   
-  class WorldDriver : public virtual GlobalObject
+  class UniverseDriver : public virtual GlobalObject
   {
   public:
-    LIB_EXPORT virtual ~WorldDriver() { ; }
+    LIB_EXPORT virtual ~UniverseDriver() { ; }
     
     // Actions
     LIB_EXPORT virtual void Pause() = 0;

@@ -161,7 +161,7 @@ public:
     }
   }
   
-  static Data::ArgumentedProviderPtr Activate(cWorld* world, World* new_world)
+  static Data::ArgumentedProviderPtr Activate(cWorld* world, Universe* new_world)
   {
     (void)new_world;
     cPopulationOrgStatProviderPtr osp(new InstructionExecCountsProvider(world));
@@ -196,7 +196,7 @@ cPopulation::cPopulation(cWorld* world)
   Data::ArgumentedProviderActivateFunctor activate(m_world, &cWorld::GetPopulationProvider);
   m_world->GetDataManager()->Register("core.population.group_id[]", activate);
 
-  Apto::Functor<Data::ArgumentedProviderPtr, Apto::TL::Create<cWorld*, World*> > is_activate(&InstructionExecCountsProvider::Activate);
+  Apto::Functor<Data::ArgumentedProviderPtr, Apto::TL::Create<cWorld*, Universe*> > is_activate(&InstructionExecCountsProvider::Activate);
   Data::ArgumentedProviderActivateFunctor isp_activate(Apto::BindFirst(is_activate, m_world));
   m_world->GetDataManager()->Register("core.population.inst_exec_counts[]", isp_activate);
 }

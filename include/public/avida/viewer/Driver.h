@@ -28,7 +28,7 @@
 #include "apto/core.h"
 #include "avida/core/Feedback.h"
 #include "avida/core/Genome.h"
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 #include "avida/data/Recorder.h"
 #include "avida/environment/Types.h"
 #include "avida/systematics/Types.h"
@@ -43,7 +43,7 @@ namespace Avida {
     // Driver Definition
     // --------------------------------------------------------------------------------------------------------------  
     
-    class Driver : public Apto::Thread, public Avida::WorldDriver
+    class Driver : public Apto::Thread, public Avida::UniverseDriver
     {
     public:
       struct InjectGenomeInfo;
@@ -134,7 +134,7 @@ namespace Avida {
       LIB_EXPORT double TestMetabolicRateOfGroup(Avida::Systematics::GroupPtr group);
       LIB_EXPORT int TestEnvironmentTriggerCountOfGroup(Avida::Systematics::GroupPtr group, Avida::Environment::ActionTriggerID action_id);
       
-      // WorldDriver Protocol
+      // UniverseDriver Protocol
       // ------------------------------------------------------------------------------------------------------------  
       
     public:

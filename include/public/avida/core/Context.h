@@ -38,13 +38,13 @@ namespace Avida {
   class Context
   {
   private:
-    WorldDriver* m_driver;
+    UniverseDriver* m_driver;
     Apto::Random* m_rng;
     
   public:
-    inline Context(WorldDriver* driver, Apto::Random* rng) : m_driver(driver), m_rng(rng) { assert(driver); }
+    inline Context(UniverseDriver* driver, Apto::Random* rng) : m_driver(driver), m_rng(rng) { assert(driver); }
     
-    LIB_EXPORT inline WorldDriver& Driver() { return *m_driver; }
+    LIB_EXPORT inline UniverseDriver& Driver() { return *m_driver; }
     LIB_EXPORT inline Apto::Random& Random() { return *m_rng; }
     
     LIB_EXPORT inline void SetRandom(Apto::Random* rng) { m_rng = rng; }

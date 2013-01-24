@@ -52,17 +52,17 @@ namespace Avida {
 
       
     public:
-      LIB_EXPORT inline static FilePtr CreateWithPath(World* world, Apto::String path, Feedback* feedback = NULL)
+      LIB_EXPORT inline static FilePtr CreateWithPath(Universe* universe, Apto::String path, Feedback* feedback = NULL)
       {
-        return createWithPath(world, path, false, feedback);
+        return createWithPath(universe, path, false, feedback);
       }
       
-      LIB_EXPORT inline static FilePtr AppendWithPath(World* world, Apto::String path, Feedback* feedback = NULL)
+      LIB_EXPORT inline static FilePtr AppendWithPath(Universe* universe, Apto::String path, Feedback* feedback = NULL)
       {
-        return createWithPath(world, path, true, feedback);
+        return createWithPath(universe, path, true, feedback);
       }
       
-      LIB_EXPORT static FilePtr StaticWithPath(World* world, Apto::String path, Feedback* feedback = NULL);
+      LIB_EXPORT static FilePtr StaticWithPath(Universe* universe, Apto::String path, Feedback* feedback = NULL);
       
       LIB_EXPORT ~File();
       
@@ -122,9 +122,9 @@ namespace Avida {
       
       
     private:
-      LIB_EXPORT static FilePtr createWithPath(World* world, Apto::String path, bool append, Feedback* feedback);
+      LIB_EXPORT static FilePtr createWithPath(Universe* universe, Apto::String path, bool append, Feedback* feedback);
 
-      LIB_LOCAL File(World* world, const OutputID& output_id, bool append = false);
+      LIB_LOCAL File(Universe* universe, const OutputID& output_id, bool append = false);
     };
     
 

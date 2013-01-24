@@ -43,7 +43,7 @@ bool Avida::Viewer::ClassificationInfo::MapColor::Serialize(ArchivePtr) const
 }
 
 
-Avida::Viewer::ClassificationInfo::ClassificationInfo(World* in_world, const Systematics::RoleID& role, int total_colors, int threshold_colors)
+Avida::Viewer::ClassificationInfo::ClassificationInfo(Universe* in_world, const Systematics::RoleID& role, int total_colors, int threshold_colors)
   : m_world(in_world)
   , m_role(role)
   , m_color_chart_id(total_colors)

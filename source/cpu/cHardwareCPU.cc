@@ -23,7 +23,7 @@
 
 #include "cHardwareCPU.h"
 
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 
 #include "avida/private/systematics/SexualAncestry.h"
 

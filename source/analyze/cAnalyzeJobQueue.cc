@@ -24,7 +24,7 @@
 #include "apto/platform.h"
 #include "avida/Avida.h"
 #include "avida/core/Feedback.h"
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 
 #include "cAnalyzeJobWorker.h"
 #include "cWorld.h"

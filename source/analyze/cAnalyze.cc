@@ -25,7 +25,7 @@
 #include "avida/Avida.h"
 
 #include "avida/core/Types.h"
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 #include "avida/output/File.h"
 #include "avida/output/Manager.h"
 

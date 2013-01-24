@@ -33,11 +33,11 @@
 #include <cmath>
 
 
-Avida::Systematics::CladeArbiter::CladeArbiter(World* world)
+Avida::Systematics::CladeArbiter::CladeArbiter(Universe* universe)
 : m_next_id(1)
 , m_cur_update(-1)
 {
-  (void)world;
+  (void)universe;
 }
 
 Avida::Systematics::CladeArbiter::~CladeArbiter()
@@ -211,17 +211,17 @@ template <class T> Avida::Data::PackagePtr Avida::Systematics::CladeArbiter::pac
   return Data::PackagePtr(new Data::Wrap<T>(val));
 }
 
-Avida::Data::ProviderPtr Avida::Systematics::CladeArbiter::activateProvider(World*)
+Avida::Data::ProviderPtr Avida::Systematics::CladeArbiter::activateProvider(Universe*)
 {
   return thisPtr();
 }
 
 
-void Avida::Systematics::CladeArbiter::setupProvidedData(World* world)
+void Avida::Systematics::CladeArbiter::setupProvidedData(Universe* universe)
 {
   // Setup functors and references for use in the PROVIDE macro
   Data::ProviderActivateFunctor activate(this, &CladeArbiter::activateProvider);
-  Data::ManagerPtr mgr = Data::Manager::Of(world);
+  Data::ManagerPtr mgr = Data::Manager::Of(universe);
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<const int&> > intStat(this, &CladeArbiter::packageData<int>);
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<const double&> > doubleStat(this, &CladeArbiter::packageData<double>);
   

@@ -22,7 +22,7 @@
 #ifndef cDriver_TextViewer_h
 #define cDriver_TextViewer_h
 
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 
 #include "cViewer_Info.h"
 #include "cScreen_Map.h"
@@ -39,7 +39,7 @@ using namespace std;
 using namespace Avida;
 
 
-class cDriver_TextViewer : public WorldDriver {
+class cDriver_TextViewer : public UniverseDriver {
 private:
   cWorld* m_world;
   cViewer_Info m_info;

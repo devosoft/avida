@@ -56,22 +56,22 @@ void Avida::Systematics::Manager::ClassifyNewUnit(UnitPtr u, const RoleClassific
     if (g) u->AddClassification(g);
   }
 }
-bool Avida::Systematics::Manager::AttachTo(World* world)
+bool Avida::Systematics::Manager::AttachTo(Universe* universe)
 {
-  WorldFacetPtr ptr(this);
+  UniverseFacetPtr ptr(this);
   AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
   
-  if (world->AttachFacet(Reserved::SystematicsFacetID, ptr)) {
+  if (universe->AttachFacet(Reserved::SystematicsFacetID, ptr)) {
     return true;
   }
   return false;
 }
 
 
-Avida::Systematics::ManagerPtr Avida::Systematics::Manager::Of(World* world)
+Avida::Systematics::ManagerPtr Avida::Systematics::Manager::Of(Universe* universe)
 {
   ManagerPtr manager;
-  manager.DynamicCastFrom(world->Systematics());
+  manager.DynamicCastFrom(universe->Systematics());
   return manager;
 }
 
@@ -83,12 +83,12 @@ bool Avida::Systematics::Manager::Serialize(ArchivePtr) const
 }
 
 
-Avida::WorldFacetID Avida::Systematics::Manager::UpdateBefore() const
+Avida::UniverseFacetID Avida::Systematics::Manager::UpdateBefore() const
 {
   return Avida::Reserved::DataManagerFacetID;
 }
 
-Avida::WorldFacetID Avida::Systematics::Manager::UpdateAfter() const
+Avida::UniverseFacetID Avida::Systematics::Manager::UpdateAfter() const
 {
   return "";
 }

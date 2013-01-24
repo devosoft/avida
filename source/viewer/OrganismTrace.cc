@@ -25,7 +25,7 @@
 #include "avida/viewer/OrganismTrace.h"
 
 #include "avida/core/Feedback.h"
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 #include "avida/viewer/GraphicsContext.h"
 
 #include "apto/rng.h"
@@ -131,7 +131,7 @@ Private::InstructionColorChartPtr Private::InstructionColorChart::OfInstSetForGr
 // Private::SnapshotTracer
 // --------------------------------------------------------------------------------------------------------------  
 
-class Private::SnapshotTracer : public cHardwareTracer, public WorldDriver
+class Private::SnapshotTracer : public cHardwareTracer, public UniverseDriver
 {
 private:
   cWorld* m_world;
@@ -166,7 +166,7 @@ public:
   LIB_LOCAL void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism);
   
   
-  // WorldDriver
+  // UniverseDriver
   LIB_LOCAL void Pause() { ; }
   LIB_LOCAL void Finish() { ; }
   LIB_LOCAL void Abort(AbortCondition condition) { (void)condition; }

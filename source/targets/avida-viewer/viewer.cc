@@ -22,7 +22,7 @@
 
 #include "apto/core/FileSystem.h"
 #include "avida/Avida.h"
-#include "avida/core/World.h"
+#include "avida/core/Universe.h"
 #include "avida/util/CmdLine.h"
 
 #include "AvidaTools.h"

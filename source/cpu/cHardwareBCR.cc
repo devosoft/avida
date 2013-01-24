@@ -25,7 +25,7 @@
 #include "cHardwareBCR.h"
 
 #include "avida/core/Feedback.h"
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 #include "avida/output/File.h"
 
 #include "cAvidaContext.h"

@@ -23,7 +23,7 @@
 
 #include "avida/core/Feedback.h"
 #include "avida/core/InstructionSequence.h"
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
 #include "avida/data/Recorder.h"

@@ -34,18 +34,18 @@ class cWorld;
 class cAvidaContext
 {
 private:
-  Avida::WorldDriver* m_driver;
+  Avida::UniverseDriver* m_driver;
   Apto::Random* m_rng;
   bool m_analyze;
   bool m_testing;
   bool m_org_faults;
   
 public:
-  cAvidaContext(Avida::WorldDriver* driver, Apto::Random& rng) : m_driver(driver), m_rng(&rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
-  cAvidaContext(Avida::WorldDriver* driver, Apto::Random* rng) : m_driver(driver), m_rng(rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
+  cAvidaContext(Avida::UniverseDriver* driver, Apto::Random& rng) : m_driver(driver), m_rng(&rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
+  cAvidaContext(Avida::UniverseDriver* driver, Apto::Random* rng) : m_driver(driver), m_rng(rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
   ~cAvidaContext() { ; }
   
-  Avida::WorldDriver& Driver() { return *m_driver; }
+  Avida::UniverseDriver& Driver() { return *m_driver; }
   
   void SetRandom(Apto::Random& rng) { m_rng = &rng; }
   void SetRandom(Apto::Random* rng) { m_rng = rng; }

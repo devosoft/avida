@@ -21,7 +21,7 @@
 #include "cDynamicRes.h"
 
 #include "avida/core/Feedback.h"
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 
 #include "cPopulation.h"
 #include "cStats.h"

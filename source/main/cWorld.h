@@ -53,7 +53,7 @@ using namespace Avida;
 class cWorld
 {
 protected:
-  World* m_new_world;
+  Universe* m_new_world;
   cString m_working_dir;
   
   cAnalyze* m_analyze;
@@ -64,7 +64,7 @@ protected:
   cHardwareManager* m_hw_mgr;
   Apto::SmartPtr<cPopulation, Apto::InternalRCObject> m_pop;
   Apto::SmartPtr<cStats, Apto::InternalRCObject> m_stats;
-  WorldDriver* m_driver;
+  UniverseDriver* m_driver;
   
   Data::ManagerPtr m_data_mgr;
 
@@ -80,10 +80,10 @@ protected:
   
   
 public:
-  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, World* new_world, cUserFeedback* feedback = NULL, const Apto::Map<Apto::String, Apto::String>* mappings = NULL);
+  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, Universe* new_world, cUserFeedback* feedback = NULL, const Apto::Map<Apto::String, Apto::String>* mappings = NULL);
   virtual ~cWorld();
   
-  void SetDriver(WorldDriver* driver, bool take_ownership = false);
+  void SetDriver(UniverseDriver* driver, bool take_ownership = false);
   
   const cString& GetWorkingDir() const { return m_working_dir; }
   
@@ -97,13 +97,13 @@ public:
   Apto::Random& GetRandom() { return m_rng; }
   Apto::Random& GetRandomSample() { return m_srng; }
   cStats& GetStats() { return *m_stats; }
-  WorldDriver& GetDriver() { return *m_driver; }
-  World* GetNewWorld() { return m_new_world; }
+  UniverseDriver& GetDriver() { return *m_driver; }
+  Universe* GetNewWorld() { return m_new_world; }
   
   Data::ManagerPtr& GetDataManager() { return m_data_mgr; }
   
-  Data::ProviderPtr GetStatsProvider(World*);
-  Data::ArgumentedProviderPtr GetPopulationProvider(World*);
+  Data::ProviderPtr GetStatsProvider(Universe*);
+  Data::ArgumentedProviderPtr GetPopulationProvider(Universe*);
   
   // Config Dependent Modes
   bool GetTestOnDivide() const { return m_test_on_div; }
@@ -138,7 +138,7 @@ public:
   
 protected:
   // Internal Methods
-  bool setup(World* new_world, cUserFeedback* errors,  const Apto::Map<Apto::String, Apto::String>* mappings);
+  bool setup(Universe* new_world, cUserFeedback* errors,  const Apto::Map<Apto::String, Apto::String>* mappings);
 
 };
 

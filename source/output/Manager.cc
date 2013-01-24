@@ -26,7 +26,7 @@
 
 #include "avida/output/Socket.h"
 
-Avida::Output::Manager::Manager(const Apto::String& output_path) : m_world(NULL)
+Avida::Output::Manager::Manager(const Apto::String& output_path) : m_universe(NULL)
 {
   m_output_path = output_path;
   m_output_path.Trim();
@@ -115,25 +115,25 @@ void Avida::Output::Manager::FlushAll()
 }
 
 
-bool Avida::Output::Manager::AttachTo(World* world)
+bool Avida::Output::Manager::AttachTo(Universe* universe)
 {
-  if (m_world) return false;
+  if (m_universe) return false;
   
-  WorldFacetPtr ptr(this);
+  UniverseFacetPtr ptr(this);
   AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
   
-  if (world->AttachFacet(Reserved::OutputManagerFacetID, ptr)) {
-    m_world = world;
+  if (universe->AttachFacet(Reserved::OutputManagerFacetID, ptr)) {
+    m_universe = universe;
     return true;
   }
   return false;
 }
 
 
-Avida::Output::ManagerPtr Avida::Output::Manager::Of(World* world)
+Avida::Output::ManagerPtr Avida::Output::Manager::Of(Universe* universe)
 {
   ManagerPtr manager;
-  manager.DynamicCastFrom(world->OutputManager());
+  manager.DynamicCastFrom(universe->OutputManager());
   return manager;
 }
 
@@ -145,12 +145,12 @@ bool Avida::Output::Manager::Serialize(ArchivePtr) const
 }
 
 
-Avida::WorldFacetID Avida::Output::Manager::UpdateBefore() const
+Avida::UniverseFacetID Avida::Output::Manager::UpdateBefore() const
 {
   return "";
 }
 
-Avida::WorldFacetID Avida::Output::Manager::UpdateAfter() const
+Avida::UniverseFacetID Avida::Output::Manager::UpdateAfter() const
 {
   return "";
 }

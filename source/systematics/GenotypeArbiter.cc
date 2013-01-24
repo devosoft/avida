@@ -36,7 +36,7 @@
 #include <cmath>
 
 
-Avida::Systematics::GenotypeArbiter::GenotypeArbiter(World* world, int threshold)
+Avida::Systematics::GenotypeArbiter::GenotypeArbiter(Universe* universe, int threshold)
   : m_threshold(threshold)
   , m_active_sz(1)
   , m_coalescent(NULL)
@@ -48,7 +48,7 @@ Avida::Systematics::GenotypeArbiter::GenotypeArbiter(World* world, int threshold
   , m_tot_genotypes(0)
   , m_coalescent_depth(-1)
 {
-  Avida::Environment::ManagerPtr env = Avida::Environment::Manager::Of(world);
+  Avida::Environment::ManagerPtr env = Avida::Environment::Manager::Of(universe);
   Avida::Environment::ConstActionTriggerIDSetPtr trigger_ids = env->GetActionTriggerIDs();
   m_env_action_average.Resize(trigger_ids->GetSize());
   m_env_action_count.Resize(trigger_ids->GetSize());
@@ -408,17 +408,17 @@ template <class T> Avida::Data::PackagePtr Avida::Systematics::GenotypeArbiter::
   return Data::PackagePtr(new Data::Wrap<T>(val));
 }
 
-Avida::Data::ProviderPtr Avida::Systematics::GenotypeArbiter::activateProvider(World*) 
+Avida::Data::ProviderPtr Avida::Systematics::GenotypeArbiter::activateProvider(Universe*) 
 {
   return thisPtr();
 }
 
 
-void Avida::Systematics::GenotypeArbiter::setupProvidedData(World* world)
+void Avida::Systematics::GenotypeArbiter::setupProvidedData(Universe* universe)
 {
   // Setup functors and references for use in the PROVIDE macro
   Data::ProviderActivateFunctor activate(this, &GenotypeArbiter::activateProvider);
-  Data::ManagerPtr mgr = Data::Manager::Of(world);
+  Data::ManagerPtr mgr = Data::Manager::Of(universe);
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<const int&> > intStat(this, &GenotypeArbiter::packageData<int>);
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<const double&> > doubleStat(this, &GenotypeArbiter::packageData<double>);
 

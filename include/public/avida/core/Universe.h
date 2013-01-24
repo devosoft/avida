@@ -1,5 +1,5 @@
 /*
- *  core/World.h
+ *  core/Universe.h
  *  avida-core
  *
  *  Created by David on 6/29/11.
@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef AvidaCoreWorld_h
-#define AvidaCoreWorld_h
+#ifndef AvidaCoreUniverse_h
+#define AvidaCoreUniverse_h
 
 #include "apto/platform.h"
 #include "avida/core/Types.h"
@@ -31,41 +31,41 @@
 
 namespace Avida {
   
-  // World
+  // Universe
   // --------------------------------------------------------------------------------------------------------------
   //
-  // A World object contains a collection of facets (WorldFacet) that implement top-level functionality.  These facets
+  // A Universe object contains a collection of facets (UniverseFacet) that implement top-level functionality.  These facets
   // can be retrieved and used from essentially any level of a given experimental run.  Facets also participate in the
-  // update cycle of the experiment. World schedules the order of execution based on facet dependencies and takes care
+  // update cycle of the experiment. Universe schedules the order of execution based on facet dependencies and takes care
   // of issuing PerformUpdate on all facets in the appropriate order.
   //
   // Several core facets have convenience/performance accessors, listed below. All others may be retrieve through the
   // main Facet() method.
   
-  class World
+  class Universe
   {
   private:
-    WorldFacetPtr m_data_manager;
-    WorldFacetPtr m_environment;
-    WorldFacetPtr m_output_manager;
-    WorldFacetPtr m_systematics;
+    UniverseFacetPtr m_data_manager;
+    UniverseFacetPtr m_environment;
+    UniverseFacetPtr m_output_manager;
+    UniverseFacetPtr m_systematics;
     
-    Apto::Map<WorldFacetID, WorldFacetPtr> m_facets;
-    Apto::Array<WorldFacetPtr> m_facet_order;
+    Apto::Map<UniverseFacetID, UniverseFacetPtr> m_facets;
+    Apto::Array<UniverseFacetPtr> m_facet_order;
     
   public:
-    LIB_EXPORT World();
-    LIB_EXPORT World(ConstArchivePtr ar);
+    LIB_EXPORT Universe();
+    LIB_EXPORT Universe(ConstArchivePtr ar);
     
     // General facet methods
-    LIB_EXPORT bool AttachFacet(WorldFacetID facet_id, WorldFacetPtr facet);
-    LIB_EXPORT inline WorldFacetPtr Facet(const WorldFacetID& facet_id) const;
+    LIB_EXPORT bool AttachFacet(UniverseFacetID facet_id, UniverseFacetPtr facet);
+    LIB_EXPORT inline UniverseFacetPtr Facet(const UniverseFacetID& facet_id) const;
 
     // Specific built-in facet accessors
-    LIB_EXPORT inline WorldFacetPtr DataManager() const { return m_data_manager; }
-    LIB_EXPORT inline WorldFacetPtr Environment() const { return m_environment; }
-    LIB_EXPORT inline WorldFacetPtr OutputManager() const { return m_output_manager; }
-    LIB_EXPORT inline WorldFacetPtr Systematics() const { return m_systematics; }
+    LIB_EXPORT inline UniverseFacetPtr DataManager() const { return m_data_manager; }
+    LIB_EXPORT inline UniverseFacetPtr Environment() const { return m_environment; }
+    LIB_EXPORT inline UniverseFacetPtr OutputManager() const { return m_output_manager; }
+    LIB_EXPORT inline UniverseFacetPtr Systematics() const { return m_systematics; }
     
     // Actions
     LIB_EXPORT void PerformUpdate(Context& ctx, Update current_update);
@@ -74,15 +74,15 @@ namespace Avida {
   };
   
 
-  inline WorldFacetPtr World::Facet(const WorldFacetID& facet_id) const
+  inline UniverseFacetPtr Universe::Facet(const UniverseFacetID& facet_id) const
   {
-    WorldFacetPtr facet;
+    UniverseFacetPtr facet;
     m_facets.Get(facet_id, facet);
     return facet;
   }
   
   
-  // WorldFacet
+  // UniverseFacet
   // --------------------------------------------------------------------------------------------------------------
   //
   // Protocol definition for world facet classes that register with world. These methods define the update order
@@ -90,18 +90,18 @@ namespace Avida {
   // implemented) must register their facet type and deserialization functor with the global factory via 
   // RegisterFacetType().
   
-  class WorldFacet : public Apto::RefCountObject<Apto::ThreadSafe>
+  class UniverseFacet : public Apto::RefCountObject<Apto::ThreadSafe>
   {
   public:
-    LIB_EXPORT virtual WorldFacetID UpdateBefore() const = 0;
-    LIB_EXPORT virtual WorldFacetID UpdateAfter() const = 0;
+    LIB_EXPORT virtual UniverseFacetID UpdateBefore() const = 0;
+    LIB_EXPORT virtual UniverseFacetID UpdateAfter() const = 0;
     
     LIB_EXPORT virtual void PerformUpdate(Context& ctx, Update current_update);
     
     LIB_EXPORT virtual bool Serialize(ArchivePtr ar) const = 0;
     
-    LIB_EXPORT static WorldFacetPtr Deserialize(ArchivePtr ar);
-    LIB_EXPORT static bool RegisterFacetType(WorldFacetID facet_id, WorldFacetDeserializeFunctor facet_func);
+    LIB_EXPORT static UniverseFacetPtr Deserialize(ArchivePtr ar);
+    LIB_EXPORT static bool RegisterFacetType(UniverseFacetID facet_id, UniverseFacetDeserializeFunctor facet_func);
   };
   
   
@@ -110,10 +110,10 @@ namespace Avida {
 
   namespace Reserved
   {
-    LIB_EXPORT extern const WorldFacetID DataManagerFacetID;
-    LIB_EXPORT extern const WorldFacetID EnvironmentFacetID;
-    LIB_EXPORT extern const WorldFacetID OutputManagerFacetID;
-    LIB_EXPORT extern const WorldFacetID SystematicsFacetID;
+    LIB_EXPORT extern const UniverseFacetID DataManagerFacetID;
+    LIB_EXPORT extern const UniverseFacetID EnvironmentFacetID;
+    LIB_EXPORT extern const UniverseFacetID OutputManagerFacetID;
+    LIB_EXPORT extern const UniverseFacetID SystematicsFacetID;
   };
 };
 

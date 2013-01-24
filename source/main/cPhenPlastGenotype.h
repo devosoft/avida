@@ -24,7 +24,7 @@
 #define cPhenPlastGenotype_h
 
 #include "avida/core/Genome.h"
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 
 #include "cCPUMemory.h"
 #include "cPlasticPhenotype.h"

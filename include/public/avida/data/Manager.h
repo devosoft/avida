@@ -27,7 +27,7 @@
 
 #include "apto/platform.h"
 #include "avida/core/Types.h"
-#include "avida/core/World.h"
+#include "avida/core/Universe.h"
 #include "avida/data/Types.h"
 
 
@@ -37,14 +37,14 @@ namespace Avida {
     // Data::Manager - Manages available and active data providers for a given world
     // --------------------------------------------------------------------------------------------------------------
     
-    class Manager : public WorldFacet
+    class Manager : public UniverseFacet
     {
     private:
       typedef Apto::Set<Apto::String, Apto::DefaultHashBTree, Apto::Multi> ArgMultiSet;
       typedef Apto::SmartPtr<ArgMultiSet> ArgMultiSetPtr;
       
     private:
-      World* m_world;
+      Universe* m_universe;
       
       mutable Apto::RWLock m_rwlock;
       
@@ -82,15 +82,15 @@ namespace Avida {
       LIB_EXPORT bool Register(const DataID& data_id, ProviderActivateFunctor functor);
       LIB_EXPORT bool Register(const DataID& data_id, ArgumentedProviderActivateFunctor functor);
       
-      LIB_EXPORT bool AttachTo(World* world);
-      LIB_EXPORT static ManagerPtr Of(World* world);
+      LIB_EXPORT bool AttachTo(Universe* universe);
+      LIB_EXPORT static ManagerPtr Of(Universe* universe);
       
     public:
       LIB_EXPORT bool Serialize(ArchivePtr ar) const;
       
     public:
-      LIB_LOCAL WorldFacetID UpdateBefore() const;
-      LIB_LOCAL WorldFacetID UpdateAfter() const;
+      LIB_LOCAL UniverseFacetID UpdateBefore() const;
+      LIB_LOCAL UniverseFacetID UpdateAfter() const;
       LIB_LOCAL void PerformUpdate(Avida::Context& ctx, Update current_update);
       
     public:

@@ -1,5 +1,5 @@
 /*
- *  core/World.h
+ *  core/Universe.h
  *  avida-core
  *
  *  Created by David on 6/29/11.
@@ -22,27 +22,27 @@
  *
  */
 
-#include "avida/core/World.h"
+#include "avida/core/Universe.h"
 
 #include "avida/core/Archive.h"
 
 
 static const int WORLD_ARCHIVE_VERSION = 1;
 
-const Avida::WorldFacetID Avida::Reserved::DataManagerFacetID("datamanager");
-const Avida::WorldFacetID Avida::Reserved::EnvironmentFacetID("environment");
-const Avida::WorldFacetID Avida::Reserved::OutputManagerFacetID("outputmanager");
-const Avida::WorldFacetID Avida::Reserved::SystematicsFacetID("systematics");
+const Avida::UniverseFacetID Avida::Reserved::DataManagerFacetID("datamanager");
+const Avida::UniverseFacetID Avida::Reserved::EnvironmentFacetID("environment");
+const Avida::UniverseFacetID Avida::Reserved::OutputManagerFacetID("outputmanager");
+const Avida::UniverseFacetID Avida::Reserved::SystematicsFacetID("systematics");
 
 
-Avida::World::World()
+Avida::Universe::Universe()
 {
   
   
 }
 
 
-bool Avida::World::AttachFacet(WorldFacetID facet_id, WorldFacetPtr facet)
+bool Avida::Universe::AttachFacet(UniverseFacetID facet_id, UniverseFacetPtr facet)
 {
   if (m_facets.Has(facet_id)) return false;
   
@@ -51,7 +51,7 @@ bool Avida::World::AttachFacet(WorldFacetID facet_id, WorldFacetPtr facet)
   int max = m_facet_order.GetSize();
   
   if (facet->UpdateAfter() != "" && m_facets.Has(facet->UpdateAfter())) {
-    WorldFacetPtr after = m_facets[facet->UpdateAfter()];
+    UniverseFacetPtr after = m_facets[facet->UpdateAfter()];
     for (int i = 0; i < m_facet_order.GetSize(); i++) {
       if (m_facet_order[i] == after) {
         min = i + 1;
@@ -60,7 +60,7 @@ bool Avida::World::AttachFacet(WorldFacetID facet_id, WorldFacetPtr facet)
     }
   }
   if (facet->UpdateBefore() != "" && m_facets.Has(facet->UpdateBefore())) {
-    WorldFacetPtr before = m_facets[facet->UpdateBefore()];
+    UniverseFacetPtr before = m_facets[facet->UpdateBefore()];
     for (int i = 0; i < m_facet_order.GetSize(); i++) {
       if (m_facet_order[i] == before) {
         max = i;
@@ -94,7 +94,7 @@ bool Avida::World::AttachFacet(WorldFacetID facet_id, WorldFacetPtr facet)
   return true;
 }
 
-void Avida::World::PerformUpdate(Context& ctx, Update current_update)
+void Avida::Universe::PerformUpdate(Context& ctx, Update current_update)
 {
   for (int i = 0; i < m_facet_order.GetSize(); i++) {
     m_facet_order[i]->PerformUpdate(ctx, current_update);
@@ -102,12 +102,12 @@ void Avida::World::PerformUpdate(Context& ctx, Update current_update)
 }
 
 
-bool Avida::World::Serialize(ArchivePtr ar) const
+bool Avida::Universe::Serialize(ArchivePtr ar) const
 {
   ar->SetObjectType("core.world");
   ar->SetVersion(WORLD_ARCHIVE_VERSION);
   
-  Apto::Map<WorldFacetID, WorldFacetPtr>::KeyIterator kit = m_facets.Keys();
+  Apto::Map<UniverseFacetID, UniverseFacetPtr>::KeyIterator kit = m_facets.Keys();
   while (kit.Next()) {
     ArchivePtr facet_ar = ar->DefineSubObject(*kit.Get());
     this->Facet(*kit.Get())->Serialize(facet_ar);
@@ -117,18 +117,18 @@ bool Avida::World::Serialize(ArchivePtr ar) const
 }
 
 
-void Avida::WorldFacet::PerformUpdate(Context&, Update)
+void Avida::UniverseFacet::PerformUpdate(Context&, Update)
 {
 }
 
 
-Avida::WorldFacetPtr Avida::WorldFacet::Deserialize(ArchivePtr)
+Avida::UniverseFacetPtr Avida::UniverseFacet::Deserialize(ArchivePtr)
 {
   // @TODO
-  return WorldFacetPtr();
+  return UniverseFacetPtr();
 }
 
-bool Avida::WorldFacet::RegisterFacetType(WorldFacetID, WorldFacetDeserializeFunctor)
+bool Avida::UniverseFacet::RegisterFacetType(UniverseFacetID, UniverseFacetDeserializeFunctor)
 {
   // @TODO
   return false;

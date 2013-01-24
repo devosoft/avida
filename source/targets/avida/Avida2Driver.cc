@@ -25,7 +25,7 @@
 #include "Avida2Driver.h"
 
 #include "avida/core/Context.h"
-#include "avida/core/World.h"
+#include "avida/core/Universe.h"
 #include "avida/systematics/Group.h"
 
 #include "cAnalyze.h"
@@ -48,7 +48,7 @@ using namespace Avida;
 using namespace std;
 
 
-Avida2Driver::Avida2Driver(cWorld* world, World* new_world) : m_world(world), m_new_world(new_world), m_done(false)
+Avida2Driver::Avida2Driver(cWorld* world, Universe* new_world) : m_world(world), m_new_world(new_world), m_done(false)
 {
   GlobalObjectManager::Register(this);
   world->SetDriver(this);

@@ -70,7 +70,7 @@ namespace Avida {
       
       
     public:
-      CladeArbiter(World* world);
+      CladeArbiter(Universe* universe);
       ~CladeArbiter();
       
       GroupPtr GroupWithName(const Apto::String& name);
@@ -98,9 +98,9 @@ namespace Avida {
       void AdjustClade(CladePtr clade, int old_size, int new_size);
       
     private:
-      void setupProvidedData(World* world);
+      void setupProvidedData(Universe* universe);
       template <class T> Data::PackagePtr packageData(const T&) const;
-      Data::ProviderPtr activateProvider(World*);
+      Data::ProviderPtr activateProvider(Universe*);
       
       void removeClade(CladePtr genotype);
       

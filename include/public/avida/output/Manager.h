@@ -26,7 +26,7 @@
 #define AvidaOutputManager_h
 
 #include "apto/platform.h"
-#include "avida/core/World.h"
+#include "avida/core/Universe.h"
 #include "avida/output/Types.h"
 
 
@@ -36,11 +36,11 @@ namespace Avida {
     // Output::Manager - Manages output sockets (files, etc.) and their identifiers
     // --------------------------------------------------------------------------------------------------------------
     
-    class Manager : public WorldFacet
+    class Manager : public UniverseFacet
     {
       friend class Socket;
     private:
-      World* m_world;
+      Universe* m_universe;
       
       Apto::String m_output_path;
       
@@ -61,15 +61,15 @@ namespace Avida {
       
       LIB_EXPORT void FlushAll();
       
-      LIB_EXPORT bool AttachTo(World* world);
-      LIB_EXPORT static ManagerPtr Of(World* world);
+      LIB_EXPORT bool AttachTo(Universe* universe);
+      LIB_EXPORT static ManagerPtr Of(Universe* universe);
       
     public:
       LIB_EXPORT bool Serialize(ArchivePtr ar) const;
       
     public:
-      LIB_LOCAL WorldFacetID UpdateBefore() const;
-      LIB_LOCAL WorldFacetID UpdateAfter() const;
+      LIB_LOCAL UniverseFacetID UpdateBefore() const;
+      LIB_LOCAL UniverseFacetID UpdateAfter() const;
       
     private:
       LIB_EXPORT bool RegisterSocket(const OutputID& output_id, SocketWeakRef socket_ref);

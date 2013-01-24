@@ -31,14 +31,14 @@
 #include "avida/environment/Resource.h"
 
 
-static Avida::WorldFacetPtr DeserializeEnvironmentManager(Avida::ArchivePtr)
+static Avida::UniverseFacetPtr DeserializeEnvironmentManager(Avida::ArchivePtr)
 {
   // @TODO
-  return Avida::WorldFacetPtr();
+  return Avida::UniverseFacetPtr();
 }
 
 bool Avida::Environment::Manager::s_registered_with_facet_factory =
-  Avida::WorldFacet::RegisterFacetType(Avida::Reserved::EnvironmentFacetID, DeserializeEnvironmentManager);
+  Avida::UniverseFacet::RegisterFacetType(Avida::Reserved::EnvironmentFacetID, DeserializeEnvironmentManager);
 
 
 
@@ -136,22 +136,22 @@ Avida::Environment::ConstResourcePtr Avida::Environment::Manager::GetResource(co
   return resource;
 }
 
-bool Avida::Environment::Manager::AttachTo(World* world)
+bool Avida::Environment::Manager::AttachTo(Universe* universe)
 {
-  WorldFacetPtr ptr(this);
+  UniverseFacetPtr ptr(this);
   AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
   
-  if (world->AttachFacet(Reserved::EnvironmentFacetID, ptr)) {
+  if (universe->AttachFacet(Reserved::EnvironmentFacetID, ptr)) {
     return true;
   }
   return false;
 }
 
 
-Avida::Environment::ManagerPtr Avida::Environment::Manager::Of(World* world)
+Avida::Environment::ManagerPtr Avida::Environment::Manager::Of(Universe* universe)
 {
   ManagerPtr manager;
-  manager.DynamicCastFrom(world->Environment());
+  manager.DynamicCastFrom(universe->Environment());
   return manager;
 }
 
@@ -162,12 +162,12 @@ bool Avida::Environment::Manager::Serialize(ArchivePtr) const
 }
 
 
-Avida::WorldFacetID Avida::Environment::Manager::UpdateBefore() const
+Avida::UniverseFacetID Avida::Environment::Manager::UpdateBefore() const
 {
   return Reserved::DataManagerFacetID;
 }
 
-Avida::WorldFacetID Avida::Environment::Manager::UpdateAfter() const
+Avida::UniverseFacetID Avida::Environment::Manager::UpdateAfter() const
 {
   return "";
 }

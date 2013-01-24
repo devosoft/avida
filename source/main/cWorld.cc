@@ -55,7 +55,7 @@ cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)
 {
 }
 
-cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, World* new_world, cUserFeedback* feedback, const Apto::Map<Apto::String, Apto::String>* mappings)
+cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, Universe* new_world, cUserFeedback* feedback, const Apto::Map<Apto::String, Apto::String>* mappings)
 {
   cWorld* world = new cWorld(cfg, working_dir);
   if (!world->setup(new_world, feedback, mappings)) {
@@ -90,7 +90,7 @@ cWorld::~cWorld()
 }
 
 
-bool cWorld::setup(World* new_world, cUserFeedback* feedback, const Apto::Map<Apto::String, Apto::String>* defs)
+bool cWorld::setup(Universe* new_world, cUserFeedback* feedback, const Apto::Map<Apto::String, Apto::String>* defs)
 {
   m_new_world = new_world;
   
@@ -188,8 +188,8 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback, const Apto::Map<Ap
   return success;
 }
 
-Data::ProviderPtr cWorld::GetStatsProvider(World*) { return m_stats; }
-Data::ArgumentedProviderPtr cWorld::GetPopulationProvider(World*) { return m_pop; }
+Data::ProviderPtr cWorld::GetStatsProvider(Universe*) { return m_stats; }
+Data::ArgumentedProviderPtr cWorld::GetPopulationProvider(Universe*) { return m_pop; }
 
 
 cAnalyze& cWorld::GetAnalyze()
@@ -213,7 +213,7 @@ int cWorld::GetNumResources()
 }
 
 
-void cWorld::SetDriver(WorldDriver* driver, bool take_ownership)
+void cWorld::SetDriver(UniverseDriver* driver, bool take_ownership)
 {
   // cleanup current driver, if needed
   if (m_own_driver) delete m_driver;

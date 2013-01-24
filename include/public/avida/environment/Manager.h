@@ -26,7 +26,7 @@
 #define AvidaEnvironmentManager_h
 
 #include "apto/platform.h"
-#include "avida/core/World.h"
+#include "avida/core/Universe.h"
 #include "avida/environment/ActionTrigger.h"
 #include "avida/environment/Product.h"
 #include "avida/environment/Reaction.h"
@@ -39,7 +39,7 @@ namespace Avida {
     // Environment::Manager - holds the top level definition of the environment
     // --------------------------------------------------------------------------------------------------------------
     
-    class Manager : public WorldFacet
+    class Manager : public UniverseFacet
     {
     private:
       Apto::RWLock m_rwlock;
@@ -72,15 +72,15 @@ namespace Avida {
       LIB_EXPORT ConstResourcePtr GetResource(const ResourceID& resource_id) const;
       
       
-      LIB_EXPORT bool AttachTo(World* world);
-      LIB_EXPORT static ManagerPtr Of(World* world);
+      LIB_EXPORT bool AttachTo(Universe* universe);
+      LIB_EXPORT static ManagerPtr Of(Universe* universe);
       
     public:
       LIB_EXPORT bool Serialize(ArchivePtr ar) const;
       
     public:
-      LIB_LOCAL WorldFacetID UpdateBefore() const;
-      LIB_LOCAL WorldFacetID UpdateAfter() const;
+      LIB_LOCAL UniverseFacetID UpdateBefore() const;
+      LIB_LOCAL UniverseFacetID UpdateAfter() const;
     };
     
   };

@@ -22,7 +22,7 @@
 
 #include "cInstSet.h"
 
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 
 #include "cArgContainer.h"
 #include "cArgSchema.h"

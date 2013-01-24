@@ -22,7 +22,7 @@
 #include "DriverActions.h"
 
 #include "avida/core/Feedback.h"
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 
 #include "cAction.h"
 #include "cActionLibrary.h"

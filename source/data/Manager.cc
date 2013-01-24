@@ -32,17 +32,17 @@
 #include <cassert>
 
 
-static Avida::WorldFacetPtr DeserializeDataManager(Avida::ArchivePtr)
+static Avida::UniverseFacetPtr DeserializeDataManager(Avida::ArchivePtr)
 {
   // @TODO
-  return Avida::WorldFacetPtr();
+  return Avida::UniverseFacetPtr();
 }
 
 bool Avida::Data::Manager::s_registered_with_facet_factory =
-  Avida::WorldFacet::RegisterFacetType(Avida::Reserved::DataManagerFacetID, DeserializeDataManager);
+  Avida::UniverseFacet::RegisterFacetType(Avida::Reserved::DataManagerFacetID, DeserializeDataManager);
 
 
-Avida::Data::Manager::Manager() : m_world(NULL), m_available(new DataSet)
+Avida::Data::Manager::Manager() : m_universe(NULL), m_available(new DataSet)
 {
   
 }
@@ -156,7 +156,7 @@ bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder, bool concurrent_
       
       // Check and activate provider if active not currently active
       if (!m_active_arg_provider_map.Has(raw_id)) {
-        ArgumentedProviderPtr arg_provider = (m_arg_provider_map.Get(raw_id))(m_world);
+        ArgumentedProviderPtr arg_provider = (m_arg_provider_map.Get(raw_id))(m_universe);
         if (!arg_provider) return false;
         
         m_active_arg_providers.Push(arg_provider);
@@ -240,7 +240,7 @@ bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder, bool concurrent_
       
 
       // Request data provider not active, instantiate provider and register the values it provides as active
-      provider = (m_provider_map.Get(*it.Get()))(m_world);
+      provider = (m_provider_map.Get(*it.Get()))(m_universe);
       if (!provider) return false;
       
       // Insert located provider into the set for potential instant update
@@ -346,10 +346,10 @@ bool Avida::Data::Manager::Register(const DataID& data_id, ProviderActivateFunct
   return success;
 }
 
-static Avida::Data::ProviderPtr convertArgumentedPtr(Avida::Data::ArgumentedProviderActivateFunctor functor, Avida::World* world)
+static Avida::Data::ProviderPtr convertArgumentedPtr(Avida::Data::ArgumentedProviderActivateFunctor functor, Avida::Universe* universe)
 {
   Avida::Data::ProviderPtr ptr;
-  Avida::Data::ArgumentedProviderPtr aptr(functor(world));
+  Avida::Data::ArgumentedProviderPtr aptr(functor(universe));
   ptr = aptr;
   return ptr;
 }
@@ -361,7 +361,7 @@ bool Avida::Data::Manager::Register(const DataID& data_id, ArgumentedProviderAct
   bool success = false;
   m_rwlock.WriteLock();
   if (id_size > 0 && data_id[id_size - 1] != ']' && !m_provider_map.Has(data_id)) {
-    Apto::Functor<ProviderPtr, Apto::TL::Create<ArgumentedProviderActivateFunctor, World*> > conv_func(convertArgumentedPtr);
+    Apto::Functor<ProviderPtr, Apto::TL::Create<ArgumentedProviderActivateFunctor, Universe*> > conv_func(convertArgumentedPtr);
     m_provider_map[data_id] = Apto::BindFirst(conv_func, functor);
     m_available->Insert(data_id);
     success = true;
@@ -375,25 +375,25 @@ bool Avida::Data::Manager::Register(const DataID& data_id, ArgumentedProviderAct
   return success;
 }
 
-bool Avida::Data::Manager::AttachTo(World* world)
+bool Avida::Data::Manager::AttachTo(Universe* universe)
 {
-  if (m_world) return false;
+  if (m_universe) return false;
   
-  WorldFacetPtr ptr(this);
+  UniverseFacetPtr ptr(this);
   AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
   
-  if (world->AttachFacet(Reserved::DataManagerFacetID, ptr)) {
-    m_world = world;
+  if (universe->AttachFacet(Reserved::DataManagerFacetID, ptr)) {
+    m_universe = universe;
     return true;
   }
   return false;
 }
                                     
                                     
-Avida::Data::ManagerPtr Avida::Data::Manager::Of(World* world)
+Avida::Data::ManagerPtr Avida::Data::Manager::Of(Universe* universe)
 {
   ManagerPtr manager;
-  manager.DynamicCastFrom(world->DataManager());
+  manager.DynamicCastFrom(universe->DataManager());
   return manager;
 }
 
@@ -405,12 +405,12 @@ bool Avida::Data::Manager::Serialize(ArchivePtr) const
 }
 
 
-Avida::WorldFacetID Avida::Data::Manager::UpdateBefore() const
+Avida::UniverseFacetID Avida::Data::Manager::UpdateBefore() const
 {
   return "";
 }
 
-Avida::WorldFacetID Avida::Data::Manager::UpdateAfter() const
+Avida::UniverseFacetID Avida::Data::Manager::UpdateAfter() const
 {
   return "";
 }

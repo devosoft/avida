@@ -28,9 +28,9 @@
 #include "avida/output/Manager.h"
 
 
-Avida::Output::FilePtr Avida::Output::File::createWithPath(World* world, Apto::String path, bool append, Feedback* feedback)
+Avida::Output::FilePtr Avida::Output::File::createWithPath(Universe* universe, Apto::String path, bool append, Feedback* feedback)
 {
-  Output::ManagerPtr mgr = Output::Manager::Of(world);
+  Output::ManagerPtr mgr = Output::Manager::Of(universe);
   OutputID oid = mgr->OutputIDFromPath(path);
   
   if (oid.GetSize() == 0) {
@@ -43,7 +43,7 @@ Avida::Output::FilePtr Avida::Output::File::createWithPath(World* world, Apto::S
     return FilePtr(NULL);
   }
   
-  FilePtr rtn(new File(world, oid, append));
+  FilePtr rtn(new File(universe, oid, append));
   
   if (!rtn->Good() || rtn->Fail()) {
     if (feedback) feedback->Error("unable to open file '%s' for writing", (const char*)oid);
@@ -53,9 +53,9 @@ Avida::Output::FilePtr Avida::Output::File::createWithPath(World* world, Apto::S
   return rtn;
 }
 
-Avida::Output::FilePtr Avida::Output::File::StaticWithPath(World* world, Apto::String path, Feedback* feedback)
+Avida::Output::FilePtr Avida::Output::File::StaticWithPath(Universe* universe, Apto::String path, Feedback* feedback)
 {
-  Output::ManagerPtr mgr = Output::Manager::Of(world);
+  Output::ManagerPtr mgr = Output::Manager::Of(universe);
   OutputID oid = mgr->OutputIDFromPath(path);
   
   if (oid.GetSize() == 0) {
@@ -72,7 +72,7 @@ Avida::Output::FilePtr Avida::Output::File::StaticWithPath(World* world, Apto::S
       if (feedback) feedback->Error("'%s' already open, incompatible socket type", (const char*)oid);
       return FilePtr(NULL);
     }
-    rtn = createWithPath(world, path, false, feedback);
+    rtn = createWithPath(universe, path, false, feedback);
     if (rtn) {
       if (!rtn->registerAsStatic()) {
         if (feedback) feedback->Error("unable to register '%s' as a static socket", (const char*)oid);
@@ -86,8 +86,8 @@ Avida::Output::FilePtr Avida::Output::File::StaticWithPath(World* world, Apto::S
 
 
 
-Avida::Output::File::File(World* world, const OutputID& name, bool append)
-  : Socket(world, name), m_descr_written(false), m_num_cols(0)
+Avida::Output::File::File(Universe* universe, const OutputID& name, bool append)
+  : Socket(universe, name), m_descr_written(false), m_num_cols(0)
 {
   m_fp.open(name, (append) ? (std::ios::out | std::ios::app) : std::ios::out);
   assert(m_fp.good());

@@ -48,9 +48,9 @@ namespace Avida {
   template <typename T> struct PropertyTraits;
   template <typename T> class ReferenceProperty;
   class StringProperty;
-  class World;
-  class WorldDriver;
-  class WorldFacet;
+  class Universe;
+  class UniverseDriver;
+  class UniverseFacet;
 
   
   // Enumeration Declarations
@@ -113,9 +113,9 @@ namespace Avida {
   typedef Apto::SmartPtr<const PropertyMap> ConstPropertyMapPtr;
   typedef Apto::Map<PropertyID, Apto::String, Apto::DefaultHashBTree, Apto::ImplicitDefault> PropertyDescriptionMap;
   
-  typedef Apto::String WorldFacetID;
-  typedef Apto::SmartPtr<WorldFacet, Apto::InternalRCObject> WorldFacetPtr;
-  typedef Apto::Functor<WorldFacetPtr, Apto::TL::Create<ArchivePtr>, SmallObjectMalloc> WorldFacetDeserializeFunctor;
+  typedef Apto::String UniverseFacetID;
+  typedef Apto::SmartPtr<UniverseFacet, Apto::InternalRCObject> UniverseFacetPtr;
+  typedef Apto::Functor<UniverseFacetPtr, Apto::TL::Create<ArchivePtr>, SmallObjectMalloc> UniverseFacetDeserializeFunctor;
   
   typedef Apto::Functor<void, Apto::TL::Create<DriverEvent>, SmallObjectMalloc> DriverCallback;
 

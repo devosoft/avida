@@ -152,8 +152,8 @@ SET(CORE_SOURCES
   ${CORE_DIR}/InstructionSequence.cc
   ${CORE_DIR}/Properties.cc
   ${CORE_DIR}/Types.cc
+  ${CORE_DIR}/Universe.cc
   ${CORE_DIR}/Version.cc
-  ${CORE_DIR}/World.cc
 )
 SOURCE_GROUP(core FILES ${CORE_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${CORE_SOURCES})

@@ -22,7 +22,7 @@
 
 #include "cAnalyzeGenotype.h"
 
-#include "avida/core/WorldDriver.h"
+#include "avida/core/UniverseDriver.h"
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
