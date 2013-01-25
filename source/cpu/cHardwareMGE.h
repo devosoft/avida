@@ -129,7 +129,7 @@ private:
     cCPUMemory thread_mem;
     sInternalValue reg[NUM_REGISTERS];
     cLocalStack stack;
-    unsigned char cur_stack;          // 0 = local stack, 1 = global stack.
+    int cur_stack;          // 0 = local stack, 1 = global stack.
 
     int mem_id;
     int thread_class;
@@ -172,9 +172,9 @@ private:
   
   Apto::Array<cBehavThread> m_threads;          // The hardware is a collection of threads, each with a behavioral class type
   Apto::Array<cBehavProc> m_bps;                // The 3 behavioral proceses keep the registers and stacks.
-  unsigned int m_waiting_threads;
-  unsigned int m_cur_thread;
-  unsigned int m_cur_behavior;
+  int m_waiting_threads;
+  int m_cur_thread;
+  int m_cur_behavior;
   
   int m_use_avatar;
   cOrgSensor m_sensor;
@@ -183,7 +183,6 @@ private:
     unsigned int m_cycle_count:16;
     unsigned int m_last_output:16;
   };
-  
   cCodeLabel m_read_label;
   cCodeLabel m_read_seq;
 
@@ -223,7 +222,7 @@ public:
   BehavClass GetBehavClass(int classid);
   inline void IncThread() {
     m_cur_thread++;
-    if ((int) m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
+    if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
   }
 
   // --------  Core Execution Methods  --------
@@ -296,7 +295,7 @@ public:
     m_threads[m_cur_thread].active = false;
     m_threads[m_cur_thread].wait_reg = -1;
   }
-  inline bool SpareThreads() { return (m_threads.GetSize() - (int) m_waiting_threads) > 1; }
+  inline bool SpareThreads() { return (m_threads.GetSize() - m_waiting_threads) > 1; }
 
   // --------  Non-Standard Methods  --------
   int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }

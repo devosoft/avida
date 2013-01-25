@@ -281,7 +281,6 @@ cHardwareMGE::cHardwareMGE(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
 {
   m_functions = s_inst_slib->GetFunctions();
   
-  m_spec_die = false;
   m_no_cpu_cycle_time = m_world->GetConfig().NO_CPU_CYCLE_TIME.Get();
   
   const Genome& in_genome = in_organism->GetGenome();
@@ -290,11 +289,6 @@ cHardwareMGE::cHardwareMGE(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
   const InstructionSequence& in_seq = *in_seq_p;
   
   main_memory = in_seq;                     // Initialize main org memory and heads...
-  mHeads[mRH].Reset(this, 0);
-  mHeads[mIP].Reset(this, 0);
-  mHeads[mFH].Reset(this, 0);
-  child_memory.Resize(1);
-  mHeads[mWH].Reset(this, 1);
   
   m_threads.Resize(0);
   m_cur_thread = 0;
@@ -308,28 +302,38 @@ cHardwareMGE::cHardwareMGE(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
 
 void cHardwareMGE::internalReset()
 {
-  m_cycle_count = 0;
-  m_last_output = 0;
+  m_spec_die = false;
+  
+  // heads reset...redundant with constructor, but constructor not called on divide reset
+  mHeads[mRH].Reset(this, 0);
+  mHeads[mIP].Reset(this, 0);
+  mHeads[mFH].Reset(this, 0);
+  child_memory.Resize(1);
+  mHeads[mWH].Reset(this, 1);
+
   m_global_stack.Clear();
   m_cur_thread = 0;
-  m_cur_behavior = 0;
-  m_read_label.Clear();
-  m_reading_label = false;
-  m_read_seq.Clear();
-  m_reading_seq = false;
   
   m_waiting_threads = 0;
   m_cur_thread = 0;
+  m_cur_behavior = 0;
   
+  m_sensor.Reset();
+
+  m_cycle_count = 0;
+  m_last_output = 0;
+  m_read_label.Clear();
+  m_read_seq.Clear();
+
   // associate each thread and it's heads with the appropriate memory space id
   for (int i = 0; i < m_threads.GetSize(); i++) m_threads[i].Reset(this, i + 2);
   
   m_has_alloc = false;
   m_has_copied_end = false;
+  m_reading_label = false;
+  m_reading_seq = false;
+
   m_executedmatchstrings = false;
-  
-  m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
-  m_sensor.Reset();
 }
 
 void cHardwareMGE::internalResetOnFailedDivide()
@@ -363,14 +367,14 @@ void cHardwareMGE::cBehavThread::operator=(const cBehavThread& in_thread)
 void cHardwareMGE::cBehavThread::Reset(cHardwareMGE* in_hardware, int in_id)
 {
   mem_id = in_id;
-  for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i].Reset(in_hardware, mem_id); 
-  active = true;
-  next_label.Clear();
-  
+  for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i].Reset(in_hardware, mem_id);
   for (int i = 0; i < NUM_REGISTERS; i++) reg[i].Clear();
+
   stack.Clear();
   cur_stack = 0;
-  
+
+  active = true;
+  next_label.Clear();
 }
 
 // This function processes the very next command in the genome, and is made
@@ -398,23 +402,27 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
   
   int num_active = 0;
   for (int i = 0; i < m_threads.GetSize(); i++) if (m_threads[i].active) num_active++;
-  assert(num_active == (m_threads.GetSize() - (int) m_waiting_threads));
+  assert(num_active == (m_threads.GetSize() - m_waiting_threads));
   assert(num_active > 0);
   
-  int max_exec_count = 20;          // min tot num for equ from Nature '03  = 19
+  const int max_exec_count = 20;          // min tot num for equ from Nature '03  = 19
   int tot_count = 0;
   Apto::Array<bool> bp_used(NUM_BEHAVIORS);
   bp_used.SetAll(false);
   bool all_used = false;
   
   while (!all_used) {
-    if (!m_threads[m_cur_thread].active) { IncThread(); continue; } 
+    if (!m_threads[m_cur_thread].active) { IncThread(); continue; }
     tot_count++;
     
     m_advance_ip = true;
     cHeadCPU& ip = getThIP();
+    bool end_cyc = false;
+    if (ip.GetPosition() >= ip.GetMemSize() - 1) end_cyc = true;
     Adjust(getThIP(), thIP);
     
+//    if (m_organism->GetID() == 0 && m_world->GetStats().GetUpdate() >= 0) cout << " org: " << m_organism->GetID() << " thread: " << m_cur_thread << " mem_space: " << ip.GetMemSpace() << " ip_position: " << ip.GetPosition() << " thread_end: " << m_threads[m_cur_thread].end << " thread_size: " << ip.GetMemSize() << " inst: " << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName() <<  " cell: " << m_organism->GetOrgInterface().GetAVCellID() << endl;
+
     // if you exceed the per cycle exec max, you're done
     if (tot_count > max_exec_count) break;
     // only one 'designated' behavior instruction per class per cycle
@@ -423,8 +431,6 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
       if (bp_used[BEHAV]) break;
       else bp_used[BEHAV] = true;
     }
-
-//    if (m_organism->GetID() == 0) cout << " org: " << m_organism->GetID() << " thread: " << m_cur_thread << " mem_space: " << ip.GetMemSpace() << " ip_position: " << ip.GetPosition() << " thread_end: " << m_threads[m_cur_thread].end << " thread_size: " << ip.GetMemSize() << " inst: " << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName() <<  endl;
 
     // And proceed with standard execution...
     
@@ -453,7 +459,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     bool on_pause = IsPayingActiveCost(ctx, m_cur_thread);
     if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
     if (!exec) exec_success = -1;
-    
+
     // Now execute the instruction...
     bool rand_fail = false;
     if (exec == true) {
@@ -513,8 +519,9 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (phenotype.GetToDelete()) break;
     
     // check for continued execution
-    IncThread();
+//    IncThread();
     all_used = (bp_used[BEHAV_CLASS_ACTION] && bp_used[BEHAV_CLASS_INPUT] && bp_used[BEHAV_CLASS_COPY]);
+    if (end_cyc) { IncThread(); continue; }
     
   }  // end per BEHAV exec
   
@@ -569,7 +576,6 @@ void cHardwareMGE::CreateBPThreads()
 
   int prev_behav_class = -1;
   int cur_behav_class = 0;
-  int next_class = 1;
   
   const Genome& in_genome = m_organism->GetGenome();
   ConstInstructionSequencePtr in_seq_p;
@@ -579,20 +585,26 @@ void cHardwareMGE::CreateBPThreads()
   cHeadCPU& ip = mHeads[mIP];
   ip.Reset(this, 0);
   int offset = 0;
+  bool end_unset = false;
+  bool created_gene_already = false;
   while (offset < sequence.GetSize()) {
+    if (end_unset) m_threads[m_cur_thread].end = offset - 1;
     bool new_gene = false;
     bool end_gene = false;
+    bool set_end = true;
+//    cout << m_organism->GetID() << " " << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst(offset))).GetName() << endl;
     BehavClass inst_class = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst(offset))).GetBehavClass();
     if (inst_class < 3) cur_behav_class = inst_class;
     else if (inst_class == BEHAV_CLASS_BREAK) {
-      next_class = PreclassNewGeneBehavior(cur_behav_class, offset + 1);
-      cur_behav_class = GetBehavClass(next_class);
-      new_gene = true;
+      cur_behav_class = GetNextGeneClass(offset + 1, sequence.GetSize(), cur_behav_class);
+      if (!created_gene_already) new_gene = true;  // prevent start gene following an end gene
+      else set_end = false;
     }
     else if (inst_class == BEHAV_CLASS_END_GENE) {
       end_gene = true;
     }
-    if (cur_behav_class != prev_behav_class) new_gene = true;
+    if ((cur_behav_class != prev_behav_class) && !created_gene_already) new_gene = true;
+    if (created_gene_already) created_gene_already = false;
 
     if (end_gene) {
       if (prev_behav_class == -1) {   // if first inst in genome is 'end gene'...
@@ -616,14 +628,29 @@ void cHardwareMGE::CreateBPThreads()
         continue;
       }
       m_threads[m_cur_thread].end = offset;
+      assert(m_threads[m_cur_thread].end >= m_threads[m_cur_thread].start);
       cur_behav_class = GetNextGeneClass(offset + 1, sequence.GetSize(), cur_behav_class);
       new_gene = true;
       offset++;
     }
-
     if (new_gene) {
       if (prev_behav_class != -1) {
-        if (!end_gene) m_threads[m_cur_thread].end = offset - 1;
+        if ((!end_gene && set_end) || end_unset) { m_threads[m_cur_thread].end = offset - 1; end_unset = false; }
+        else end_unset = true;
+/*
+  /// debug
+        
+        //     cout << " created_gene_already " << created_gene_already << " " << m_cur_thread << " start " << m_threads[m_cur_thread].start << " end: " << m_threads[m_cur_thread].end << endl;
+        if (m_organism->GetID() == 24 && m_cur_thread == 1 && m_threads[m_cur_thread].start == 6) {
+          bool rubbish;
+          rubbish = true;
+        }
+        
+        
+        cout << m_organism->GetID() << " thread: " << m_cur_thread << " start: " << m_threads[m_cur_thread].start << " end: " << m_threads[m_cur_thread].end << " inst: " << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst(offset))).GetName() << endl;
+  /// end debug
+  */
+        assert(m_threads[m_cur_thread].end >= m_threads[m_cur_thread].start);
         m_cur_thread++;
       }
       m_threads.Resize(m_threads.GetSize() + 1);
@@ -632,19 +659,51 @@ void cHardwareMGE::CreateBPThreads()
       m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids.Resize(m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids.GetSize() + 1);
       m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids[m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids.GetSize() - 1] = m_threads.GetSize() - 1;
       prev_behav_class = cur_behav_class;
+      if (end_gene) created_gene_already = true;
+      else created_gene_already = false;
     }
-    offset++;
+    else created_gene_already = false;
+    //     cout << " created_gene_already " << created_gene_already << " " << m_cur_thread << " start " << m_threads[m_cur_thread].start << " end: " << m_threads[m_cur_thread].end << endl;
+    if (!(end_gene && new_gene)) offset++;
   }
   m_threads[m_cur_thread].end = sequence.GetSize() - 1; // for very last gene
   if (m_threads[m_cur_thread].start == sequence.GetSize()) {  // end_gene was last instruction in genome
     m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids.Pop();
-    m_threads.Pop(); 
+    m_threads.Pop();
   }
   
+  
+  
+  
+  
+/*
+  /// debug
+
+//     if (m_threads.GetSize() > 0) cout << "thread: 2 start: " << m_threads[2].start << " end: " << m_threads[2].end << endl;
+    // Reset the threads, associating them with the correct memory space
+
+  ip.Reset(this, 0);
+  for (int i = 0; i < m_threads.GetSize(); i++) {
+    int pos = 0;
+    for (int j = m_threads[i].start; j < m_threads[i].end + 1; j++) {
+      cout << m_organism->GetID() << " thread: " << i << " start: " << m_threads[i].start << " end: " << m_threads[i].end << " inst: " << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst(j))).GetName() << endl;
+      pos++;
+    }
+    // Reset the threads, associating them with the correct memory space
+    m_threads[i].Reset(this, i + 2);
+  }
+  /// end debug
+*/  
+  
+  
+  
+  
+
   // copy the appropriate instructions into the new thread memory spaces
   ip.Reset(this, 0);
   for (int i = 0; i < m_threads.GetSize(); i++) {
     int mem_size = 1 + m_threads[i].end - m_threads[i].start;
+//     cout << i << " start " << m_threads[i].start << " end: " << m_threads[i].end << endl;
     m_threads[i].thread_mem.Reset(mem_size);
     int pos = 0;
     for (int j = m_threads[i].start; j < m_threads[i].end + 1; j++) {
@@ -1335,7 +1394,7 @@ int cHardwareMGE::calcCopiedSize(const int parent_size, const int child_size)
 }  
 
 bool cHardwareMGE::Divide_Main(cAvidaContext& ctx, int child_mem_space, int write_head_pos, double mut_multiplier)
-{  
+{
   // Make sure the memory space we're using exists
   if (child_memory.GetSize() <= 0) return false;
   
@@ -1653,6 +1712,7 @@ bool cHardwareMGE::Inst_Zero(cAvidaContext&)
 
 bool cHardwareMGE::Inst_One(cAvidaContext&)
 {
+//  if (m_organism->GetID() == 0 && m_world->GetStats().GetUpdate() >= 0) { cout << "fed!" << endl; }
   const int reg_used = FindModifiedRegister(rBX);
   setInternalValue(reg_used, 1, false);
   return true;
@@ -1782,7 +1842,6 @@ bool cHardwareMGE::Inst_TaskOutput(cAvidaContext& ctx)
   // Do the "put" component
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
   m_last_output = m_cycle_count;
-  
   return true;
 }
 
@@ -1885,12 +1944,9 @@ bool cHardwareMGE::Inst_Divide(cAvidaContext& ctx)
 
 bool cHardwareMGE::Inst_Repro(cAvidaContext& ctx)
 {
-  // these checks should be done, but currently they make some assumptions
-  // that crash when evaluating this kind of organism -- JEB
-  
   if (m_organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
   
-  // Since the divide will now succeed, set up the information to be sent
+  // set up the information to be sent
   // to the new organism
   InstructionSequencePtr offspring_seq(new InstructionSequence(main_memory));
   HashPropertyMap props;
@@ -1947,7 +2003,10 @@ bool cHardwareMGE::Inst_Repro(cAvidaContext& ctx)
   
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) { Reset(ctx); ResizeCostArrays(m_threads.GetSize()); }
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+      Reset(ctx);
+      ResizeCostArrays(m_threads.GetSize());
+    }
   }
   return true;
 }
@@ -2022,13 +2081,16 @@ bool cHardwareMGE::Inst_GetHead(cAvidaContext&)
 bool cHardwareMGE::Inst_JumpGene(cAvidaContext&)
 {
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
+  cCodeLabel& jump_to_label = GetLabel();
+  jump_to_label.Rotate(1, NUM_NOPS);
   int prev_thread = m_cur_thread;
   m_cur_thread = FindNopSequenceOrgStart(true);
+  m_threads[m_cur_thread].next_label = jump_to_label;
   cHeadCPU found_pos = FindNopSequenceStart(true);
   getThIP().Set(found_pos);
-  getIP(prev_thread).Advance();
+  if (prev_thread != m_cur_thread) getIP(prev_thread).Advance();
   Advance(getThHead(thIP), thIP);
+  m_advance_ip = false;
 
   m_cur_behavior = m_threads[m_cur_thread].thread_class;
   return true;
@@ -2139,7 +2201,7 @@ bool cHardwareMGE::Inst_WaitCondition_Equal(cAvidaContext&)
       }
     }
   // Fail to sleep if this is the last thread awake
-  if ((int) m_waiting_threads == (m_threads.GetSize() - 1)) return false;
+  if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
   
   // Put thread to sleep with appropriate wait condition
   m_threads[m_cur_thread].active = false;
@@ -2169,7 +2231,7 @@ bool cHardwareMGE::Inst_WaitCondition_Less(cAvidaContext&)
       }
     }
   // Fail to sleep if this is the last thread awake
-  if ((int) m_waiting_threads == (m_threads.GetSize() - 1)) return false;
+  if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
   
   // Put thread to sleep with appropriate wait condition
   m_threads[m_cur_thread].active = false;
@@ -2199,7 +2261,7 @@ bool cHardwareMGE::Inst_WaitCondition_Greater(cAvidaContext&)
       }
     }
   // Fail to sleep if this is the last thread awake
-  if ((int) m_waiting_threads == (m_threads.GetSize() - 1)) return false;
+  if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
   
   // Put thread to sleep with appropriate wait condition
   m_threads[m_cur_thread].active = false;
@@ -2334,6 +2396,7 @@ bool cHardwareMGE::Inst_RotateX(cAvidaContext&)
   rot_num = abs(rot_num);
   if (rot_num > 7) rot_num = rot_num % 8;
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(rot_dir);
+//   if (m_organism->GetID() == 0 && m_world->GetStats().GetUpdate() >= 0) cout << "direction: " << m_organism->GetOrgInterface().GetAVFacing() << endl;
   setInternalValue(reg_used, rot_num * rot_dir, true);
   return true;
 }
@@ -2556,6 +2619,7 @@ cOrgSensor::sLookOut cHardwareMGE::InitLooking(cAvidaContext& ctx, sLookRegAssig
 
 void cHardwareMGE::LookResults(sLookRegAssign& regs, cOrgSensor::sLookOut& results)
 {
+//    if (m_organism->GetID() == 0 && m_world->GetStats().GetUpdate() >= 0) cout << "look_dist_seen: " << results.distance << " look_count_seen: " << results.count << endl;
   // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
   // return defaults for failed to find
   if (results.report_type == 0) {
