@@ -233,8 +233,8 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_MGE; }
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);                                                                 // not implemented for this hardware
-  void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype);
-  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name);
+  void SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype);
+  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp);
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success);
   
   // --------  Stack Manipulation  --------

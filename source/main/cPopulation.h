@@ -107,7 +107,7 @@ private:
   int num_prey_organisms;
   int num_pred_organisms;
   int pop_enforce;
-  Apto::Array<int> min_prey_failures;
+  int num_top_pred_organisms;
   bool m_has_predatory_res;
   
   Apto::Array<cDeme> deme_array;            // Deme structure of the population.
@@ -170,8 +170,6 @@ public:
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
   void KillOrganism(cAvidaContext& ctx, int in_cell) { KillOrganism(cell_array[in_cell], ctx); } 
-  
-  void SetPopCapEnforcement(int rate) { pop_enforce = rate; }
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
@@ -338,13 +336,17 @@ public:
 
   cEnvironment& GetEnvironment() { return environment; }
   int GetNumOrganisms() { return num_organisms; }
-
   int GetNumPreyOrganisms() { return num_prey_organisms; }
   int GetNumPredOrganisms() { return num_pred_organisms; }
+  int GetNumTopPredOrganisms() { return num_top_pred_organisms; }
+
   void DecNumPreyOrganisms() { num_prey_organisms--; }
   void DecNumPredOrganisms() { num_pred_organisms--; }
+  void DecNumTopPredOrganisms() { num_top_pred_organisms--; }
+
   void IncNumPreyOrganisms() { num_prey_organisms++; }
   void IncNumPredOrganisms() { num_pred_organisms++; }
+  void IncNumTopPredOrganisms() { num_top_pred_organisms++; }
   
   void RemovePredators(cAvidaContext& ctx);
   void InjectPreyClone(cAvidaContext& ctx, cOrganism* org_to_clone);
@@ -398,8 +400,9 @@ public:
 
   //Kill random member of the group (but not self!!!) 
   void KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism* org);
-  //Attack organism faced by this one, if there is an organism in front.
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
+  void KillRandPred(cAvidaContext& ctx, cOrganism* org);
+  void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
   // Identifies the number of organisms in a group
   int NumberOfOrganismsInGroup(int group_id);
   int NumberGroupFemales(int group_id);

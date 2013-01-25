@@ -194,6 +194,7 @@ private:
   
   int m_use_avatar;
   cOrgSensor m_sensor;
+  bool m_from_sensor;
   
   struct {
     unsigned int m_cycle_count:16;
@@ -249,8 +250,8 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_EXPERIMENTAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype);
-  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name);
+  void SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype);
+  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp);
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success);
   
   // --------  Stack Manipulation  --------
@@ -284,6 +285,7 @@ public:
   // --------  Register Manipulation  --------
   int GetRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].value; }
   int GetNumRegisters() const { return NUM_REGISTERS; }
+  bool FromSensor(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].from_sensor; }
   
   
   // --------  Thread Manipulation  --------
@@ -598,6 +600,7 @@ private:
   bool Inst_AttackPrey(cAvidaContext& ctx); 
   bool Inst_AttackPreyGroup(cAvidaContext& ctx);
   bool Inst_AttackPreyShare(cAvidaContext& ctx);
+  bool Inst_AttackPreyGroupShare(cAvidaContext& ctx);
   bool Inst_AttackSpecPrey(cAvidaContext& ctx);
   bool Inst_AttackPreyArea(cAvidaContext& ctx);
   bool Inst_AttackFTPrey(cAvidaContext& ctx); 
@@ -662,6 +665,8 @@ public:
   void MakePred(cAvidaContext& ctx);
   void MakeTopPred(cAvidaContext& ctx);
   bool TestAttack(cAvidaContext& ctx);
+  bool TestAttackPred(cAvidaContext& ctx);
+  void UpdateGroupAttackStats(cString& inst);
 };
 
 

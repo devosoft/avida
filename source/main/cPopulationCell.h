@@ -146,23 +146,24 @@ public:
   
 // -------- Avatar support -------- 
 private:
-  Apto::Array<cOrganism*, Apto::Smart> m_av_inputs;
-  Apto::Array<cOrganism*, Apto::Smart> m_av_outputs;
+  Apto::Array<cOrganism*, Apto::Smart>  m_av_prey;
+  Apto::Array<cOrganism*, Apto::Smart>  m_av_pred;
+
 public:
-  inline int GetNumAVInputs() const { return m_av_inputs.GetSize(); }
-  inline int GetNumAVOutputs() const { return m_av_outputs.GetSize(); }
-  inline int GetNumAV() const { return GetNumAVInputs() + GetNumAVOutputs(); }
-  inline int GetNumPredAV() const { return GetNumAVInputs(); }
-  inline int GetNumPreyAV() const { return GetNumAVOutputs(); }
-  void AddInputAV(cOrganism* org);
-  void AddOutputAV(cOrganism* org);
-  void RemoveInputAV(cOrganism* org);
-  void RemoveOutputAV(cOrganism* org);
+  inline int GetNumAVInputs() const { return GetNumPredAV(); }
+  inline int GetNumAVOutputs() const { return GetNumPreyAV(); }
+  inline int GetNumAV() const { return GetNumPreyAV() + GetNumPredAV(); }
+  inline int GetNumPredAV() const { return m_av_pred.GetSize(); }
+  inline int GetNumPreyAV() const { return m_av_prey.GetSize(); }
+  void AddPredAV(cOrganism* org);
+  void AddPreyAV(cOrganism* org);
+  void RemovePredAV(cOrganism* org);
+  void RemovePreyAV(cOrganism* org);
   inline bool HasInputAV() const { return GetNumAVInputs() > 0; }
   inline bool HasOutputAV() const { return GetNumAVOutputs() > 0; }
   inline bool HasAV() const { return (GetNumAVOutputs() > 0 || GetNumAVInputs() > 0); }
-  inline bool HasPredAV() const { return GetNumAVInputs() > 0; }
-  inline bool HasPreyAV() const { return GetNumAVOutputs() > 0; }
+  inline bool HasPredAV() const { return GetNumPredAV() > 0; }
+  inline bool HasPreyAV() const { return GetNumPreyAV() > 0; }
   bool HasOutputAV(cOrganism* org);
   cOrganism* GetRandAV() const;
   cOrganism* GetRandPredAV() const;

@@ -29,7 +29,6 @@
 
 #include "cAvidaConfig.h"
 #include "cAvidaContext.h"
-#include "cDataFileManager.h"
 
 #include <cassert>
 
@@ -60,7 +59,6 @@ protected:
   cAnalyze* m_analyze;
   cAvidaConfig* m_conf;
   cAvidaContext* m_ctx;
-  cDataFileManager* m_datafile_mgr;
   cEnvironment* m_env;
   cEventList* m_event_list;
   cHardwareManager* m_hw_mgr;
@@ -94,7 +92,6 @@ public:
   cAnalyze& GetAnalyze();
   cAvidaConfig& GetConfig() { return *m_conf; }
   cAvidaContext& GetDefaultContext() { return *m_ctx; }
-  cDataFileManager& GetDataFileManager() { return *m_datafile_mgr; }
   cEnvironment& GetEnvironment() { return *m_env; }
   cHardwareManager& GetHardwareManager() { return *m_hw_mgr; }
   cMigrationMatrix& GetMigrationMatrix(){ return *m_mig_mat; };
@@ -110,10 +107,6 @@ public:
   Data::ProviderPtr GetStatsProvider(World*);
   Data::ArgumentedProviderPtr GetPopulationProvider(World*);
   
-  // Access to Data File Manager
-  std::ofstream& GetDataFileOFStream(const cString& fname) { return m_datafile_mgr->GetOFStream(fname); }
-  cDataFile& GetDataFile(const cString& fname) { return m_datafile_mgr->Get(fname); }  
-
   // Config Dependent Modes
   bool GetTestOnDivide() const { return m_test_on_div; }
   bool GetTestSterilize() const { return m_test_sterilize; }

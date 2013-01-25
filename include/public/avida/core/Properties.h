@@ -51,7 +51,7 @@ namespace Avida {
   public:
     LIB_EXPORT inline Property(const PropertyID& p_id, const PropertyTypeID& t_id, const PropertyDescriptionMap& desc)
       : m_id(p_id), m_type_id(t_id), m_desc(desc) { ; }
-    LIB_EXPORT inline Property(const Property& p) : m_id(p.m_id), m_type_id(p.m_type_id), m_desc(p.m_desc) { ; }
+    LIB_EXPORT inline Property(const Property& p) : Apto::ClassAllocator<SmallObjectMalloc>(p), m_id(p.m_id), m_type_id(p.m_type_id), m_desc(p.m_desc) { ; }
     LIB_EXPORT virtual ~Property() = 0;
     
     LIB_EXPORT inline const PropertyID& ID() const { return m_id; }

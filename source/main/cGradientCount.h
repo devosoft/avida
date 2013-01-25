@@ -176,7 +176,7 @@ private:
   void fillinResourceValues();
   void updatePeakRes(cAvidaContext& ctx);
   void moveRes(cAvidaContext& ctx);
-  int setHaloPeakMovement(cAvidaContext& ctx, int current_orbit);
+  int setHaloOrbit(cAvidaContext& ctx, int current_orbit);
   void setPeakMoveMovement(cAvidaContext& ctx);
   void moveHaloPeak(int current_orbit);
   void movePeak();

@@ -10,12 +10,12 @@
 
 #include "cDataManager_Base.h"
 
-#include "cDataFile.h"
+#include "avida/output/File.h"
 
 using namespace std;
 
 
-bool cDataManager_Base::PrintRow(cDataFile& data_file, cString row_entries, char sep)
+bool cDataManager_Base::PrintRow(Avida::Output::File& data_file, cString row_entries, char sep)
 {
   bool result = true;
   
@@ -56,7 +56,7 @@ bool cDataManager_Base::PrintRow(cDataFile& data_file, cString row_entries, char
   }
   
   
-  ofstream& fp = data_file.GetOFStream();
+  ofstream& fp = data_file.OFStream();
   while (row_entries.GetSize() > 0) {
     cString cur_entry( row_entries.Pop(sep) );
     if ( Print(cur_entry, fp) == false ) {

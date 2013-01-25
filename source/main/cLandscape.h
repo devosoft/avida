@@ -24,14 +24,13 @@
 #define cLandscape_h
 
 #include "avida/core/Genome.h"
-
 #include "avida/core/InstructionSequence.h"
+#include "avida/output/Types.h"
 
 #include "cCPUTestInfo.h"
 #include "tMatrix.h"
 
 class cAvidaContext;
-class cDataFile;
 class cInstSet;
 class cTestCPU;
 class cWorld;
@@ -104,9 +103,9 @@ public:
   void Process(cAvidaContext& ctx);
   void ProcessDelete(cAvidaContext& ctx);
   void ProcessInsert(cAvidaContext& ctx);
-  void PredictWProcess(cAvidaContext& ctx, cDataFile& df, int update = -1);
-  void PredictNuProcess(cAvidaContext& ctx, cDataFile& df, int update = -1);
-  void ProcessDump(cAvidaContext& ctx, cDataFile& df);
+  void PredictWProcess(cAvidaContext& ctx, Avida::Output::File& df, int update = -1);
+  void PredictNuProcess(cAvidaContext& ctx, Avida::Output::File& df, int update = -1);
+  void ProcessDump(cAvidaContext& ctx, Avida::Output::File& df);
   
   inline void SetDistance(int in_distance) { distance = in_distance; }
   inline void SetTrials(int in_trials) { trials = in_trials; }
@@ -125,11 +124,11 @@ public:
   void TestPairs(cAvidaContext& ctx);
   void TestAllPairs(cAvidaContext& ctx);
 
-  void HillClimb(cAvidaContext& ctx, cDataFile& df);
+  void HillClimb(cAvidaContext& ctx, Avida::Output::File& df);
 
-  void PrintStats(cDataFile& df, int update = -1);
-  void PrintEntropy(cDataFile& fp);
-  void PrintSiteCount(cDataFile& fp);
+  void PrintStats(Avida::Output::File& df, int update = -1);
+  void PrintEntropy(Avida::Output::File& fp);
+  void PrintSiteCount(Avida::Output::File& fp);
 
   inline const Genome& GetPeakGenome() { return peak_genome; }
   inline double GetAveFitness() { return total_fitness / total_count; }

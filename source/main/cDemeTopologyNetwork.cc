@@ -21,6 +21,7 @@
 #include "avida/Avida.h"
 
 #include "avida/core/WorldDriver.h"
+#include "avida/output/File.h"
 
 /* By default, Boost is not available.  To enable Boost, either modify your environment,
  alter your build settings, or change this value -- BUT BE CAREFUL NOT TO CHECK IT IN LIKE THAT!
@@ -38,7 +39,6 @@
 #include "cPopulationInterface.h"
 #include "cStats.h"
 #include "cWorld.h"
-#include "cDataFile.h"
 
 using namespace Avida;
 
@@ -341,7 +341,7 @@ cStats::network_stats_t cDemeTopologyNetwork::Measure() const {
 
 /*! Print this network's topology.
  */
-void cDemeTopologyNetwork::PrintTopology(cDataFile& df) const {
+void cDemeTopologyNetwork::PrintTopology(Avida::Output::File& df) const {
 	Network::edge_iterator ei,ei_end;
 	for(boost::tie(ei,ei_end)=boost::edges(m_network); ei!=ei_end; ++ei) {
 		df.Write(m_world->GetStats().GetUpdate(), "Update [update]");

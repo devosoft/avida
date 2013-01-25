@@ -214,6 +214,7 @@ void cOrganism::initialize(cAvidaContext& ctx)
 {
   m_phenotype.SetInstSetSize(m_hardware->GetInstSet().GetSize());
   const_cast<Genome&>(m_initial_genome).Properties().SetValue(s_ext_prop_name_instset,(const char*)m_hardware->GetInstSet().GetInstSetName());
+  m_phenotype.SetGroupAttackInstSetSize(m_world->GetStats().GetGroupAttackInsts(m_hardware->GetInstSet().GetInstSetName()).GetSize());
   
   if (m_world->GetConfig().DEATH_METHOD.Get() > DEATH_METHOD_OFF) {
     m_max_executed = m_world->GetConfig().AGE_LIMIT.Get();
@@ -724,7 +725,7 @@ double cOrganism::GetNeutralMin() const { return m_world->GetConfig().NEUTRAL_MI
 double cOrganism::GetNeutralMax() const { return m_world->GetConfig().NEUTRAL_MAX.Get(); }
 
 
-void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
+void cOrganism::PrintStatus(ostream& fp)
 {
   fp << "---------------------------" << endl;
 	fp << "U:" << m_world->GetStats().GetUpdate() << endl;
@@ -750,14 +751,11 @@ void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
   fp << endl;
   
   fp << setfill(' ') << setbase(10);
-  
-  fp << "---------------------------" << endl;
-  fp << "ABOUT TO EXECUTE: " << next_name << endl;
 }
 
-void cOrganism::PrintMiniTraceStatus(cAvidaContext& ctx, ostream & fp, const cString& next_name)
+void cOrganism::PrintMiniTraceStatus(cAvidaContext& ctx, ostream & fp)
 {
-  m_hardware->PrintMiniTraceStatus(ctx, fp, next_name);
+  m_hardware->PrintMiniTraceStatus(ctx, fp);
 }
 
 void cOrganism::PrintMiniTraceSuccess(ostream & fp, const int exec_success)
@@ -781,7 +779,7 @@ void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated)
     
     ConstInstructionSequencePtr seq;
     seq.DynamicCastFrom(m_offspring_genome.Representation());
-    fp << "# Child Memory: " << seq->AsString() << endl;
+    fp << "# Offspring Memory: " << seq->AsString() << endl;
   }
 }
 
@@ -1119,20 +1117,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
       deme->AddPheromone(destcellID, pher_amount, ctx); 
     }
   } // End laying pheromone
-  
-  // Write some logging information if LOG_PHEROMONE is set.  This is done
-  // out here so that non-pheromone moves are recorded.
-  if (m_world->GetConfig().LOG_PHEROMONE.Get() == 1 &&
-      m_world->GetStats().GetUpdate() >= m_world->GetConfig().MOVETARGET_LOG_START.Get()) {
-    cDataFile& df = m_world->GetDataFile("movelog.dat");
     
-    int rel_srcid = GetDeme()->GetRelativeCellID(fromcellID);
-    int rel_destid = GetDeme()->GetRelativeCellID(destcellID);
-    
-    cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%d,%f,%d,5",  m_world->GetStats().GetUpdate(), GetID(), GetDeme()->GetDemeID(), rel_srcid, rel_destid, pher_amount, drop_mode);
-    df.WriteRaw(UpdateStr);
-  }
-  
   // don't trigger reactions on move if you're not supposed to! 
   const cEnvironment& env = m_world->GetEnvironment();
   const int num_tasks = env.GetNumTasks();
@@ -1207,16 +1192,36 @@ bool cOrganism::HasOpinion() {
   else return true;
 }
 
-void cOrganism::SetForageTarget(int forage_target) {
+void cOrganism::SetForageTarget(cAvidaContext& ctx, int forage_target) {
+  if (forage_target > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
   // if using avatars, make sure you swap avatar lists if the org type changes!
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
-    if (forage_target <= -2 && m_forage_target > -2) {
+    // change to pred
+    if (forage_target == -2 && m_forage_target > -2) {
       m_interface->DecNumPreyOrganisms();
       m_interface->IncNumPredOrganisms();
     }
-    else if (forage_target > -2 && m_forage_target <= -2) {
+    else if (forage_target == -2 && m_forage_target < -2) {
+      m_interface->DecNumTopPredOrganisms();
+      m_interface->IncNumPredOrganisms();
+    }
+    // change to top pred
+    else if (forage_target < -2 && m_forage_target > -2) {
+      m_interface->DecNumPreyOrganisms();
+      m_interface->IncNumTopPredOrganisms();
+    }
+    else if (forage_target < -2 && m_forage_target == -2) {
+      m_interface->DecNumPredOrganisms();
+      m_interface->IncNumTopPredOrganisms();
+    }
+    // change to prey
+    else if (forage_target > -2 && m_forage_target == -2) {
       m_interface->IncNumPreyOrganisms();
       m_interface->DecNumPredOrganisms();
+    }
+    else if (forage_target > -2 && m_forage_target < -2) {
+      m_interface->IncNumPreyOrganisms();
+      m_interface->DecNumTopPredOrganisms();
     }
   }
   m_forage_target = forage_target;
@@ -1232,8 +1237,9 @@ void cOrganism::CopyParentFT(cAvidaContext& ctx) {
     }
   }
   if (copy_ft) {
-    if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_interface->KillRandPred(ctx, this);
-    SetForageTarget(m_parent_ft);
+    if (m_parent_ft <= -2 && m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_interface->KillRandPred(ctx, this);
+    else if (m_parent_ft > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
+    SetForageTarget(ctx, m_parent_ft);
   }
 }
 
@@ -1241,7 +1247,6 @@ void cOrganism::CopyParentFT(cAvidaContext& ctx) {
 void cOrganism::ReceiveFlash() {
   m_hardware->ReceiveFlash();
 }
-
 
 /*! Called by the "flash" instruction. */
 void cOrganism::SendFlash(cAvidaContext& ctx) {

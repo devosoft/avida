@@ -26,6 +26,7 @@
 
 #include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
+#include "avida/output/File.h"
 
 #include "cAvidaContext.h"
 #include "cHardwareManager.h"
@@ -239,6 +240,8 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareBCR::Inst_TeachOffspring, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
     tInstLibEntry<tMethod>("learn-parent", &cHardwareBCR::Inst_LearnParent, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
+
+    tInstLibEntry<tMethod>("attack-prey", &cHardwareBCR::Inst_AttackPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
 
     // Control-type Instructions
     tInstLibEntry<tMethod>("scramble-registers", &cHardwareBCR::Inst_ScrambleReg, INST_CLASS_DATA, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
@@ -458,7 +461,7 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
   // Execute specified number of micro ops per cpu cycle on each thread in a round robin fashion
   const int uop_ratio = m_inst_set->GetUOpsPerCycle();
   for (; m_cur_uop < uop_ratio; m_cur_uop++) {
-    for (; m_cur_thread < m_threads.GetSize(); m_cur_thread++) {
+    for (m_cur_thread = (m_cur_thread < m_threads.GetSize()) ? m_cur_thread : 0; m_cur_thread < m_threads.GetSize(); m_cur_thread++) {
       // Setup the hardware for the next instruction to be executed.
       
       // If the currently selected thread is inactive, proceed to the next thread
@@ -468,8 +471,6 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       Head& ip = m_threads[m_cur_thread].heads[hIP];
       ip.Adjust();
     
-      // Print the status of this CPU at each step...
-      if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
       
       // Find the instruction to be executed
       const Instruction& cur_inst = ip.GetInst();
@@ -480,9 +481,6 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
         m_organism->SetRunning(false);
         return false;
       }
-      
-      // Print the short form status of this CPU at each step...
-      if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true);
       
       bool exec = true;
       int exec_success = 0;
@@ -519,6 +517,14 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
         }
         
         if (exec == true) {
+          if (m_tracer) {
+            // Print the status of this CPU at each step...
+            m_tracer->TraceHardware(ctx, *this);
+            
+            // Print the short form status of this CPU at each step...
+            m_tracer->TraceHardware(ctx, *this, false, true);
+          }
+          
           if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
             SingleProcess_PayPostResCosts(ctx, cur_inst);
             SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread);
@@ -529,7 +535,7 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
         
         // Check if the instruction just executed caused premature death, break out of execution if so
         if (phenotype.GetToDelete()) {
-          if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
+          if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true, exec_success);
           break;
         }
         
@@ -546,7 +552,7 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       }
       
       // if using mini traces, report success or failure of execution
-      if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
+      if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true, exec_success);
       
       bool do_record = false;
       // record exec failed if the org just now started paying precosts
@@ -624,7 +630,7 @@ void cHardwareBCR::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
   bool prev_run_state = m_organism->IsRunning();
   m_organism->SetRunning(true);
   
-  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
+  if (m_tracer) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -634,9 +640,9 @@ void cHardwareBCR::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
 
 void cHardwareBCR::PrintStatus(ostream& fp)
 {
-  fp << "CPU CYCLE:" << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
+  fp << "CPU CYCLE:" << m_organism->GetPhenotype().GetCPUCyclesUsed() << "."  << m_cur_uop << " ";
   fp << "THREAD:" << m_cur_thread << "  ";
-  fp << "IP:" << getIP().Position() << "    ";
+  fp << "IP:" << getIP().Position() << " (" << GetInstSet().GetName(getIP().GetInst()) << ")" << endl;
   
   
   for (int i = 0; i < NUM_REGISTERS; i++) {
@@ -681,14 +687,13 @@ void cHardwareBCR::PrintStatus(ostream& fp)
   fp.flush();
 }
 
-void cHardwareBCR::SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype)
+void cHardwareBCR::SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype)
 {
   const Genome& in_genome = m_organism->GetGenome();
   ConstInstructionSequencePtr in_seq_p;
   in_seq_p.DynamicCastFrom(in_genome.Representation());
   const InstructionSequence& in_seq = *in_seq_p;
 
-  cDataFile& df = m_world->GetDataFile(filename);
   df.WriteTimeStamp();
   cString org_dat("");
   df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
@@ -723,7 +728,7 @@ void cHardwareBCR::SetupMiniTraceFileHeader(const cString& filename, const int g
   df.Endl();
 }
 
-void cHardwareBCR::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const cString& next_name)
+void cHardwareBCR::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
 {
   // basic status info
   fp << m_cycle_count << " ";
@@ -768,6 +773,7 @@ void cHardwareBCR::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const c
   fp << hill << " ";
   fp << wall << " ";
   // instruction about to be executed
+  cString next_name(GetInstSet().GetName(getIP().GetInst()));
   fp << next_name << " ";
   // any trailing nops (up to NUM_REGISTERS)
   cCPUMemory& memory = m_mem_array[0];
@@ -2771,7 +2777,7 @@ bool cHardwareBCR::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareBCR::Inst_SetForageTarget(cAvidaContext&)
+bool cHardwareBCR::Inst_SetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   int prop_target = getRegister(FindModifiedRegister(rBX));
@@ -2813,9 +2819,9 @@ bool cHardwareBCR::Inst_SetForageTarget(cAvidaContext&)
   if (m_use_avatar && (((prop_target == -2 || prop_target == -3) && old_target > -2) || (prop_target > -2 && (old_target == -2 || old_target == -3))) &&
       (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
     m_organism->GetOrgInterface().SwitchPredPrey();
-    m_organism->SetForageTarget(prop_target);
+    m_organism->SetForageTarget(ctx, prop_target);
   }
-  else m_organism->SetForageTarget(prop_target);
+  else m_organism->SetForageTarget(ctx, prop_target);
     
   // Set the new target and return the value
   m_organism->RecordFTSet();
@@ -2853,7 +2859,7 @@ bool cHardwareBCR::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
         prop_target = *itr;
       }
       // Set the new target and return the value
-      m_organism->SetForageTarget(prop_target);
+      m_organism->SetForageTarget(ctx, prop_target);
       m_organism->RecordFTSet();
       setRegister(FindModifiedRegister(rBX), prop_target, false);
       return true;
@@ -3183,9 +3189,9 @@ void cHardwareBCR::makePred(cAvidaContext& ctx)
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
-      m_organism->SetForageTarget(-2);
+      m_organism->SetForageTarget(ctx, -2);
     }
-    else m_organism->SetForageTarget(-2);
+    else m_organism->SetForageTarget(ctx, -2);
   }
 }
 
@@ -3196,11 +3202,11 @@ void cHardwareBCR::makeTopPred(cAvidaContext& ctx)
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
-      m_organism->SetForageTarget(-3);
+      m_organism->SetForageTarget(ctx, -3);
     }
-    else m_organism->SetForageTarget(-3);
+    else m_organism->SetForageTarget(ctx, -3);
   }
-  else if (m_organism->GetForageTarget() == -2) m_organism->SetForageTarget(-3);
+  else if (m_organism->GetForageTarget() == -2) m_organism->SetForageTarget(ctx, -3);
 }
 
 bool cHardwareBCR::testAttack(cAvidaContext& ctx)

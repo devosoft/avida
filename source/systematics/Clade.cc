@@ -24,10 +24,9 @@
 #include "avida/private/systematics/Clade.h"
 
 #include "avida/core/Properties.h"
+#include "avida/output/File.h"
 
 #include "avida/private/systematics/CladeArbiter.h"
-
-#include "cDataFile.h"
 
 
 static Avida::PropertyDescriptionMap s_prop_desc_map;
@@ -139,7 +138,7 @@ bool Avida::Systematics::Clade::Serialize(ArchivePtr) const
 
 bool Avida::Systematics::Clade::LegacySave(void* dfp) const
 {
-  cDataFile& df = *static_cast<cDataFile*>(dfp);
+  Avida::Output::File& df = *static_cast<Avida::Output::File*>(dfp);
   df.Write(m_name, "Clade Name", "name");
   return false;
 }

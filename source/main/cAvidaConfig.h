@@ -584,11 +584,6 @@ public:
   CONFIG_ADD_VAR(TEST_CPU_TIME_MOD, int, 20, "Time allocated in test CPUs (multiple of length)");
   
 
-  // -------- Log File config options --------
-  CONFIG_ADD_GROUP(LOG_GROUP, "Log Files");
-  CONFIG_ADD_VAR(TRACE_EXECUTION, bool, 0, "Trace the execution of all organisms in the population (WARNING: SLOW!)");
-  
-
   // -------- Organism Network config options --------
   CONFIG_ADD_GROUP(ORGANISM_NETWORK_GROUP, "Organism Network Communication");
   CONFIG_ADD_VAR(NET_DROP_PROB, double, 0.0, "Message drop rate");
@@ -667,7 +662,6 @@ public:
   CONFIG_ADD_VAR(ENERGY_SHARING_INCREMENT, double, 0.01, "Amount to change percent energy shared");
   CONFIG_ADD_VAR(RESOURCE_SHARING_LOSS, double, 0.0, "Fraction of shared resource lost in transfer");
   CONFIG_ADD_VAR(ENERGY_SHARING_UPDATE_METABOLIC, bool, 0, "0/1 (off/on) - Whether to update an organism's metabolic rate on donate or reception/application of energy");
-  CONFIG_ADD_VAR(LOG_ENERGY_SHARING, bool, 0, "Whether or not to log energy shares.  0/1 (off/on)");
   
 
   // -------- Second Pass Metrics config options --------
@@ -742,11 +736,8 @@ public:
   CONFIG_ADD_VAR(PHEROMONE_AMOUNT, double, 1.0, "Amount of pheromone to add per drop");
   CONFIG_ADD_VAR(PHEROMONE_DROP_MODE, int, 0, "Where to drop pheromone\n0 = Half amount at src, half at dest\n1 = All at source\n2 = All at dest");
   CONFIG_ADD_VAR(EXPLOIT_EXPLORE_PROB, double, 0.00, "Probability of random exploration\ninstead of pheromone trail following");
-  CONFIG_ADD_VAR(LOG_PHEROMONE, bool, 0, "Log pheromone drops.  0/1 (off/on)");
-  CONFIG_ADD_VAR(PHEROMONE_LOG_START, int, 0, "Update at which to start logging pheromone drops");
   CONFIG_ADD_VAR(EXPLOIT_LOG_START, int, 0, "Update at which to start logging exploit moves");
   CONFIG_ADD_VAR(EXPLORE_LOG_START, int, 0, "Update at which to start logging explore moves");
-  CONFIG_ADD_VAR(MOVETARGET_LOG_START, int, 0, "Update at which to start logging movetarget moves");
   CONFIG_ADD_VAR(LOG_INJECT, bool, 0, "Log injection of organisms.  0/1 (off/on)");
   CONFIG_ADD_VAR(INJECT_LOG_START, int, 0, "Update at which to start logging injection of\norganisms");
   
@@ -804,6 +795,7 @@ public:
   CONFIG_ADD_VAR(PRED_INJURY, double, 0.0, "If an attack fails, target's bonus, merit, and internal resources are reduced by this fraction.");
   CONFIG_ADD_VAR(MIN_PREY, int, 0, "If positive (recommended for prey studies), predator attacks fail if num prey falls below this (0 = off).\nIf negative (recommended for predator studies), random prey of genotype other than target will be cloned (using birth placement methods).");
   CONFIG_ADD_VAR(MAX_PRED, int, 0, "Population cap on number of predators (random predator will be removed when cap is exceeded).");
+  CONFIG_ADD_VAR(MAX_PREY, int, 0, "Population cap on number of prey (random prey will be removed when cap is exceeded). For births, classification as prey is based on parent.");
   CONFIG_ADD_VAR(MARKING_EXPIRE_DATE, int, -1, " Number of updates markings in cells will remain effective on territory move.");
 		
 

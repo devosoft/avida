@@ -25,10 +25,10 @@
 
 #include "avida/core/InstructionSequence.h"
 #include "avida/core/Properties.h"
+#include "avida/output/File.h"
 
 #include "avida/private/systematics/GenotypeArbiter.h"
 
-#include "cDataFile.h"
 #include "cHardwareManager.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
@@ -343,7 +343,7 @@ bool Avida::Systematics::Genotype::Serialize(ArchivePtr) const
 
 bool Avida::Systematics::Genotype::LegacySave(void* dfp) const
 {
-  cDataFile& df = *static_cast<cDataFile*>(dfp);
+  Avida::Output::File& df = *static_cast<Avida::Output::File*>(dfp);
   df.Write(m_id, "ID", "id");
   
   df.Write(m_src.AsString(), "Source", "src");

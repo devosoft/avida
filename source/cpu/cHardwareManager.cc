@@ -160,12 +160,24 @@ bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, int st
   for (int i = 0; i < inst_set->GetSize(); i++) names[i] = inst_set->GetName(i);
   m_world->GetStats().SetInstNames(inst_set->GetInstSetName(), names);
   Apto::String is((const char*)inst_set->GetInstSetName());
+  m_world->GetStats().SetGroupAttackInstNames(inst_set->GetInstSetName());
+
   m_world->GetStats().InstPreyExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstPredExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
+  m_world->GetStats().InstTopPredExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstPreyFromSensorExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstPredFromSensorExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
-  m_world->GetStats().InstPreyFailedExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
-  m_world->GetStats().InstPredFailedExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
+  m_world->GetStats().InstTopPredFromSensorExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
+
+  m_world->GetStats().ExecCountsForGroupAttackInstSet(inst_set->GetInstSetName()).Clear();
+  Apto::Array<cString> att_inst = m_world->GetStats().GetGroupAttackInsts(inst_set->GetInstSetName());
+  for (int i = 0; i < att_inst.GetSize(); i++) {
+    m_world->GetStats().ExecCountsForGroupAttackInst(inst_set->GetInstSetName(), att_inst[i]).Resize(20);
+    for (int j = 0; j < 20; j++) {
+      m_world->GetStats().ExecCountsForGroupAttackInst(inst_set->GetInstSetName(), att_inst[i])[j].Clear();
+    }
+  }
+  
   m_world->GetStats().InstMaleExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstFemaleExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   
@@ -272,12 +284,6 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
       break;
   }
   
-  // Are we tracing the execution of this cpu?
-  if (m_world->GetConfig().TRACE_EXECUTION.Get()) {
-    cString filename =  cStringUtil::Stringf("trace-%d.trace", org->GetID());
-    hw->SetTrace(new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename)));
-  }
-    
   assert(hw != 0);
   return hw;
 }

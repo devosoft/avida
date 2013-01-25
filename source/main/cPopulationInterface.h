@@ -249,11 +249,14 @@ public:
   
   void DecNumPreyOrganisms();
   void DecNumPredOrganisms();
+  void DecNumTopPredOrganisms();
   void IncNumPreyOrganisms();
   void IncNumPredOrganisms();
+  void IncNumTopPredOrganisms();
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   void InjectPreyClone(cAvidaContext& ctx);
   void KillRandPred(cAvidaContext& ctx, cOrganism* org);
+  void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
   
 // -------- Avatar support -------- @JJB
 private:

@@ -27,10 +27,10 @@
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
 #include "avida/environment/Manager.h"
+#include "avida/output/File.h"
 
 #include "avida/private/systematics/Genotype.h"
 
-#include "cDataFile.h"
 #include "cDoubleSum.h"
 
 #include <cmath>
@@ -122,7 +122,7 @@ bool Avida::Systematics::GenotypeArbiter::LegacySave(void* dfp) const
   Apto::List<GenotypePtr, Apto::SparseVector>::ConstIterator list_it(m_historic.Begin());
   while (list_it.Next() != NULL) {
     (*list_it.Get())->LegacySave(dfp);
-    static_cast<cDataFile*>(dfp)->Endl();
+    static_cast<Avida::Output::File*>(dfp)->Endl();
   }
   return true;
 }

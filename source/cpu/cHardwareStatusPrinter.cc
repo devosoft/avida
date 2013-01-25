@@ -33,18 +33,23 @@
 void cHardwareStatusPrinter::TraceHardware(cAvidaContext& ctx, cHardwareBase& hardware, bool bonus, bool minitrace, const int exec_success)
 {
   cOrganism* organism = hardware.GetOrganism();
-  if (exec_success == -2) {cString next_name(hardware.GetInstSet().GetName(hardware.IP().GetInst()));
-    if (bonus) next_name = cStringUtil::Stringf("%s (bonus instruction)", static_cast<const char*>(next_name));
-    
-    if (organism) {
-      if (!minitrace) organism->PrintStatus(m_trace_fp, next_name);
-      else if (minitrace && exec_success == -2) organism->PrintMiniTraceStatus(ctx, m_trace_fp, next_name);
-    }
+
+  if (!organism) return;
+  
+  if (m_minitracer && minitrace && !m_file->HeaderDone()) {
+    Apto::String genotype_name = organism->SystematicsGroup("genotype")->Properties().Get("genotype").StringValue();
+    hardware.SetupMiniTraceFileHeader(*m_file, organism->SystematicsGroup("genotype")->ID(), genotype_name);
   }
-  else if (minitrace && exec_success != -2 && organism) organism->PrintMiniTraceSuccess(m_trace_fp, exec_success);
+    
+  if (exec_success == -2) {
+    if (!m_minitracer && !minitrace) organism->PrintStatus(m_file->OFStream());
+    else if (m_minitracer && minitrace && exec_success == -2) organism->PrintMiniTraceStatus(ctx, m_file->OFStream());
+  } else if (m_minitracer && minitrace && exec_success != -2) {
+    organism->PrintMiniTraceSuccess(m_file->OFStream(), exec_success);
+  }
 }
 
 void cHardwareStatusPrinter::TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism)
 {
-  organism.PrintFinalStatus(m_trace_fp, time_used, time_allocated);
+  organism.PrintFinalStatus(m_file->OFStream(), time_used, time_allocated);
 }

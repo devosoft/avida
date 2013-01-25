@@ -23,29 +23,25 @@
 #ifndef cHardwareStatusPrinter_h
 #define cHardwareStatusPrinter_h
 
-#include <iostream>
+#include "avida/output/File.h"
 
-#ifndef cHardwareTracer_h
 #include "cHardwareTracer.h"
-#endif
 
 class cAvidaContext;
+
+
 class cHardwareStatusPrinter : public cHardwareTracer
 {
 protected:
-  std::ostream& m_trace_fp;
-
-
-private: 
-  cHardwareStatusPrinter(); // @not_implemented
-
+  Avida::Output::FilePtr m_file;
+  bool m_minitracer;
 
 public:
-  cHardwareStatusPrinter(std::ostream& trace_fp) : m_trace_fp(trace_fp) { ; }
+  cHardwareStatusPrinter(Avida::World* world, const Apto::String& filename, bool minitracer = false)
+    : m_file(Avida::Output::File::CreateWithPath(world, filename)), m_minitracer(minitracer) { ; }
 
   virtual void TraceHardware(cAvidaContext& ctx, cHardwareBase& hardware, bool bonus, bool mini, int exec_success);
   virtual void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism);
-  virtual std::ostream * GetStream() { return &m_trace_fp; }  
 };
 
 #endif

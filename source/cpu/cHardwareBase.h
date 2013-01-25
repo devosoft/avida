@@ -24,19 +24,20 @@
 #define cHardwareBase_h
 
 #include "avida/core/InstructionSequence.h"
+#include "avida/output/Types.h"
 #include "avida/systematics/Types.h"
 
 #include <cassert>
 #include <climits>
 #include <iostream>
 
+#include "cHardwareTracer.h"
 #include "cInstSet.h"
 #include "tBuffer.h"
 
 class cAvidaContext;
 class cCodeLabel;
 class cCPUMemory;
-class cHardwareTracer;
 class cHeadCPU;
 class cMutation;
 class cOrganism;
@@ -54,16 +55,18 @@ protected:
   cOrganism* m_organism;            // Organism using this hardware.
   cInstSet* m_inst_set;             // Instruction set being used.
 
-  cHardwareTracer* m_tracer;        // Set this if you want execution traced.
-  cHardwareTracer* m_minitracer;    // Set this if you want execution traced in a condensed and tractable format.
-  cString& m_minitrace_file;
+  HardwareTracerPtr m_tracer;        // Set this if you want execution traced.
   Apto::Array<char, Apto::Smart> m_microtracer;
   Apto::Array<int, Apto::Smart> m_navtraceloc;
   Apto::Array<int, Apto::Smart> m_navtracefacing;
   Apto::Array<int, Apto::Smart> m_navtraceupdate;
-  bool m_microtrace;
-  bool m_topnavtrace;
-  bool m_reprotrace;
+  
+  struct {
+    bool m_minitrace:1;
+    bool m_microtrace:1;
+    bool m_topnavtrace:1;
+    bool m_reprotrace:1;
+  };
 
   // --------  Instruction Costs  ---------
   int m_inst_cost;
@@ -138,10 +141,10 @@ public:
   virtual int GetType() const = 0;
   virtual bool SupportsSpeculative() const = 0;
   virtual void PrintStatus(std::ostream& fp) = 0;
-  virtual void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) = 0;
+  virtual void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp) = 0;
   virtual void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) = 0;
-  void SetTrace(cHardwareTracer* tracer) { m_tracer = tracer; }
-  void SetMiniTrace(const cString& filename, const int gen_id, const cString& genotype);
+  void SetTrace(HardwareTracerPtr tracer) { m_tracer = tracer; }
+  void SetMiniTrace(const cString& filename);
   void SetMicroTrace() { m_microtrace = true; } 
   void SetTopNavTrace(bool nav_trace) { m_topnavtrace = nav_trace; }
   bool IsTopNavTrace() { return m_topnavtrace; }
@@ -155,7 +158,7 @@ public:
   Apto::Array<int, Apto::Smart>& GetNavTraceFacing() { return m_navtracefacing; }
   Apto::Array<int, Apto::Smart>& GetNavTraceUpdate() { return m_navtraceupdate; }
   void DeleteMiniTrace(bool print_reacs);
-  virtual void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype) = 0;
+  virtual void SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype) = 0;
   void SetupExtendedMemory(const Apto::Array<int, Apto::Smart>& ext_mem) { m_ext_mem = ext_mem; }
   void PrintMiniTraceReactions();
   

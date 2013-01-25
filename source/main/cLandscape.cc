@@ -22,8 +22,9 @@
 
 #include "cLandscape.h"
 
+#include "avida/output/File.h"
+
 #include "cCPUMemory.h"
-#include "cDataFile.h"
 #include "cEnvironment.h"
 #include "cInstSet.h"
 #include "cHardwareManager.h"
@@ -213,7 +214,7 @@ void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, Genome& cur
 
 
 
-void cLandscape::ProcessDump(cAvidaContext& ctx, cDataFile& df)
+void cLandscape::ProcessDump(cAvidaContext& ctx, Avida::Output::File& df)
 {
   df.WriteComment("Detailed dump of the per-site, per-instruction fitness");
   df.WriteComment("values for the entire single-step landscape.");
@@ -329,7 +330,7 @@ void cLandscape::ProcessInsert(cAvidaContext& ctx)
 }
 
 // Prediction for a landscape where n sites are _randomized_.
-void cLandscape::PredictWProcess(cAvidaContext& ctx, cDataFile& df, int update)
+void cLandscape::PredictWProcess(cAvidaContext& ctx, Avida::Output::File& df, int update)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
 
@@ -452,7 +453,7 @@ void cLandscape::PredictWProcess(cAvidaContext& ctx, cDataFile& df, int update)
 
 
 // Prediction for a landscape where n sites are _mutated_.
-void cLandscape::PredictNuProcess(cAvidaContext& ctx, cDataFile& df, int update)
+void cLandscape::PredictNuProcess(cAvidaContext& ctx, Avida::Output::File& df, int update)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
 
@@ -824,7 +825,7 @@ void cLandscape::TestAllPairs(cAvidaContext& ctx)
 }
 
 
-void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
+void cLandscape::HillClimb(cAvidaContext& ctx, Avida::Output::File& df)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   Genome cur_genome(base_genome);
@@ -948,7 +949,7 @@ double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, Genome& mo
 }
 
 
-void cLandscape::PrintStats(cDataFile& df, int update)
+void cLandscape::PrintStats(Avida::Output::File& df, int update)
 {
   df.Write(update, "Update");
   df.Write(GetProbDead(), "Probability Lethal");
@@ -978,7 +979,7 @@ void cLandscape::PrintStats(cDataFile& df, int update)
   df.Endl();
 }
 
-void cLandscape::PrintEntropy(cDataFile& df)
+void cLandscape::PrintEntropy(Avida::Output::File& df)
 {
   df.WriteComment("Entropy Data");
   double max_ent = log(static_cast<double>(m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).GetSize()));
@@ -990,7 +991,7 @@ void cLandscape::PrintEntropy(cDataFile& df)
   df.Endl();
 }
 
-void cLandscape::PrintSiteCount(cDataFile& df)
+void cLandscape::PrintSiteCount(Avida::Output::File& df)
 {
   df.WriteComment("Site Counts");
   ConstInstructionSequencePtr base_seq_p;

@@ -21,6 +21,8 @@
 
 #include "cMutationalNeighborhood.h"
 
+#include "avida/output/File.h"
+
 #include "cAnalyze.h"
 #include "cAnalyzeJobQueue.h"
 #include "cCPUTestInfo.h"
@@ -836,7 +838,7 @@ void cMutationalNeighborhood::AggregateTwoStep(Apto::Array<sTwoStep>& steps, sTw
 }
 
 
-void cMutationalNeighborhood::PrintStats(cDataFile& df, int update) const
+void cMutationalNeighborhood::PrintStats(Avida::Output::File& df, int update) const
 {
   df.Write(update, "Update/Tree Depth");
   
