@@ -23,9 +23,8 @@
 #ifndef cTaskEntry_h
 #define cTaskEntry_h
 
-#include "apto/core.h"
+#include "avida/util/ArgParser.h"
 
-#include "cArgContainer.h"
 #include "cString.h"
 
 class cTaskLib;

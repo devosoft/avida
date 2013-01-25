@@ -21,10 +21,10 @@
 
 #include "SaveLoadActions.h"
 
+#include "avida/util/ArgParser.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
-#include "cArgContainer.h"
-#include "cArgSchema.h"
 #include "cPopulation.h"
 #include "cStats.h"
 #include "cStringUtil.h"

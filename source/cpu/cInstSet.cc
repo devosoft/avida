@@ -23,9 +23,8 @@
 #include "cInstSet.h"
 
 #include "avida/core/UniverseDriver.h"
+#include "avida/util/ArgParser.h"
 
-#include "cArgContainer.h"
-#include "cArgSchema.h"
 #include "cAvidaContext.h"
 #include "cStringUtil.h"
 #include "cUserFeedback.h"

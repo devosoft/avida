@@ -19,12 +19,13 @@
  *
  */
 
+#include "avida/util/ArgParser.h"
+
 #include "math.h"
 #include "EnvironmentActions.h"
 
 #include "cAction.h"
 #include "cActionLibrary.h"
-#include "cArgSchema.h"
 #include "cEnvironment.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
