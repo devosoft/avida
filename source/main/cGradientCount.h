@@ -179,6 +179,7 @@ private:
   int setHaloOrbit(cAvidaContext& ctx, int current_orbit);
   void setPeakMoveMovement(cAvidaContext& ctx);
   void moveHaloPeak(int current_orbit);
+  void confirmHaloPeak();
   void movePeak();
   void generatePeak(cAvidaContext& ctx);
   void getCurrentPlatValues();

@@ -297,6 +297,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   if (name == "form-group") Load_FormSpatialGroup(name, info, envreqs, feedback);
   if (name == "form-group-id") Load_FormSpatialGroupWithID(name, info, envreqs, feedback);
   if (name == "live-on-patch-id") Load_LiveOnPatchRes(name, info, envreqs, feedback);
+  if (name == "collect-odd-cell") Load_CollectOddCell(name, info, envreqs, feedback);
   
   // Feed Specific Tasks
   if (name == "eat-target") Load_ConsumeTarget(name, info, envreqs, feedback);
@@ -3417,6 +3418,36 @@ double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
     reward = 1;
   }
   
+  return reward;
+}
+
+void cTaskLib::Load_CollectOddCell(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("even_or_odd", 0, 0);
+  
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "collect-odd-cell", &cTaskLib::Task_CollectOddCell, 0, args);
+}
+
+double cTaskLib::Task_CollectOddCell(cTaskContext& ctx) const
+{
+  int even_odds = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  double reward = 0.0;
+  // If the organism is in an odd cell...
+  int cell_id_mod_2 = ctx.GetOrganism()->GetCellID()%2;
+  if (even_odds == 0) {
+    if (cell_id_mod_2 != 0){
+      reward = 1;
+    }
+  }
+  else {
+    if (cell_id_mod_2 == 0){
+      reward = 1;
+    }
+  }
   return reward;
 }
 

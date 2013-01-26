@@ -530,6 +530,7 @@ private:
   bool Inst_DonateRandom(cAvidaContext& ctx);
   bool Inst_DonateKin(cAvidaContext& ctx);
   bool Inst_DonateEditDist(cAvidaContext& ctx);
+  bool Inst_GetFacedEditDistance(cAvidaContext& ctx);
   bool Inst_DonateGreenBeardGene(cAvidaContext& ctx);
   bool Inst_DonateTrueGreenBeard(cAvidaContext& ctx);
   bool Inst_DonateShadedGreenBeard(cAvidaContext& ctx);
@@ -562,6 +563,8 @@ private:
   bool Inst_DonateResource0(cAvidaContext& ctx);
   bool Inst_DonateResource1(cAvidaContext& ctx);
   bool Inst_DonateResource2(cAvidaContext& ctx);
+  bool Inst_DonateSpecific(cAvidaContext& ctx);
+
 
   bool Inst_SearchF(cAvidaContext& ctx);
   bool Inst_SearchB(cAvidaContext& ctx);
