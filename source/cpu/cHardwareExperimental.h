@@ -636,6 +636,8 @@ private:
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
   
+  bool Inst_DonateSpecific(cAvidaContext& ctx);
+  bool Inst_GetFacedEditDistance(cAvidaContext& ctx);  
 
 private:
   std::pair<bool, int> m_last_cell_data; // If cell data has been previously collected, and it's value

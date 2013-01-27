@@ -568,7 +568,6 @@ public:
   CONFIG_ADD_VAR(MIN_GB_DONATE_THRESHOLD, int, -1, "threshold green beard donates only to orgs above this\ndonation attempt threshold; -1=no thresh");
   CONFIG_ADD_VAR(DONATE_THRESH_QUANTA, int, 10, "The size of steps between quanta donate thresholds");
   CONFIG_ADD_VAR(MAX_DONATES, int, 1000000, "Limit on number of donates organisms are allowed.");
-  CONFIG_ADD_VAR(TRACK_DONATES, int, 0, "Track execution circumstances around donate-specific.");
     
   // -------- Kaboom config options -----------
   CONFIG_ADD_GROUP(KABOOM_GROUP, "Kaboom");
