@@ -262,7 +262,7 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (m_tracer) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
-    const Instruction& cur_inst = IP().GetInst();
+    const Instruction cur_inst = IP().GetInst();
 		
     // Test if costs have been paid and it is okay to execute this now...
     bool exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);

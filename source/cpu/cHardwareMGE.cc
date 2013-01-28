@@ -433,7 +433,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (m_tracer) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
-    const Instruction& cur_inst = ip.GetInst();
+    const Instruction cur_inst = ip.GetInst();
     if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
       // Speculative instruction reject, flush and return
       phenotype.DecCPUCyclesUsed();
