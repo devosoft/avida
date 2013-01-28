@@ -384,8 +384,12 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Control-type Instructions
     tInstLibEntry<tMethod>("scramble-registers", &cHardwareExperimental::Inst_ScrambleReg, INST_CLASS_DATA, nInstFlag::STALL),
 
+    tInstLibEntry<tMethod>("donate-specific", &cHardwareExperimental::Inst_DonateSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-faced-edit-dist", &cHardwareExperimental::Inst_GetFacedEditDistance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+
     // DEPRECATED Instructions
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, INST_CLASS_FLOW_CONTROL, 0, "Set flow-head to position in ?CX?")
+    
   };
   
   
@@ -4950,9 +4954,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   if (!TestAttack(ctx)) return false;
 
   cOrganism* target = NULL;
-  if (!m_use_avatar) { 
-    target = m_organism->GetOrgInterface().GetNeighbor();
-  }
+  if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
   else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
 
   // attacking other carnivores is handled differently (e.g. using fights or tolerance)
@@ -6561,8 +6563,6 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
   return exec_success;
 }
 
-
-
 bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
 {
   for (int i = 0; i < NUM_REGISTERS; i++) {
@@ -6593,6 +6593,64 @@ void cHardwareExperimental::InjureOrg(cOrganism* target)
       target->AddToRBin(i, -1 * (target_bins[i] * injury));
     }
   }
+}
+
+bool cHardwareExperimental::Inst_DonateSpecific(cAvidaContext& ctx)
+{
+  if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get() ||
+      (m_world->GetConfig().MAX_DONATE_EDIT_DIST.Get() > 0 && m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATE_EDIT_DIST.Get())) {
+    return false;
+  }
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = NULL;
+  target = m_organism->GetOrgInterface().GetNeighbor();
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()){
+    double res_before = m_organism->GetRBin(resource);
+    if (res_before >= 1) {
+      target->AddToRBin (resource, 1);
+      m_organism->GetPhenotype().IncDonates();
+      m_organism->GetPhenotype().SetIsDonorEdit();
+      target->GetPhenotype().SetIsReceiverEdit();
+      
+      const Genome& org_genome = m_organism->GetGenome();
+      ConstInstructionSequencePtr org_seq_p;
+      org_seq_p.DynamicCastFrom(org_genome.Representation());
+      const InstructionSequence& org_seq = *org_seq_p;
+      
+      const Genome& target_genome = target->GetGenome();
+      ConstInstructionSequencePtr target_seq_p;
+      target_seq_p.DynamicCastFrom(target_genome.Representation());
+      const InstructionSequence& target_seq = *target_seq_p;
+      
+      InstructionSequence::FindEditDistance(org_seq, target_seq);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool cHardwareExperimental::Inst_GetFacedEditDistance(cAvidaContext& ctx)
+{
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = NULL;
+  target = m_organism->GetOrgInterface().GetNeighbor();
+
+  const Genome& org_genome = m_organism->GetGenome();
+  ConstInstructionSequencePtr org_seq_p;
+  org_seq_p.DynamicCastFrom(org_genome.Representation());
+  const InstructionSequence& org_seq = *org_seq_p;
+  
+  const Genome& target_genome = target->GetGenome();
+  ConstInstructionSequencePtr target_seq_p;
+  target_seq_p.DynamicCastFrom(target_genome.Representation());
+  const InstructionSequence& target_seq = *target_seq_p;
+  
+  setInternalValue(rBX, InstructionSequence::FindEditDistance(org_seq, target_seq), true);
+  
+  return true;
 }
 
 void cHardwareExperimental::MakePred(cAvidaContext& ctx)

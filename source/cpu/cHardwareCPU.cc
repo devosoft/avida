@@ -262,6 +262,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
     tInstLibEntry<tMethod>("donate-edt", &cHardwareCPU::Inst_DonateEditDist),
+    tInstLibEntry<tMethod>("get-faced-edit-dist", &cHardwareCPU::Inst_GetFacedEditDistance),
     tInstLibEntry<tMethod>("donate-gbg",  &cHardwareCPU::Inst_DonateGreenBeardGene),
     tInstLibEntry<tMethod>("donate-tgb",  &cHardwareCPU::Inst_DonateTrueGreenBeard),
     tInstLibEntry<tMethod>("donate-shadedgb",  &cHardwareCPU::Inst_DonateShadedGreenBeard),
@@ -292,6 +293,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-resource2", &cHardwareCPU::Inst_DonateResource2, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("IObuf-add1", &cHardwareCPU::Inst_IOBufAdd1, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("IObuf-add0", &cHardwareCPU::Inst_IOBufAdd0, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-specific", &cHardwareCPU::Inst_DonateSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("rotate-l", &cHardwareCPU::Inst_RotateL, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-r", &cHardwareCPU::Inst_RotateR, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -4566,6 +4568,28 @@ bool cHardwareCPU::Inst_DonateEditDist(cAvidaContext& ctx)
 	
 }
 
+bool cHardwareCPU::Inst_GetFacedEditDistance(cAvidaContext& ctx)
+{
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = NULL;
+  target = m_organism->GetOrgInterface().GetNeighbor();
+
+  const Genome& org_genome = m_organism->GetGenome();
+  ConstInstructionSequencePtr org_seq_p;
+  org_seq_p.DynamicCastFrom(org_genome.Representation());
+  const InstructionSequence& org_seq = *org_seq_p;
+  
+  const Genome& target_genome = target->GetGenome();
+  ConstInstructionSequencePtr target_seq_p;
+  target_seq_p.DynamicCastFrom(target_genome.Representation());
+  const InstructionSequence& target_seq = *target_seq_p;
+  
+  GetRegister(FindModifiedRegister(REG_BX)) = InstructionSequence::FindEditDistance(org_seq, target_seq);
+  
+  return true;
+}
+
 bool cHardwareCPU::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
 {
   //this donates to organisms that have this instruction anywhere
@@ -5622,6 +5646,43 @@ bool cHardwareCPU::Inst_DonateResource2(cAvidaContext& ctx)
   return DonateResourceX(ctx, 2);
 } //End Inst_DonateResource2()
 
+
+/*Donates resources to the a neighboring cell */
+bool cHardwareCPU::Inst_DonateSpecific(cAvidaContext& ctx)
+{
+  if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get() ||
+      (m_world->GetConfig().MAX_DONATE_EDIT_DIST.Get() > 0 && m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATE_EDIT_DIST.Get())) {
+    return false;
+  }
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = NULL;
+  target = m_organism->GetOrgInterface().GetNeighbor();
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()){
+    double res_before = m_organism->GetRBin(resource);
+    if (res_before >= 1) {
+      target->AddToRBin (resource, 1);
+      m_organism->GetPhenotype().IncDonates();
+      m_organism->GetPhenotype().SetIsDonorEdit();
+      target->GetPhenotype().SetIsReceiverEdit();
+      
+      const Genome& org_genome = m_organism->GetGenome();
+      ConstInstructionSequencePtr org_seq_p;
+      org_seq_p.DynamicCastFrom(org_genome.Representation());
+      const InstructionSequence& org_seq = *org_seq_p;
+      
+      const Genome& target_genome = target->GetGenome();
+      ConstInstructionSequencePtr target_seq_p;
+      target_seq_p.DynamicCastFrom(target_genome.Representation());
+      const InstructionSequence& target_seq = *target_seq_p;
+      
+      InstructionSequence::FindEditDistance(org_seq, target_seq);
+      return true;
+    }
+  }
+  return false;
+}
 
 bool cHardwareCPU::Inst_SearchF(cAvidaContext&)
 {
@@ -9294,8 +9355,6 @@ bool cHardwareCPU::Inst_DonateFacingRawMaterials(cAvidaContext&)
   }
   return true;
 }  
-
-
 
 /* An organism artificially increases its reputation without donating. */
 bool cHardwareCPU::Inst_Pose(cAvidaContext&)

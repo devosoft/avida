@@ -319,6 +319,9 @@ private:
   void Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
   double Task_ConsumeTarget(cTaskContext& ctx) const; 
   
+  void Load_CollectOddCell(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  double Task_CollectOddCell(cTaskContext& ctx) const;
+
   // String Matching Tasks
 	void Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
 	double Task_AllOnes(cTaskContext& ctx) const;
