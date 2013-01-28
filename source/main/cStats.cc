@@ -2197,7 +2197,9 @@ void cStats::SetGroupAttackInstNames(const cString& inst_set) {
   for (int i = 0; i < m_is_inst_names_map[inst_set].GetSize(); i++) {
     inst = m_is_inst_names_map[inst_set][i];
     if (inst == "attack-prey" || inst == "attack-ft-prey" || inst == "attack-prey-group" ||
-        inst == "attack-prey-share" || inst == "attack-prey-group-share") {
+        inst == "attack-prey-share" || inst == "attack-prey-group-share" ||
+        inst == "attack-prey-no-share" || inst=="attack-prey-fake-share" ||
+        inst == "attack-prey-fake-group-share") {
       names.Push(inst);
     }
   }

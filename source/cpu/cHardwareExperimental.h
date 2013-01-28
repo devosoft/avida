@@ -600,6 +600,9 @@ private:
   bool Inst_AttackPrey(cAvidaContext& ctx); 
   bool Inst_AttackPreyGroup(cAvidaContext& ctx);
   bool Inst_AttackPreyShare(cAvidaContext& ctx);
+  bool Inst_AttackPreyNoShare(cAvidaContext& ctx);
+  bool Inst_AttackPreyFakeShare(cAvidaContext& ctx);
+  bool Inst_AttackPreyFakeGroupShare(cAvidaContext& ctx);
   bool Inst_AttackPreyGroupShare(cAvidaContext& ctx);
   bool Inst_AttackSpecPrey(cAvidaContext& ctx);
   bool Inst_AttackPreyArea(cAvidaContext& ctx);
