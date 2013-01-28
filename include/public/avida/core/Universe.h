@@ -49,6 +49,7 @@ namespace Avida {
     UniverseFacetPtr m_environment;
     UniverseFacetPtr m_output_manager;
     UniverseFacetPtr m_systematics;
+    UniverseFacetPtr m_world_manager;
     
     Apto::Map<UniverseFacetID, UniverseFacetPtr> m_facets;
     Apto::Array<UniverseFacetPtr> m_facet_order;
@@ -66,6 +67,7 @@ namespace Avida {
     LIB_EXPORT inline UniverseFacetPtr Environment() const { return m_environment; }
     LIB_EXPORT inline UniverseFacetPtr OutputManager() const { return m_output_manager; }
     LIB_EXPORT inline UniverseFacetPtr Systematics() const { return m_systematics; }
+    LIB_EXPORT inline UniverseFacetPtr WorldManager() const { return m_output_manager; }
     
     // Actions
     LIB_EXPORT void PerformUpdate(Context& ctx, Update current_update);
@@ -108,12 +110,12 @@ namespace Avida {
   // Reserved Names
   // --------------------------------------------------------------------------------------------------------------
 
-  namespace Reserved
-  {
+  namespace Reserved {
     LIB_EXPORT extern const UniverseFacetID DataManagerFacetID;
     LIB_EXPORT extern const UniverseFacetID EnvironmentFacetID;
     LIB_EXPORT extern const UniverseFacetID OutputManagerFacetID;
     LIB_EXPORT extern const UniverseFacetID SystematicsFacetID;
+    LIB_EXPORT extern const UniverseFacetID WorldManagerFacetID;
   };
 };
 

@@ -1,5 +1,5 @@
 /*
- *  private/world/stuctures/TwoDimensionalGrid.h
+ *  structure/types/ConnectedCells.cc
  *  avida-core
  *
  *  Created by David on 1/24/13.
@@ -21,3 +21,5 @@
  *  Authors: David M. Bryson <david@programerror.com>
  *
  */
+
+#include "avida/private/structure/types/ConnectedCells.h"

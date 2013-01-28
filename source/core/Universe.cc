@@ -33,6 +33,7 @@ const Avida::UniverseFacetID Avida::Reserved::DataManagerFacetID("datamanager");
 const Avida::UniverseFacetID Avida::Reserved::EnvironmentFacetID("environment");
 const Avida::UniverseFacetID Avida::Reserved::OutputManagerFacetID("outputmanager");
 const Avida::UniverseFacetID Avida::Reserved::SystematicsFacetID("systematics");
+const Avida::UniverseFacetID Avida::Reserved::WorldManagerFacetID("worldmanager");
 
 
 Avida::Universe::Universe()
@@ -87,6 +88,7 @@ bool Avida::Universe::AttachFacet(UniverseFacetID facet_id, UniverseFacetPtr fac
   else if (facet_id == Reserved::EnvironmentFacetID) m_environment = facet;
   else if (facet_id == Reserved::OutputManagerFacetID) m_output_manager = facet;
   else if (facet_id == Reserved::SystematicsFacetID) m_systematics = facet;
+  else if (facet_id == Reserved::WorldManagerFacetID) m_world_manager = facet;
   
   m_facets[facet_id] = facet;
         

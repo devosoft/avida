@@ -1,8 +1,8 @@
 /*
- *  world/structures/ConnectedCells.cc
+ *  structure/Coord.h
  *  avida-core
  *
- *  Created by David on 1/24/13.
+ *  Created by David on 1/25/13.
  *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -21,3 +21,30 @@
  *  Authors: David M. Bryson <david@programerror.com>
  *
  */
+
+#ifndef AvidaStructureCoord_h
+#define AvidaStructureCoord_h
+
+#include "avida/structure/Types.h"
+
+namespace Avida {
+  namespace Structure {
+    
+    // Coord
+    // --------------------------------------------------------------------------------------------------------------
+    
+    struct Coord
+    {
+    public:
+      double x;
+      double y;
+      double z;
+      
+      LIB_EXPORT inline Coord() x(0.0), y(0.0), z(0.0) { ; }
+      LIB_EXPORT Coord(double in_x, double in_y, double in_z = 0.0) : x(in_x), y(in_y), z(in_z) { ; }
+    };
+    
+  };
+};
+
+#endif

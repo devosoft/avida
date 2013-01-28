@@ -1,5 +1,5 @@
 /*
- *  world/Element.cc
+ *  private/structure/types/TwoDimensionalGrid.h
  *  avida-core
  *
  *  Created by David on 1/24/13.
@@ -21,3 +21,24 @@
  *  Authors: David M. Bryson <david@programerror.com>
  *
  */
+
+#ifndef AvidaStructureTypesTwoDimensionalGrid_h
+#define AvidaStructureTypesTwoDimensionalGrid_h
+
+#include "avida/structure/Controller.h"
+
+
+namespace Avida {
+  namespace Structure {
+    namespace Types {
+      
+      class TwoDimensionalGrid : public Controller
+      {
+        
+      };
+    
+    };
+  };
+};
+
+#endif

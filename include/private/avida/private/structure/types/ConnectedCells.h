@@ -1,5 +1,5 @@
 /*
- *  world/Container.h
+ *  private/structure/types/ConnectedCells.h
  *  avida-core
  *
  *  Created by David on 1/24/13.
@@ -22,27 +22,22 @@
  *
  */
 
-#ifndef AvidaWorldContainer_h
-#define AvidaWorldContainer_h
+#ifndef AvidaStructureTypesConnectedCells_h
+#define AvidaStructureTypesConnectedCells_h
 
-#include "avida/environment/Types.h"
-#include "avida/structure/Types.h"
-#include "avida/world/Types.h"
+#include "avida/structure/Controller.h"
+
 
 namespace Avida {
-  namespace World {
-    
-    // Container
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class Container
-    {
-    private:
-      // Population Here....
-      Structure::Controller* m_structure;
-      Environment::ResourceManager* m_resources;
+  namespace Structure {
+    namespace Types {
+      
+      class ConnectedCells : public Controller
+      {
+        
+      };
+      
     };
-    
   };
 };
 

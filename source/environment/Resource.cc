@@ -1,8 +1,8 @@
 /*
- *  world/Container.h
+ *  environment/Resource.cc
  *  avida-core
  *
- *  Created by David on 1/24/13.
+ *  Created by David on 1/25/13.
  *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,28 +22,6 @@
  *
  */
 
-#ifndef AvidaWorldContainer_h
-#define AvidaWorldContainer_h
+#include "avida/environment/Resource.h"
 
-#include "avida/environment/Types.h"
-#include "avida/structure/Types.h"
-#include "avida/world/Types.h"
-
-namespace Avida {
-  namespace World {
-    
-    // Container
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class Container
-    {
-    private:
-      // Population Here....
-      Structure::Controller* m_structure;
-      Environment::ResourceManager* m_resources;
-    };
-    
-  };
-};
-
-#endif
+Avida::Environment::Resource::~Resource() { ; }

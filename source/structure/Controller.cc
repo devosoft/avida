@@ -1,5 +1,5 @@
 /*
- *  world/Container.h
+ *  structure/Controller.cc
  *  avida-core
  *
  *  Created by David on 1/24/13.
@@ -22,28 +22,4 @@
  *
  */
 
-#ifndef AvidaWorldContainer_h
-#define AvidaWorldContainer_h
-
-#include "avida/environment/Types.h"
-#include "avida/structure/Types.h"
-#include "avida/world/Types.h"
-
-namespace Avida {
-  namespace World {
-    
-    // Container
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class Container
-    {
-    private:
-      // Population Here....
-      Structure::Controller* m_structure;
-      Environment::ResourceManager* m_resources;
-    };
-    
-  };
-};
-
-#endif
+#include "avida/structure/Controller.h"

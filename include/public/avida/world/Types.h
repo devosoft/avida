@@ -1,8 +1,8 @@
 /*
- *  world/Element.h
+ *  world/Types.h
  *  avida-core
  *
- *  Created by David on 1/24/13.
+ *  Created by David on 1/25/13.
  *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -21,3 +21,29 @@
  *  Authors: David M. Bryson <david@programerror.com>
  *
  */
+
+#ifndef AvidaWorldTypes_h
+#define AvidaWorldTypes_h
+
+#include "avida/core/Types.h"
+
+
+namespace Avida {
+  namespace World {
+    
+    // Class Declarations
+    // --------------------------------------------------------------------------------------------------------------
+    
+    class Container;
+    class Manager;
+    
+
+    // Type Declarations
+    // --------------------------------------------------------------------------------------------------------------
+    
+    typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
+    
+  };
+};
+
+#endif

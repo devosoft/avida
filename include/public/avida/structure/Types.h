@@ -1,8 +1,8 @@
 /*
- *  private/world/structures.h
+ *  structure/Types.h
  *  avida-core
  *
- *  Created by David on 1/24/13.
+ *  Created by David on 1/25/13.
  *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,5 +22,29 @@
  *
  */
 
-#include "avida/private/world/structures/ConnectedCells.h"
-#include "avida/private/world/structures/TwoDimensionalGrid.h"
+#ifndef AvidaStructureTypes_h
+#define AvidaStructureTypes_h
+
+#include "avida/core/Types.h"
+
+
+namespace Avida {
+  namespace Structure {
+    
+    // Class Declarations
+    // --------------------------------------------------------------------------------------------------------------
+    
+    class Controller;
+    struct Coord;
+    class Element;
+    
+    
+    // Type Declarations
+    // --------------------------------------------------------------------------------------------------------------
+    
+    typedef Apto::SmartPtr<Controller, Apto::InternalRCObject> ControllerPtr;
+    
+  };
+};
+
+#endif

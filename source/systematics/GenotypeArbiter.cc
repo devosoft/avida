@@ -31,8 +31,6 @@
 
 #include "avida/private/systematics/Genotype.h"
 
-#include "cDoubleSum.h"
-
 #include <cmath>
 
 
@@ -173,11 +171,11 @@ Avida::Data::ConstDataSetPtr Avida::Systematics::GenotypeArbiter::Provides() con
 
 void Avida::Systematics::GenotypeArbiter::UpdateProvidedValues(Update current_update)
 {
-  cDoubleSum sum_age;
-  cDoubleSum sum_abundance;
-  cDoubleSum sum_depth;
-  cDoubleSum sum_size;
-  cDoubleSum sum_threshold_age;
+  Apto::Stat::Accumulator<double> sum_age;
+  Apto::Stat::Accumulator<double> sum_abundance;
+  Apto::Stat::Accumulator<double> sum_depth;
+  Apto::Stat::Accumulator<double> sum_size;
+  Apto::Stat::Accumulator<double> sum_threshold_age;
   
   // Pre-calculate the total number of units that are currently active (used in entropy calculation)
   int tot_units = 0;
@@ -198,14 +196,14 @@ void Avida::Systematics::GenotypeArbiter::UpdateProvidedValues(Update current_up
       
       // Update stats...
       const int age = current_update - bg->GetUpdateBorn();
-      sum_age.Add(age, abundance);
+      sum_age.Add(age * abundance);
       sum_abundance.Add(abundance);
-      sum_depth.Add(bg->Depth(), abundance);
+      sum_depth.Add(bg->Depth() * abundance);
       
       ConstInstructionSequencePtr seq;
       seq.DynamicCastFrom(bg->GroupGenome().Representation());
       assert(seq);
-      sum_size.Add(seq->GetSize(), abundance);
+      sum_size.Add(seq->GetSize() * abundance);
       
       // Calculate this genotype's contribution to entropy
       // - when p = 1.0, partial_ent calculation would return -0.0. This may propagate
@@ -216,7 +214,7 @@ void Avida::Systematics::GenotypeArbiter::UpdateProvidedValues(Update current_up
       m_entropy += partial_ent;
       
       // Do any special calculations for threshold genotypes.
-      if (bg->IsThreshold()) sum_threshold_age.Add(age, abundance);
+      if (bg->IsThreshold()) sum_threshold_age.Add(age * abundance);
     }
   }
   
@@ -224,11 +222,11 @@ void Avida::Systematics::GenotypeArbiter::UpdateProvidedValues(Update current_up
   m_num_genotypes = active_count;
   m_num_historic_genotypes = m_historic.GetSize();
   
-  m_ave_age = sum_age.Average();
-  m_ave_abundance = sum_abundance.Average();
-  m_ave_depth = sum_depth.Average();
-  m_ave_size = sum_size.Average();
-  m_ave_threshold_age = sum_threshold_age.Average();
+  m_ave_age = sum_age.Mean();
+  m_ave_abundance = sum_abundance.Mean();
+  m_ave_depth = sum_depth.Mean();
+  m_ave_size = sum_size.Mean();
+  m_ave_threshold_age = sum_threshold_age.Mean();
   
   m_stderr_age = sum_age.StdError();
   m_stderr_abundance = sum_abundance.StdError();

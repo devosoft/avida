@@ -2069,7 +2069,7 @@ void cAnalyze::CommandDetailAverage_Body(ostream& fp, int nucoutputs,
   cAnalyzeGenotype * next_genotype = batch_it.Next();
   cAnalyzeGenotype * prev_genotype = NULL;
   
-  Apto::Array<cDoubleSum> output_counts(nucoutputs);
+  Apto::Array<Apto::Stat::Accumulator<double> > output_counts(nucoutputs);
   for (int i = 0; i < nucoutputs; i++) { output_counts[i].Clear();} 
   int count; 
   while (cur_genotype != NULL) { 
@@ -2089,7 +2089,7 @@ void cAnalyze::CommandDetailAverage_Body(ostream& fp, int nucoutputs,
   }
   fp << batch[cur_batch].Name() << " "; 
   for (int i = 0; i < nucoutputs; i++) {  
-    fp << output_counts[i].Average() << " ";
+    fp << output_counts[i].Mean() << " ";
   } 
   fp << endl;   
 }

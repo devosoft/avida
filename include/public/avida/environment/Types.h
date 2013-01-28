@@ -40,6 +40,7 @@ namespace Avida {
     class Product;
     class Reaction;
     class Resource;
+    class ResourceManager;
     
     
     // Type Declarations

@@ -21,3 +21,59 @@
  *  Authors: David M. Bryson <david@programerror.com>
  *
  */
+
+#include "avida/world/Manager.h"
+
+#include "avida/world/Container.h"
+
+
+Avida::World::Manager::Manager() : m_universe(NULL), m_top_level(NULL)
+{
+  
+}
+
+Avida::World::Manager::~Manager()
+{
+  delete m_top_level;
+}
+
+
+bool Avida::World::Manager::AttachTo(Universe* universe)
+{
+  if (m_universe) return false;
+  
+  UniverseFacetPtr ptr(this);
+  AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
+  
+  if (universe->AttachFacet(Reserved::WorldManagerFacetID, ptr)) {
+    m_universe = universe;
+    return true;
+  }
+  return false;
+}
+
+
+Avida::World::ManagerPtr Avida::World::Manager::Of(Universe* universe)
+{
+  ManagerPtr manager;
+  manager.DynamicCastFrom(universe->WorldManager());
+  return manager;
+}
+
+
+bool Avida::World::Manager::Serialize(ArchivePtr) const
+{
+  // @TODO
+  return false;
+}
+
+
+Avida::UniverseFacetID Avida::World::Manager::UpdateBefore() const
+{
+  return Reserved::EnvironmentFacetID;
+}
+
+Avida::UniverseFacetID Avida::World::Manager::UpdateAfter() const
+{
+  return "";
+}

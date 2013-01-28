@@ -119,20 +119,26 @@
 		705E53DC16A7162600392BA7 /* Socket.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E53DB16A7162600392BA7 /* Socket.cc */; };
 		705E546C16B1C4A300392BA7 /* cPopulationResources.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A65713A16A9EC7800EFFC5C /* cPopulationResources.cc */; };
 		705E547216B1E0C200392BA7 /* Container.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E546E16B1E0C200392BA7 /* Container.h */; };
-		705E547316B1E0C200392BA7 /* Element.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E546F16B1E0C200392BA7 /* Element.h */; };
 		705E547416B1E0C200392BA7 /* Manager.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E547016B1E0C200392BA7 /* Manager.h */; };
-		705E547516B1E0C200392BA7 /* Structure.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E547116B1E0C200392BA7 /* Structure.h */; };
-		705E547B16B1E0DB00392BA7 /* ConnectedCells.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E547816B1E0DB00392BA7 /* ConnectedCells.h */; };
-		705E547C16B1E0DB00392BA7 /* TwoDimensionalGrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E547916B1E0DB00392BA7 /* TwoDimensionalGrid.h */; };
-		705E547D16B1E0DB00392BA7 /* structures.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E547A16B1E0DB00392BA7 /* structures.h */; };
 		705E548616B1E10600392BA7 /* Container.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E547F16B1E10600392BA7 /* Container.cc */; };
-		705E548716B1E10600392BA7 /* Element.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E548016B1E10600392BA7 /* Element.cc */; };
 		705E548816B1E10600392BA7 /* Manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E548116B1E10600392BA7 /* Manager.cc */; };
-		705E548916B1E10600392BA7 /* Structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E548216B1E10600392BA7 /* Structure.cc */; };
-		705E548A16B1E10600392BA7 /* ConnectedCells.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E548416B1E10600392BA7 /* ConnectedCells.cc */; };
-		705E548B16B1E10600392BA7 /* TwoDimensionalGrid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E548516B1E10600392BA7 /* TwoDimensionalGrid.cc */; };
 		705E54A916B2D9C700392BA7 /* ArgParser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E54A816B2D9C700392BA7 /* ArgParser.cc */; };
 		705E54AC16B2D9E200392BA7 /* ArgParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E54AB16B2D9E200392BA7 /* ArgParser.h */; };
+		705E54AE16B2FDAB00392BA7 /* Types.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E54AD16B2FDAB00392BA7 /* Types.h */; };
+		705E54B416B3099F00392BA7 /* Controller.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E54B016B3099F00392BA7 /* Controller.h */; };
+		705E54B516B3099F00392BA7 /* Coord.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E54B116B3099F00392BA7 /* Coord.h */; };
+		705E54B616B3099F00392BA7 /* Element.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E54B216B3099F00392BA7 /* Element.h */; };
+		705E54B716B3099F00392BA7 /* Types.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E54B316B3099F00392BA7 /* Types.h */; };
+		705E54BC16B309C700392BA7 /* ConnectedCells.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E54BA16B309C700392BA7 /* ConnectedCells.h */; };
+		705E54BD16B309C700392BA7 /* TwoDimensionalGrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E54BB16B309C700392BA7 /* TwoDimensionalGrid.h */; };
+		705E54C416B309EF00392BA7 /* Controller.cc in Headers */ = {isa = PBXBuildFile; fileRef = 705E54BF16B309EF00392BA7 /* Controller.cc */; };
+		705E54C516B309EF00392BA7 /* Element.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E54C016B309EF00392BA7 /* Element.cc */; };
+		705E54C616B309EF00392BA7 /* ConnectedCells.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E54C216B309EF00392BA7 /* ConnectedCells.cc */; };
+		705E54C716B309EF00392BA7 /* TwoDimensionalGrid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E54C316B309EF00392BA7 /* TwoDimensionalGrid.cc */; };
+		705E54C916B30D9600392BA7 /* Resource.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E54C816B30D9600392BA7 /* Resource.cc */; };
+		705E54CD16B319C000392BA7 /* Organism.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E54CB16B319C000392BA7 /* Organism.h */; };
+		705E54CE16B319C000392BA7 /* Types.h in Headers */ = {isa = PBXBuildFile; fileRef = 705E54CC16B319C000392BA7 /* Types.h */; };
+		705E54D116B31A7100392BA7 /* Organism.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705E54D016B31A7100392BA7 /* Organism.cc */; };
 		706C7B6A125F64C400EDB4B9 /* ClassificationInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E325125CDF2B00D56AC4 /* ClassificationInfo.cc */; };
 		706C7B6B125F64C600EDB4B9 /* Map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E327125CDF2B00D56AC4 /* Map.cc */; };
 		7070E6BF12109C1D0056BE1E /* (null) in Sources */ = {isa = PBXBuildFile; };
@@ -257,8 +263,6 @@
 
 /* Begin PBXFileReference section */
 		4201F39A0BE187F6006279B9 /* cTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTopology.h; sourceTree = "<group>"; };
-		4216165511DA45A800B49195 /* cMultiProcessWorld.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cMultiProcessWorld.cc; sourceTree = "<group>"; };
-		4216165611DA45A800B49195 /* cMultiProcessWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMultiProcessWorld.h; sourceTree = "<group>"; };
 		42777E5B0C7F123600AFA4ED /* cOrgMessage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOrgMessage.h; sourceTree = "<group>"; };
 		4A4A7023163B01AF00C07E82 /* cHardwareMBE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cHardwareMBE.h; sourceTree = "<group>"; };
 		4A4A7025163B01E000C07E82 /* cHardwareMBE.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cHardwareMBE.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -498,20 +502,26 @@
 		705E53D916A7119300392BA7 /* Socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Socket.h; sourceTree = "<group>"; };
 		705E53DB16A7162600392BA7 /* Socket.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Socket.cc; sourceTree = "<group>"; };
 		705E546E16B1E0C200392BA7 /* Container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
-		705E546F16B1E0C200392BA7 /* Element.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Element.h; sourceTree = "<group>"; };
 		705E547016B1E0C200392BA7 /* Manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
-		705E547116B1E0C200392BA7 /* Structure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Structure.h; sourceTree = "<group>"; };
-		705E547816B1E0DB00392BA7 /* ConnectedCells.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectedCells.h; sourceTree = "<group>"; };
-		705E547916B1E0DB00392BA7 /* TwoDimensionalGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwoDimensionalGrid.h; sourceTree = "<group>"; };
-		705E547A16B1E0DB00392BA7 /* structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = structures.h; sourceTree = "<group>"; };
 		705E547F16B1E10600392BA7 /* Container.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cc; sourceTree = "<group>"; };
-		705E548016B1E10600392BA7 /* Element.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Element.cc; sourceTree = "<group>"; };
 		705E548116B1E10600392BA7 /* Manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Manager.cc; sourceTree = "<group>"; };
-		705E548216B1E10600392BA7 /* Structure.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Structure.cc; sourceTree = "<group>"; };
-		705E548416B1E10600392BA7 /* ConnectedCells.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConnectedCells.cc; sourceTree = "<group>"; };
-		705E548516B1E10600392BA7 /* TwoDimensionalGrid.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TwoDimensionalGrid.cc; sourceTree = "<group>"; };
 		705E54A816B2D9C700392BA7 /* ArgParser.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArgParser.cc; sourceTree = "<group>"; };
 		705E54AB16B2D9E200392BA7 /* ArgParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArgParser.h; sourceTree = "<group>"; };
+		705E54AD16B2FDAB00392BA7 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		705E54B016B3099F00392BA7 /* Controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Controller.h; sourceTree = "<group>"; };
+		705E54B116B3099F00392BA7 /* Coord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Coord.h; sourceTree = "<group>"; };
+		705E54B216B3099F00392BA7 /* Element.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Element.h; sourceTree = "<group>"; };
+		705E54B316B3099F00392BA7 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		705E54BA16B309C700392BA7 /* ConnectedCells.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectedCells.h; sourceTree = "<group>"; };
+		705E54BB16B309C700392BA7 /* TwoDimensionalGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwoDimensionalGrid.h; sourceTree = "<group>"; };
+		705E54BF16B309EF00392BA7 /* Controller.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Controller.cc; sourceTree = "<group>"; };
+		705E54C016B309EF00392BA7 /* Element.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Element.cc; sourceTree = "<group>"; };
+		705E54C216B309EF00392BA7 /* ConnectedCells.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConnectedCells.cc; sourceTree = "<group>"; };
+		705E54C316B309EF00392BA7 /* TwoDimensionalGrid.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TwoDimensionalGrid.cc; sourceTree = "<group>"; };
+		705E54C816B30D9600392BA7 /* Resource.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Resource.cc; sourceTree = "<group>"; };
+		705E54CB16B319C000392BA7 /* Organism.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Organism.h; sourceTree = "<group>"; };
+		705E54CC16B319C000392BA7 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		705E54D016B31A7100392BA7 /* Organism.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Organism.cc; sourceTree = "<group>"; };
 		7061AB7C1358BD420000B036 /* Genome.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Genome.h; sourceTree = "<group>"; };
 		7061AB7D1358BD420000B036 /* InstructionSequence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InstructionSequence.h; sourceTree = "<group>"; };
 		7061AB801358BD6F0000B036 /* Genome.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Genome.cc; sourceTree = "<group>"; };
@@ -991,10 +1001,12 @@
 		703549231333E32200D3865C /* public */ = {
 			isa = PBXGroup;
 			children = (
+				705E54CA16B319BC00392BA7 /* biota */,
 				703549CD1337BB6C00D3865C /* core */,
 				70FEF6361381CAB900A9D082 /* data */,
 				708BEC9413B3C98E004CB59D /* environment */,
 				705E53CD16A7102100392BA7 /* output */,
+				705E54AF16B3099C00392BA7 /* structure */,
 				706EA25C149950390021E441 /* systematics */,
 				70A53BC5135B732C00C3E661 /* util */,
 				703549261333E36800D3865C /* viewer */,
@@ -1009,9 +1021,9 @@
 		703549241333E32D00D3865C /* private */ = {
 			isa = PBXGroup;
 			children = (
+				705E54B816B309C700392BA7 /* structure */,
 				709CDEC2149EE2C000995644 /* systematics */,
 				708D3E3414A42AA500204169 /* util */,
-				705E547616B1E0DB00392BA7 /* world */,
 			);
 			name = private;
 			path = include/private/avida/private;
@@ -1118,50 +1130,83 @@
 			isa = PBXGroup;
 			children = (
 				705E546E16B1E0C200392BA7 /* Container.h */,
-				705E546F16B1E0C200392BA7 /* Element.h */,
 				705E547016B1E0C200392BA7 /* Manager.h */,
-				705E547116B1E0C200392BA7 /* Structure.h */,
+				705E54AD16B2FDAB00392BA7 /* Types.h */,
 			);
 			path = world;
-			sourceTree = "<group>";
-		};
-		705E547616B1E0DB00392BA7 /* world */ = {
-			isa = PBXGroup;
-			children = (
-				705E547716B1E0DB00392BA7 /* structures */,
-				705E547A16B1E0DB00392BA7 /* structures.h */,
-			);
-			path = world;
-			sourceTree = "<group>";
-		};
-		705E547716B1E0DB00392BA7 /* structures */ = {
-			isa = PBXGroup;
-			children = (
-				705E547816B1E0DB00392BA7 /* ConnectedCells.h */,
-				705E547916B1E0DB00392BA7 /* TwoDimensionalGrid.h */,
-			);
-			path = structures;
 			sourceTree = "<group>";
 		};
 		705E547E16B1E0FE00392BA7 /* world */ = {
 			isa = PBXGroup;
 			children = (
 				705E547F16B1E10600392BA7 /* Container.cc */,
-				705E548016B1E10600392BA7 /* Element.cc */,
 				705E548116B1E10600392BA7 /* Manager.cc */,
-				705E548216B1E10600392BA7 /* Structure.cc */,
-				705E548316B1E10600392BA7 /* structures */,
 			);
 			path = world;
 			sourceTree = "<group>";
 		};
-		705E548316B1E10600392BA7 /* structures */ = {
+		705E54AF16B3099C00392BA7 /* structure */ = {
 			isa = PBXGroup;
 			children = (
-				705E548416B1E10600392BA7 /* ConnectedCells.cc */,
-				705E548516B1E10600392BA7 /* TwoDimensionalGrid.cc */,
+				705E54B016B3099F00392BA7 /* Controller.h */,
+				705E54B116B3099F00392BA7 /* Coord.h */,
+				705E54B216B3099F00392BA7 /* Element.h */,
+				705E54B316B3099F00392BA7 /* Types.h */,
 			);
-			path = structures;
+			path = structure;
+			sourceTree = "<group>";
+		};
+		705E54B816B309C700392BA7 /* structure */ = {
+			isa = PBXGroup;
+			children = (
+				705E54B916B309C700392BA7 /* types */,
+			);
+			path = structure;
+			sourceTree = "<group>";
+		};
+		705E54B916B309C700392BA7 /* types */ = {
+			isa = PBXGroup;
+			children = (
+				705E54BA16B309C700392BA7 /* ConnectedCells.h */,
+				705E54BB16B309C700392BA7 /* TwoDimensionalGrid.h */,
+			);
+			path = types;
+			sourceTree = "<group>";
+		};
+		705E54BE16B309E200392BA7 /* structure */ = {
+			isa = PBXGroup;
+			children = (
+				705E54BF16B309EF00392BA7 /* Controller.cc */,
+				705E54C016B309EF00392BA7 /* Element.cc */,
+				705E54C116B309EF00392BA7 /* types */,
+			);
+			path = structure;
+			sourceTree = "<group>";
+		};
+		705E54C116B309EF00392BA7 /* types */ = {
+			isa = PBXGroup;
+			children = (
+				705E54C216B309EF00392BA7 /* ConnectedCells.cc */,
+				705E54C316B309EF00392BA7 /* TwoDimensionalGrid.cc */,
+			);
+			path = types;
+			sourceTree = "<group>";
+		};
+		705E54CA16B319BC00392BA7 /* biota */ = {
+			isa = PBXGroup;
+			children = (
+				705E54CB16B319C000392BA7 /* Organism.h */,
+				705E54CC16B319C000392BA7 /* Types.h */,
+			);
+			path = biota;
+			sourceTree = "<group>";
+		};
+		705E54CF16B31A6E00392BA7 /* biota */ = {
+			isa = PBXGroup;
+			children = (
+				705E54D016B31A7100392BA7 /* Organism.cc */,
+			);
+			path = biota;
 			sourceTree = "<group>";
 		};
 		7061AB7F1358BD6F0000B036 /* core */ = {
@@ -1276,6 +1321,7 @@
 			isa = PBXGroup;
 			children = (
 				708BEC9E13B3C9C2004CB59D /* Manager.cc */,
+				705E54C816B30D9600392BA7 /* Resource.cc */,
 			);
 			path = environment;
 			sourceTree = "<group>";
@@ -1608,6 +1654,7 @@
 			children = (
 				707AEEEE09E80699001AEA89 /* actions */,
 				70422A1B091B141000A5E67F /* analyze */,
+				705E54CF16B31A6E00392BA7 /* biota */,
 				7061AB7F1358BD6F0000B036 /* core */,
 				DCC30F7C0762539D008F7A48 /* cpu */,
 				70FEF65C1382C48900A9D082 /* data */,
@@ -1615,6 +1662,7 @@
 				DCC310040762539D008F7A48 /* main */,
 				705E53D216A7103600392BA7 /* output */,
 				70DCAD1E097AF81A002F8733 /* script */,
+				705E54BE16B309E200392BA7 /* structure */,
 				709CDEA4149BF69000995644 /* systematics */,
 				70DCAC54097AF730002F8733 /* targets */,
 				DCC314D8076253A2008F7A48 /* tools */,
@@ -1713,8 +1761,6 @@
 				70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */,
 				70B0864808F4972600FC65FE /* cLandscape.h */,
 				70B0865108F4974300FC65FE /* cLandscape.cc */,
-				4216165611DA45A800B49195 /* cMultiProcessWorld.h */,
-				4216165511DA45A800B49195 /* cMultiProcessWorld.cc */,
 				70B0864E08F4972600FC65FE /* cMutationRates.h */,
 				70B0865708F4974300FC65FE /* cMutationRates.cc */,
 				70B0868308F49E9700FC65FE /* cOrganism.h */,
@@ -1850,13 +1896,18 @@
 				705E53D816A7109300392BA7 /* Types.h in Headers */,
 				705E53DA16A7119300392BA7 /* Socket.h in Headers */,
 				705E547216B1E0C200392BA7 /* Container.h in Headers */,
-				705E547316B1E0C200392BA7 /* Element.h in Headers */,
 				705E547416B1E0C200392BA7 /* Manager.h in Headers */,
-				705E547516B1E0C200392BA7 /* Structure.h in Headers */,
-				705E547B16B1E0DB00392BA7 /* ConnectedCells.h in Headers */,
-				705E547C16B1E0DB00392BA7 /* TwoDimensionalGrid.h in Headers */,
-				705E547D16B1E0DB00392BA7 /* structures.h in Headers */,
 				705E54AC16B2D9E200392BA7 /* ArgParser.h in Headers */,
+				705E54AE16B2FDAB00392BA7 /* Types.h in Headers */,
+				705E54B416B3099F00392BA7 /* Controller.h in Headers */,
+				705E54B516B3099F00392BA7 /* Coord.h in Headers */,
+				705E54B616B3099F00392BA7 /* Element.h in Headers */,
+				705E54B716B3099F00392BA7 /* Types.h in Headers */,
+				705E54BC16B309C700392BA7 /* ConnectedCells.h in Headers */,
+				705E54BD16B309C700392BA7 /* TwoDimensionalGrid.h in Headers */,
+				705E54C416B309EF00392BA7 /* Controller.cc in Headers */,
+				705E54CD16B319C000392BA7 /* Organism.h in Headers */,
+				705E54CE16B319C000392BA7 /* Types.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2112,12 +2163,13 @@
 				705E53DC16A7162600392BA7 /* Socket.cc in Sources */,
 				705E546C16B1C4A300392BA7 /* cPopulationResources.cc in Sources */,
 				705E548616B1E10600392BA7 /* Container.cc in Sources */,
-				705E548716B1E10600392BA7 /* Element.cc in Sources */,
 				705E548816B1E10600392BA7 /* Manager.cc in Sources */,
-				705E548916B1E10600392BA7 /* Structure.cc in Sources */,
-				705E548A16B1E10600392BA7 /* ConnectedCells.cc in Sources */,
-				705E548B16B1E10600392BA7 /* TwoDimensionalGrid.cc in Sources */,
 				705E54A916B2D9C700392BA7 /* ArgParser.cc in Sources */,
+				705E54C516B309EF00392BA7 /* Element.cc in Sources */,
+				705E54C616B309EF00392BA7 /* ConnectedCells.cc in Sources */,
+				705E54C716B309EF00392BA7 /* TwoDimensionalGrid.cc in Sources */,
+				705E54C916B30D9600392BA7 /* Resource.cc in Sources */,
+				705E54D116B31A7100392BA7 /* Organism.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

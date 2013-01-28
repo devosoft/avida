@@ -31,7 +31,6 @@
 #include "apto/stat/Accumulator.h"
 
 #include "cCountTracker.h"
-#include "cDoubleSum.h"
 
 
 namespace Avida {
@@ -88,12 +87,12 @@ namespace Avida {
 
       cCountTracker m_gestation_count;
             
-      cDoubleSum m_copied_size;
-      cDoubleSum m_exe_size;
-      cDoubleSum m_gestation_time;
-      cDoubleSum m_repro_rate;
-      cDoubleSum m_merit;
-      cDoubleSum m_fitness;
+      Apto::Stat::Accumulator<double> m_copied_size;
+      Apto::Stat::Accumulator<double> m_exe_size;
+      Apto::Stat::Accumulator<double> m_gestation_time;
+      Apto::Stat::Accumulator<double> m_repro_rate;
+      Apto::Stat::Accumulator<double> m_merit;
+      Apto::Stat::Accumulator<double> m_fitness;
             
       int m_last_birth_cell;
       int m_last_group_id;

@@ -1,9 +1,9 @@
 /*
- *  environment/cResourceDef.h
+ *  environment/Resource.h
  *  avida-core
  *
  *  Created by David on 6/24/11.
- *  Copyright 2011 Michigan State University. All rights reserved.
+ *  Copyright 2011-2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -25,6 +25,8 @@
 #ifndef AvidaEnvironmentResource_h
 #define AvidaEnvironmentResource_h
 
+#include "avida/environment/Types.h"
+
 
 namespace Avida {
   namespace Environment {
@@ -39,6 +41,7 @@ namespace Avida {
       
     public:
       Resource(const ResourceID& resource_id);
+      virtual ~Resource() = 0;
       
       const ResourceID& GetID() const { return m_id; }
     };

@@ -1,5 +1,5 @@
 /*
- *  world/Structure.cc
+ *  structure/Element.h
  *  avida-core
  *
  *  Created by David on 1/24/13.
@@ -21,3 +21,24 @@
  *  Authors: David M. Bryson <david@programerror.com>
  *
  */
+
+#ifndef AvidaStructureElement_h
+#define AvidaStructureElement_h
+
+#include "avida/structure/Types.h"
+
+namespace Avida {
+  namespace Structure {
+    
+    // Element
+    // --------------------------------------------------------------------------------------------------------------
+    
+    class Element
+    {
+      
+    };
+    
+  };
+};
+
+#endif

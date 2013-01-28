@@ -495,14 +495,14 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
   ADD_REF_PROP(threshold, bool, m_threshold);
   ADD_REF_PROP(update_born, int, m_update_born);
   
-  ADD_FUN_PROP(ave_copy_size, double, GetFunctor(&m_copied_size, &cDoubleSum::Average));
-  ADD_FUN_PROP(ave_exe_size, double, GetFunctor(&m_exe_size, &cDoubleSum::Average));
-  ADD_FUN_PROP(ave_gestation_time, double, GetFunctor(&m_gestation_time, &cDoubleSum::Average));
-  ADD_FUN_PROP(ave_repro_rate, double, GetFunctor(&m_repro_rate, &cDoubleSum::Average));
-  ADD_FUN_PROP(ave_metabolic_rate, double, GetFunctor(&m_merit, &cDoubleSum::Average));
-  ADD_FUN_PROP(ave_fitness, double, GetFunctor(&m_fitness, &cDoubleSum::Average));
+  ADD_FUN_PROP(ave_copy_size, double, GetFunctor(&m_copied_size, &Apto::Stat::Accumulator<double>::Mean));
+  ADD_FUN_PROP(ave_exe_size, double, GetFunctor(&m_exe_size, &Apto::Stat::Accumulator<double>::Mean));
+  ADD_FUN_PROP(ave_gestation_time, double, GetFunctor(&m_gestation_time, &Apto::Stat::Accumulator<double>::Mean));
+  ADD_FUN_PROP(ave_repro_rate, double, GetFunctor(&m_repro_rate, &Apto::Stat::Accumulator<double>::Mean));
+  ADD_FUN_PROP(ave_metabolic_rate, double, GetFunctor(&m_merit, &Apto::Stat::Accumulator<double>::Mean));
+  ADD_FUN_PROP(ave_fitness, double, GetFunctor(&m_fitness, &Apto::Stat::Accumulator<double>::Mean));
 
-  ADD_FUN_PROP(max_fitness, double, GetFunctor(&m_fitness, &cDoubleSum::Max));
+  ADD_FUN_PROP(max_fitness, double, GetFunctor(&m_fitness, &Apto::Stat::Accumulator<double>::Max));
   
   ADD_REF_PROP(recent_births, int, m_births.GetCur());
   ADD_REF_PROP(recent_deaths, int, m_deaths.GetCur());

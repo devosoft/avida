@@ -50,7 +50,6 @@ class cContextPhenotype;
 class cEnvironment;
 class cHardwareBase;
 class cInstSet;
-class cLineage;
 class cStateGrid;
 
 struct sOrgDisplay;
@@ -72,7 +71,6 @@ private:
   cOrgInterface* m_interface;             // Interface back to the population.
   int m_id;                               // unique id for each org, is just the number it was born
   int m_lineage_label;                    // a lineages tag; inherited unchanged in offspring
-  cLineage* m_lineage;                    // A lineage descriptor... (different from label)
   int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
 
   int m_org_list_index;
@@ -154,9 +152,7 @@ public:
   void SetOrgInterface(cAvidaContext& ctx, cOrgInterface* org_interface);
 
   void SetLineageLabel(int in_label) { m_lineage_label = in_label; }
-  int GetLineageLabel() const { return m_lineage_label; }  
-  void SetLineage(cLineage* in_lineage) { m_lineage = in_lineage; }
-  cLineage* GetLineage() const { return m_lineage; }
+  int GetLineageLabel() const { return m_lineage_label; }
 
   void SetCCladeLabel( int in_label ) { cclade_id = in_label; };  //@MRR
   int  GetCCladeLabel() const { return cclade_id; }

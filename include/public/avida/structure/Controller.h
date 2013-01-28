@@ -1,5 +1,5 @@
 /*
- *  world/Manager.h
+ *  structure/Controller.h
  *  avida-core
  *
  *  Created by David on 1/24/13.
@@ -22,41 +22,20 @@
  *
  */
 
-#ifndef AvidaWorldManager_h
-#define AvidaWorldManager_h
+#ifndef AvidaStructureController_h
+#define AvidaStructureController_h
 
-#include "avida/core/Universe.h"
-#include "avida/world/Types.h"
-
+#include "avida/structure/Types.h"
 
 namespace Avida {
-  namespace World {
+  namespace Structure {
     
-    // Manager
+    // Controller
     // --------------------------------------------------------------------------------------------------------------
     
-    class Manager : public UniverseFacet
+    class Controller
     {
-    private:
-      Universe* m_universe;
-      Container* m_top_level;
       
-    public:
-      LIB_EXPORT Manager();
-      LIB_EXPORT ~Manager();
-      
-      LIB_EXPORT inline Container& TopLevelContainer() { return *m_top_level; }
-      LIB_EXPORT inline const Container& TopLevelContainer() const { return *m_top_level; }
-      
-      LIB_EXPORT bool AttachTo(Universe* universe);
-      LIB_EXPORT static ManagerPtr Of(Universe* universe);
-      
-    public:
-      LIB_EXPORT bool Serialize(ArchivePtr ar) const;
-      
-    public:
-      LIB_LOCAL UniverseFacetID UpdateBefore() const;
-      LIB_LOCAL UniverseFacetID UpdateAfter() const;      
     };
     
   };

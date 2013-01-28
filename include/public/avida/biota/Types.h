@@ -1,8 +1,8 @@
 /*
- *  private/world/structures/ConnectedCells.h
+ *  biota/Types.h
  *  avida-core
  *
- *  Created by David on 1/24/13.
+ *  Created by David on 1/25/13.
  *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -21,3 +21,28 @@
  *  Authors: David M. Bryson <david@programerror.com>
  *
  */
+
+#ifndef AvidaBiotaTypes_h
+#define AvidaBiotaTypes_h
+
+#include "avida/core/Types.h"
+
+
+namespace Avida {
+  namespace Biota {
+    
+    // Class Declarations
+    // --------------------------------------------------------------------------------------------------------------
+    
+    class Organism;
+    
+    
+    // Type Declarations
+    // --------------------------------------------------------------------------------------------------------------
+    
+    typedef Apto::SmartPtr<Organism, Apto::InternalRCObject> OrganismPtr;
+    
+  };
+};
+
+#endif

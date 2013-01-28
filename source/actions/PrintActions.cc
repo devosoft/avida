@@ -2974,14 +2974,14 @@ public:
     
     // Loop through genotypes again, and determine the average genetic distance.
     it = classmgr->ArbiterForRole("genotype")->Begin();
-    cDoubleSum distance_sum;
+    Apto::Stat::Accumulator<double> distance_sum;
     while ((it->Next())) {
       const int num_organisms = it->Get()->NumUnits();
       Genome cur_gen(it->Get()->Properties().Get("genome"));
       InstructionSequencePtr cur_seq;
       cur_seq.DynamicCastFrom(cur_gen.Representation());
       const int cur_dist = InstructionSequence::FindEditDistance(con_genome, *cur_seq);
-      distance_sum.Add(cur_dist, num_organisms);
+      distance_sum.Add(cur_dist * num_organisms);
     }
     
     // Finally, gather last bits of data and print the results.
@@ -2994,7 +2994,7 @@ public:
     best_seq.DynamicCastFrom(best_genome.Representation());
     const int best_dist = InstructionSequence::FindEditDistance(con_genome, *best_seq);
     
-    const double ave_dist = distance_sum.Average();
+    const double ave_dist = distance_sum.Mean();
     const double var_dist = distance_sum.Variance();
     const double complexity_base = static_cast<double>(con_genome.GetSize()) - total_entropy;
     

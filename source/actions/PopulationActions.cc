@@ -36,7 +36,6 @@
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cCodeLabel.h"
-#include "cDoubleSum.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"
@@ -48,7 +47,6 @@
 #include "cOrganism.h"
 #include "cEnvironment.h"
 #include "cUserFeedback.h"
-#include "cArgSchema.h"
 
 #include <map>
 #include <set>
@@ -262,27 +260,27 @@ public:
   cActionInjectAll(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_merit(-1.0), m_lineage_label(0), m_neutral_metric(0)
   {
 
-    cArgSchema schema(':','=');
+    Util::ArgSchema schema;
     
     // Entries
-    schema.AddEntry("filename", 0, cArgSchema::SCHEMA_STRING);
-    schema.AddEntry("instset", 1, "");
+    schema.Define("filename", Util::STRING);
+    schema.Define("instset", "");
     
-    schema.AddEntry("merit", 0, -1.0);
-    schema.AddEntry("neutral_metric", 1, 0.0);
+    schema.Define("merit", -1.0);
+    schema.Define("neutral_metric", 0.0);
     
-    schema.AddEntry("lineage_label", 0, 0);
+    schema.Define("lineage_label", 0);
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    Util::Args* argc = Util::Args::Load((const char*)args, schema, ':', '=', &feedback);
     
     if (argc) {
-      m_filename = argc->GetString(0);
-      m_instset = argc->GetString(1);
+      m_filename = argc->String(0);
+      m_instset = argc->String(1);
       
-      m_merit = argc->GetDouble(0);
-      m_neutral_metric = argc->GetDouble(1);
+      m_merit = argc->Double(0);
+      m_neutral_metric = argc->Double(1);
       
-      m_lineage_label = argc->GetInt(0);
+      m_lineage_label = argc->Int(0);
     }
     
     delete argc;
@@ -2396,7 +2394,7 @@ public:
     assert(m_kill_density <= 1.0);
     assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
     
-    cDoubleSum resourcesum;
+    Apto::Stat::Accumulator<double> resourcesum;
     
     cPopulation& pop = m_world->GetPopulation();
     int res_id = m_world->GetPopulation().GetResources().GetResourceCountID(m_resname);
@@ -2439,7 +2437,7 @@ public:
         }
       }
       
-      if(resourcesum.Average() < m_threshold) {
+      if(resourcesum.Mean() < m_threshold) {
         for(int row = current_row - m_radius; row <= current_row + m_radius; row++) {
           
           if( ((row < 0) || (row >= world_y)) && (geometry == nGeometry::GRID) ) continue;
@@ -2536,7 +2534,7 @@ public:
     assert(m_threshold >= 0.0);
     assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
     
-    cDoubleSum resourcesum;
+    Apto::Stat::Accumulator<double> resourcesum;
     
     cPopulation& pop = m_world->GetPopulation();
     
@@ -2588,7 +2586,7 @@ public:
         }
       }
       
-      if(resourcesum.Average() < m_threshold) {
+      if(resourcesum.Mean() < m_threshold) {
         for(int row = current_row - m_radius; row <= current_row + m_radius; row++) {
           
           if( ((row < 0) || (row >= world_y)) && (geometry == nGeometry::GRID) ) continue;
