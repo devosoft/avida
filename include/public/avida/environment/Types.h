@@ -25,7 +25,8 @@
 #ifndef AvidaEnvironmentTypes_h
 #define AvidaEnvironmentTypes_h
 
-#include "apto/core.h"
+#include "avida/core/Types.h"
+
 
 namespace Avida {
   namespace Environment {
@@ -37,14 +38,16 @@ namespace Avida {
     class Catalyst;
     class Context;
     class Manager;
-    class Product;
     class Reaction;
     class Resource;
     class ResourceManager;
+    class ResourceDefinition;
     
     
     // Type Declarations
     // --------------------------------------------------------------------------------------------------------------
+    
+    typedef double ResourceQuantity;
     
     typedef Apto::String ActionTriggerID;
     typedef Apto::SmartPtr<ActionTrigger, Apto::ThreadSafeRefCount> ActionTriggerPtr;
@@ -54,9 +57,6 @@ namespace Avida {
     typedef Apto::SmartPtr<const ActionTriggerIDSet, Apto::ThreadSafeRefCount> ConstActionTriggerIDSetPtr;    
     typedef Apto::Set<ActionTriggerID>::ConstIterator ConstActionTriggerIDSetIterator;
     
-    typedef Apto::SmartPtr<Product, Apto::ThreadSafeRefCount> ProductPtr;
-    typedef Apto::SmartPtr<const Product, Apto::ThreadSafeRefCount> ConstProductPtr;
-    
     typedef Apto::String ReactionID;
     typedef Apto::SmartPtr<Reaction, Apto::ThreadSafeRefCount> ReactionPtr;
     typedef Apto::SmartPtr<const Reaction, Apto::ThreadSafeRefCount> ConstReactionPtr;
@@ -65,7 +65,7 @@ namespace Avida {
     typedef Apto::SmartPtr<const ReactionIDSet, Apto::ThreadSafeRefCount> ConstReactionIDSetPtr;
     typedef Apto::Set<ReactionID>::ConstIterator ConstReactionIDSetIterator;
     
-    typedef Apto::String ResourceID;
+    typedef int ResourceID;
     typedef Apto::SmartPtr<Resource, Apto::ThreadSafeRefCount> ResourcePtr;
     typedef Apto::SmartPtr<const Resource, Apto::ThreadSafeRefCount> ConstResourcePtr;
     typedef Apto::Set<ResourceID> ResourceIDSet;

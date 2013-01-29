@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4A65713116A8A5F700EFFC5C /* cDynamicRes.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A65712F16A8A5F600EFFC5C /* cDynamicRes.cc */; };
-		4A8F3D9616AF26D300B6747C /* cResourcePopulationInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A8F3D9416AF26D300B6747C /* cResourcePopulationInterface.cc */; };
 		4A9B676315404DBD005AE9B9 /* Avida2Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7038918C13BBA88800606079 /* Avida2Driver.cc */; };
 		4A9B676515404DD1005AE9B9 /* Types.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C0588314CF106200AB38C5 /* Types.cc */; };
 		4A9B676615404DFC005AE9B9 /* GenomeLoader.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708D3E3214A429DF00204169 /* GenomeLoader.cc */; };
@@ -149,6 +147,17 @@
 		707FD8B51541B67B0012A090 /* Freezer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DAE8E314B4B01900FE5A6A /* Freezer.cc */; };
 		707FD8B61541B67F0012A090 /* Color.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701269C6151A61F1004865C2 /* Color.cc */; };
 		707FD8B71541B7890012A090 /* Recorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70D46D3615222A6300F6B5DA /* Recorder.cc */; };
+		70821D7B16B8656D00B90333 /* Diffusion.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70821D7716B8656D00B90333 /* Diffusion.cc */; };
+		70821D7C16B8656D00B90333 /* Dynamic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70821D7816B8656D00B90333 /* Dynamic.cc */; };
+		70821D7D16B8656D00B90333 /* Global.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70821D7916B8656D00B90333 /* Global.cc */; };
+		70821D7E16B8656D00B90333 /* Internal.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70821D7A16B8656D00B90333 /* Internal.cc */; };
+		70821D8616B8657900B90333 /* Diffusion.h in Headers */ = {isa = PBXBuildFile; fileRef = 70821D8216B8657900B90333 /* Diffusion.h */; };
+		70821D8716B8657900B90333 /* Dynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = 70821D8316B8657900B90333 /* Dynamic.h */; };
+		70821D8816B8657900B90333 /* Global.h in Headers */ = {isa = PBXBuildFile; fileRef = 70821D8416B8657900B90333 /* Global.h */; };
+		70821D8916B8657900B90333 /* Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 70821D8516B8657900B90333 /* Internal.h */; };
+		70821D8B16B868C300B90333 /* ResourceManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70821D8A16B868C300B90333 /* ResourceManager.cc */; };
+		70821D8E16B8796B00B90333 /* cResourcePopulationInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A8F3D9416AF26D300B6747C /* cResourcePopulationInterface.cc */; };
+		70821D8F16B8797200B90333 /* cDynamicRes.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A65712F16A8A5F600EFFC5C /* cDynamicRes.cc */; };
 		7095867914439E5E00243303 /* Provider.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7095867814439E5E00243303 /* Provider.cc */; };
 		709CDEA9149BF69000995644 /* Arbiter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709CDEA5149BF69000995644 /* Arbiter.cc */; };
 		709CDEAA149BF69000995644 /* Group.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709CDEA6149BF69000995644 /* Group.cc */; };
@@ -571,13 +580,22 @@
 		708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cActionLibrary.cc; sourceTree = "<group>"; };
 		7081844614B37EDB009A9AFE /* Freezer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Freezer.h; sourceTree = "<group>"; };
 		7081844814B38147009A9AFE /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		70821D7716B8656D00B90333 /* Diffusion.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Diffusion.cc; sourceTree = "<group>"; };
+		70821D7816B8656D00B90333 /* Dynamic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dynamic.cc; sourceTree = "<group>"; };
+		70821D7916B8656D00B90333 /* Global.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Global.cc; sourceTree = "<group>"; };
+		70821D7A16B8656D00B90333 /* Internal.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Internal.cc; sourceTree = "<group>"; };
+		70821D8216B8657900B90333 /* Diffusion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Diffusion.h; sourceTree = "<group>"; };
+		70821D8316B8657900B90333 /* Dynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dynamic.h; sourceTree = "<group>"; };
+		70821D8416B8657900B90333 /* Global.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
+		70821D8516B8657900B90333 /* Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Internal.h; sourceTree = "<group>"; };
+		70821D8A16B868C300B90333 /* ResourceManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourceManager.cc; sourceTree = "<group>"; };
 		708BEC9513B3C98E004CB59D /* ActionTrigger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActionTrigger.h; sourceTree = "<group>"; };
 		708BEC9613B3C98E004CB59D /* Catalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Catalyst.h; sourceTree = "<group>"; };
 		708BEC9713B3C98E004CB59D /* Context.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Context.h; sourceTree = "<group>"; };
 		708BEC9813B3C98E004CB59D /* Manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = Manager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		708BEC9913B3C98E004CB59D /* Product.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Product.h; sourceTree = "<group>"; };
+		708BEC9913B3C98E004CB59D /* ResourceDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResourceDefinition.h; sourceTree = "<group>"; };
 		708BEC9A13B3C98E004CB59D /* Reaction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reaction.h; sourceTree = "<group>"; };
-		708BEC9B13B3C98E004CB59D /* Reagent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reagent.h; sourceTree = "<group>"; };
+		708BEC9B13B3C98E004CB59D /* ResourceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResourceManager.h; sourceTree = "<group>"; };
 		708BEC9C13B3C98E004CB59D /* Resource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = Resource.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		708BEC9E13B3C9C2004CB59D /* Manager.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = Manager.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		708BF2FD0AB65DC700A923BF /* cEventList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventList.cc; sourceTree = "<group>"; };
@@ -1021,6 +1039,7 @@
 		703549241333E32D00D3865C /* private */ = {
 			isa = PBXGroup;
 			children = (
+				70821D8016B8657900B90333 /* environment */,
 				705E54B816B309C700392BA7 /* structure */,
 				709CDEC2149EE2C000995644 /* systematics */,
 				708D3E3414A42AA500204169 /* util */,
@@ -1300,6 +1319,36 @@
 			path = misc;
 			sourceTree = "<group>";
 		};
+		70821D7616B8656D00B90333 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				70821D7716B8656D00B90333 /* Diffusion.cc */,
+				70821D7816B8656D00B90333 /* Dynamic.cc */,
+				70821D7916B8656D00B90333 /* Global.cc */,
+				70821D7A16B8656D00B90333 /* Internal.cc */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
+		70821D8016B8657900B90333 /* environment */ = {
+			isa = PBXGroup;
+			children = (
+				70821D8116B8657900B90333 /* resources */,
+			);
+			path = environment;
+			sourceTree = "<group>";
+		};
+		70821D8116B8657900B90333 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				70821D8216B8657900B90333 /* Diffusion.h */,
+				70821D8316B8657900B90333 /* Dynamic.h */,
+				70821D8416B8657900B90333 /* Global.h */,
+				70821D8516B8657900B90333 /* Internal.h */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
 		708BEC9413B3C98E004CB59D /* environment */ = {
 			isa = PBXGroup;
 			children = (
@@ -1308,10 +1357,10 @@
 				708BEC9713B3C98E004CB59D /* Context.h */,
 				70B9DC4B13BA53BD00C833BB /* ContextFactory.h */,
 				708BEC9813B3C98E004CB59D /* Manager.h */,
-				708BEC9913B3C98E004CB59D /* Product.h */,
 				708BEC9A13B3C98E004CB59D /* Reaction.h */,
-				708BEC9B13B3C98E004CB59D /* Reagent.h */,
 				708BEC9C13B3C98E004CB59D /* Resource.h */,
+				708BEC9913B3C98E004CB59D /* ResourceDefinition.h */,
+				708BEC9B13B3C98E004CB59D /* ResourceManager.h */,
 				70F27F0C13B4E59F008A88A7 /* Types.h */,
 			);
 			path = environment;
@@ -1322,6 +1371,8 @@
 			children = (
 				708BEC9E13B3C9C2004CB59D /* Manager.cc */,
 				705E54C816B30D9600392BA7 /* Resource.cc */,
+				70821D8A16B868C300B90333 /* ResourceManager.cc */,
+				70821D7616B8656D00B90333 /* resources */,
 			);
 			path = environment;
 			sourceTree = "<group>";
@@ -1908,6 +1959,10 @@
 				705E54C416B309EF00392BA7 /* Controller.cc in Headers */,
 				705E54CD16B319C000392BA7 /* Organism.h in Headers */,
 				705E54CE16B319C000392BA7 /* Types.h in Headers */,
+				70821D8616B8657900B90333 /* Diffusion.h in Headers */,
+				70821D8716B8657900B90333 /* Dynamic.h in Headers */,
+				70821D8816B8657900B90333 /* Global.h in Headers */,
+				70821D8916B8657900B90333 /* Internal.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2170,6 +2225,13 @@
 				705E54C716B309EF00392BA7 /* TwoDimensionalGrid.cc in Sources */,
 				705E54C916B30D9600392BA7 /* Resource.cc in Sources */,
 				705E54D116B31A7100392BA7 /* Organism.cc in Sources */,
+				70821D7B16B8656D00B90333 /* Diffusion.cc in Sources */,
+				70821D7C16B8656D00B90333 /* Dynamic.cc in Sources */,
+				70821D7D16B8656D00B90333 /* Global.cc in Sources */,
+				70821D7E16B8656D00B90333 /* Internal.cc in Sources */,
+				70821D8B16B868C300B90333 /* ResourceManager.cc in Sources */,
+				70821D8E16B8796B00B90333 /* cResourcePopulationInterface.cc in Sources */,
+				70821D8F16B8797200B90333 /* cDynamicRes.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2228,8 +2290,6 @@
 			files = (
 				70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */,
 				4A9B676315404DBD005AE9B9 /* Avida2Driver.cc in Sources */,
-				4A65713116A8A5F700EFFC5C /* cDynamicRes.cc in Sources */,
-				4A8F3D9616AF26D300B6747C /* cResourcePopulationInterface.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

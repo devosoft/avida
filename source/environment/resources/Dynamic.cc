@@ -1,9 +1,9 @@
 /*
- *  environment/Product.h
+ *  environment/resources/Dynamic.cc
  *  avida-core
  *
- *  Created by David on 6/24/11.
- *  Copyright 2011 Michigan State University. All rights reserved.
+ *  Created by David on 1/25/13.
+ *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,22 +22,4 @@
  *
  */
 
-#ifndef AvidaEnvironmentProduct_h
-#define AvidaEnvironmentProduct_h
-
-
-namespace Avida {
-  namespace Environment {
-    
-    // Environment::Product - output of an action trigger or reaction
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class Product
-    {
-      
-    };
-    
-  };
-};
-
-#endif
+#include "avida/private/environment/resources/Dynamic.h"

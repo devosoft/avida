@@ -366,9 +366,9 @@ bool Avida::Systematics::Genotype::LegacySave(void* dfp) const
   seq.DynamicCastFrom(m_genome.Representation());
   df.Write(seq->GetSize(), "Genome Length", "length");
   
-  df.Write(m_merit.Average(), "Average Merit", "merit");
-  df.Write(m_gestation_time.Average(), "Average Gestation Time", "gest_time");
-  df.Write(m_fitness.Average(), "Average Fitness", "fitness");
+  df.Write(m_merit.Mean(), "Average Merit", "merit");
+  df.Write(m_gestation_time.Mean(), "Average Gestation Time", "gest_time");
+  df.Write(m_fitness.Mean(), "Average Fitness", "fitness");
   
   df.Write(m_generation_born, "Generation Born", "gen_born");
   df.Write(m_update_born, "Update Born", "update_born");

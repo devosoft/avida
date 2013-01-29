@@ -116,25 +116,6 @@ Avida::Environment::ConstReactionPtr Avida::Environment::Manager::GetReaction(co
 }
 
 
-Avida::Environment::ConstResourceIDSetPtr Avida::Environment::Manager::GetResourceIDs() const
-{
-  if (!m_resource_ids) {
-    ResourceIDSetPtr resource_ids(new ResourceIDSet);
-    for (Apto::Map<ResourceID, ResourcePtr>::KeyIterator it = m_resources.Keys(); it.Next();) {
-      resource_ids->Insert(*it.Get());
-    }
-    m_resource_ids = resource_ids;
-  }
-  
-  return m_resource_ids;
-}
-
-Avida::Environment::ConstResourcePtr Avida::Environment::Manager::GetResource(const ResourceID& resource_id) const
-{
-  ResourcePtr resource;
-  m_resources.Get(resource_id, resource);
-  return resource;
-}
 
 bool Avida::Environment::Manager::AttachTo(Universe* universe)
 {

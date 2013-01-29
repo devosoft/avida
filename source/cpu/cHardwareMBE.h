@@ -27,7 +27,6 @@
 
 #include "cCodeLabel.h"
 #include "cCPUMemory.h"
-#include "cEnvReqs.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHeadCPU.h"
@@ -38,7 +37,6 @@
 #include "nHardware.h"
 
 #include "tInstLib.h"
-#include "cEnvReqs.h"
 #include "cEnvironment.h"
 
 #include <cstring>

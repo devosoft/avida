@@ -1,9 +1,9 @@
 /*
- *  environment/ActionTrigger.h
+ *  environment/ResourceManager.h
  *  avida-core
  *
- *  Created by David on 6/24/11.
- *  Copyright 2011 Michigan State University. All rights reserved.
+ *  Created by David on 1/29/13.
+ *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,37 +22,33 @@
  *
  */
 
-#ifndef AvidaEnvironmentActionTrigger_h
-#define AvidaEnvironmentActionTrigger_h
+#ifndef AvidaEnvironmentResourceManager_h
+#define AvidaEnvironmentResourceManager_h
 
 #include "avida/environment/Types.h"
+
 
 namespace Avida {
   namespace Environment {
     
-    // Environment::ActionTrigger - Direct resource production resulting from an action
+    // Environment::ResourceManager - Container for Resource instances (created by Environment::Manager)
     // --------------------------------------------------------------------------------------------------------------
-
-    class ActionTrigger
+    
+    class ResourceManager
     {
       friend class Manager;
     private:
-      const ActionTriggerID m_id;
-      const Apto::String m_desc;
-      int m_tmp_order;
+      Apto::Array<Resource*> m_resources;
       
-      LIB_LOCAL inline ActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc,
-                                     int tmp_order = -1)
-        : m_id(trigger_id), m_desc(desc), m_tmp_order(tmp_order) { ; }
+      LIB_LOCAL inline ResourceManager(int num_resources) : m_resources(num_resources) { ; }
 
     public:
-      LIB_EXPORT inline ~ActionTrigger() { ; }
+      LIB_EXPORT ~ResourceManager();
       
-      LIB_EXPORT inline const ActionTriggerID& GetID() const { return m_id; }
-      LIB_EXPORT inline const Apto::String& GetDescription() const { return m_desc; }
-
-      // Transitionary methods
-      LIB_EXPORT inline int TempOrdering() const { return m_tmp_order; }
+      LIB_EXPORT inline Resource& GetResource(ResourceID res_id) { return *m_resources[res_id]; }
+      
+      
+      LIB_EXPORT void PerformUpdate(Avida::Context& ctx, Update current_update);
     };
     
   };

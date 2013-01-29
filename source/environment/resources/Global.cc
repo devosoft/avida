@@ -1,9 +1,9 @@
 /*
- *  environment/Reagent.h
+ *  environment/resources/Global.cc
  *  avida-core
  *
- *  Created by David on 6/24/11.
- *  Copyright 2011 Michigan State University. All rights reserved.
+ *  Created by David on 1/25/13.
+ *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,17 +22,15 @@
  *
  */
 
-#ifndef AvidaEnvironmentReagent_h
-#define AvidaEnvironmentReagent_h
+#include "avida/private/environment/resources/Global.h"
 
 
-namespace Avida {
-  namespace Environment {
-    
-    // Environment:: - 
-    // --------------------------------------------------------------------------------------------------------------
-    
-  };
-};
+static const double UPDATE_STEP(1.0 / 10000.0);
+static const double EPSILON(1.0e-15);
+static const int PRECALC_DISTANCE(100);
 
-#endif
+
+Avida::Environment::Resources::Global::Global(ResourceDefinition& def) : Resource(def) { ; }
+
+Avida::Environment::Resources::Global::~Global() { ; }
+

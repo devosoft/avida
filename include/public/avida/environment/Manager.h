@@ -46,11 +46,9 @@ namespace Avida {
       
       Apto::Map<ActionTriggerID, ActionTriggerPtr> m_action_triggers;
       Apto::Map<ReactionID, ReactionPtr> m_reactions;
-      Apto::Map<ResourceID, ResourcePtr> m_resources;
       
       mutable ActionTriggerIDSetPtr m_action_trigger_ids;
       mutable ReactionIDSetPtr m_reaction_ids;
-      mutable ResourceIDSetPtr m_resource_ids;
       
       static bool s_registered_with_facet_factory;
       
@@ -67,9 +65,6 @@ namespace Avida {
       
       LIB_EXPORT ConstReactionIDSetPtr GetReactionIDs() const;
       LIB_EXPORT ConstReactionPtr GetReaction(const ReactionID& reaction_id) const;
-      
-      LIB_EXPORT ConstResourceIDSetPtr GetResourceIDs() const;
-      LIB_EXPORT ConstResourcePtr GetResource(const ResourceID& resource_id) const;
       
       
       LIB_EXPORT bool AttachTo(Universe* universe);

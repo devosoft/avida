@@ -1,5 +1,5 @@
 /*
- *  environment/ActionTrigger.h
+ *  environment/ResourceDefinition.h
  *  avida-core
  *
  *  Created by David on 6/24/11.
@@ -22,37 +22,28 @@
  *
  */
 
-#ifndef AvidaEnvironmentActionTrigger_h
-#define AvidaEnvironmentActionTrigger_h
+#ifndef AvidaEnvironmentResourceDefinition_h
+#define AvidaEnvironmentResourceDefinition_h
 
-#include "avida/environment/Types.h"
 
 namespace Avida {
   namespace Environment {
     
-    // Environment::ActionTrigger - Direct resource production resulting from an action
+    // Environment::ResourceDefinition -
     // --------------------------------------------------------------------------------------------------------------
-
-    class ActionTrigger
+    
+    class ResourceDefinition
     {
-      friend class Manager;
     private:
-      const ActionTriggerID m_id;
-      const Apto::String m_desc;
-      int m_tmp_order;
-      
-      LIB_LOCAL inline ActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc,
-                                     int tmp_order = -1)
-        : m_id(trigger_id), m_desc(desc), m_tmp_order(tmp_order) { ; }
+      const ResourceID m_id;
+      const Apto::String m_name;
 
     public:
-      LIB_EXPORT inline ~ActionTrigger() { ; }
+      ResourceDefinition(const ResourceID& resource_id, const Apto::String& resource_name) : m_id(resource_id), m_name(resource_name) { ; }
       
-      LIB_EXPORT inline const ActionTriggerID& GetID() const { return m_id; }
-      LIB_EXPORT inline const Apto::String& GetDescription() const { return m_desc; }
-
-      // Transitionary methods
-      LIB_EXPORT inline int TempOrdering() const { return m_tmp_order; }
+      LIB_EXPORT inline const ResourceID& GetID() const { return m_id; }
+      LIB_EXPORT inline const Apto::String& Name() const { return m_name; }
+            
     };
     
   };

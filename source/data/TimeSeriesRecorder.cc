@@ -80,7 +80,7 @@ namespace Avida {
       
       while (str.GetSize()) {
         Apto::String entry_str = str.Pop(',');
-        Update update = Apto::StrAs(entry_str.Pop(':'));
+        Update update(entry_str.Pop(':'));
         PackagePtr package(new Wrap<Apto::String>(entry_str));
         m_data.Push(DataEntry(update, package));
       }
@@ -95,7 +95,7 @@ namespace Avida {
 
       while (str.GetSize()) {
         Apto::String entry_str = str.Pop(',');
-        Update update = Apto::StrAs(entry_str.Pop(':'));
+        Update update(entry_str.Pop(':'));
         bool value = Apto::StrAs(entry_str);
         m_data.Push(DataEntry(update, value));
       }
@@ -110,7 +110,7 @@ namespace Avida {
       
       while (str.GetSize()) {
         Apto::String entry_str = str.Pop(',');
-        Update update = Apto::StrAs(entry_str.Pop(':'));
+        Update update(entry_str.Pop(':'));
         int value = Apto::StrAs(entry_str);
         m_data.Push(DataEntry(update, value));
       }
@@ -125,7 +125,7 @@ namespace Avida {
       
       while (str.GetSize()) {
         Apto::String entry_str = str.Pop(',');
-        Update update = Apto::StrAs(entry_str.Pop(':'));
+        Update update(entry_str.Pop(':'));
         double value = Apto::StrAs(entry_str);
         m_data.Push(DataEntry(update, value));
       }
@@ -140,7 +140,7 @@ namespace Avida {
       
       while (str.GetSize()) {
         Apto::String entry_str = str.Pop(',');
-        Update update = Apto::StrAs(entry_str.Pop(':'));
+        Update update(entry_str.Pop(':'));
         m_data.Push(DataEntry(update, entry_str));
       }
     }
@@ -199,9 +199,9 @@ namespace Avida {
     {
       if (m_data.GetSize() == 0) return "";
       
-      Apto::String rtn = Apto::FormatStr("%d:%s", m_data[0].update, (const char*)m_data[0].data->StringValue());
+      Apto::String rtn = Apto::FormatStr("%d:%s", m_data[0].update.discrete, (const char*)m_data[0].data->StringValue());
       for (int i = 1; i < m_data.GetSize(); i++) {
-        rtn += Apto::FormatStr(",%d:%s", m_data[i].update, (const char*)m_data[i].data->StringValue());
+        rtn += Apto::FormatStr(",%d:%s", m_data[i].update.discrete, (const char*)m_data[i].data->StringValue());
       }
       return rtn;
     }
@@ -211,9 +211,9 @@ namespace Avida {
     {
       if (m_data.GetSize() == 0) return "";
       
-      Apto::String rtn = Apto::FormatStr("%d:%d", m_data[0].update, m_data[0].data);
+      Apto::String rtn = Apto::FormatStr("%d:%d", m_data[0].update.discrete, m_data[0].data);
       for (int i = 1; i < m_data.GetSize(); i++) {
-        rtn += Apto::FormatStr(",%d:%d", m_data[i].update, m_data[i].data);
+        rtn += Apto::FormatStr(",%d:%d", m_data[i].update.discrete, m_data[i].data);
       }
       return rtn;
     }
@@ -223,9 +223,9 @@ namespace Avida {
     {
       if (m_data.GetSize() == 0) return "";
       
-      Apto::String rtn = Apto::FormatStr("%d:%d", m_data[0].update, m_data[0].data);
+      Apto::String rtn = Apto::FormatStr("%d:%d", m_data[0].update.discrete, m_data[0].data);
       for (int i = 1; i < m_data.GetSize(); i++) {
-        rtn += Apto::FormatStr(",%d:%d", m_data[i].update, m_data[i].data);
+        rtn += Apto::FormatStr(",%d:%d", m_data[i].update.discrete, m_data[i].data);
       }
       return rtn;
     }
@@ -235,9 +235,9 @@ namespace Avida {
     {
       if (m_data.GetSize() == 0) return "";
       
-      Apto::String rtn = Apto::FormatStr("%d:%f", m_data[0].update, m_data[0].data);
+      Apto::String rtn = Apto::FormatStr("%d:%f", m_data[0].update.discrete, m_data[0].data);
       for (int i = 1; i < m_data.GetSize(); i++) {
-        rtn += Apto::FormatStr(",%d:%f", m_data[i].update, m_data[i].data);
+        rtn += Apto::FormatStr(",%d:%f", m_data[i].update.discrete, m_data[i].data);
       }
       return rtn;
     }
@@ -247,9 +247,9 @@ namespace Avida {
     {
       if (m_data.GetSize() == 0) return "";
       
-      Apto::String rtn = Apto::FormatStr("%d:%s", m_data[0].update, (const char*)m_data[0].data);
+      Apto::String rtn = Apto::FormatStr("%d:%s", m_data[0].update.discrete, (const char*)m_data[0].data);
       for (int i = 1; i < m_data.GetSize(); i++) {
-        rtn += Apto::FormatStr(",%d:%s", m_data[i].update, (const char*)m_data[i].data);
+        rtn += Apto::FormatStr(",%d:%s", m_data[i].update.discrete, (const char*)m_data[i].data);
       }
       return rtn;
     }

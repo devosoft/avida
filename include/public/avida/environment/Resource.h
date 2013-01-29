@@ -25,7 +25,8 @@
 #ifndef AvidaEnvironmentResource_h
 #define AvidaEnvironmentResource_h
 
-#include "avida/environment/Types.h"
+#include "avida/environment/ResourceDefinition.h"
+#include "avida/structure/Types.h"
 
 
 namespace Avida {
@@ -36,14 +37,19 @@ namespace Avida {
     
     class Resource
     {
-    private:
-      const ResourceID m_id;
+    protected:
+      ResourceDefinition& m_def;
       
     public:
-      Resource(const ResourceID& resource_id);
-      virtual ~Resource() = 0;
+      LIB_EXPORT Resource(ResourceDefinition& def);
+      LIB_EXPORT virtual ~Resource() = 0;
       
-      const ResourceID& GetID() const { return m_id; }
+      LIB_EXPORT inline const ResourceID& GetID() const { return m_def.GetID(); }
+      LIB_EXPORT inline const Apto::String& Name() const { return m_def.Name(); }
+      
+      LIB_EXPORT virtual ResourceQuantity AmountAt(const Structure::Coord& location, Update current_update) = 0;
+      
+      LIB_EXPORT virtual void PerformUpdate(Avida::Context& ctx, Update current_update) = 0;
     };
     
   };
