@@ -25,6 +25,8 @@
 #ifndef AvidaEnvironmentResourceDefinition_h
 #define AvidaEnvironmentResourceDefinition_h
 
+#include "avida/environment/Types.h"
+
 
 namespace Avida {
   namespace Environment {

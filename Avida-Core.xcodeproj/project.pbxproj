@@ -97,6 +97,7 @@
 		7039884F09F00D060052ACE7 /* environment.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D709EE8501001AEA89 /* environment.cfg */; };
 		7039885009F00D080052ACE7 /* events.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D809EE8501001AEA89 /* events.cfg */; };
 		7042DF15128C90240062501F /* Listener.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7042DF13128C90240062501F /* Listener.cc */; };
+		704349DE16B9ACCC00759960 /* Library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704349DD16B9ACCC00759960 /* Library.cc */; };
 		7049F3590A66A8F500640512 /* instset-transsmt.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 7049F3550A66A8F500640512 /* instset-transsmt.cfg */; };
 		7049F3730A66AD7E00640512 /* default-transsmt.org in Create work dir */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
 		704C629A160CA668004E9B25 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
@@ -427,6 +428,7 @@
 		70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeGenotype.cc; sourceTree = "<group>"; };
 		70422A25091B141000A5E67F /* cAnalyzeGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeGenotype.h; sourceTree = "<group>"; };
 		7042DF13128C90240062501F /* Listener.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Listener.cc; sourceTree = "<group>"; };
+		704349DD16B9ACCC00759960 /* Library.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Library.cc; sourceTree = "<group>"; };
 		704368CC0C3198F200A05ABA /* ASTree.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ASTree.cc; sourceTree = "<group>"; };
 		704368CD0C3198F200A05ABA /* ASTree.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ASTree.h; sourceTree = "<group>"; };
 		704368F50C32E6AB00A05ABA /* cFlexVar.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFlexVar.h; sourceTree = "<group>"; };
@@ -590,7 +592,7 @@
 		70821D8516B8657900B90333 /* Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Internal.h; sourceTree = "<group>"; };
 		70821D8A16B868C300B90333 /* ResourceManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourceManager.cc; sourceTree = "<group>"; };
 		708BEC9513B3C98E004CB59D /* ActionTrigger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActionTrigger.h; sourceTree = "<group>"; };
-		708BEC9613B3C98E004CB59D /* Catalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Catalyst.h; sourceTree = "<group>"; };
+		708BEC9613B3C98E004CB59D /* Library.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Library.h; sourceTree = "<group>"; };
 		708BEC9713B3C98E004CB59D /* Context.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Context.h; sourceTree = "<group>"; };
 		708BEC9813B3C98E004CB59D /* Manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = Manager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		708BEC9913B3C98E004CB59D /* ResourceDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResourceDefinition.h; sourceTree = "<group>"; };
@@ -1353,9 +1355,9 @@
 			isa = PBXGroup;
 			children = (
 				708BEC9513B3C98E004CB59D /* ActionTrigger.h */,
-				708BEC9613B3C98E004CB59D /* Catalyst.h */,
 				708BEC9713B3C98E004CB59D /* Context.h */,
 				70B9DC4B13BA53BD00C833BB /* ContextFactory.h */,
+				708BEC9613B3C98E004CB59D /* Library.h */,
 				708BEC9813B3C98E004CB59D /* Manager.h */,
 				708BEC9A13B3C98E004CB59D /* Reaction.h */,
 				708BEC9C13B3C98E004CB59D /* Resource.h */,
@@ -1369,6 +1371,7 @@
 		708BEC9D13B3C9C2004CB59D /* environment */ = {
 			isa = PBXGroup;
 			children = (
+				704349DD16B9ACCC00759960 /* Library.cc */,
 				708BEC9E13B3C9C2004CB59D /* Manager.cc */,
 				705E54C816B30D9600392BA7 /* Resource.cc */,
 				70821D8A16B868C300B90333 /* ResourceManager.cc */,
@@ -2232,6 +2235,7 @@
 				70821D8B16B868C300B90333 /* ResourceManager.cc in Sources */,
 				70821D8E16B8796B00B90333 /* cResourcePopulationInterface.cc in Sources */,
 				70821D8F16B8797200B90333 /* cDynamicRes.cc in Sources */,
+				704349DE16B9ACCC00759960 /* Library.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

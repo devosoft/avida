@@ -24,6 +24,8 @@
 
 #include "avida/private/environment/resources/Global.h"
 
+#include "avida/environment/Library.h"
+
 
 static const double UPDATE_STEP(1.0 / 10000.0);
 static const double EPSILON(1.0e-15);
@@ -33,4 +35,15 @@ static const int PRECALC_DISTANCE(100);
 Avida::Environment::Resources::Global::Global(ResourceDefinition& def) : Resource(def) { ; }
 
 Avida::Environment::Resources::Global::~Global() { ; }
+
+
+void Avida::Environment::Resources::Global::Initialize()
+{
+  static Util::ArgSchema schema;
+  
+  schema.Define("initial", 0.0);
+  schema.Define("inflow", 0.0);
+  
+  Library::Instance().RegisterResourceType("global", schema, Create);
+}
 

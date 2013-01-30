@@ -25,7 +25,9 @@
 #include "avida/Avida.h"
 
 #include "apto/platform.h"
+#include "avida/biota/Organism.h"
 #include "avida/core/GlobalObject.h"
+#include "avida/private/environment/resources/Global.h"
 #include "avida/private/systematics/Genotype.h"
 
 #include "AvidaTools.h"
@@ -58,6 +60,9 @@ void Avida::Initialize()
   cHardwareManager::Initialize();
   cModularityAnalysis::Initialize();
   cOrganism::Initialize();
+  
+  Environment::Resources::Global::Initialize();
+  Biota::Organism::Initialize();
   
   Systematics::Genotype::Initialize();
 }

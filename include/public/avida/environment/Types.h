@@ -26,6 +26,7 @@
 #define AvidaEnvironmentTypes_h
 
 #include "avida/core/Types.h"
+#include "avida/structure/Types.h"
 
 
 namespace Avida {
@@ -35,8 +36,8 @@ namespace Avida {
     // --------------------------------------------------------------------------------------------------------------
     
     class ActionTrigger;
-    class Catalyst;
     class Context;
+    class Library;
     class Manager;
     class Reaction;
     class Resource;
@@ -65,15 +66,21 @@ namespace Avida {
     typedef Apto::SmartPtr<const ReactionIDSet, Apto::ThreadSafeRefCount> ConstReactionIDSetPtr;
     typedef Apto::Set<ReactionID>::ConstIterator ConstReactionIDSetIterator;
     
+    
+    
     typedef int ResourceID;
     typedef Apto::SmartPtr<Resource, Apto::ThreadSafeRefCount> ResourcePtr;
     typedef Apto::SmartPtr<const Resource, Apto::ThreadSafeRefCount> ConstResourcePtr;
+
     typedef Apto::Set<ResourceID> ResourceIDSet;
     typedef Apto::SmartPtr<ResourceIDSet, Apto::ThreadSafeRefCount> ResourceIDSetPtr;
     typedef Apto::SmartPtr<const ReactionIDSet, Apto::ThreadSafeRefCount> ConstResourceIDSetPtr;
     typedef Apto::Set<ResourceID>::ConstIterator ConstResourceIDSetIterator;
     
     typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
+    
+    
+    typedef Apto::Functor<Resource*, Apto::TL::Create<ResourceDefinition&, Structure::Controller&> > ResourceCreateFunctor;
   };
 };
 

@@ -38,17 +38,22 @@ namespace Avida {
         ResourceQuantity m_quantity;
         
       public:
-        ~Global();
+        LIB_EXPORT ~Global();
         
-        ResourceQuantity AmountAt(const Structure::Coord& location, Update current_update);
+        LIB_EXPORT static void Initialize();
         
-        void PerformUpdate(Avida::Context& ctx, Update current_update);
+        
+        LIB_EXPORT ResourceQuantity AmountAt(const Structure::Coord& location, Update current_update);
+        
+        LIB_EXPORT void PerformUpdate(Avida::Context& ctx, Update current_update);
+        
+        
         
         
       private:
-        Global(ResourceDefinition& def);
+        LIB_LOCAL Global(ResourceDefinition& def);
         
-        static Global* CreateWithDefinition(ResourceDefinition& def, Structure::Controller& structure);
+        LIB_LOCAL static Global* Create(ResourceDefinition& def, Structure::Controller& structure);
       };
       
     };
