@@ -750,7 +750,7 @@
 		70B1B1D913F43016005DDF90 /* Properties.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Properties.cc; sourceTree = "<group>"; };
 		70B6514C0BEA6FAD002472ED /* unit-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "unit-tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70B984B40EBB71B500A828B1 /* tDataCommandManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tDataCommandManager.h; sourceTree = "<group>"; };
-		70B9DC4B13BA53BD00C833BB /* ContextFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContextFactory.h; sourceTree = "<group>"; };
+		70B9DC4B13BA53BD00C833BB /* ResourceListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResourceListener.h; sourceTree = "<group>"; };
 		70BB2A290E9FA12F008269D2 /* ASAvidaLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAvidaLib.h; sourceTree = "<group>"; };
 		70BB2A2A0E9FA12F008269D2 /* ASAvidaLib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASAvidaLib.cc; sourceTree = "<group>"; };
 		70C054C80A4F6E19002703C1 /* PopulationActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopulationActions.h; sourceTree = "<group>"; };
@@ -1356,12 +1356,12 @@
 			children = (
 				708BEC9513B3C98E004CB59D /* ActionTrigger.h */,
 				708BEC9713B3C98E004CB59D /* Context.h */,
-				70B9DC4B13BA53BD00C833BB /* ContextFactory.h */,
 				708BEC9613B3C98E004CB59D /* Library.h */,
 				708BEC9813B3C98E004CB59D /* Manager.h */,
 				708BEC9A13B3C98E004CB59D /* Reaction.h */,
 				708BEC9C13B3C98E004CB59D /* Resource.h */,
 				708BEC9913B3C98E004CB59D /* ResourceDefinition.h */,
+				70B9DC4B13BA53BD00C833BB /* ResourceListener.h */,
 				708BEC9B13B3C98E004CB59D /* ResourceManager.h */,
 				70F27F0C13B4E59F008A88A7 /* Types.h */,
 			);

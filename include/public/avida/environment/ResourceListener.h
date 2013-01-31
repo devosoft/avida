@@ -1,9 +1,9 @@
 /*
- *  environment/ContextFactory.h
+ *  environment/ResourceListener.h
  *  avida-core
  *
- *  Created by David on 6/28/11.
- *  Copyright 2011 Michigan State University. All rights reserved.
+ *  Created by David on 1/31/13.
+ *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,21 +22,21 @@
  *
  */
 
-#ifndef AvidaEnvironmentContextFactory_h
-#define AvidaEnvironmentContextFactory_h
+#ifndef AvidaEnvironmentResourceListener_h
+#define AvidaEnvironmentResourceListener_h
+
+#include "avida/structure/Types.h"
+
 
 namespace Avida {
   namespace Environment {
     
-    // Environment::ContextFactory - Creates Environment::Context instances, provides data collection facilities
+    // Environment::ResouceListener - Object that wishes to be notifed of resource events
     // --------------------------------------------------------------------------------------------------------------
     
-    class ContextFactory
+    class ResourceListener
     {
-    private:
-      
     public:
-      
     };
     
   };

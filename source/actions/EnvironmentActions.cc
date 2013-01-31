@@ -454,33 +454,33 @@ public:
   cActionSetProbabilisticResource(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_res_name(""), 
                                   m_initial(0.0), m_inflow(0.0), m_outflow(0.0), m_lambda(1.0), m_theta(0.0), m_x(-1), m_y(-1), m_count(-1)
   {
-    cArgSchema schema(':','=');
-    schema.AddEntry("res_name", 0, (const char*)m_world->GetEnvironment().GetResDefLib().GetResDef(0)->GetName());
+    Util::ArgSchema schema;
+    schema.Define("res_name", (const char*)m_world->GetEnvironment().GetResDefLib().GetResDef(0)->GetName());
     
-    schema.AddEntry("initial", 0, 0.0);
-    schema.AddEntry("inflow", 1, 0.0);
-    schema.AddEntry("outflow", 2, 0.0);
-    schema.AddEntry("lambda", 3, 1.0);
-    schema.AddEntry("theta", 4, 0.0); 
+    schema.Define("initial", 0.0);
+    schema.Define("inflow", 0.0);
+    schema.Define("outflow", 0.0);
+    schema.Define("lambda", 1.0);
+    schema.Define("theta", 0.0);
     
-    schema.AddEntry("x", 0, -1);
-    schema.AddEntry("y", 1, -1);
-    schema.AddEntry("num", 2, -1);
+    schema.Define("x", -1);
+    schema.Define("y", -1);
+    schema.Define("num", -1);
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    Util::Args* argc = Util::Args::Load((const char*)args, schema, ':', '=', &feedback);
     
     if (args) {
-      m_res_name = argc->GetString(0);
+      m_res_name = argc->String(0);
       
-      m_initial = argc->GetDouble(0);
-      m_inflow = argc->GetDouble(1);
-      m_outflow = argc->GetDouble(2);
-      m_lambda = argc->GetDouble(3);
-      m_theta = argc->GetDouble(4);
+      m_initial = argc->Double(0);
+      m_inflow = argc->Double(1);
+      m_outflow = argc->Double(2);
+      m_lambda = argc->Double(3);
+      m_theta = argc->Double(4);
       
-      m_x = argc->GetInt(0);
-      m_y = argc->GetInt(1);
-      m_count = argc->GetInt(2);
+      m_x = argc->Int(0);
+      m_y = argc->Int(1);
+      m_count = argc->Int(2);
     }
     
     assert(m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name));
@@ -842,7 +842,7 @@ class cActionSetTaskArgInt : public cAction
 {
 private:
   int m_task;
-  int m_arg;
+  cString m_arg;
   int m_value;
   
 public:
@@ -850,17 +850,17 @@ public:
   {
     cString largs(args);
     if (largs.GetSize()) m_task = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_arg = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_arg = largs.PopWord();
     if (largs.GetSize()) m_value = largs.PopWord().AsInt();
   }
   
-  static const cString GetDescription() { return "Arguments: <int task> <int arg> <int value>"; }
+  static const cString GetDescription() { return "Arguments: <int task> <string arg> <int value>"; }
   
   void Process(cAvidaContext&)
   {
     cEnvironment& env = m_world->GetEnvironment();
     if (m_task >= 0 && m_task < env.GetNumTasks()) {
-      env.GetTask(m_task).GetArguments().SetInt(m_arg, m_value);
+      env.GetTask(m_task).GetArguments().SetInt((const char*)m_arg, m_value);
     } else {
       m_world->GetDriver().Feedback().Error("Task specified in SetTaskArgInt action does not exist");
       m_world->GetDriver().Abort(Avida::INTERNAL_ERROR);
@@ -1001,7 +1001,7 @@ class cActionSetTaskArgDouble : public cAction
 {
 private:
   int m_task;
-  int m_arg;
+  cString m_arg;
   double m_value;
   
 public:
@@ -1009,7 +1009,7 @@ public:
   {
     cString largs(args);
     if (largs.GetSize()) m_task = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_arg = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_arg = largs.PopWord();
     if (largs.GetSize()) m_value = largs.PopWord().AsDouble();
   }
   
@@ -1019,7 +1019,7 @@ public:
   {
     cEnvironment& env = m_world->GetEnvironment();
     if (m_task >= 0 && m_task < env.GetNumTasks()) {
-      env.GetTask(m_task).GetArguments().SetDouble(m_arg, m_value);
+      env.GetTask(m_task).GetArguments().SetDouble((const char*)m_arg, m_value);
     } else {
       m_world->GetDriver().Feedback().Error("Task specified in SetTaskArgDouble action does not exist");
       m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
@@ -1032,7 +1032,7 @@ class cActionSetTaskArgString : public cAction
 {
 private:
   int m_task;
-  int m_arg;
+  cString m_arg;
   cString m_value;
   
 public:
@@ -1040,7 +1040,7 @@ public:
   {
     cString largs(args);
     if (largs.GetSize()) m_task = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_arg = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_arg = largs.PopWord();
     if (largs.GetSize()) m_value = largs;
   }
   
@@ -1050,7 +1050,7 @@ public:
   {
     cEnvironment& env = m_world->GetEnvironment();
     if (m_task >= 0 && m_task < env.GetNumTasks()) {
-      env.GetTask(m_task).GetArguments().SetString(m_arg, m_value);
+      env.GetTask(m_task).GetArguments().SetString((const char*)m_arg, (const char*)m_value);
     } else {
       m_world->GetDriver().Feedback().Error("Task specified in SetTaskArgString action does not exist");
       m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
@@ -1089,8 +1089,8 @@ class cActionSetOptimizeMinMax : public cAction
           if (val < minFx) minFx = val;
           if (val > maxFx) maxFx = val;
         }
-        env.GetTask(j).GetArguments().SetDouble(1, maxFx);
-        env.GetTask(j).GetArguments().SetDouble(2, minFx);
+        env.GetTask(j).GetArguments().SetDouble("maxFx", maxFx);
+        env.GetTask(j).GetArguments().SetDouble("minFx", minFx);
       }
     }
   };

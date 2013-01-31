@@ -61,7 +61,7 @@ namespace Avida {
     // Unit
     // --------------------------------------------------------------------------------------------------------------
     
-    class Unit : virtual public Apto::RefCountObject<Apto::ThreadSafe>
+    class Unit : public virtual Apto::RefCountObject<Apto::ThreadSafe>
     {
     protected:
       mutable GroupMembershipPtr m_groups;

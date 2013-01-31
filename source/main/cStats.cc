@@ -1200,8 +1200,8 @@ void cStats::PrintDynamicMaxMinData(const cString& filename)
 	df->WriteComment("First column gives the current update, 2nd and 3rd give max and min Fx");
 	df->Write(m_update, "Update");
 	for(int i = 0; i < task_last_count.GetSize(); i++) {
-		double max = m_world->GetEnvironment().GetTask(i).GetArguments().GetDouble(1);
-		double min = m_world->GetEnvironment().GetTask(i).GetArguments().GetDouble(2);
+		double max = m_world->GetEnvironment().GetTask(i).GetArguments().Double(1);
+		double min = m_world->GetEnvironment().GetTask(i).GetArguments().Double(2);
 		df->Write(max, task_names[i] + " Max");
 		df->Write(min, task_names[i] + " Min");
 	}

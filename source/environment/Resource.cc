@@ -24,4 +24,5 @@
 
 #include "avida/environment/Resource.h"
 
+
 Avida::Environment::Resource::~Resource() { ; }

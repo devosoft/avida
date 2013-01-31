@@ -35,7 +35,6 @@ private:
   double xgravity, ygravity;
   int    inflowX1, inflowX2, inflowY1, inflowY2;
   int    outflowX1, outflowX2, outflowY1, outflowY2;
-  int    curr_peakx, curr_peaky;
   /* instead of creating a new array use the existing one from cResource */
   Apto::Array<cCellResource> *cell_list_ptr;
   

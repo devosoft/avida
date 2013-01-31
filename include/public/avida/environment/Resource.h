@@ -41,11 +41,16 @@ namespace Avida {
       ResourceDefinition& m_def;
       
     public:
-      LIB_EXPORT Resource(ResourceDefinition& def);
+      // Base Methods
+      
+      LIB_EXPORT inline Resource(ResourceDefinition& def) : m_def(def) { ; }
       LIB_EXPORT virtual ~Resource() = 0;
       
       LIB_EXPORT inline const ResourceID& GetID() const { return m_def.GetID(); }
       LIB_EXPORT inline const Apto::String& Name() const { return m_def.Name(); }
+      
+
+      // Interface Methods
       
       LIB_EXPORT virtual ResourceQuantity AmountAt(const Structure::Coord& location, Update current_update) = 0;
       

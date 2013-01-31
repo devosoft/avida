@@ -41,8 +41,9 @@ namespace Avida {
     class Manager;
     class Reaction;
     class Resource;
-    class ResourceManager;
     class ResourceDefinition;
+    class ResourceListener;
+    class ResourceManager;
     
     
     // Type Declarations

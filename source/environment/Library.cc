@@ -25,22 +25,6 @@
 #include "avida/environment/Library.h"
 
 
-namespace Avida {
-  namespace Environment {
-    
-    typedef Apto::SingletonHolder<Library, Apto::CreateWithNew, Apto::DestroyAtExit, Apto::ThreadSafe> LibrarySingleton;
-  
-  };
-};
-
-
-Avida::Environment::Library& Avida::Environment::Library::Instance()
-{
-  return LibrarySingleton::Instance();
-}
-
-
-
 bool Avida::Environment::Library::RegisterResourceType(const Apto::String& res_type_name, Util::ArgSchema& arg_schema,
                                                        ResourceCreateFunctor res_create)
 {

@@ -3774,14 +3774,14 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
   for (int i=0; i<m_world->GetEnvironment().GetReactionLib().GetSize(); i++)
   {
 	  cReaction* react = m_world->GetEnvironment().GetReactionLib().GetReaction(i);
-	  int fun = react->GetTask()->GetArguments().GetInt(0);
-	  double thresh = react->GetTask()->GetArguments().GetDouble(3);
-	  double threshMax = react->GetTask()->GetArguments().GetDouble(4);
+	  int fun = react->GetTask()->GetArguments().Int(0);
+	  double thresh = react->GetTask()->GetArguments().Double(3);
+	  double threshMax = react->GetTask()->GetArguments().Double(4);
 	  if (i==0)
 	  {
 		  f1 = fun;
-		  f1Max = react->GetTask()->GetArguments().GetDouble(1);
-		  f1Min = react->GetTask()->GetArguments().GetDouble(2);
+		  f1Max = react->GetTask()->GetArguments().Double(1);
+		  f1Min = react->GetTask()->GetArguments().Double(2);
 	  }
 	  
 	     if (fun==f1 && threshMax>0)
@@ -3791,8 +3791,8 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
 		 else if (fun!=f1 && threshcount[1]==0 && rangecount[1]==0)
 		 {
 			 f2=fun;
-			 f2Max = react->GetTask()->GetArguments().GetDouble(1);
-			 f2Min = react->GetTask()->GetArguments().GetDouble(2);
+			 f2Max = react->GetTask()->GetArguments().Double(1);
+			 f2Min = react->GetTask()->GetArguments().Double(2);
 		 }
 		 if (fun==f2 && threshMax>0)
 			 rangecount[1]++;
@@ -3846,16 +3846,16 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
 	  double max = react->GetProcesses().GetPos(0)->GetMaxNumber();
 	  double min = react->GetProcesses().GetPos(0)->GetMinNumber();
 	  double value = react->GetValue();
-	  int fun = react->GetTask()->GetArguments().GetInt(0);
+	  int fun = react->GetTask()->GetArguments().Int(0);
 	  
     if (fun == f1) fun = 0;
 	  else if (fun == f2) fun = 1;
 	  else cout << "function is neither f1 or f2! doh!\n";
     
-	  double thresh = react->GetTask()->GetArguments().GetDouble(3);
-	  double threshMax = react->GetTask()->GetArguments().GetDouble(4);
-	  //double maxFx = react->GetTask()->GetArguments().GetDouble(1);
-	  //double minFx = react->GetTask()->GetArguments().GetDouble(2);
+	  double thresh = react->GetTask()->GetArguments().Double(3);
+	  double threshMax = react->GetTask()->GetArguments().Double(4);
+	  //double maxFx = react->GetTask()->GetArguments().Double(1);
+	  //double minFx = react->GetTask()->GetArguments().Double(2);
 
 	  // and pull the concentration of this resource from resource object loaded from resource.dat
 	  double concentration = resources[i];

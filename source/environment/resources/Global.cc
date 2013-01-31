@@ -47,3 +47,26 @@ void Avida::Environment::Resources::Global::Initialize()
   Library::Instance().RegisterResourceType("global", schema, Create);
 }
 
+
+Avida::Environment::ResourceQuantity Avida::Environment::Resources::Global::AmountAt(const Structure::Coord& location,
+                                                                                     Update current_update)
+{
+  assert(false);
+  // @TOOD
+  
+  return 0.0;
+}
+
+
+void Avida::Environment::Resources::Global::PerformUpdate(Avida::Context& ctx, Update current_update)
+{
+  ;
+}
+
+Avida::Environment::Resources::Global* Avida::Environment::Resources::Global::Create(ResourceDefinition& def,
+                                                                                     Structure::Controller& structure)
+{
+  (void)structure;
+  
+  return new Global(def);
+}

@@ -41,6 +41,7 @@ namespace Avida {
     // Type Declarations
     // --------------------------------------------------------------------------------------------------------------
     
+    typedef Apto::SmartPtr<Container, Apto::InternalRCObject> ContainerPtr;
     typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
     
   };

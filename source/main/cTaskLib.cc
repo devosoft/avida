@@ -24,7 +24,6 @@
 
 #include "apto/platform.h"
 
-#include "cArgSchema.h"
 #include "cEnvironment.h"
 #include "cEnvReqs.h"
 #include "cTaskState.h"
@@ -306,7 +305,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   return task_array[start_size];
 }
 
-void cTaskLib::NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs, cArgContainer* args)
+void cTaskLib::NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs, Util::Args* args)
 {
   if (reqs & REQ_NEIGHBOR_INPUT) use_neighbor_input = true;
   if (reqs & REQ_NEIGHBOR_OUTPUT) use_neighbor_output = true;
@@ -1862,13 +1861,14 @@ double cTaskLib::Task_Math3in_AM(cTaskContext& ctx) const //((X+Y)^2+(Y+Z)^2)
 
 void cTaskLib::Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
-  cArgSchema schema;
-  schema.AddEntry("string", 0, cArgSchema::SCHEMA_STRING);
-  schema.AddEntry("partial",0, 0);
-  schema.AddEntry("binary",1,1);
-  schema.AddEntry("pow",0,2.0);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
-  envreqs.SetMinOutputs(args->GetString(0).GetSize());
+  Util::ArgSchema schema;
+  schema.Define("string", Util::STRING);
+  schema.Define("partial", 0);
+  schema.Define("binary", 1);
+  schema.Define("pow", 2.0);
+  
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
+  envreqs.SetMinOutputs(args->String(0).GetSize());
   if (args) NewTask(name, "MatchStr", &cTaskLib::Task_MatchStr, 0, args);
 }
 
@@ -1879,10 +1879,10 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
   
   //  temp_buf.Pop(); // pop the signal value off of the buffer
   
-  const cString& string_to_match = ctx.GetTaskEntry()->GetArguments().GetString(0);
-  int partial = ctx.GetTaskEntry()->GetArguments().GetInt(0);
-  int binary = ctx.GetTaskEntry()->GetArguments().GetInt(1);
-//  double mypow = ctx.GetTaskEntry()->GetArguments().GetDouble(0);
+  const Apto::String& string_to_match = ctx.GetTaskEntry()->GetArguments().String(0);
+  int partial = ctx.GetTaskEntry()->GetArguments().Int(0);
+  int binary = ctx.GetTaskEntry()->GetArguments().Int(1);
+//  double mypow = ctx.GetTaskEntry()->GetArguments().Double(0);
   int string_index;
   int num_matched = 0;
   int test_output;
@@ -1974,15 +1974,15 @@ cString cTaskLib::GetMatchString(int x)
 
 void cTaskLib::Load_MatchProdStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
-  cArgSchema schema;
-  schema.AddEntry("string", 0, cArgSchema::SCHEMA_STRING);		
-  schema.AddEntry("partial",0, 0);
-  schema.AddEntry("binary",1,1);
-  schema.AddEntry("pow",0,2.0);
-	schema.AddEntry("tag",2,-1);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);	
-  envreqs.SetMinOutputs(args->GetString(0).GetSize());
-	m_strings.push_back(args->GetString(0));
+  Util::ArgSchema schema;
+  schema.Define("string", Util::STRING);
+  schema.Define("partial", 0);
+  schema.Define("binary", 1);
+  schema.Define("pow", 2.0);
+	schema.Define("tag", -1);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
+  envreqs.SetMinOutputs(args->String(0).GetSize());
+	m_strings.push_back((const char*)args->String(0));
   if (args) NewTask(name, "MatchProdStr", &cTaskLib::Task_MatchStr, 0, args);
 }
 
@@ -1990,15 +1990,15 @@ void cTaskLib::Load_MatchProdStr(const cString& name, const cString& argstr, cEn
 double cTaskLib::Task_MatchProdStr(cTaskContext& ctx) const
 {
   // These even out the stats tracking.
-  m_world->GetStats().AddTag(ctx.GetTaskEntry()->GetArguments().GetInt(2), 0);
+  m_world->GetStats().AddTag(ctx.GetTaskEntry()->GetArguments().Int(2), 0);
   m_world->GetStats().AddTag(-1, 0);
 	
   tBuffer<int> temp_buf(ctx.GetOutputBuffer());
   
-  const cString& string_to_match = ctx.GetTaskEntry()->GetArguments().GetString(0);
-  int partial = ctx.GetTaskEntry()->GetArguments().GetInt(0);
-  int binary = ctx.GetTaskEntry()->GetArguments().GetInt(1);
-  double mypow = ctx.GetTaskEntry()->GetArguments().GetDouble(0);
+  const Apto::String& string_to_match = ctx.GetTaskEntry()->GetArguments().String(0);
+  int partial = ctx.GetTaskEntry()->GetArguments().Int(0);
+  int binary = ctx.GetTaskEntry()->GetArguments().Int(1);
+  double mypow = ctx.GetTaskEntry()->GetArguments().Double(0);
   int string_index;
   int num_matched = 0;
   int test_output;
@@ -2030,7 +2030,7 @@ double cTaskLib::Task_MatchProdStr(cTaskContext& ctx) const
   
   // Check if the organism already produced this string. 
   // If so, it receives a perfect score for this task.
-  int tag = ctx.GetTaskEntry()->GetArguments().GetInt(2);
+  int tag = ctx.GetTaskEntry()->GetArguments().Int(2);
 	
   if (m_world->GetConfig().MATCH_ALREADY_PRODUCED.Get()) {
     int prod = ctx.GetOrganism()->GetNumberStringsProduced(tag); 
@@ -2041,7 +2041,7 @@ double cTaskLib::Task_MatchProdStr(cTaskContext& ctx) const
   // Update the organism's tag. 
   ctx.GetOrganism()->UpdateTag(tag, max_num_matched);
   if (ctx.GetOrganism()->GetTagLabel() == tag) {
-    ctx.GetOrganism()->SetLineageLabel(ctx.GetTaskEntry()->GetArguments().GetInt(2));
+    ctx.GetOrganism()->SetLineageLabel(ctx.GetTaskEntry()->GetArguments().Int(2));
   } 
 	
 	
@@ -2077,29 +2077,29 @@ double cTaskLib::Task_MatchProdStr(cTaskContext& ctx) const
 
 void cTaskLib::Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("target", 0, cArgSchema::SCHEMA_INT);
-  schema.AddEntry("threshold", 1, -1);
+  schema.Define("target", Util::INT);
+  schema.Define("threshold", -1);
   // Double Arguments
-  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+  schema.Define("halflife", Util::DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "Match Number", &cTaskLib::Task_MatchNumber, 0, args);
 }
 
 double cTaskLib::Task_MatchNumber(cTaskContext& ctx) const
 {
   double quality = 0.0;
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   
-  long long diff = ::llabs((long long)args.GetInt(0) - ctx.GetOutputBuffer()[0]);
-  int threshold = args.GetInt(1);
+  long long diff = ::llabs((long long)args.Int(0) - ctx.GetOutputBuffer()[0]);
+  int threshold = args.Int(1);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
     // If within threshold range, quality decays based on absolute difference
-    double halflife = -1.0 * fabs(args.GetDouble(0));
+    double halflife = -1.0 * fabs(args.Double(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
   
@@ -2109,19 +2109,19 @@ double cTaskLib::Task_MatchNumber(cTaskContext& ctx) const
 
 void cTaskLib::Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("size", 0, cArgSchema::SCHEMA_INT); // Number of items to sort
-  schema.AddEntry("direction", 1, 0); // < 0 = Descending, Otherwise = Ascending
-  schema.AddEntry("contiguous", 2, 1); // 0 = No, Otherwise = Yes
+  schema.Define("size", Util::INT); // Number of items to sort
+  schema.Define("direction", 0); // < 0 = Descending, Otherwise = Ascending
+  schema.Define("contiguous", 1); // 0 = No, Otherwise = Yes
   // Double Arguments
-  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+  schema.Define("halflife", Util::DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) {
-    envreqs.SetMinInputs(args->GetInt(0));
-    envreqs.SetMinOutputs(args->GetInt(0) * 2);
+    envreqs.SetMinInputs(args->Int(0));
+    envreqs.SetMinOutputs(args->Int(0) * 2);
     envreqs.SetTrueRandInputs();
     NewTask(name, "Sort Inputs", &cTaskLib::Task_SortInputs, 0, args);
   }
@@ -2129,9 +2129,9 @@ void cTaskLib::Load_SortInputs(const cString& name, const cString& argstr, cEnvR
 
 double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
 {
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   const tBuffer<int>& output = ctx.GetOutputBuffer();
-  const int size = args.GetInt(0);
+  const int size = args.Int(0);
   const int stored = output.GetNumStored();
   
   // if less than half, can't possibly reach threshold
@@ -2147,7 +2147,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   int span_start = -1;
   int span_end = stored;
   
-  if (args.GetInt(2)) { // Contiguous
+  if (args.Int(2)) { // Contiguous
     // scan for the largest contiguous span
     // - in the event of a tie, keep the first discovered
     for (int i = 0; i < stored; i++) {
@@ -2179,7 +2179,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   // - count moves required
   // - update valmap, tracking observed inputs
   Apto::Array<int> sorted(size);
-  const bool ascending = (args.GetInt(1) >= 0);
+  const bool ascending = (args.Int(1) >= 0);
   int count = 1;
   
   // store first value
@@ -2227,7 +2227,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   // score of 50% expected with random output
   // - only grant quality when less than 50% maximum moves are required
   if (static_cast<double>(score) / static_cast<double>(maxscore) < 0.5) {
-    double halflife = -1.0 * fabs(args.GetDouble(0));
+    double halflife = -1.0 * fabs(args.Double(0));
     quality = pow(2.0, static_cast<double>(score) / halflife);
   }
   
@@ -2248,14 +2248,14 @@ public:
 
 void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("target", 0, cArgSchema::SCHEMA_INT);
+  schema.Define("target", Util::INT);
   // Double Arguments
-  schema.AddEntry("penalty", 0, 0.0);
+  schema.Define("penalty", 0.0);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   
   if (args) NewTask(name, "Fibonacci Sequence", &cTaskLib::Task_FibonacciSequence, 0, args);
 }
@@ -2263,7 +2263,7 @@ void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr
 
 double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
 {
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   cFibSeqState* state = static_cast<cFibSeqState*>(ctx.GetTaskState());
   if (state == NULL) {
     state = new cFibSeqState();
@@ -2279,7 +2279,7 @@ double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
     state->seq[state->count % 2] = next;
     
     // If past target sequence ending point, return the penalty setting
-    if (state->count > args.GetInt(0)) return args.GetDouble(0);
+    if (state->count > args.Int(0)) return args.Double(0);
     
     return 1.0;
   }
@@ -2290,29 +2290,29 @@ double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
 
 void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("function", 0, cArgSchema::SCHEMA_INT);
-  schema.AddEntry("binary", 1, 0);
-  schema.AddEntry("varlength", 2, 8);
-  schema.AddEntry("numvars", 3, 2);
+  schema.Define("function", Util::INT);
+  schema.Define("binary", 0);
+  schema.Define("varlength", 8);
+  schema.Define("numvars", 2);
   // Double Arguments
-  schema.AddEntry("basepow", 0, 2.0);
-  schema.AddEntry("maxFx", 1, 1.0);
-  schema.AddEntry("minFx", 2, 0.0);
-  schema.AddEntry("thresh", 3, -1.0);
-  schema.AddEntry("threshMax", 4, -1.0);
+  schema.Define("basepow", 2.0);
+  schema.Define("maxFx", 1.0);
+  schema.Define("minFx", 0.0);
+  schema.Define("thresh", -1.0);
+  schema.Define("threshMax", -1.0);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) {
-    if (args->GetInt(1)) {
-      envreqs.SetMinOutputs(args->GetInt(2)*args->GetInt(3));
+    if (args->Int(1)) {
+      envreqs.SetMinOutputs(args->Int(2)*args->Int(3));
     }
     else {
       // once have ability to change args should in each of these cases change the max/min
       // to the appropriate defaults for this function
-      switch (args->GetInt(0)) {
+      switch (args->Int(0)) {
       case 1:
 	envreqs.SetMinOutputs(1);
 	break;
@@ -2337,35 +2337,35 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   if (ctx.GetOutputBuffer().GetNumStored() < ctx.GetOutputBuffer().GetCapacity()) return 0;
   
   double quality = 0.0;
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   
   // which function are we currently checking?
-  const int function = args.GetInt(0);
+  const int function = args.Int(0);
   
   // get however many variables need, turn them into doubles between 0 and 1
   Apto::Array<double> vars;
-  vars.Resize(args.GetInt(3));
+  vars.Resize(args.Int(3));
   
   double Fx = 0.0;
   
   // some of the problems don't need double variables but use the bit string as a bit string
   // string match, Fx=length - num_matched (0 best, length worst)
   if (function == 20) {
-    const cString& string_to_match = args.GetString(0);
+    const Apto::String& string_to_match = args.String(0);
     int matched=0;
-    for (int i=0; i<args.GetInt(2); i++) {
+    for (int i=0; i<args.Int(2); i++) {
       if ((string_to_match[i] == '0' && ctx.GetOutputBuffer()[i]==0)  ||
 	  (string_to_match[i] == '1' && ctx.GetOutputBuffer()[i]==1))
 	matched++;
     }
-    Fx=args.GetInt(2) - matched;
+    Fx=args.Int(2) - matched;
   }
 
   // string with all 1's at beginning until pattern 0101, reward for # 1's
   else if (function == 21) {
     int numOnes=0;
     int patFound=0;
-    for (int i=0; i<args.GetInt(2)-3; i++) {
+    for (int i=0; i<args.Int(2)-3; i++) {
       if (ctx.GetOutputBuffer()[i]==1) numOnes++;
       else {
 	if (ctx.GetOutputBuffer()[i+1] == 1 &&
@@ -2375,28 +2375,28 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 	break;
       }
     }
-    if (patFound) Fx=args.GetInt(2)-4-numOnes;
-    else Fx=args.GetInt(2);
+    if (patFound) Fx=args.Int(2)-4-numOnes;
+    else Fx=args.Int(2);
   }
 
   // simply rewared for number of 1's at beginning of string, maxFx=length of string
   else if (function == 22) {
     int numOnes=0;
-    for (int i=0; i<args.GetInt(2); i++) {
+    for (int i=0; i<args.Int(2); i++) {
       if (ctx.GetOutputBuffer()[i]==1) numOnes++;
       else break;
     }
-    Fx=args.GetInt(2)-numOnes;
+    Fx=args.Int(2)-numOnes;
   }
 
   // simply reward for number 0's in string
   else if (function == 23) {
     int numZeros=0;
-    for (int i=0; i<args.GetInt(2); i++) {
+    for (int i=0; i<args.Int(2); i++) {
       if (ctx.GetOutputBuffer()[i]==0) numZeros++;
       else break;
     }
-    Fx=args.GetInt(2)-numZeros;
+    Fx=args.Int(2)-numZeros;
   }
 
   else if (function == 18) {
@@ -2409,8 +2409,8 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 
   else if (function == 19) {
     Apto::Array<double> tempVars;
-    tempVars.Resize(args.GetInt(3));
-    for (int i=0; i<args.GetInt(3); i++) {
+    tempVars.Resize(args.Int(3));
+    for (int i=0; i<args.Int(3); i++) {
       tempVars[i]=0;
     }
     
@@ -2418,15 +2418,15 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
       tempVars[0]+= ctx.GetOutputBuffer()[i];
     }
     
-    int len = args.GetInt(2);
+    int len = args.Int(2);
     for (int i = len - 1; i >= 0; i--) {
-      for (int j=1; j<args.GetInt(3); j++) {
-        tempVars[j-1] += ctx.GetOutputBuffer()[30+i + len*(args.GetInt(3)-j-1)];
+      for (int j=1; j<args.Int(3); j++) {
+        tempVars[j-1] += ctx.GetOutputBuffer()[30+i + len*(args.Int(3)-j-1)];
       }
     }
     
     int Gx = 0;
-    for (int i = 1; i < args.GetInt(3); i++) {
+    for (int i = 1; i < args.Int(3); i++) {
       if (tempVars[i] == 5) Gx += 1;
       else Gx += int(tempVars[i]) + 2;
     }
@@ -2434,33 +2434,33 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   }
 
   else {
-    if (args.GetInt(1)) {
-      int len = args.GetInt(2);
-      double base_pow = args.GetDouble(0);
+    if (args.Int(1)) {
+      int len = args.Int(2);
+      double base_pow = args.Double(0);
       
       Apto::Array<double> tempVars;
-      tempVars.Resize(args.GetInt(3));
-      for (int i=0; i<args.GetInt(3); i++) tempVars[i] = 0;
+      tempVars.Resize(args.Int(3));
+      for (int i=0; i<args.Int(3); i++) tempVars[i] = 0;
       
       double tot = 0;
       for (int i = len - 1; i >= 0; i--) {
-        for (int j=0; j<args.GetInt(3); j++) {
-          tempVars[j] += ctx.GetOutputBuffer()[i + len*(args.GetInt(3)-j-1)] * pow(base_pow, (len - 1) - i);
+        for (int j=0; j<args.Int(3); j++) {
+          tempVars[j] += ctx.GetOutputBuffer()[i + len*(args.Int(3)-j-1)] * pow(base_pow, (len - 1) - i);
         }
         tot += pow(base_pow, double(i));
       }
-      for (int i=0; i<args.GetInt(3); i++) {
+      for (int i=0; i<args.Int(3); i++) {
         vars[i] = tempVars[i] / tot;
       }
       //	cout << "x: " << vars[0] << " ";
     } 
     else {
-      for (int j=0; j<args.GetInt(3); j++) {
+      for (int j=0; j<args.Int(3); j++) {
         vars[j] = double(ctx.GetOutputBuffer()[j]) / 0xffffffff;
       }
     }
     
-    for (int j=0; j<args.GetInt(3); j++) {
+    for (int j=0; j<args.Int(3); j++) {
       if (vars[j] < 0) vars[j] = 0;
       else if (vars[j] > 1) vars[j] = 1;
     }
@@ -2506,8 +2506,8 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
     case 9: {
       double sum = 0;
       //      cout << "9x: " << vars[0] << " ";
-      for (int i=1; i<args.GetInt(3); i++)
-	sum += vars[i]/double(args.GetInt(3)-1);
+      for (int i=1; i<args.Int(3); i++)
+	sum += vars[i]/double(args.Int(3)-1);
       double Gx = 1+9*sum;
       Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
       break;
@@ -2515,8 +2515,8 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
       
     case 10: {
       double sum = 0;
-      for (int i=1; i<args.GetInt(3); i++)
-	sum += vars[i]/double(args.GetInt(3)-1);
+      for (int i=1; i<args.Int(3); i++)
+	sum += vars[i]/double(args.Int(3)-1);
       double Gx = 1+9*sum;
       Fx = Gx * (1.0 - pow(vars[0]/Gx, 2.0));
       break;
@@ -2524,8 +2524,8 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
       
     case 11: {
       double sum = 0;
-      for (int i=1; i<args.GetInt(3); i++)
-	sum += vars[i]/double(args.GetInt(3)-1);
+      for (int i=1; i<args.Int(3); i++)
+	sum += vars[i]/double(args.Int(3)-1);
       double Gx = 1+9*sum;
       Fx = Gx * (1 - sqrt(vars[0]/Gx) - (vars[0]/Gx)*(sin(3.14159*vars[0]*10)));
       break;
@@ -2567,7 +2567,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
         
     case 17: {
       double sum = 0;
-      for (int i=1; i<args.GetInt(3); i++)
+      for (int i=1; i<args.Int(3); i++)
 	sum += (pow((vars[i]*6-3),2)-10*cos(4*3.14159*(vars[i]*6-3)))/10.0;
       double Gx = 10+sum;
       Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
@@ -2580,24 +2580,24 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   }
 
   ctx.SetTaskValue(Fx);
-  if (args.GetDouble(3) < 0.0) {
-    double q1 = (args.GetDouble(1) - Fx+.001);
-    double q2 = (args.GetDouble(1) - args.GetDouble(2)+.001);
+  if (args.Double(3) < 0.0) {
+    double q1 = (args.Double(1) - Fx+.001);
+    double q2 = (args.Double(1) - args.Double(2)+.001);
     assert(q1 > 0.0);
     assert(q2 > 0.0);
     quality = q1 / q2;
   } 
   else {
-    if (args.GetDouble(4) < 0.0) {
-      if (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2)) {
+    if (args.Double(4) < 0.0) {
+      if (Fx <= (args.Double(1) - args.Double(2))*args.Double(3) + args.Double(2)) {
         quality = 1.0;
       } else {
         quality = 0.0;
       }
     }
     else {
-      if ( (Fx >= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2)) &&
-	   (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(4) + args.GetDouble(2)) ){
+      if ( (Fx >= (args.Double(1) - args.Double(2))*args.Double(3) + args.Double(2)) &&
+	   (Fx <= (args.Double(1) - args.Double(2))*args.Double(4) + args.Double(2)) ){
         quality = 1.0;
       } else {
         quality = 0.0;
@@ -2623,14 +2623,14 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 
 void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("threshold", 0, -1);
+  schema.Define("threshold", -1);
   // Double Arguments
-  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+  schema.Define("halflife", Util::DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "Multiplication", &cTaskLib::Task_Mult, 0, args);
 }
 
@@ -2638,7 +2638,7 @@ void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs&, 
 double cTaskLib::Task_Mult(cTaskContext& ctx) const
 {
   double quality = 0.0;
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const long long test_output = ctx.GetOutputBuffer()[0];
@@ -2654,11 +2654,11 @@ double cTaskLib::Task_Mult(cTaskContext& ctx) const
     }
   }
   
-  int threshold = args.GetInt(0);
+  int threshold = args.Int(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
     // If within threshold range, quality decays based on absolute difference
-    double halflife = -1.0 * fabs(args.GetDouble(0));
+    double halflife = -1.0 * fabs(args.Double(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
   
@@ -2668,14 +2668,14 @@ double cTaskLib::Task_Mult(cTaskContext& ctx) const
 
 void cTaskLib::Load_Div(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("threshold", 0, -1);
+  schema.Define("threshold", -1);
   // Double Arguments
-  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+  schema.Define("halflife", Util::DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "Division", &cTaskLib::Task_Div, 0, args);
 }
 
@@ -2683,7 +2683,7 @@ void cTaskLib::Load_Div(const cString& name, const cString& argstr, cEnvReqs&, F
 double cTaskLib::Task_Div(cTaskContext& ctx) const
 {
   double quality = 0.0;
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const long long test_output = ctx.GetOutputBuffer()[0];
@@ -2699,11 +2699,11 @@ double cTaskLib::Task_Div(cTaskContext& ctx) const
     }
   }
   
-  int threshold = args.GetInt(0);
+  int threshold = args.Int(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
     // If within threshold range, quality decays based on absolute difference
-    double halflife = -1.0 * fabs(args.GetDouble(0));
+    double halflife = -1.0 * fabs(args.Double(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
   
@@ -2713,14 +2713,14 @@ double cTaskLib::Task_Div(cTaskContext& ctx) const
 
 void cTaskLib::Load_Log(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("threshold", 0, -1);
+  schema.Define("threshold", -1);
   // Double Arguments
-  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+  schema.Define("halflife", Util::DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "Logarithm (natural)", &cTaskLib::Task_Log, 0, args);
 }
 
@@ -2728,7 +2728,7 @@ void cTaskLib::Load_Log(const cString& name, const cString& argstr, cEnvReqs&, F
 double cTaskLib::Task_Log(cTaskContext& ctx) const
 {
   double quality = 0.0;
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const long long test_output = ctx.GetOutputBuffer()[0];
@@ -2741,11 +2741,11 @@ double cTaskLib::Task_Log(cTaskContext& ctx) const
     if (cur_diff < diff) diff = cur_diff;
   }
   
-  int threshold = args.GetInt(0);
+  int threshold = args.Int(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
     // If within threshold range, quality decays based on absolute difference
-    double halflife = -1.0 * fabs(args.GetDouble(0));
+    double halflife = -1.0 * fabs(args.Double(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
   
@@ -2755,21 +2755,21 @@ double cTaskLib::Task_Log(cTaskContext& ctx) const
 
 void cTaskLib::Load_Log2(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("threshold", 0, -1);
+  schema.Define("threshold", -1);
   // Double Arguments
-  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+  schema.Define("halflife", Util::DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "Logarithm (base-2)", &cTaskLib::Task_Log2, 0, args);
 }
 
 double cTaskLib::Task_Log2(cTaskContext& ctx) const
 {
   double quality = 0.0;
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const long long test_output = ctx.GetOutputBuffer()[0];
@@ -2782,11 +2782,11 @@ double cTaskLib::Task_Log2(cTaskContext& ctx) const
     if (cur_diff < diff) diff = cur_diff;
   }
   
-  int threshold = args.GetInt(0);
+  int threshold = args.Int(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
     // If within threshold range, quality decays based on absolute difference
-    double halflife = -1.0 * fabs(args.GetDouble(0));
+    double halflife = -1.0 * fabs(args.Double(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
   
@@ -2796,14 +2796,14 @@ double cTaskLib::Task_Log2(cTaskContext& ctx) const
 
 void cTaskLib::Load_Log10(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("threshold", 0, -1);
+  schema.Define("threshold", -1);
   // Double Arguments
-  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+  schema.Define("halflife", Util::DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "Logarithm (base-10)", &cTaskLib::Task_Log10, 0, args);
 }
 
@@ -2811,7 +2811,7 @@ void cTaskLib::Load_Log10(const cString& name, const cString& argstr, cEnvReqs&,
 double cTaskLib::Task_Log10(cTaskContext& ctx) const
 {
   double quality = 0.0;
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const long long test_output = ctx.GetOutputBuffer()[0];
@@ -2824,11 +2824,11 @@ double cTaskLib::Task_Log10(cTaskContext& ctx) const
     if (cur_diff < diff) diff = cur_diff;
   }
   
-  int threshold = args.GetInt(0);
+  int threshold = args.Int(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
     // If within threshold range, quality decays based on absolute difference
-    double halflife = -1.0 * fabs(args.GetDouble(0));
+    double halflife = -1.0 * fabs(args.Double(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
   
@@ -2838,14 +2838,14 @@ double cTaskLib::Task_Log10(cTaskContext& ctx) const
 
 void cTaskLib::Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("threshold", 0, -1);
+  schema.Define("threshold", -1);
   // Double Arguments
-  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+  schema.Define("halflife", Util::DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "Square Root", &cTaskLib::Task_Sqrt, 0, args);
 }
 
@@ -2853,7 +2853,7 @@ void cTaskLib::Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs&, 
 double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
 {
   double quality = 0.0;
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const long long test_output = ctx.GetOutputBuffer()[0];
@@ -2866,11 +2866,11 @@ double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
     if (cur_diff < diff) diff = cur_diff;
   }
   
-  int threshold = args.GetInt(0);
+  int threshold = args.Int(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
     // If within threshold range, quality decays based on absolute difference
-    double halflife = -1.0 * fabs(args.GetDouble(0));
+    double halflife = -1.0 * fabs(args.Double(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
   
@@ -2880,14 +2880,14 @@ double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
 
 void cTaskLib::Load_Sine(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("threshold", 0, -1);
+  schema.Define("threshold", -1);
   // Double Arguments
-  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+  schema.Define("halflife", Util::DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "Sine", &cTaskLib::Task_Sine, 0, args);
 }
 
@@ -2895,7 +2895,7 @@ void cTaskLib::Load_Sine(const cString& name, const cString& argstr, cEnvReqs&, 
 double cTaskLib::Task_Sine(cTaskContext& ctx) const
 {
   double quality = 0.0;
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const long long test_output = ctx.GetOutputBuffer()[0];
@@ -2908,11 +2908,11 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
     if (cur_diff < diff) diff = cur_diff;
   }
   
-  int threshold = args.GetInt(0);
+  int threshold = args.Int(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
     // If within threshold range, quality decays based on absolute difference
-    double halflife = -1.0 * fabs(args.GetDouble(0));
+    double halflife = -1.0 * fabs(args.Double(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
   
@@ -2922,14 +2922,14 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
 
 void cTaskLib::Load_Cosine(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("threshold", 0, -1);
+  schema.Define("threshold", -1);
   // Double Arguments
-  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+  schema.Define("halflife", Util::DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "Cosine", &cTaskLib::Task_Cosine, 0, args);
 }
 
@@ -2937,7 +2937,7 @@ void cTaskLib::Load_Cosine(const cString& name, const cString& argstr, cEnvReqs&
 double cTaskLib::Task_Cosine(cTaskContext& ctx) const
 {
   double quality = 0.0;
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const long long test_output = ctx.GetOutputBuffer()[0];
@@ -2950,11 +2950,11 @@ double cTaskLib::Task_Cosine(cTaskContext& ctx) const
     if (cur_diff < diff) diff = cur_diff;
   }
   
-  int threshold = args.GetInt(0);
+  int threshold = args.Int(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
     // If within threshold range, quality decays based on absolute difference
-    double halflife = -1.0 * fabs(args.GetDouble(0));
+    double halflife = -1.0 * fabs(args.Double(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
   
@@ -3033,32 +3033,32 @@ double cTaskLib::Task_MoveNotUpGradient(cTaskContext& ctx) const
 
 void cTaskLib::Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
 
   // Integer Arguments
-  schema.AddEntry("pathlen", 0, cArgSchema::SCHEMA_INT);
+  schema.Define("pathlen", Util::INT);
   
   // String Arguments
-  schema.AddEntry("sgname", 0, cArgSchema::SCHEMA_STRING);
-  schema.AddEntry("poison", 1, cArgSchema::SCHEMA_STRING);
+  schema.Define("sgname", Util::STRING);
+  schema.Define("poison", Util::STRING);
   
   // Double Arguments
-//  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+//  schema.AddEntry("halflife", 0, Util::DOUBLE);
 //  schema.AddEntry("base", 1, 2.0);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "State Grid Path Traversal", &cTaskLib::Task_SGPathTraversal, 0, args);
 }
 
 
 double cTaskLib::Task_SGPathTraversal(cTaskContext& ctx) const
 {
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
   const cStateGrid& sg = ctx.GetOrganism()->GetStateGrid();
 
-  if (sg.GetName() != args.GetString(0)) return 0.0;
+  if (sg.GetName() != (const char*)args.String(0)) return 0.0;
 
-  int state = sg.GetStateID(args.GetString(1));
+  int state = sg.GetStateID((const char*)args.String(1));
   if (state < 0) return 0.0;
   
   const Apto::Array<int, Apto::Smart>& ext_mem = ctx.GetExtendedMemory();
@@ -3082,9 +3082,9 @@ double cTaskLib::Task_SGPathTraversal(cTaskContext& ctx) const
   
   double quality = 0.0;
   
-//  double halflife = -1.0 * fabs(args.GetDouble(0));
-//  quality = pow(args.GetDouble(1), (double)(args.GetInt(0) - ((traversed >= 0) ? traversed : 0)) / halflife);
-  quality = (double)((traversed >= 0) ? traversed : 0) / (double)args.GetInt(0);
+//  double halflife = -1.0 * fabs(args.Double(0));
+//  quality = pow(args.Double(1), (double)(args.Int(0) - ((traversed >= 0) ? traversed : 0)) / halflife);
+  quality = (double)((traversed >= 0) ? traversed : 0) / (double)args.Int(0);
   
   return quality;
 }  
@@ -3128,19 +3128,19 @@ double cTaskLib::Task_CreatePerfectStrings(cTaskContext& ctx) const
 
 void cTaskLib::Load_FormSpatialGroup(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("group_size", 0, 1);
+  schema.Define("group_size", 1);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "FormSpatialGroups", &cTaskLib::Task_FormSpatialGroup, 0, args);
 }
 
 
 double cTaskLib::Task_FormSpatialGroup(cTaskContext& ctx) const
 {
-  double t = (double) ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  double t = (double) ctx.GetTaskEntry()->GetArguments().Int(0);
   double reward = 0.0;
   int group_id = 0; 
   if (ctx.GetOrganism()->HasOpinion()) {
@@ -3167,24 +3167,24 @@ double cTaskLib::Task_FormSpatialGroup(cTaskContext& ctx) const
 
 void cTaskLib::Load_FormSpatialGroupWithID(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("group_size", 0, 1);
-  schema.AddEntry("group_id", 1, 1);
+  schema.Define("group_size", 1);
+  schema.Define("group_id", 1);
     
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "FormSpatialGroupWithID", &cTaskLib::Task_FormSpatialGroupWithID, 0, args);
   
   // Add this group id to the list in the instructions file. 
-  m_world->GetEnvironment().AddGroupID(args->GetInt(1));
+  m_world->GetEnvironment().AddGroupID(args->Int(1));
 }
 
 
 double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
 {
-  double t = (double) ctx.GetTaskEntry()->GetArguments().GetInt(0);
-  int des_group_id = ctx.GetTaskEntry()->GetArguments().GetInt(1);
+  double t = (double) ctx.GetTaskEntry()->GetArguments().Int(0);
+  int des_group_id = ctx.GetTaskEntry()->GetArguments().Int(1);
   
   double reward = 0.0;
   int group_id = -1; 
@@ -3217,20 +3217,20 @@ double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
 /* Reward organisms for having a given group-id.*/
 void cTaskLib::Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
-  schema.AddEntry("patch_id", 0, 1);
+  schema.Define("patch_id", 1);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "LiveOnPatchRes", &cTaskLib::Task_LiveOnPatchRes, 0, args);
 	
   // Add this patch id to the list in the instructions file. 
-  m_world->GetEnvironment().AddGroupID(args->GetInt(0));
+  m_world->GetEnvironment().AddGroupID(args->Int(0));
 }
 
 double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
 {
-  int des_patch_id = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int des_patch_id = ctx.GetTaskEntry()->GetArguments().Int(0);
   
   double reward = 0.0;
   int patch_id = -1; 
@@ -3249,19 +3249,19 @@ double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
 /* Reward organisms for having found a targeted resource*/
 void cTaskLib::Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
-  schema.AddEntry("target_id", 0, 1);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  schema.Define("target_id", 1);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "ConsumeTarget", &cTaskLib::Task_ConsumeTarget, 0, args);
 
   // Add this target id to the list in the instructions file. 
-  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+  m_world->GetEnvironment().AddTargetID(args->Int(0));
 }
 
 double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
 {
-  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int des_target = ctx.GetTaskEntry()->GetArguments().Int(0);
   
   double reward = 0.0;
   int target_res = ctx.GetOrganism()->GetForageTarget();
@@ -3277,10 +3277,10 @@ double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
 
 void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
-  cArgSchema schema;
-  schema.AddEntry("length", 0, 0);		
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);	
-  envreqs.SetMinOutputs(args->GetInt(0));
+  Util::ArgSchema schema;
+  schema.Define("length", 0);		
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
+  envreqs.SetMinOutputs(args->Int(0));
   if (args) NewTask(name, "all-ones", &cTaskLib::Task_AllOnes, 0, args);
 }
 
@@ -3288,7 +3288,7 @@ double cTaskLib::Task_AllOnes(cTaskContext& ctx) const
 {
   tBuffer<int> buf(ctx.GetOutputBuffer());
   double num_ones = 0.0;
-  int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int length = ctx.GetTaskEntry()->GetArguments().Int(0);
   
   for (int i=0; i<length; ++i) {
     num_ones += buf[i];
@@ -3300,19 +3300,19 @@ double cTaskLib::Task_AllOnes(cTaskContext& ctx) const
 
 void cTaskLib::Load_RoyalRoad(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
-  cArgSchema schema;
-  schema.AddEntry("length", 0, 0);
-  schema.AddEntry("block_count", 1, 0);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);	
-  envreqs.SetMinOutputs(args->GetInt(0));
+  Util::ArgSchema schema;
+  schema.Define("length", 0);
+  schema.Define("block_count", 0);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
+  envreqs.SetMinOutputs(args->Int(0));
   if (args) NewTask(name, "royal-road", &cTaskLib::Task_RoyalRoad, 0, args);
 }
 
 double cTaskLib::Task_RoyalRoad(cTaskContext& ctx) const
 {
   // block size
-  int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
-  int block_count = ctx.GetTaskEntry()->GetArguments().GetInt(1);
+  int length = ctx.GetTaskEntry()->GetArguments().Int(0);
+  int block_count = ctx.GetTaskEntry()->GetArguments().Int(1);
   int block_size = floor(double(length) / double(block_count));
   int block_reward; 
   int current_spot;
@@ -3338,13 +3338,13 @@ double cTaskLib::Task_RoyalRoad(cTaskContext& ctx) const
 
 void cTaskLib::Load_RoyalRoadWithDitches(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
-  cArgSchema schema;
-  schema.AddEntry("length", 0, 0);
-  schema.AddEntry("block_count", 1, 0);
-  schema.AddEntry("width", 2, 0);
-  schema.AddEntry("height", 3, 0);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);	
-  envreqs.SetMinOutputs(args->GetInt(0));
+  Util::ArgSchema schema;
+  schema.Define("length", 0);
+  schema.Define("block_count", 0);
+  schema.Define("width", 0);
+  schema.Define("height", 0);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
+  envreqs.SetMinOutputs(args->Int(0));
   if (args) NewTask(name, "royal-road-wd", &cTaskLib::Task_RoyalRoadWithDitches, 0, args);
 }
 
@@ -3352,15 +3352,15 @@ void cTaskLib::Load_RoyalRoadWithDitches(const cString& name, const cString& arg
 double cTaskLib::Task_RoyalRoadWithDitches(cTaskContext& ctx) const
 {
   // block size
-  int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
-  int block_count = ctx.GetTaskEntry()->GetArguments().GetInt(1);
+  int length = ctx.GetTaskEntry()->GetArguments().Int(0);
+  int block_count = ctx.GetTaskEntry()->GetArguments().Int(1);
   int block_size = floor(double(length) / double(block_count));
   int block_correct;
   int num_b_blocks = 0;
   int current_spot;
   double total_reward = 0.0;
-  int width = ctx.GetTaskEntry()->GetArguments().GetInt(2);
-  int height = ctx.GetTaskEntry()->GetArguments().GetInt(3);
+  int width = ctx.GetTaskEntry()->GetArguments().Int(2);
+  int height = ctx.GetTaskEntry()->GetArguments().Int(3);
   int next_case = 1;
   int block_type = -1; // -1 undefined; 0 X; 1 A; 2 B
   tBuffer<int> buf(ctx.GetOutputBuffer());
@@ -3431,9 +3431,9 @@ double cTaskLib::Task_RoyalRoadWithDitches(cTaskContext& ctx) const
 //! Load the command line for checking an opinion.
 void cTaskLib::Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
-  schema.AddEntry("opinion", 0, cArgSchema::SCHEMA_INT);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  Util::ArgSchema schema;
+  schema.Define("opinion", Util::INT);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if(args) {
     NewTask(name, "Whether organism's opinion is set to value.", &cTaskLib::Task_OpinionIs, 0, args);
   }
@@ -3443,8 +3443,8 @@ void cTaskLib::Load_OpinionIs(const cString& name, const cString& argstr, cEnvRe
 double cTaskLib::Task_OpinionIs(cTaskContext& ctx) const
 {
   cOrganism* org = ctx.GetOrganism();
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
-  int opinion = args.GetInt(0);
+  const Util::Args& args = ctx.GetTaskEntry()->GetArguments();
+  int opinion = args.Int(0);
   
   if (org->HasOpinion()) {
     return org->GetOpinion().first == opinion;

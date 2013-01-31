@@ -25,9 +25,7 @@
 
 #include "avida/core/Feedback.h"
 #include "avida/environment/Manager.h"
-#include "avida/environment/Product.h"
 
-#include "cArgSchema.h"
 #include "cAvidaContext.h"
 #include "cContextPhenotype.h"
 #include "cContextReactionRequisite.h"
@@ -924,8 +922,7 @@ bool cEnvironment::LoadReaction(cString desc, Feedback& feedback)
   if (cur_task == NULL) return false;
   new_reaction->SetTask(cur_task);      // Attack task to reaction.
   Environment::ManagerPtr env = Environment::Manager::Of(m_world->GetNewWorld());
-  env->DefineActionTrigger((const char*)cur_task->GetName(), (const char*)cur_task->GetDesc(), Environment::ConstProductPtr(),
-                           m_tasklib.GetSize() - 1);
+  env->DefineActionTrigger((const char*)cur_task->GetName(), (const char*)cur_task->GetDesc(), m_tasklib.GetSize() - 1);
   
   while (desc.GetSize()) {
     cString desc_entry = desc.PopWord();      // Get the next argument
@@ -970,31 +967,31 @@ bool cEnvironment::LoadStateGrid(cString desc, Feedback& feedback)
   // First component is the name
   cString name = desc.Pop(':');
   
-  cArgSchema schema(':','=');
+  Util::ArgSchema schema;
   
   // Integer Arguments
-  schema.AddEntry("width", 0, 0, INT_MAX);
-  schema.AddEntry("height", 1, 0, INT_MAX);
-  schema.AddEntry("initx", 2, 0, INT_MAX);
-  schema.AddEntry("inity", 3, 0, INT_MAX);
-  schema.AddEntry("initfacing", 4, 0, 7);
+  schema.Define("width", 0, INT_MAX);
+  schema.Define("height", 0, INT_MAX);
+  schema.Define("initx", 0, INT_MAX);
+  schema.Define("inity", 0, INT_MAX);
+  schema.Define("initfacing", 0, 7);
   
   // String Arguments
-  schema.AddEntry("states", 0, cArgSchema::SCHEMA_STRING);
-  schema.AddEntry("grid", 1, cArgSchema::SCHEMA_STRING);
+  schema.Define("states", Util::STRING);
+  schema.Define("grid", Util::STRING);
   
   // Load the Arguments
-  Apto::SmartPtr<cArgContainer> args(cArgContainer::Load(desc, schema, feedback));
+  Apto::SmartPtr<Util::Args> args(Util::Args::Load((const char*)desc, schema, ':', '=', &feedback));
   
   // Check for errors loading the arguments
   if (!args) return false;
   
   // Extract and validate the arguments
-  int width = args->GetInt(0);
-  int height = args->GetInt(1);
-  int initx = args->GetInt(2);
-  int inity = args->GetInt(3);
-  int initfacing = args->GetInt(4);
+  int width = args->Int(0);
+  int height = args->Int(1);
+  int initx = args->Int(2);
+  int inity = args->Int(3);
+  int initfacing = args->Int(4);
   
   if (initx >= width || inity >= height) {
     feedback.Error("initx and inity must not exceed (width - 1) and (height - 1)");
@@ -1008,7 +1005,7 @@ bool cEnvironment::LoadStateGrid(cString desc, Feedback& feedback)
   
   Apto::Array<cString> states;
   Apto::Array<int> state_sense;
-  cString statestr = args->GetString(0);
+  cString statestr = (const char*)args->String(0);
   statestr.Trim();
   while (statestr.GetSize()) {
     statesensestr = statestr.Pop(',');
@@ -1038,7 +1035,7 @@ bool cEnvironment::LoadStateGrid(cString desc, Feedback& feedback)
   
   // Load the state grid itself
   Apto::Array<int> lgrid(width * height);
-  cString gridstr = args->GetString(1);
+  cString gridstr = (const char*)args->String(1);
   int cell = 0;
   while (gridstr.GetSize() && cell < lgrid.GetSize()) {
     statename = gridstr.Pop(',');

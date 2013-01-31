@@ -32,11 +32,18 @@
 namespace Avida {
   namespace Environment {
     
+    // Type Declarations
+    // --------------------------------------------------------------------------------------------------------------
+    
+    typedef Apto::SingletonHolder<Library, Apto::CreateWithNew, Apto::DestroyAtExit, Apto::ThreadSafe> LibrarySingleton;
+    
+    
     // Environment::Library - Global container of available environment components
     // --------------------------------------------------------------------------------------------------------------
     
     class Library
     {
+      friend Apto::CreateWithNew<Library>;
     public:
       struct ResourceType
       {
@@ -52,7 +59,7 @@ namespace Avida {
       Apto::Map<Apto::String, ResourceType*> m_resource_types;
 
     public:
-      LIB_EXPORT static Library& Instance();
+      LIB_EXPORT static inline Library& Instance() { return LibrarySingleton::Instance(); }
       
       
       LIB_EXPORT inline const ResourceType* ResourceTypeOf(const Apto::String& res_type_name) const

@@ -37,3 +37,21 @@ void Avida::Environment::ResourceManager::PerformUpdate(Avida::Context& ctx, Upd
 {
   for (int i = 0; i < m_resources.GetSize(); i++) m_resources[i]->PerformUpdate(ctx, current_update);
 }
+
+
+void Avida::Environment::ResourceManager::AttachListener(ResourceListener* listener)
+{
+  for (int i = 0; i < m_listeners.GetSize(); i++) if (m_listeners[i] == listener) return;
+  
+  m_listeners.Push(listener);
+}
+
+void Avida::Environment::ResourceManager::DetachListener(ResourceListener* listener)
+{
+  for (int i = 0; i < m_listeners.GetSize(); i++) {
+    if (m_listeners[i] == listener) {
+      m_listeners.RemoveAt(i);
+      return;
+    }
+  }
+}

@@ -24,6 +24,8 @@
 
 #include "avida/biota/Organism.h"
 
+#include "avida/systematics/Group.h"
+
 
 // Internal Organism Definitions
 // --------------------------------------------------------------------------------------------------------------
@@ -220,6 +222,11 @@ Avida::Biota::Organism::~Organism()
   
 }
 
+
+Avida::Systematics::Source Avida::Biota::Organism::UnitSource() const { return m_src; }
+
+const Avida::Genome& Avida::Biota::Organism::UnitGenome() const { return m_initial_genome; }
+
 const Avida::PropertyMap& Avida::Biota::Organism::Properties() const { return *m_prop_map; }
 
 
@@ -312,11 +319,11 @@ bool Avida::Biota::Internal::OrgPropertyMap::Serialize(ArchivePtr) const
 
 Apto::String Avida::Biota::Organism::getGenomeString() { return m_initial_genome.AsString(); }
 int Avida::Biota::Organism::getSrcTransmissionType() { return m_src.transmission_type; }
-int Avida::Biota::Organism::getAge() { return m_phenotype.GetAge(); }
-int Avida::Biota::Organism::getGeneration() { return m_phenotype.GetGeneration(); }
-int Avida::Biota::Organism::getLastCopied() { return m_phenotype.GetCopiedSize(); }
-int Avida::Biota::Organism::getLastExecuted() { return m_phenotype.GetExecutedSize(); }
-int Avida::Biota::Organism::getLastGestation() { return m_phenotype.GetGestationTime(); }
-double Avida::Biota::Organism::getLastMetabolicRate() { return m_phenotype.GetLastMerit(); }
-double Avida::Biota::Organism::getLastFitness() { return m_phenotype.GetFitness(); }
+int Avida::Biota::Organism::getAge() { assert(false); return 0; /*return m_phenotype.GetAge();*/ }
+int Avida::Biota::Organism::getGeneration() { assert(false); return 0; /*return m_phenotype.GetGeneration();*/ }
+int Avida::Biota::Organism::getLastCopied() { assert(false); return 0; /*return m_phenotype.GetCopiedSize();*/ }
+int Avida::Biota::Organism::getLastExecuted() { assert(false); return 0; /*return m_phenotype.GetExecutedSize();*/ }
+int Avida::Biota::Organism::getLastGestation() { assert(false); return 0; /*return m_phenotype.GetGestationTime();*/ }
+double Avida::Biota::Organism::getLastMetabolicRate() { assert(false); return 0; /*return m_phenotype.GetLastMerit();*/ }
+double Avida::Biota::Organism::getLastFitness() { assert(false); return 0; /*return m_phenotype.GetFitness();*/ }
 

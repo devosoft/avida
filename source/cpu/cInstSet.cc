@@ -147,25 +147,25 @@ bool cInstSet::InstInSet(const cString& in_name) const
 
 bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback)
 {
-  cArgSchema schema(':');
+  Util::ArgSchema schema;
   
   // Integer
-  schema.AddEntry("cost", 0, 0);
-  schema.AddEntry("initial_cost", 1, 0);
-  schema.AddEntry("energy_cost", 2, 0);
-  schema.AddEntry("addl_time_cost", 3, 0);
-  schema.AddEntry("female_cost", 4, 0); //@CHC
-  schema.AddEntry("choosy_female_cost", 5, 0); //@CHC
-  schema.AddEntry("post_cost", 6, 0);
+  schema.Define("cost", 0);
+  schema.Define("initial_cost", 0);
+  schema.Define("energy_cost", 0);
+  schema.Define("addl_time_cost", 0);
+  schema.Define("female_cost", 0); //@CHC
+  schema.Define("choosy_female_cost", 0); //@CHC
+  schema.Define("post_cost", 0);
 
   // Double
-  schema.AddEntry("prob_fail", 0, 0.0);
-  schema.AddEntry("res_cost", 1, 0.0);  
-  schema.AddEntry("redundancy", 2, 1.0);
-  schema.AddEntry("fem_res_cost", 3, 0.0);  
+  schema.Define("prob_fail", 0.0);
+  schema.Define("res_cost", 0.0);
+  schema.Define("redundancy", 1.0);
+  schema.Define("fem_res_cost", 0.0);  
   
   // String  
-  schema.AddEntry("inst_code", 0, "");
+  schema.Define("inst_code", "");
   
   
   // Ensure that the instruction code length is in the range of bits supported by the int type
@@ -194,7 +194,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     }
     
     // Load the arguments for this instruction
-    cArgContainer* args = cArgContainer::Load(cur_line, schema, *feedback);
+    Util::Args* args = Util::Args::Load((const char*)cur_line, schema, ':', '=', feedback);
     if (!args) {
       success = false;
       continue;
@@ -207,7 +207,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
       continue;
     }
     
-    double redundancy = args->GetDouble(2);
+    double redundancy = args->Double(2);
     if (redundancy < 0.0) {
       if (feedback) feedback->Warning("instruction '%s' has negative redundancy, ignoring...", (const char*)inst_name);
       continue;
@@ -224,16 +224,16 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     // Setup the new function...
     m_lib_name_map[inst_id].lib_fun_id = fun_id;
     m_lib_name_map[inst_id].redundancy = redundancy;
-    m_lib_name_map[inst_id].cost = args->GetInt(0);
-    m_lib_name_map[inst_id].ft_cost = args->GetInt(1);
-    m_lib_name_map[inst_id].energy_cost = args->GetInt(2);
-    m_lib_name_map[inst_id].prob_fail = args->GetDouble(0);
-    m_lib_name_map[inst_id].addl_time_cost = args->GetInt(3);
-    m_lib_name_map[inst_id].res_cost = args->GetDouble(1); 
-    m_lib_name_map[inst_id].fem_res_cost = args->GetDouble(3); 
-    m_lib_name_map[inst_id].female_cost = args->GetInt(4);
-    m_lib_name_map[inst_id].choosy_female_cost = args->GetInt(5);
-    m_lib_name_map[inst_id].post_cost = args->GetInt(6);
+    m_lib_name_map[inst_id].cost = args->Int(0);
+    m_lib_name_map[inst_id].ft_cost = args->Int(1);
+    m_lib_name_map[inst_id].energy_cost = args->Int(2);
+    m_lib_name_map[inst_id].prob_fail = args->Double(0);
+    m_lib_name_map[inst_id].addl_time_cost = args->Int(3);
+    m_lib_name_map[inst_id].res_cost = args->Double(1);
+    m_lib_name_map[inst_id].fem_res_cost = args->Double(3);
+    m_lib_name_map[inst_id].female_cost = args->Int(4);
+    m_lib_name_map[inst_id].choosy_female_cost = args->Int(5);
+    m_lib_name_map[inst_id].post_cost = args->Int(6);
     
     if (m_lib_name_map[inst_id].cost > 1) m_has_costs = true;
     if (m_lib_name_map[inst_id].ft_cost) m_has_ft_costs = true;
@@ -245,7 +245,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     if (m_lib_name_map[inst_id].post_cost > 1) m_has_post_costs = true;
     
     // Parse the instruction code
-    cString inst_code = args->GetString(0);
+    cString inst_code = (const char*)args->String(0);
     if (inst_code == "") {
       switch (m_world->GetConfig().INST_CODE_DEFAULT_TYPE.Get()) {
         case INST_CODE_ZEROS:

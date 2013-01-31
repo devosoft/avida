@@ -2827,29 +2827,29 @@ public:
   : cAction(world, args), m_random(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), 
   m_print_genomes(true), m_print_reacs(false)
   {
-    cArgSchema schema(':','=');
+    Util::ArgSchema schema;
     
     // Entries
-    schema.AddEntry("random", 0, 0, 1, 0);
-    schema.AddEntry("save_dominants", 1, 0, 1, 0);
-    schema.AddEntry("save_groups", 2, 0, 1, 0);
-    schema.AddEntry("save_foragers", 3, 0, 1, 0);
-    schema.AddEntry("orgs_per", 4, 1);
-    schema.AddEntry("max_samples", 5, 0); // recommended if using save_groups and restrict to defined is not set
-    schema.AddEntry("print_genomes", 6, 0, 1, 1);
-    schema.AddEntry("print_reacs", 7, 0, 1, 0);
+    schema.Define("random", 0, 1, 0);
+    schema.Define("save_dominants", 0, 1, 0);
+    schema.Define("save_groups", 0, 1, 0);
+    schema.Define("save_foragers", 0, 1, 0);
+    schema.Define("orgs_per", 1);
+    schema.Define("max_samples", 0); // recommended if using save_groups and restrict to defined is not set
+    schema.Define("print_genomes", 0, 1, 1);
+    schema.Define("print_reacs", 0, 1, 0);
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    Util::Args* argc = Util::Args::Load((const char*)args, schema, ':', '=', &feedback);
     
     if (args) {
-      m_random = argc->GetInt(0);
-      m_save_dominants = argc->GetInt(1);
-      m_save_groups = argc->GetInt(2);
-      m_save_foragers = argc->GetInt(3);
-      m_orgs_per = argc->GetInt(4);
-      m_max_samples = argc->GetInt(5);
-      m_print_genomes = argc->GetInt(6);
-      m_print_reacs = argc->GetInt(7);
+      m_random = argc->Int(0);
+      m_save_dominants = argc->Int(1);
+      m_save_groups = argc->Int(2);
+      m_save_foragers = argc->Int(3);
+      m_orgs_per = argc->Int(4);
+      m_max_samples = argc->Int(5);
+      m_print_genomes = argc->Int(6);
+      m_print_reacs = argc->Int(7);
     }
   }
   
@@ -2886,37 +2886,37 @@ public:
   cActionPrintMicroTraces(cWorld* world, const cString& args, Feedback& feedback)
   : cAction(world, args), m_random(false), m_rand_prey(false), m_rand_pred(false), m_next_prey(false), m_next_pred(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), m_print_genomes(true), m_print_reacs(false)
   {
-    cArgSchema schema(':','=');
+    Util::ArgSchema schema;
     
     // Entries
-    schema.AddEntry("random", 0, 0, 1, 0);
-    schema.AddEntry("rand_prey", 1, 0, 1, 0);
-    schema.AddEntry("rand_pred", 2, 0, 1, 0);
-    schema.AddEntry("next_prey", 3, 0, 1, 0);
-    schema.AddEntry("next_pred", 4, 0, 1, 0);
-    schema.AddEntry("save_dominants", 5, 0, 1, 0);
-    schema.AddEntry("save_groups", 6, 0, 1, 0);
-    schema.AddEntry("save_foragers", 7, 0, 1, 0);
-    schema.AddEntry("orgs_per", 8, 1);
-    schema.AddEntry("max_samples", 9, 0); // recommended if using save_groups and restrict to defined is not set
-    schema.AddEntry("print_genomes", 10, 0, 1, 0);
-    schema.AddEntry("print_reacs", 11, 0, 1, 0);
+    schema.Define("random", 0, 1, 0);
+    schema.Define("rand_prey", 0, 1, 0);
+    schema.Define("rand_pred", 0, 1, 0);
+    schema.Define("next_prey", 0, 1, 0);
+    schema.Define("next_pred", 0, 1, 0);
+    schema.Define("save_dominants", 0, 1, 0);
+    schema.Define("save_groups", 0, 1, 0);
+    schema.Define("save_foragers", 0, 1, 0);
+    schema.Define("orgs_per", 1);
+    schema.Define("max_samples", 0); // recommended if using save_groups and restrict to defined is not set
+    schema.Define("print_genomes", 0, 1, 0);
+    schema.Define("print_reacs", 0, 1, 0);
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    Util::Args* argc = Util::Args::Load((const char*)args, schema, ':', '=', &feedback);
     
     if (args) {
-      m_random = argc->GetInt(0);
-      m_rand_prey = argc->GetInt(1);
-      m_rand_pred = argc->GetInt(2);
-      m_next_prey = argc->GetInt(3);
-      m_next_pred = argc->GetInt(4);
-      m_save_dominants = argc->GetInt(5);
-      m_save_groups = argc->GetInt(6);
-      m_save_foragers = argc->GetInt(7);
-      m_orgs_per = argc->GetInt(8);
-      m_max_samples = argc->GetInt(9);
-      m_print_genomes = argc->GetInt(10);
-      m_print_reacs = argc->GetInt(11);
+      m_random = argc->Int(0);
+      m_rand_prey = argc->Int(1);
+      m_rand_pred = argc->Int(2);
+      m_next_prey = argc->Int(3);
+      m_next_pred = argc->Int(4);
+      m_save_dominants = argc->Int(5);
+      m_save_groups = argc->Int(6);
+      m_save_foragers = argc->Int(7);
+      m_orgs_per = argc->Int(8);
+      m_max_samples = argc->Int(9);
+      m_print_genomes = argc->Int(10);
+      m_print_reacs = argc->Int(11);
     }
   }
   
@@ -2960,21 +2960,21 @@ public:
   cActionLoadMiniTraceQ(cWorld* world, const cString& args, Feedback& feedback)
   : cAction(world, args), m_filename(""), m_orgs_per(1), m_print_genomes(true), m_print_reacs(false)
   {
-    cArgSchema schema(':','=');
+    Util::ArgSchema schema;
     
     // Entries
-    schema.AddEntry("file", 0, "genotype_ids");
-    schema.AddEntry("orgs_per", 0, 1);
-    schema.AddEntry("print_genomes", 1, 0, 1, 1);
-    schema.AddEntry("print_reacs", 2, 0, 1, 0);
+    schema.Define("file", "genotype_ids");
+    schema.Define("orgs_per", 1);
+    schema.Define("print_genomes", 0, 1, 1);
+    schema.Define("print_reacs", 0, 1, 0);
 
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    Util::Args* argc = Util::Args::Load((const char*)args, schema, ':', '=', &feedback);
     
     if (args) {
-      m_filename = argc->GetString(0);
-      m_orgs_per = argc->GetInt(0);
-      m_print_genomes = argc->GetInt(1);
-      m_print_reacs = argc->GetInt(2);
+      m_filename = argc->String(0);
+      m_orgs_per = argc->Int(0);
+      m_print_genomes = argc->Int(1);
+      m_print_reacs = argc->Int(2);
     }
   }
   

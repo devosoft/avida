@@ -28,9 +28,6 @@
 #include "apto/platform.h"
 #include "avida/core/Universe.h"
 #include "avida/environment/ActionTrigger.h"
-#include "avida/environment/Product.h"
-#include "avida/environment/Reaction.h"
-#include "avida/environment/Resource.h"
 
 
 namespace Avida {
@@ -45,26 +42,20 @@ namespace Avida {
       Apto::RWLock m_rwlock;
       
       Apto::Map<ActionTriggerID, ActionTriggerPtr> m_action_triggers;
-      Apto::Map<ReactionID, ReactionPtr> m_reactions;
       
       mutable ActionTriggerIDSetPtr m_action_trigger_ids;
-      mutable ReactionIDSetPtr m_reaction_ids;
       
       static bool s_registered_with_facet_factory;
       
     public:
       LIB_EXPORT Manager();
       
-      LIB_EXPORT bool DefineActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc, ConstProductPtr product,
-                                          int tmp_order = -1);
-      LIB_EXPORT bool Register(ReactionPtr);
-      LIB_EXPORT bool Register(ResourcePtr);
+      LIB_EXPORT bool DefineActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc, int tmp_order = -1);
 
       LIB_EXPORT ConstActionTriggerIDSetPtr GetActionTriggerIDs() const;
       LIB_EXPORT ConstActionTriggerPtr GetActionTrigger(const ActionTriggerID& trigger_id) const;
       
-      LIB_EXPORT ConstReactionIDSetPtr GetReactionIDs() const;
-      LIB_EXPORT ConstReactionPtr GetReaction(const ReactionID& reaction_id) const;
+      LIB_EXPORT ResourceManager* CreateResourceManagerForStructure(Structure::Controller* structure);
       
       
       LIB_EXPORT bool AttachTo(Universe* universe);

@@ -21,3 +21,30 @@
  *  Authors: David M. Bryson <david@programerror.com>
  *
  */
+
+#include "avida/world/Container.h"
+
+#include "avida/biota/Organism.h"
+#include "avida/environment/Manager.h"
+#include "avida/environment/ResourceManager.h"
+#include "avida/structure/Controller.h"
+#include "avida/systematics/Group.h"
+
+
+Avida::World::Container::Container(Universe* universe, Structure::Controller* structure)
+: m_universe(universe), m_structure(structure)
+{
+  Environment::ManagerPtr env(Environment::Manager::Of(universe));
+  assert(env);
+  
+  m_resources = env->CreateResourceManagerForStructure(structure);
+  
+}
+
+
+Avida::World::Container::~Container()
+{
+  delete m_structure;
+  delete m_resources;
+}
+

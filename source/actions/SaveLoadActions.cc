@@ -97,25 +97,25 @@ public:
   cActionSavePopulation(cWorld* world, const cString& args, Feedback& feedback)
     : cAction(world, args), m_filename(""), m_save_historic(true), m_save_group_info(false), m_save_avatars(false), m_save_rebirth(false)
   {
-    cArgSchema schema(':','=');
+    Util::ArgSchema schema;
     
     // String Entries
-    schema.AddEntry("filename", 0, "detail");
+    schema.Define("filename", "detail");
     
     // Integer Entries
-    schema.AddEntry("save_historic", 0, 0, 1, 1);
-    schema.AddEntry("save_groups", 1, 0, 1, 0);
-    schema.AddEntry("save_avatars", 2, 0, 1, 0);
-    schema.AddEntry("save_rebirth", 3, 0, 1, 0);
+    schema.Define("save_historic", 0, 1, 1);
+    schema.Define("save_groups", 0, 1, 0);
+    schema.Define("save_avatars", 0, 1, 0);
+    schema.Define("save_rebirth", 0, 1, 0);
 
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    Util::Args* argc = Util::Args::Load((const char*)args, schema, ':', '=', &feedback);
     
     if (argc) {
-      m_filename = argc->GetString(0);
-      m_save_historic = argc->GetInt(0);
-      m_save_group_info = argc->GetInt(1);
-      m_save_avatars = argc->GetInt(2);
-      m_save_rebirth = argc->GetInt(3);
+      m_filename = argc->String(0);
+      m_save_historic = argc->Int(0);
+      m_save_group_info = argc->Int(1);
+      m_save_avatars = argc->Int(2);
+      m_save_rebirth = argc->Int(3);
     }
     
     delete argc;
@@ -141,17 +141,17 @@ private:
 public:
   cActionLoadStructuredSystematicsGroup(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_filename(""), m_role("")
   {
-    cArgSchema schema(':','=');
+    Util::ArgSchema schema;
     
     // String Entries
-    schema.AddEntry("filename", 0, cArgSchema::SCHEMA_STRING);
-    schema.AddEntry("role", 1, cArgSchema::SCHEMA_STRING);
+    schema.Define("filename", Util::STRING);
+    schema.Define("role", Util::STRING);
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    Util::Args* argc = Util::Args::Load((const char*)args, schema, ':', '=', &feedback);
     
     if (argc) {
-      m_filename = argc->GetString(0);
-      m_role = argc->GetString(1);
+      m_filename = argc->String(0);
+      m_role = argc->String(1);
     }
     
     delete argc;
@@ -179,17 +179,17 @@ public:
   cActionSaveStructuredSystematicsGroup(cWorld* world, const cString& args, Feedback& feedback)
   : cAction(world, args), m_filename(""), m_role("")
   {
-    cArgSchema schema(':','=');
+    Util::ArgSchema schema;
     
     // String Entries
-    schema.AddEntry("filename", 0, "");
-    schema.AddEntry("role", 0, cArgSchema::SCHEMA_STRING);
+    schema.Define("filename", "");
+    schema.Define("role", Util::STRING);
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    Util::Args* argc = Util::Args::Load((const char*)args, schema, ':', '=', &feedback);
     
     if (argc) {
-      m_filename = argc->GetString(0);
-      m_role = argc->GetString(0);
+      m_filename = argc->String(0);
+      m_role = argc->String(0);
     }
     
     delete argc;
@@ -215,15 +215,15 @@ public:
   cActionSaveFlameData(cWorld* world, const cString& args, Feedback& feedback)
   : cAction(world, args), m_filename("")
   {
-    cArgSchema schema(':','=');
+    Util::ArgSchema schema;
     
     // String Entries
-    schema.AddEntry("filename", 0, "flame_data");
+    schema.Define("filename", "flame_data");
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    Util::Args* argc = Util::Args::Load((const char*)args, schema, ':', '=', &feedback);
     
     if (args) {
-      m_filename = argc->GetString(0);
+      m_filename = argc->String(0);
     }
   }
   

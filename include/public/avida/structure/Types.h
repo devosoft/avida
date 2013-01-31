@@ -42,6 +42,7 @@ namespace Avida {
     // Type Declarations
     // --------------------------------------------------------------------------------------------------------------
     
+    typedef int ElementID;
     typedef Apto::SmartPtr<Controller, Apto::InternalRCObject> ControllerPtr;
     
   };

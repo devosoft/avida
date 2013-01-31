@@ -24,8 +24,6 @@
 #include "avida/core/Genome.h"
 #include "avida/core/GlobalObject.h"
 
-#include "cArgContainer.h"
-#include "cArgSchema.h"
 #include "cHardwareBCR.h"
 #include "cHardwareCPU.h"
 #include "cHardwareExperimental.h"
@@ -64,12 +62,12 @@ bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
   cString name;
   
   // Build up schema to process instruction set parameters
-  cArgSchema is_schema(':');
-  is_schema.AddEntry("hw_type", 0, cArgSchema::SCHEMA_INT);
-  is_schema.AddEntry("stack_size", 1, 10);
-  is_schema.AddEntry("uops_per_cycle", 2, 20);
+  Util::ArgSchema is_schema(':');
+  is_schema.Define("hw_type", Util::INT);
+  is_schema.Define("stack_size", 10);
+  is_schema.Define("uops_per_cycle", 20);
   
-  cArgContainer* args = NULL;
+  Util::Args* args = NULL;
 
   bool success = true;
   for (int line_id = 0; line_id < cfg_list.GetSize(); line_id++) {
@@ -83,7 +81,7 @@ bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
       }
     } else if (line_type == "INSTSET") {
       if (cur_list) {
-        if (!loadInstSet(args->GetInt(0), (const char*)name, args->GetInt(1), args->GetInt(2), *cur_list, feedback)) success = false;
+        if (!loadInstSet(args->Int(0), (const char*)name, args->Int(1), args->Int(2), *cur_list, feedback)) success = false;
         delete cur_list;
         delete args;
         cur_list = NULL;
@@ -103,7 +101,7 @@ bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
       }
       
       // Process arguments on the INSTSET line
-      args = cArgContainer::Load(is_def_str, is_schema, *feedback);
+      args = Util::Args::Load((const char*)is_def_str, is_schema, ':', '=', feedback);
       if (!args) {
         success = false;
         continue;
@@ -114,7 +112,7 @@ bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
   }
   
   if (cur_list) {
-    if (!loadInstSet(args->GetInt(0), (const char*)name, args->GetInt(1), args->GetInt(2), *cur_list, feedback)) success = false;
+    if (!loadInstSet(args->Int(0), (const char*)name, args->Int(1), args->Int(2), *cur_list, feedback)) success = false;
     delete cur_list;
     delete args;
   }

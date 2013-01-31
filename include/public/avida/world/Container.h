@@ -25,9 +25,11 @@
 #ifndef AvidaWorldContainer_h
 #define AvidaWorldContainer_h
 
+#include "avida/biota/Types.h"
 #include "avida/environment/Types.h"
-#include "avida/structure/Types.h"
+#include "avida/structure/Element.h"
 #include "avida/world/Types.h"
+
 
 namespace Avida {
   namespace World {
@@ -35,12 +37,26 @@ namespace Avida {
     // Container
     // --------------------------------------------------------------------------------------------------------------
     
-    class Container
+    class Container : public virtual Apto::RefCountObject<Apto::ThreadSafe>
     {
-    private:
-      // Population Here....
+    protected:
+      Universe* m_universe;
+      
+      Apto::Array<Biota::OrganismPtr, Apto::Smart> m_organisms;
       Structure::Controller* m_structure;
       Environment::ResourceManager* m_resources;
+      
+    public:
+      LIB_EXPORT ~Container();
+      
+      LIB_EXPORT static inline ContainerPtr CreateWithStructure(Universe* universe, Structure::Controller* structure)
+      {
+        return ContainerPtr(new Container(universe, structure));
+      }
+      
+      
+    protected:
+      LIB_EXPORT Container(Universe* universe, Structure::Controller* structure);
     };
     
   };

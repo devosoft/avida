@@ -84,7 +84,7 @@ private:
   
 private:
   
-  void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0, cArgContainer* args = NULL);
+  void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0, Avida::Util::Args* args = NULL);
 
   inline double FractionalReward(unsigned int supplied, unsigned int correct);  
 

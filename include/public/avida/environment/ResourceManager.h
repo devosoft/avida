@@ -39,6 +39,7 @@ namespace Avida {
       friend class Manager;
     private:
       Apto::Array<Resource*> m_resources;
+      Apto::Array<ResourceListener*> m_listeners;
       
       LIB_LOCAL inline ResourceManager(int num_resources) : m_resources(num_resources) { ; }
 
@@ -46,7 +47,9 @@ namespace Avida {
       LIB_EXPORT ~ResourceManager();
       
       LIB_EXPORT inline Resource& GetResource(ResourceID res_id) { return *m_resources[res_id]; }
-      
+
+      LIB_EXPORT void AttachListener(ResourceListener* listener);
+      LIB_EXPORT void DetachListener(ResourceListener* listener);
       
       LIB_EXPORT void PerformUpdate(Avida::Context& ctx, Update current_update);
     };

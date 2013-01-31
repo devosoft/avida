@@ -40,12 +40,12 @@ private:
   cString m_desc;  // For more human-understandable output...
   int m_id;
   tTaskTest m_test_fun;
-  cArgContainer* m_args;
+  Avida::Util::Args* m_args;
   Apto::String m_prop_id_ave;
   Apto::String m_prop_id_count;
 
 public:
-  cTaskEntry(const cString& name, const cString& desc, int in_id, tTaskTest fun, cArgContainer* args)
+  cTaskEntry(const cString& name, const cString& desc, int in_id, tTaskTest fun, Avida::Util::Args* args)
     : m_name(name), m_desc(desc), m_id(in_id), m_test_fun(fun), m_args(args)
   {
     m_prop_id_ave = Apto::FormatStr("environment.triggers.%s.average", (const char*)name);
@@ -66,7 +66,7 @@ public:
   
   
   bool HasArguments() const { return (m_args != NULL); }
-  cArgContainer& GetArguments() const { return *m_args; }
+  Avida::Util::Args& GetArguments() const { return *m_args; }
 };
 
 #endif
