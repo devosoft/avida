@@ -589,7 +589,14 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
     ip.Adjust();
        
-    // Print the status of this CPU at each step...    
+/*    if (m_organism->GetID() == 0 && m_world->GetStats().GetUpdate() >= 0) cout << " org: " << m_organism->GetID()
+    << " thread: " << m_cur_thread << " ip_position: " << ip.GetPosition() << " inst: "
+      << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName()
+      << " write head: " << m_threads[m_cur_thread].heads[nHardware::HEAD_WRITE].GetPosition()
+      << " flow head: " << m_threads[m_cur_thread].heads[nHardware::HEAD_WRITE].GetPosition()
+      <<  " cell: " << m_organism->GetOrgInterface().GetAVCellID() << endl; */
+
+    // Print the status of this CPU at each step...
     if (m_tracer) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
