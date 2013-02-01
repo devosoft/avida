@@ -138,9 +138,6 @@ bool cWorld::setup(Universe* new_world, cUserFeedback* feedback, const Apto::Map
   
   // Initialize the hardware manager, loading all of the instruction sets
   m_hw_mgr = new cHardwareManager(this);
-  if (m_conf->INST_SET_LOAD_LEGACY.Get()) {
-    if (!m_hw_mgr->ConvertLegacyInstSetFile(m_conf->INST_SET.Get(), m_conf->INSTSETS.Get(), feedback)) success = false;
-  }
   if (!m_hw_mgr->LoadInstSets(feedback)) success = false;
   if (m_hw_mgr->GetNumInstSets() == 0) {
     if (feedback) {
@@ -207,11 +204,6 @@ void cWorld::GetEvents(cAvidaContext& ctx)
   m_event_list->Process(ctx);
 }
 
-int cWorld::GetNumResources()
-{
-  return m_env->GetResDefLib().GetSize();
-}
-
 
 void cWorld::SetDriver(UniverseDriver* driver, bool take_ownership)
 {
@@ -225,16 +217,3 @@ void cWorld::SetDriver(UniverseDriver* driver, bool take_ownership)
   m_own_driver = take_ownership;
 }
 
-/*! Calculate the size (in virtual CPU cycles) of the current update.
- */
-int cWorld::CalculateUpdateSize()
-{
-	return GetConfig().AVE_TIME_SLICE.Get() * GetPopulation().GetNumOrganisms();
-}
-
-void cWorld::MigrateOrganism(cOrganism* org, const cPopulationCell& cell, const cMerit& merit, int lineage)
-{
-  (void)org; (void)cell; (void)merit; (void)lineage;
-}
-
-bool cWorld::IsWorldBoundary(const cPopulationCell& cell) { (void)cell; return false; }

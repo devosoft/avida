@@ -22,33 +22,24 @@
  *
  */
 
-#ifndef Avida2Driver_h
-#define Avida2Driver_h
+#ifndef Avida3Driver_h
+#define Avida3Driver_h
 
 #include "avida/core/Feedback.h"
 #include "avida/core/Types.h"
 #include "avida/core/UniverseDriver.h"
 
-class cWorld;
 
-
-class Avida2Driver : public Avida::UniverseDriver
+class Avida3Driver : public Avida::UniverseDriver
 {
 protected:
-  cWorld* m_world;
-  Avida::Universe* m_new_world;
+  Avida::Universe* m_universe;
+  Avida::Feedback& m_feedback;
   bool m_done;
-  
-  class StdIOFeedback : public Avida::Feedback
-  {
-    void Error(const char* fmt, ...);
-    void Warning(const char* fmt, ...);
-    void Notify(const char* fmt, ...);
-  } m_feedback;
-  
+    
 public:
-  Avida2Driver(cWorld* world, Avida::Universe* new_world);
-  ~Avida2Driver();  
+  Avida3Driver(Avida::Universe* universe, Avida::Feedback& feedback);
+  ~Avida3Driver();
   
   // Actions
   void Run();

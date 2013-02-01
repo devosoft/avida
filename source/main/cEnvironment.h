@@ -28,7 +28,6 @@
 
 #include "cMutationRates.h"
 #include "cReactionLib.h"
-#include "cResourceDefLib.h"
 #include "cString.h"
 #include "cTaskLib.h"
 #include "tList.h"
@@ -60,7 +59,6 @@ private:
   cWorld* m_world;
   
   cMutationRates mut_rates;
-  cResourceDefLib resource_lib;
   cReactionLib reaction_lib;
   cTaskLib m_tasklib;
 
@@ -117,11 +115,9 @@ public:
 
   
   int GetNumReactions() const { return reaction_lib.GetSize(); }
-  const cResourceDefLib& GetResDefLib() const { return resource_lib; }
   const cReactionLib& GetReactionLib() const { return reaction_lib; }
   const cMutationRates& GetMutRates() const { return mut_rates; }
 
-  cResourceDefLib& GetResDefLib() { return resource_lib; }
   cReactionLib& GetReactionLib() { return reaction_lib; }
   cMutationRates& GetMutRates() { return mut_rates; }
   

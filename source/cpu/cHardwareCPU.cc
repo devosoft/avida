@@ -107,11 +107,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-grt-X", &cHardwareCPU::Inst_IfGrX, INST_CLASS_CONDITIONAL),
     tInstLibEntry<tMethod>("if-equ-X", &cHardwareCPU::Inst_IfEquX, INST_CLASS_CONDITIONAL),
 		
-    tInstLibEntry<tMethod>("if-aboveResLevel", &cHardwareCPU::Inst_IfAboveResLevel, INST_CLASS_CONDITIONAL),
-    tInstLibEntry<tMethod>("if-aboveResLevel.end", &cHardwareCPU::Inst_IfAboveResLevelEnd, INST_CLASS_CONDITIONAL),
-    tInstLibEntry<tMethod>("if-notAboveResLevel", &cHardwareCPU::Inst_IfNotAboveResLevel, INST_CLASS_CONDITIONAL),
-    tInstLibEntry<tMethod>("if-notAboveResLevel.end", &cHardwareCPU::Inst_IfNotAboveResLevelEnd, INST_CLASS_CONDITIONAL),
-    
     // Probabilistic ifs.
     tInstLibEntry<tMethod>("if-p-0.125", &cHardwareCPU::Inst_IfP0p125, INST_CLASS_CONDITIONAL),
     tInstLibEntry<tMethod>("if-p-0.25", &cHardwareCPU::Inst_IfP0p25, INST_CLASS_CONDITIONAL),
@@ -2057,103 +2052,7 @@ bool cHardwareCPU::Inst_IfEquX(cAvidaContext&)       // Execute next if BX == X;
   return true;
 }
 
-bool cHardwareCPU::Inst_IfAboveResLevel(cAvidaContext& ctx)
-{
-  const double resCrossoverLevel = 100;
-  
-  const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
-  const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
-  
-  if (resource_count.GetSize() == 0) assert(false); // change to: return false;
-  
-  double pher_amount = 0;
-  cResourceDef* res = resLib.GetResDef("pheromone");
-  
-  if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
-    pher_amount += resource_count_array[res->GetID()];
-  }
-	
-  if (pher_amount > resCrossoverLevel) {
-    getIP().Advance();
-  }
-  
-  return true;
-}
 
-bool cHardwareCPU::Inst_IfAboveResLevelEnd(cAvidaContext& ctx)
-{
-  const double resCrossoverLevel = 100;
-  
-  const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
-  
-  const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
-	
-  if (resource_count.GetSize() == 0) assert(false); // change to: return false;
-	
-  double pher_amount = 0;
-  cResourceDef* res = resLib.GetResDef("pheromone");
-  
-  if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
-    pher_amount += resource_count_array[res->GetID()];
-  }
-	
-  if (pher_amount > resCrossoverLevel) {
-    Else_TopHalf();
-  }
-	
-  return true;
-}
-
-bool cHardwareCPU::Inst_IfNotAboveResLevel(cAvidaContext& ctx)
-{
-  const double resCrossoverLevel = 100;
-	
-  const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
-  
-  const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
-  
-  if (resource_count.GetSize() == 0) assert(false); // change to: return false;
-	
-  double pher_amount = 0;
-  cResourceDef* res = resLib.GetResDef("pheromone");
-  
-  if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
-    pher_amount += resource_count_array[res->GetID()];
-  }
-	
-  if (pher_amount <= resCrossoverLevel) {
-    getIP().Advance();
-  }
-	
-  return true;
-}
-
-bool cHardwareCPU::Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx)
-{
-  const double resCrossoverLevel = 100;
-  
-  const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
-  const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
-  
-  if (resource_count.GetSize() == 0) assert(false); // change to: return false;
-  
-  double pher_amount = 0;
-  cResourceDef* res = resLib.GetResDef("pheromone");
-  
-  if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
-    pher_amount += resource_count_array[res->GetID()];
-  }
-  
-  if (pher_amount <= resCrossoverLevel) {
-    Else_TopHalf();
-  }
-  
-  return true;
-}
 
 bool cHardwareCPU::Inst_IfP0p125(cAvidaContext&)
 {

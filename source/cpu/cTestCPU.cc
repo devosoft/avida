@@ -36,7 +36,6 @@
 #include "cPopulationResources.h"
 #include "cResourceDef.h"
 #include "cResourceHistory.h"
-#include "cResourceDefLib.h"
 #include "cStringUtil.h"
 #include "cTestCPUInterface.h"
 #include "cWorld.h"
@@ -87,7 +86,8 @@ void cTestCPU::InitResources(cAvidaContext& ctx, int res_method, cResourceHistor
     // be changed if LOAD_RESOURCES analyze command is called.  If there are
     // no resources in the environment or there is no environment, the list
     // is empty then the all resources will default to 0.0
-    m_res = &m_world->GetEnvironment().GetResDefLib().GetInitialResourceLevels();
+    //m_res = &m_world->GetEnvironment().GetResDefLib().GetInitialResourceLevels();
+    assert(false);
   }
   
   const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();

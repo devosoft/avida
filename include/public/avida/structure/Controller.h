@@ -35,7 +35,8 @@ namespace Avida {
     
     class Controller
     {
-      
+    public:
+      virtual ~Controller() = 0;
     };
     
   };

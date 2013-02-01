@@ -1644,9 +1644,6 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       case nReaction::PROCTYPE_LIN:
         result.AddBonus(bonus * task_count, reaction_id);
         break;
-      case nReaction::PROCTYPE_ENERGY:
-        result.AddEnergy(bonus);
-        break;
       case nReaction::PROCTYPE_ENZYME: //@JEB -- experimental
       {
         const int res_id = in_resource->GetID();

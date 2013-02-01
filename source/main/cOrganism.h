@@ -96,8 +96,6 @@ private:
   int m_test_receive_pos;   // In a test CPU, what message to receive next?
 
   double m_gradient_movement;  // TEMP.  Remove once movement tasks are implemented.
-  bool m_pher_drop;	   // Is the organism dropping pheromone?
-  double frac_energy_donating;  // What fraction of the organism's energy is it donating
 
   int m_max_executed;      // Max number of instruction executed before death.  
   bool m_is_running;       // Does this organism have the CPU?
@@ -178,9 +176,6 @@ public:
   bool GetPheromoneStatus() { return m_pher_drop; }
   void TogglePheromone() { m_pher_drop = (m_pher_drop == true) ? false : true; }
   void SetPheromone(bool newval) { m_pher_drop = newval; }
-
-  double GetFracEnergyDonating() { return frac_energy_donating; }
-  void SetFracEnergyDonating(double newval) { assert(newval >= 0); assert(newval <= 1); frac_energy_donating = newval; }
 
   const cStateGrid& GetStateGrid() const;
 

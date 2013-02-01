@@ -107,10 +107,6 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "equ") NewTask(name, "Equals", &cTaskLib::Task_Equ);
   else if (name == "equ_dup") NewTask(name, "Equals_dup", &cTaskLib::Task_Equ);
   
-	// resoruce dependent version
-  else if (name == "nand-resourceDependent") NewTask(name, "Nand-resourceDependent", &cTaskLib::Task_Nand_ResourceDependent);
-  else if (name == "nor-resourceDependent") NewTask(name, "Nor-resourceDependent", &cTaskLib::Task_Nor_ResourceDependent);
-	
   // All 3-Input Logic Functions
   if (name == "logic_3AA")      NewTask(name, "Logic 3AA (A+B+C == 0)", &cTaskLib::Task_Logic3in_AA);
   else if (name == "logic_3AB") NewTask(name, "Logic 3AB (A+B+C == 1)", &cTaskLib::Task_Logic3in_AB);
@@ -523,57 +519,6 @@ double cTaskLib::Task_Equ(cTaskContext& ctx) const
   const int logic_id = ctx.GetLogicId();
   if (logic_id == 153 || logic_id == 165 || logic_id == 195) return 1.0;
   return 0.0;
-}
-
-
-double cTaskLib::Task_Nand_ResourceDependent(cTaskContext& ctx) const
-{
-  const double resCrossoverLevel = 100;
-
-  const int logic_id = ctx.GetLogicId();
-  if (!(logic_id == 63 || logic_id == 95 || logic_id == 119)) return 0.0;
-		
-  const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
-  const Apto::Array<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
-	
-  if (resource_count.GetSize() == 0) assert(false); // change to: return false;
-	
-  double pher_amount = 0;
-  cResourceDef* res = resLib.GetResDef("pheromone");
-	
-  if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
-    pher_amount += resource_count_array[res->GetID()];
-  }
-  
-  if (pher_amount < resCrossoverLevel) return 1.0;
-  return 0.0;	
-}
-
-
-double cTaskLib::Task_Nor_ResourceDependent(cTaskContext& ctx) const
-{
-  const double resCrossoverLevel = 100;
-
-  const int logic_id = ctx.GetLogicId();
-  if (!(logic_id == 3 || logic_id == 5 || logic_id == 17))  return 0.0;
-	
-  const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
-  const Apto::Array<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
-  
-  //if (resource_count.GetSize() == 0) assert(false); // change to: return false;
-  assert(resource_count.GetSize() != 0);
-	
-  double pher_amount = 0;
-  cResourceDef* res = resLib.GetResDef("pheromone");
-  
-  if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
-    pher_amount += resource_count_array[res->GetID()];
-  }
-	
-  if (pher_amount > resCrossoverLevel) return 1.0;
-  return 0.0;	
 }
 
 

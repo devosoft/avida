@@ -147,7 +147,7 @@ int Avida::Util::ArgSchema::Define(Apto::String in_name, double lower, double up
 }
 
 
-int Avida::Util::ArgSchema::Define(Apto::String in_name, const Apto::String& def)
+int Avida::Util::ArgSchema::Define(Apto::String in_name, const Apto::String& def, Apto::Set<Apto::String>* vocab)
 {
   AdjustArgName(in_name);
   if (m_entries.Has(in_name)) return -1;
@@ -155,6 +155,7 @@ int Avida::Util::ArgSchema::Define(Apto::String in_name, const Apto::String& def
   int new_idx = m_strings.GetSize();
   Apto::String* str = new Apto::String(def);
   Entry* entry = new Entry(in_name, new_idx, str);
+  entry->vocab = vocab;
   m_entries.Set(in_name, entry);
   m_strings.Push(entry);
   
@@ -229,6 +230,14 @@ Avida::Util::Args* Avida::Util::Args::Load(Apto::String args, const ArgSchema& s
           set_strings[index] = true;
           arg_ent.Trim();
           ret->m_strings[index] = arg_ent;
+          if (!schema.ValidateString(index, ret->m_strings[index])) {
+            Apto::String name;
+            if (schema.StringName(index, name)) {
+              if (feedback) feedback->Error("value of '%s' unrecognized", static_cast<const char*>(name));
+            } else {
+              if (feedback) feedback->Error("invalid string schema entry at index %d", index);
+            }
+          }
           break;
         default:
           success = false;

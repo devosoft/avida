@@ -80,7 +80,6 @@ public:
   
   bool m_has_costs;
   bool m_has_ft_costs;
-  bool m_has_energy_costs;
   bool m_has_res_costs;
   bool m_has_fem_res_costs;
   bool m_has_female_costs;
@@ -95,7 +94,7 @@ public:
 public:
   inline cInstSet(cWorld* world, const cString& name, int hw_type, cInstLib* inst_lib, int stack_size, int uops_per_cycle)
     : m_world(world), m_name(name), m_hw_type(hw_type), m_inst_lib(inst_lib), m_mutation_index(NULL)
-    , m_has_costs(false), m_has_ft_costs(false), m_has_energy_costs(false), m_has_res_costs(false), m_has_fem_res_costs(false)
+    , m_has_costs(false), m_has_ft_costs(false), m_has_res_costs(false), m_has_fem_res_costs(false)
     , m_has_female_costs(false), m_has_choosy_female_costs(false), m_has_post_costs(false), m_stack_size(stack_size)
     , m_uops_per_cycle(uops_per_cycle) { ; }
   cInstSet(const cInstSet&); 
@@ -112,7 +111,6 @@ public:
   int GetRedundancy(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].redundancy; }
   int GetCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].cost; }
   int GetFTCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].ft_cost; }
-  int GetEnergyCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].energy_cost; }
   double GetProbFail(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].prob_fail; }
   int GetAddlTimeCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].addl_time_cost; }
   int GetInstructionCode(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].inst_code; }
@@ -138,7 +136,6 @@ public:
   
   bool HasCosts() const { return m_has_costs; }
   bool HasFTCosts() const { return m_has_ft_costs; }
-  bool HasEnergyCosts() const { return m_has_energy_costs; }
   bool HasResCosts() const { return m_has_res_costs; }
   bool HasFemResCosts() const { return m_has_fem_res_costs; }
   bool HasFemaleCosts() const { return m_has_female_costs; }

@@ -42,6 +42,9 @@ namespace Avida {
       Apto::RWLock m_rwlock;
       
       Apto::Map<ActionTriggerID, ActionTriggerPtr> m_action_triggers;
+
+      Apto::Array<ResourceDefinition*> m_res_defs;
+      Apto::Map<Apto::String, int> m_res_name_map;
       
       mutable ActionTriggerIDSetPtr m_action_trigger_ids;
       
@@ -49,6 +52,7 @@ namespace Avida {
       
     public:
       LIB_EXPORT Manager();
+      LIB_EXPORT ~Manager();
       
       LIB_EXPORT bool DefineActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc, int tmp_order = -1);
 

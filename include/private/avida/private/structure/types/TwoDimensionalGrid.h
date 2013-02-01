@@ -34,7 +34,12 @@ namespace Avida {
       
       class TwoDimensionalGrid : public Controller
       {
+      private:
         
+        
+      public:
+        LIB_EXPORT TwoDimensionalGrid();
+        LIB_EXPORT ~TwoDimensionalGrid();
       };
     
     };

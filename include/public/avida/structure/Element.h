@@ -33,7 +33,7 @@ namespace Avida {
     // Element
     // --------------------------------------------------------------------------------------------------------------
     
-    class Element
+    class Element : public virtual Apto::RefCountObject<Apto::ThreadSafe>
     {
       
     };

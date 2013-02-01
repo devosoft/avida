@@ -110,11 +110,6 @@ private:
   double Task_Xor(cTaskContext& ctx) const;
   double Task_Equ(cTaskContext& ctx) const;
 
-	// resource dependent
-	double Task_Nand_ResourceDependent(cTaskContext& ctx) const;
-	double Task_Nor_ResourceDependent(cTaskContext& ctx) const;
-			
-	
   // All 3-Input Logic Functions
   double Task_Logic3in_AA(cTaskContext& ctx) const;
   double Task_Logic3in_AB(cTaskContext& ctx) const;

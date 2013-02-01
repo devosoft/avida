@@ -22,21 +22,11 @@
  *
  */
 
-#include "Avida2Driver.h"
+#include "Avida3Driver.h"
 
 #include "avida/core/Context.h"
 #include "avida/core/Universe.h"
 #include "avida/systematics/Group.h"
-
-#include "cAnalyze.h"
-#include "cAvidaContext.h"
-#include "cHardwareBase.h"
-#include "cHardwareManager.h"
-#include "cOrganism.h"
-#include "cPopulation.h"
-#include "cPopulationCell.h"
-#include "cStats.h"
-#include "cWorld.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -44,32 +34,28 @@
 #include <iostream>
 #include <iomanip>
 
-using namespace Avida;
-using namespace std;
-
-
-Avida2Driver::Avida2Driver(cWorld* world, Universe* new_world) : m_world(world), m_new_world(new_world), m_done(false)
+Avida3Driver::Avida3Driver(Avida::Universe* universe, Avida::Feedback& feedback)
+  : m_universe(universe), m_feedback(feedback), m_done(false)
 {
-  GlobalObjectManager::Register(this);
-  world->SetDriver(this);
+  Avida::GlobalObjectManager::Register(this);
 }
 
-Avida2Driver::~Avida2Driver()
+Avida3Driver::~Avida3Driver()
 {
-  GlobalObjectManager::Unregister(this);
-  delete m_world;
+  Avida::GlobalObjectManager::Unregister(this);
+  delete m_universe;
 }
 
 
-void Avida2Driver::Run()
+void Avida3Driver::Run()
 {
-  if (m_world->GetConfig().ANALYZE_MODE.Get() > 0) {
-    cout << "In analyze mode!!" << endl;
-    cAnalyze& analyze = m_world->GetAnalyze();
-    analyze.RunFile(m_world->GetConfig().ANALYZE_FILE.Get());
-    if (m_world->GetConfig().ANALYZE_MODE.Get() == 2) analyze.RunInteractive();
-    return;
-  }
+//  if (m_world->GetConfig().ANALYZE_MODE.Get() > 0) {
+//    cout << "In analyze mode!!" << endl;
+//    cAnalyze& analyze = m_world->GetAnalyze();
+//    analyze.RunFile(m_world->GetConfig().ANALYZE_FILE.Get());
+//    if (m_world->GetConfig().ANALYZE_MODE.Get() == 2) analyze.RunInteractive();
+//    return;
+//  }
   
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
@@ -105,7 +91,7 @@ void Avida2Driver::Run()
     
     // Process the update.
     // query the world to calculate the exact size of this update:
-    const int UD_size = m_world->CalculateUpdateSize();
+    const int UD_size = GetConfig().AVE_TIME_SLICE.Get() * GetPopulation().GetNumOrganisms()
     const double step_size = 1.0 / (double) UD_size;
     
     for (int i = 0; i < UD_size; i++) {
@@ -135,7 +121,7 @@ void Avida2Driver::Run()
       }
       if (m_world->GetVerbosity() >= VERBOSE_DEBUG) {
         cout << "Spec: " << setw(6) << setprecision(4) << stats.GetAveSpeculative() << "  ";
-        cout << "SWst: " << setw(6) << setprecision(4) << (((double)stats.GetSpeculativeWaste() / (double)m_world->CalculateUpdateSize()) * 100.0) << "%  ";
+        cout << "SWst: " << setw(6) << setprecision(4) << (((double)stats.GetSpeculativeWaste() / (double)UD_size) * 100.0) << "%  ";
       }
 
       cout << endl;
@@ -161,38 +147,10 @@ void Avida2Driver::Run()
   }
 }
 
-void Avida2Driver::Abort(Avida::AbortCondition condition)
+void Avida3Driver::Abort(Avida::AbortCondition condition)
 {
   exit(condition);
 }
 
-void Avida2Driver::StdIOFeedback::Error(const char* fmt, ...)
-{
-  printf("error: ");
-  va_list args;
-  va_start(args, fmt);
-  printf(fmt, args);
-  va_end(args);
-  printf("\n");
-}
-
-void Avida2Driver::StdIOFeedback::Warning(const char* fmt, ...)
-{
-  printf("warning: ");
-  va_list args;
-  va_start(args, fmt);
-  printf(fmt, args);
-  va_end(args);
-  printf("\n");
-}
-
-void Avida2Driver::StdIOFeedback::Notify(const char* fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  printf(fmt, args);
-  va_end(args);
-  printf("\n");
-}
 
 

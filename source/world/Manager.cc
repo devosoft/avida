@@ -27,29 +27,24 @@
 #include "avida/world/Container.h"
 
 
-Avida::World::Manager::Manager() : m_universe(NULL), m_top_level(NULL)
+Avida::World::Manager::Manager(Universe* universe, Structure::Controller* structure) : m_universe(universe)
 {
-  
+  m_top_level = ContainerPtr(new Container(universe, structure));
 }
 
 Avida::World::Manager::~Manager()
 {
-  delete m_top_level;
+
 }
 
 
-bool Avida::World::Manager::AttachTo(Universe* universe)
+Avida::World::ManagerPtr Avida::World::Manager::CreateWithTopLevelStructure(Universe* universe, Structure::Controller* structure)
 {
-  if (m_universe) return false;
+  ManagerPtr mgr(new Manager(universe, structure));
   
-  UniverseFacetPtr ptr(this);
-  AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
-  
-  if (universe->AttachFacet(Reserved::WorldManagerFacetID, ptr)) {
-    m_universe = universe;
-    return true;
-  }
-  return false;
+  if (universe->AttachFacet(Reserved::WorldManagerFacetID, mgr)) return mgr;
+
+  return ManagerPtr(NULL);
 }
 
 

@@ -62,7 +62,6 @@ cResourceDef::cResourceDef(const cString & _name, int _id)
   , xgravity(0.0)
   , ydiffuse(1.0)
   , ygravity(0.0)
-  , energy_resource(false)
   , m_peakx(-1)
   , m_peaky(-1)
   , m_height(0)
@@ -134,19 +133,6 @@ void cResourceDef::UpdateCellResource(cCellResource *_CellResourcePtr, double _i
   _CellResourcePtr->SetInitial(_initial);
   _CellResourcePtr->SetInflow(_inflow);
   _CellResourcePtr->SetOutflow(_outflow);
-}
-
-/* Set if the resource is a energy resource */
-bool cResourceDef::SetEnergyResource(cString _energy_resource) {
-  _energy_resource.ToLower();
-  if ((_energy_resource == "false") || (_energy_resource == "0")) {
-    energy_resource = false;
-    return true;
-  } else if ((_energy_resource == "true") || (_energy_resource == "1")) {
-    energy_resource = true;
-    return true;
-  }
-  return false;
 }
 
 bool cResourceDef::SetGeometry(cString _geometry)

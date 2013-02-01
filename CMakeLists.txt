@@ -250,7 +250,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cReactionResult.cc
   ${MAIN_DIR}/cResourceDef.cc
   ${MAIN_DIR}/cResource.cc
-  ${MAIN_DIR}/cResourceDefLib.cc
   ${MAIN_DIR}/cResourceElement.cc
   ${MAIN_DIR}/cResourceHistory.cc
   ${MAIN_DIR}/cResourcePopulationInterface.cc

@@ -111,7 +111,6 @@ cBirthEntry& cBirthEntry::operator=(const cBirthEntry& _birth_entry)
   m_group_id = _birth_entry.m_group_id;
   
   genome = _birth_entry.genome;
-  energy4Offspring = _birth_entry.energy4Offspring;
   merit = _birth_entry.merit;
   timestamp = _birth_entry.timestamp;
   groups = _birth_entry.groups;

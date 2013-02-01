@@ -44,7 +44,6 @@ private:
   Apto::Array<int> m_parent_task_count;
 public:
   Genome genome;
-  double energy4Offspring;
   cMerit merit;
   int timestamp; // -1 if empty
   Systematics::GroupMembershipPtr groups;

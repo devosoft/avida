@@ -138,7 +138,6 @@ public:
 
   inline bool IsOccupied() const { return m_organism != NULL; }
 
-  double UptakeCellEnergy(double frac_to_uptake, cAvidaContext& ctx); 
   
 // -------- Avatar support -------- 
 private:

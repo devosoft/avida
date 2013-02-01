@@ -2137,26 +2137,6 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
     if (out_cell_id == cell_array.GetSize()) out_cell_id = 0;
     return GetCell(out_cell_id);
   }
-  else if (birth_method == POSITION_OFFSPRING_FULL_SOUP_ENERGY_USED) {
-    tList<cPopulationCell> found_list;
-    int max_time_used = 0;
-    for  (int i=0; i < cell_array.GetSize(); i++)
-    {
-      int time_used = cell_array[i].IsOccupied() ? cell_array[i].GetOrganism()->GetPhenotype().GetTimeUsed() : INT_MAX;
-      if (time_used == max_time_used)
-      {
-        found_list.Push(&cell_array[i]);
-      }
-      else if (time_used > max_time_used)
-      {
-        max_time_used = time_used;
-        found_list.Clear();
-        found_list.Push(&cell_array[i]);
-      }
-    }
-    int choice = m_world->GetRandom().GetUInt(found_list.GetSize());
-    return *( found_list.GetPos(choice) );
-  }
   
   // All remaining methods require us to choose among mulitple local positions.
   
@@ -2205,8 +2185,6 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
         found_list.Append(conn_list);
         if (parent_ok == true) found_list.Push(&parent_cell);
         break;
-      case POSITION_OFFSPRING_NEIGHBORHOOD_ENERGY_USED:
-        PositionEnergyUsed(parent_cell, found_list, parent_ok);
       case POSITION_OFFSPRING_EMPTY:
         // Nothing is in list if no empty cells are found...
         break;
@@ -2272,34 +2250,6 @@ void cPopulation::PositionMerit(cPopulationCell & parent_cell,
       found_list.Push(test_cell);
     }
     else if (cur_ratio == max_ratio) {
-      found_list.Push(test_cell);
-    }
-  }
-}
-
-void cPopulation::PositionEnergyUsed(cPopulationCell & parent_cell,
-                                     tList<cPopulationCell> & found_list,
-                                     bool parent_ok)
-{
-  // Start with the parent organism as the replacement, and see if we can find
-  // anything equivilent or better.
-  
-  found_list.Push(&parent_cell);
-  int max_energy_used = parent_cell.GetOrganism()->GetPhenotype().GetTimeUsed();
-  if (parent_ok == false) max_energy_used = -1;
-  
-  // Now look at all of the neighbors.
-  tListIterator<cPopulationCell> conn_it( parent_cell.ConnectionList() );
-  
-  cPopulationCell * test_cell;
-  while ( (test_cell = conn_it.Next()) != NULL) {
-    const int cur_energy_used = test_cell->GetOrganism()->GetPhenotype().GetTimeUsed();
-    if (cur_energy_used > max_energy_used) {
-      max_energy_used = cur_energy_used;
-      found_list.Clear();
-      found_list.Push(test_cell);
-    }
-    else if (cur_energy_used == max_energy_used) {
       found_list.Push(test_cell);
     }
   }

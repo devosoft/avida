@@ -57,15 +57,6 @@ class cOrgMessage;
 using namespace Avida;
 
 
-struct flow_rate_tuple {
-  Apto::Stat::Accumulator<int> orgCount;
-  Apto::Stat::Accumulator<int> eventsKilled;
-  Apto::Stat::Accumulator<int> attemptsToKillEvents;
-  cDoubleSum AvgEnergyUsageRatio;
-  Apto::Stat::Accumulator<int> totalBirths;
-  Apto::Stat::Accumulator<int> currentSleeping;
-};
-
 struct s_inst_circumstances {
   int update;
   int inst;

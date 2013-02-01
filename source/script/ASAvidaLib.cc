@@ -83,8 +83,6 @@ static void setupNativeObjects()
   REGISTER_S_METHOD(cGenotypeBatch, "PruneNonViableGenotypes", PruneNonViableGenotypes, void ());
   
 
-  tASNativeObject<cResourceHistory>::InitializeMethodRegistrar();
-
   tASNativeObject<cWorld>::InitializeMethodRegistrar();
   
   

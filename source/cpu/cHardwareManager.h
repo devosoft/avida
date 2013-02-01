@@ -62,7 +62,6 @@ public:
   
   
   bool LoadInstSets(cUserFeedback* feedback = NULL);
-  bool ConvertLegacyInstSetFile(cString filename, cStringList& str_list, cUserFeedback* feedback = NULL);
   
   cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const Genome& mg);
   inline cTestCPU* CreateTestCPU(cAvidaContext& ctx) { return new cTestCPU(ctx, m_world); }

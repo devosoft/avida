@@ -308,7 +308,6 @@ private:
   cPopulationCell& PositionOffspring(cPopulationCell& parent_cell, cAvidaContext& ctx, bool parent_ok = true); 
   void PositionAge(cPopulationCell& parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
-  void PositionEnergyUsed(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   Apto::Array<int>& GetEmptyCellIDArray() { return empty_cell_id_array; }
   void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
   int FindRandEmptyCell();

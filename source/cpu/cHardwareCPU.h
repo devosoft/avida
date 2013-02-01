@@ -331,11 +331,6 @@ private:
   bool Inst_IfGrX(cAvidaContext& ctx);
   bool Inst_IfEquX(cAvidaContext& ctx);
 
-  bool Inst_IfAboveResLevel(cAvidaContext& ctx);
-  bool Inst_IfAboveResLevelEnd(cAvidaContext& ctx);
-  bool Inst_IfNotAboveResLevel(cAvidaContext& ctx);
-  bool Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx);
-  
   // Probabilistic ifs.
   bool Inst_IfP0p125(cAvidaContext& ctx);
   bool Inst_IfP0p25(cAvidaContext& ctx);
@@ -646,28 +641,6 @@ private:
   bool Inst_HeadDivide0_05(cAvidaContext& ctx);
   bool Inst_HeadDivide0_01(cAvidaContext& ctx);
   bool Inst_HeadDivide0_001(cAvidaContext& ctx);
-
-  bool Inst_IfEnergyLow(cAvidaContext& ctx);
-  bool Inst_IfEnergyNotLow(cAvidaContext& ctx);
-  bool Inst_IfFacedEnergyLow(cAvidaContext& ctx);
-  bool Inst_IfFacedEnergyNotLow(cAvidaContext& ctx);
-  bool Inst_IfEnergyHigh(cAvidaContext& ctx);
-  bool Inst_IfEnergyNotHigh(cAvidaContext& ctx);
-  bool Inst_IfFacedEnergyHigh(cAvidaContext& ctx);
-  bool Inst_IfFacedEnergyNotHigh(cAvidaContext& ctx);
-  bool Inst_IfEnergyMed(cAvidaContext& ctx);
-  bool Inst_IfFacedEnergyMed(cAvidaContext& ctx);
-  bool Inst_IfFacedEnergyMore(cAvidaContext& ctx);
-  bool Inst_IfFacedEnergyLess(cAvidaContext& ctx);
-  bool Inst_IfEnergyInBuffer(cAvidaContext& ctx);
-  bool Inst_IfEnergyNotInBuffer(cAvidaContext& ctx);
-  bool Inst_GetEnergyLevel(cAvidaContext& ctx);
-  bool Inst_GetFacedEnergyLevel(cAvidaContext& ctx);
-  bool Inst_IfFacedEnergyRequestOn(cAvidaContext& ctx);
-  bool Inst_IfFacedEnergyRequestOff(cAvidaContext& ctx);
-  bool Inst_GetEnergyRequestStatus(cAvidaContext& ctx);
-  bool Inst_GetFacedEnergyRequestStatus(cAvidaContext& ctx);
-
 
 
   bool Inst_GetUpdate(cAvidaContext& ctx);

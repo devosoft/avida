@@ -49,8 +49,8 @@ namespace Avida {
       struct InjectGenomeInfo;
       
     private:
+      Universe* m_universe;
       cWorld* m_world;
-      World* m_new_world;
       
       mutable Apto::Mutex m_mutex;
       Apto::ConditionVariable m_pause_cv;
@@ -79,13 +79,12 @@ namespace Avida {
 
       
     public:
-      LIB_EXPORT Driver(cWorld* world, World* new_world);
+      LIB_EXPORT Driver(Universe* universe);
       LIB_EXPORT ~Driver();
       
       LIB_EXPORT static Driver* InitWithDirectory(const Apto::String& dir);
       
-      LIB_EXPORT inline World* GetWorld() { return m_new_world; }
-      LIB_EXPORT inline cWorld* GetOldWorld() { return m_world; }
+      LIB_EXPORT inline Universe* Universe() { return m_universe; }
       
       LIB_EXPORT inline bool HasStarted() const { return m_started; }
       LIB_EXPORT inline void PauseAt(Update update) { m_pause_at = update; }

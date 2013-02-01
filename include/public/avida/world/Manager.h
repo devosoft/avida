@@ -26,6 +26,7 @@
 #define AvidaWorldManager_h
 
 #include "avida/core/Universe.h"
+#include "avida/structure/Types.h"
 #include "avida/world/Types.h"
 
 
@@ -39,16 +40,17 @@ namespace Avida {
     {
     private:
       Universe* m_universe;
-      Container* m_top_level;
+      ContainerPtr m_top_level;
       
     public:
-      LIB_EXPORT Manager();
+      LIB_EXPORT static ManagerPtr CreateWithTopLevelStructure(Universe* universe, Structure::Controller* structure);
       LIB_EXPORT ~Manager();
+      
       
       LIB_EXPORT inline Container& TopLevelContainer() { return *m_top_level; }
       LIB_EXPORT inline const Container& TopLevelContainer() const { return *m_top_level; }
       
-      LIB_EXPORT bool AttachTo(Universe* universe);
+      
       LIB_EXPORT static ManagerPtr Of(Universe* universe);
       
     public:
@@ -56,7 +58,11 @@ namespace Avida {
       
     public:
       LIB_LOCAL UniverseFacetID UpdateBefore() const;
-      LIB_LOCAL UniverseFacetID UpdateAfter() const;      
+      LIB_LOCAL UniverseFacetID UpdateAfter() const;
+      
+      
+    private:
+      LIB_EXPORT Manager(Universe* universe, Structure::Controller* structure);
     };
     
   };

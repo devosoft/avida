@@ -51,8 +51,8 @@
 #include <iostream>
 
 
-Avida::Viewer::Driver::Driver(cWorld* world, World* new_world)
-: Apto::Thread(), m_world(world), m_new_world(new_world), m_pause_state(DRIVER_UNPAUSED), m_started(false), m_done(false)
+Avida::Viewer::Driver::Driver(Universe* universe)
+: Apto::Thread(), m_universe(universe), m_pause_state(DRIVER_UNPAUSED), m_started(false), m_done(false)
 , m_paused(false), m_pause_at(-2), m_map(NULL)
 {
   GlobalObjectManager::Register(this);
@@ -69,7 +69,7 @@ Avida::Viewer::Driver::~Driver()
   delete m_map;
   
   GlobalObjectManager::Unregister(this);
-  delete m_world;
+  delete m_universe;
 }
 
 
@@ -512,10 +512,10 @@ void Avida::Viewer::Driver::DetachListener(Listener* listener)
 
 void Avida::Viewer::Driver::AttachRecorder(Data::RecorderPtr recorder, bool concurrent_update)
 {
-  m_world->GetDataManager()->AttachRecorder(recorder, concurrent_update);
+  Data::Manager::Of(m_universe)->AttachRecorder(recorder, concurrent_update);
 }
 
 void Avida::Viewer::Driver::DetachRecorder(Data::RecorderPtr recorder)
 {
-  m_world->GetDataManager()->DetachRecorder(recorder);
+  Data::Manager::Of(m_universe)->DetachRecorder(recorder);
 }

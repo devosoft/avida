@@ -39,6 +39,7 @@ namespace Avida {
     
     class Container : public virtual Apto::RefCountObject<Apto::ThreadSafe>
     {
+      friend class Manager;
     protected:
       Universe* m_universe;
       
@@ -48,12 +49,7 @@ namespace Avida {
       
     public:
       LIB_EXPORT ~Container();
-      
-      LIB_EXPORT static inline ContainerPtr CreateWithStructure(Universe* universe, Structure::Controller* structure)
-      {
-        return ContainerPtr(new Container(universe, structure));
-      }
-      
+
       
     protected:
       LIB_EXPORT Container(Universe* universe, Structure::Controller* structure);

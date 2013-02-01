@@ -78,7 +78,6 @@ private:
   double ydiffuse;
   double ygravity;
   bool org_resources;
-  bool energy_resource;  // only implemented for spacial resource
 
   int m_peakx;
   int m_peaky;
@@ -134,7 +133,6 @@ public:
   void SetCellIdList(Apto::Array<int>& id_list); //SLG partial resources
   cCellResource* GetCellResourcePtr(int _id);
   void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial, double _inflow, double _outflow);
-  bool SetEnergyResource(cString _energy_resource);
   bool SetGeometry(cString _geometry);
 
   const cString& GetName() const { return name; }
@@ -152,7 +150,6 @@ public:
   void SetOutflow(double _outflow) { outflow = _outflow; }
   void SetSpatial(bool _spatial) { isspatial = _spatial; }
 
-  bool GetEnergyResource() const { return energy_resource; }
   bool GetHGTMetabolize() const { return hgt_metabolize; }
   bool GetCollectable() { return collectable; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }

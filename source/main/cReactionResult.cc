@@ -57,7 +57,6 @@ void cReactionResult::ActivateReaction()
   reactions_triggered.SetAll(false);
   reaction_add_bonus.SetAll(0.0);
   task_plasticity.SetAll(0.0);
-  energy_add = 0.0;
   bonus_add = 0.0;
   bonus_mult = 1.0;
   insts_triggered.Resize(0);
@@ -125,12 +124,6 @@ void cReactionResult::MarkReaction(int id)
 {
   ActivateReaction();
   reactions_triggered[id] = true;
-}
-
-void cReactionResult::AddEnergy(double value)
-{
-  ActivateReaction();
-  energy_add += value;
 }
 
 void cReactionResult::AddBonus(double value, int id)

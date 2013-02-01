@@ -182,61 +182,6 @@ bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, int st
   return true;
 }
 
-bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& str_list, cUserFeedback* feedback)
-{
-  // Setup the instruction library and collect the default filename
-  cString default_filename;
-	switch (m_world->GetConfig().HARDWARE_TYPE.Get())
-	{
-		case HARDWARE_TYPE_CPU_ORIGINAL:
-			default_filename = cHardwareCPU::GetDefaultInstFilename();
-			break;
-		case HARDWARE_TYPE_CPU_TRANSSMT:
-			default_filename = cHardwareTransSMT::GetDefaultInstFilename();
-			break;
-		case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-			default_filename = cHardwareExperimental::GetDefaultInstFilename();
-			break;
-		default:
-      if (feedback) feedback->Error("unknown/unsupported HARDWARE_TYPE specified");
-      return false;
-  }
-  
-  if (filename == "" || filename == "-") {
-    filename = default_filename;
-    if (feedback) feedback->Notify("using default instruction set: %s", (const char*)filename);
-    // set INST_SET so that the proper name will show up in the text viewer
-    m_world->GetConfig().INST_SET.Set(filename);
-  }
-  
-  
-  cInitFile file(filename, m_world->GetWorkingDir());
-  
-  if (!file.WasOpened()) {
-    if (feedback) feedback->Append(file.GetFeedback());
-    return false;
-  }
-
-  str_list.PushRear(cStringUtil::Stringf("INSTSET %s:hw_type=%d", (const char*)filename, m_world->GetConfig().HARDWARE_TYPE.Get()));
-  for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {
-    cString cur_line = file.GetLine(line_id);
-    cString inst_name = cur_line.PopWord();
-    int redundancy = cur_line.PopWord().AsInt();
-    int cost = cur_line.PopWord().AsInt();
-    int ft_cost = cur_line.PopWord().AsInt();
-    int energy_cost = cur_line.PopWord().AsInt();
-    double prob_fail = cur_line.PopWord().AsDouble();
-    int addl_time_cost = cur_line.PopWord().AsInt();
-    double res_cost = cur_line.PopWord().AsDouble();
-    double fem_res_cost = cur_line.PopWord().AsDouble();
-    int post_cost = cur_line.PopWord().AsDouble();
-
-    str_list.PushRear(cStringUtil::Stringf("INST %s:redundancy=%d:cost=%d:initial_cost=%d:energy_cost=%d:prob_fail=%f:addl_time_cost=%d:res_cost=%f:fem_res_cost=%f:post_cost=%d",
-                                           (const char*)inst_name, redundancy, cost, ft_cost, energy_cost, prob_fail, addl_time_cost, res_cost, fem_res_cost, post_cost)); 
-  }  
-  return true;
-}
-
 
 cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const Genome& mg)
 {

@@ -56,42 +56,44 @@ namespace Avida {
       
       
     public:
-      ArgSchema(bool case_sensitive = false) : m_case_sensitive(case_sensitive) { ; }
-      ~ArgSchema();
+      LIB_EXPORT ArgSchema(bool case_sensitive = false) : m_case_sensitive(case_sensitive) { ; }
+      LIB_EXPORT ~ArgSchema();
       
-      inline void AdjustArgName(Apto::String& in_name) const;
+      LIB_EXPORT inline void AdjustArgName(Apto::String& in_name) const;
       
-      bool IsCaseSensitive() const { return m_case_sensitive; }
+      LIB_EXPORT bool IsCaseSensitive() const { return m_case_sensitive; }
       
-      int Define(Apto::String in_name, ArgumentType in_type);                  // Required Argument (supplied type)
-      int Define(Apto::String in_name, int def);                         // Optional Int Argument
-      int Define(Apto::String in_name, int lower, int upper);           // Required Int Argument (with range limits)
-      int Define(Apto::String in_name, int lower, int upper, int def);  // Optional Int Argument (with range limits)
-      int Define(Apto::String in_name, double def);                     // Optional Double Argument
-      int Define(Apto::String in_name, double lower, double upper);     // Required Double Argument (with range limits)
-      int Define(Apto::String in_name, double lower, double upper, double def); // Optional Double (with range limits)
-      int Define(Apto::String in_name, const Apto::String& def);             // Optional String Argument
+      LIB_EXPORT int Define(Apto::String in_name, ArgumentType in_type);           // Required Argument (supplied type)
+      LIB_EXPORT int Define(Apto::String in_name, int def);                        // Optional Int Argument
+      LIB_EXPORT int Define(Apto::String in_name, int lower, int upper);           // Required Int Argument (with range limits)
+      LIB_EXPORT int Define(Apto::String in_name, int lower, int upper, int def);  // Optional Int Argument (with range limits)
+      LIB_EXPORT int Define(Apto::String in_name, double def);                     // Optional Double Argument
+      LIB_EXPORT int Define(Apto::String in_name, double lower, double upper);     // Required Double Argument (with range limits)
+      LIB_EXPORT int Define(Apto::String in_name, double lower, double upper, double def); // Optional Double (with range limits)
+      LIB_EXPORT int Define(Apto::String in_name, Apto::Set<Apto::String>* vocab); // Required String Argument with Vocabulary
+      LIB_EXPORT int Define(Apto::String in_name, const Apto::String& def, Apto::Set<Apto::String>* vocab = NULL); // Optional String Argument
       
-      bool FindEntry(const Apto::String& in_name, ArgumentType& ret_type, int& ret_idx) const;
+      LIB_EXPORT bool FindEntry(const Apto::String& in_name, ArgumentType& ret_type, int& ret_idx) const;
       
-      inline int NumIntArgs() const { return m_ints.GetSize(); }
-      inline int NumDoubleArgs() const { return m_doubles.GetSize(); }
-      inline int NumStringArgs() const { return m_strings.GetSize(); }
+      LIB_EXPORT inline int NumIntArgs() const { return m_ints.GetSize(); }
+      LIB_EXPORT inline int NumDoubleArgs() const { return m_doubles.GetSize(); }
+      LIB_EXPORT inline int NumStringArgs() const { return m_strings.GetSize(); }
       
-      inline bool IsOptionalInt(int i) const;
-      inline bool IsOptionalDouble(int i) const;
-      inline bool IsOptionalString(int i) const;
+      LIB_EXPORT inline bool IsOptionalInt(int i) const;
+      LIB_EXPORT inline bool IsOptionalDouble(int i) const;
+      LIB_EXPORT inline bool IsOptionalString(int i) const;
       
-      inline void SetDefaultInt(int i, int& v) const;
-      inline void SetDefaultDouble(int i, double& v) const;
-      inline void SetDefaultString(int i, Apto::String& v) const;
+      LIB_EXPORT inline void SetDefaultInt(int i, int& v) const;
+      LIB_EXPORT inline void SetDefaultDouble(int i, double& v) const;
+      LIB_EXPORT inline void SetDefaultString(int i, Apto::String& v) const;
       
-      inline bool IntName(int i, Apto::String& name) const;
-      inline bool DoubleName(int i, Apto::String& name) const;
-      inline bool StringName(int i, Apto::String& name) const;
+      LIB_EXPORT inline bool IntName(int i, Apto::String& name) const;
+      LIB_EXPORT inline bool DoubleName(int i, Apto::String& name) const;
+      LIB_EXPORT inline bool StringName(int i, Apto::String& name) const;
       
-      inline bool ValidateInt(int i, int v) const;
-      inline bool ValidateDouble(int i, double v) const;
+      LIB_EXPORT inline bool ValidateInt(int i, int v) const;
+      LIB_EXPORT inline bool ValidateDouble(int i, double v) const;
+      LIB_EXPORT inline bool ValidateString(int i, const Apto::String& v) const;
       
     private:
       struct Entry
@@ -109,6 +111,7 @@ namespace Avida {
         union {
           int r_l_int;
           double r_l_double;
+          Apto::Set<Apto::String>* vocab;
         };
         union {
           int r_u_int;
@@ -116,16 +119,23 @@ namespace Avida {
         };
         
         
-        Entry() { ; }
-        Entry(const Apto::String& in_name, int in_idx, ArgumentType in_type)  // Required Argument (supplied type)
-        : name(in_name), type(in_type), index(in_idx), optional(false), has_range_limits(false) { ; }
-        Entry(const Apto::String& in_name, int in_idx, int def)               // Optional Int Argument
-        : name(in_name), type(INT), index(in_idx), optional(true), def_int(def), has_range_limits(false) { ; }
-        Entry(const Apto::String& in_name, int in_idx, double def)            // Optional Double Argument
-        : name(in_name), type(DOUBLE), index(in_idx), optional(true), def_double(def), has_range_limits(false) { ; }
-        Entry(const Apto::String& in_name, int in_idx, Apto::String* def)     // Optional String Argument
-        : name(in_name), type(STRING), index(in_idx), optional(true), def_string(def), has_range_limits(false) { ; }
-        ~Entry() { if (type == STRING && optional) delete def_string; }       // Cleanup string object
+        LIB_EXPORT inline Entry() { ; }
+        LIB_EXPORT Entry(const Apto::String& in_name, int in_idx, ArgumentType in_type)  // Required Argument (supplied type)
+          : name(in_name), type(in_type), index(in_idx), optional(false), def_string(NULL), has_range_limits(false), vocab(NULL) { ; }
+        LIB_EXPORT Entry(const Apto::String& in_name, int in_idx, int def)               // Optional Int Argument
+          : name(in_name), type(INT), index(in_idx), optional(true), def_int(def), has_range_limits(false) { ; }
+        LIB_EXPORT Entry(const Apto::String& in_name, int in_idx, double def)            // Optional Double Argument
+          : name(in_name), type(DOUBLE), index(in_idx), optional(true), def_double(def), has_range_limits(false) { ; }
+        LIB_EXPORT Entry(const Apto::String& in_name, int in_idx, Apto::String* def)     // Optional String Argument
+          : name(in_name), type(STRING), index(in_idx), optional(true), def_string(def), has_range_limits(false) { ; }
+        
+        ~Entry()
+        {
+          if (type == STRING) {
+            delete def_string;
+            delete vocab;
+          }          
+        }
       };
     };
     
@@ -257,7 +267,16 @@ namespace Avida {
       return false;
     }
     
+    inline bool ArgSchema::ValidateString(int i, const Apto::String& v) const
+    {
+      if (i < m_strings.GetSize() && m_strings[i] && (!m_strings[i]->vocab || m_strings[i]->vocab->Has(v))) {
+        return true;
+      }
+      
+      return false;
+    }
     
+        
     // Args - Inline Method Implementations
     // --------------------------------------------------------------------------------------------------------------
     

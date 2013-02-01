@@ -39,7 +39,6 @@ private:
   Apto::Array<bool> reactions_triggered;
   Apto::Array<double> reaction_add_bonus;
   Apto::Array<double> task_plasticity;
-  double energy_add;
   double bonus_add;
   double bonus_mult;
   Apto::Array<cString> insts_triggered;
@@ -70,7 +69,6 @@ public:
   void MarkTask(int id, const double quality=1, const double value=0);
 
   void MarkReaction(int id);
-  void AddEnergy(double value);
   void AddBonus(double value, int id);
   void MultBonus(double value);
 
@@ -87,7 +85,6 @@ public:
   bool TaskDone(int id);
   double TaskQuality(int id);
   double TaskValue(int id);
-  double GetAddEnergy() { return energy_add; }
   double GetAddBonus() { return bonus_add; }
   double GetReactionAddBonus(const int i) { return reaction_add_bonus[i]; }
   double GetMultBonus() { return bonus_mult; }

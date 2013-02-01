@@ -46,6 +46,12 @@ Avida::Environment::Manager::Manager()
   
 }
 
+Avida::Environment::Manager::~Manager()
+{
+  for (int i = 0; i < m_res_defs.GetSize(); i++) delete m_res_defs[i];
+}
+
+
 bool Avida::Environment::Manager::DefineActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc, int tmp_order)
 {
   if (m_action_triggers.Has(trigger_id)) return false;

@@ -25,7 +25,6 @@
 #define cOrgSensor_h
 
 #include "cOrganism.h"
-#include "cResourceDefLib.h"
 #include "cWorld.h"
 
 struct sOrgDisplay 

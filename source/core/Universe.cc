@@ -31,6 +31,7 @@ static const int WORLD_ARCHIVE_VERSION = 1;
 
 const Avida::UniverseFacetID Avida::Reserved::DataManagerFacetID("datamanager");
 const Avida::UniverseFacetID Avida::Reserved::EnvironmentFacetID("environment");
+const Avida::UniverseFacetID Avida::Reserved::HardwareManagerFacetID("hardwaremanager");
 const Avida::UniverseFacetID Avida::Reserved::OutputManagerFacetID("outputmanager");
 const Avida::UniverseFacetID Avida::Reserved::SystematicsFacetID("systematics");
 const Avida::UniverseFacetID Avida::Reserved::WorldManagerFacetID("worldmanager");
@@ -86,6 +87,7 @@ bool Avida::Universe::AttachFacet(UniverseFacetID facet_id, UniverseFacetPtr fac
   
   if (facet_id == Reserved::DataManagerFacetID) m_data_manager = facet;
   else if (facet_id == Reserved::EnvironmentFacetID) m_environment = facet;
+  else if (facet_id == Reserved::HardwareManagerFacetID) m_hardware_manager = facet;
   else if (facet_id == Reserved::OutputManagerFacetID) m_output_manager = facet;
   else if (facet_id == Reserved::SystematicsFacetID) m_systematics = facet;
   else if (facet_id == Reserved::WorldManagerFacetID) m_world_manager = facet;

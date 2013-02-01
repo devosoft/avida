@@ -36,12 +36,16 @@ namespace Avida {
     struct Coord
     {
     public:
-      double x;
-      double y;
-      double z;
+      union {
+        float x;
+        int index;
+      };
+      float y;
+      float z;
       
-      LIB_EXPORT inline Coord() x(0.0), y(0.0), z(0.0) { ; }
-      LIB_EXPORT Coord(double in_x, double in_y, double in_z = 0.0) : x(in_x), y(in_y), z(in_z) { ; }
+      LIB_EXPORT inline Coord() : x(0.0f), y(0.0f), z(0.0f) { ; }
+      LIB_EXPORT inline Coord(float in_x, float in_y, float in_z = 0.0f) : x(in_x), y(in_y), z(in_z) { ; }
+      LIB_EXPORT inline explicit Coord(int in_index) : x(0.0f), index(in_index), y(0.0f), z(0.0f) { ; }
     };
     
   };

@@ -21,3 +21,8 @@
  *  Authors: David M. Bryson <david@programerror.com>
  *
  */
+
+#include "avida/private/structure/types/TwoDimensionalGrid.h"
+
+
+Avida::Structure::Types::TwoDimensionalGrid::~TwoDimensionalGrid() { ; }

@@ -23,3 +23,6 @@
  */
 
 #include "avida/structure/Controller.h"
+
+
+Avida::Structure::Controller::~Controller() { ; }
