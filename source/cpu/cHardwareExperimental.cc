@@ -4987,7 +4987,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   else {
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
     double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
-    if (m_organism->GetForageTarget() <= -3) effic *= 0.5;
+    if (m_organism->GetForageTarget() <= -3) effic *= effic;
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
       const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
       double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
@@ -5456,7 +5456,7 @@ bool cHardwareExperimental::Inst_AttackPreyNoShare(cAvidaContext& ctx)
   else {
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
     double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
-    if (m_organism->GetForageTarget() <= -3) effic *= 0.5;
+    if (m_organism->GetForageTarget() <= -3) effic *= effic;
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
       const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
       double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();

@@ -22,6 +22,7 @@
 
 using namespace std;
 
+const Apto::String sGenotypeViewInfo::ObjectKey("sGenotypeViewInfo");
 
 cViewInfo::cViewInfo(cWorld* world, cView_Base* view)
 : m_world(world)
