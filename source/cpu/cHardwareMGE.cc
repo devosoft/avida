@@ -562,11 +562,13 @@ bool cHardwareMGE::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instructi
   m_organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
   
   // And execute it.
+  m_from_sensor = false;
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
   
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
+    if (m_from_sensor) m_organism->GetPhenotype().IncCurFromSensorInstCount(actual_inst.GetOp());
   }  
   return exec_success;
 }
@@ -1526,6 +1528,7 @@ bool cHardwareMGE::Inst_IfNEqu(cAvidaContext&) // Execute next if bx != ?cx?
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
   if (GetRegVal(op1) == GetRegVal(op2)) Advance(getThIP(), thIP);
+  m_from_sensor = (FromSensor(op1) || FromSensor(op2));
   return true;
 }
 
@@ -1534,6 +1537,7 @@ bool cHardwareMGE::Inst_IfLess(cAvidaContext&) // Execute next if ?bx? < ?cx?
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
   if (GetRegVal(op1) >=  GetRegVal(op2)) Advance(getThIP(), thIP);
+  m_from_sensor = (FromSensor(op1) || FromSensor(op2));
   return true;
 }
 
@@ -1541,18 +1545,21 @@ bool cHardwareMGE::Inst_IfNotZero(cAvidaContext&)  // Execute next if ?bx? != 0
 {
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegVal(op1) == 0) Advance(getThIP(), thIP);
+  m_from_sensor = FromSensor(op1);
   return true;
 }
 bool cHardwareMGE::Inst_IfEqualZero(cAvidaContext&)  // Execute next if ?bx? == 0
 {
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegVal(op1) != 0) Advance(getThIP(), thIP);
+  m_from_sensor = FromSensor(op1);
   return true;
 }
 bool cHardwareMGE::Inst_IfGreaterThanZero(cAvidaContext&)  // Execute next if ?bx? > 0
 {
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegVal(op1) <= 0) Advance(getThIP(), thIP);
+  m_from_sensor = FromSensor(op1);
   return true;
 }
 
@@ -1560,6 +1567,7 @@ bool cHardwareMGE::Inst_IfLessThanZero(cAvidaContext&)  // Execute next if ?bx? 
 {
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegVal(op1) >= 0) Advance(getThIP(), thIP);
+  m_from_sensor = FromSensor(op1);
   return true;
 }
 
@@ -1586,6 +1594,7 @@ bool cHardwareMGE::Inst_IfGtrX(cAvidaContext&)       // Execute next if BX > X; 
   }
   
   if (GetRegVal(rBX) <= valueToCompare) Advance(getThIP(), thIP);
+  m_from_sensor = FromSensor(rBX);
   
   return true;
 }
@@ -1612,6 +1621,7 @@ bool cHardwareMGE::Inst_IfEquX(cAvidaContext&)       // Execute next if BX == X;
   }
   
   if (GetRegVal(rBX) != valueToCompare) Advance(getThIP(), thIP);
+  m_from_sensor = FromSensor(rBX);
   
   return true;
 }
@@ -1619,6 +1629,7 @@ bool cHardwareMGE::Inst_IfEquX(cAvidaContext&)       // Execute next if BX == X;
 bool cHardwareMGE::Inst_Pop(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
+  m_from_sensor = FromSensor(reg_used);
   sInternalValue pop = stackPop();
   setInternalValue(reg_used, pop.value, pop);
   return true;
@@ -1627,6 +1638,7 @@ bool cHardwareMGE::Inst_Pop(cAvidaContext&)
 bool cHardwareMGE::Inst_Push(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
+  m_from_sensor = FromSensor(reg_used);
   getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
@@ -1634,23 +1646,29 @@ bool cHardwareMGE::Inst_Push(cAvidaContext&)
 bool cHardwareMGE::Inst_PopAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
+  bool any_from_sensor = false;
   for (int i = 0; i < NUM_REGISTERS; i++) {
+    if (FromSensor(reg_used)) any_from_sensor = true;
     sInternalValue pop = stackPop();
     setInternalValue(reg_used, pop.value, pop);
     reg_used++;
     if (reg_used == NUM_REGISTERS) reg_used = 0;
   }
+  m_from_sensor = any_from_sensor;
   return true;
 }
 
 bool cHardwareMGE::Inst_PushAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
+  bool any_from_sensor = false;
   for (int i = 0; i < NUM_REGISTERS; i++) {
+    if (FromSensor(reg_used)) any_from_sensor = true;
     getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].reg[reg_used]);
     reg_used++;
     if (reg_used == NUM_REGISTERS) reg_used = 0;
   }
+  m_from_sensor = any_from_sensor;
   return true;
 }
 
@@ -1678,6 +1696,7 @@ bool cHardwareMGE::Inst_Swap(cAvidaContext&)
 bool cHardwareMGE::Inst_ShiftR(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
+  m_from_sensor = FromSensor(reg_used);
   setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value >> 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
@@ -1685,6 +1704,7 @@ bool cHardwareMGE::Inst_ShiftR(cAvidaContext&)
 bool cHardwareMGE::Inst_ShiftL(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
+  m_from_sensor = FromSensor(reg_used);
   setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value << 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
@@ -1693,6 +1713,7 @@ bool cHardwareMGE::Inst_ShiftL(cAvidaContext&)
 bool cHardwareMGE::Inst_Inc(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
+  m_from_sensor = FromSensor(reg_used);
   setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value + 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
@@ -1700,6 +1721,7 @@ bool cHardwareMGE::Inst_Inc(cAvidaContext&)
 bool cHardwareMGE::Inst_Dec(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
+  m_from_sensor = FromSensor(reg_used);
   setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value - 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
@@ -1732,6 +1754,7 @@ bool cHardwareMGE::Inst_Add(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
+  m_from_sensor = (FromSensor(op1) || FromSensor(op2));
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, r1.value + r2.value, r1, r2);
@@ -1743,6 +1766,7 @@ bool cHardwareMGE::Inst_Sub(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
+  m_from_sensor = (FromSensor(op1) || FromSensor(op2));
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, r1.value - r2.value, r1, r2);
@@ -1754,6 +1778,7 @@ bool cHardwareMGE::Inst_Mult(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
+  m_from_sensor = (FromSensor(op1) || FromSensor(op2));
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, r1.value * r2.value, r1, r2);
@@ -1765,6 +1790,7 @@ bool cHardwareMGE::Inst_Div(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
+  m_from_sensor = (FromSensor(op1) || FromSensor(op2));
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
@@ -1784,6 +1810,7 @@ bool cHardwareMGE::Inst_Mod(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
+  m_from_sensor = (FromSensor(op1) || FromSensor(op2));
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
@@ -1800,6 +1827,7 @@ bool cHardwareMGE::Inst_Nand(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
+  m_from_sensor = (FromSensor(op1) || FromSensor(op2));
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, ~(r1.value & r2.value), r1, r2);
@@ -1838,6 +1866,7 @@ bool cHardwareMGE::Inst_TaskInput(cAvidaContext&)
 bool cHardwareMGE::Inst_TaskOutput(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
+  m_from_sensor = FromSensor(reg_used);
   sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
   // Do the "put" component
@@ -2059,6 +2088,7 @@ bool cHardwareMGE::Inst_JumpHead(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(thIP);
   const int reg = FindModifiedRegister(rCX);
+  m_from_sensor = FromSensor(reg);
   if (head_used > 1) getHead(head_used - 2).Jump(m_threads[m_cur_thread].reg[reg].value);
   else getThHead(head_used).Jump(m_threads[m_cur_thread].reg[reg].value);
   if (head_used == thIP) {
@@ -2193,6 +2223,8 @@ bool cHardwareMGE::Inst_WaitCondition_Equal(cAvidaContext&)
   const int check_reg = FindModifiedRegister(rDX);
   const int wait_dst = FindModifiedRegister(wait_val_reg);
   
+  m_from_sensor = FromSensor(wait_val_reg);
+
   // Check if condition has already been met
     for (int i = 0; i < m_threads.GetSize(); i++) {
       // if not current thread in current behavioral process...and not active...and has a wait condition in current reg...
@@ -2223,6 +2255,8 @@ bool cHardwareMGE::Inst_WaitCondition_Less(cAvidaContext&)
   const int check_reg = FindModifiedRegister(rDX);
   const int wait_dst = FindModifiedRegister(wait_val_reg);
   
+  m_from_sensor = FromSensor(wait_val_reg);
+
   // Check if condition has already been met
     for (int i = 0; i < m_threads.GetSize(); i++) {
       // if not current thread in current behavioral process...and not active...and has a wait condition in current reg...
@@ -2253,6 +2287,8 @@ bool cHardwareMGE::Inst_WaitCondition_Greater(cAvidaContext&)
   const int check_reg = FindModifiedRegister(rDX);
   const int wait_dst = FindModifiedRegister(wait_val_reg);
   
+  m_from_sensor = FromSensor(wait_val_reg);
+
   // Check if condition has already been met
     for (int i = 0; i < m_threads.GetSize(); i++) {
       // if not current thread in current behavioral process...and not active...and has a wait condition in current reg...
@@ -2392,6 +2428,7 @@ bool cHardwareMGE::Inst_RotateX(cAvidaContext&)
   
   const int reg_used = FindModifiedRegister(rBX);
   int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
+  m_from_sensor = FromSensor(reg_used);
   // rotate the nop nuMGEr of times in the appropriate direction
   rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
   rot_num = abs(rot_num);
@@ -2477,6 +2514,7 @@ bool cHardwareMGE::Inst_LookAround(cAvidaContext& ctx)
   int dir_reg = FindModifiedNextRegister(id_reg);
   
   int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
+  m_from_sensor = FromSensor(dir_reg);
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
@@ -2533,6 +2571,7 @@ bool cHardwareMGE::Inst_LookAroundFT(cAvidaContext& ctx)
   int dir_reg = FindModifiedNextRegister(id_reg);
   
   int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
+  m_from_sensor = FromSensor(dir_reg);
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
@@ -2614,6 +2653,8 @@ cOrgSensor::sLookOut cHardwareMGE::InitLooking(cAvidaContext& ctx, sLookRegAssig
   reg_init.distance = m_threads[m_cur_thread].reg[distance_reg].value;
   reg_init.search_type = m_threads[m_cur_thread].reg[search_reg].value;
   reg_init.id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+
+  m_from_sensor = (FromSensor(habitat_reg) || FromSensor(distance_reg) || FromSensor(search_reg) || FromSensor(id_reg) || m_from_sensor);
 
   return m_sensor.SetLooking(ctx, reg_init, facing, cell_id, use_ft);
 }    
@@ -2712,7 +2753,9 @@ bool cHardwareMGE::Inst_SenseFacedHabitat(cAvidaContext& ctx)
 bool cHardwareMGE::Inst_SetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  int prop_target = GetRegVal(FindModifiedRegister(rBX));
+  const int reg = FindModifiedRegister(rBX);
+  int prop_target = GetRegister(reg);
+  m_from_sensor = FromSensor(reg);
   
   //return false if org setting target to current one (avoid paying costs for not switching)
   const int old_target = m_organism->GetForageTarget();
