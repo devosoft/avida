@@ -185,6 +185,7 @@ private:
   struct {
     unsigned int m_cycle_count:16;
     unsigned int m_last_output:16;
+    unsigned int m_sense_age:16;
   };
   cCodeLabel m_read_label;
   cCodeLabel m_read_seq;

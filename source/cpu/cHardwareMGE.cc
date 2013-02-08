@@ -320,6 +320,7 @@ void cHardwareMGE::internalReset()
   m_cur_behavior = 0;
   
   m_sensor.Reset();
+  m_sense_age = 0;
 
   m_cycle_count = 0;
   m_last_output = 0;
@@ -565,11 +566,18 @@ bool cHardwareMGE::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instructi
   m_from_sensor = false;
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
   
+/*  if (exec_success & m_from_sensor) {
+    m_organism->GetPhenotype().IncCurFromSensorInstCount(actual_inst.GetOp());
+	  if ((m_sense_age == m_cycle_count) || (m_sense_age == (m_cycle_count - 1))) {
+      const double cur_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+      m_organism->UpdateMerit(cur_merit * 2);
+    }
+  } */
+  
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
-    if (m_from_sensor) m_organism->GetPhenotype().IncCurFromSensorInstCount(actual_inst.GetOp());
-  }  
+  }
   return exec_success;
 }
 
@@ -2665,25 +2673,25 @@ void cHardwareMGE::LookResults(sLookRegAssign& regs, cOrgSensor::sLookOut& resul
   // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
   // return defaults for failed to find
   if (results.report_type == 0) {
-    setInternalValue(regs.habitat, results.habitat, true);
-    setInternalValue(regs.distance, -1, true);
-    setInternalValue(regs.search_type, results.search_type, true);
-    setInternalValue(regs.id_sought, results.id_sought, true);
-    setInternalValue(regs.count, 0, true);
-    setInternalValue(regs.value, 0, true);
-    setInternalValue(regs.group, -9, true);
-    setInternalValue(regs.ft, -9, true);  
+    setInternalValue(regs.habitat, results.habitat, true, true);
+    setInternalValue(regs.distance, -1, true, true);
+    setInternalValue(regs.search_type, results.search_type, true, true);
+    setInternalValue(regs.id_sought, results.id_sought, true, true);
+    setInternalValue(regs.count, 0, true, true);
+    setInternalValue(regs.value, 0, true, true);
+    setInternalValue(regs.group, -9, true, true);
+    setInternalValue(regs.ft, -9, true, true);  
   }
   // report results as sent
   else if (results.report_type == 1) {
-    setInternalValue(regs.habitat, results.habitat, true);
-    setInternalValue(regs.distance, results.distance, true);
-    setInternalValue(regs.search_type, results.search_type, true);
-    setInternalValue(regs.id_sought, results.id_sought, true);
-    setInternalValue(regs.count, results.count, true);
-    setInternalValue(regs.value, results.value, true);
-    setInternalValue(regs.group, results.group, true);
-    setInternalValue(regs.ft, results.forage, true);  
+    setInternalValue(regs.habitat, results.habitat, true, true);
+    setInternalValue(regs.distance, results.distance, true, true);
+    setInternalValue(regs.search_type, results.search_type, true, true);
+    setInternalValue(regs.id_sought, results.id_sought, true, true);
+    setInternalValue(regs.count, results.count, true, true);
+    setInternalValue(regs.value, results.value, true, true);
+    setInternalValue(regs.group, results.group, true, true);
+    setInternalValue(regs.ft, results.forage, true, true);  
   }
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() > 5) {
@@ -2708,6 +2716,7 @@ void cHardwareMGE::LookResults(sLookRegAssign& regs, cOrgSensor::sLookOut& resul
       else if (target_reg == 13) setInternalValue(regs.ft, rand, true);  
     }
   }
+  m_sense_age = m_cycle_count;
   return;
 }
 

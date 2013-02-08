@@ -4042,14 +4042,14 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
       int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
       int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
       
-      if (target_reg == 6) setInternalValue(regs.habitat, rand, true, true);
-      else if (target_reg == 7) setInternalValue(regs.distance, rand, true, true);
-      else if (target_reg == 8) setInternalValue(regs.search_type, rand, true, true);
-      else if (target_reg == 9) setInternalValue(regs.id_sought, rand, true, true);
-      else if (target_reg == 10) setInternalValue(regs.count, rand, true, true);
-      else if (target_reg == 11) setInternalValue(regs.value, rand, true, true);
-      else if (target_reg == 12) setInternalValue(regs.group, rand, true, true);
-      else if (target_reg == 13) setInternalValue(regs.ft, rand, true, true);  
+      if (target_reg == 6) setInternalValue(regs.habitat, rand, true);
+      else if (target_reg == 7) setInternalValue(regs.distance, rand, true);
+      else if (target_reg == 8) setInternalValue(regs.search_type, rand, true);
+      else if (target_reg == 9) setInternalValue(regs.id_sought, rand, true);
+      else if (target_reg == 10) setInternalValue(regs.count, rand, true);
+      else if (target_reg == 11) setInternalValue(regs.value, rand, true);
+      else if (target_reg == 12) setInternalValue(regs.group, rand, true);
+      else if (target_reg == 13) setInternalValue(regs.ft, rand, true);  
     }
   }
   return;
