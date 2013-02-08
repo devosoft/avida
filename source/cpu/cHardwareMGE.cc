@@ -568,9 +568,9 @@ bool cHardwareMGE::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instructi
   
 /*  if (exec_success & m_from_sensor) {
     m_organism->GetPhenotype().IncCurFromSensorInstCount(actual_inst.GetOp());
-	  if ((m_sense_age == m_cycle_count) || (m_sense_age == (m_cycle_count - 1))) {
-      const double cur_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
-      m_organism->UpdateMerit(cur_merit * 2);
+    if ((m_sense_age == m_cycle_count) || (m_sense_age == (m_cycle_count - 1))) {
+      // m_organism->UpdateMerit(m_organism->GetPhenotype().GetMerit().GetDouble() + 1);
+      m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + 1);
     }
   } */
   

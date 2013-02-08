@@ -317,7 +317,25 @@ private:
 	
   // Feed Specific Tasks
   void Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetEcho(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetNand(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetAnd(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetOrn(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetOr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetAndn(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetNor(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetXor(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetEqu(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
   double Task_ConsumeTarget(cTaskContext& ctx) const; 
+  double Task_ConsumeTargetEcho(cTaskContext& ctx) const;
+  double Task_ConsumeTargetNand(cTaskContext& ctx) const;
+  double Task_ConsumeTargetAnd(cTaskContext& ctx) const;
+  double Task_ConsumeTargetOrn(cTaskContext& ctx) const;
+  double Task_ConsumeTargetOr(cTaskContext& ctx) const;
+  double Task_ConsumeTargetAndn(cTaskContext& ctx) const;
+  double Task_ConsumeTargetNor(cTaskContext& ctx) const;
+  double Task_ConsumeTargetXor(cTaskContext& ctx) const;
+  double Task_ConsumeTargetEqu(cTaskContext& ctx) const;
   
   void Load_CollectOddCell(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
   double Task_CollectOddCell(cTaskContext& ctx) const;

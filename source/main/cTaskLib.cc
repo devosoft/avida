@@ -301,7 +301,16 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   
   // Feed Specific Tasks
   if (name == "eat-target") Load_ConsumeTarget(name, info, envreqs, feedback);
-    
+  else if (name == "eat-target-echo") Load_ConsumeTargetEcho(name, info, envreqs, feedback);
+  else if (name == "eat-target-nand") Load_ConsumeTargetNand(name, info, envreqs, feedback);
+  else if (name == "eat-target-and") Load_ConsumeTargetAnd(name, info, envreqs, feedback);
+  else if (name == "eat-target-orn") Load_ConsumeTargetOrn(name, info, envreqs, feedback);
+  else if (name == "eat-target-or") Load_ConsumeTargetOr(name, info, envreqs, feedback);
+  else if (name == "eat-target-andn") Load_ConsumeTargetAndn(name, info, envreqs, feedback);
+  else if (name == "eat-target-nor") Load_ConsumeTargetNor(name, info, envreqs, feedback);
+  else if (name == "eat-target-xor") Load_ConsumeTargetXor(name, info, envreqs, feedback);
+  else if (name == "eat-target-equ") Load_ConsumeTargetEqu(name, info, envreqs, feedback);
+
   // String matching
   if (name == "all-ones") Load_AllOnes(name, info, envreqs, feedback);
   else if (name == "royal-road") Load_RoyalRoad(name, info, envreqs, feedback);
@@ -3464,6 +3473,123 @@ void cTaskLib::Load_ConsumeTarget(const cString& name, const cString& argstr, cE
   m_world->GetEnvironment().AddTargetID(args->GetInt(0));
 }
 
+/* Reward organisms for having found a targeted resource + performing logic*/
+void cTaskLib::Load_ConsumeTargetEcho(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("target_id", 0, 1);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "ConsumeTargetEcho", &cTaskLib::Task_ConsumeTargetEcho, 0, args);
+
+  // Add this target id to the list in the instructions file. 
+  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+}
+
+/* Reward organisms for having found a targeted resource + performing logic*/
+void cTaskLib::Load_ConsumeTargetNand(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("target_id", 0, 1);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "ConsumeTargetNand", &cTaskLib::Task_ConsumeTargetNand, 0, args);
+
+  // Add this target id to the list in the instructions file. 
+  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+}
+
+/* Reward organisms for having found a targeted resource + performing logic*/
+void cTaskLib::Load_ConsumeTargetAnd(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("target_id", 0, 1);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "ConsumeTargetAnd", &cTaskLib::Task_ConsumeTargetAnd, 0, args);
+
+  // Add this target id to the list in the instructions file. 
+  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+}
+
+/* Reward organisms for having found a targeted resource + performing logic*/
+void cTaskLib::Load_ConsumeTargetOrn(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("target_id", 0, 1);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "ConsumeTargetOrn", &cTaskLib::Task_ConsumeTargetOrn, 0, args);
+
+  // Add this target id to the list in the instructions file. 
+  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+}
+
+/* Reward organisms for having found a targeted resource + performing logic*/
+void cTaskLib::Load_ConsumeTargetOr(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("target_id", 0, 1);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "ConsumeTargetOr", &cTaskLib::Task_ConsumeTargetOr, 0, args);
+
+  // Add this target id to the list in the instructions file. 
+  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+}
+
+/* Reward organisms for having found a targeted resource + performing logic*/
+void cTaskLib::Load_ConsumeTargetAndn(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("target_id", 0, 1);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "ConsumeTargetAndn", &cTaskLib::Task_ConsumeTargetAndn, 0, args);
+
+  // Add this target id to the list in the instructions file. 
+  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+}
+
+/* Reward organisms for having found a targeted resource + performing logic*/
+void cTaskLib::Load_ConsumeTargetNor(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("target_id", 0, 1);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "ConsumeTargetNor", &cTaskLib::Task_ConsumeTargetNor, 0, args);
+
+  // Add this target id to the list in the instructions file. 
+  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+}
+
+/* Reward organisms for having found a targeted resource + performing logic*/
+void cTaskLib::Load_ConsumeTargetXor(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("target_id", 0, 1);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "ConsumeTargetXor", &cTaskLib::Task_ConsumeTargetXor, 0, args);
+
+  // Add this target id to the list in the instructions file. 
+  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+}
+
+/* Reward organisms for having found a targeted resource + performing logic*/
+void cTaskLib::Load_ConsumeTargetEqu(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("target_id", 0, 1);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "ConsumeTargetEqu", &cTaskLib::Task_ConsumeTargetEqu, 0, args);
+
+  // Add this target id to the list in the instructions file. 
+  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+}
+
 double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
 {
   int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
@@ -3478,7 +3604,131 @@ double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
   return reward;
 }
 
+double cTaskLib::Task_ConsumeTargetEcho(cTaskContext& ctx) const
+{
+  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  double reward = 0.0;
+  int target_res = ctx.GetOrganism()->GetForageTarget();
+  
+  // If the organism is on the right resource...
+  if (target_res == des_target) {
+    reward = Task_Echo(ctx);
+  }
+  return reward;
+}
 
+double cTaskLib::Task_ConsumeTargetNand(cTaskContext& ctx) const
+{
+  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  double reward = 0.0;
+  int target_res = ctx.GetOrganism()->GetForageTarget();
+  
+  // If the organism is on the right resource...
+  if (target_res == des_target) {
+    reward = Task_Nand(ctx);
+  }
+  return reward;
+}
+
+double cTaskLib::Task_ConsumeTargetAnd(cTaskContext& ctx) const
+{
+  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  double reward = 0.0;
+  int target_res = ctx.GetOrganism()->GetForageTarget();
+  
+  // If the organism is on the right resource...
+  if (target_res == des_target) {
+    reward = Task_And(ctx);
+  }
+  return reward;
+}
+
+double cTaskLib::Task_ConsumeTargetOrn(cTaskContext& ctx) const
+{
+  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  double reward = 0.0;
+  int target_res = ctx.GetOrganism()->GetForageTarget();
+  
+  // If the organism is on the right resource...
+  if (target_res == des_target) {
+    reward = Task_OrNot(ctx);
+  }
+  return reward;
+}
+
+double cTaskLib::Task_ConsumeTargetOr(cTaskContext& ctx) const
+{
+  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  double reward = 0.0;
+  int target_res = ctx.GetOrganism()->GetForageTarget();
+  
+  // If the organism is on the right resource...
+  if (target_res == des_target) {
+    reward = Task_Or(ctx);
+  }
+  return reward;
+}
+
+double cTaskLib::Task_ConsumeTargetAndn(cTaskContext& ctx) const
+{
+  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  double reward = 0.0;
+  int target_res = ctx.GetOrganism()->GetForageTarget();
+  
+  // If the organism is on the right resource...
+  if (target_res == des_target) {
+    reward = Task_AndNot(ctx);
+  }
+  return reward;
+}
+
+double cTaskLib::Task_ConsumeTargetNor(cTaskContext& ctx) const
+{
+  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  double reward = 0.0;
+  int target_res = ctx.GetOrganism()->GetForageTarget();
+  
+  // If the organism is on the right resource...
+  if (target_res == des_target) {
+    reward = Task_Nor(ctx);
+  }
+  return reward;
+}
+
+double cTaskLib::Task_ConsumeTargetXor(cTaskContext& ctx) const
+{
+  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  double reward = 0.0;
+  int target_res = ctx.GetOrganism()->GetForageTarget();
+  
+  // If the organism is on the right resource...
+  if (target_res == des_target) {
+    reward = Task_Xor(ctx);
+  }
+  return reward;
+}
+
+double cTaskLib::Task_ConsumeTargetEqu(cTaskContext& ctx) const
+{
+  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  double reward = 0.0;
+  int target_res = ctx.GetOrganism()->GetForageTarget();
+  
+  // If the organism is on the right resource...
+  if (target_res == des_target) {
+    reward = Task_Equ(ctx);
+  }
+  return reward;
+}
 
 void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
