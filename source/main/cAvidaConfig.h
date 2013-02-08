@@ -728,6 +728,7 @@ public:
   CONFIG_ADD_VAR(LOOK_DISABLE, int, 0, "0: none \n 1: input habitat register \n 2: input sight dist sought \n 3: input type of search (e.g. closest vs count vs total) \n 4: input resource/org id sought \n 5: output habitat used \n 6: output distance used\n 7: output search type used\n 8: output resource/org id used \n 9: output count (edible)\n 10: outptu amount/value seen\n 11: output id seen \n 12: output org forage target seen");
   CONFIG_ADD_VAR(LOOK_DISABLE_TYPE, int, 0, "0: predators \n 1: prey \n 2: both predators and prey");
   CONFIG_ADD_VAR(USE_DISPLAY, int, 0, "If 1, org display data is always 'on' (visible). If 2, org display is on and sensor does not set potential data.");
+  CONFIG_ADD_VAR(USE_MIMICS, int, 0, "If 1, org's with forage target of 1 can show a deceptive ft number (as seen by other orgs via sensor)");
 
   // -------- Pheromone config options --------
   CONFIG_ADD_GROUP(PHEROMONE_GROUP, "Pheromone Settings");

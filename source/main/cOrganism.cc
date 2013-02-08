@@ -186,6 +186,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_northerly(0)
   , m_easterly(0)
   , m_forage_target(-1)
+  , m_show_ft(-1)
   , m_has_set_ft(false)
   , m_teach(false)
   , m_parent_teacher(false)
@@ -1225,6 +1226,7 @@ void cOrganism::SetForageTarget(cAvidaContext& ctx, int forage_target) {
     }
   }
   m_forage_target = forage_target;
+  if (m_show_ft == -1) m_show_ft = m_forage_target;
 }
 
 void cOrganism::CopyParentFT(cAvidaContext& ctx) {

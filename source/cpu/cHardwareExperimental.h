@@ -564,6 +564,7 @@ private:
   bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
   bool Inst_SetRandForageTargetOnce(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
+  bool Inst_ShowForageTarget(cAvidaContext& ctx);
   bool Inst_GetLocOrgDensity(cAvidaContext& ctx);
   bool Inst_GetFacedOrgDensity(cAvidaContext& ctx);
   
@@ -607,6 +608,7 @@ private:
   bool Inst_AttackSpecPrey(cAvidaContext& ctx);
   bool Inst_AttackPreyArea(cAvidaContext& ctx);
   bool Inst_AttackFTPrey(cAvidaContext& ctx); 
+  bool Inst_AttackPoisionPrey(cAvidaContext& ctx);
   bool Inst_FightMeritOrg(cAvidaContext& ctx); 
   bool Inst_FightBonusOrg(cAvidaContext& ctx); 
   bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 

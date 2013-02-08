@@ -305,8 +305,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("set-ft-once", &cHardwareExperimental::Inst_SetForageTargetOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-rand-ft-once", &cHardwareExperimental::Inst_SetRandForageTargetOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget, INST_CLASS_ENVIRONMENT),
+    tInstLibEntry<tMethod>("show-ft", &cHardwareExperimental::Inst_ShowForageTarget, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-loc-org-density", &cHardwareExperimental::Inst_GetLocOrgDensity, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("get-faced-org-density", &cHardwareExperimental::Inst_GetFacedOrgDensity, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
+    tInstLibEntry<tMethod>("get-faced-org-density", &cHardwareExperimental::Inst_GetFacedOrgDensity, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
 
     tInstLibEntry<tMethod>("collect-edible", &cHardwareExperimental::Inst_CollectEdible, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect-specific", &cHardwareExperimental::Inst_CollectSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
@@ -347,6 +348,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey", &cHardwareExperimental::Inst_AttackPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("attack-ft-prey", &cHardwareExperimental::Inst_AttackFTPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("attack-poison-prey", &cHardwareExperimental::Inst_AttackPoisionPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-group", &cHardwareExperimental::Inst_AttackPreyGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-share", &cHardwareExperimental::Inst_AttackPreyShare, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-no-share", &cHardwareExperimental::Inst_AttackPreyNoShare, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -4192,6 +4194,34 @@ bool cHardwareExperimental::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
   else return Inst_SetForageTargetOnce(ctx);
 }
 
+bool cHardwareExperimental::Inst_ShowForageTarget(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int reg = FindModifiedRegister(rBX);
+  int prop_target = GetRegister(reg);
+  m_from_sensor = FromSensor(reg);
+  
+  // return false if not a mimic ft type 
+  if (m_organism->GetForageTarget() != 1) return false;
+  
+  // a little mod help...can only set to positive ft's
+  if (!m_world->GetEnvironment().IsTargetID(prop_target)) {
+    int num_fts = 0;
+    std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+    set <int>::iterator itr;
+    for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) num_fts++;
+    // ft's may not be sequentially numbered
+    int ft_num = abs(prop_target) % num_fts;
+    itr = fts_avail.begin();
+    for (int i = 0; i < ft_num; i++) itr++;
+    prop_target = *itr;
+  }
+
+  m_organism->SetShowForageTarget(ctx, prop_target);
+  setInternalValue(FindModifiedRegister(rBX), prop_target, false);
+  return true;
+}
+
 bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -6071,7 +6101,86 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   return true;
 } 
 
-//Attack organism faced by this one if you are both predators or both prey. 
+bool cHardwareExperimental::Inst_AttackPoisionPrey(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (!TestAttack(ctx)) return false;
+
+  cOrganism* target = NULL;
+  if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
+  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+
+  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+  if (target->GetForageTarget() <= -2) return false;
+  
+  if (target->IsDead()) return false;  
+  
+  const int success_reg = FindModifiedRegister(rBX);   
+  const int bonus_reg = FindModifiedNextRegister(success_reg);
+  const int bin_reg = FindModifiedNextRegister(bonus_reg);
+
+  if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() || 
+      (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+    InjureOrg(target);
+    setInternalValue(success_reg, -1, true);   
+    setInternalValue(bonus_reg, -1, true);
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
+    return false;  
+  }
+  else {
+    double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
+    // apply poison, if any
+    if (target->GetForageTarget() == 2) {
+      const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+      double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+      attacker_merit -= target_merit * effic;
+      m_organism->UpdateMerit(attacker_merit);
+    }
+    else if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+      const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+      double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+      attacker_merit += target_merit * effic;
+      m_organism->UpdateMerit(attacker_merit);
+    }
+    
+    // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
+    Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
+    Apto::Array<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+    for (int i = 0; i < org_reactions.GetSize(); i++) {
+      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
+    }
+    
+    // and add current merit bonus after adjusting for conversion efficiency
+    const double target_bonus = target->GetPhenotype().GetCurBonus();
+    m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * effic));
+    
+    // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+      Apto::Array<double> target_bins = target->GetRBins();
+      for (int i = 0; i < target_bins.GetSize(); i++) {
+        m_organism->AddToRBin(i, target_bins[i] * effic);
+        target->AddToRBin(i, -1 * (target_bins[i] * effic));
+      }
+      const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+      setInternalValue(bin_reg, spec_bin, true);
+    }
+    
+    // if you weren't a predator before, you are now!
+    MakePred(ctx);
+    target->Die(ctx); // kill first -- could end up being killed by inject clone
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
+      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
+      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
+
+    setInternalValue(success_reg, 1, true);
+    setInternalValue(bonus_reg, (int) (target_bonus), true);
+  }
+  return true;
+}
+
+//Attack organism faced by this one if you are both predators or both prey.
 bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
