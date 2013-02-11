@@ -30,7 +30,6 @@
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStateGrid.h"
-#include "cUserFeedback.h"
 
 #include <cstdlib>
 #include <cmath>
