@@ -966,11 +966,10 @@ class cActionPrintLineageCounts : public cAction
 {
 private:
   cString m_filename;
-  int m_verbose;
   bool first_run;
   Apto::Array<int> lineage_labels;
 public:
-  cActionPrintLineageCounts(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_verbose(1)
+  cActionPrintLineageCounts(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_counts.dat";
@@ -1679,7 +1678,6 @@ private:
   double m_hist_fmax;
   cString m_mode;
   cString m_filename;
-  bool    first_run;
   
 public:
   cActionPrintRelativeFitnessHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)

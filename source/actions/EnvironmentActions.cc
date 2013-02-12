@@ -977,10 +977,9 @@ class cActionMergeResourceAcrossDemes : public cAction
 private:
   cString m_deme_res_name;
   cString m_global_res_name;
-  Feedback& m_feedback;
   
 public:
-  cActionMergeResourceAcrossDemes(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_deme_res_name(""), m_global_res_name(""), m_feedback(feedback)
+  cActionMergeResourceAcrossDemes(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_deme_res_name(""), m_global_res_name("")
   {
     cString largs(args);
     if (largs.GetSize()) m_deme_res_name = largs.PopWord();
@@ -1366,7 +1365,6 @@ private:
   int m_x1, m_y1, m_x2, m_y2; // bounding box of event in deme
   int m_delay; // deme age when event occurs
   int m_duration; // length of event; subverted when deme is reset
-  bool m_static_pos;
   int m_total_events; // total number of unique event to create; they may overlab
   bool m_static_position;
   
@@ -1498,13 +1496,14 @@ public:
     
     void Process(cAvidaContext& ctx)
     {
-        cUserFeedback feedback;
-        bool count_parasites,count_offspring = false;
-        if(m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get() > 0.0)
-          count_parasites = true;
-        if(m_world->GetConfig().DEMES_MIGRATION_RATE.Get() > 0.0)
-          count_offspring = true;
-        assert(m_world->GetMigrationMatrix().Load(m_world->GetPopulation().GetNumDemes(), m_fname, m_world->GetWorkingDir(),count_parasites,count_offspring,true,feedback));
+      cUserFeedback feedback;
+      bool count_parasites = false;
+      bool count_offspring = false;
+      if(m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get() > 0.0)
+        count_parasites = true;
+      if(m_world->GetConfig().DEMES_MIGRATION_RATE.Get() > 0.0)
+        count_offspring = true;
+      assert(m_world->GetMigrationMatrix().Load(m_world->GetPopulation().GetNumDemes(), m_fname, m_world->GetWorkingDir(),count_parasites,count_offspring,true,feedback));
     }
 };
 
