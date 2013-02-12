@@ -796,6 +796,7 @@ public:
   CONFIG_ADD_VAR(MIN_PREY, int, 0, "If positive (recommended for prey studies), predator attacks fail if num prey falls below this (0 = off).\nIf negative (recommended for predator studies), random prey of genotype other than target will be cloned (using birth placement methods).");
   CONFIG_ADD_VAR(MAX_PRED, int, 0, "Population cap on number of predators (random predator will be removed when cap is exceeded).");
   CONFIG_ADD_VAR(MAX_PREY, int, 0, "Population cap on number of prey (random prey will be removed when cap is exceeded). For births, classification as prey is based on parent.");
+  CONFIG_ADD_VAR(TRACK_GROUP_ATTACK_DETAILS, int, 0, "Track details around execution of group attack instructions for every update. Will create a new file for every update that this is on!");
   CONFIG_ADD_VAR(MARKING_EXPIRE_DATE, int, -1, " Number of updates markings in cells will remain effective on territory move.");
 		
 

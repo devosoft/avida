@@ -212,6 +212,7 @@ public:
   void PushToleranceInstExe(int, cAvidaContext&) { ; }
   int& GetGroupIntolerances(int, int, int) { return *(new int(0)); }
 
+  void TryWriteGroupAttackBits(unsigned char) { ; }
   void DecNumPreyOrganisms() { ; }
   void DecNumPredOrganisms() { ; }
   void DecNumTopPredOrganisms() { ; }

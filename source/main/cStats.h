@@ -812,6 +812,7 @@ public:
   void PrintPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
   void PrintTopPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
   void PrintGroupAttackData(const cString& filename, const cString& inst_set);
+  void PrintGroupAttackBits(unsigned char raw_bits);
 
   void PrintCountData(const cString& filename);
   void PrintThreadsData(const cString& filename);

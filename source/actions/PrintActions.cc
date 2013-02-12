@@ -347,7 +347,6 @@ public:
   }
 };
 
-
 class cActionPrintInstructionData : public cAction, public Data::Recorder
 {
 private:

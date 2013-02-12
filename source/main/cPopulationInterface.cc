@@ -1545,6 +1545,11 @@ int& cPopulationInterface::GetGroupIntolerances(int group_id, int tol_num, int m
   return m_world->GetPopulation().GetGroupIntolerances(group_id, tol_num, mating_type);
 }
 
+void cPopulationInterface::TryWriteGroupAttackBits(unsigned char raw_bits)
+{
+  if (m_world->GetConfig().TRACK_GROUP_ATTACK_DETAILS.Get()) m_world->GetStats().PrintGroupAttackBits(raw_bits);
+}
+
 void cPopulationInterface::DecNumPreyOrganisms()
 {
   m_world->GetPopulation().DecNumPreyOrganisms();

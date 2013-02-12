@@ -646,13 +646,10 @@ private:
 
 private:
   std::pair<bool, int> m_last_cell_data; // If cell data has been previously collected, and it's value
-public:
-  bool Inst_CollectCellData(cAvidaContext& ctx);
-  bool Inst_IfCellDataChanged(cAvidaContext& ctx);
-  bool Inst_ReadCellData(cAvidaContext& ctx);
-  bool Inst_ReadGroupCell(cAvidaContext& ctx);
-
+  
   // ---------- Some Instruction Helpers -----------
+  inline const cString& GetCurInstName() { return m_inst_set->GetName(m_threads[m_cur_thread].heads[nHardware::HEAD_IP].GetInst()); }
+  
   struct sLookRegAssign {
     int habitat;
     int distance;
@@ -664,6 +661,19 @@ public:
     int ft;
   };
   
+  struct sAttackReg {
+    int success_reg;
+    int bonus_reg;
+    int bin_reg;
+  };
+  
+  struct sAttackResult {
+    unsigned int inst:1;     // 0 == solo attack inst, 1 == group attack inst
+    unsigned int share:2;    // 0 == no, 1 == yes, 2 == fake
+    unsigned int success:2;  // 0 == sucess, 1 == no prey failure, 2 == no friends failure, 3 == chance failure
+    unsigned int size:3;     // potential group size, not including self
+  };
+  
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
@@ -673,9 +683,37 @@ public:
   void MakeTopPred(cAvidaContext& ctx);
   bool TestAttack(cAvidaContext& ctx);
   bool TestAttackPred(cAvidaContext& ctx);
-  void UpdateGroupAttackStats(cString& inst);
-};
+  cOrganism* GetPreyTarget(cAvidaContext& ctx);
+  bool TestPreyTarget(cOrganism* target);
+  void SetAttackReg(sAttackReg& reg);
+  bool ExecuteAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds = -1);
+  bool ExecuteShareAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, Apto::Array<cOrganism*>& pack, double odds = -1);
+  bool ExecuteFakeShareAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double share, double odds = -1);
+  bool ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds = -1);
+  
+  bool TestAttackResultsOut(sAttackResult& results);
+  bool TestAttackChance(cOrganism* target, sAttackReg& reg, double odds = -1);
+  void ApplyKilledPreyMerit(cOrganism* target, double effic);
+  void ApplyKilledPreyReactions(cOrganism* target);
+  void ApplyKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic);
+  void ApplyKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic);
 
+  void ApplySharedKilledPreyMerit(cOrganism* target, double effic, cOrganism* org, double share);
+  void ApplySharedKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic, cOrganism* org, double share);
+  void ApplySharedKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic, cOrganism* org, double share);
+
+  Apto::Array<cOrganism*> GetPredGroupAttackNeighbors();
+  Apto::Array<cOrganism*> GetPredSameGroupAttackNeighbors();
+  void TryPreyClone(cAvidaContext& ctx);
+  void UpdateGroupAttackStats(const cString& inst, sAttackResult& result, bool get_size = true);
+  void TryWriteGroupAttackBits(unsigned char raw_bits);
+
+public:
+  bool Inst_CollectCellData(cAvidaContext& ctx);
+  bool Inst_IfCellDataChanged(cAvidaContext& ctx);
+  bool Inst_ReadCellData(cAvidaContext& ctx);
+  bool Inst_ReadGroupCell(cAvidaContext& ctx);
+};
 
 inline cHardwareExperimental::DataValue& cHardwareExperimental::DataValue::operator=(const DataValue& i)
 {

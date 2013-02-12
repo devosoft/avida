@@ -247,6 +247,7 @@ public:
   void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx);
   int& GetGroupIntolerances(int group_id, int tol_num, int mating_type);
   
+  void TryWriteGroupAttackBits(unsigned char raw_bits);
   void DecNumPreyOrganisms();
   void DecNumPredOrganisms();
   void DecNumTopPredOrganisms();
