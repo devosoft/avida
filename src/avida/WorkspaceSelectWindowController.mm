@@ -86,7 +86,13 @@
 
 
 - (IBAction) openWorkspace:(id)sender {
-  //@TODO
+  [self close];
+  
+  NSArray* selectedWorkspaces = workspaceArrayCtlr.selectedObjects;
+  assert([selectedWorkspaces count] == 1);
+  
+  ACWorkspace* workspace = (ACWorkspace*)[selectedWorkspaces objectAtIndex:0];
+  [avidaCtlr workspaceSelected:workspace];
 }
 
 
@@ -180,7 +186,11 @@
     [workspaceArrayCtlr addObject:workspace];
     
     // Write known workspaces to preferences
-    // @TODO
+    NSMutableArray* knownWorkspaces = [NSMutableArray arrayWithCapacity:[workspaceArrayCtlr.arrangedObjects count]];
+    for (ACWorkspace* workspace in workspaceArrayCtlr.arrangedObjects) {
+      [knownWorkspaces addObject:[NSKeyedArchiver archivedDataWithRootObject:workspace.location]];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:knownWorkspaces forKey:PrefKeyWorkspaceURLs];
     
     // Notify the controller that a workspace has been selected
     [avidaCtlr workspaceSelected:workspace];
