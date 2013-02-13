@@ -534,7 +534,7 @@ private:
   // Predator-prey
   bool Inst_AttackPrey(cAvidaContext& ctx);   
 
-public:
+private:
   // ---------- Some Instruction Helpers -----------
   struct sLookRegAssign {
     int habitat;

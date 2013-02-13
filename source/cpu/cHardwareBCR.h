@@ -564,7 +564,8 @@ private:
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
 
-
+private:
+  static tInstLib<cHardwareBCR::tMethod>* initInstLib();
   // ---------- Some Instruction Helpers -----------
   struct sLookRegAssign {
     int habitat;
@@ -581,8 +582,6 @@ private:
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
   
-private:
-  static tInstLib<cHardwareBCR::tMethod>* initInstLib();
 };
 
 
