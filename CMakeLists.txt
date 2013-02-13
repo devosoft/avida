@@ -172,7 +172,6 @@ SET(CPU_SOURCES
   ${CPU_DIR}/cHardwareExperimental.cc
   ${CPU_DIR}/cHardwareManager.cc
   ${CPU_DIR}/cHardwareMBE.cc
-  ${CPU_DIR}/cHardwareMGE.cc
   ${CPU_DIR}/cHardwareStatusPrinter.cc
   ${CPU_DIR}/cHardwareTransSMT.cc
   ${CPU_DIR}/cHeadCPU.cc

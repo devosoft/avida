@@ -291,7 +291,7 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
   snapshot->AddMemSpace("genome", memory, mutated);
   
   // - handle all heads that are in the first part of the memory space
-  if (hw.GetType() != HARDWARE_TYPE_CPU_MGE && hw.GetType() != HARDWARE_TYPE_CPU_MBE) {
+  if (hw.GetType() != HARDWARE_TYPE_CPU_MBE) {
     for (int i = 0; i < hw.GetNumHeads(); i++) {
       Apto::String name = "FLOW";
       if (i == 0) name = "IP";
