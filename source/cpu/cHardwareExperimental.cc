@@ -5001,15 +5001,14 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
 
   sAttackReg reg;
   SetAttackReg(reg);
-
   
-  if (!ExecuteAttack(ctx, target, reg)) { results.success = 3; return TestAttackResultsOut(results); }
+  if (!ExecuteAttack(ctx, target, reg)) results.success = 3;
   else {
     cString inst = "attack-prey";
     UpdateGroupAttackStats(inst, results, false);
   }
   return TestAttackResultsOut(results);
-} 		
+}
 
 bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
 {
@@ -5018,7 +5017,7 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
   results.share = 0;
   results.success = 0;
   results.size = 0;
-  if (!TestAttack(ctx))  { results.success = 1; return TestAttackResultsOut(results); }
+  if (!TestAttack(ctx)) { results.success = 1; return TestAttackResultsOut(results); }
   
   int prey_count = 0;
   int pred_count = 0;
@@ -5045,12 +5044,12 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
   odds = odds * (double) ((pred_count + 1) * 4);
   
   cOrganism* target = GetPreyTarget(ctx);
-  if (!TestPreyTarget(target))  { results.success = 1; return TestAttackResultsOut(results); }
+  if (!TestPreyTarget(target)) { results.success = 1; return TestAttackResultsOut(results); }
   
   sAttackReg reg;
   SetAttackReg(reg);
 
-  if (!ExecuteAttack(ctx, target, reg, odds)) { results.success = 3; return TestAttackResultsOut(results); }
+  if (!ExecuteAttack(ctx, target, reg, odds)) results.success = 3; 
   return TestAttackResultsOut(results);
 }
 
@@ -5074,12 +5073,12 @@ bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
   sAttackReg reg;
   SetAttackReg(reg);
   
-  if (!ExecuteAttack(ctx, target, reg, odds)) { results.success = 3; return TestAttackResultsOut(results); }
+  if (!ExecuteAttack(ctx, target, reg, odds)) results.success = 3; 
   else {
     cString inst = "attack-prey-group";
     UpdateGroupAttackStats(inst, results, false);
   }
-  return true;
+  return TestAttackResultsOut(results);
 }
 
 bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
@@ -5103,12 +5102,12 @@ bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
   sAttackReg reg;
   SetAttackReg(reg);
   
-  if (!ExecuteShareAttack(ctx, target, reg, pack, odds))  { results.success = 3; return TestAttackResultsOut(results); }
+  if (!ExecuteShareAttack(ctx, target, reg, pack, odds)) results.success = 3;
   else {
     cString inst = "attack-prey-share";
     UpdateGroupAttackStats(inst, results, false);
   }
-  return true;
+  return TestAttackResultsOut(results);
 }
 
 bool cHardwareExperimental::Inst_AttackPreyNoShare(cAvidaContext& ctx)
@@ -5131,12 +5130,12 @@ bool cHardwareExperimental::Inst_AttackPreyNoShare(cAvidaContext& ctx)
   sAttackReg reg;
   SetAttackReg(reg);
   
-  if (!ExecuteAttack(ctx, target, reg, odds)) { results.success = 3; return TestAttackResultsOut(results); }
+  if (!ExecuteAttack(ctx, target, reg, odds)) results.success = 3; 
   else {
     cString inst = "attack-prey-no-share";
     UpdateGroupAttackStats(inst, results, false);
   }
-  return true;
+  return TestAttackResultsOut(results);
 }
 
 bool cHardwareExperimental::Inst_AttackPreyFakeShare(cAvidaContext& ctx)
@@ -5160,12 +5159,12 @@ bool cHardwareExperimental::Inst_AttackPreyFakeShare(cAvidaContext& ctx)
   sAttackReg reg;
   SetAttackReg(reg);
   
-  if (!ExecuteFakeShareAttack(ctx, target, reg, share, odds))  { results.success = 3; return TestAttackResultsOut(results); }
+  if (!ExecuteFakeShareAttack(ctx, target, reg, share, odds)) results.success = 3; 
   else {
     cString inst = "attack-prey-fake-share";
     UpdateGroupAttackStats(inst, results, false);
   }
-  return true;
+  return TestAttackResultsOut(results);
 }
 
 bool cHardwareExperimental::Inst_AttackPreyGroupShare(cAvidaContext& ctx)
@@ -5190,12 +5189,12 @@ bool cHardwareExperimental::Inst_AttackPreyGroupShare(cAvidaContext& ctx)
   sAttackReg reg;
   SetAttackReg(reg);
   
-  if (!ExecuteShareAttack(ctx, target, reg, pack, odds))  { results.success = 3; return TestAttackResultsOut(results); }
+  if (!ExecuteShareAttack(ctx, target, reg, pack, odds)) results.success = 3; 
   else {
     cString inst = "attack-prey-group-share";
     UpdateGroupAttackStats(inst, results, false);
   }
-  return true;
+  return TestAttackResultsOut(results);
 }
 
 bool cHardwareExperimental::Inst_AttackPreyFakeGroupShare(cAvidaContext& ctx)
@@ -5220,12 +5219,12 @@ bool cHardwareExperimental::Inst_AttackPreyFakeGroupShare(cAvidaContext& ctx)
   sAttackReg reg;
   SetAttackReg(reg);
   
-  if (!ExecuteFakeShareAttack(ctx, target, reg, share, odds))  { results.success = 3; return TestAttackResultsOut(results); }
+  if (!ExecuteFakeShareAttack(ctx, target, reg, share, odds)) results.success = 3; 
   else {
     cString inst = "attack-prey-fake-group-share";
     UpdateGroupAttackStats(inst, results, false);
   }
-  return true;
+  return TestAttackResultsOut(results);
 }
 
 bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
@@ -5312,13 +5311,13 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   sAttackReg reg;
   SetAttackReg(reg);
   
-  if (!ExecuteAttack(ctx, target, reg))  { results.success = 3; return TestAttackResultsOut(results); }
+  if (!ExecuteAttack(ctx, target, reg)) results.success = 3; 
   else {
     cString inst = "attack-ft-prey";
     UpdateGroupAttackStats(inst, results, false);
   }
-  return true;
-} 
+  return TestAttackResultsOut(results);
+}
 
 bool cHardwareExperimental::Inst_AttackPoisionPrey(cAvidaContext& ctx)
 {
@@ -6340,7 +6339,7 @@ bool cHardwareExperimental::TestPreyTarget(cOrganism* target)
   // attacking other carnivores is handled differently (e.g. using fights or tolerance)
   bool success = true;
   if (target->GetForageTarget() <= -2) success = false;
-  if (target->IsDead()) success = false;
+  else if (target->IsDead()) success = false;
   return success;
 }
 
@@ -6358,12 +6357,15 @@ bool cHardwareExperimental::ExecuteAttack(cAvidaContext& ctx, cOrganism* target,
   if (m_organism->GetForageTarget() <= -3) effic *= effic;
   ApplyKilledPreyMerit(target, effic);
   ApplyKilledPreyReactions(target);
-  ApplyKilledPreyBonus(target, reg, effic);
+
+  // keep returns in same order as legacy code (important if reg assignments are shared)
   ApplyKilledPreyResBins(target, reg, effic);
+  setInternalValue(reg.success_reg, 1, true);
+  ApplyKilledPreyBonus(target, reg, effic);
+
   MakePred(ctx);
   target->Die(ctx); // kill first -- could end up being killed by inject clone
   TryPreyClone(ctx);
-  setInternalValue(reg.success_reg, 1, true);
   return true;
 }
 

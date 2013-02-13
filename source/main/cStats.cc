@@ -2258,10 +2258,10 @@ void cStats::PrintGroupAttackData(const cString& filename, const cString& inst_s
 void cStats::PrintGroupAttackBits(unsigned char raw_bits)
 {
   cString filename = cStringUtil::Stringf("group_attack_bits-%d.dat", m_world->GetStats().GetUpdate());
-  Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   
   if (!df->HeaderDone()) {
-    df->WriteComment("Condensed Group Attack Results during this update (left to right): \n # Size (3 bit): potential group size, not including self \n # Success: (2 bit) 0 == sucess, 1 == no prey failure, 2 == no friends failure, 3 == chance failure \n # Share (2 bit): 0 == no, 1 == yes, 2 == fake \n # Inst (1 bit): 0 == solo attack inst, 1 == group attack inst");
+    df->WriteComment("Condensed Group Attack Results during this update (left to right bits): \n# Size (3 bit): potential group size, not including self \n# Success: (2 bit) 0 == sucess, 1 == no prey failure, 2 == no friends failure, 3 == chance failure \n# Share (2 bit): 0 == no, 1 == yes, 2 == fake \n# Inst (1 bit): 0 == solo attack inst, 1 == group attack inst");
     df->WriteTimeStamp();
     df->Endl();
   }  
