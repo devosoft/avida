@@ -29,28 +29,35 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class AvidaAppDelegate;
-@class AvidaRun;
-@class MapGridView;
+@class AvidaController;
 
 
-@interface MainWindowController : NSWindowController <NSWindowDelegate>
+@interface MainWindowController : NSWindowController <NSWindowDelegate, NSToolbarDelegate>
 {
-  AvidaAppDelegate* app;
+  AvidaController* avidaCtlr;
+  
+  IBOutlet NSToolbar* toolbar;
+  IBOutlet NSView* tbViewShowWorkspace;
+  IBOutlet NSView* tbViewViewSelect;
 }
 
 // Init and Dealloc Methods
--(id)initWithAppDelegate:(AvidaAppDelegate*)delegate;
+- (id) initWithAvidaController:(AvidaController*)ctlr;
 
--(void)dealloc;
+- (void) dealloc;
 
 
 // NSWindowController Methods
--(void)windowDidLoad;
+- (void) windowDidLoad;
 
 
 // NSWindowDelegate Protocol
--(void)windowWillClose:(NSNotification*)notification;
+- (void) windowWillClose:(NSNotification*)notification;
 
+
+// NSToolbarDelegeate
+- (NSToolbarItem*) toolbar:(NSToolbar*)toolbar itemForItemIdentifier:(NSString*)itemIdentifier willBeInsertedIntoToolbar:(BOOL)flag;
+- (NSArray*) toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar;
+- (NSArray*) toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar;
 
 @end

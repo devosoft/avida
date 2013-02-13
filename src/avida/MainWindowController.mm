@@ -29,16 +29,32 @@
 
 #import "MainWindowController.h"
 
+NSString* const tbShowWorkspace = @"ShowWorkspace";
+NSString* const tbViewSelect = @"ViewSelect";
+
+@interface MainWindowController ()
+- (NSToolbarItem*) toolbarItemWithIdentifier:(NSString*)identifier
+                                       label:(NSString*)label
+                                 paleteLabel:(NSString*)paletteLabel
+                                     toolTip:(NSString*)toolTip
+                                      target:(id)target
+                                 itemContent:(id)imageOrView
+                                      action:(SEL)action
+                                        menu:(NSMenu*)menu;
+@end
+
 
 @implementation MainWindowController
 
-- (id)initWithAppDelegate: (AvidaAppDelegate*)delegate {
+- (id)initWithAvidaController: (AvidaController*)ctlr {
   self = [super initWithWindowNibName:@"Avida-MainWindow"];
   
   if (self != nil) {
-    app = delegate;
+    avidaCtlr = ctlr;
     
-    [self showWindow:self];
+    [toolbar setAllowsUserCustomization:YES];
+    [toolbar setAutosavesConfiguration:YES];
+    [toolbar setDisplayMode:NSToolbarDisplayModeIconOnly];
   }
   
   return self;
@@ -54,10 +70,104 @@
 }
 
 
+// NSWindowDelegate
+// --------------------------------------------------------------------------------------------------------------
 
 - (void)windowWillClose: (NSNotification *)notification {
 
 }
 
+
+// NSToolbarDelegate
+// --------------------------------------------------------------------------------------------------------------
+
+- (NSToolbarItem*) toolbarItemWithIdentifier:(NSString*)identifier
+                                       label:(NSString*)label
+                                 paleteLabel:(NSString*)paletteLabel
+                                     toolTip:(NSString*)toolTip
+                                      target:(id)target
+                                 itemContent:(id)imageOrView
+                                      action:(SEL)action
+                                        menu:(NSMenu*)menu
+{
+  // here we create the NSToolbarItem and setup its attributes in line with the parameters
+  NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:identifier];
+  
+  [item setLabel:label];
+  [item setPaletteLabel:paletteLabel];
+  [item setToolTip:toolTip];
+  [item setTarget:target];
+  [item setAction:action];
+  
+  // Set the right attribute, depending on if we were given an image or a view
+  if ([imageOrView isKindOfClass:[NSImage class]]) {
+    [item setImage:imageOrView];
+  } else if ([imageOrView isKindOfClass:[NSView class]]) {
+    [item setView:imageOrView];
+  } else {
+    assert(!"Invalid itemContent: object");
+  }
+  
+  
+  // If this NSToolbarItem is supposed to have a menu "form representation" associated with it
+  // (for text-only mode), we set it up here.  Actually, you have to hand an NSMenuItem
+  // (not a complete NSMenu) to the toolbar item, so we create a dummy NSMenuItem that has our real
+  // menu as a submenu.
+  //
+  if (menu != nil) {
+    // we actually need an NSMenuItem here, so we construct one
+    NSMenuItem *mItem = [[NSMenuItem alloc] init];
+    [mItem setSubmenu:menu];
+    [mItem setTitle:label];
+    [item setMenuFormRepresentation:mItem];
+  }
+  
+  return item;
+}
+
+
+
+- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)itemIdentifier willBeInsertedIntoToolbar:(BOOL)flag {
+  NSToolbarItem *toolbarItem = nil;
+  
+  if ([itemIdentifier isEqualToString:tbShowWorkspace]) {
+    toolbarItem = [self toolbarItemWithIdentifier:tbShowWorkspace
+                                            label:@"Workspace"
+                                      paleteLabel:@"Workspace"
+                                          toolTip:@"Show/Hide the Workspace"
+                                           target:self
+                                      itemContent:tbViewShowWorkspace
+                                           action:nil
+                                             menu:nil];
+  } else if ([itemIdentifier isEqualToString:tbViewSelect]) {
+    toolbarItem = [self toolbarItemWithIdentifier:tbViewSelect
+                                            label:@"View Mode"
+                                      paleteLabel:@"View Mode"
+                                          toolTip:@"Select the Main View Mode"
+                                           target:self
+                                      itemContent:tbViewViewSelect
+                                           action:nil
+                                             menu:nil];
+  }
+  
+  return toolbarItem;
+}
+
+
+- (NSArray*) toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar {
+  return @[tbShowWorkspace,
+           NSToolbarFlexibleSpaceItemIdentifier,
+           tbViewSelect,
+           NSToolbarFlexibleSpaceItemIdentifier,
+           NSToolbarSpaceItemIdentifier];
+}
+
+
+- (NSArray*) toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar {
+  return @[tbShowWorkspace,
+          tbViewSelect,
+          NSToolbarSpaceItemIdentifier,
+          NSToolbarFlexibleSpaceItemIdentifier];
+}
 
 @end

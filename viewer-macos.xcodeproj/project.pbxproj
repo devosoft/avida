@@ -683,7 +683,7 @@
 		7035496313379F3F00D3865C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Michigan State University";
 			};
 			buildConfigurationList = 7035496613379F3F00D3865C /* Build configuration list for PBXProject "viewer-macos" */;

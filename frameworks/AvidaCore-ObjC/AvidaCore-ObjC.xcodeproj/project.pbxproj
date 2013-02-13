@@ -290,7 +290,7 @@
 		7041ABF41655823D008413DB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0460;
 			};
 			buildConfigurationList = 7041ABF71655823D008413DB /* Build configuration list for PBXProject "AvidaCore-ObjC" */;
 			compatibilityVersion = "Xcode 3.2";

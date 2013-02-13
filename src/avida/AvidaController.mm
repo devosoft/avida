@@ -29,6 +29,7 @@
 
 #import "AvidaController.h"
 
+#import "MainWindowController.h"
 #import "WorkspaceSelectWindowController.h"
 
 
@@ -59,7 +60,9 @@
 }
 
 - (void) workspaceSelected:(ACWorkspace*)selectedWorkspace {
-  
+  workspace = selectedWorkspace;
+  mainWindow = [[MainWindowController alloc] initWithAvidaController:self];
+  [mainWindow showWindow:self];
 }
 
 @end
