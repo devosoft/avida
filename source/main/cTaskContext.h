@@ -34,7 +34,6 @@ class cTaskContext
 {
 private:
   cOrganism* m_organism;
-  cDeme* m_deme;            // for use with deme level input/output @JJB**
   const tBuffer<int>& m_input_buffer;
   const tBuffer<int>& m_output_buffer;
   const tList<tBuffer<int> >& m_other_input_buffers;
@@ -58,7 +57,6 @@ public:
                const Apto::Array<int, Apto::Smart>& ext_mem, bool in_on_divide = false,
                tBuffer<int>* in_received_messages = NULL, cDeme* deme = NULL)
     : m_organism(organism)
-    , m_deme(deme)
     , m_input_buffer(inputs)
     , m_output_buffer(outputs)
     , m_other_input_buffers(other_inputs)

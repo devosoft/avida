@@ -3305,7 +3305,7 @@ bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
   
   if (max_res > current_res) {
     for(int i = 0; i < actualNeighborhoodSize; i++) {
-      double faced_res;
+      double faced_res = 0.0;
       if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedResourceVal(ctx, ft);
       else faced_res = m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, ft);
       if (faced_res != max_res) m_organism->Rotate(1);

@@ -131,7 +131,8 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback, const Apto::Map<Ap
   }
     
   if(m_conf->DEMES_MIGRATION_METHOD.Get() == 4){     
-    bool count_parasites,count_offspring = false;
+    bool count_parasites = false;
+    bool count_offspring = false;
     if(m_conf->DEMES_PARASITE_MIGRATION_RATE.Get() > 0.0)
       count_parasites = true;
     if(m_conf->DEMES_MIGRATION_RATE.Get() > 0.0)
