@@ -35,8 +35,8 @@
 		7041AC5616558DF1008413DB /* AvidaCore_Core.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC5416558DF1008413DB /* AvidaCore_Core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		709AE9771684F52E00E50275 /* ACWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = 709AE9751684F52E00E50275 /* ACWorkspace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		709AE9781684F52E00E50275 /* ACWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = 709AE9751684F52E00E50275 /* ACWorkspace.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		709AE9791684F52E00E50275 /* ACWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9761684F52E00E50275 /* ACWorkspace.m */; };
-		709AE97A1684F52E00E50275 /* ACWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9761684F52E00E50275 /* ACWorkspace.m */; };
+		709AE9791684F52E00E50275 /* ACWorkspace.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9761684F52E00E50275 /* ACWorkspace.mm */; };
+		709AE97A1684F52E00E50275 /* ACWorkspace.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9761684F52E00E50275 /* ACWorkspace.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -77,7 +77,7 @@
 		7041AC5016558B98008413DB /* ACGenome+NSPasteboardAdditions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "ACGenome+NSPasteboardAdditions.mm"; sourceTree = "<group>"; };
 		7041AC5416558DF1008413DB /* AvidaCore_Core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaCore_Core.h; sourceTree = "<group>"; };
 		709AE9751684F52E00E50275 /* ACWorkspace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACWorkspace.h; sourceTree = "<group>"; };
-		709AE9761684F52E00E50275 /* ACWorkspace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACWorkspace.m; sourceTree = "<group>"; };
+		709AE9761684F52E00E50275 /* ACWorkspace.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ACWorkspace.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,7 +174,7 @@
 				7041AC31165585D0008413DB /* ACGenome.h */,
 				7041AC32165585D0008413DB /* ACGenome.mm */,
 				709AE9751684F52E00E50275 /* ACWorkspace.h */,
-				709AE9761684F52E00E50275 /* ACWorkspace.m */,
+				709AE9761684F52E00E50275 /* ACWorkspace.mm */,
 				7041AC43165587F3008413DB /* NSString+Apto.h */,
 				7041AC44165587F3008413DB /* NSString+Apto.mm */,
 			);
@@ -346,7 +346,7 @@
 				7041AC46165587F3008413DB /* NSString+Apto.mm in Sources */,
 				7041AC5216558B98008413DB /* ACGenome+NSPasteboardAdditions.mm in Sources */,
 				703023411672909B008C60A2 /* ACFramework.mm in Sources */,
-				709AE9791684F52E00E50275 /* ACWorkspace.m in Sources */,
+				709AE9791684F52E00E50275 /* ACWorkspace.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,7 +357,7 @@
 				7041AC3716558644008413DB /* ACGenome.mm in Sources */,
 				7041AC47165587F3008413DB /* NSString+Apto.mm in Sources */,
 				703023421672909B008C60A2 /* ACFramework.mm in Sources */,
-				709AE97A1684F52E00E50275 /* ACWorkspace.m in Sources */,
+				709AE97A1684F52E00E50275 /* ACWorkspace.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

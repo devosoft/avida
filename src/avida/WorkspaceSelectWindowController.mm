@@ -34,7 +34,7 @@
 
 
 @interface WorkspaceSelectWindowController ()
-- (BOOL) loadWorkspaceWithURL:(NSURL*)workspaceURL;
+- (BOOL) loadWorkspace:(ACWorkspace*)workspace;
 @end
 
 
@@ -78,7 +78,8 @@
     NSArray* files = [openDlg URLs];
     NSURL* workspaceURL = [files objectAtIndex:0];
     
-    if (![self loadWorkspaceWithURL:workspaceURL]) [self showWindow:sender];
+    ACWorkspace* workspace = [[ACWorkspace alloc] initWithURL:workspaceURL];
+    if (![self loadWorkspace:workspace]) [self showWindow:sender];
   } else {
     [self showWindow:sender];
   }
@@ -124,7 +125,8 @@
           // No error means successful deletion of the old workspace. Remove from list, create a new one...
           [workspaceArrayCtlr removeObject:workspace];
           
-          if (![self loadWorkspaceWithURL:workspaceURL]) [self showWindow:sender];
+          ACWorkspace* workspace = [ACWorkspace createAtURL:workspaceURL];
+          if (![self loadWorkspace:workspace]) [self showWindow:sender];
         } else {
           // Error occurred, notify user and return to the selection window
           NSAlert* errAlert = [NSAlert alertWithError:error];
@@ -135,7 +137,8 @@
       
       [nsworkspace recycleURLs:@[workspaceURL] completionHandler:completionHandler];
     } else {
-      if (![self loadWorkspaceWithURL:workspaceURL]) [self showWindow:sender];
+      ACWorkspace* workspace = [ACWorkspace createAtURL:workspaceURL];
+      if (![self loadWorkspace:workspace]) [self showWindow:sender];
     }
   } else {
     [self showWindow:sender];
@@ -178,11 +181,10 @@
 // WorkspaceSelectWindowController ()
 // --------------------------------------------------------------------------------------------------------------
 
-- (BOOL) loadWorkspaceWithURL:(NSURL*)workspaceURL {
-  ACWorkspace* workspace = [[ACWorkspace alloc] initWithURL:workspaceURL];
+- (BOOL) loadWorkspace:(ACWorkspace*)workspace {
   if (workspace) {
     // Add newly loaded workspace to the selection list
-    [workspaceDict setObject:workspace forKey:workspaceURL];
+    [workspaceDict setObject:workspace forKey:workspace.location];
     [workspaceArrayCtlr addObject:workspace];
     
     // Write known workspaces to preferences

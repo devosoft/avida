@@ -29,16 +29,22 @@
 
 #import <Foundation/Foundation.h>
 
+#include "avida/viewer/Freezer.h"
+
 
 @interface ACWorkspace : NSObject {
   NSURL* workspaceURL;
   NSString* name;
+  
+  Avida::Viewer::FreezerPtr freezer;
 }
 
 + (void) initialize;
 
 
-- (id) initWithURL:(NSURL*)url;
+- (ACWorkspace*) initWithURL:(NSURL*)url;
+
++ (ACWorkspace*) createAtURL:(NSURL*)url;
 
 
 @property (readonly) NSString* name;

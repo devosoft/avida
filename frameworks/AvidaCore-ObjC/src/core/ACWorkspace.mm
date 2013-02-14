@@ -34,6 +34,10 @@
 
 NSString* const ACWorkspaceFiletypes[] = {@"org.devosoft.avida.avida-workspace", @"avidaworkspace"};
 
+@interface ACWorkspace ()
+- (ACWorkspace*) initWithFreezer:(Avida::Viewer::FreezerPtr)f atURL:(NSURL*)url;
+@end
+
 
 @implementation ACWorkspace
 
@@ -46,18 +50,48 @@ NSString* const ACWorkspaceFiletypes[] = {@"org.devosoft.avida.avida-workspace",
   }
 }
 
-- (id) initWithURL:(NSURL*)url {
+- (ACWorkspace*) initWithURL:(NSURL*)url {
   NSError* err = nil;
   if (![url isFileURL] || ![url checkResourceIsReachableAndReturnError:&err]) return nil;
   
   self = [super init];
   
   if (self) {
+    Avida::Viewer::FreezerPtr f = Avida::Viewer::Freezer::LoadWithPath([[url path] UTF8String]);
+    if (!f) return nil;
+    
     workspaceURL = [url fileReferenceURL];
+    freezer = f;
   }
   
   return self;
 }
+
+
+- (ACWorkspace*) initWithFreezer:(Avida::Viewer::FreezerPtr)f atURL:(NSURL*)url {
+  self = [super init];
+  
+  if (self) {
+    workspaceURL = [url fileReferenceURL];
+    freezer = f;
+  }
+  
+  return self;
+}
+
+
+
++ (ACWorkspace*) createAtURL:(NSURL*)url {
+  NSError* err = nil;
+  if (![url isFileURL] || ![url checkResourceIsReachableAndReturnError:&err]) return nil;
+    
+  Avida::Viewer::FreezerPtr f = Avida::Viewer::Freezer::LoadWithPath([[url path] UTF8String]);
+  if (!f) return nil;
+  
+  return [[ACWorkspace alloc] initWithFreezer:f atURL:url];
+}
+
+
 
 
 - (NSString*) detailsString {

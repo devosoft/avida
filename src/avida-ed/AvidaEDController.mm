@@ -914,7 +914,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   
   freezerURL = fileURL;
   Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
-  freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
+  freezer = Avida::Viewer::Freezer::CreateWithPath(freezer_path);
   [self setupFreezer];
   [outlineFreezer reloadData];
   [outlineFreezer expandItem:freezerConfigs];
@@ -952,7 +952,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     isDefaultFreezer = YES;
     
     Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
-    freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
+    freezer = Avida::Viewer::Freezer::CreateWithPath(freezer_path);
     [self setupFreezer];
         
     [self showWindow:self];
@@ -974,7 +974,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     isDefaultFreezer = NO;
 
     Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
-    freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
+    freezer = Avida::Viewer::Freezer::CreateWithPath(freezer_path);
     [self setupFreezer];
     
     // Hide freezer extension
@@ -1032,7 +1032,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   
   freezerURL = fileURL;
   Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
-  freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
+  freezer = Avida::Viewer::Freezer::CreateWithPath(freezer_path);
   [self setupFreezer];
   [outlineFreezer reloadData];
   [outlineFreezer expandItem:freezerConfigs];
