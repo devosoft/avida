@@ -1703,7 +1703,7 @@ void cPopulationInterface::AddIOAV(int av_cell_id, int av_facing, bool input, bo
 void cPopulationInterface::AddPredPreyAV(int av_cell_id)
 {
   // Add predator (saved as input avatar)
-  if (GetOrganism()->GetForageTarget() <= -2) {
+  if (!GetOrganism()->IsPreyFT()) {
     sIO_avatar predAV(av_cell_id, 0, -1, true, false);
     m_avatars.Push(predAV);
     m_world->GetPopulation().GetCell(av_cell_id).AddPredAV(GetOrganism());

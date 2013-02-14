@@ -59,8 +59,8 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   if (m_world->GetConfig().LOOK_DISABLE.Get() < 5 && m_world->GetConfig().LOOK_DISABLE.Get() > 0) {    
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
     bool is_target_type = false;
-    if (org_type == 0 && m_organism->GetForageTarget() <= -2) is_target_type = true;
-    else if (org_type == 1 && m_organism->GetForageTarget() > -2) is_target_type = true;
+    if (org_type == 0 && !m_organism->IsPreyFT()) is_target_type = true;
+    else if (org_type == 1 && m_organism->IsPreyFT()) is_target_type = true;
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {

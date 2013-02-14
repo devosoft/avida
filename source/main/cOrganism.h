@@ -597,6 +597,12 @@ public:
   int GetForageTarget() const { return m_forage_target; }
   int GetShowForageTarget() const { return m_show_ft; }
   void SetForageTarget(cAvidaContext& ctx, int forage_target);
+  void SetPredFT(cAvidaContext& ctx) { SetForageTarget(ctx, -2); }
+  void SetTopPredFT(cAvidaContext& ctx) { SetForageTarget(ctx, -3); }
+  bool IsPreyFT() { return m_forage_target > -2; }
+  bool IsPredFT() { return m_forage_target == -2; }
+  bool IsTopPredFT() { return m_forage_target < -2; }
+  bool IsMimicFT() { return m_forage_target == 1; }
   void SetShowForageTarget(cAvidaContext& ctx, int forage_target) { m_show_ft = forage_target; }
   bool HasSetFT() const { return m_has_set_ft; }
   void RecordFTSet() { m_has_set_ft = true; }

@@ -1122,8 +1122,8 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   num_organisms++;
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     // ft should be nearly always -1 so long as it is not being inherited
-    if (in_organism->GetForageTarget() > -2) num_prey_organisms++;
-    else if (in_organism->GetForageTarget() < -2) num_top_pred_organisms++;
+    if (in_organism->IsPreyFT()) num_prey_organisms++;
+    else if (in_organism->IsTopPredFT()) num_top_pred_organisms++;
     else num_pred_organisms++;
   }
   if (deme_array.GetSize() > 0) {
@@ -1388,7 +1388,7 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomPreyTraceQ(int max_samples)
     int this_rand_sample = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
     if (!used_orgs[this_rand_sample]) {
       cOrganism* rand_org = live_orgs[this_rand_sample];
-      if (rand_org->GetForageTarget() > -2) {
+      if (rand_org->IsPreyFT() > -2) {
         bg_id_list.Push(rand_org->SystematicsGroup("genotype")->ID());
         used_orgs[this_rand_sample] = true;
       }
@@ -1415,7 +1415,7 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomPredTraceQ(int max_samples)
     int this_rand_sample = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
     if (!used_orgs[this_rand_sample]) {
       cOrganism* rand_org = live_orgs[this_rand_sample];
-      if (rand_org->GetForageTarget() <= -2) {
+      if (!rand_org->IsPreyFT()) {
         bg_id_list.Push(rand_org->SystematicsGroup("genotype")->ID());
         used_orgs[this_rand_sample] = true;
       }
@@ -1881,7 +1881,7 @@ void cPopulation::KillRandPred(cAvidaContext& ctx, cOrganism* org)
   while (org_to_kill == org) {
     cOrganism* org_at = TriedIdx[idx];
     // exclude prey
-    if (org_at->GetParentFT() <= -2 || org_at->GetForageTarget() <= -2) org_to_kill = org_at;
+    if (org_at->GetParentFT() <= -2 || !org_at->IsPreyFT()) org_to_kill = org_at;
     else TriedIdx.Swap(idx, --list_size);
     if (list_size == 1) break;
     idx = m_world->GetRandom().GetUInt(list_size);
@@ -4814,7 +4814,7 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   }
   
   // for juvs with non-predatory parents...
-  if (m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get() && parent_cell.GetOrganism()->GetForageTarget() > -2) {
+  if (m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get() && parent_cell.GetOrganism()->IsPreyFT()) {
     KillRandPrey(ctx, parent_cell.GetOrganism());
   }
   
@@ -5649,7 +5649,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
     const cMerit cur_merit = phenotype.GetMerit();
     const double cur_fitness = phenotype.GetFitness();
     
-    if (organism->GetForageTarget() > -2) {
+    if (organism->IsPreyFT()) {
       stats.SumPreyFitness().Add(cur_fitness);
       stats.SumPreyGestation().Add(phenotype.GetGestationTime());
       stats.SumPreyMerit().Add(cur_merit.GetDouble());
@@ -5665,7 +5665,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
         prey_from_sensor_exec_counts[j].Add(organism->GetPhenotype().GetLastFromSensorInstCount()[j]);
       }
     }
-    else if (organism->GetForageTarget() == -2) {
+    else if (organism->IsPredFT()) {
       stats.SumPredFitness().Add(cur_fitness);
       stats.SumPredGestation().Add(phenotype.GetGestationTime());
       stats.SumPredMerit().Add(cur_merit.GetDouble());
@@ -7076,7 +7076,7 @@ void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads, cAvidaCon
 void cPopulation::RemovePredators(cAvidaContext& ctx)
 {
   for (int i = 0; i < live_org_list.GetSize(); i++) {
-    if (live_org_list[i]->GetForageTarget() <= -2) live_org_list[i]->Die(ctx);
+    if (!live_org_list[i]->IsPreyFT()) live_org_list[i]->Die(ctx);
   }
 }
 

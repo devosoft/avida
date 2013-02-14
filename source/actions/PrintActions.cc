@@ -4365,7 +4365,7 @@ public:
     const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
     for (int i = 0; i < live_orgs.GetSize(); i++) {
       cOrganism* org = live_orgs[i];
-      if (org->GetForageTarget() <= -2) continue;
+      if (!org->IsPreyFT()) continue;
       const int id = org->GetID();
       int num_neighbors = 0;
       neighborhood.Resize(0);
@@ -4376,7 +4376,7 @@ public:
         org->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
         for (int j = 0; j < neighborhood.GetSize(); j++) {
           if (m_world->GetPopulation().GetCell(neighborhood[j]).IsOccupied()) {
-            if (m_world->GetPopulation().GetCell(neighborhood[j]).GetOrganism()->GetForageTarget() > -2) {
+            if (m_world->GetPopulation().GetCell(neighborhood[j]).GetOrganism()->IsPreyFT()) {
               num_neighbors++;
             }
           }

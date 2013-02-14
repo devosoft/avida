@@ -2550,8 +2550,8 @@ bool cHardwareBCR::Inst_LookAround(cAvidaContext& ctx)
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
     bool is_target_type = false;
-    if (org_type == 0 && m_organism->GetForageTarget() <= -2) is_target_type = true;
-    else if (org_type == 1 && m_organism->GetForageTarget() >-2) is_target_type = true;
+    if (org_type == 0 && !m_organism->IsPreyFT()) is_target_type = true;
+    else if (org_type == 1 && m_organism->IsPreyFT()) is_target_type = true;
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
@@ -2606,8 +2606,8 @@ bool cHardwareBCR::Inst_LookAroundFT(cAvidaContext& ctx)
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
     bool is_target_type = false;
-    if (org_type == 0 && m_organism->GetForageTarget() <= -2) is_target_type = true;
-    else if (org_type == 1 && m_organism->GetForageTarget() > -2) is_target_type = true;
+    if (org_type == 0 && !m_organism->IsPreyFT()) is_target_type = true;
+    else if (org_type == 1 && m_organism->IsPreyFT()) is_target_type = true;
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
@@ -2716,8 +2716,8 @@ void cHardwareBCR::LookResults(sLookRegAssign& regs, cOrgSensor::sLookOut& resul
   if (m_world->GetConfig().LOOK_DISABLE.Get() > 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
     bool is_target_type = false;
-    if (org_type == 0 && m_organism->GetForageTarget() <= -2) is_target_type = true;
-    else if (org_type == 1 && m_organism->GetForageTarget() > -2) is_target_type = true;
+    if (org_type == 0 && !m_organism->IsPreyFT()) is_target_type = true;
+    else if (org_type == 1 && m_organism->IsPreyFT()) is_target_type = true;
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
@@ -3045,7 +3045,7 @@ bool cHardwareBCR::Inst_AttackPrey(cAvidaContext& ctx)
   else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
   
   // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-  if (target->GetForageTarget() <= -2) return false;
+  if (!target->IsPreyFT()) return false;
   
   if (target->IsDead()) return false;
   
@@ -3184,29 +3184,29 @@ void cHardwareBCR::injureOrg(cOrganism* target)
 
 void cHardwareBCR::makePred(cAvidaContext& ctx)
 {
-  if (m_organism->GetForageTarget() > -2) {
+  if (m_organism->IsPreyFT()) {
     if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
-      m_organism->SetForageTarget(ctx, -2);
+      m_organism->SetPredFT(ctx);
     }
-    else m_organism->SetForageTarget(ctx, -2);
+    else m_organism->SetPredFT(ctx);
   }
 }
 
 void cHardwareBCR::makeTopPred(cAvidaContext& ctx)
 {
-  if (m_organism->GetForageTarget() > -2) {
+  if (m_organism->IsPreyFT()) {
     if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
-      m_organism->SetForageTarget(ctx, -3);
+      m_organism->SetTopPredFT(ctx);
     }
-    else m_organism->SetForageTarget(ctx, -3);
+    else m_organism->SetTopPredFT(ctx);
   }
-  else if (m_organism->GetForageTarget() == -2) m_organism->SetForageTarget(ctx, -3);
+  else if (m_organism->IsPredFT()) m_organism->SetTopPredFT(ctx);
 }
 
 bool cHardwareBCR::testAttack(cAvidaContext& ctx)

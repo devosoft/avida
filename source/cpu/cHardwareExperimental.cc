@@ -3132,7 +3132,7 @@ bool cHardwareExperimental::Inst_RangePredMove(cAvidaContext& ctx)
   if (m_use_avatar == 2) faced_range = m_organism->GetOrgInterface().GetAVFacedDataTerritory();
   int marked_update = m_organism->GetOrgInterface().GetFacedCellDataUpdate();
   if (m_use_avatar == 2) marked_update = m_organism->GetOrgInterface().GetAVFacedDataUpdate();
-  if (m_organism->GetForageTarget() <= -2 && faced_range != -1 && (faced_range != m_organism->GetOpinion().first) &&
+  if (!m_organism->IsPreyFT() && faced_range != -1 && (faced_range != m_organism->GetOpinion().first) &&
       ((m_world->GetStats().GetUpdate() - marked_update) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
     safe_passage = false;
   }
@@ -3865,8 +3865,8 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
     bool is_target_type = false;
-    if (org_type == 0 && m_organism->GetForageTarget() <= -2) is_target_type = true;
-    else if (org_type == 1 && m_organism->GetForageTarget() > -2) is_target_type = true;
+    if (org_type == 0 && !m_organism->IsPreyFT()) is_target_type = true;
+    else if (org_type == 1 && m_organism->IsPreyFT()) is_target_type = true;
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
@@ -3922,8 +3922,8 @@ bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
     bool is_target_type = false;
-    if (org_type == 0 && m_organism->GetForageTarget() <= -2) is_target_type = true;
-    else if (org_type == 1 && m_organism->GetForageTarget() > -2) is_target_type = true;
+    if (org_type == 0 && !m_organism->IsPreyFT()) is_target_type = true;
+    else if (org_type == 1 && m_organism->IsPreyFT()) is_target_type = true;
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
@@ -4035,8 +4035,8 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
   if (m_world->GetConfig().LOOK_DISABLE.Get() > 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
     bool is_target_type = false;
-    if (org_type == 0 && m_organism->GetForageTarget() <= -2) is_target_type = true;
-    else if (org_type == 1 && m_organism->GetForageTarget() > -2) is_target_type = true;
+    if (org_type == 0 && !m_organism->IsPreyFT()) is_target_type = true;
+    else if (org_type == 1 && m_organism->IsPreyFT()) is_target_type = true;
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
@@ -4202,7 +4202,7 @@ bool cHardwareExperimental::Inst_ShowForageTarget(cAvidaContext& ctx)
   m_from_sensor = FromSensor(reg);
   
   // return false if not a mimic ft type 
-  if (m_organism->GetForageTarget() != 1) return false;
+  if (!m_organism->IsMimicFT()) return false;
   
   // a little mod help...can only set to positive ft's
   if (!m_world->GetEnvironment().IsTargetID(prop_target)) {
@@ -4270,14 +4270,14 @@ bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx)
       int cellid = ul + i + (j * worldx);
       const cPopulationCell* cell = m_organism->GetOrgInterface().GetCell(cellid);
       if (!m_use_avatar && cell->IsOccupied() && !cell->GetOrganism()->IsDead() && cellid != m_organism->GetOrgInterface().GetCellID()) { 
-        if (cell->GetOrganism()->GetForageTarget() > -2) prey_count++;
-        if (cell->GetOrganism()->GetForageTarget() <= -2) pred_count++;
+        if (cell->GetOrganism()->IsPreyFT()) prey_count++;
+        if (!cell->GetOrganism()->IsPreyFT()) pred_count++;
       }
       else if (m_use_avatar == 2) { 
         prey_count += cell->GetNumPreyAV();
         pred_count += cell->GetNumPredAV();
         if (cellid == m_organism->GetOrgInterface().GetAVCellID()) {
-          if (m_organism->GetForageTarget() > -2) prey_count--;
+          if (m_organism->IsPreyFT()) prey_count--;
           else pred_count--;
         }
       }
@@ -4358,14 +4358,14 @@ bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext&)
       }
       const cPopulationCell* cell = m_organism->GetOrgInterface().GetCell(cellid);
       if (!m_use_avatar && cell->IsOccupied() && !cell->GetOrganism()->IsDead() && cellid != m_organism->GetOrgInterface().GetCellID()) { 
-        if (cell->GetOrganism()->GetForageTarget() > -2) prey_count++;
-        if (cell->GetOrganism()->GetForageTarget() <= -2) pred_count++;
+        if (cell->GetOrganism()->IsPreyFT()) prey_count++;
+        if (!cell->GetOrganism()->IsPreyFT()) pred_count++;
       }
       else if (m_use_avatar == 2) { 
         prey_count += cell->GetNumPreyAV();
         pred_count += cell->GetNumPredAV();
         if (cellid == m_organism->GetOrgInterface().GetAVCellID()) {
-          if (m_organism->GetForageTarget() > -2) prey_count--;
+          if (m_organism->IsPreyFT()) prey_count--;
           else pred_count--;
         }
       }
@@ -4839,7 +4839,7 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext&)
 bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (m_organism->GetForageTarget() > -2) return false;
+  if (m_organism->IsPreyFT()) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
   
   // If not nop-modified, fails to execute.
@@ -4873,7 +4873,7 @@ bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (m_organism->GetForageTarget() > -2) return false;
+  if (m_organism->IsPreyFT()) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
   
   // If in a group, leave it.
@@ -4896,7 +4896,7 @@ bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
   
   // Confirm the org is a pred and groups are on.
   assert(m_organism != 0);
-  if (m_organism->GetForageTarget() > -2) return false;
+  if (m_organism->IsPreyFT()) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
   
   // If in a group, leave it.
@@ -4917,7 +4917,7 @@ bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_AdoptPredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (m_organism->GetForageTarget() > -2) return false;
+  if (m_organism->IsPreyFT()) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
   
   // Read target group from the faced marked cell.
@@ -4961,7 +4961,7 @@ bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext&)
 bool cHardwareExperimental::Inst_GetPredGroupID(cAvidaContext&)
 {
   assert(m_organism != 0);
-  if (m_organism->GetForageTarget() > -2) return false;
+  if (m_organism->IsPreyFT()) return false;
   if (m_organism->HasOpinion()) {
     const int group_reg = FindModifiedRegister(rBX);
     
@@ -5027,8 +5027,8 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
     for (int j = 0; j < neighborhood.GetSize(); j++) {
       if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
           !m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsDead()) {
-        if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetForageTarget() > -2) prey_count++;
-        if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetForageTarget() <= -2) pred_count++;
+        if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsPreyFT()) prey_count++;
+        if (!m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsPreyFT()) pred_count++;
       }
     }
   }
@@ -5280,7 +5280,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     target = m_organism->GetOrgInterface().GetNeighbor();
     if (target_org_type != target->GetForageTarget())  { results.success = 1; return TestAttackResultsOut(results); }
     // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-    if (target->GetForageTarget() <= -2)  { results.success = 1; return TestAttackResultsOut(results); }
+    if (!target->IsPreyFT())  { results.success = 1; return TestAttackResultsOut(results); }
   }    
   else if (m_use_avatar == 2) {
     const Apto::Array<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetFacedPreyAVs();
@@ -5344,18 +5344,18 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
     if (!m_organism->IsNeighborCellOccupied()) return false;
     target = m_organism->GetOrgInterface().GetNeighbor();
     // allow only for predator vs predator or prey vs prey
-    if ((target->GetForageTarget() <= -2 && m_organism->GetForageTarget() > -2) ||
-        (target->GetForageTarget() > -2 && m_organism->GetForageTarget() <= -2)) {
+    if ((!target->IsPreyFT() && m_organism->IsPreyFT()) ||
+        (target->IsPreyFT() && !m_organism->IsPreyFT())) {
       return false;
     }
   }
   else if (m_use_avatar == 2) {
     if (!m_organism->GetOrgInterface().FacedHasAV()) return false;
-    if (m_organism->GetForageTarget() > -2) {
+    if (m_organism->IsPreyFT()) {
       if (!m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
     }
-    else if (m_organism->GetForageTarget() <= -2) {
+    else if (!m_organism->IsPreyFT()) {
       if (!m_organism->GetOrgInterface().FacedHasPredAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPredAV();
     }
@@ -5404,18 +5404,18 @@ bool cHardwareExperimental::Inst_FightBonusOrg(cAvidaContext& ctx)
     if (!m_organism->IsNeighborCellOccupied()) return false;
     target = m_organism->GetOrgInterface().GetNeighbor();
     // allow only for predator vs predator or prey vs prey
-    if ((target->GetForageTarget() <= -2 && m_organism->GetForageTarget() > -2) ||
-        (target->GetForageTarget() > -2 && m_organism->GetForageTarget() <= -2)) {
+    if ((!target->IsPreyFT() && m_organism->IsPreyFT()) ||
+        (target->IsPreyFT() && !m_organism->IsPreyFT())) {
       return false;
     }
   }
   else if (m_use_avatar == 2) {
     if (!m_organism->GetOrgInterface().FacedHasAV()) return false;
-    if (m_organism->GetForageTarget() > -2) {
+    if (m_organism->IsPreyFT()) {
       if (!m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
     }
-    else if (m_organism->GetForageTarget() <= -2) {
+    else if (!m_organism->IsPreyFT()) {
       if (!m_organism->GetOrgInterface().FacedHasPredAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPredAV();
     }
@@ -5464,18 +5464,18 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext&)
     if (!m_organism->IsNeighborCellOccupied()) return false;
     target = m_organism->GetOrgInterface().GetNeighbor();
     // allow only for predator vs predator or prey vs prey
-    if ((target->GetForageTarget() <= -2 && m_organism->GetForageTarget() > -2) ||
-        (target->GetForageTarget() > -2 && m_organism->GetForageTarget() <= -2)) {
+    if ((!target->IsPreyFT() && m_organism->IsPreyFT()) ||
+        (target->IsPreyFT() && !m_organism->IsPreyFT())) {
       return false;
     }
   }
   else if (m_use_avatar == 2) {
     if (!m_organism->GetOrgInterface().FacedHasAV()) return false;
-    if (m_organism->GetForageTarget() > -2) {
+    if (m_organism->IsPreyFT()) {
       if (!m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
     }
-    else if (m_organism->GetForageTarget() <= -2) {
+    else if (!m_organism->IsPreyFT()) {
       if (!m_organism->GetOrgInterface().FacedHasPredAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPredAV();
     }
@@ -5509,18 +5509,18 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
     if (!m_organism->IsNeighborCellOccupied()) return false;
     target = m_organism->GetOrgInterface().GetNeighbor();
     // allow only for predator vs predator or prey vs prey
-    if ((target->GetForageTarget() <= -2 && m_organism->GetForageTarget() > -2) ||
-        (target->GetForageTarget() > -2 && m_organism->GetForageTarget() <= -2)) {
+    if ((!target->IsPreyFT() && m_organism->IsPreyFT()) ||
+        (target->IsPreyFT() && !m_organism->IsPreyFT())) {
       return false;
     }
   }
   else if (m_use_avatar == 2) {
     if (!m_organism->GetOrgInterface().FacedHasAV()) return false;
-    if (m_organism->GetForageTarget() > -2) {
+    if (m_organism->IsPreyFT()) {
       if (!m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
     }
-    else if (m_organism->GetForageTarget() <= -2) {
+    else if (!m_organism->IsPreyFT()) {
       if (!m_organism->GetOrgInterface().FacedHasPredAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPredAV();
     }
@@ -5546,7 +5546,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
   else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPredAV();
 
-  if (target->GetForageTarget() > -2 || m_organism->GetForageTarget() > -2) return false;
+  if (target->IsPreyFT() || m_organism->IsPreyFT()) return false;
   if (target->IsDead()) return false;  
   
   sAttackReg reg;
@@ -5604,7 +5604,7 @@ bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator
-  if (target->GetForageTarget() > -2 || m_organism->GetForageTarget() > -2) return false;
+  if (target->IsPreyFT() || m_organism->IsPreyFT()) return false;
   
   int target_cell = target->GetOrgInterface().GetCellID();  
   m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
@@ -5631,7 +5631,7 @@ bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator
-  if (target->GetForageTarget() > -2 || m_organism->GetForageTarget() > -2) return false;
+  if (target->IsPreyFT() || m_organism->IsPreyFT()) return false;
   
   //Use merit to decide who wins this battle.
   bool kill_attacker = true;
@@ -5676,7 +5676,7 @@ bool cHardwareExperimental::Inst_MarkPredCell(cAvidaContext&)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;  
-  if (m_organism->GetForageTarget() > -2) return false;
+  if (m_organism->IsPreyFT()) return false;
   const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
   if (!m_use_avatar) m_organism->SetCellData(marking);
   else if (m_use_avatar == 2) m_organism->GetOrgInterface().SetAVCellData(marking, m_organism->GetID());
@@ -5760,7 +5760,7 @@ bool cHardwareExperimental::Inst_ReadFacedPredCell(cAvidaContext&)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;  
-  if (m_organism->GetForageTarget() > -2) return false;
+  if (m_organism->IsPreyFT()) return false;
   const int marking_reg = FindModifiedRegister(rBX);
   const int update_reg = FindModifiedNextRegister(rBX);
   const int org_reg = FindModifiedNextRegister(update_reg);
@@ -6059,7 +6059,7 @@ bool cHardwareExperimental::Inst_KillDisplay(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
 {
    // Exit if the org is not a predator
-   if (m_organism->GetForageTarget() > -2) return false;
+   if (m_organism->IsPreyFT()) return false;
    // Exit if tolerance is not enabled
    if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
@@ -6099,7 +6099,7 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
 {
   // Exit if the org is not a predator
-  if (m_organism->GetForageTarget() > -2) return false;
+  if (m_organism->IsPreyFT()) return false;
   // Exit if tolerance is not enabled
   if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
@@ -6134,7 +6134,7 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
 {
   bool exec_success = false;
-  if (m_organism->GetForageTarget() > -2) return false;
+  if (m_organism->IsPreyFT()) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       if (m_organism->GetOpinion().first == -1) return false;
@@ -6161,7 +6161,7 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
 {
   bool exec_success = false;
   // If not a predator in a group, return false
-  if (m_organism->GetForageTarget() > -2 || m_organism->GetOpinion().first < 0) return false;
+  if (m_organism->IsPreyFT() || m_organism->GetOpinion().first < 0) return false;
   // If groups are used and tolerances are on...
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
@@ -6263,29 +6263,29 @@ bool cHardwareExperimental::Inst_GetFacedEditDistance(cAvidaContext& ctx)
 
 void cHardwareExperimental::MakePred(cAvidaContext& ctx)
 {
-  if (m_organism->GetForageTarget() > -2) {
+  if (m_organism->IsPreyFT()) {
     if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
-      m_organism->SetForageTarget(ctx, -2);
+      m_organism->SetPredFT(ctx);
     }
-    else m_organism->SetForageTarget(ctx, -2);
+    else m_organism->SetPredFT(ctx);
   }    
 }
 
 void cHardwareExperimental::MakeTopPred(cAvidaContext& ctx)
 {
-  if (m_organism->GetForageTarget() > -2) {
+  if (m_organism->IsPreyFT() > -2) {
     if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
-      m_organism->SetForageTarget(ctx, -3);
+      m_organism->SetTopPredFT(ctx);
     }
-    else m_organism->SetForageTarget(ctx, -3);
+    else m_organism->SetTopPredFT(ctx);
   }
-  else if (m_organism->GetForageTarget() == -2) m_organism->SetForageTarget(ctx, -3);
+  else if (m_organism->IsPredFT()) m_organism->SetTopPredFT(ctx);
 }
 
 bool cHardwareExperimental::TestAttack(cAvidaContext& ctx)
@@ -6338,7 +6338,7 @@ bool cHardwareExperimental::TestPreyTarget(cOrganism* target)
 {
   // attacking other carnivores is handled differently (e.g. using fights or tolerance)
   bool success = true;
-  if (target->GetForageTarget() <= -2) success = false;
+  if (!target->IsPreyFT()) success = false;
   else if (target->IsDead()) success = false;
   return success;
 }
@@ -6354,7 +6354,7 @@ bool cHardwareExperimental::ExecuteAttack(cAvidaContext& ctx, cOrganism* target,
 {
   if (!TestAttackChance(target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
-  if (m_organism->GetForageTarget() <= -3) effic *= effic;
+  if (m_organism->IsTopPredFT()) effic *= effic;
   ApplyKilledPreyMerit(target, effic);
   ApplyKilledPreyReactions(target);
 
@@ -6373,7 +6373,7 @@ bool cHardwareExperimental::ExecuteShareAttack(cAvidaContext& ctx, cOrganism* ta
 {
   if (!TestAttackChance(target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
-  if (m_organism->GetForageTarget() <= -3) effic *= effic;
+  if (m_organism->IsTopPredFT()) effic *= effic;
   ApplyKilledPreyReactions(target);           // reactions can't be shared
   double share = 1 / pack.GetSize();
   for (int i = 0; i < pack.GetSize(); i++) {
@@ -6393,7 +6393,7 @@ bool cHardwareExperimental::ExecuteFakeShareAttack(cAvidaContext& ctx, cOrganism
 {
   if (!TestAttackChance(target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
-  if (m_organism->GetForageTarget() <= -3) effic *= effic;
+  if (m_organism->IsTopPredFT()) effic *= effic;
   ApplyKilledPreyReactions(target);           // reactions can't be shared
   ApplySharedKilledPreyMerit(target, effic, m_organism, share);
   ApplySharedKilledPreyBonus(target, reg, effic, m_organism, share);
@@ -6411,9 +6411,9 @@ bool cHardwareExperimental::ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganis
   // poison affects merit
   if (!TestAttackChance(target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
-  if (m_organism->GetForageTarget() <= -3) effic *= effic;
+  if (m_organism->IsTopPredFT()) effic *= effic;
   // apply poison, if any
-  if (target->GetForageTarget() == 2) {
+  if (target->IsPredFT()) {
     const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
     double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
     attacker_merit -= target_merit * effic;
@@ -6564,7 +6564,7 @@ Apto::Array<cOrganism*> cHardwareExperimental::GetPredGroupAttackNeighbors()
     for (int j = 0; j < neighborhood.GetSize(); j++) {
       if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
           !m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsDead()) {
-        if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetForageTarget() <= -2) {
+        if (!m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsPreyFT()) {
           pack.Push(m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism());
         }
       }
@@ -6576,7 +6576,7 @@ Apto::Array<cOrganism*> cHardwareExperimental::GetPredGroupAttackNeighbors()
       if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->HasPredAV()) {
         Apto::Array<cOrganism*> predators = m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetCellInputAVs();
         for (int i = 0; i < predators.GetSize(); i++) {
-          if (!predators[i]->IsDead() && predators[i]->GetForageTarget() <= -2) pack.Push(predators[i]);
+          if (!predators[i]->IsDead() && !predators[i]->IsPreyFT()) pack.Push(predators[i]);
          }
       }
     }
@@ -6595,7 +6595,7 @@ Apto::Array<cOrganism*> cHardwareExperimental::GetPredSameGroupAttackNeighbors()
     for (int j = 0; j < neighborhood.GetSize(); j++) {
       if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
           !m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsDead()) {
-        if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetForageTarget() <= -2 &&
+        if (!m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsPreyFT() &&
             m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->HasOpinion()) {
           if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetOpinion().first == opinion) {
             pack.Push(m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism());
@@ -6610,7 +6610,7 @@ Apto::Array<cOrganism*> cHardwareExperimental::GetPredSameGroupAttackNeighbors()
       if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->HasPredAV()) {
         Apto::Array<cOrganism*> predators = m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetCellInputAVs();
         for (int i = 0; i < predators.GetSize(); i++) {
-          if (!predators[i]->IsDead() && predators[i]->GetForageTarget() <= -2 && predators[i]->HasOpinion()) {
+          if (!predators[i]->IsDead() && !predators[i]->IsPreyFT() && predators[i]->HasOpinion()) {
             if (predators[i]->GetOpinion().first == opinion) pack.Push(predators[i]);
           }
         }
@@ -6652,11 +6652,11 @@ void cHardwareExperimental::UpdateGroupAttackStats(const cString& inst, sAttackR
   }
   assert(idx >= 0);
   
-  if (m_organism->GetForageTarget() == -2) {
+  if (m_organism->IsPredFT()) {
     m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, fr_pack_size);
     if (has_opinion) m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, gr_pack_size + 10);
   }
-  else if (m_organism->GetForageTarget() < -2) {
+  else if (m_organism->IsTopPredFT()) {
     m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, fr_pack_size);
     if (has_opinion) m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, gr_pack_size + 10);
   }
