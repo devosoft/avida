@@ -2985,20 +2985,36 @@ namespace Avida {
   }
 }
 
+
+Avida::Viewer::FreezerPtr Avida::Viewer::Freezer::LoadWithPath(const Apto::String& dir)
+{
+  // Check for existing freezer dir
+  if (!Apto::FileSystem::IsDir(dir)) return FreezerPtr(NULL);
+  
+  return FreezerPtr(new Freezer(dir));
+}
+
+
+Avida::Viewer::FreezerPtr Avida::Viewer::Freezer::CreateWithPath(const Apto::String& dir)
+{
+  // Check for existing freezer dir
+  if (!Apto::FileSystem::IsDir(dir)) {
+    if (!Apto::FileSystem::MkDir(dir)) return FreezerPtr(NULL);
+    
+    // Set up defaults
+    Private::CreateDefaultFreezer(dir);
+  }
+  
+  return FreezerPtr(new Freezer(dir));
+}
+
+
 Avida::Viewer::Freezer::Freezer(const Apto::String& dir) : m_dir(dir), m_opened(false)
 {
   // Initialize next identifiers
   m_next_id[0] = m_next_id[1] = m_next_id[2] = -1;
   
   
-  // Check for existing freezer dir
-  if (!Apto::FileSystem::IsDir(m_dir)) {
-    if (!Apto::FileSystem::MkDir(m_dir)) return;
-    
-    // Set up defaults
-    Private::CreateDefaultFreezer(m_dir);
-  }
-    
   // Open entries
   Apto::Array<Apto::String, Apto::Smart> direntries;
   if (!Apto::FileSystem::ReadDir(m_dir, direntries)) return;
