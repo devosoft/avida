@@ -214,9 +214,9 @@
 		};
 		70486B9508267145009328F0 /* Create work dir */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = work;
-			dstSubfolderSpec = 16;
+			buildActionMask = 8;
+			dstPath = /usr/local/share/avida/config;
+			dstSubfolderSpec = 0;
 			files = (
 				705B10401073AF05002242E6 /* instset-heads-sex.cfg in Create work dir */,
 				705B10411073AF05002242E6 /* instset-heads.cfg in Create work dir */,
@@ -230,7 +230,7 @@
 				7049F3730A66AD7E00640512 /* default-transsmt.org in Create work dir */,
 			);
 			name = "Create work dir";
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 		70B651B50BEA9AC2002472ED /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -2175,7 +2175,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = avida;
 			};
 			name = Debug;
@@ -2185,7 +2184,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = avida;
 			};
 			name = Release;
@@ -2196,7 +2194,6 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = NO;
-				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DEBUG_CRANDOM,
@@ -2226,8 +2223,6 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
