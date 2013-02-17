@@ -547,6 +547,19 @@ private:
     int ft;
   };
   
+  struct sAttackReg {
+    int success_reg;
+    int bonus_reg;
+    int bin_reg;
+  };
+  
+  struct sAttackResult {
+    unsigned int inst:1;     // 0 == solo attack inst, 1 == group attack inst
+    unsigned int share:2;    // 0 == no, 1 == yes, 2 == fake
+    unsigned int success:2;  // 0 == sucess, 1 == no prey failure, 2 == no friends failure, 3 == chance failure
+    unsigned int size:3;     // potential group size, not including self
+  };
+  
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
@@ -554,6 +567,18 @@ private:
   bool TestAttack(cAvidaContext& ctx);
   void InjureOrg(cOrganism* target);
   void MakePred(cAvidaContext& ctx);
+  cOrganism* GetPreyTarget(cAvidaContext& ctx);
+  bool TestPreyTarget(cOrganism* target);
+  void SetAttackReg(sAttackReg& reg);
+  bool ExecuteAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds = -1);  
+
+  bool TestAttackResultsOut(sAttackResult& results);
+  bool TestAttackChance(cOrganism* target, sAttackReg& reg, double odds = -1);
+  void ApplyKilledPreyMerit(cOrganism* target, double effic);
+  void ApplyKilledPreyReactions(cOrganism* target);
+  void ApplyKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic);
+  void ApplyKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic);
+  void TryPreyClone(cAvidaContext& ctx);
 };
 
 
