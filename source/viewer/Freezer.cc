@@ -108,7 +108,7 @@ namespace Avida {
         *fs << "DIVIDE_DEL_PROB 0.0" << std::endl;
         *fs << "OFFSPRING_SIZE_RANGE 1.0" << std::endl;
         *fs << "BIRTH_METHOD 0" << std::endl;
-        *fs << "RANDOM_SEED 0" << std::endl;
+        *fs << "RANDOM_SEED -1" << std::endl;
         *fs << "#include instset.cfg" << std::endl;
         
         file.Close();
