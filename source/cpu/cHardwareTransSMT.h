@@ -24,6 +24,7 @@
 
 #include "avida/Avida.h"
 
+#include "cAvidaContext.h"
 #include "cCodeLabel.h"
 #include "cContextPhenotype.h"
 #include "cCPUMemory.h"

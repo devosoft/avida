@@ -51,10 +51,12 @@
 #include "cUserFeedback.h"
 #include "cArgSchema.h"
 
-#include <map>
-#include <set>
-#include <numeric>
 #include <algorithm>
+#include <iterator>
+#include <map>
+#include <numeric>
+#include <set>
+
 #include "stdlib.h"
 
 using namespace Avida;

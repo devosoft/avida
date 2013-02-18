@@ -27,6 +27,8 @@
 #include "avida/core/Feedback.h"
 #include "avida/output/Manager.h"
 
+#include <ctime>
+
 
 Avida::Output::FilePtr Avida::Output::File::createWithPath(World* world, Apto::String path, bool append, Feedback* feedback)
 {
