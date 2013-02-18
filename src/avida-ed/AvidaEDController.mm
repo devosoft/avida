@@ -1675,7 +1675,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 - (IBAction) changeRepeatability:(id)sender {
   if ([[matCfgRepeatability selectedCell] tag] == 0) {
-    [currentRun setRandomSeed:0]; // full random
+    [currentRun setRandomSeed:-1]; // full random
   } else {    
     [currentRun setRandomSeed:100]; // fixed seed
   }  
