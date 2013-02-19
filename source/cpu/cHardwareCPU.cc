@@ -24,6 +24,7 @@
 #include "cHardwareCPU.h"
 
 #include "avida/core/WorldDriver.h"
+#include "avida/output/File.h"
 
 #include "avida/private/systematics/SexualAncestry.h"
 
@@ -873,6 +874,9 @@ void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
   m_messageTriggerType = -1;
     
 }
+
+void cHardwareCPU::SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype) { (void)df, (void)gen_id, (void)genotype; }
+
 
 // This function processes the very next command in the genome, and is made
 // to be as optimized as possible.  This is the heart of avida.
