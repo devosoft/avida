@@ -4025,6 +4025,30 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
 {
   // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
   // return defaults for failed to find
+  if (m_world->GetConfig().LOOK_DISABLE_COMBO.Get() > 0 && results.report_type == 1) {
+    int disable_combo = m_world->GetConfig().LOOK_DISABLE_COMBO.Get();
+    if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 2) {
+      if (disable_combo == 1 && results.habitat == 0) results.report_type = 0;  // food
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2)) results.report_type = 0; // predator
+      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2)) results.report_type = 0; // prey
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2) results.report_type = 0; // predator
+      else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2) results.report_type = 0; // prey
+    }
+    else if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 1 && m_organism->GetForageTarget() > -2) {
+      if (disable_combo == 1 && results.habitat == 0) results.report_type = 0;
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2)) results.report_type = 0; 
+      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2)) results.report_type = 0; 
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2) results.report_type = 0; // predator
+      else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2) results.report_type = 0; // prey
+    }
+    else if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 0 && m_organism->GetForageTarget() <= -2) {
+      if (disable_combo == 1 && results.habitat == 0) results.report_type = 0;
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2)) results.report_type = 0; 
+      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2)) results.report_type = 0; 
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2) results.report_type = 0; // predator
+      else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2) results.report_type = 0; // prey
+    }
+  }
   if (results.report_type == 0) {
     setInternalValue(regs.habitat, results.habitat, true, true);
     setInternalValue(regs.distance, -1, true, true);
