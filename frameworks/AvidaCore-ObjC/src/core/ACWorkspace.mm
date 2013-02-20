@@ -32,7 +32,7 @@
 #import "ACFramework.h"
 
 
-NSString* const ACWorkspaceFiletypes[] = {@"org.devosoft.avida.avida-workspace", @"avidaworkspace"};
+NSString* const ACWorkspaceFiletypes[] = {@"avidaworkspace", @"org.devosoft.avida.avida-workspace"};
 
 @interface ACWorkspace ()
 - (ACWorkspace*) initWithFreezer:(Avida::Viewer::FreezerPtr)f atURL:(NSURL*)url;
@@ -82,10 +82,9 @@ NSString* const ACWorkspaceFiletypes[] = {@"org.devosoft.avida.avida-workspace",
 
 
 + (ACWorkspace*) createAtURL:(NSURL*)url {
-  NSError* err = nil;
-  if (![url isFileURL] || ![url checkResourceIsReachableAndReturnError:&err]) return nil;
-    
-  Avida::Viewer::FreezerPtr f = Avida::Viewer::Freezer::LoadWithPath([[url path] UTF8String]);
+  if (![url isFileURL]) return nil;
+  
+  Avida::Viewer::FreezerPtr f = Avida::Viewer::Freezer::CreateWithPath([[url path] UTF8String]);
   if (!f) return nil;
   
   return [[ACWorkspace alloc] initWithFreezer:f atURL:url];

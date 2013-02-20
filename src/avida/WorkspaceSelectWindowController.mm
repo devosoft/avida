@@ -160,7 +160,7 @@
   
   // Load all known workspaces
   for (NSData* urlData in knownWorkspaces) {
-    NSURL* workspaceURL = (NSURL*)[NSUnarchiver unarchiveObjectWithData:urlData];
+    NSURL* workspaceURL = (NSURL*)[NSKeyedUnarchiver unarchiveObjectWithData:urlData];
     
     if (workspaceURL) {
       // If already loaded, ignore
