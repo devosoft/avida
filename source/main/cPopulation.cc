@@ -6498,7 +6498,10 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         if ((load_avatars || load_birth_cells) && org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
           int avatar_cell = -1;
           if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
-          if (avatar_cell != -1) new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+          if (avatar_cell != -1) {
+            new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+            new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
+          }
         }
       }
       else if (load_rebirth) {
@@ -6512,7 +6515,10 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       if (org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
         int avatar_cell = -1;
         if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
-        if (avatar_cell != -1) new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+        if (avatar_cell != -1) {
+          new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+          new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
+        }
       }
     }
   }
