@@ -1388,7 +1388,7 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomPreyTraceQ(int max_samples)
     int this_rand_sample = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
     if (!used_orgs[this_rand_sample]) {
       cOrganism* rand_org = live_orgs[this_rand_sample];
-      if (rand_org->IsPreyFT() > -2) {
+      if (rand_org->IsPreyFT()) {
         bg_id_list.Push(rand_org->SystematicsGroup("genotype")->ID());
         used_orgs[this_rand_sample] = true;
       }
@@ -6438,8 +6438,9 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         // Set the phenotype merit from the save file
         assert(tmp.props->Has("merit"));
         double merit = Apto::StrAs(tmp.props->Get("merit"));
-        if (load_rebirth && m_world->GetConfig().INHERIT_MERIT.Get() && tmp.props->Has("parent_merit")) { 
-          merit = tmp.parent_merit[cell_i]; 
+        if (load_rebirth && tmp.props->Has("parent_merit")) { 
+          if (m_world->GetConfig().INHERIT_MERIT.Get()) merit = tmp.parent_merit[cell_i];
+          new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
         }
         
         if (merit > 0) {
