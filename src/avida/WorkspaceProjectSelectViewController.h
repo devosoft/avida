@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 12/21/12.
-//  Copyright 2012 Michigan State University. All rights reserved.
+//  Copyright 2012-2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -29,6 +29,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface WorkspaceProjectSelectViewController : NSViewController
+@class WorkspaceViewController;
+
+
+@interface WorkspaceProjectSelectViewController : NSViewController {
+}
+
+- (WorkspaceProjectSelectViewController*) initWithWorkspaceView:(WorkspaceViewController*)workspaceView;
 
 @end

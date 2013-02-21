@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 12/21/12.
-//  Copyright 2012 Michigan State University. All rights reserved.
+//  Copyright 2012-2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -28,7 +28,28 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <AvidaCore/AvidaCore.h>
 
-@interface WorkspaceViewController : NSViewController
+#import "WorkspaceViewDelegate.h"
+
+@class WorkspaceProjectDetailViewController;
+@class WorkspaceProjectSelectViewController;
+
+
+@interface WorkspaceViewController : NSObject {
+  ACWorkspace* workspace;
+  
+  WorkspaceProjectDetailViewController* detailViewCtlr;
+  WorkspaceProjectSelectViewController* selectViewCtlr;
+  
+  id<WorkspaceViewDelegate> delegate;
+}
+
+- (WorkspaceViewController*) initWithWorkspace:(ACWorkspace*)workspace delegate:(id<WorkspaceViewDelegate>)delegate;
+
+
+@property (readonly) ACWorkspace* workspace;
+@property (readonly) NSView* view;
+@property (readwrite) id<WorkspaceViewDelegate> delegate;
 
 @end

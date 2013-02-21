@@ -3,12 +3,12 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1070</int>
 		<string key="IBDocument.SystemVersion">12C60</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2844</string>
+		<string key="IBDocument.InterfaceBuilderVersion">3084</string>
 		<string key="IBDocument.AppKitVersion">1187.34</string>
 		<string key="IBDocument.HIToolboxVersion">625.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">2844</string>
+			<string key="NS.object.0">3084</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>IBNSLayoutConstraint</string>
@@ -129,7 +129,7 @@
 										<string key="NSFrameSize">{300, 64}</string>
 										<reference key="NSSuperview" ref="897101896"/>
 										<reference key="NSWindow"/>
-										<reference key="NSNextKeyView" ref="512673494"/>
+										<reference key="NSNextKeyView" ref="1055815000"/>
 										<string key="NSReuseIdentifierKey">_NS:3367</string>
 										<string key="NSMinGridSize">{0, 0}</string>
 										<string key="NSMaxGridSize">{0, 0}</string>
@@ -196,7 +196,7 @@
 						<string key="NSFrame">{{20, 20}, {300, 64}}</string>
 						<reference key="NSSuperview" ref="585578516"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="1055815000"/>
+						<reference key="NSNextKeyView" ref="897101896"/>
 						<string key="NSReuseIdentifierKey">_NS:3363</string>
 						<int key="NSsFlags">153600</int>
 						<reference key="NSVScroller" ref="1055815000"/>
@@ -212,7 +212,6 @@
 						<string key="NSFrame">{{632, 37}, {171, 22}}</string>
 						<reference key="NSSuperview" ref="585578516"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSPopUpButtonCell" key="NSCell" id="1050226201">
 							<int key="NSCellFlags">67108928</int>
@@ -345,7 +344,7 @@
 				<bool key="NSClearsFilterPredicateOnInsertion">YES</bool>
 			</object>
 			<object class="NSView" id="516679733">
-				<reference key="NSNextResponder"/>
+				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">256</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="NSPopUpButton" id="594173792">
@@ -353,7 +352,6 @@
 						<int key="NSvFlags">265</int>
 						<string key="NSFrame">{{28, 2}, {88, 22}}</string>
 						<reference key="NSSuperview" ref="516679733"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="1072793441"/>
 						<string key="NSReuseIdentifierKey">_NS:868</string>
 						<bool key="NSEnabled">YES</bool>
@@ -471,7 +469,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{0, 5}, {23, 18}}</string>
 						<reference key="NSSuperview" ref="516679733"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="594173792"/>
 						<string key="NSReuseIdentifierKey">_NS:287</string>
 						<bool key="NSEnabled">YES</bool>
@@ -496,8 +493,6 @@
 						<int key="NSvFlags">266</int>
 						<string key="NSFrame">{{118, 7}, {185, 14}}</string>
 						<reference key="NSSuperview" ref="516679733"/>
-						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:3944</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="630192470">
@@ -522,8 +517,6 @@
 					</object>
 				</array>
 				<string key="NSFrameSize">{300, 23}</string>
-				<reference key="NSSuperview"/>
-				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="545600987"/>
 			</object>
 			<object class="NSCollectionViewItem" id="368961058"/>
@@ -1838,7 +1831,7 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">CPTGraphHostingView</string>
-					<string key="superclassName">UIView</string>
+					<string key="superclassName">NSView</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/CPTGraphHostingView.h</string>

@@ -64,9 +64,9 @@
 		708308F714B6ADEB0051B354 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 708308F614B6ADEB0051B354 /* OpenGL.framework */; };
 		7083E58414BE1E2900E4023E /* Freezer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7083E58314BE1E2900E4023E /* Freezer.mm */; };
 		708D31301342312100AE5CEF /* README in Resources */ = {isa = PBXBuildFile; fileRef = 708D312F1342312100AE5CEF /* README */; };
-		709AE9511684E45600E50275 /* WorkspaceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9501684E45600E50275 /* WorkspaceViewController.m */; };
-		709AE9551684E4D500E50275 /* WorkspaceProjectSelectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9541684E4D500E50275 /* WorkspaceProjectSelectViewController.m */; };
-		709AE9581684E50800E50275 /* WorkspaceProjectDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9571684E50800E50275 /* WorkspaceProjectDetailViewController.m */; };
+		709AE9511684E45600E50275 /* WorkspaceViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9501684E45600E50275 /* WorkspaceViewController.mm */; };
+		709AE9551684E4D500E50275 /* WorkspaceProjectSelectViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9541684E4D500E50275 /* WorkspaceProjectSelectViewController.mm */; };
+		709AE9581684E50800E50275 /* WorkspaceProjectDetailViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9571684E50800E50275 /* WorkspaceProjectDetailViewController.mm */; };
 		709AE95B1684E52B00E50275 /* WorkspaceArchivesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE95A1684E52B00E50275 /* WorkspaceArchivesViewController.m */; };
 		709AE95E1684E56800E50275 /* ConfigEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE95D1684E56800E50275 /* ConfigEditViewController.m */; };
 		709AE9631684E64900E50275 /* PopulationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9621684E64900E50275 /* PopulationViewController.m */; };
@@ -91,6 +91,8 @@
 		70E6072D15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E6072C15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm */; };
 		70E6073015658B0600E7AA82 /* AvidaED-AnalyzeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70E6072F15658B0600E7AA82 /* AvidaED-AnalyzeView.xib */; };
 		70E6073215658B2400E7AA82 /* AvidaED-OrganismView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70E6073115658B2400E7AA82 /* AvidaED-OrganismView.xib */; };
+		70E8B19A16D6BD99001B2AB6 /* Avida-WorkspaceArchives.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70E8B19916D6BD99001B2AB6 /* Avida-WorkspaceArchives.xib */; };
+		70E8B19C16D6BDBE001B2AB6 /* Avida-WorkspaceProjectDetails.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70E8B19B16D6BDBE001B2AB6 /* Avida-WorkspaceProjectDetails.xib */; };
 		70FA09C715FFD4DE006DF5DF /* AvidaED-AboutPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70FA09C615FFD4DE006DF5DF /* AvidaED-AboutPanel.xib */; };
 		70FA09CA15FFD551006DF5DF /* avida-ED-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 70FA09C915FFD551006DF5DF /* avida-ED-logo.png */; };
 		70FA09CD15FFDC4A006DF5DF /* AvidaEDAboutController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70FA09CC15FFDC4A006DF5DF /* AvidaEDAboutController.m */; };
@@ -218,11 +220,11 @@
 		7083E58314BE1E2900E4023E /* Freezer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Freezer.mm; sourceTree = "<group>"; };
 		708D312F1342312100AE5CEF /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		709AE94F1684E45600E50275 /* WorkspaceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorkspaceViewController.h; sourceTree = "<group>"; };
-		709AE9501684E45600E50275 /* WorkspaceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WorkspaceViewController.m; sourceTree = "<group>"; };
+		709AE9501684E45600E50275 /* WorkspaceViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WorkspaceViewController.mm; sourceTree = "<group>"; };
 		709AE9531684E4D500E50275 /* WorkspaceProjectSelectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorkspaceProjectSelectViewController.h; sourceTree = "<group>"; };
-		709AE9541684E4D500E50275 /* WorkspaceProjectSelectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WorkspaceProjectSelectViewController.m; sourceTree = "<group>"; };
+		709AE9541684E4D500E50275 /* WorkspaceProjectSelectViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WorkspaceProjectSelectViewController.mm; sourceTree = "<group>"; };
 		709AE9561684E50800E50275 /* WorkspaceProjectDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorkspaceProjectDetailViewController.h; sourceTree = "<group>"; };
-		709AE9571684E50800E50275 /* WorkspaceProjectDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WorkspaceProjectDetailViewController.m; sourceTree = "<group>"; };
+		709AE9571684E50800E50275 /* WorkspaceProjectDetailViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WorkspaceProjectDetailViewController.mm; sourceTree = "<group>"; };
 		709AE9591684E52B00E50275 /* WorkspaceArchivesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorkspaceArchivesViewController.h; sourceTree = "<group>"; };
 		709AE95A1684E52B00E50275 /* WorkspaceArchivesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WorkspaceArchivesViewController.m; sourceTree = "<group>"; };
 		709AE95C1684E56800E50275 /* ConfigEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigEditViewController.h; sourceTree = "<group>"; };
@@ -253,6 +255,7 @@
 		70C99138167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-WorkspaceSelectWindow.xib"; sourceTree = "<group>"; };
 		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
 		70D3C087135739E1008374E3 /* MapScaleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapScaleView.mm; sourceTree = "<group>"; };
+		70DD5AE616D6CF1300821457 /* WorkspaceViewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkspaceViewDelegate.h; sourceTree = "<group>"; };
 		70E09DD7150AAC5400154C00 /* CorePlot.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CorePlot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		70E60728156588A200E7AA82 /* OrgExecStateValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgExecStateValue.h; sourceTree = "<group>"; };
 		70E60729156588A200E7AA82 /* OrgExecStateValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgExecStateValue.m; sourceTree = "<group>"; };
@@ -260,6 +263,8 @@
 		70E6072C15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDAnalyzeViewController.mm; sourceTree = "<group>"; };
 		70E6072F15658B0600E7AA82 /* AvidaED-AnalyzeView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-AnalyzeView.xib"; sourceTree = "<group>"; };
 		70E6073115658B2400E7AA82 /* AvidaED-OrganismView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-OrganismView.xib"; sourceTree = "<group>"; };
+		70E8B19916D6BD99001B2AB6 /* Avida-WorkspaceArchives.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-WorkspaceArchives.xib"; sourceTree = "<group>"; };
+		70E8B19B16D6BDBE001B2AB6 /* Avida-WorkspaceProjectDetails.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-WorkspaceProjectDetails.xib"; sourceTree = "<group>"; };
 		70FA09C615FFD4DE006DF5DF /* AvidaED-AboutPanel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-AboutPanel.xib"; sourceTree = "<group>"; };
 		70FA09C915FFD551006DF5DF /* avida-ED-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "avida-ED-logo.png"; sourceTree = "<group>"; };
 		70FA09CB15FFDC4A006DF5DF /* AvidaEDAboutController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDAboutController.h; sourceTree = "<group>"; };
@@ -362,20 +367,8 @@
 		703549971337A12E00D3865C /* NIBs */ = {
 			isa = PBXGroup;
 			children = (
-				70FA3F73164421730003971F /* Avida-MainMenu.xib */,
-				703549A71337A4B100D3865C /* Avida-MainWindow.xib */,
-				70C99138167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib */,
-				70FA09C615FFD4DE006DF5DF /* AvidaED-AboutPanel.xib */,
-				70E6072F15658B0600E7AA82 /* AvidaED-AnalyzeView.xib */,
-				702837E4155C58B300C733D2 /* AvidaED-ExportData.xib */,
-				702837E6155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib */,
-				702837E8155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib */,
-				702837EA155C5C8E00C733D2 /* AvidaED-ExportGraphics-Analysis.xib */,
-				703549A81337A4B100D3865C /* AvidaED-MainMenu.xib */,
-				703549A61337A4B100D3865C /* AvidaED-MainWindow.xib */,
-				703ECC2B1513B14400AF9292 /* AvidaED-OrganismSettings.xib */,
-				701269C9151B702D004865C2 /* AvidaED-OrganismValueDisplay.xib */,
-				70E6073115658B2400E7AA82 /* AvidaED-OrganismView.xib */,
+				70E8B19816D6B326001B2AB6 /* Avida */,
+				70E8B19716D6AF64001B2AB6 /* Avida-ED */,
 			);
 			name = NIBs;
 			path = resources/nibs;
@@ -547,11 +540,12 @@
 				709AE9591684E52B00E50275 /* WorkspaceArchivesViewController.h */,
 				709AE95A1684E52B00E50275 /* WorkspaceArchivesViewController.m */,
 				709AE9561684E50800E50275 /* WorkspaceProjectDetailViewController.h */,
-				709AE9571684E50800E50275 /* WorkspaceProjectDetailViewController.m */,
+				709AE9571684E50800E50275 /* WorkspaceProjectDetailViewController.mm */,
 				709AE9531684E4D500E50275 /* WorkspaceProjectSelectViewController.h */,
-				709AE9541684E4D500E50275 /* WorkspaceProjectSelectViewController.m */,
+				709AE9541684E4D500E50275 /* WorkspaceProjectSelectViewController.mm */,
 				709AE94F1684E45600E50275 /* WorkspaceViewController.h */,
-				709AE9501684E45600E50275 /* WorkspaceViewController.m */,
+				709AE9501684E45600E50275 /* WorkspaceViewController.mm */,
+				70DD5AE616D6CF1300821457 /* WorkspaceViewDelegate.h */,
 			);
 			name = "Workspace Pane";
 			sourceTree = "<group>";
@@ -636,6 +630,36 @@
 				70178C7C14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm */,
 			);
 			name = "Analyze View";
+			sourceTree = "<group>";
+		};
+		70E8B19716D6AF64001B2AB6 /* Avida-ED */ = {
+			isa = PBXGroup;
+			children = (
+				70FA09C615FFD4DE006DF5DF /* AvidaED-AboutPanel.xib */,
+				70E6072F15658B0600E7AA82 /* AvidaED-AnalyzeView.xib */,
+				702837E4155C58B300C733D2 /* AvidaED-ExportData.xib */,
+				702837E6155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib */,
+				702837E8155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib */,
+				702837EA155C5C8E00C733D2 /* AvidaED-ExportGraphics-Analysis.xib */,
+				703549A81337A4B100D3865C /* AvidaED-MainMenu.xib */,
+				703549A61337A4B100D3865C /* AvidaED-MainWindow.xib */,
+				703ECC2B1513B14400AF9292 /* AvidaED-OrganismSettings.xib */,
+				701269C9151B702D004865C2 /* AvidaED-OrganismValueDisplay.xib */,
+				70E6073115658B2400E7AA82 /* AvidaED-OrganismView.xib */,
+			);
+			name = "Avida-ED";
+			sourceTree = "<group>";
+		};
+		70E8B19816D6B326001B2AB6 /* Avida */ = {
+			isa = PBXGroup;
+			children = (
+				70FA3F73164421730003971F /* Avida-MainMenu.xib */,
+				703549A71337A4B100D3865C /* Avida-MainWindow.xib */,
+				70C99138167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib */,
+				70E8B19916D6BD99001B2AB6 /* Avida-WorkspaceArchives.xib */,
+				70E8B19B16D6BDBE001B2AB6 /* Avida-WorkspaceProjectDetails.xib */,
+			);
+			name = Avida;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -746,6 +770,8 @@
 				70C99139167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib in Resources */,
 				705E52E51696361F00392BA7 /* PopViewerIcon.png in Resources */,
 				705E52E61696361F00392BA7 /* petri128.png in Resources */,
+				70E8B19A16D6BD99001B2AB6 /* Avida-WorkspaceArchives.xib in Resources */,
+				70E8B19C16D6BDBE001B2AB6 /* Avida-WorkspaceProjectDetails.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -800,9 +826,9 @@
 				70FA3F7D164422750003971F /* AvidaAppDelegate.mm in Sources */,
 				70C99135167299B5004823A2 /* WorkspaceSelectWindowController.mm in Sources */,
 				70A671881677A1BB0087D2FC /* MainWindowController.mm in Sources */,
-				709AE9511684E45600E50275 /* WorkspaceViewController.m in Sources */,
-				709AE9551684E4D500E50275 /* WorkspaceProjectSelectViewController.m in Sources */,
-				709AE9581684E50800E50275 /* WorkspaceProjectDetailViewController.m in Sources */,
+				709AE9511684E45600E50275 /* WorkspaceViewController.mm in Sources */,
+				709AE9551684E4D500E50275 /* WorkspaceProjectSelectViewController.mm in Sources */,
+				709AE9581684E50800E50275 /* WorkspaceProjectDetailViewController.mm in Sources */,
 				709AE95B1684E52B00E50275 /* WorkspaceArchivesViewController.m in Sources */,
 				709AE95E1684E56800E50275 /* ConfigEditViewController.m in Sources */,
 				709AE9631684E64900E50275 /* PopulationViewController.m in Sources */,

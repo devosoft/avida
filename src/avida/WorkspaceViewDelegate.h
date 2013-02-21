@@ -1,9 +1,9 @@
 //
-//  WorkspaceProjectDetailViewController.m
+//  WorkspaceViewController.h
 //  avida/apps/viewer-macos
 //
-//  Created by David M. Bryson on 12/21/12.
-//  Copyright 2012 Michigan State University. All rights reserved.
+//  Created by David M. Bryson on 2/21/13.
+//  Copyright 2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,22 +27,9 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import "WorkspaceProjectDetailViewController.h"
+#import <Foundation/Foundation.h>
 
-@interface WorkspaceProjectDetailViewController ()
 
-@end
-
-@implementation WorkspaceProjectDetailViewController
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Initialization code here.
-    }
-    
-    return self;
-}
+@protocol WorkspaceViewDelegate <NSObject>
 
 @end

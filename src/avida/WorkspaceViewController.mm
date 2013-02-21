@@ -1,9 +1,9 @@
 //
-//  WorkspaceProjectDetailViewController.h
+//  WorkspaceViewController.m
 //  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 12/21/12.
-//  Copyright 2012-2013 Michigan State University. All rights reserved.
+//  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,21 +27,36 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <Cocoa/Cocoa.h>
+#import "WorkspaceViewController.h"
 
-@class WorkspaceViewController;
+#import "WorkspaceProjectDetailViewController.h"
+#import "WorkspaceProjectSelectViewController.h"
 
 
-@interface WorkspaceProjectDetailViewController : NSViewController {
-  WorkspaceViewController* workspaceView;
-  NSString* projectName;
+@interface WorkspaceViewController ()
+
+@end
+
+
+@implementation WorkspaceViewController
+
+@synthesize workspace;
+@synthesize delegate;
+
+
+- (WorkspaceViewController*) initWithWorkspace:(ACWorkspace*)ws delegate:(id<WorkspaceViewDelegate>)d;
+{
+  self = [super init];
+  if (self) {
+    workspace = ws;
+    
+    detailViewCtlr = [[WorkspaceProjectDetailViewController alloc] initWithWorkspaceView:self];
+    selectViewCtlr = [[WorkspaceProjectSelectViewController alloc] initWithWorkspaceView:self];
+    
+    delegate = d;
+  }
+    
+  return self;
 }
-
-- (WorkspaceProjectDetailViewController*) initWithWorkspaceView:(WorkspaceViewController*)workspaceView;
-
-- (IBAction) closeProject:(id)sender;
-
-
-@property (readwrite) NSString* projectName;
 
 @end

@@ -62,6 +62,7 @@ NSString* const ACWorkspaceFiletypes[] = {@"avidaworkspace", @"org.devosoft.avid
     
     workspaceURL = [url fileReferenceURL];
     freezer = f;
+    name = [[workspaceURL lastPathComponent] stringByDeletingPathExtension];
   }
   
   return self;
@@ -74,6 +75,7 @@ NSString* const ACWorkspaceFiletypes[] = {@"avidaworkspace", @"org.devosoft.avid
   if (self) {
     workspaceURL = [url fileReferenceURL];
     freezer = f;
+    name = [[workspaceURL lastPathComponent] stringByDeletingPathExtension];
   }
   
   return self;
