@@ -6438,9 +6438,8 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         // Set the phenotype merit from the save file
         assert(tmp.props->Has("merit"));
         double merit = Apto::StrAs(tmp.props->Get("merit"));
-        if (load_rebirth && tmp.props->Has("parent_merit")) { 
-          if (m_world->GetConfig().INHERIT_MERIT.Get()) merit = tmp.parent_merit[cell_i];
-          new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
+        if (load_rebirth && m_world->GetConfig().INHERIT_MERIT.Get() && tmp.props->Has("parent_merit")) { 
+          merit = tmp.parent_merit[cell_i]; 
         }
         
         if (merit > 0) {
@@ -6492,6 +6491,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           new_organism->GetPhenotype().SetBirthForagerType(forager_type);
           new_organism->SetParentGroup(group_id);
           new_organism->SetParentFT(forager_type);
+          if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
           org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
         }
         else org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
@@ -6508,6 +6508,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       else if (load_rebirth) {
         new_organism->SetParentFT(tmp.parent_ft[cell_i]);
         new_organism->SetParentTeacher(tmp.parent_teacher[cell_i]);
+        if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
         
         new_organism->GetPhenotype().SetBirthCellID(cell_id);
         org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
