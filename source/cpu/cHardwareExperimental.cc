@@ -6276,7 +6276,7 @@ void cHardwareExperimental::MakePred(cAvidaContext& ctx)
 
 void cHardwareExperimental::MakeTopPred(cAvidaContext& ctx)
 {
-  if (m_organism->IsPreyFT() > -2) {
+  if (m_organism->IsPreyFT()) {
     if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
