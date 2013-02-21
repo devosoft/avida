@@ -5924,7 +5924,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
           const int p_teach = (bool) (org->HadParentTeacher());
           const double p_merit = org->GetParentMerit();
           
-          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell, av_bcell, p_ft, p_teach, p_merit));                  
+          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell, av_bcell, p_ft, p_teach, p_merit));
         }
       } else {
         map_entry = new sGroupInfo(genotype);
@@ -5991,7 +5991,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
     
     pforagestr.Set("%d", cells[0].parent_ft);
     pteachstr.Set("%d", cells[0].parent_is_teacher);
-    pmeritstr.Set("%.4d", cells[0].parent_merit);
+    pmeritstr.Set("%f", cells[0].parent_merit);
     
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
       cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
@@ -6018,7 +6018,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
         pforagestr += cStringUtil::Stringf(",%d",cells[cell_i].parent_ft);
         pteachstr += cStringUtil::Stringf(",%d",cells[cell_i].parent_is_teacher);
         
-        pmeritstr += cStringUtil::Stringf(",%.4f",cells[cell_i].parent_merit);
+        pmeritstr += cStringUtil::Stringf(",%f",cells[cell_i].parent_merit);
       }
     }
 

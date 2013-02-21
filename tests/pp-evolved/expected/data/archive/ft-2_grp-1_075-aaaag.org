@@ -1,4 +1,4 @@
-# Thu Feb 21 14:21:30 2013
+# Thu Feb 21 15:18:25 2013
 # Filename........: archive/ft-2_grp-1_075-aaaag.org
 # Update Output...: 100
 # Is Viable.......: 0
