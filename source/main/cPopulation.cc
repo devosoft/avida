@@ -5923,6 +5923,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
           const int p_ft = org->GetParentFT();
           const int p_teach = (bool) (org->HadParentTeacher());
           const double p_merit = org->GetParentMerit();
+          
           map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell, av_bcell, p_ft, p_teach, p_merit));                  
         }
       } else {
@@ -6016,7 +6017,8 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
         
         pforagestr += cStringUtil::Stringf(",%d",cells[cell_i].parent_ft);
         pteachstr += cStringUtil::Stringf(",%d",cells[cell_i].parent_is_teacher);
-        pmeritstr += cStringUtil::Stringf(",%.4d",cells[cell_i].parent_merit);
+        
+        pmeritstr += cStringUtil::Stringf(",%.4f",cells[cell_i].parent_merit);
       }
     }
 
