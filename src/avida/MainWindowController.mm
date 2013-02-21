@@ -31,6 +31,7 @@
 
 NSString* const tbShowWorkspace = @"ShowWorkspace";
 NSString* const tbViewSelect = @"ViewSelect";
+NSString* const tbStatusPanel = @"StatusPanel";
 
 @interface MainWindowController ()
 - (NSToolbarItem*) toolbarItemWithIdentifier:(NSString*)identifier
@@ -66,15 +67,30 @@ NSString* const tbViewSelect = @"ViewSelect";
 
 
 - (void) windowDidLoad {
-
+  // Make the window fill the screen (a la Aperture)
+  NSScreen* mainScreen = [NSScreen mainScreen];
+  NSRect visibileFrame = [mainScreen visibleFrame];
+  [self.window setFrame:visibileFrame display:NO];
 }
 
 
 // NSWindowDelegate
 // --------------------------------------------------------------------------------------------------------------
 
-- (void)windowWillClose: (NSNotification *)notification {
+- (void) windowDidBecomeMain:(NSNotification*)notification {
+  
+}
 
+- (void) windowDidResize:(NSNotification*)notification {
+  
+}
+
+- (void) windowWillClose:(NSNotification*)notification {
+  [[NSApplication sharedApplication] terminate:self];
+}
+
+- (NSSize) windowWillResize:(NSWindow*)window toSize:(NSSize)frameSize {
+  return frameSize;
 }
 
 
@@ -148,6 +164,15 @@ NSString* const tbViewSelect = @"ViewSelect";
                                       itemContent:tbViewViewSelect
                                            action:nil
                                              menu:nil];
+  } else if ([itemIdentifier isEqualToString:tbStatusPanel]) {
+    toolbarItem = [self toolbarItemWithIdentifier:tbViewSelect
+                                            label:@"Status"
+                                      paleteLabel:@"Status"
+                                          toolTip:@"Show/Hide the Status Panel"
+                                           target:self
+                                      itemContent:tbViewStatusPanel
+                                           action:nil
+                                             menu:nil];
   }
   
   return toolbarItem;
@@ -159,15 +184,16 @@ NSString* const tbViewSelect = @"ViewSelect";
            NSToolbarFlexibleSpaceItemIdentifier,
            tbViewSelect,
            NSToolbarFlexibleSpaceItemIdentifier,
-           NSToolbarSpaceItemIdentifier];
+           tbStatusPanel];
 }
 
 
 - (NSArray*) toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar {
   return @[tbShowWorkspace,
-          tbViewSelect,
-          NSToolbarSpaceItemIdentifier,
-          NSToolbarFlexibleSpaceItemIdentifier];
+           tbViewSelect,
+           tbStatusPanel,
+           NSToolbarSpaceItemIdentifier,
+           NSToolbarFlexibleSpaceItemIdentifier];
 }
 
 @end

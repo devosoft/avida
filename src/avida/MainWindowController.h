@@ -39,6 +39,7 @@
   IBOutlet NSToolbar* toolbar;
   IBOutlet NSView* tbViewShowWorkspace;
   IBOutlet NSView* tbViewViewSelect;
+  IBOutlet NSView* tbViewStatusPanel;
 }
 
 // Init and Dealloc Methods
