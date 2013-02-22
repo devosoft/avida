@@ -4052,7 +4052,8 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
   
   if (m_world->GetConfig().TRACK_LOOK_SETTINGS.Get()) {
     cString look_string = "";
-    look_string += cStringUtil::Stringf(",%d", m_organism->GetForageTarget());
+    look_string += cStringUtil::Stringf("%d", m_organism->GetForageTarget());
+    look_string += cStringUtil::Stringf(",%d", results.report_type);
     look_string += cStringUtil::Stringf(",%d", results.habitat);
     look_string += cStringUtil::Stringf(",%d", results.distance);
     look_string += cStringUtil::Stringf(",%d", results.search_type);
@@ -4107,7 +4108,8 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
 
   if (m_world->GetConfig().TRACK_LOOK_OUTPUT.Get()) {
     cString look_string = "";
-    look_string += cStringUtil::Stringf(",%d", m_organism->GetForageTarget());
+    look_string += cStringUtil::Stringf("%d", m_organism->GetForageTarget());
+    look_string += cStringUtil::Stringf(",%d", results.report_type);
     look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.habitat].value);
     look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.distance].value);
     look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.search_type].value);

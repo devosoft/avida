@@ -2543,6 +2543,7 @@ void cStats::PrintLookData(cString& string)
     
     df.WriteComment("Update");
     df.WriteComment("ThisOrgForageTarget");
+    df.WriteComment("AnyFound");
     df.WriteComment("Habitat");
     df.WriteComment("Distance");
     df.WriteComment("SearchType");
@@ -2566,6 +2567,7 @@ void cStats::PrintLookDataOutput(cString& string)
     
     df.WriteComment("Update");
     df.WriteComment("ThisOrgForageTarget");
+    df.WriteComment("AnyFound");
     df.WriteComment("Habitat");
     df.WriteComment("Distance");
     df.WriteComment("SearchType");
