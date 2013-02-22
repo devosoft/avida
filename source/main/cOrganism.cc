@@ -99,6 +99,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 , m_parent_teacher(false)
 , m_parent_ft(-1)
 , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
+, m_p_merit(0)
 , m_beggar(false)
 , m_guard(false)
 , m_num_guard(0)

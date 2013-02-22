@@ -4044,7 +4044,7 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
     else if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 0 && m_organism->GetForageTarget() <= -2) {
       if (disable_combo == 1 && results.habitat == 0) results.report_type = 0;
       else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2)) results.report_type = 0; 
-      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2)) results.report_type = 0; 
+      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2)) results.report_type = 0;
       else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2) results.report_type = 0; // predator
       else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2) results.report_type = 0; // prey
     }

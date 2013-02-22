@@ -5896,7 +5896,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
     
     pforagestr.Set("%d", cells[0].parent_ft);
     pteachstr.Set("%d", cells[0].parent_is_teacher);
-    pmeritstr.Set("%.4d", cells[0].parent_merit);
+    pmeritstr.Set("%f", cells[0].parent_merit);
     
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
       cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
@@ -5922,7 +5922,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
         
         pforagestr += cStringUtil::Stringf(",%d",cells[cell_i].parent_ft);
         pteachstr += cStringUtil::Stringf(",%d",cells[cell_i].parent_is_teacher);
-        pmeritstr += cStringUtil::Stringf(",%.4d",cells[cell_i].parent_merit);
+        pmeritstr += cStringUtil::Stringf(",%f",cells[cell_i].parent_merit);
       }
     }
 
@@ -6247,8 +6247,8 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         // Set the phenotype merit from the save file
         assert(tmp.props->HasEntry("merit"));
         double merit = tmp.props->Get("merit").AsDouble();
-        if (load_rebirth && m_world->GetConfig().INHERIT_MERIT.Get() && tmp.props->HasEntry("parent_merit")) { 
-          merit = tmp.parent_merit[cell_i]; 
+        if (load_rebirth && m_world->GetConfig().INHERIT_MERIT.Get() && tmp.props->HasEntry("parent_merit")) {
+          merit = tmp.parent_merit[cell_i];
         }
         
         if (merit > 0) {
@@ -6300,6 +6300,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           new_organism->GetPhenotype().SetBirthForagerType(forager_type);
           new_organism->SetParentGroup(group_id);
           new_organism->SetParentFT(forager_type);
+          if (tmp.props->HasEntry("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
           org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
         }
         else org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
@@ -6307,12 +6308,16 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         if ((load_avatars || load_birth_cells) && org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
           int avatar_cell = -1;
           if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
-          if (avatar_cell != -1) new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+          if (avatar_cell != -1) {
+            new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+            new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
+          }
         }
       }
       else if (load_rebirth) {
         new_organism->SetParentFT(tmp.parent_ft[cell_i]);
         new_organism->SetParentTeacher(tmp.parent_teacher[cell_i]);
+        if (tmp.props->HasEntry("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
         
         new_organism->GetPhenotype().SetBirthCellID(cell_id);
         org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
@@ -6321,7 +6326,10 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       if (org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
         int avatar_cell = -1;
         if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
-        if (avatar_cell != -1) new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+        if (avatar_cell != -1) {
+          new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+          new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
+        }
       }
     }
   }
