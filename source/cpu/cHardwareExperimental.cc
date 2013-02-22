@@ -4049,6 +4049,13 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
       else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2) results.report_type = 0; // prey
     }
   }
+  
+  if (m_world->GetConfig().TRACK_LOOK_SETTINGS.Get()) {
+    cString look_string = "";
+    look_string = cStringUtil::Stringf(look_string, ",", m_organism->GetForageTarget(), ",", results.habitat, ",", results.distance, ",", results.search_type, ",", results.id_sought);
+    m_organism->GetOrgInterface().TryWriteLookData(look_string);
+  }
+  
   if (results.report_type == 0) {
     setInternalValue(regs.habitat, results.habitat, true, true);
     setInternalValue(regs.distance, -1, true, true);

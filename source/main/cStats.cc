@@ -2532,6 +2532,28 @@ void cStats::PrintGroupAttackData(const cString& filename, const cString& inst_s
   }
 }
 
+void cStats::PrintLookData(cString& string)
+{
+  cString file = "lookdata";
+  cDataFile& df = m_world->GetDataFile(file);
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Final (used) Look Settings");
+    df.WriteTimeStamp();
+    
+    df.WriteComment("ForageTarget");
+    df.WriteComment("Habitat");
+    df.WriteComment("Distance");
+    df.WriteComment("SearchType");
+    df.WriteComment("SoughtID");
+    df.FlushComments();
+    df.Endl();
+  }
+  
+  std::ofstream& fp = df.GetOFStream();
+  fp << GetUpdate() << "," << string << endl;
+}
+
 /*! Print the genotype IDs of the founders of recently born demes.
 
 Prints only the most recent set of founding genotype ids for each deme.  If a deme was replaced multiple
