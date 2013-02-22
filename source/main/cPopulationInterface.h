@@ -264,6 +264,7 @@ public:
   void KillRandPred(cAvidaContext& ctx, cOrganism* org);
   void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
   void TryWriteLookData(cString& string);
+  void TryWriteLookOutput(cString& string);
   
 // --------Donate Specific support ----
   void PushDonateSpecInstExe(cAvidaContext& ctx, cOrganism* recipient_org, int kin); 

@@ -972,6 +972,7 @@ public:
   void PrintTopPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
   void PrintGroupAttackData(const cString& filename, const cString& inst_set);
   void PrintLookData(cString& string);
+  void PrintLookDataOutput(cString& string);
 
   void PrintStatsData(const cString& filename);
   void PrintCountData(const cString& filename);

@@ -208,6 +208,7 @@ public:
   void KillRandPred(cAvidaContext& ctx, cOrganism* org) { ; }
   void KillRandPrey(cAvidaContext& ctx, cOrganism* org) { ; }
   void TryWriteLookData(cString& string) { ; }
+  void TryWriteLookOutput(cString& string) { ; }
 
   bool HasOutputAV(int av_num = 0) { return false; }
   bool FacedHasOutputAV(int av_num = 0) { return false; }

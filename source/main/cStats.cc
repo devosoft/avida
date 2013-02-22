@@ -2534,18 +2534,46 @@ void cStats::PrintGroupAttackData(const cString& filename, const cString& inst_s
 
 void cStats::PrintLookData(cString& string)
 {
-  cString file = "lookdata";
+  cString file = "looksettings";
   cDataFile& df = m_world->GetDataFile(file);
   
   if (!df.HeaderDone()) {
     df.WriteComment("Final (used) Look Settings");
     df.WriteTimeStamp();
     
-    df.WriteComment("ForageTarget");
+    df.WriteComment("Update");
+    df.WriteComment("ThisOrgForageTarget");
     df.WriteComment("Habitat");
     df.WriteComment("Distance");
     df.WriteComment("SearchType");
     df.WriteComment("SoughtID");
+    df.FlushComments();
+    df.Endl();
+  }
+  
+  std::ofstream& fp = df.GetOFStream();
+  fp << GetUpdate() << "," << string << endl;
+}
+
+void cStats::PrintLookDataOutput(cString& string)
+{
+  cString file = "lookoutput";
+  cDataFile& df = m_world->GetDataFile(file);
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Final (used) Look Output to Registers");
+    df.WriteTimeStamp();
+    
+    df.WriteComment("Update");
+    df.WriteComment("ThisOrgForageTarget");
+    df.WriteComment("Habitat");
+    df.WriteComment("Distance");
+    df.WriteComment("SearchType");
+    df.WriteComment("SoughtID");
+    df.WriteComment("Count");
+    df.WriteComment("Value");
+    df.WriteComment("Group");
+    df.WriteComment("FT");
     df.FlushComments();
     df.Endl();
   }

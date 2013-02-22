@@ -1668,6 +1668,11 @@ void cPopulationInterface::TryWriteLookData(cString& string)
   if (m_world->GetConfig().TRACK_LOOK_SETTINGS.Get()) m_world->GetStats().PrintLookData(string);
 }
 
+void cPopulationInterface::TryWriteLookOutput(cString& string)
+{
+  if (m_world->GetConfig().TRACK_LOOK_OUTPUT.Get()) m_world->GetStats().PrintLookDataOutput(string);
+}
+
 // -------- Avatar support --------
 /* Each organism carries an array of avatars linking the organism to any cells it is occupying.
  * Each cell contains an array of the organisms with avatars in that cell, linking the cells back to

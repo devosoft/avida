@@ -4100,6 +4100,21 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
       else if (target_reg == 13) setInternalValue(regs.ft, rand, true, true);  
     }
   }
+
+  if (m_world->GetConfig().TRACK_LOOK_OUTPUT.Get()) {
+    cString look_string = "";
+    int habitat = m_threads[m_cur_thread].reg[regs.habitat].value;
+    int dist = m_threads[m_cur_thread].reg[regs.distance].value;
+    int st = m_threads[m_cur_thread].reg[regs.search_type].value;
+    int id = m_threads[m_cur_thread].reg[regs.id_sought].value;
+    int count = m_threads[m_cur_thread].reg[regs.count].value;
+    int value = m_threads[m_cur_thread].reg[regs.value].value;
+    int group = m_threads[m_cur_thread].reg[regs.group].value;
+    int ft = m_threads[m_cur_thread].reg[regs.ft].value;
+    look_string = cStringUtil::Stringf(look_string, ",", m_organism->GetForageTarget(), ",", habitat, ",", dist, ",", st, ",", id, ",", count, ",", value, ",", group, ",", ft);
+    m_organism->GetOrgInterface().TryWriteLookOutput(look_string);
+  }
+  
   return;
 }
 

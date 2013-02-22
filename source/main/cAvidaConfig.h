@@ -750,6 +750,7 @@ public:
   CONFIG_ADD_VAR(LOOK_DISABLE_TYPE, int, 0, "0: predators \n 1: prey \n 2: both predators and prey");
   CONFIG_ADD_VAR(LOOK_DISABLE_COMBO, int, 0, "# 0: none \n # 1: return 'not found' for any food resource query \n # 2: return 'not found' for any looking-for-predator query \n # 3: return 'not found' for any looking-for-prey query");
   CONFIG_ADD_VAR(TRACK_LOOK_SETTINGS, int, 0, "# track (final) settings for look sensor use");
+  CONFIG_ADD_VAR(TRACK_LOOK_OUTPUT, int, 0, "# track (final) output from sensor use");
   CONFIG_ADD_VAR(USE_DISPLAY, int, 0, "If 1, org display data is always 'on' (visible). If 2, org display is on and sensor does not set potential data.");
 
   // -------- Pheromone config options --------
