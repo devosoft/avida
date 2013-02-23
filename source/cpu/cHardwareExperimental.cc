@@ -4010,6 +4010,47 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
 {
   // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
   // return defaults for failed to find
+  bool override = false;
+  if (m_world->GetConfig().LOOK_DISABLE_COMBO.Get() > 0 && results.report_type == 1) {
+    int disable_combo = m_world->GetConfig().LOOK_DISABLE_COMBO.Get();
+    if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 2) {
+      if (disable_combo == 1 && results.habitat == 0) override = true; // food
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2)) override = true; // predator
+      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2)) override = true; // prey
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2) override = true; // predator
+      else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2) override = true; // prey
+    }
+    else if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 1 && m_organism->GetForageTarget() > -2) {
+      if (disable_combo == 1 && results.habitat == 0) override = true; // food
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2)) override = true; // predator
+      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2)) override = true; // prey
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2) override = true; // predator
+      else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2) override = true; // prey
+    }
+    else if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 0 && m_organism->GetForageTarget() <= -2) {
+      if (disable_combo == 1 && results.habitat == 0) override = true; // food
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2)) override = true; // predator
+      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2)) override = true; // prey
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2) override = true; // predator
+      else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2) override = true; // prey
+    }
+  }
+  if (override) {
+    results.report_type = 0; 
+    results.id_sought = -1;
+  }
+  
+  if (m_world->GetConfig().TRACK_LOOK_SETTINGS.Get()) {
+    cString look_string = "";
+    look_string += cStringUtil::Stringf("%d", m_organism->GetForageTarget());
+    look_string += cStringUtil::Stringf(",%d", results.report_type);
+    look_string += cStringUtil::Stringf(",%d", results.habitat);
+    look_string += cStringUtil::Stringf(",%d", results.distance);
+    look_string += cStringUtil::Stringf(",%d", results.search_type);
+    look_string += cStringUtil::Stringf(",%d", results.id_sought);
+    m_organism->GetOrgInterface().TryWriteLookData(look_string);
+  }
+  
   if (results.report_type == 0) {
     setInternalValue(regs.habitat, results.habitat, true, true);
     setInternalValue(regs.distance, -1, true, true);
@@ -4054,6 +4095,22 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
       else if (target_reg == 13) setInternalValue(regs.ft, rand, true);  
     }
   }
+
+  if (m_world->GetConfig().TRACK_LOOK_OUTPUT.Get()) {
+    cString look_string = "";
+    look_string += cStringUtil::Stringf("%d", m_organism->GetForageTarget());
+    look_string += cStringUtil::Stringf(",%d", results.report_type);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.habitat].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.distance].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.search_type].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.id_sought].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.count].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.value].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.group].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.ft].value);
+    m_organism->GetOrgInterface().TryWriteLookOutput(look_string);
+  }
+  
   return;
 }
 
@@ -6664,8 +6721,18 @@ void cHardwareExperimental::UpdateGroupAttackStats(const cString& inst, sAttackR
 
 bool cHardwareExperimental::TestAttackResultsOut(sAttackResult& results)
 {
-  unsigned char raw_bits = (((((results.inst << 2) | results.share) << 2) | results.success) << 3) | results.size;
-  m_organism->GetOrgInterface().TryWriteGroupAttackBits(raw_bits);
+  if (m_world->GetConfig().TRACK_GROUP_ATTACK_DETAILS.Get() == 1) {
+    cString attack_string = "";
+    attack_string += cStringUtil::Stringf("%d", results.size);
+    attack_string += cStringUtil::Stringf(",%d", results.success);
+    attack_string += cStringUtil::Stringf(",%d", results.share);
+    attack_string += cStringUtil::Stringf(",%d", results.inst);
+    m_organism->GetOrgInterface().TryWriteGroupAttackString(attack_string);
+  }
+  else if (m_world->GetConfig().TRACK_GROUP_ATTACK_DETAILS.Get() == 2) {
+    unsigned char raw_bits = (((((results.inst << 2) | results.share) << 2) | results.success) << 3) | results.size;
+    m_organism->GetOrgInterface().TryWriteGroupAttackBits(raw_bits);
+  }
   if (results.success == 0) return true;
   return false;
 }

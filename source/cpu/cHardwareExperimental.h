@@ -707,6 +707,7 @@ private:
   void TryPreyClone(cAvidaContext& ctx);
   void UpdateGroupAttackStats(const cString& inst, sAttackResult& result, bool get_size = true);
   void TryWriteGroupAttackBits(unsigned char raw_bits);
+  void TryWriteGroupAttackString(cString& string);
 
 public:
   bool Inst_CollectCellData(cAvidaContext& ctx);

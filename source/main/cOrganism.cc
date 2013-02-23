@@ -51,7 +51,6 @@ using namespace Avida;
 
 // Referenced external properties
 // --------------------------------------------------------------------------------------------------------------
-
 static const Apto::BasicString<Apto::ThreadSafe> s_ext_prop_name_instset("instset");
 
 

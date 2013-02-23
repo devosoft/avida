@@ -213,6 +213,7 @@ public:
   int& GetGroupIntolerances(int, int, int) { return *(new int(0)); }
 
   void TryWriteGroupAttackBits(unsigned char) { ; }
+  void TryWriteGroupAttackString(cString&) { ; }
   void DecNumPreyOrganisms() { ; }
   void DecNumPredOrganisms() { ; }
   void DecNumTopPredOrganisms() { ; }
@@ -223,6 +224,8 @@ public:
   void InjectPreyClone(cAvidaContext& ctx) { ; }
   void KillRandPred(cAvidaContext& ctx, cOrganism* org) { ; }
   void KillRandPrey(cAvidaContext& ctx, cOrganism* org) { ; }
+  void TryWriteLookData(cString& string) { ; }
+  void TryWriteLookOutput(cString& string) { ; }
 
   bool HasOutputAV(int av_num = 0) { return false; }
   bool FacedHasOutputAV(int av_num = 0) { return false; }

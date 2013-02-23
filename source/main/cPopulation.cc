@@ -6017,7 +6017,6 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
         
         pforagestr += cStringUtil::Stringf(",%d",cells[cell_i].parent_ft);
         pteachstr += cStringUtil::Stringf(",%d",cells[cell_i].parent_is_teacher);
-        
         pmeritstr += cStringUtil::Stringf(",%f",cells[cell_i].parent_merit);
       }
     }
@@ -6510,8 +6509,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       else if (load_rebirth) {
         new_organism->SetParentFT(tmp.parent_ft[cell_i]);
         new_organism->SetParentTeacher(tmp.parent_teacher[cell_i]);
-        if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
-        
+        if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);        
         new_organism->GetPhenotype().SetBirthCellID(cell_id);
         org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
       }

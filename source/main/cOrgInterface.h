@@ -193,6 +193,7 @@ public:
   virtual int& GetGroupIntolerances(int group_id, int tol_num, int mating_type) = 0;
   
   virtual void TryWriteGroupAttackBits(unsigned char raw_bits) = 0;
+  virtual void TryWriteGroupAttackString(cString& string) = 0;
   virtual void DecNumPreyOrganisms() = 0;
   virtual void DecNumPredOrganisms() = 0;
   virtual void DecNumTopPredOrganisms() = 0;
@@ -203,6 +204,8 @@ public:
   virtual void InjectPreyClone(cAvidaContext& ctx) = 0;
   virtual void KillRandPred(cAvidaContext& ctx, cOrganism* org) = 0;
   virtual void KillRandPrey(cAvidaContext& ctx, cOrganism* org) = 0;
+  virtual void TryWriteLookData(cString& string) = 0;
+  virtual void TryWriteLookOutput(cString& string) = 0;
   
   virtual bool HasOutputAV(int av_num = 0) = 0;
   virtual bool FacedHasOutputAV(int av_num = 0) = 0;

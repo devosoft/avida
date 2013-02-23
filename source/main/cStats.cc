@@ -2269,6 +2269,80 @@ void cStats::PrintGroupAttackBits(unsigned char raw_bits)
   fp << raw_bits << endl;
 }
 
+void cStats::PrintGroupAttackString(cString& string)
+{
+  cString file = "looksettings";
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
+  
+  if (!df->HeaderDone()) {
+    df->WriteComment("Group Attack Circumstances");
+    df->WriteTimeStamp();
+    
+    df->WriteComment("Update");
+    df->WriteComment("Size: potential group size, not including self");
+    df->WriteComment("Success: 0 == sucess, 1 == no prey failure, 2 == no friends failure, 3 == chance failure");
+    df->WriteComment("SharedKill: 0 == no, 1 == yes, 2 == fake");
+    df->WriteComment("Inst: 0 == solo attack inst, 1 == group attack inst");
+    df->FlushComments();
+    df->Endl();
+  }
+  
+  std::ofstream& fp = df->OFStream();
+  fp << GetUpdate() << "," << string << endl;
+}
+
+void cStats::PrintLookData(cString& string)
+{
+  cString file = "looksettings";
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
+  
+  if (!df->HeaderDone()) {
+    df->WriteComment("Final (used) Look Settings");
+    df->WriteTimeStamp();
+    
+    df->WriteComment("Update");
+    df->WriteComment("ThisOrgForageTarget");
+    df->WriteComment("AnyFound");
+    df->WriteComment("Habitat");
+    df->WriteComment("Distance");
+    df->WriteComment("SearchType");
+    df->WriteComment("SoughtID");
+    df->FlushComments();
+    df->Endl();
+  }
+  
+  std::ofstream& fp = df->OFStream();
+  fp << GetUpdate() << "," << string << endl;
+}
+
+void cStats::PrintLookDataOutput(cString& string)
+{
+  cString file = "lookoutput";
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
+  
+  if (!df->HeaderDone()) {
+    df->WriteComment("Final (used) Look Output to Registers");
+    df->WriteTimeStamp();
+    
+    df->WriteComment("Update");
+    df->WriteComment("ThisOrgForageTarget");
+    df->WriteComment("AnyFound");
+    df->WriteComment("Habitat");
+    df->WriteComment("Distance");
+    df->WriteComment("SearchType");
+    df->WriteComment("SoughtID");
+    df->WriteComment("Count");
+    df->WriteComment("Value");
+    df->WriteComment("Group");
+    df->WriteComment("FT");
+    df->FlushComments();
+    df->Endl();
+  }
+  
+  std::ofstream& fp = df->OFStream();
+  fp << GetUpdate() << "," << string << endl;
+}
+
 /*! Print the genotype IDs of the founders of recently born demes.
  
  Prints only the most recent set of founding genotype ids for each deme.  If a deme was replaced multiple
