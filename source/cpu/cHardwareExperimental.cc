@@ -4029,24 +4029,60 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
     int disable_combo = m_world->GetConfig().LOOK_DISABLE_COMBO.Get();
     if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 2) {
       if (disable_combo == 1 && results.habitat == 0) results.report_type = 0;  // food
-      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2)) results.report_type = 0; // predator
-      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2)) results.report_type = 0; // prey
-      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2) results.report_type = 0; // predator
-      else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2) results.report_type = 0; // prey
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2)) {
+	results.report_type = 0; // predator
+  	results.id_sought = -1;
+      }
+      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2))  {
+	results.report_type = 0; // prey
+  	results.id_sought = -1;
+      }
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2)  {
+	results.report_type = 0; // predator
+  	results.id_sought = -1;
+      }
+      else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2)  {
+	results.report_type = 0; // prey
+  	results.id_sought = -1;
+      }
     }
     else if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 1 && m_organism->GetForageTarget() > -2) {
       if (disable_combo == 1 && results.habitat == 0) results.report_type = 0;
-      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2)) results.report_type = 0; 
-      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2)) results.report_type = 0; 
-      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2) results.report_type = 0; // predator
-      else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2) results.report_type = 0; // prey
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2))  {
+	results.report_type = 0; 
+  	results.id_sought = -1;
+      }
+      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2))  {
+	results.report_type = 0; 
+  	results.id_sought = -1;
+      }
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2)  {
+	results.report_type = 0; // predator
+  	results.id_sought = -1;
+      }
+      else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2)  {
+	results.report_type = 0; // prey
+  	results.id_sought = -1;
+      }
     }
     else if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 0 && m_organism->GetForageTarget() <= -2) {
       if (disable_combo == 1 && results.habitat == 0) results.report_type = 0;
-      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2)) results.report_type = 0; 
-      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2)) results.report_type = 0;
-      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2) results.report_type = 0; // predator
-      else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2) results.report_type = 0; // prey
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && (results.search_type == 1 || results.search_type == 2))  {
+	results.report_type = 0; 
+  	results.id_sought = -1;
+      }
+      else if (disable_combo == 3 && results.habitat == -2 && (results.search_type == -1 || results.search_type == -2))  {
+	results.report_type = 0;
+  	results.id_sought = -1;
+      }
+      else if (disable_combo == 2 && (results.habitat == -2 || results.habitat == 5) && results.forage <= -2)  {
+	results.report_type = 0; // predator
+  	results.id_sought = -1;
+      }
+      else if (disable_combo == 3 && results.habitat == -2 && results.forage > -2)  {
+	results.report_type = 0; // prey
+  	results.id_sought = -1;
+      }
     }
   }
   
