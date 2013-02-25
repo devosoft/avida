@@ -3961,9 +3961,6 @@ bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const
   // define our input (4) and output registers (8)
   sLookRegAssign reg_defs;
   reg_defs.habitat = FindModifiedRegister(rBX);
-  // fail if the org is trying to sense a nest/hidden habitat
-  int habitat_used = m_threads[m_cur_thread].reg[reg_defs.habitat].value;
-  if (habitat_used == 3) return false;
   reg_defs.distance = FindModifiedNextRegister(reg_defs.habitat);
   reg_defs.search_type = FindModifiedNextRegister(reg_defs.distance);
   reg_defs.id_sought = FindModifiedNextRegister(reg_defs.search_type);
