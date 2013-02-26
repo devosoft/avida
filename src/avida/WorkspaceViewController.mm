@@ -38,11 +38,23 @@
 @end
 
 
+// WorkspaceViewController Implementation
+// --------------------------------------------------------------------------------------------------------------
+
 @implementation WorkspaceViewController
+
+
+// Properties
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Properties
 
 @synthesize workspace;
 @synthesize delegate;
 
+
+// Initialization
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Initialization
 
 - (WorkspaceViewController*) initWithWorkspace:(ACWorkspace*)ws delegate:(id<WorkspaceViewDelegate>)d;
 {
@@ -59,4 +71,6 @@
   return self;
 }
 
+
+// --------------------------------------------------------------------------------------------------------------
 @end

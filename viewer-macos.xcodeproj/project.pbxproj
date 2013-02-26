@@ -86,6 +86,7 @@
 		70C99135167299B5004823A2 /* WorkspaceSelectWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70C99133167299B5004823A2 /* WorkspaceSelectWindowController.mm */; };
 		70C99139167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C99138167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib */; };
 		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
+		70DD5B5316D7EA9D00821457 /* Apto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70DD5B5216D7EA9C00821457 /* Apto.framework */; };
 		70E09DD8150AAC5400154C00 /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
 		70E6072A156588A200E7AA82 /* OrgExecStateValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 70E60729156588A200E7AA82 /* OrgExecStateValue.m */; };
 		70E6072D15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E6072C15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm */; };
@@ -256,6 +257,7 @@
 		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
 		70D3C087135739E1008374E3 /* MapScaleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapScaleView.mm; sourceTree = "<group>"; };
 		70DD5AE616D6CF1300821457 /* WorkspaceViewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkspaceViewDelegate.h; sourceTree = "<group>"; };
+		70DD5B5216D7EA9C00821457 /* Apto.framework */ = {isa = PBXFileReference; lastKnownFileType = file; name = Apto.framework; path = ../../libs/apto/build/Release/Apto.framework; sourceTree = "<group>"; };
 		70E09DD7150AAC5400154C00 /* CorePlot.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CorePlot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		70E60728156588A200E7AA82 /* OrgExecStateValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgExecStateValue.h; sourceTree = "<group>"; };
 		70E60729156588A200E7AA82 /* OrgExecStateValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgExecStateValue.m; sourceTree = "<group>"; };
@@ -302,6 +304,7 @@
 			files = (
 				70FA3F59164418570003971F /* Cocoa.framework in Frameworks */,
 				7041AC5C16558F38008413DB /* AvidaCore.framework in Frameworks */,
+				70DD5B5316D7EA9D00821457 /* Apto.framework in Frameworks */,
 				7041AC5D16558F3C008413DB /* CorePlot.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -334,6 +337,7 @@
 		7035497413379FBD00D3865C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				70DD5B5216D7EA9C00821457 /* Apto.framework */,
 				7041AC5916558EDF008413DB /* AvidaCore.framework */,
 				70E09DD7150AAC5400154C00 /* CorePlot.framework */,
 				7035497513379FBD00D3865C /* Cocoa.framework */,

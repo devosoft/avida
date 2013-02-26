@@ -32,16 +32,35 @@
 @class WorkspaceViewController;
 
 
+// WorkspaceProjectDetailViewController Interface
+// --------------------------------------------------------------------------------------------------------------
+
 @interface WorkspaceProjectDetailViewController : NSViewController {
   WorkspaceViewController* workspaceView;
   NSString* projectName;
 }
 
+
+// Initialization
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Initialization
+
 - (WorkspaceProjectDetailViewController*) initWithWorkspaceView:(WorkspaceViewController*)workspaceView;
+
+
+// Actions
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Actions
 
 - (IBAction) closeProject:(id)sender;
 
 
+// Properties
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Properties
+
 @property (readwrite) NSString* projectName;
 
+
+// --------------------------------------------------------------------------------------------------------------
 @end

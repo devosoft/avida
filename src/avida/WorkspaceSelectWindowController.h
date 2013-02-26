@@ -32,6 +32,9 @@
 @class AvidaController;
 
 
+// WorkspaceSelectWindowController
+// --------------------------------------------------------------------------------------------------------------
+
 @interface WorkspaceSelectWindowController : NSWindowController {
   AvidaController* avidaCtlr;
   
@@ -43,12 +46,14 @@
 
 // Initialization
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - Initialization
 
 - (id) initWithAvidaController:(AvidaController*)ctlr;
 
 
 // Actions
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - Actions
 
 - (IBAction) cancelWorkspaceSelection:(id)sender;
 - (IBAction) locateWorkspace:(id)sender;
@@ -58,7 +63,10 @@
 
 // NSWindowController
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSWindowController
 
 - (void)windowDidLoad;
 
+
+// --------------------------------------------------------------------------------------------------------------
 @end

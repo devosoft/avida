@@ -29,20 +29,30 @@
 
 #import "AvidaAppDelegate.h"
 
+
+// AvidaAppDelegate Implmentation
+// --------------------------------------------------------------------------------------------------------------
+
 @implementation AvidaAppDelegate
 
 @synthesize appController=ctlr;
 
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+// NSApplication Delegate
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSApplication Delegate
+
+- (void)applicationDidFinishLaunching:(NSNotification*)notification
 {
   [ctlr applicationDidFinishLaunching];
 }
 
 
-- (BOOL) application:(NSApplication*)theApplication openFile:(NSString*)filename {
+- (BOOL) application:(NSApplication*)theApplication openFile:(NSString*)filename
+{
   NSURL* fileURL = [NSURL fileURLWithPath:filename];
   return [ctlr applicationOpenFile:fileURL];
 }
 
+// --------------------------------------------------------------------------------------------------------------
 @end

@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos/frameworks/AvidaCore-ObjC
 //
 //  Created by David M. Bryson on 12/21/12.
-//  Copyright 2012 Michigan State University. All rights reserved.
+//  Copyright 2012-2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -30,25 +30,73 @@
 #import "ACWorkspace.h"
 
 #import "ACFramework.h"
+#import "ACProject_Private.h"
 
+
+// Global Constants
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark Global Constants
 
 NSString* const ACWorkspaceFiletypes[] = {@"avidaworkspace", @"org.devosoft.avida.avida-workspace"};
+
+
+// ACWorkspace Private Interface
+// --------------------------------------------------------------------------------------------------------------
 
 @interface ACWorkspace ()
 - (ACWorkspace*) initWithFreezer:(Avida::Viewer::FreezerPtr)f atURL:(NSURL*)url;
 @end
 
 
+// ACWorkspace Implementations
+// --------------------------------------------------------------------------------------------------------------
+
 @implementation ACWorkspace
 
 @synthesize name;
 @synthesize location=workspaceURL;
+@dynamic detailsString;
+@dynamic lastOpenedString;
+
+
+- (NSString*) detailsString {
+  return @"workspace details here...";
+}
+
+
+- (NSString*) lastOpenedString {
+  NSError* err = nil;
+  NSDictionary* resVals = [workspaceURL resourceValuesForKeys:@[NSURLContentAccessDateKey] error:&err];
+  
+  NSDate* lastOpenedDate = [resVals objectForKey:NSURLContentAccessDateKey];
+  if (lastOpenedDate) {
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+    [dateFormatter setDateStyle:NSDateFormatterShortStyle];
+    [dateFormatter setDoesRelativeDateFormatting:YES];
+    NSString* dateString = [dateFormatter stringFromDate:lastOpenedDate];
+    
+    return dateString;
+  }
+  
+  return @"unknown";
+}
+
+
+// Static Initialization
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Static Initialization
 
 + (void) initialize {
   if (self == [ACWorkspace class]) {
     [ACFramework self];
   }
 }
+
+
+// Initialization and Creation
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Initialization and Creation
 
 - (ACWorkspace*) initWithURL:(NSURL*)url {
   NSError* err = nil;
@@ -82,7 +130,6 @@ NSString* const ACWorkspaceFiletypes[] = {@"avidaworkspace", @"org.devosoft.avid
 }
 
 
-
 + (ACWorkspace*) createAtURL:(NSURL*)url {
   if (![url isFileURL]) return nil;
   
@@ -93,31 +140,20 @@ NSString* const ACWorkspaceFiletypes[] = {@"avidaworkspace", @"org.devosoft.avid
 }
 
 
+// Project Listing and Access
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Project Listing and Access
 
-
-- (NSString*) detailsString {
-  return @"workspace details here...";
+- (ACProject*) projectWithName:(NSString*)name
+{
+  // Return the default project for now
+  return [ACProject projectWithFreezer:freezer];
 }
 
 
-- (NSString*) lastOpenedString {
-  NSError* err = nil;
-  NSDictionary* resVals = [workspaceURL resourceValuesForKeys:@[NSURLContentAccessDateKey] error:&err];
-  
-  NSDate* lastOpenedDate = [resVals objectForKey:NSURLContentAccessDateKey];
-  if (lastOpenedDate) {
-    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setTimeStyle:NSDateFormatterNoStyle];
-    [dateFormatter setDateStyle:NSDateFormatterShortStyle];
-    [dateFormatter setDoesRelativeDateFormatting:YES];
-    NSString* dateString = [dateFormatter stringFromDate:lastOpenedDate];
-    
-    return dateString;
-  }
-  
-  return @"unknown";
-}
-
+// Global Information
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Global Information
 
 + (NSArray*) fileTypes {
   static NSArray* workspaceFiletypes = nil;
@@ -128,4 +164,6 @@ NSString* const ACWorkspaceFiletypes[] = {@"avidaworkspace", @"org.devosoft.avid
   return workspaceFiletypes;
 }
 
+
+// --------------------------------------------------------------------------------------------------------------
 @end

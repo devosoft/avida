@@ -27,7 +27,9 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
+#import <Apto/Apto.h>
+
 #import <AvidaCore/ACFramework.h>
 #import <AvidaCore/ACGenome.h>
+#import <AvidaCore/ACProject.h>
 #import <AvidaCore/ACWorkspace.h>
-#import <AvidaCore/NSString+Apto.h>

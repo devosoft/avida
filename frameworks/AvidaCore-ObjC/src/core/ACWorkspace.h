@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos/frameworks/AvidaCore-ObjC
 //
 //  Created by David M. Bryson on 12/21/12.
-//  Copyright 2012 Michigan State University. All rights reserved.
+//  Copyright 2012-2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -31,6 +31,11 @@
 
 #include "avida/viewer/Freezer.h"
 
+@class ACProject;
+
+
+// ACWorkspace Interface
+// --------------------------------------------------------------------------------------------------------------
 
 @interface ACWorkspace : NSObject {
   NSURL* workspaceURL;
@@ -39,13 +44,33 @@
   Avida::Viewer::FreezerPtr freezer;
 }
 
+
+// Static Initialization
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Static Initialization
+
 + (void) initialize;
 
+
+// Initialization and Creation
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Initialization and Creation
 
 - (ACWorkspace*) initWithURL:(NSURL*)url;
 
 + (ACWorkspace*) createAtURL:(NSURL*)url;
 
+
+// Project Listing and Access
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Project Listing and Access
+
+- (ACProject*) projectWithName:(NSString*)name;
+
+
+// Properties
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Properties
 
 @property (readonly) NSString* name;
 @property (readonly) NSString* detailsString;
@@ -53,6 +78,12 @@
 @property (readonly) NSURL* location;
 
 
+// Global Information
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Global Information
+
 + (NSArray*) fileTypes;
 
+
+// --------------------------------------------------------------------------------------------------------------
 @end

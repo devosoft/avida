@@ -32,17 +32,28 @@
 #import "WorkspaceViewController.h"
 
 
+// WorkspaceProjectDetailViewController Private Interface
+// --------------------------------------------------------------------------------------------------------------
+
 @interface WorkspaceProjectDetailViewController ()
 
 @end
 
+
+// WorkspaceProjectDetailViewController Implementation
+// --------------------------------------------------------------------------------------------------------------
 
 @implementation WorkspaceProjectDetailViewController
 
 @synthesize projectName;
 
 
-- (WorkspaceProjectDetailViewController*) initWithWorkspaceView:(WorkspaceViewController*)inWorkspaceView {
+// Initialization
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Initialization
+
+- (WorkspaceProjectDetailViewController*) initWithWorkspaceView:(WorkspaceViewController*)inWorkspaceView
+{
   
   self = [super initWithNibName:@"Avida-WorkspaceProjectSelectView" bundle:nil];
   if (self) {
@@ -54,7 +65,13 @@
   return self;
 }
 
-- (IBAction) closeProject:(id)sender {
+
+// Actions
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Actions
+
+- (IBAction) closeProject:(id)sender
+{
   
 }
 

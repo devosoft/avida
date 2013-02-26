@@ -32,6 +32,9 @@
 @class AvidaController;
 
 
+// MainWindowController Interface
+// --------------------------------------------------------------------------------------------------------------
+
 @interface MainWindowController : NSWindowController <NSWindowDelegate, NSToolbarDelegate>
 {
   AvidaController* avidaCtlr;
@@ -42,23 +45,37 @@
   IBOutlet NSView* tbViewStatusPanel;
 }
 
+
 // Init and Dealloc Methods
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Init and Dealloc Methods
+
 - (id) initWithAvidaController:(AvidaController*)ctlr;
 
 - (void) dealloc;
 
 
-// NSWindowController Methods
+// NSWindowController
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSWindowController
 - (void) windowDidLoad;
 
 
-// NSWindowDelegate Protocol
+// NSWindowDelegate
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSWindowDelegate
+
 - (void) windowWillClose:(NSNotification*)notification;
 
 
-// NSToolbarDelegeate
+// NSToolbarDelegate
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSToolbarDelegate
+
 - (NSToolbarItem*) toolbar:(NSToolbar*)toolbar itemForItemIdentifier:(NSString*)itemIdentifier willBeInsertedIntoToolbar:(BOOL)flag;
 - (NSArray*) toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar;
 - (NSArray*) toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar;
 
+
+// --------------------------------------------------------------------------------------------------------------
 @end

@@ -30,12 +30,27 @@
 #import <Foundation/Foundation.h>
 
 
+// Global Constants
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark Global Constants
+
 extern NSString* const PrefKeyWorkspaceURLs;
 extern NSString* const PrefKeyDefaultWorkspace;
 
 
+
+// AvidaPreferences Interface
+// --------------------------------------------------------------------------------------------------------------
+
 @interface AvidaPreferences : NSObject
+
+
+// Static Registration
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Static Registration
 
 + (void) registerDefaults;
 
+
+// --------------------------------------------------------------------------------------------------------------
 @end

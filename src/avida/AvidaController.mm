@@ -33,36 +33,50 @@
 #import "WorkspaceSelectWindowController.h"
 
 
+// AvidaController Implementation
+// --------------------------------------------------------------------------------------------------------------
+
 @implementation AvidaController
+
+@synthesize workspace;
+
 
 // Application Events
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - Application Events
 
-- (void) applicationDidFinishLaunching {
+- (void) applicationDidFinishLaunching
+{
   workspaceSelectWindow = [[WorkspaceSelectWindowController alloc] initWithAvidaController:self];
   [workspaceSelectWindow showWindow:self];
 }
 
 
-- (BOOL) applicationOpenFile:(NSURL*)fileURL {
+- (BOOL) applicationOpenFile:(NSURL*)fileURL
+{
   return NO;
 }
 
 
-
 // Workspace Selection Events
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - Workspace Selection Events
 
-- (void) workspaceSelectionCancelled {
+- (void) workspaceSelectionCancelled
+{
   if (workspace == nil) {
     [[NSApplication sharedApplication] terminate:self];
   }
 }
 
-- (void) workspaceSelected:(ACWorkspace*)selectedWorkspace {
+
+- (void) workspaceSelected:(ACWorkspace*)selectedWorkspace
+{
   workspace = selectedWorkspace;
   mainWindow = [[MainWindowController alloc] initWithAvidaController:self];
   [mainWindow showWindow:self];
 }
 
+
+// --------------------------------------------------------------------------------------------------------------
 @end

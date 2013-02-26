@@ -29,13 +29,27 @@
 
 #import "AvidaPreferences.h"
 
+
+// Global Constants
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark Global Constants
+
 NSString* const PrefKeyWorkspaceURLs = @"WorkspaceURLs";
 NSString* const PrefKeyDefaultWorkspace = @"DefaultWorkspace";
 
 
+
+// AvidaPreferences Implementation
+// --------------------------------------------------------------------------------------------------------------
+
 @implementation AvidaPreferences
 
-+ (void) registerDefaults {
+// Static Registration
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Static Registration
+
++ (void) registerDefaults
+{
   NSDictionary* defaultPrefs = @{
     PrefKeyWorkspaceURLs : @[],
     PrefKeyDefaultWorkspace : @""
@@ -44,4 +58,6 @@ NSString* const PrefKeyDefaultWorkspace = @"DefaultWorkspace";
   [[NSUserDefaults standardUserDefaults] registerDefaults:defaultPrefs];
 }
 
+
+// --------------------------------------------------------------------------------------------------------------
 @end

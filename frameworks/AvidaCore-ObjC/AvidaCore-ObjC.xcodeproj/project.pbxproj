@@ -22,12 +22,8 @@
 		7041AC3E165586CE008413DB /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7041AC3C165586A0008413DB /* libavida-core.a */; };
 		7041AC40165586D0008413DB /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7041AC3F165586D0008413DB /* libviewer-core.a */; };
 		7041AC42165586D9008413DB /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7041AC41165586D9008413DB /* libapto.a */; };
-		7041AC45165587F3008413DB /* NSString+Apto.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC43165587F3008413DB /* NSString+Apto.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7041AC46165587F3008413DB /* NSString+Apto.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7041AC44165587F3008413DB /* NSString+Apto.mm */; };
-		7041AC47165587F3008413DB /* NSString+Apto.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7041AC44165587F3008413DB /* NSString+Apto.mm */; };
 		7041AC4916558ADD008413DB /* AvidaCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC4816558ADD008413DB /* AvidaCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7041AC4C16558B32008413DB /* AvidaCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC4A16558AFF008413DB /* AvidaCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7041AC4D16558B3E008413DB /* NSString+Apto.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC43165587F3008413DB /* NSString+Apto.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7041AC4E16558B48008413DB /* ACGenome.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC31165585D0008413DB /* ACGenome.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7041AC5116558B98008413DB /* ACGenome+NSPasteboardAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC4F16558B98008413DB /* ACGenome+NSPasteboardAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7041AC5216558B98008413DB /* ACGenome+NSPasteboardAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7041AC5016558B98008413DB /* ACGenome+NSPasteboardAdditions.mm */; };
@@ -37,6 +33,14 @@
 		709AE9781684F52E00E50275 /* ACWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = 709AE9751684F52E00E50275 /* ACWorkspace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		709AE9791684F52E00E50275 /* ACWorkspace.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9761684F52E00E50275 /* ACWorkspace.mm */; };
 		709AE97A1684F52E00E50275 /* ACWorkspace.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9761684F52E00E50275 /* ACWorkspace.mm */; };
+		70DD5B4F16D7E9F200821457 /* Apto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70DD5B4E16D7E9F200821457 /* Apto.framework */; };
+		70DD5B5116D7EA5B00821457 /* libApto-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70DD5B5016D7EA5B00821457 /* libApto-iOS.a */; };
+		70DD5B6416DBD32300821457 /* ACProject.h in Headers */ = {isa = PBXBuildFile; fileRef = 70DD5B6216DBD32300821457 /* ACProject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		70DD5B6516DBD32300821457 /* ACProject.h in Headers */ = {isa = PBXBuildFile; fileRef = 70DD5B6216DBD32300821457 /* ACProject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		70DD5B6616DBD32300821457 /* ACProject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70DD5B6316DBD32300821457 /* ACProject.mm */; };
+		70DD5B6716DBD32300821457 /* ACProject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70DD5B6316DBD32300821457 /* ACProject.mm */; };
+		70DD5B6916DBDBA000821457 /* ACProject_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 70DD5B6816DBDB9F00821457 /* ACProject_Private.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		70DD5B6A16DBDBA000821457 /* ACProject_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 70DD5B6816DBDB9F00821457 /* ACProject_Private.h */; settings = {ATTRIBUTES = (Private, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -69,8 +73,6 @@
 		7041AC3C165586A0008413DB /* libavida-core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libavida-core.a"; path = "../../../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug/libavida-core.a"; sourceTree = "<group>"; };
 		7041AC3F165586D0008413DB /* libviewer-core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libviewer-core.a"; path = "../../../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug/libviewer-core.a"; sourceTree = "<group>"; };
 		7041AC41165586D9008413DB /* libapto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libapto.a; path = "../../../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug/libapto.a"; sourceTree = "<group>"; };
-		7041AC43165587F3008413DB /* NSString+Apto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Apto.h"; sourceTree = "<group>"; };
-		7041AC44165587F3008413DB /* NSString+Apto.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString+Apto.mm"; sourceTree = "<group>"; };
 		7041AC4816558ADD008413DB /* AvidaCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaCore.h; sourceTree = "<group>"; };
 		7041AC4A16558AFF008413DB /* AvidaCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaCore.h; sourceTree = "<group>"; };
 		7041AC4F16558B98008413DB /* ACGenome+NSPasteboardAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ACGenome+NSPasteboardAdditions.h"; sourceTree = "<group>"; };
@@ -78,6 +80,11 @@
 		7041AC5416558DF1008413DB /* AvidaCore_Core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaCore_Core.h; sourceTree = "<group>"; };
 		709AE9751684F52E00E50275 /* ACWorkspace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACWorkspace.h; sourceTree = "<group>"; };
 		709AE9761684F52E00E50275 /* ACWorkspace.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ACWorkspace.mm; sourceTree = "<group>"; };
+		70DD5B4E16D7E9F200821457 /* Apto.framework */ = {isa = PBXFileReference; lastKnownFileType = file; name = Apto.framework; path = ../../../../libs/apto/build/Release/Apto.framework; sourceTree = "<group>"; };
+		70DD5B5016D7EA5B00821457 /* libApto-iOS.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = "libApto-iOS.a"; path = "../../../../libs/apto/build/Release-iphoneos/libApto-iOS.a"; sourceTree = "<group>"; };
+		70DD5B6216DBD32300821457 /* ACProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACProject.h; sourceTree = "<group>"; };
+		70DD5B6316DBD32300821457 /* ACProject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ACProject.mm; sourceTree = "<group>"; };
+		70DD5B6816DBDB9F00821457 /* ACProject_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACProject_Private.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +93,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7041AC041655825A008413DB /* Cocoa.framework in Frameworks */,
+				70DD5B4F16D7E9F200821457 /* Apto.framework in Frameworks */,
 				7041AC3E165586CE008413DB /* libavida-core.a in Frameworks */,
 				7041AC40165586D0008413DB /* libviewer-core.a in Frameworks */,
 				7041AC42165586D9008413DB /* libapto.a in Frameworks */,
@@ -97,6 +105,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7041AC1C1655829A008413DB /* Foundation.framework in Frameworks */,
+				70DD5B5116D7EA5B00821457 /* libApto-iOS.a in Frameworks */,
 				7030234516729522008C60A2 /* libavida-core.a in Frameworks */,
 				703023461672952E008C60A2 /* libviewer-core.a in Frameworks */,
 				7030234716729538008C60A2 /* libapto.a in Frameworks */,
@@ -129,9 +138,11 @@
 		7041AC021655825A008413DB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				70DD5B4E16D7E9F200821457 /* Apto.framework */,
 				7041AC031655825A008413DB /* Cocoa.framework */,
 				7041AC1B1655829A008413DB /* Foundation.framework */,
 				7041AC051655825A008413DB /* Other Frameworks */,
+				70DD5B5016D7EA5B00821457 /* libApto-iOS.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -173,10 +184,11 @@
 				7030233E1672909B008C60A2 /* ACFramework.mm */,
 				7041AC31165585D0008413DB /* ACGenome.h */,
 				7041AC32165585D0008413DB /* ACGenome.mm */,
+				70DD5B6216DBD32300821457 /* ACProject.h */,
+				70DD5B6816DBDB9F00821457 /* ACProject_Private.h */,
+				70DD5B6316DBD32300821457 /* ACProject.mm */,
 				709AE9751684F52E00E50275 /* ACWorkspace.h */,
 				709AE9761684F52E00E50275 /* ACWorkspace.mm */,
-				7041AC43165587F3008413DB /* NSString+Apto.h */,
-				7041AC44165587F3008413DB /* NSString+Apto.mm */,
 			);
 			name = Core;
 			path = core;
@@ -222,12 +234,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				7041AC3A16558655008413DB /* ACGenome.h in Headers */,
-				7041AC45165587F3008413DB /* NSString+Apto.h in Headers */,
 				7041AC4916558ADD008413DB /* AvidaCore.h in Headers */,
 				7041AC5116558B98008413DB /* ACGenome+NSPasteboardAdditions.h in Headers */,
 				7041AC5516558DF1008413DB /* AvidaCore_Core.h in Headers */,
 				7030233F1672909B008C60A2 /* ACFramework.h in Headers */,
 				709AE9771684F52E00E50275 /* ACWorkspace.h in Headers */,
+				70DD5B6416DBD32300821457 /* ACProject.h in Headers */,
+				70DD5B6916DBDBA000821457 /* ACProject_Private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,11 +249,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				7041AC4C16558B32008413DB /* AvidaCore.h in Headers */,
-				7041AC4D16558B3E008413DB /* NSString+Apto.h in Headers */,
 				7041AC4E16558B48008413DB /* ACGenome.h in Headers */,
 				7041AC5616558DF1008413DB /* AvidaCore_Core.h in Headers */,
 				703023401672909B008C60A2 /* ACFramework.h in Headers */,
 				709AE9781684F52E00E50275 /* ACWorkspace.h in Headers */,
+				70DD5B6516DBD32300821457 /* ACProject.h in Headers */,
+				70DD5B6A16DBDBA000821457 /* ACProject_Private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,10 +357,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				7041AC3816558645008413DB /* ACGenome.mm in Sources */,
-				7041AC46165587F3008413DB /* NSString+Apto.mm in Sources */,
 				7041AC5216558B98008413DB /* ACGenome+NSPasteboardAdditions.mm in Sources */,
 				703023411672909B008C60A2 /* ACFramework.mm in Sources */,
 				709AE9791684F52E00E50275 /* ACWorkspace.mm in Sources */,
+				70DD5B6616DBD32300821457 /* ACProject.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,9 +369,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				7041AC3716558644008413DB /* ACGenome.mm in Sources */,
-				7041AC47165587F3008413DB /* NSString+Apto.mm in Sources */,
 				703023421672909B008C60A2 /* ACFramework.mm in Sources */,
 				709AE97A1684F52E00E50275 /* ACWorkspace.mm in Sources */,
+				70DD5B6716DBD32300821457 /* ACProject.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

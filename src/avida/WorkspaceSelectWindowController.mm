@@ -33,15 +33,23 @@
 #import "AvidaPreferences.h"
 
 
+// WorkspaceSelectWindowController Private Interface
+// --------------------------------------------------------------------------------------------------------------
+
 @interface WorkspaceSelectWindowController ()
 - (BOOL) loadWorkspace:(ACWorkspace*)workspace;
 @end
 
 
+// WorkspaceSelectWindowController Implementation
+// --------------------------------------------------------------------------------------------------------------
+
 @implementation WorkspaceSelectWindowController
+
 
 // Initialization
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - Initialization
 
 - (id) initWithAvidaController:(AvidaController*)ctlr
 {
@@ -57,14 +65,17 @@
 
 // Actions
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - Actions
 
-- (IBAction) cancelWorkspaceSelection:(id)sender {
+- (IBAction) cancelWorkspaceSelection:(id)sender
+{
   [self close];
   [avidaCtlr workspaceSelectionCancelled];
 }
 
 
-- (IBAction) locateWorkspace:(id)sender {
+- (IBAction) locateWorkspace:(id)sender
+{
   [self close];
 
   NSOpenPanel* openDlg = [NSOpenPanel openPanel];
@@ -86,7 +97,8 @@
 }
 
 
-- (IBAction) openWorkspace:(id)sender {
+- (IBAction) openWorkspace:(id)sender
+{
   [self close];
   
   NSArray* selectedWorkspaces = workspaceArrayCtlr.selectedObjects;
@@ -97,8 +109,8 @@
 }
 
 
-
-- (IBAction) newWorkspace:(id)sender {
+- (IBAction) newWorkspace:(id)sender
+{
   [self close];
 
   NSSavePanel* saveDlg = [NSSavePanel savePanel];
@@ -149,6 +161,7 @@
 
 // NSWindowController
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSWindowController
 
 - (void)windowDidLoad
 {
@@ -178,8 +191,9 @@
 }
 
 
-// WorkspaceSelectWindowController ()
+// Workspace Loading
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - Workspace Loading
 
 - (BOOL) loadWorkspace:(ACWorkspace*)workspace {
   if (workspace) {
@@ -203,4 +217,5 @@
 }
 
 
+// --------------------------------------------------------------------------------------------------------------
 @end

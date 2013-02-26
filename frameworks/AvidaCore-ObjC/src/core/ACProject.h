@@ -1,9 +1,9 @@
 //
-//  WorkspaceViewController.h
-//  avida/apps/viewer-macos
+//  ACProject.h
+//  avida/apps/viewer-macos/frameworks/AvidaCore-ObjC
 //
-//  Created by David M. Bryson on 12/21/12.
-//  Copyright 2012-2013 Michigan State University. All rights reserved.
+//  Created by David M. Bryson on 2/25/13.
+//  Copyright 2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,42 +27,43 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <Cocoa/Cocoa.h>
-#import <AvidaCore/AvidaCore.h>
+#import <Foundation/Foundation.h>
+#import <Apto/Apto.h>
 
-#import "WorkspaceViewDelegate.h"
-
-@class WorkspaceProjectDetailViewController;
-@class WorkspaceProjectSelectViewController;
+#include "avida/viewer/Freezer.h"
 
 
-// WorkspaceViewController Interface
+// ACProject Interface
 // --------------------------------------------------------------------------------------------------------------
 
-@interface WorkspaceViewController : NSObject {
-  ACWorkspace* workspace;
+@interface ACProject : NSObject <AptoSourceListDataSource> {
+  Avida::Viewer::FreezerPtr freezer;
   
-  WorkspaceProjectDetailViewController* detailViewCtlr;
-  WorkspaceProjectSelectViewController* selectViewCtlr;
-  
-  id<WorkspaceViewDelegate> delegate;
+  NSArray* sourceListItems;
 }
 
 
-// Initialization
+// AptoSourceListDataSource
 // --------------------------------------------------------------------------------------------------------------
-#pragma mark - Initialization
+#pragma mark - AptoSourceListDataSource
 
-- (WorkspaceViewController*) initWithWorkspace:(ACWorkspace*)workspace delegate:(id<WorkspaceViewDelegate>)delegate;
+- (NSUInteger) sourceList:(AptoSourceList*)sourceList numberOfChildrenOfItem:(id)item;
+- (id) sourceList:(AptoSourceList*)aSourceList child:(NSUInteger)index ofItem:(id)item;
+- (id) sourceList:(AptoSourceList*)aSourceList objectValueForItem:(id)item;
+- (BOOL) sourceList:(AptoSourceList*)aSourceList isItemExpandable:(id)item;
+
+- (void) sourceList:(AptoSourceList*)aSourceList setObjectValue:(id)object forItem:(id)item;
+
+- (BOOL) sourceList:(AptoSourceList*)aSourceList itemHasBadge:(id)item;
+- (NSInteger) sourceList:(AptoSourceList*)aSourceList badgeValueForItem:(id)item;
+
+- (BOOL) sourceList:(AptoSourceList*)aSourceList itemHasIcon:(id)item;
+- (NSImage*) sourceList:(AptoSourceList*)aSourceList iconForItem:(id)item;
 
 
-// Properties
-// --------------------------------------------------------------------------------------------------------------
-#pragma mark - Properties
-
-@property (readonly) ACWorkspace* workspace;
-@property (readonly) NSView* view;
-@property (readwrite) id<WorkspaceViewDelegate> delegate;
+- (BOOL) sourceList:(AptoSourceList*)aSourceList writeItems:(NSArray*)items toPasteboard:(NSPasteboard*)pboard;
+- (NSDragOperation) sourceList:(AptoSourceList*)sourceList validateDrop:(id<NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(NSInteger)index;
+- (BOOL) sourceList:(AptoSourceList*)AptoSourceList acceptDrop:(id<NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index;
 
 
 // --------------------------------------------------------------------------------------------------------------

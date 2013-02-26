@@ -29,9 +29,18 @@
 
 #import "MainWindowController.h"
 
+
+// Global Constants
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark Global Constants
+
 NSString* const tbShowWorkspace = @"ShowWorkspace";
 NSString* const tbViewSelect = @"ViewSelect";
 NSString* const tbStatusPanel = @"StatusPanel";
+
+
+// MainWindowController Private Interface
+// --------------------------------------------------------------------------------------------------------------
 
 @interface MainWindowController ()
 - (NSToolbarItem*) toolbarItemWithIdentifier:(NSString*)identifier
@@ -45,9 +54,18 @@ NSString* const tbStatusPanel = @"StatusPanel";
 @end
 
 
+// MainWindowController Implementation
+// --------------------------------------------------------------------------------------------------------------
+
 @implementation MainWindowController
 
-- (id)initWithAvidaController: (AvidaController*)ctlr {
+
+// Init and Dealloc Methods
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Init and Dealloc Methods
+
+- (id)initWithAvidaController: (AvidaController*)ctlr
+{
   self = [super initWithWindowNibName:@"Avida-MainWindow"];
   
   if (self != nil) {
@@ -62,11 +80,17 @@ NSString* const tbStatusPanel = @"StatusPanel";
 }
 
 
-- (void) dealloc {
+- (void) dealloc
+{
 }
 
 
-- (void) windowDidLoad {
+// NSWindowController
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSWindowController
+
+- (void) windowDidLoad
+{
   // Make the window fill the screen (a la Aperture)
   NSScreen* mainScreen = [NSScreen mainScreen];
   NSRect visibileFrame = [mainScreen visibleFrame];
@@ -76,26 +100,35 @@ NSString* const tbStatusPanel = @"StatusPanel";
 
 // NSWindowDelegate
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSWindowDelegate
 
-- (void) windowDidBecomeMain:(NSNotification*)notification {
+- (void) windowDidBecomeMain:(NSNotification*)notification
+{
   
 }
 
-- (void) windowDidResize:(NSNotification*)notification {
+
+- (void) windowDidResize:(NSNotification*)notification
+{
   
 }
 
-- (void) windowWillClose:(NSNotification*)notification {
+
+- (void) windowWillClose:(NSNotification*)notification
+{
   [[NSApplication sharedApplication] terminate:self];
 }
 
-- (NSSize) windowWillResize:(NSWindow*)window toSize:(NSSize)frameSize {
+
+- (NSSize) windowWillResize:(NSWindow*)window toSize:(NSSize)frameSize
+{
   return frameSize;
 }
 
 
 // NSToolbarDelegate
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSToolbarDelegate
 
 - (NSToolbarItem*) toolbarItemWithIdentifier:(NSString*)identifier
                                        label:(NSString*)label
@@ -143,7 +176,8 @@ NSString* const tbStatusPanel = @"StatusPanel";
 
 
 
-- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)itemIdentifier willBeInsertedIntoToolbar:(BOOL)flag {
+- (NSToolbarItem*) toolbar:(NSToolbar*)toolbar itemForItemIdentifier:(NSString*)itemIdentifier willBeInsertedIntoToolbar:(BOOL)flag
+{
   NSToolbarItem *toolbarItem = nil;
   
   if ([itemIdentifier isEqualToString:tbShowWorkspace]) {
@@ -179,7 +213,8 @@ NSString* const tbStatusPanel = @"StatusPanel";
 }
 
 
-- (NSArray*) toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar {
+- (NSArray*) toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar
+{
   return @[tbShowWorkspace,
            NSToolbarFlexibleSpaceItemIdentifier,
            tbViewSelect,
@@ -188,7 +223,8 @@ NSString* const tbStatusPanel = @"StatusPanel";
 }
 
 
-- (NSArray*) toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar {
+- (NSArray*) toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar
+{
   return @[tbShowWorkspace,
            tbViewSelect,
            tbStatusPanel,
@@ -196,4 +232,6 @@ NSString* const tbStatusPanel = @"StatusPanel";
            NSToolbarFlexibleSpaceItemIdentifier];
 }
 
+
+// --------------------------------------------------------------------------------------------------------------
 @end

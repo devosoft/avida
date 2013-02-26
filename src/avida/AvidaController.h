@@ -46,14 +46,25 @@
 }
 
 
+// Properties
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Properties
+
+@property (readonly) ACWorkspace* workspace;
+
+
 // Application Events
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - Application Events
+
 - (void) applicationDidFinishLaunching;
 - (BOOL) applicationOpenFile:(NSURL*)fileURL;
 
 
 // Workspace Selection Events
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - Workspace Selection Events
+
 - (void) workspaceSelectionCancelled;
 - (void) workspaceSelected:(ACWorkspace*)selectedWorkspace;
 

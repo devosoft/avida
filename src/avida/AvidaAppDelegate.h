@@ -32,16 +32,28 @@
 #import "AvidaController.h"
 
 
+// AvidaAppDelegate Interface
+// --------------------------------------------------------------------------------------------------------------
+
 @interface AvidaAppDelegate : NSObject <NSApplicationDelegate> {
   AvidaController* ctlr;
 }
 
 
+// Properties
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Properties
+
 @property (strong) IBOutlet AvidaController* appController;
 
 
-// NSApplicationDelegate Protocol
+// NSApplication Delegate
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSApplication Delegate
+
 - (void) applicationDidFinishLaunching:(NSNotification*)aNotification;
 - (BOOL) application:(NSApplication*)theApplication openFile:(NSString*)filename;
 
+
+// --------------------------------------------------------------------------------------------------------------
 @end

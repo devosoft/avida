@@ -30,7 +30,6 @@
 #import "ACGenome.h"
 
 #import "ACFramework.h"
-#import "NSString+Apto.h"
 
 
 NSString* const AvidaPasteboardTypeGenome = @"org.devosoft.avida.genome";

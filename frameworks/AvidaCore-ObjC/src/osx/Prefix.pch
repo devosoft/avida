@@ -34,4 +34,6 @@
 #ifdef __OBJC__
   #import <Cocoa/Cocoa.h>
   #import <QuartzCore/QuartzCore.h>
+
+  #import <Apto/Apto.h>
 #endif
