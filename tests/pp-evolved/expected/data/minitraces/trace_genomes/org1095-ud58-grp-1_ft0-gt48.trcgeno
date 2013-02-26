@@ -1,6 +1,6 @@
-# Tue Feb 26 12:56:53 2013
-# Filename........: archive/ft-1_grp-1_053-aaaah.org
-# Update Output...: 50
+# Tue Feb 26 12:56:54 2013
+# Filename........: minitraces/trace_genomes/org1095-ud58-grp-1_ft0-gt48.trcgeno
+# Update Output...: 58
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
@@ -13,9 +13,6 @@
 # Genome Size.....: 53
 # Copied Size.....: 53
 # Executed Size...: 53
-# Last Birth Group ID........: -1
-# Last Birth Forager Type....: -1
-# Last Birth Cell............: 0
 # Offspring.......: NONE
 # 
 # Tasks Performed:

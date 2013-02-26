@@ -1,18 +1,18 @@
-# Thu Feb 21 16:18:48 2013
-# Filename........: minitraces/trace_genomes/org1054-ud57-grp-1_ft-2-gt206.trcgeno
-# Update Output...: 57
+# Tue Feb 26 12:56:54 2013
+# Filename........: minitraces/trace_genomes/org1325-ud66-grp-1_ft-2-gt187.trcgeno
+# Update Output...: 66
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
 # 
 # Generation: 0
-# Merit...........: 55.000000
+# Merit...........: 53.000000
 # Gestation Time..: 0
 # Fitness.........: 0.000000
 # Errors..........: 0
-# Genome Size.....: 55
-# Copied Size.....: 55
-# Executed Size...: 55
+# Genome Size.....: 53
+# Copied Size.....: 53
+# Executed Size...: 53
 # Offspring.......: NONE
 # 
 # Tasks Performed:
@@ -20,25 +20,24 @@
 
 
 move
-if-not-0
+nop-B
 IO
 nop-H
 move
 fork-thread
 mov-head
 search-seq-direct-s
-dec
+zero
 dec
 swap-stk
-nop-H
+attack-prey
 nop-C
-teach-offspring
+id-thread
 if-gtr-x
 move
 learn-parent
-rand
+pop-all
 rotate-away-org-id
-rand
 nop-B
 nop-F
 get-north-offset
@@ -47,28 +46,27 @@ shift-l
 move
 if-gtr-x
 swap
-nop-X
+nop-A
 add
 if-not-0
 rotate-org-id
 rotate-x
 push
-move
+nop-F
 IO
-nop-B
+IO
 move
 wait-cond-less
 rand
-nop-F
+push
 nand
-look-ahead-intercept
-attack-prey
+if-less
 learn-parent
 move
 set-forage-target
 repro
 nop-A
-rotate-away-org-id
+nop-C
 set-flow
 nand
 move

@@ -1,6 +1,6 @@
-# Thu Feb 21 16:18:47 2013
-# Filename........: minitraces/trace_genomes/org916-ud40-grp-1_ft0-gt445.trcgeno
-# Update Output...: 40
+# Tue Feb 26 12:56:53 2013
+# Filename........: archive/ft0_grp-1_056-aaaab.org
+# Update Output...: 50
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
@@ -13,13 +13,15 @@
 # Genome Size.....: 56
 # Copied Size.....: 56
 # Executed Size...: 56
+# Last Birth Group ID........: -1
+# Last Birth Forager Type....: 0
+# Last Birth Cell............: 56706
 # Offspring.......: NONE
 # 
 # Tasks Performed:
 # eat-target 0 (0.000000)
 
 
-nand
 move
 IO
 nop-H
@@ -28,41 +30,43 @@ fork-thread
 mov-head
 search-seq-direct-s
 zero
+rotate-x
 nop-E
-swap-stk
+add
 nop-C
+rotate-away-org-id
 learn-parent
 nop-G
 dec
+nop-H
 rand
 nop-F
 move
 shift-l
 IO
 move
-teach-offspring
 if-gtr-x
-nop-E
-push-all
+get-north-offset
+nop-A
 add
 if-not-0
-rotate-x
+rotate-org-id
 rotate-x
 push
-shift-l
+inc
 IO
 nop-B
 move
 one
 push
 rand
-push
+shift-r
 nand
 look-ahead-intercept
 learn-parent
-swap-stk
+nop-C
 set-forage-target
-shift-l
+if-equ-0
 push-all
 zero
 repro
@@ -70,8 +74,7 @@ move
 swap-stk
 id-thread
 push-all
-get-north-offset
+move
 nop-X
-nop-X
-sub
+swap-stk
 nop-A
