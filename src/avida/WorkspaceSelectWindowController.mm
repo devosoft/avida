@@ -173,13 +173,21 @@
   
   // Load all known workspaces
   for (NSData* urlData in knownWorkspaces) {
-    NSURL* workspaceURL = (NSURL*)[NSKeyedUnarchiver unarchiveObjectWithData:urlData];
+    BOOL urlIsStale = NO;
+    NSError* error = nil;
+    NSURL* workspaceURL = (NSURL*)[NSURL URLByResolvingBookmarkData:urlData
+                                                            options:NSURLBookmarkResolutionWithSecurityScope
+                                                      relativeToURL:nil
+                                                bookmarkDataIsStale:&urlIsStale
+                                                              error:&error];
     
-    if (workspaceURL) {
+    
+    if (!urlIsStale && workspaceURL) {
       // If already loaded, ignore
       if ([workspaceDict objectForKey:workspaceURL] != nil) continue;
 
       // Attempt to load the workspace object
+      [workspaceURL startAccessingSecurityScopedResource];
       ACWorkspace* workspace = [[ACWorkspace alloc] initWithURL:workspaceURL];
       
       if (workspace) {
@@ -204,7 +212,11 @@
     // Write known workspaces to preferences
     NSMutableArray* knownWorkspaces = [NSMutableArray arrayWithCapacity:[workspaceArrayCtlr.arrangedObjects count]];
     for (ACWorkspace* workspace in workspaceArrayCtlr.arrangedObjects) {
-      [knownWorkspaces addObject:[NSKeyedArchiver archivedDataWithRootObject:workspace.location]];
+      NSError* error = nil;
+      [knownWorkspaces addObject:[workspace.location bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope
+                                              includingResourceValuesForKeys:@[NSURLNameKey]
+                                                               relativeToURL:nil
+                                                                       error:&error]];
     }
     [[NSUserDefaults standardUserDefaults] setObject:knownWorkspaces forKey:PrefKeyWorkspaceURLs];
     

@@ -362,6 +362,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
+						<string key="label">splitMain</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="1071515789"/>
+					</object>
+					<int key="connectionID">148</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="389683943"/>
 						<reference key="destination" ref="1001"/>
@@ -370,11 +378,43 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
+						<string key="label">initialFirstResponder</string>
+						<reference key="source" ref="389683943"/>
+						<reference key="destination" ref="400481020"/>
+					</object>
+					<int key="connectionID">149</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="168420533"/>
 						<reference key="destination" ref="1001"/>
 					</object>
 					<int key="connectionID">40</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">nextKeyView</string>
+						<reference key="source" ref="400481020"/>
+						<reference key="destination" ref="325095008"/>
+					</object>
+					<int key="connectionID">150</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">nextKeyView</string>
+						<reference key="source" ref="893758477"/>
+						<reference key="destination" ref="400481020"/>
+					</object>
+					<int key="connectionID">152</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">nextKeyView</string>
+						<reference key="source" ref="325095008"/>
+						<reference key="destination" ref="893758477"/>
+					</object>
+					<int key="connectionID">151</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -802,7 +842,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">147</int>
+			<int key="maxID">152</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -810,12 +850,17 @@
 					<string key="className">MainWindowController</string>
 					<string key="superclassName">NSWindowController</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="splitMain">NSSplitView</string>
 						<string key="tbViewShowWorkspace">NSView</string>
 						<string key="tbViewStatusPanel">NSView</string>
 						<string key="tbViewViewSelect">NSView</string>
 						<string key="toolbar">NSToolbar</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="splitMain">
+							<string key="name">splitMain</string>
+							<string key="candidateClassName">NSSplitView</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="tbViewShowWorkspace">
 							<string key="name">tbViewShowWorkspace</string>
 							<string key="candidateClassName">NSView</string>

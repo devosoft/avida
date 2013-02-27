@@ -35,9 +35,11 @@
 
 @implementation WorkspaceProjectSelectViewController
 
-- (WorkspaceProjectSelectViewController*) initWithWorkspaceView:(WorkspaceViewController*)workspaceView {
+- (WorkspaceProjectSelectViewController*) initWithWorkspaceView:(WorkspaceViewController*)workspaceView
+{
   
-  self = [super initWithNibName:@"Avida-WorkspaceProjectSelectView" bundle:nil];
+//  self = [super initWithNibName:@"Avida-WorkspaceProjectSelectView" bundle:nil];
+  self = nil;
   if (self) {
     // Initialization code here.
   }

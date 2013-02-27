@@ -43,6 +43,8 @@
   IBOutlet NSView* tbViewShowWorkspace;
   IBOutlet NSView* tbViewViewSelect;
   IBOutlet NSView* tbViewStatusPanel;
+  
+  IBOutlet NSSplitView* splitMain;
 }
 
 

@@ -177,11 +177,26 @@
   if (project) {
     project->freezer = new_freezer;
     
-    ACProjectItem* configItem = [ACProjectItem itemWithTitle:@"Configurations"];
-    ACProjectItem* worldItem = [ACProjectItem itemWithTitle:@"Saved Worlds"];
-    ACProjectItem* genomeItem = [ACProjectItem itemWithTitle:@"Genomes"];
+    project->configItem = [ACProjectItem itemWithTitle:@"Configurations"];
+    project->worldItem = [ACProjectItem itemWithTitle:@"Saved Worlds"];
+    project->genomeItem = [ACProjectItem itemWithTitle:@"Genomes"];
     
-    project->sourceListItems = @[configItem, worldItem, genomeItem];
+    const Avida::Viewer::FreezerObjectType object_types[] = { Avida::Viewer::CONFIG, Avida::Viewer::WORLD, Avida::Viewer::GENOME };
+    NSArray* itemGroups = @[project->configItem, project->worldItem, project->genomeItem];
+    
+    for (NSUInteger idx = 0; idx < [itemGroups count]; idx++) {
+      Avida::Viewer::FreezerObjectType entry_type = object_types[idx];
+      NSMutableArray* items = [NSMutableArray arrayWithCapacity:new_freezer->NumEntriesOfType(entry_type)];
+      for (Avida::Viewer::Freezer::Iterator it = new_freezer->EntriesOfType(entry_type); it.Next();) {
+        Avida::Viewer::FreezerID fid = *it.Get();
+        NSString* itemName = [NSString stringWithAptoString:new_freezer->NameOf(fid)];
+        ACProjectItem* item = [ACProjectItem itemWithFreezerID:fid title:itemName];
+        [items addObject:item];
+      }
+      [[itemGroups objectAtIndex:idx] setChildren:items];
+    }
+    
+    project->sourceListItems = itemGroups;
   }
   
   return project;

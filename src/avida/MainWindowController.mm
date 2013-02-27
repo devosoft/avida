@@ -29,6 +29,9 @@
 
 #import "MainWindowController.h"
 
+#import "AvidaController.h"
+#import "WorkspaceViewController.h"
+
 
 // Global Constants
 // --------------------------------------------------------------------------------------------------------------
@@ -93,8 +96,16 @@ NSString* const tbStatusPanel = @"StatusPanel";
 {
   // Make the window fill the screen (a la Aperture)
   NSScreen* mainScreen = [NSScreen mainScreen];
-  NSRect visibileFrame = [mainScreen visibleFrame];
-  [self.window setFrame:visibileFrame display:NO];
+  NSRect visibleFrame = [mainScreen visibleFrame];
+  [self.window setFrame:visibleFrame display:NO];
+
+  WorkspaceViewController* workspacePane = [[WorkspaceViewController alloc] initWithWorkspace:avidaCtlr.workspace delegate:nil];
+  [splitMain replaceSubview:[splitMain.subviews objectAtIndex:0] with:workspacePane.view];
+  [splitMain setHoldingPriority:NSLayoutPriorityFittingSizeCompression forSubviewAtIndex:1];
+  
+  CGFloat sidePaneWidth = visibleFrame.size.width / 6.0f;
+  if (sidePaneWidth < 200.0f) sidePaneWidth = 200.0f;
+  [splitMain setPosition:sidePaneWidth ofDividerAtIndex:0];  
 }
 
 

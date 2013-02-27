@@ -32,6 +32,8 @@
 
 #include "avida/viewer/Freezer.h"
 
+@class ACProjectItem;
+
 
 // ACProject Interface
 // --------------------------------------------------------------------------------------------------------------
@@ -40,6 +42,9 @@
   Avida::Viewer::FreezerPtr freezer;
   
   NSArray* sourceListItems;
+  ACProjectItem* configItem;
+  ACProjectItem* worldItem;
+  ACProjectItem* genomeItem;
 }
 
 

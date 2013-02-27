@@ -46,6 +46,8 @@
   WorkspaceProjectSelectViewController* selectViewCtlr;
   
   id<WorkspaceViewDelegate> delegate;
+  
+  NSView* view;
 }
 
 

@@ -45,7 +45,22 @@
 
 @implementation WorkspaceProjectDetailViewController
 
-@synthesize projectName;
+@dynamic project;
+@dynamic projectName;
+
+
+- (void) setProject:(ACProject*)new_project
+{
+  project = new_project;
+}
+
+
+- (NSString*) projectName
+{
+  return workspaceView.workspace.name;
+}
+
+
 
 
 // Initialization
@@ -55,14 +70,22 @@
 - (WorkspaceProjectDetailViewController*) initWithWorkspaceView:(WorkspaceViewController*)inWorkspaceView
 {
   
-  self = [super initWithNibName:@"Avida-WorkspaceProjectSelectView" bundle:nil];
+  self = [super initWithNibName:@"Avida-WorkspaceProjectDetails" bundle:nil];
   if (self) {
     // Initialization code here.
     workspaceView = inWorkspaceView;
-    projectName = workspaceView.workspace.name;
+    
+    project = [workspaceView.workspace projectWithName:@"default"];
   }
   
   return self;
+}
+
+- (void) loadView
+{
+  [super loadView];
+  
+  sourceList.dataSource = project;
 }
 
 

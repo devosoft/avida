@@ -27,6 +27,8 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
+#import <Apto/Apto.h>
+#import <AvidaCore/AvidaCore.h>
 #import <Cocoa/Cocoa.h>
 
 @class WorkspaceViewController;
@@ -37,7 +39,10 @@
 
 @interface WorkspaceProjectDetailViewController : NSViewController {
   WorkspaceViewController* workspaceView;
-  NSString* projectName;
+
+  ACProject* project;
+  
+  IBOutlet AptoSourceList* sourceList;
 }
 
 
@@ -59,7 +64,8 @@
 // --------------------------------------------------------------------------------------------------------------
 #pragma mark - Properties
 
-@property (readwrite) NSString* projectName;
+@property (readwrite) ACProject* project;
+@property (readonly) NSString* projectName;
 
 
 // --------------------------------------------------------------------------------------------------------------

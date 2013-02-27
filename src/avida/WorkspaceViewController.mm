@@ -49,6 +49,7 @@
 #pragma mark - Properties
 
 @synthesize workspace;
+@synthesize view;
 @synthesize delegate;
 
 
@@ -66,6 +67,17 @@
     selectViewCtlr = [[WorkspaceProjectSelectViewController alloc] initWithWorkspaceView:self];
     
     delegate = d;
+    view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 200, 400)];
+    [view setTranslatesAutoresizingMaskIntoConstraints:NO];
+    
+    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[view(>=200)]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(view)]];
+    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view(>=200)]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(view)]];
+    
+    NSView* detailView = detailViewCtlr.view;
+    [detailView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [view addSubview:detailView];
+    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[detailView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(detailView)]];
+    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[detailView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(detailView)]];
   }
     
   return self;
