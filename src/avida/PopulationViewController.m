@@ -29,20 +29,47 @@
 
 #import "PopulationViewController.h"
 
+
+// PopulationViewController Private Interface
+// --------------------------------------------------------------------------------------------------------------
+
 @interface PopulationViewController ()
 
 @end
 
+
+// PopulationViewController Implementation
+// --------------------------------------------------------------------------------------------------------------
+
 @implementation PopulationViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+
+// Initialization
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Initialization
+
+- (PopulationViewController*) init
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Initialization code here.
-    }
-    
-    return self;
+  
+  self = [super initWithNibName:@"Avida-PopulationView" bundle:nil];
+  if (self) {
+    // Initialization code here.
+  }
+  
+  return self;
 }
 
+- (void) loadView
+{
+  [super loadView];
+
+}
+
+
+// Actions
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Actions
+
+
+// --------------------------------------------------------------------------------------------------------------
 @end
