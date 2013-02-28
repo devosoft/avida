@@ -314,7 +314,8 @@ static const int MAX_GRAPH_POINTS = 1000;
   const Avida::Update x_scale_constant = 50;
   
   CPTMutablePlotRange* xrange = [[(CPTXYPlotSpace*)graph.defaultPlotSpace xRange] mutableCopy];
-  Avida::Update max_x = x_scale_constant;
+  int min_x = run.initialUpdate;
+  Avida::Update max_x = min_x + x_scale_constant;
   if (curRecorder && curRecorder->NumPoints() > 0) {
     max_x = curRecorder->DataTime(timeRecorders[0]->NumPoints() - 1);
   }
@@ -322,6 +323,9 @@ static const int MAX_GRAPH_POINTS = 1000;
   if ((max_x % x_scale_constant) != 0) new_length++;
   new_length *= x_scale_constant;
   
+  
+  NSDecimalNumber* xloc = [[NSDecimalNumber alloc] initWithInt:min_x];
+  [xrange setLocation:[xloc decimalValue]];
   NSDecimalNumber* xlen = [[NSDecimalNumber alloc] initWithInt:new_length];
   [xrange setLength:[xlen decimalValue]];
   [graph.defaultPlotSpace setPlotRange:xrange forCoordinate:CPTCoordinateX];
@@ -474,13 +478,13 @@ static const int MAX_GRAPH_POINTS = 1000;
   
   Apto::String loaded_data;
   timeRecorders.ResizeClear(4);
-  loaded_data = freezer->LoadAttachment(fid, "tr0");
+//  loaded_data = freezer->LoadAttachment(fid, "tr0");
   timeRecorders[0] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_fitness", loaded_data));
-  loaded_data = freezer->LoadAttachment(fid, "tr1");
+//  loaded_data = freezer->LoadAttachment(fid, "tr1");
   timeRecorders[1] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_gestation_time", loaded_data));
-  loaded_data = freezer->LoadAttachment(fid, "tr2");
+//  loaded_data = freezer->LoadAttachment(fid, "tr2");
   timeRecorders[2] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_metabolic_rate", loaded_data));
-  loaded_data = freezer->LoadAttachment(fid, "tr3");
+//  loaded_data = freezer->LoadAttachment(fid, "tr3");
   timeRecorders[3] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.organisms", loaded_data));
   
   for (int i = 0; i < timeRecorders.GetSize(); i++) [run attachRecorder:timeRecorders[i]];

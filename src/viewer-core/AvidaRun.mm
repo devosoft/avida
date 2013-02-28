@@ -48,6 +48,8 @@ void handleDriverCallback(Avida::DriverEvent event)
 
 @implementation AvidaRun
 
+@synthesize initialUpdate;
+
 - (id) init {
   return nil;
 }
@@ -64,6 +66,9 @@ void handleDriverCallback(Avida::DriverEvent event)
     driver = Avida::Viewer::Driver::InitWithDirectory(config_path);
     if (!driver) return nil;
     driver->RegisterCallback(&handleDriverCallback);
+    
+    initialUpdate = driver->CurrentUpdate();
+    if (initialUpdate < 0) initialUpdate = 0;
     
     if (update == -1) driver->Pause();
     else driver->PauseAt(update);

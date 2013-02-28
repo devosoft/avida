@@ -257,7 +257,7 @@
 		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
 		70D3C087135739E1008374E3 /* MapScaleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapScaleView.mm; sourceTree = "<group>"; };
 		70DD5AE616D6CF1300821457 /* WorkspaceViewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkspaceViewDelegate.h; sourceTree = "<group>"; };
-		70DD5B5216D7EA9C00821457 /* Apto.framework */ = {isa = PBXFileReference; lastKnownFileType = file; name = Apto.framework; path = ../../libs/apto/build/Release/Apto.framework; sourceTree = "<group>"; };
+		70DD5B5216D7EA9C00821457 /* Apto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Apto.framework; path = ../../libs/apto/build/Release/Apto.framework; sourceTree = "<group>"; };
 		70E09DD7150AAC5400154C00 /* CorePlot.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CorePlot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		70E60728156588A200E7AA82 /* OrgExecStateValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgExecStateValue.h; sourceTree = "<group>"; };
 		70E60729156588A200E7AA82 /* OrgExecStateValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgExecStateValue.m; sourceTree = "<group>"; };

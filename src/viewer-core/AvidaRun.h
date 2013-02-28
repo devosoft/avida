@@ -40,6 +40,7 @@
 @interface AvidaRun : NSObject {
 @protected
   Avida::Viewer::Driver* driver;
+  int initialUpdate;
 }
 
 - (id) init;
@@ -59,6 +60,7 @@
 @property (nonatomic, readwrite) double mutationRate;
 @property (nonatomic, readwrite) int placementMode;
 @property (nonatomic, readwrite) int randomSeed;
+@property (nonatomic, readonly) int initialUpdate;
 
 - (double) reactionValueOf:(const Apto::String&)reaction_name;
 - (void) setReactionValueOf:(const Apto::String&)reaction_name to:(double)value;
