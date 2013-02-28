@@ -86,6 +86,7 @@
   [super loadView];
   
   sourceList.dataSource = project;
+  [sourceList expandItem:nil expandChildren:YES];
 }
 
 
