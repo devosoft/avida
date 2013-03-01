@@ -1,0 +1,13 @@
+# Predator Standard Error Data
+# Tue Feb 26 12:56:51 2013
+#  1: Update
+#  2: Fitness
+#  3: Gestation Time
+#  4: Merit
+#  5: Creature Age
+#  6: Generation
+#  7: Genome Length
+
+0 0 0 28.0226 0 0 0 
+50 0 0 32.0355 0 0 0 
+100 0.0178985 64.5886 33.8247 1.36469 0.0182041 0 

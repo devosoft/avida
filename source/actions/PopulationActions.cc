@@ -5223,8 +5223,8 @@ private:
   bool m_random;
   bool m_rand_prey;
   bool m_rand_pred;
-  bool m_next_prey;
-  bool m_next_pred;
+  int m_next_prey;
+  int m_next_pred;
   bool m_save_dominants;
   bool m_save_groups;
   bool m_save_foragers;
@@ -5243,8 +5243,8 @@ public:
     schema.AddEntry("random", 0, 0, 1, 0);
     schema.AddEntry("rand_prey", 1, 0, 1, 0);
     schema.AddEntry("rand_pred", 2, 0, 1, 0);
-    schema.AddEntry("next_prey", 3, 0, 1, 0);
-    schema.AddEntry("next_pred", 4, 0, 1, 0);
+    schema.AddEntry("next_prey", 3, 0);
+    schema.AddEntry("next_pred", 4, 0);
     schema.AddEntry("save_dominants", 5, 0, 1, 0);
     schema.AddEntry("save_groups", 6, 0, 1, 0);
     schema.AddEntry("save_foragers", 7, 0, 1, 0);

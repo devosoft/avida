@@ -1388,7 +1388,7 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomPreyTraceQ(int max_samples)
     int this_rand_sample = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
     if (!used_orgs[this_rand_sample]) {
       cOrganism* rand_org = live_orgs[this_rand_sample];
-      if (rand_org->IsPreyFT() > -2) {
+      if (rand_org->IsPreyFT()) {
         bg_id_list.Push(rand_org->SystematicsGroup("genotype")->ID());
         used_orgs[this_rand_sample] = true;
       }
@@ -3061,8 +3061,11 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
     
     target_deme.AddFounder(organism->SystematicsGroup("genotype"), &organism->GetPhenotype());
     
-    track_founders.push_back(make_pair(organism->SystematicsGroup("genotype")->ID(), new_genome.AsString())); 
+    //track_founders.push_back(make_pair<int, Apto::String>(organism->SystematicsGroup("genotype")->ID(), Apto::String(new_genome.AsString()))); 
     
+    ctx2.Driver().Feedback().Error("Temporarily disabled due to bizarre incompatibility on Windows with Visual Studio 2012");
+    ctx2.Driver().Abort(Avida::INVALID_CONFIG);
+
     DemePostInjection(target_deme, cell_array[cellid]);
   }
   
@@ -5923,7 +5926,8 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
           const int p_ft = org->GetParentFT();
           const int p_teach = (bool) (org->HadParentTeacher());
           const double p_merit = org->GetParentMerit();
-          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell, av_bcell, p_ft, p_teach, p_merit));                  
+          
+          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell, av_bcell, p_ft, p_teach, p_merit));
         }
       } else {
         map_entry = new sGroupInfo(genotype);
@@ -5990,7 +5994,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
     
     pforagestr.Set("%d", cells[0].parent_ft);
     pteachstr.Set("%d", cells[0].parent_is_teacher);
-    pmeritstr.Set("%.4d", cells[0].parent_merit);
+    pmeritstr.Set("%f", cells[0].parent_merit);
     
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
       cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
@@ -6016,7 +6020,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
         
         pforagestr += cStringUtil::Stringf(",%d",cells[cell_i].parent_ft);
         pteachstr += cStringUtil::Stringf(",%d",cells[cell_i].parent_is_teacher);
-        pmeritstr += cStringUtil::Stringf(",%.4d",cells[cell_i].parent_merit);
+        pmeritstr += cStringUtil::Stringf(",%f",cells[cell_i].parent_merit);
       }
     }
 
@@ -6491,6 +6495,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           new_organism->GetPhenotype().SetBirthForagerType(forager_type);
           new_organism->SetParentGroup(group_id);
           new_organism->SetParentFT(forager_type);
+          if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
           org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
         }
         else org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
@@ -6498,13 +6503,16 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         if ((load_avatars || load_birth_cells) && org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
           int avatar_cell = -1;
           if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
-          if (avatar_cell != -1) new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+          if (avatar_cell != -1) {
+            new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+            new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
+          }
         }
       }
       else if (load_rebirth) {
         new_organism->SetParentFT(tmp.parent_ft[cell_i]);
         new_organism->SetParentTeacher(tmp.parent_teacher[cell_i]);
-        
+        if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);        
         new_organism->GetPhenotype().SetBirthCellID(cell_id);
         org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
       }
@@ -6512,7 +6520,10 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       if (org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
         int avatar_cell = -1;
         if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
-        if (avatar_cell != -1) new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+        if (avatar_cell != -1) {
+          new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+          new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
+        }
       }
     }
   }

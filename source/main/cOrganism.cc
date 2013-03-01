@@ -51,7 +51,6 @@ using namespace Avida;
 
 // Referenced external properties
 // --------------------------------------------------------------------------------------------------------------
-
 static const Apto::BasicString<Apto::ThreadSafe> s_ext_prop_name_instset("instset");
 
 
@@ -193,6 +192,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_parent_teacher(false)
   , m_parent_ft(-1)
   , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
+  , m_p_merit(0)
   , m_beggar(false)
   , m_guard(false)
   , m_num_guard(0)
@@ -241,11 +241,7 @@ void cOrganism::initialize(cAvidaContext& ctx)
 		int raw_mat = m_world->GetConfig().RAW_MATERIAL_AMOUNT.Get();
 		m_self_raw_materials = m_world->GetRandom().GetUInt(0, raw_mat+1); 
 	}
-
-
 }
-
-
 
 cOrganism::~cOrganism()
 {  

@@ -1,0 +1,13 @@
+# Predator Variance Data
+# Tue Feb 26 12:56:51 2013
+#  1: Update
+#  2: Fitness
+#  3: Gestation Time
+#  4: Merit
+#  5: Creature Age
+#  6: Generation
+#  7: Genome Length
+
+0 0 0 149986 0 0 0 
+50 0 0 214491 0 0 0 
+100 0.0717595 934457 256281 417.174 0.0742313 0 

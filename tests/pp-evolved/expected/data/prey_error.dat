@@ -1,0 +1,13 @@
+# Prey Standard Error Data
+# Tue Feb 26 12:56:51 2013
+#  1: Update
+#  2: Fitness
+#  3: Gestation Time
+#  4: Merit
+#  5: Creature Age
+#  6: Generation
+#  7: Genome Length
+
+0 0 0 59.4385 0 0 0 
+50 0.0284208 39.1618 60.5141 0.621859 0.0129484 0 
+100 0.0284139 37.2765 3.31666 0.770074 0.01205 0 

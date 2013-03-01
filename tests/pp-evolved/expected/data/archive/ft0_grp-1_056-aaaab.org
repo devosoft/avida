@@ -1,0 +1,80 @@
+# Tue Feb 26 12:56:53 2013
+# Filename........: archive/ft0_grp-1_056-aaaab.org
+# Update Output...: 50
+# Is Viable.......: 0
+# Repro Cycle Size: 0
+# Depth to Viable.: -1
+# 
+# Generation: 0
+# Merit...........: 56.000000
+# Gestation Time..: 0
+# Fitness.........: 0.000000
+# Errors..........: 0
+# Genome Size.....: 56
+# Copied Size.....: 56
+# Executed Size...: 56
+# Last Birth Group ID........: -1
+# Last Birth Forager Type....: 0
+# Last Birth Cell............: 56706
+# Offspring.......: NONE
+# 
+# Tasks Performed:
+# eat-target 0 (0.000000)
+
+
+move
+IO
+nop-H
+move
+fork-thread
+mov-head
+search-seq-direct-s
+zero
+rotate-x
+nop-E
+add
+nop-C
+rotate-away-org-id
+learn-parent
+nop-G
+dec
+nop-H
+rand
+nop-F
+move
+shift-l
+IO
+move
+if-gtr-x
+get-north-offset
+nop-A
+add
+if-not-0
+rotate-org-id
+rotate-x
+push
+inc
+IO
+nop-B
+move
+one
+push
+rand
+shift-r
+nand
+look-ahead-intercept
+learn-parent
+nop-C
+set-forage-target
+if-equ-0
+push-all
+zero
+repro
+move
+swap-stk
+id-thread
+push-all
+move
+nop-X
+swap-stk
+nop-A

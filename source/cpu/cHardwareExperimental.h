@@ -89,7 +89,7 @@ private:
     unsigned int env_component:1;
     unsigned int sensor_component:1;
     
-    inline DataValue() : value(0) { ; }
+    inline DataValue() { Clear(); }
     inline void Clear() { value = 0; originated = 0; from_env = 0, from_sensor = 0, oldest_component = 0; env_component = 0, sensor_component = 0; }
     inline DataValue& operator=(const DataValue& i);
   };
@@ -707,6 +707,7 @@ private:
   void TryPreyClone(cAvidaContext& ctx);
   void UpdateGroupAttackStats(const cString& inst, sAttackResult& result, bool get_size = true);
   void TryWriteGroupAttackBits(unsigned char raw_bits);
+  void TryWriteGroupAttackString(cString& string);
 
 public:
   bool Inst_CollectCellData(cAvidaContext& ctx);

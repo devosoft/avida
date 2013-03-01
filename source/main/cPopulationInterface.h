@@ -248,6 +248,7 @@ public:
   int& GetGroupIntolerances(int group_id, int tol_num, int mating_type);
   
   void TryWriteGroupAttackBits(unsigned char raw_bits);
+  void TryWriteGroupAttackString(cString& string);
   void DecNumPreyOrganisms();
   void DecNumPredOrganisms();
   void DecNumTopPredOrganisms();
@@ -258,6 +259,8 @@ public:
   void InjectPreyClone(cAvidaContext& ctx);
   void KillRandPred(cAvidaContext& ctx, cOrganism* org);
   void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
+  void TryWriteLookData(cString& string);
+  void TryWriteLookOutput(cString& string);
   
 // -------- Avatar support -------- @JJB
 private:

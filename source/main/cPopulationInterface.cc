@@ -1547,7 +1547,12 @@ int& cPopulationInterface::GetGroupIntolerances(int group_id, int tol_num, int m
 
 void cPopulationInterface::TryWriteGroupAttackBits(unsigned char raw_bits)
 {
-  if (m_world->GetConfig().TRACK_GROUP_ATTACK_DETAILS.Get()) m_world->GetStats().PrintGroupAttackBits(raw_bits);
+  m_world->GetStats().PrintGroupAttackBits(raw_bits);
+}
+
+void cPopulationInterface::TryWriteGroupAttackString(cString& string)
+{
+  m_world->GetStats().PrintGroupAttackString(string);
 }
 
 void cPopulationInterface::DecNumPreyOrganisms()
@@ -1613,6 +1618,16 @@ void cPopulationInterface::KillRandPred(cAvidaContext& ctx, cOrganism* org)
 void cPopulationInterface::KillRandPrey(cAvidaContext& ctx, cOrganism* org)
 {
   m_world->GetPopulation().KillRandPrey(ctx, org);
+}
+
+void cPopulationInterface::TryWriteLookData(cString& string)
+{
+  if (m_world->GetConfig().TRACK_LOOK_SETTINGS.Get()) m_world->GetStats().PrintLookData(string);
+}
+
+void cPopulationInterface::TryWriteLookOutput(cString& string)
+{
+  if (m_world->GetConfig().TRACK_LOOK_OUTPUT.Get()) m_world->GetStats().PrintLookDataOutput(string);
 }
 
 // -------- Avatar support --------
