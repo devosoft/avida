@@ -33,8 +33,6 @@
 		709AE9781684F52E00E50275 /* ACWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = 709AE9751684F52E00E50275 /* ACWorkspace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		709AE9791684F52E00E50275 /* ACWorkspace.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9761684F52E00E50275 /* ACWorkspace.mm */; };
 		709AE97A1684F52E00E50275 /* ACWorkspace.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9761684F52E00E50275 /* ACWorkspace.mm */; };
-		70DD5B4F16D7E9F200821457 /* Apto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70DD5B4E16D7E9F200821457 /* Apto.framework */; };
-		70DD5B5116D7EA5B00821457 /* libApto-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70DD5B5016D7EA5B00821457 /* libApto-iOS.a */; };
 		70DD5B6416DBD32300821457 /* ACProject.h in Headers */ = {isa = PBXBuildFile; fileRef = 70DD5B6216DBD32300821457 /* ACProject.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		70DD5B6516DBD32300821457 /* ACProject.h in Headers */ = {isa = PBXBuildFile; fileRef = 70DD5B6216DBD32300821457 /* ACProject.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		70DD5B6616DBD32300821457 /* ACProject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70DD5B6316DBD32300821457 /* ACProject.mm */; };
@@ -78,10 +76,9 @@
 		7041AC4F16558B98008413DB /* ACGenome+NSPasteboardAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ACGenome+NSPasteboardAdditions.h"; sourceTree = "<group>"; };
 		7041AC5016558B98008413DB /* ACGenome+NSPasteboardAdditions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "ACGenome+NSPasteboardAdditions.mm"; sourceTree = "<group>"; };
 		7041AC5416558DF1008413DB /* AvidaCore_Core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaCore_Core.h; sourceTree = "<group>"; };
+		706544E116E11418009BABAC /* Apto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Apto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		709AE9751684F52E00E50275 /* ACWorkspace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACWorkspace.h; sourceTree = "<group>"; };
 		709AE9761684F52E00E50275 /* ACWorkspace.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ACWorkspace.mm; sourceTree = "<group>"; };
-		70DD5B4E16D7E9F200821457 /* Apto.framework */ = {isa = PBXFileReference; lastKnownFileType = file; name = Apto.framework; path = ../../../../libs/apto/build/Release/Apto.framework; sourceTree = "<group>"; };
-		70DD5B5016D7EA5B00821457 /* libApto-iOS.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = "libApto-iOS.a"; path = "../../../../libs/apto/build/Release-iphoneos/libApto-iOS.a"; sourceTree = "<group>"; };
 		70DD5B6216DBD32300821457 /* ACProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACProject.h; sourceTree = "<group>"; };
 		70DD5B6316DBD32300821457 /* ACProject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ACProject.mm; sourceTree = "<group>"; };
 		70DD5B6816DBDB9F00821457 /* ACProject_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACProject_Private.h; sourceTree = "<group>"; };
@@ -93,7 +90,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7041AC041655825A008413DB /* Cocoa.framework in Frameworks */,
-				70DD5B4F16D7E9F200821457 /* Apto.framework in Frameworks */,
 				7041AC3E165586CE008413DB /* libavida-core.a in Frameworks */,
 				7041AC40165586D0008413DB /* libviewer-core.a in Frameworks */,
 				7041AC42165586D9008413DB /* libapto.a in Frameworks */,
@@ -105,7 +101,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7041AC1C1655829A008413DB /* Foundation.framework in Frameworks */,
-				70DD5B5116D7EA5B00821457 /* libApto-iOS.a in Frameworks */,
 				7030234516729522008C60A2 /* libavida-core.a in Frameworks */,
 				703023461672952E008C60A2 /* libviewer-core.a in Frameworks */,
 				7030234716729538008C60A2 /* libapto.a in Frameworks */,
@@ -138,11 +133,10 @@
 		7041AC021655825A008413DB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				70DD5B4E16D7E9F200821457 /* Apto.framework */,
+				706544E116E11418009BABAC /* Apto.framework */,
 				7041AC031655825A008413DB /* Cocoa.framework */,
 				7041AC1B1655829A008413DB /* Foundation.framework */,
 				7041AC051655825A008413DB /* Other Frameworks */,
-				70DD5B5016D7EA5B00821457 /* libApto-iOS.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -404,6 +398,10 @@
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
+				);
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -443,6 +441,10 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
+				);
 				FRAMEWORK_VERSION = A;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
