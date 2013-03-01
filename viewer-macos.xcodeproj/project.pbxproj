@@ -59,6 +59,9 @@
 		7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */; };
 		706544DF16E113D9009BABAC /* Apto.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706544DD16E11393009BABAC /* Apto.framework */; };
 		706544E016E113E3009BABAC /* Apto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 706544DD16E11393009BABAC /* Apto.framework */; };
+		706544E416E121AC009BABAC /* Avida-Population.xib in Resources */ = {isa = PBXBuildFile; fileRef = 706544E316E121AC009BABAC /* Avida-Population.xib */; };
+		706544E516E13368009BABAC /* Apto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 706544DD16E11393009BABAC /* Apto.framework */; };
+		706544E616E134CE009BABAC /* Apto.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706544DD16E11393009BABAC /* Apto.framework */; };
 		708308EB14B6A6E50051B354 /* ImageFlipperView.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308EA14B6A6E50051B354 /* ImageFlipperView.m */; };
 		708308EF14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308EE14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m */; };
 		708308F214B6A7650051B354 /* NSFileManager+TemporaryDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308F114B6A7650051B354 /* NSFileManager+TemporaryDirectory.m */; };
@@ -128,6 +131,7 @@
 			files = (
 				7041AC5F16558F46008413DB /* AvidaCore.framework in CopyFiles */,
 				7041AC6016558F48008413DB /* CorePlot.framework in CopyFiles */,
+				706544E616E134CE009BABAC /* Apto.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,6 +215,7 @@
 		7061AB4E13588B0E0000B036 /* AvidaEDPopViewStatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDPopViewStatView.h; sourceTree = "<group>"; };
 		7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDPopViewStatView.mm; sourceTree = "<group>"; };
 		706544DD16E11393009BABAC /* Apto.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Apto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		706544E316E121AC009BABAC /* Avida-Population.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-Population.xib"; sourceTree = "<group>"; };
 		708308E914B6A6E50051B354 /* ImageFlipperView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageFlipperView.h; sourceTree = "<group>"; };
 		708308EA14B6A6E50051B354 /* ImageFlipperView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageFlipperView.m; sourceTree = "<group>"; };
 		708308ED14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBitmapImageRep+GLExtensions.h"; sourceTree = "<group>"; };
@@ -308,6 +313,7 @@
 				70FA3F59164418570003971F /* Cocoa.framework in Frameworks */,
 				7041AC5C16558F38008413DB /* AvidaCore.framework in Frameworks */,
 				7041AC5D16558F3C008413DB /* CorePlot.framework in Frameworks */,
+				706544E516E13368009BABAC /* Apto.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -664,6 +670,7 @@
 				70C99138167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib */,
 				70E8B19916D6BD99001B2AB6 /* Avida-WorkspaceArchives.xib */,
 				70E8B19B16D6BDBE001B2AB6 /* Avida-WorkspaceProjectDetails.xib */,
+				706544E316E121AC009BABAC /* Avida-Population.xib */,
 			);
 			name = Avida;
 			sourceTree = "<group>";
@@ -778,6 +785,7 @@
 				705E52E61696361F00392BA7 /* petri128.png in Resources */,
 				70E8B19A16D6BD99001B2AB6 /* Avida-WorkspaceArchives.xib in Resources */,
 				70E8B19C16D6BDBE001B2AB6 /* Avida-WorkspaceProjectDetails.xib in Resources */,
+				706544E416E121AC009BABAC /* Avida-Population.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

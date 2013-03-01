@@ -51,7 +51,7 @@
 - (PopulationViewController*) init
 {
   
-  self = [super initWithNibName:@"Avida-PopulationView" bundle:nil];
+  self = [super initWithNibName:@"Avida-Population" bundle:nil];
   if (self) {
     // Initialization code here.
   }
