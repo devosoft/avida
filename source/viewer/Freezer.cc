@@ -3317,6 +3317,9 @@ bool Avida::Viewer::Freezer::Rename(FreezerID entry_id, const Apto::String& name
   if (!m_opened) return false;
   
   if (entry_id.identifier >= m_entries[entry_id.type].GetSize()) return false;
+  if (m_entries[entry_id.type][entry_id.identifier].name == name) return true;
+  
+  Apto::String unique_name = NewUniqueNameForType(entry_id.type, name);
   
   // Save new entry name to entry path
   cFile file;
@@ -3327,12 +3330,12 @@ bool Avida::Viewer::Freezer::Rename(FreezerID entry_id, const Apto::String& name
   }
   
   std::fstream& nfs = *file.GetFileStream();
-  nfs << name << std::endl;
+  nfs << unique_name << std::endl;
   
   file.Close();
   
   // Rename in memory entry
-  m_entries[entry_id.type][entry_id.identifier].name = name;
+  m_entries[entry_id.type][entry_id.identifier].name = unique_name;
   
   return true;
 }

@@ -1162,7 +1162,9 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   
   // Make sure this divide will produce a viable offspring.
   m_cur_child = mem_space_used; // save current child memory space for use by dependent functions (e.g. calcCopiedSize())
-  if (!Divide_CheckViable(ctx, m_mem_array[0].GetSize(), write_head_pos)) return false;
+  
+  //Genome size gets a + 1 to handle heads, so we have to adjust size when it's sent to CheckViable
+  if (!Divide_CheckViable(ctx, m_mem_array[0].GetSize() - 1, write_head_pos)) return false;
   
   // Since the divide will now succeed, set up the information to be sent to the new organism
   m_mem_array[mem_space_used].Resize(write_head_pos);
