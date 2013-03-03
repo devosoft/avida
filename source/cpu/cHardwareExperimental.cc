@@ -4413,7 +4413,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext&)
       const cPopulationCell* cell = m_organism->GetOrgInterface().GetCell(cellid);
       if (!m_use_avatar && cell->IsOccupied() && !cell->GetOrganism()->IsDead() && cellid != m_organism->GetOrgInterface().GetCellID()) { 
         if (cell->GetOrganism()->IsPreyFT()) prey_count++;
-        if (!cell->GetOrganism()->IsPreyFT()) pred_count++;
+        else if (!cell->GetOrganism()->IsPreyFT()) pred_count++;
       }
       else if (m_use_avatar == 2) { 
         prey_count += cell->GetNumPreyAV();
@@ -5378,12 +5378,14 @@ bool cHardwareExperimental::Inst_AttackPoisionPrey(cAvidaContext& ctx)
   if (!TestAttack(ctx)) return false;
 
   cOrganism* target = GetPreyTarget(ctx);
+  int target_ft = target->GetForageTarget();
   if (!TestPreyTarget(target)) return false;
   
   sAttackReg reg;
   SetAttackReg(reg);
   
   if (!ExecutePoisonPreyAttack(ctx, target, reg)) return false;
+  m_organism->GetPhenotype().IncAttackedPreyFTData(target_ft);
   return true;
 }
 
@@ -6465,9 +6467,11 @@ bool cHardwareExperimental::ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganis
   // poison affects merit
   if (!TestAttackChance(target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
+  if (target->GetForageTarget() == 2) effic = m_world->GetConfig().PRED_EFFICIENCY_POISON.Get();
+  
   if (m_organism->IsTopPredFT()) effic *= effic;
   // apply poison, if any
-  if (target->IsPredFT()) {
+  if (target->GetForageTarget() == 2) {
     const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
     double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
     attacker_merit -= target_merit * effic;
@@ -6475,7 +6479,7 @@ bool cHardwareExperimental::ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganis
   }
   else ApplyKilledPreyMerit(target, effic);
   
-  ApplyKilledPreyReactions(target);
+  if (target->GetForageTarget() != 2) ApplyKilledPreyReactions(target);
   ApplyKilledPreyBonus(target, reg, effic);
   ApplyKilledPreyResBins(target, reg, effic);
   MakePred(ctx);
@@ -6488,7 +6492,7 @@ bool cHardwareExperimental::ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganis
 bool cHardwareExperimental::TestAttackChance(cOrganism* target, sAttackReg& reg, double odds)
 {
   bool success = true;
-  if (odds == -1) odds = m_world->GetConfig().PRED_ODDS.Get() ;
+  if (odds == -1) odds = m_world->GetConfig().PRED_ODDS.Get();
   if (m_world->GetRandom().GetDouble() >= odds ||
       (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
     InjureOrg(target);

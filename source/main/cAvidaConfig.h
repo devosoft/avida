@@ -794,6 +794,7 @@ public:
   CONFIG_ADD_VAR(TRACK_TOLERANCE, int, 0, "Turn on/off detailed recording of tolerance change circumstances (Warning: can be slow)");
   CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, " -2: no predators, but track prey stats \n -1: no predators in experiment \n 0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n 1: allow predators to switch to being prey \n 2: don't allow a predator to switch to being a prey & don't allow prey to switch via set-forage-target (via attack allowed) )");
   CONFIG_ADD_VAR(PRED_EFFICIENCY, double, 1.0, "Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value\n and add to current predator values (for bonus, merit, and bin consumption instructions).");
+  CONFIG_ADD_VAR(PRED_EFFICIENCY_POISON, double, 1.0, "Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value\n and subtract from current predator values if this prey is poisonous (ft == 2).");
   CONFIG_ADD_VAR(PRED_ODDS, double, 1.0, "Probability of success for predator 'attack' instructions.");
   CONFIG_ADD_VAR(PRED_INJURY, double, 0.0, "If an attack fails, target's bonus, merit, and internal resources are reduced by this fraction.");
   CONFIG_ADD_VAR(MIN_PREY, int, 0, "If positive (recommended for prey studies), predator attacks fail if num prey falls below this (0 = off).\nIf negative (recommended for predator studies), random prey of genotype other than target will be cloned (using birth placement methods).");

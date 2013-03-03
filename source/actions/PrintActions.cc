@@ -614,6 +614,25 @@ public:
   }
 };
 
+class cActionPrintKilledPreyFTData : public cAction
+{
+private:
+  
+public:
+  cActionPrintKilledPreyFTData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args)
+  {
+  }
+  
+  static const cString GetDescription() { return "Arguments: "; }
+  cString m_filename = "killed_prey.dat";
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintKilledPreyFTData(m_filename);
+  }
+};
+
 class cActionPrintMaleInstructionData : public cAction
 {
 private:

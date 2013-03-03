@@ -2291,6 +2291,35 @@ void cStats::PrintGroupAttackString(cString& string)
   fp << GetUpdate() << "," << string << endl;
 }
 
+void cStats::PrintKilledPreyFTData(const cString& filename)
+{
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  
+  df->WriteComment("Record of orgs killed by predators by victim forage type.");
+  df->WriteTimeStamp();
+  
+  df->Write(m_update, "Update");
+  
+  Apto::Array<int> poss_targets = m_world->GetEnvironment().GetAttackPreyFTList();
+  Apto::Array<int> org_targets;
+  org_targets.Resize(poss_targets.GetSize());
+  org_targets.SetAll(0);
+  
+  const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {
+    Apto::Array<int> killed_list = live_orgs[i]->GetPhenotype().GetKilledPreyFTData();
+    assert(killed_list.GetSize() == org_targets.GetSize());
+
+    for (int i = 0; i < killed_list.GetSize(); i++) org_targets[i] += killed_list[i];
+  }
+
+  for (int target = 0; target < org_targets.GetSize(); target++) {
+    df->Write(poss_targets[target], "Killed FT ID");
+    df->Write(org_targets[target], "Num Orgs Killed");
+  }
+  df->Endl();
+}
+
 void cStats::PrintLookData(cString& string)
 {
   cString file = "looksettings";

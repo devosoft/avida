@@ -129,7 +129,8 @@ private:
   Apto::Array<int> cur_from_sensor_count;           // Use of inputs that originated from sensory data were used in execution of this instruction.
   Apto::Array< Apto::Array<int> > cur_group_attack_count;
   Apto::Array< Apto::Array<int> > cur_top_pred_group_attack_count;
-
+  Apto::Array<int> cur_killed_targets;
+  
   Apto::Array<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB
   Apto::Array<double> sensed_resources;            // Resources which the organism has sensed; @JEB
   Apto::Array<double> cur_task_time;               // Time at which each task was last performed; WRE 03-18-07
@@ -180,6 +181,7 @@ private:
   Apto::Array<int> last_sense_count;   // Total times resource combinations have been sensed; @JEB
   Apto::Array< Apto::Array<int> > last_group_attack_count;
   Apto::Array< Apto::Array<int> > last_top_pred_group_attack_count;
+  Apto::Array<int> last_killed_targets;
 
   double last_fitness;            // Used to determine sterilization.
   int last_cpu_cycles_used;
@@ -642,7 +644,7 @@ public:
   void SetIsEnergyDonor() { is_energy_donor = true; }
   void SetIsEnergyReceiver() { is_energy_receiver = true; }
   bool& SetBornParentGroup() { return born_parent_group; } 
-  void SetHasUsedDonatedEnergy() {has_used_donated_energy = true; }
+  void SetHasUsedDonatedEnergy() { has_used_donated_energy = true; }
   void SetHasOpenEnergyRequest() { has_open_energy_request = true; }
   void ClearHasOpenEnergyRequest() { has_open_energy_request = false; }
   void ClearIsMultiThread() { is_multi_thread = false; }
@@ -655,6 +657,8 @@ public:
   void IncCurFromSensorInstCount(int _inst_num)  { assert(initialized == true); cur_from_sensor_count[_inst_num]++; }
   void IncCurGroupAttackInstCount(int _inst_num, int pack_size_idx)  { assert(initialized == true); cur_group_attack_count[_inst_num][pack_size_idx]++; }
   void IncCurTopPredGroupAttackInstCount(int _inst_num, int pack_size_idx)  { assert(initialized == true); cur_top_pred_group_attack_count[_inst_num][pack_size_idx]++; }
+  void IncAttackedPreyFTData(int target_ft);
+  Apto::Array<int> GetKilledPreyFTData() { return cur_killed_targets; }
   
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }
