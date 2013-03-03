@@ -617,16 +617,23 @@ public:
 class cActionPrintKilledPreyFTData : public cAction
 {
 private:
+  cString m_filename;
   
 public:
   cActionPrintKilledPreyFTData(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args)
   {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "killed_prey.dat";
+    }
+    if (m_filename == "") m_filename.Set("killed_prey.dat");
   }
   
-  static const cString GetDescription() { return "Arguments: "; }
-  cString m_filename = "killed_prey.dat";
-  
+  static const cString GetDescription() { return "Arguments: [string fname=\"killed_prey.dat\"]"; }
+
   void Process(cAvidaContext& ctx)
   {
     m_world->GetStats().PrintKilledPreyFTData(m_filename);
