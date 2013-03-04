@@ -197,70 +197,11 @@ cOrgSensor::sLookOut cOrgSensor::FindOrg(cOrganism* target_org, const int distan
   org_search.forage = -9;  
   if (m_use_avatar && m_use_avatar != 2) return org_search;
   
-  const int worldx = m_world->GetConfig().WORLD_X.Get();
   int target_org_cell = target_org->GetOrgInterface().GetCellID();
-  int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
-  if (m_use_avatar) {
-    target_org_cell = target_org->GetOrgInterface().GetAVCellID();
-    searching_org_cell = m_organism->GetOrgInterface().GetAVCellID();
-  }
-  const int target_x = target_org_cell % worldx;
-  const int target_y = target_org_cell / worldx;
-  const int searching_x = searching_org_cell % worldx;
-  const int searching_y = searching_org_cell / worldx;
-  const int x_dist = target_x - searching_x;
-  const int y_dist = target_y - searching_y;
-  // is the target org close enough to see and in my line of sight?
-  bool org_in_sight = true;
-  
-  const int travel_dist = max(abs(x_dist), abs(y_dist));
-  
-  // if simply too far or behind you
-  if (travel_dist > distance_sought) org_in_sight = false;
-  else if (facing == 0 && y_dist > 0) org_in_sight = false;
-  else if (facing == 4 && y_dist < 0) org_in_sight = false;
-  else if (facing == 2 && x_dist < 0) org_in_sight = false;
-  else if (facing == 6 && x_dist > 0) org_in_sight = false;
-  else if (facing == 1 && (y_dist > 0 || x_dist < 0)) org_in_sight = false;
-  else if (facing == 3 && (y_dist < 0 || x_dist < 0)) org_in_sight = false;
-  else if (facing == 5 && (y_dist < 0 || x_dist > 0)) org_in_sight = false;
-  else if (facing == 7 && (y_dist > 0 || x_dist > 0)) org_in_sight = false;
-  
-  // if not too far in absolute x or y directions, check the distance when we consider offset from center sight line (is it within sight cone?)
-  if (org_in_sight) {
-    const int num_cells_either_side = (travel_dist % 2) ? (int) ((travel_dist - 1) * 0.5) : (int) (travel_dist * 0.5);
-    int center_cell_x = 0;
-    int center_cell_y = 0;
-    // facing N or S and target off to E/W of center sight line
-    if ((facing == 0 || facing == 4) && abs(x_dist) > num_cells_either_side) org_in_sight = false;
-    // facing E or W and target off to N/S of center sight line
-    else if ((facing == 2 || facing == 6) && abs(y_dist) > num_cells_either_side) org_in_sight = false;
-    // if facing diagonals and target off to side
-    else if (facing == 1) {
-      center_cell_x = searching_x + abs(x_dist);
-      center_cell_y = searching_y - abs(y_dist);
-      if ((target_x < center_cell_x - num_cells_either_side) || (target_y > center_cell_y + num_cells_either_side)) org_in_sight = false;
-    }
-    else if (facing == 3) {
-      center_cell_x = searching_x + abs(x_dist);
-      center_cell_y = searching_y + abs(y_dist);
-      if ((target_x < center_cell_x - num_cells_either_side) || (target_y < center_cell_y - num_cells_either_side)) org_in_sight = false;
-    }
-    else if (facing == 5) {
-      center_cell_x = searching_x - abs(x_dist);
-      center_cell_y = searching_y + abs(y_dist);
-      if ((target_x > center_cell_x + num_cells_either_side) || (target_y < center_cell_y - num_cells_either_side)) org_in_sight = false;
-    }
-    else if (facing == 7) {
-      center_cell_x = searching_x - abs(x_dist);
-      center_cell_y = searching_y - abs(y_dist);
-      if ((target_x > center_cell_x + num_cells_either_side) || (target_y > center_cell_y + num_cells_either_side)) org_in_sight = false;
-    }
-  }
-  
-  if (org_in_sight) {
-    org_search.distance = travel_dist;
-    org_search.count = 1;
+  if (m_use_avatar) target_org_cell = target_org->GetOrgInterface().GetAVCellID();
+  FindThing(target_org_cell, distance_sought, facing, org_search, target_org);
+
+  if (org_search.distance > -1) {
     org_search.value = (int) target_org->GetPhenotype().GetCurBonus();
     if (!m_return_rel_facing && target_org->HasOpinion()) {
       org_search.group = target_org->GetOpinion().first;
@@ -274,9 +215,110 @@ cOrgSensor::sLookOut cOrgSensor::FindOrg(cOrganism* target_org, const int distan
     if (m_world->GetConfig().USE_MIMICS.Get() && org_search.forage == 1) org_search.forage = target_org->GetShowForageTarget();
   }
   return org_search;
-} 
+}
 
-cOrgSensor::sLookOut cOrgSensor::GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type) 
+cOrgSensor::sLookOut cOrgSensor::FindResCenter(cAvidaContext& ctx, const int res_id, const int distance_sought, const int facing)
+{
+  sLookOut res_search;
+  res_search.report_type = 1;
+  res_search.habitat = -2;
+  res_search.id_sought = res_id;
+  res_search.search_type = -9;
+  res_search.distance = -1;
+  res_search.count = 0;
+  res_search.value = 0;
+  res_search.group = -9;
+  res_search.forage = -9;
+  
+  int target_cell = m_organism->GetOrgInterface().GetCellID();
+  if (m_use_avatar) target_cell = m_organism->GetOrgInterface().GetAVCellID();
+
+  cResourceCount* res_count = m_organism->GetOrgInterface().GetResourceCount();
+  if (res_search.distance != -1) {
+    if (m_world->GetEnvironment().GetResourceLib().GetResource(res_id)->GetGradient()) {
+      target_cell = res_count->GetCurrPeakX(ctx, res_id) + (res_count->GetCurrPeakY(ctx, res_id) * m_world->GetConfig().WORLD_X.Get());
+    }
+  }
+  FindThing(target_cell, distance_sought, facing, res_search);
+  return res_search;
+}
+
+void cOrgSensor::FindThing(int target_cell, const int distance_sought, const int facing, cOrgSensor::sLookOut& thing_search, cOrganism* target_org)
+{
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int target_x = target_cell % worldx;
+  const int target_y = target_cell / worldx;
+  int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
+  if (m_use_avatar) {
+    searching_org_cell = m_organism->GetOrgInterface().GetAVCellID();
+  }
+  const int searching_x = searching_org_cell % worldx;
+  const int searching_y = searching_org_cell / worldx;
+  const int x_dist = target_x - searching_x;
+  const int y_dist = target_y - searching_y;
+  // is the target close enough to see and in my line of sight?
+  bool thing_in_sight = true;
+  
+  const int travel_dist = max(abs(x_dist), abs(y_dist));
+  
+  // if simply too far or behind you
+  if (travel_dist > distance_sought) thing_in_sight = false;
+  else if (facing == 0 && y_dist > 0) thing_in_sight = false;
+  else if (facing == 4 && y_dist < 0) thing_in_sight = false;
+  else if (facing == 2 && x_dist < 0) thing_in_sight = false;
+  else if (facing == 6 && x_dist > 0) thing_in_sight = false;
+  else if (facing == 1 && (y_dist > 0 || x_dist < 0)) thing_in_sight = false;
+  else if (facing == 3 && (y_dist < 0 || x_dist < 0)) thing_in_sight = false;
+  else if (facing == 5 && (y_dist < 0 || x_dist > 0)) thing_in_sight = false;
+  else if (facing == 7 && (y_dist > 0 || x_dist > 0)) thing_in_sight = false;
+  
+  // if not too far in absolute x or y directions, check the distance when we consider offset from center sight line (is it within sight cone?)
+  if (thing_in_sight) {
+    const int num_cells_either_side = (travel_dist % 2) ? (int) ((travel_dist - 1) * 0.5) : (int) (travel_dist * 0.5);
+    int center_cell_x = 0;
+    int center_cell_y = 0;
+    // facing N or S and target off to E/W of center sight line
+    if ((facing == 0 || facing == 4) && abs(x_dist) > num_cells_either_side) thing_in_sight = false;
+    // facing E or W and target off to N/S of center sight line
+    else if ((facing == 2 || facing == 6) && abs(y_dist) > num_cells_either_side) thing_in_sight = false;
+    // if facing diagonals and target off to side
+    else if (facing == 1) {
+      center_cell_x = searching_x + abs(x_dist);
+      center_cell_y = searching_y - abs(y_dist);
+      if ((target_x < center_cell_x - num_cells_either_side) || (target_y > center_cell_y + num_cells_either_side)) thing_in_sight = false;
+    }
+    else if (facing == 3) {
+      center_cell_x = searching_x + abs(x_dist);
+      center_cell_y = searching_y + abs(y_dist);
+      if ((target_x < center_cell_x - num_cells_either_side) || (target_y < center_cell_y - num_cells_either_side)) thing_in_sight = false;
+    }
+    else if (facing == 5) {
+      center_cell_x = searching_x - abs(x_dist);
+      center_cell_y = searching_y + abs(y_dist);
+      if ((target_x > center_cell_x + num_cells_either_side) || (target_y < center_cell_y - num_cells_either_side)) thing_in_sight = false;
+    }
+    else if (facing == 7) {
+      center_cell_x = searching_x - abs(x_dist);
+      center_cell_y = searching_y - abs(y_dist);
+      if ((target_x > center_cell_x + num_cells_either_side) || (target_y > center_cell_y + num_cells_either_side)) thing_in_sight = false;
+    }
+  }
+  
+  if (thing_in_sight) {
+    int offset = x_dist;
+    if (facing == 4) offset = -1 * x_dist;
+    else if (facing == 2) offset = -1 * y_dist;
+    else if (facing == 6) offset = y_dist;
+    else if (facing == 1) offset = abs(x_dist) - abs(y_dist);
+    else if (facing == 3) offset = abs(y_dist) - abs(x_dist);
+    else if (facing == 5) offset = abs(x_dist) - abs(y_dist);
+    else if (facing == 7) offset = abs(y_dist) - abs(x_dist);
+    thing_search.distance = travel_dist;
+    thing_search.count = offset;                    // count is always 1 for res and orgs, so we abuse that spot for the off-center dist
+  }
+}
+
+cOrgSensor::sLookOut cOrgSensor::GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type)
 {
   double val = 0;
   if (id_sought != -1) {

@@ -93,6 +93,8 @@ class cOrgSensor
   sLookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type,
                       const int distance_sought, const int id_sought, const int facing, const int cell_id);
   sLookOut FindOrg(cOrganism* target_org, const int distance, const int facing);
+  sLookOut FindResCenter(cAvidaContext& ctx, const int res_id, const int distance_sought, const int facing);
+  void FindThing(int target_cell, const int distance_sought, const int facing, cOrgSensor::sLookOut& org_search, cOrganism* target_org = NULL);
   sLookOut GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type);
   int TestResDist(const int dist_used, const int search_type, const int id_sought, const int facing, const int cell);
   int GetMinDist(const int worldx, sBounds& bounds, const int cell_id, const int distance_sought, 
