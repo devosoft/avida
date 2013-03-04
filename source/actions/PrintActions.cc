@@ -5119,6 +5119,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPredatorFromSensorInstructionData>("PrintPredatorFromSensorInstructionData");
   action_lib->Register<cActionPrintTopPredatorFromSensorInstructionData>("PrintTopPredatorFromSensorInstructionData");
   action_lib->Register<cActionPrintGroupAttackData>("PrintGroupAttackData");
+  action_lib->Register<cActionPrintKilledPreyFTData>("PrintKilledPreyFTData");
   
   action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");
   action_lib->Register<cActionPrintFemaleInstructionData>("PrintFemaleInstructionData");
