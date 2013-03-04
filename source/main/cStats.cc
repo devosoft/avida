@@ -2308,9 +2308,10 @@ void cStats::PrintKilledPreyFTData(const cString& filename)
   const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {
     Apto::Array<int> killed_list = live_orgs[i]->GetPhenotype().GetKilledPreyFTData();
-    assert(killed_list.GetSize() == org_targets.GetSize());
-
-    for (int i = 0; i < killed_list.GetSize(); i++) org_targets[i] += killed_list[i];
+    if (killed_list.GetSize() > 0) {
+      assert(killed_list.GetSize() == org_targets.GetSize());
+      for (int i = 0; i < killed_list.GetSize(); i++) org_targets[i] += killed_list[i];
+    }
   }
 
   for (int target = 0; target < org_targets.GetSize(); target++) {
