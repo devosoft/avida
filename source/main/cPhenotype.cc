@@ -1877,6 +1877,10 @@ int cPhenotype::CalcToleranceOffspringOthers()
 
 void cPhenotype::IncAttackedPreyFTData(int target_ft) {
   Apto::Array<int> target_list = m_world->GetEnvironment().GetAttackPreyFTList();
+  if (!cur_killed_targets.GetSize()) {
+    cur_killed_targets.Resize(target_list.GetSize());
+    cur_killed_targets.SetAll(0);
+  }
   if (target_ft < -3) target_ft = -3;
   int this_index = target_ft;
   for (int i = 0; i < target_list.GetSize(); i++) {
@@ -1885,6 +1889,8 @@ void cPhenotype::IncAttackedPreyFTData(int target_ft) {
       break;
     }
   }
+  assert(this_index >= 0);
+  assert(cur_killed_targets.GetSize() == target_list.GetSize());
   cur_killed_targets[this_index]++;
 }
 
