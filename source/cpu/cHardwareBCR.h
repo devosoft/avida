@@ -181,6 +181,8 @@ private:
     inline void Clear(int sz) { delete [] m_stack; m_sz = sz; m_stack = new DataValue[sz]; }
   };
   
+  
+  
 
   struct Thread
   {
@@ -208,6 +210,8 @@ private:
     cCodeLabel read_label;
     cCodeLabel read_seq;
     cCodeLabel next_label;
+    
+    cOrgSensor::sLookInit sensor_session;
     
     inline Thread() { ; }
     inline ~Thread() { ; }
@@ -247,6 +251,7 @@ private:
   
 
   cOrgSensor m_sensor;
+  Apto::Array<cOrgSensor::sLookInit> m_sensor_sessions;
   
   // Flags
   struct {
@@ -385,6 +390,7 @@ private:
   int FindModifiedPreviousRegister(int default_register);
   int FindModifiedHead(int default_head);
   int FindNextRegister(int base_reg);
+  int FindUpstreamModifiedRegister(int offset, int default_register);
   
   int calcCopiedSize(const int parent_size, const int child_size);
   
@@ -529,6 +535,8 @@ private:
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_LookAhead(cAvidaContext& ctx);
   bool Inst_LookAheadIntercept(cAvidaContext& ctx);
+  bool Inst_LookAheadEX(cAvidaContext& ctx);
+  bool Inst_LookAgainEX(cAvidaContext& ctx);
   bool Inst_LookAround(cAvidaContext& ctx);
   bool Inst_LookAroundIntercept(cAvidaContext& ctx);
   bool Inst_LookFT(cAvidaContext& ctx);
@@ -566,6 +574,7 @@ private:
 
 private:
   static tInstLib<cHardwareBCR::tMethod>* initInstLib();
+  
   // ---------- Some Instruction Helpers -----------
   struct sLookRegAssign {
     int habitat;

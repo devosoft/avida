@@ -214,6 +214,8 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareBCR::Inst_SenseFacedHabitat, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
     tInstLibEntry<tMethod>("look-ahead", &cHardwareBCR::Inst_LookAhead, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
     tInstLibEntry<tMethod>("look-ahead-intercept", &cHardwareBCR::Inst_LookAheadIntercept, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("look-ahead-ex", &cHardwareBCR::Inst_LookAheadEX, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("look-again-ex", &cHardwareBCR::Inst_LookAgainEX, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
     tInstLibEntry<tMethod>("look-around", &cHardwareBCR::Inst_LookAround, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
     tInstLibEntry<tMethod>("look-around-intercept", &cHardwareBCR::Inst_LookAroundIntercept, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
     tInstLibEntry<tMethod>("look-ft", &cHardwareBCR::Inst_LookFT, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
@@ -271,7 +273,7 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
 
 
 cHardwareBCR::cHardwareBCR(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
-: cHardwareBase(world, in_organism, in_inst_set), m_genes(0), m_mem_array(1), m_sensor(world, in_organism)
+: cHardwareBase(world, in_organism, in_inst_set), m_genes(0), m_mem_array(1), m_sensor(world, in_organism), m_sensor_sessions(NUM_NOPS)
 {
   m_functions = s_inst_slib->GetFunctions();
   
@@ -300,7 +302,7 @@ void cHardwareBCR::internalReset()
   m_last_output = 0;
   
   m_sensor.Reset();
-  
+  for (int i = 0; i < m_sensor_sessions.GetSize(); i++) m_sensor_sessions[i].Clear();
   
   // Stack
   m_global_stack.Clear(m_inst_set->GetStackSize());
@@ -411,6 +413,8 @@ void cHardwareBCR::Thread::Reset(cHardwareBCR* in_hardware, const Head& start_po
   active = true;
   read_label.Clear();
   next_label.Clear();
+  
+  sensor_session.Clear();
 }
 
 
@@ -1250,6 +1254,21 @@ inline int cHardwareBCR::FindModifiedHead(int default_head)
 inline int cHardwareBCR::FindNextRegister(int base_reg)
 {
   return (base_reg + 1) % NUM_REGISTERS;
+}
+
+inline int cHardwareBCR::FindUpstreamModifiedRegister(int offset, int default_register)
+{
+  assert(default_register < NUM_REGISTERS);  // Reg ID too high.
+  assert(offset >= 0);
+  
+  Head location = getIP();
+  location.Jump(-offset - 1);
+  
+  if (m_inst_set->IsNop(location.GetInst())) {
+    default_register = m_inst_set->GetNopMod(location.GetInst());
+    location.SetFlagExecuted();
+  }
+  return default_register;
 }
 
 
@@ -2527,6 +2546,184 @@ bool cHardwareBCR::Inst_LookAhead(cAvidaContext& ctx)
     facing = m_organism->GetOrgInterface().GetAVFacing();
   }
   return GoLook(ctx, facing, cell);
+}
+
+
+bool cHardwareBCR::Inst_LookAheadEX(cAvidaContext& ctx)
+{
+  int cell_id = m_organism->GetOrgInterface().GetCellID();
+  int facing = m_organism->GetOrgInterface().GetFacedDir();
+  
+  if (m_use_avatar) {
+    cell_id = m_organism->GetOrgInterface().GetAVCellID();
+    facing = m_organism->GetOrgInterface().GetAVFacing();
+  }
+
+  // temp check on world geometry until code can handle other geometries
+  if (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) {
+    // Instruction sense-diff-ahead only written to work in bounded grids
+    assert(false);
+    return false;
+  }
+  
+  if (!m_use_avatar && m_organism->GetNeighborhoodSize() == 0) return false;
+  else if (m_use_avatar && m_organism->GetOrgInterface().GetAVNumNeighbors() == 0) return false;
+  
+  const int reg_session = FindUpstreamModifiedRegister(0, -1);
+  
+  
+  const int reg_habitat = FindModifiedRegister(rBX);                        // ?rBX?
+  const int reg_id_sought = FindModifiedNextRegister(reg_habitat);          // ?rCX?
+  const int reg_travel_distance = FindModifiedNextRegister(reg_id_sought);  // ?rDX?
+  const int reg_deviance = FindNextRegister(reg_travel_distance);           // rDX + 1 = rEX
+  const int reg_cv = FindNextRegister(reg_deviance);                        // rDX + 2 = rFX
+  
+  const int reg_search_distance = FindModifiedRegister(-1);                 // ?r?X?
+  const int reg_search_type = FindModifiedRegister(-1);                     // ?r?X?
+  
+  const int reg_id_found = FindModifiedRegister(-1);                        // ?r?X?
+  
+  cOrgSensor::sLookInit look_init;
+  look_init.habitat = m_threads[m_cur_thread].reg[reg_habitat].value;
+  look_init.distance = (reg_search_distance == -1) ? std::numeric_limits<int>::max() : m_threads[m_cur_thread].reg[reg_search_distance].value;
+  look_init.search_type = (reg_search_type == -1) ? 0 : m_threads[m_cur_thread].reg[reg_search_type].value;
+  look_init.id_sought = m_threads[m_cur_thread].reg[reg_id_sought].value;
+  
+  cOrgSensor::sLookOut look_results;
+  look_results.value = 0;
+  
+  look_results = m_sensor.SetLooking(ctx, look_init, facing, cell_id, false);
+  
+  // Update Sessions
+  m_threads[m_cur_thread].sensor_session.habitat = look_results.habitat;
+  m_threads[m_cur_thread].sensor_session.distance = look_init.distance;
+  m_threads[m_cur_thread].sensor_session.search_type = look_results.search_type;
+  m_threads[m_cur_thread].sensor_session.id_sought = look_results.id_sought;
+
+  if (reg_session != -1) {
+    const int session_idx = Apto::Abs(m_threads[m_cur_thread].reg[reg_session].value % m_sensor_sessions.GetSize());
+    m_sensor_sessions[session_idx].habitat = look_results.habitat;
+    m_sensor_sessions[session_idx].distance = look_init.distance;
+    m_sensor_sessions[session_idx].search_type = look_results.search_type;
+    m_sensor_sessions[session_idx].id_sought = look_results.id_sought;
+  }
+  
+  if (look_results.report_type == 0) {
+    setRegister(reg_habitat, look_results.habitat, true);
+    setRegister(reg_id_sought, look_results.id_sought, true);
+    setRegister(reg_travel_distance, -1, true);
+    setRegister(reg_deviance, 0, true);
+    setRegister(reg_cv, 0, true);
+
+    if (reg_search_type != -1) setRegister(reg_search_type, look_results.search_type, true);
+    if (reg_id_found != -1) setRegister(reg_id_found, -9, true);
+  } else if (look_results.report_type == 1) {
+    setRegister(reg_habitat, look_results.habitat, true);
+    setRegister(reg_id_sought, look_results.id_sought, true);
+    setRegister(reg_travel_distance, look_results.distance, true);
+    setRegister(reg_deviance, look_results.deviance, true);
+    setRegister(reg_cv, (look_results.count <= 1) ? look_results.value : look_results.count, true);
+    
+    if (reg_search_type != -1) setRegister(reg_search_type, look_results.search_type, true);
+    if (reg_id_found != -1) setRegister(reg_id_found, (look_results.forage == -9) ? look_results.group : look_results.forage, true);
+  }
+  
+  if (m_world->GetConfig().LOOK_DISABLE.Get() > 5) {
+    int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
+    bool is_target_type = false;
+    if (org_type == 0 && !m_organism->IsPreyFT()) is_target_type = true;
+    else if (org_type == 1 && m_organism->IsPreyFT()) is_target_type = true;
+    else if (org_type == 2) is_target_type = true;
+    
+    if (is_target_type) {
+      int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
+      int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
+      int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
+      
+      if (target_reg == 6) setRegister(reg_habitat, rand, true);
+      else if (target_reg == 7) setRegister(reg_travel_distance, rand, true);
+      else if (target_reg == 8 && reg_search_type != -1) setRegister(reg_search_type, rand, true);
+      else if (target_reg == 9) setRegister(reg_id_sought, rand, true);
+      else if (target_reg == 10 || target_reg == 11) setRegister(reg_cv, rand, true);
+      else if ((target_reg == 12 || target_reg == 13) && reg_id_found != -1) setRegister(reg_id_found, rand, true);
+    }
+  }
+  
+  return true;
+}
+
+bool cHardwareBCR::Inst_LookAgainEX(cAvidaContext& ctx)
+{
+  int cell_id = m_organism->GetOrgInterface().GetCellID();
+  int facing = m_organism->GetOrgInterface().GetFacedDir();
+  
+  if (m_use_avatar) {
+    cell_id = m_organism->GetOrgInterface().GetAVCellID();
+    facing = m_organism->GetOrgInterface().GetAVFacing();
+  }
+  
+  // temp check on world geometry until code can handle other geometries
+  if (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) {
+    // Instruction sense-diff-ahead only written to work in bounded grids
+    assert(false);
+    return false;
+  }
+  
+  if (!m_use_avatar && m_organism->GetNeighborhoodSize() == 0) return false;
+  else if (m_use_avatar && m_organism->GetOrgInterface().GetAVNumNeighbors() == 0) return false;
+  
+  const int reg_session = FindUpstreamModifiedRegister(0, -1);
+  
+  
+  const int reg_travel_distance = FindModifiedNextRegister(rDX);  // ?rDX?
+  const int reg_deviance = FindNextRegister(reg_travel_distance);           // rDX + 1 = rEX
+  const int reg_cv = FindNextRegister(reg_deviance);                        // rDX + 2 = rFX
+  const int reg_id_found = FindModifiedRegister(-1);                        // ?r?X?
+  
+  cOrgSensor::sLookInit look_init = m_threads[m_cur_thread].sensor_session;
+  if (reg_session != -1) {
+    const int session_idx = Apto::Abs(m_threads[m_cur_thread].reg[reg_session].value % m_sensor_sessions.GetSize());
+    look_init = m_sensor_sessions[session_idx];
+  }
+  
+  cOrgSensor::sLookOut look_results;
+  look_results.value = 0;
+  
+  look_results = m_sensor.SetLooking(ctx, look_init, facing, cell_id, false);
+  
+  if (look_results.report_type == 0) {
+    setRegister(reg_travel_distance, -1, true);
+    setRegister(reg_deviance, 0, true);
+    setRegister(reg_cv, 0, true);
+    
+    if (reg_id_found != -1) setRegister(reg_id_found, -9, true);    
+  } else if (look_results.report_type == 1) {
+    setRegister(reg_travel_distance, look_results.distance, true);
+    setRegister(reg_deviance, look_results.deviance, true);
+    setRegister(reg_cv, (look_results.count <= 1) ? look_results.value : look_results.count, true);
+    
+    if (reg_id_found != -1) setRegister(reg_id_found, (look_results.forage == -9) ? look_results.group : look_results.forage, true);
+  }
+  
+  if (m_world->GetConfig().LOOK_DISABLE.Get() > 5) {
+    int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
+    bool is_target_type = false;
+    if (org_type == 0 && !m_organism->IsPreyFT()) is_target_type = true;
+    else if (org_type == 1 && m_organism->IsPreyFT()) is_target_type = true;
+    else if (org_type == 2) is_target_type = true;
+    
+    if (is_target_type) {
+      int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
+      int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
+      int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
+      
+      if (target_reg == 7) setRegister(reg_travel_distance, rand, true);
+      else if (target_reg == 10 || target_reg == 11) setRegister(reg_cv, rand, true);
+      else if ((target_reg == 12 || target_reg == 13) && reg_id_found != -1) setRegister(reg_id_found, rand, true);
+    }
+  }
+  
+  return true;
 }
 
 // Will return relative org facing (rotations to intercept) rather than group info for sighted org

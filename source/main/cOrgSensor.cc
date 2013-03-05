@@ -113,7 +113,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   // negative numbers == any of current habitat type
   if (id_sought < -1) id_sought = -1;
   // override if using lookFT
-  if (use_ft) id_sought = forage;
+  if ( (id_sought < -1 || id_sought >= lib_size) && use_ft && habitat_used != -2) id_sought = forage;
   // if resource search...
   if (habitat_used != -2) { 
     // if invalid res id...
@@ -190,11 +190,6 @@ cOrgSensor::sLookOut cOrgSensor::FindOrg(cOrganism* target_org, const int distan
   org_search.habitat = -2;
   org_search.id_sought = target_org->GetID();
   org_search.search_type = -9;
-  org_search.distance = -1;
-  org_search.count = 0;
-  org_search.value = 0;
-  org_search.group = -9;
-  org_search.forage = -9;  
   if (m_use_avatar && m_use_avatar != 2) return org_search;
   
   int target_org_cell = target_org->GetOrgInterface().GetCellID();
@@ -224,11 +219,6 @@ cOrgSensor::sLookOut cOrgSensor::FindResCenter(cAvidaContext& ctx, const int res
   res_search.habitat = -2;
   res_search.id_sought = res_id;
   res_search.search_type = -9;
-  res_search.distance = -1;
-  res_search.count = 0;
-  res_search.value = 0;
-  res_search.group = -9;
-  res_search.forage = -9;
   
   int target_cell = m_organism->GetOrgInterface().GetCellID();
   if (m_use_avatar) target_cell = m_organism->GetOrgInterface().GetAVCellID();
@@ -314,7 +304,7 @@ void cOrgSensor::FindThing(int target_cell, const int distance_sought, const int
     else if (facing == 5) offset = abs(x_dist) - abs(y_dist);
     else if (facing == 7) offset = abs(y_dist) - abs(x_dist);
     thing_search.distance = travel_dist;
-    thing_search.count = offset;                    // count is always 1 for res and orgs, so we abuse that spot for the off-center dist
+    thing_search.deviance = offset;
   }
 }
 
@@ -329,13 +319,8 @@ cOrgSensor::sLookOut cOrgSensor::GlobalVal(cAvidaContext& ctx, const int habitat
   sLookOut stuff_seen;
   stuff_seen.report_type = 1;
   stuff_seen.habitat = habitat_used;
-  stuff_seen.distance = -1;
   stuff_seen.search_type = search_type;
   stuff_seen.id_sought = id_sought;
-  stuff_seen.count = 0;
-  stuff_seen.value = -9;
-  stuff_seen.group = -9;    
-  stuff_seen.forage = -9;
   
   // can't use threshold...those only apply to gradient resources, so this is arbitrarily set at any (> 0)
   if (val > 0) {
@@ -360,13 +345,8 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   sLookOut stuff_seen;
   stuff_seen.report_type = 0;
   stuff_seen.habitat = habitat_used;
-  stuff_seen.distance = -1;
   stuff_seen.search_type = search_type;
   stuff_seen.id_sought = id_sought;
-  stuff_seen.count = 0;
-  stuff_seen.value = -9;
-  stuff_seen.group = -9;
-  stuff_seen.forage = -9;
   if ((m_use_avatar && m_use_avatar != 2 && habitat_used == -2) || (habitat_used == 3)) return stuff_seen;
   
   const int worldx = m_world->GetConfig().WORLD_X.Get();
@@ -628,8 +608,10 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   stuff_seen.habitat = habitat_used;
   stuff_seen.search_type = search_type;
   stuff_seen.id_sought = id_sought;
-  if (!found) stuff_seen.report_type = 0;
-  else if (found){
+  
+  if (!found) {
+    stuff_seen.report_type = 0;
+  } else if (found) {
     stuff_seen.report_type = 1;
     stuff_seen.distance = dist_used;
     stuff_seen.count = count;
@@ -639,10 +621,15 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
     
     // overwrite defaults for more specific search types
     
-    // if we were looking for resources, return id of nearest
-    if (habitat_used != -2) stuff_seen.group = first_whole_resource;  
-    // if searching for orgs, return info on closest one we encountered (==only one if stop_at_first_found)
-    else if (habitat_used == -2 && found_edible) {
+    if (habitat_used != -2) {
+      // if we were looking for resources, return id of nearest
+      stuff_seen.group = first_whole_resource;
+      
+      int target_cell = first_success_cell.Y() * worldx + first_success_cell.X();
+      FindThing(target_cell, distance_sought, facing, stuff_seen);
+    
+    } else if (habitat_used == -2 && found_edible) {
+      // if searching for orgs, return info on closest one we encountered (==only one if stop_at_first_found)
       const cPopulationCell* first_good_cell = m_organism->GetOrgInterface().GetCell(first_success_cell.Y() * worldx + first_success_cell.X());
       cOrganism* first_org = first_good_cell->GetOrganism();
       if (m_use_avatar) {
@@ -650,18 +637,21 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
         else if (search_type > 0) first_org = first_good_cell->GetRandPredAV();
         else if (search_type < 0) first_org = first_good_cell->GetRandPreyAV();
       }
+      
+      FindThing(first_good_cell->GetID(), distance_sought, facing, stuff_seen, first_org);
+      
       stuff_seen.id_sought = first_org->GetID();
       stuff_seen.value = (int) first_org->GetPhenotype().GetCurBonus();
       if (!m_return_rel_facing && first_org->HasOpinion()) {
         stuff_seen.group = first_org->GetOpinion().first;
-      }
-      else if (m_return_rel_facing || !first_org->HasOpinion()) {
+      } else if (m_return_rel_facing || !first_org->HasOpinion()) {
         stuff_seen.group = ReturnRelativeFacing(first_org);
       }
       stuff_seen.forage = first_org->GetForageTarget();   
       if ((first_org->IsDisplaying()  || m_world->GetConfig().USE_DISPLAY.Get()) && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());            
       if (m_world->GetConfig().USE_MIMICS.Get() && stuff_seen.forage == 1) stuff_seen.forage = first_org->GetShowForageTarget();
     }
+    
     if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) SetPotentialDisplayData(stuff_seen);   
   }
   return stuff_seen;

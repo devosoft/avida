@@ -65,6 +65,20 @@ class cOrgSensor
     int distance;
     int search_type;
     int id_sought;
+    
+    inline sLookInit()
+      : habitat(std::numeric_limits<int>::min()), distance(std::numeric_limits<int>::max())
+      , search_type(0), id_sought(-1)
+    {
+    }
+    
+    inline void Clear()
+    {
+      habitat = std::numeric_limits<int>::min();
+      distance = std::numeric_limits<int>::max();
+      search_type = 0;
+      id_sought = -1;
+    }
   };
   struct sLookOut {
     int report_type;
@@ -76,6 +90,13 @@ class cOrgSensor
     int value;
     int group;
     int forage;
+    int deviance;
+    
+    inline sLookOut()
+      : report_type(0), habitat(0), distance(-1), search_type(0), id_sought(-1), count(0), value(0)
+      , group(-9), forage(-9), deviance(0)
+    {
+    }
   }; 
   struct sBounds {
     int min_x;
