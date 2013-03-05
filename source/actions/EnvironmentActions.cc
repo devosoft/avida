@@ -517,6 +517,54 @@ public:
   } 
 };
 
+class cActionDecInflow : public cAction
+{
+private:
+  cString m_res_name;
+  double m_inflow_change;
+  
+public:
+  cActionDecInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow_change(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_inflow_change = largs.PopWord().AsDouble();
+    
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow_change>"; }
+  
+  void Process(cAvidaContext&)
+  {
+    m_world->GetPopulation().UpdateInflow(m_res_name, -1 * m_inflow_change);
+  } 
+};
+
+class cActionIncInflow : public cAction
+{
+private:
+  cString m_res_name;
+  double m_inflow_change;
+  
+public:
+  cActionIncInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow_change(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_inflow_change = largs.PopWord().AsDouble();
+    
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow_change>"; }
+  
+  void Process(cAvidaContext&)
+  {
+    m_world->GetPopulation().UpdateInflow(m_res_name, m_inflow_change);
+  } 
+};
+
 /* Change Environment settings */
 class cActionChangeEnvironment : public cAction
 {
@@ -1586,6 +1634,8 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetGradPlatVarInflow>("SetGradPlatVarInflow");
   action_lib->Register<cActionSetPredatoryResource>("SetPredatoryResource");
   action_lib->Register<cActionSetProbabilisticResource>("SetProbabilisticResource");
+  action_lib->Register<cActionDecInflow>("DecInflow");
+  action_lib->Register<cActionIncInflow>("IncInflow");
 
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");

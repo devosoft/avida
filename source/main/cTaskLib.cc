@@ -111,6 +111,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "equ") NewTask(name, "Equals", &cTaskLib::Task_Equ);
   else if (name == "equ_dup") NewTask(name, "Equals_dup", &cTaskLib::Task_Equ);
   
+  else if (name == "xor-max") NewTask(name, "Xor-max", &cTaskLib::Task_XorMax);
 	// resoruce dependent version
   else if (name == "nand-resourceDependent") NewTask(name, "Nand-resourceDependent", &cTaskLib::Task_Nand_ResourceDependent);
   else if (name == "nor-resourceDependent") NewTask(name, "Nor-resourceDependent", &cTaskLib::Task_Nor_ResourceDependent);
@@ -3728,6 +3729,27 @@ double cTaskLib::Task_ConsumeTargetEqu(cTaskContext& ctx) const
     reward = Task_Equ(ctx);
   }
   return reward;
+}
+
+double cTaskLib::Task_XorMax(cTaskContext& ctx) const
+{
+  Apto::Array<double> cell_res;
+  if (!m_world->GetConfig().USE_AVATARS.Get()) cell_res = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
+  else if (m_world->GetConfig().USE_AVATARS.Get()) cell_res = ctx.GetOrganism()->GetOrgInterface().GetAVResources(m_world->GetDefaultContext());
+  
+  double max_amount = 0.0;
+  int max_res = 0;
+  // if more than one resource is available, set the reaction to use the resource with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
+  for (int i = 0; i < cell_res.GetSize(); i++) {
+    if (cell_res[i] > max_amount) {
+      max_amount = cell_res[i];
+      max_res = i;
+    }
+  }    
+  cReaction* found_reaction = m_world->GetEnvironment().GetReactionLib().GetReaction(ctx.GetTaskEntry()->GetID());
+  if (found_reaction == NULL) return false;
+  m_world->GetEnvironment().ChangeResource(found_reaction, m_world->GetEnvironment().GetResourceLib().GetResource(max_res)->GetName());
+  return Task_Xor(ctx);
 }
 
 void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)

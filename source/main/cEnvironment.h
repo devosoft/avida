@@ -144,6 +144,7 @@ public:
   bool SetReactionTask(const cString& name, const cString& task);
   bool SetResourceInflow(const cString& name, double _inflow );
   bool SetResourceOutflow(const cString& name, double _outflow );
+  bool ChangeResource(cReaction* reaction, const cString& res, int process_num = 0);
 	
   void AddGroupID(int new_id) { possible_group_ids.insert(new_id); }
   bool IsGroupID(int test_id);

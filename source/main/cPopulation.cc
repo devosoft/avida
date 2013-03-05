@@ -7907,6 +7907,17 @@ void cPopulation::SetProbabilisticResource(cAvidaContext& ctx, const cString res
   }
 }
 
+void cPopulation::UpdateInflow(const cString& res_name, const double change)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource* res = resource_lib.GetResource(i);
+    if (res->GetName() == res_name) {
+      resource_count.SetInflow(res_name, resource_count.GetInflow(res_name) + change);
+    }
+  } 
+}
+
 void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per)
 {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
