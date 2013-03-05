@@ -139,8 +139,6 @@ bool cEnvironment::AssertInputValid(void* input, const cString& name, const cStr
   return true;
 }
 
-
-
 bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedback& feedback)
 {
   cReactionProcess* new_process = reaction->AddProcess();
@@ -1904,6 +1902,13 @@ bool cEnvironment::SetResourceOutflow(const cString& name, double _outflow )
   cResource* found_resource = resource_lib.GetResource(name);
   if (found_resource == NULL) return false;
   found_resource->SetOutflow( _outflow );
+  return true;
+}
+
+bool cEnvironment::ChangeResource(cReaction* reaction, const cString& res, int process_num)
+{
+  cReactionProcess* process = reaction->GetProcess(process_num);
+  process->SetResource(m_world->GetEnvironment().GetResourceLib().GetResource(res));
   return true;
 }
 

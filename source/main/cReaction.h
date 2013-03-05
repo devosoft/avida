@@ -59,6 +59,7 @@ public:
   int GetID() const { return id; }
   cTaskEntry* GetTask() { return task; }
   const tList<cReactionProcess>& GetProcesses() { return process_list; }
+  cReactionProcess* GetProcess(int process = 0) { return process_list.GetPos(process); }
   const tList<cReactionRequisite>& GetRequisites() { return requisite_list; }
   const tList<cReactionRequisite>& GetRequisites() const { return requisite_list; }
   const tList<cContextReactionRequisite>& GetContextRequisites() { return context_requisite_list; }

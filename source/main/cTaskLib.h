@@ -336,7 +336,9 @@ private:
   double Task_ConsumeTargetNor(cTaskContext& ctx) const;
   double Task_ConsumeTargetXor(cTaskContext& ctx) const;
   double Task_ConsumeTargetEqu(cTaskContext& ctx) const;
-  
+
+  double Task_XorMax(cTaskContext& ctx) const;
+
   void Load_CollectOddCell(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
   double Task_CollectOddCell(cTaskContext& ctx) const;
 

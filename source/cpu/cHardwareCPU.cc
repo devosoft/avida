@@ -181,6 +181,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("inc", &cHardwareCPU::Inst_Inc, INST_CLASS_ARITHMETIC_LOGIC, nInstFlag::DEFAULT, "Increment ?BX? by one"),
     tInstLibEntry<tMethod>("dec", &cHardwareCPU::Inst_Dec, INST_CLASS_ARITHMETIC_LOGIC, nInstFlag::DEFAULT, "Decrement ?BX? by one"),
     tInstLibEntry<tMethod>("zero", &cHardwareCPU::Inst_Zero, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to zero"),
+    tInstLibEntry<tMethod>("one", &cHardwareCPU::Inst_One, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to one"),
     tInstLibEntry<tMethod>("all1s", &cHardwareCPU::Inst_All1s, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to all 1s in bitstring"),
     tInstLibEntry<tMethod>("neg", &cHardwareCPU::Inst_Neg, INST_CLASS_ARITHMETIC_LOGIC),
     tInstLibEntry<tMethod>("square", &cHardwareCPU::Inst_Square, INST_CLASS_ARITHMETIC_LOGIC),
@@ -2848,6 +2849,13 @@ bool cHardwareCPU::Inst_Zero(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) = 0;
+  return true;
+}
+
+bool cHardwareCPU::Inst_One(cAvidaContext&)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = 1;
   return true;
 }
 

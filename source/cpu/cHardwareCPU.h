@@ -415,6 +415,7 @@ private:
   bool Inst_Dec(cAvidaContext& ctx);
   bool Inst_All1s(cAvidaContext& ctx);
   bool Inst_Zero(cAvidaContext& ctx);
+  bool Inst_One(cAvidaContext& ctx);
   bool Inst_Not(cAvidaContext& ctx);
   bool Inst_Neg(cAvidaContext& ctx);
   bool Inst_Square(cAvidaContext& ctx);
