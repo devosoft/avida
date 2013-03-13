@@ -6469,23 +6469,27 @@ bool cHardwareExperimental::ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganis
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
   if (target->GetForageTarget() == 2) effic = m_world->GetConfig().PRED_EFFICIENCY_POISON.Get();
   
+  bool to_die = false;
   if (m_organism->IsTopPredFT()) effic *= effic;
   // apply poison, if any
-  if (target->GetForageTarget() == 2) {
+  if (target->GetForageTarget() == 2 && (m_world->GetConfig().INHERIT_MERIT.Get() || m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get())) {
     const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
     double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
     attacker_merit -= target_merit * effic;
     m_organism->UpdateMerit(attacker_merit);
+    to_die = (m_organism->GetPhenotype().GetMerit().GetDouble() <= 0);
   }
   else ApplyKilledPreyMerit(target, effic);
   
   if (target->GetForageTarget() != 2) ApplyKilledPreyReactions(target);
+  if (target->GetForageTarget() == 2) effic *= -1;
   ApplyKilledPreyBonus(target, reg, effic);
   ApplyKilledPreyResBins(target, reg, effic);
   MakePred(ctx);
   target->Die(ctx); // kill first -- could end up being killed by inject clone
   TryPreyClone(ctx);
   setInternalValue(reg.success_reg, 1, true);
+  if (to_die) m_organism->Die(ctx); // poisoned to death
   return true;
 }
 
