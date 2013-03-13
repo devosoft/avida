@@ -6472,7 +6472,7 @@ bool cHardwareExperimental::ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganis
   bool to_die = false;
   if (m_organism->IsTopPredFT()) effic *= effic;
   // apply poison, if any
-  if (target->GetForageTarget() == 2 && (m_world->GetConfig().INHERIT_MERIT.Get() || m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get())) {
+  if (target->GetForageTarget() == 2 && m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
     double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
     attacker_merit -= target_merit * effic;
@@ -6544,7 +6544,7 @@ void cHardwareExperimental::ApplyKilledPreyResBins(cOrganism* target, sAttackReg
     Apto::Array<double> target_bins = target->GetRBins();
     for (int i = 0; i < target_bins.GetSize(); i++) {
       m_organism->AddToRBin(i, target_bins[i] * effic);
-      target->AddToRBin(i, -1 * (target_bins[i] * effic));
+      if (effic > 0) target->AddToRBin(i, -1 * (target_bins[i] * effic));
     }
     const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
     setInternalValue(reg.bin_reg, spec_bin, true);
