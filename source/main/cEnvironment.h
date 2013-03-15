@@ -75,7 +75,7 @@ private:
   
   Apto::Array<cStateGrid*> m_state_grids;
 
-	std::set<int> possible_group_ids;
+  std::set<int> possible_group_ids;
   std::set<int> possible_target_ids;
   std::set<int> possible_habitats;
   Apto::Array<int> pp_fts;

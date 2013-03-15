@@ -857,6 +857,7 @@ public:
   void PrintGroupsFormedData(const cString& filename);
   void PrintGroupIds(const cString& filename);
   void PrintTargets(const cString& filename);
+  void PrintMimicDisplays(const cString& filename);
   void PrintTopPredTargets(const cString& filename);
   void PrintGroupTolerance(const cString& filename); 
   void PrintGroupMTTolerance(const cString& filename); 
