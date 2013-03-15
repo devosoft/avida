@@ -7915,7 +7915,9 @@ void cPopulation::UpdateInflow(const cString& res_name, const double change)
     if (res->GetName() == res_name) {
       resource_count.SetInflow(res_name, resource_count.GetInflow(res_name) + change);
     }
-  } 
+  }
+  assert(resource_count.GetInflow(res_name) >= 0);
+  if (resource_count.GetInflow(res_name) < 0) cout << "WARNING: update to inflow rate results in negative resource inflow!" << endl;
 }
 
 void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per)
