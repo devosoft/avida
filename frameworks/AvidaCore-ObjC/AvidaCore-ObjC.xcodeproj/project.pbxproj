@@ -29,6 +29,10 @@
 		7041AC5216558B98008413DB /* ACGenome+NSPasteboardAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7041AC5016558B98008413DB /* ACGenome+NSPasteboardAdditions.mm */; };
 		7041AC5516558DF1008413DB /* AvidaCore_Core.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC5416558DF1008413DB /* AvidaCore_Core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7041AC5616558DF1008413DB /* AvidaCore_Core.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC5416558DF1008413DB /* AvidaCore_Core.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		706B82A816F38AD4007F19FE /* ACMapView.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82A616F38AD4007F19FE /* ACMapView.h */; };
+		706B82A916F38AD4007F19FE /* ACMapView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 706B82A716F38AD4007F19FE /* ACMapView.mm */; };
+		706B82AC16F38B0C007F19FE /* ACScaleView.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82AA16F38B0C007F19FE /* ACScaleView.h */; };
+		706B82AD16F38B0C007F19FE /* ACScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 706B82AB16F38B0C007F19FE /* ACScaleView.mm */; };
 		709AE9771684F52E00E50275 /* ACWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = 709AE9751684F52E00E50275 /* ACWorkspace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		709AE9781684F52E00E50275 /* ACWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = 709AE9751684F52E00E50275 /* ACWorkspace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		709AE9791684F52E00E50275 /* ACWorkspace.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9761684F52E00E50275 /* ACWorkspace.mm */; };
@@ -77,6 +81,10 @@
 		7041AC5016558B98008413DB /* ACGenome+NSPasteboardAdditions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "ACGenome+NSPasteboardAdditions.mm"; sourceTree = "<group>"; };
 		7041AC5416558DF1008413DB /* AvidaCore_Core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaCore_Core.h; sourceTree = "<group>"; };
 		706544E116E11418009BABAC /* Apto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Apto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		706B82A616F38AD4007F19FE /* ACMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACMapView.h; sourceTree = "<group>"; };
+		706B82A716F38AD4007F19FE /* ACMapView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ACMapView.mm; sourceTree = "<group>"; };
+		706B82AA16F38B0C007F19FE /* ACScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACScaleView.h; sourceTree = "<group>"; };
+		706B82AB16F38B0C007F19FE /* ACScaleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ACScaleView.mm; sourceTree = "<group>"; };
 		709AE9751684F52E00E50275 /* ACWorkspace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACWorkspace.h; sourceTree = "<group>"; };
 		709AE9761684F52E00E50275 /* ACWorkspace.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ACWorkspace.mm; sourceTree = "<group>"; };
 		70DD5B6216DBD32300821457 /* ACProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACProject.h; sourceTree = "<group>"; };
@@ -202,9 +210,13 @@
 			isa = PBXGroup;
 			children = (
 				7041AC4816558ADD008413DB /* AvidaCore.h */,
+				7041AC36165585D0008413DB /* Prefix.pch */,
 				7041AC4F16558B98008413DB /* ACGenome+NSPasteboardAdditions.h */,
 				7041AC5016558B98008413DB /* ACGenome+NSPasteboardAdditions.mm */,
-				7041AC36165585D0008413DB /* Prefix.pch */,
+				706B82A616F38AD4007F19FE /* ACMapView.h */,
+				706B82A716F38AD4007F19FE /* ACMapView.mm */,
+				706B82AA16F38B0C007F19FE /* ACScaleView.h */,
+				706B82AB16F38B0C007F19FE /* ACScaleView.mm */,
 			);
 			name = OSX;
 			path = osx;
@@ -235,6 +247,8 @@
 				709AE9771684F52E00E50275 /* ACWorkspace.h in Headers */,
 				70DD5B6416DBD32300821457 /* ACProject.h in Headers */,
 				70DD5B6916DBDBA000821457 /* ACProject_Private.h in Headers */,
+				706B82A816F38AD4007F19FE /* ACMapView.h in Headers */,
+				706B82AC16F38B0C007F19FE /* ACScaleView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,6 +369,8 @@
 				703023411672909B008C60A2 /* ACFramework.mm in Sources */,
 				709AE9791684F52E00E50275 /* ACWorkspace.mm in Sources */,
 				70DD5B6616DBD32300821457 /* ACProject.mm in Sources */,
+				706B82A916F38AD4007F19FE /* ACMapView.mm in Sources */,
+				706B82AD16F38B0C007F19FE /* ACScaleView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

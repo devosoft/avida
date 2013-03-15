@@ -31,6 +31,9 @@
 #import "ACProject_Private.h"
 
 
+NSString* const AvidaPasteboardTypeProjectItem = @"org.devosoft.avida.projectitem";
+
+
 // ACProjectItem Interface
 // --------------------------------------------------------------------------------------------------------------
 

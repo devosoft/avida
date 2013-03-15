@@ -30,7 +30,7 @@
 
 #include "avida/core/Genome.h"
 
-extern NSString* const AvidaPasteboardTypeGenome;
+extern NSString* const ACPasteboardTypeGenome;
 
 
 @interface ACGenome : NSObject <NSCoding> {

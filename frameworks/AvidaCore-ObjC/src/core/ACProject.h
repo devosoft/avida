@@ -35,6 +35,9 @@
 @class ACProjectItem;
 
 
+extern NSString* const ACPasteboardTypeProjectItem;
+
+
 // ACProject Interface
 // --------------------------------------------------------------------------------------------------------------
 
