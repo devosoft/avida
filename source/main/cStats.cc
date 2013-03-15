@@ -3939,6 +3939,7 @@ void cStats::PrintMimicDisplays(const cString& filename)
   for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) {
     if (*itr >= 0) {
       poss_fts.Resize(poss_fts.GetSize() + 1);
+      poss_fts[poss_fts.GetSize() - 1] = *itr;
     }
   }
   
