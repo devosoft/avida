@@ -3922,6 +3922,53 @@ void cStats::PrintTargets(const cString& filename)
   df->Endl();
 }
 
+void cStats::PrintMimicDisplays(const cString& filename)
+{
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteComment("FTs being displayed by mimics on update boundary (true mimic ft == 1).");
+  df->WriteTimeStamp();
+  
+  df->Write(m_update, "Update");
+  
+  std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+  
+  Apto::Array<int> poss_fts;
+  poss_fts.Resize(0);
+  
+  set <int>::iterator itr;
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) {
+    if (*itr >= 0) {
+      poss_fts.Resize(poss_fts.GetSize() + 1);
+      poss_fts[poss_fts.GetSize() - 1] = *itr;
+    }
+  }
+  
+  Apto::Array<int> displayed_fts;
+  displayed_fts.Resize(poss_fts.GetSize());
+  displayed_fts.SetAll(0);
+  
+  const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_world->GetPopulation().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {
+    cOrganism* org = live_orgs[i];
+    if (org->GetForageTarget() == 1) {
+      int shown_ft = org->GetShowForageTarget();
+      // fts may not be sequentially numbered
+      for (int j = 0; j < displayed_fts.GetSize(); j++) {
+        if (displayed_fts[i] == shown_ft) {
+          displayed_fts[i]++;
+          break;
+        }
+      }
+    }
+  }
+      
+  for (int target = 0; target < poss_fts.GetSize(); target++) {
+    df->Write(poss_fts[target], "Displayed FT");
+    df->Write(displayed_fts[target], "Num Orgs Displaying this FT");
+  }
+  df->Endl();
+}
+
 /*
  Print data regarding the living org targets.
  */
