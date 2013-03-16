@@ -5059,7 +5059,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   if (!ExecuteAttack(ctx, target, reg)) results.success = 3;
   else {
     cString inst = "attack-prey";
-    UpdateGroupAttackStats(inst, results, false);
+    UpdateGroupAttackStats(inst, results, true);
   }
   return TestAttackResultsOut(results);
 }
@@ -5120,9 +5120,9 @@ bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
   if (!TestPreyTarget(target))  { results.success = 1; return TestAttackResultsOut(results); }
   
   double odds = m_world->GetConfig().PRED_ODDS.Get();
-  int pred_count = GetPredSameGroupAttackNeighbors().GetSize();
-  if (pred_count <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (pred_count > 1) odds += (odds * pred_count); // 1 friend = 20%, 8 friends = 90%
+  results.size = GetPredSameGroupAttackNeighbors().GetSize();
+  if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
+  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
   
   sAttackReg reg;
   SetAttackReg(reg);
@@ -5149,9 +5149,9 @@ bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
   Apto::Array<cOrganism*> pack = GetPredGroupAttackNeighbors();
 
   double odds = m_world->GetConfig().PRED_ODDS.Get();
-  int pred_count = pack.GetSize();
-  if (pred_count <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (pred_count > 1) odds += (odds * pred_count); // 1 friend = 20%, 8 friends = 90%
+  results.size = pack.GetSize();
+  if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
+  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
   
   sAttackReg reg;
   SetAttackReg(reg);
@@ -5177,9 +5177,9 @@ bool cHardwareExperimental::Inst_AttackPreyNoShare(cAvidaContext& ctx)
   if (!TestPreyTarget(target))  { results.success = 1; return TestAttackResultsOut(results); }
   
   double odds = m_world->GetConfig().PRED_ODDS.Get();
-  int pred_count = GetPredGroupAttackNeighbors().GetSize();
-  if (pred_count <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (pred_count > 1) odds += (odds * pred_count); // 1 friend = 20%, 8 friends = 90%
+  results.size = GetPredGroupAttackNeighbors().GetSize();
+  if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
+  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
   
   sAttackReg reg;
   SetAttackReg(reg);
@@ -5205,10 +5205,10 @@ bool cHardwareExperimental::Inst_AttackPreyFakeShare(cAvidaContext& ctx)
   if (!TestPreyTarget(target))  { results.success = 1; return TestAttackResultsOut(results); }
   
   double odds = m_world->GetConfig().PRED_ODDS.Get();
-  int pred_count = GetPredGroupAttackNeighbors().GetSize();
-  if (pred_count <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (pred_count > 1) odds += (odds * pred_count); // 1 friend = 20%, 8 friends = 90%
-  double share = 1.0 / (double) pred_count;
+  results.size = GetPredGroupAttackNeighbors().GetSize();
+  if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
+  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
+  double share = 1.0 / (double) results.size;
   
   sAttackReg reg;
   SetAttackReg(reg);
@@ -5236,9 +5236,9 @@ bool cHardwareExperimental::Inst_AttackPreyGroupShare(cAvidaContext& ctx)
   
   double odds = m_world->GetConfig().PRED_ODDS.Get();
   Apto::Array<cOrganism*> pack = GetPredSameGroupAttackNeighbors();
-  int pred_count = pack.GetSize();
-  if (pred_count <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (pred_count > 1) odds += (odds * pred_count); // 1 friend = 20%, 8 friends = 90%
+  results.size = pack.GetSize();
+  if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
+  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
   
   sAttackReg reg;
   SetAttackReg(reg);
@@ -5265,10 +5265,10 @@ bool cHardwareExperimental::Inst_AttackPreyFakeGroupShare(cAvidaContext& ctx)
   if (!TestPreyTarget(target))  { results.success = 1; return TestAttackResultsOut(results); }
   
   double odds = m_world->GetConfig().PRED_ODDS.Get();
-  int pred_count = GetPredSameGroupAttackNeighbors().GetSize();
-  if (pred_count <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (pred_count > 1) odds += (odds * pred_count); // 1 friend = 20%, 8 friends = 90%
-  double share = 1.0 / (double) pred_count;
+  results.size = GetPredSameGroupAttackNeighbors().GetSize();
+  if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
+  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
+  double share = 1.0 / (double) results.size;
   
   sAttackReg reg;
   SetAttackReg(reg);
@@ -5368,7 +5368,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   if (!ExecuteAttack(ctx, target, reg)) results.success = 3; 
   else {
     cString inst = "attack-ft-prey";
-    UpdateGroupAttackStats(inst, results, false);
+    UpdateGroupAttackStats(inst, results, true);
   }
   return TestAttackResultsOut(results);
 }
@@ -6394,8 +6394,7 @@ bool cHardwareExperimental::TestPreyTarget(cOrganism* target)
 {
   // attacking other carnivores is handled differently (e.g. using fights or tolerance)
   bool success = true;
-  if (!target->IsPreyFT()) success = false;
-  else if (target->IsDead()) success = false;
+  if (!target->IsPreyFT() || target->IsDead()) success = false;
   return success;
 }
 
