@@ -1206,6 +1206,8 @@ void cStats::PrintSingleTasksSnapshot(const cString& filename, cAvidaContext& ct
   totals_list.SetAll(0);
   
   const Apto::Array <cOrganism*, Apto::Smart> pop = m_world->GetPopulation().GetLiveOrgList();
+	df->Write(pop.GetSize(),   "PopSize");
+  
   for (int i = 0; i < pop.GetSize(); i++) {
     cOrganism* organism = pop[i];
     
