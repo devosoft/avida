@@ -272,7 +272,6 @@ public:
   }
 };
 
-
 class cActionPrintResWallLocData : public cAction
 {
 private:
@@ -4954,6 +4953,23 @@ public:
   }
 };
 
+class cActionPrintSingleTasksSnapshot : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintSingleTasksSnapshot(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "tasks-snap.dat"; else m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"tasks-snap.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintSingleTasksSnapshot(m_filename, ctx);
+  }
+};
+
 
 //Prints data about the 'offspring' from the birth chamber that were chosen as mates during the current update
 class cActionPrintSuccessfulMates : public cAction
@@ -5083,6 +5099,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintThreadsData>("PrintThreadsData");
   action_lib->Register<cActionPrintTasksData>("PrintTasksData");
+  action_lib->Register<cActionPrintSingleTasksSnapshot>("PrintSingleTasksSnapshot");
   action_lib->Register<cActionPrintHostTasksData>("PrintHostTasksData");
   action_lib->Register<cActionPrintParasiteTasksData>("PrintParasiteTasksData");
   action_lib->Register<cActionPrintTasksExeData>("PrintTasksExeData");
@@ -5124,6 +5141,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   
   action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");
   action_lib->Register<cActionPrintFemaleInstructionData>("PrintFemaleInstructionData");
+  action_lib->Register<cActionPrintSingleTasksSnapshot>("PrintSingleTasksSnapshot");
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
   action_lib->Register<cActionPrintInstructionData>("PrintInstructionData");

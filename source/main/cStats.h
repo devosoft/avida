@@ -824,6 +824,7 @@ public:
   void PrintInterruptData(const cString& filename);
   void PrintTotalsData(const cString& filename);
   void PrintTasksData(const cString& filename);
+  void PrintSingleTasksSnapshot(const cString& filename, cAvidaContext& ctx);
   void PrintHostTasksData(const cString& filename);
   void PrintParasiteTasksData(const cString& filename);
   void PrintTasksExeData(const cString& filename);

@@ -1161,7 +1161,6 @@ void cStats::PrintThreadsData(const cString& filename)
 }
 
 
-
 void cStats::PrintTasksData(const cString& filename)
 {
 	cString file = filename;
@@ -1186,6 +1185,49 @@ void cStats::PrintTasksData(const cString& filename)
 	}
 	df->Endl();
 }
+
+void cStats::PrintSingleTasksSnapshot(const cString& filename, cAvidaContext& ctx)
+{
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  
+  df->WriteComment("Pop potential tasks (test cpu).");
+	df->WriteTimeStamp();
+	df->WriteComment("First set of columnas gives number");
+	df->WriteComment("of organisms that can perform that particular task at least once. Second set of columns gives total number");
+  df->WriteComment("of times that task can be performed.");
+	df->Write(m_update,   "Update");
+  
+  Apto::Array<int> task_list;
+  task_list.Resize(m_world->GetEnvironment().GetNumTasks());
+  task_list.SetAll(0);
+  
+  Apto::Array<int> totals_list;
+  totals_list.Resize(m_world->GetEnvironment().GetNumTasks());
+  totals_list.SetAll(0);
+  
+  const Apto::Array <cOrganism*, Apto::Smart> pop = m_world->GetPopulation().GetLiveOrgList();
+  for (int i = 0; i < pop.GetSize(); i++) {
+    cOrganism* organism = pop[i];
+    
+    // create a test-cpu for the current creature
+    cCPUTestInfo test_info;
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
+    testcpu->TestGenome(ctx, test_info, organism->GetGenome());
+    cPhenotype& test_phenotype = test_info.GetTestPhenotype();
+    
+    for (int j = 0; j < task_list.GetSize(); j++) {
+      task_list[j] += ( test_phenotype.GetLastTaskCount()[j] == 0 ) ? 0 : 1;
+      totals_list[j] += test_phenotype.GetLastTaskCount()[j];
+    }
+    delete testcpu;
+  }
+  for(int j = 0; j < task_list.GetSize(); j++) {
+    df->Write(task_list[j], task_names[j] );
+    Apto::String tot_str(Apto::FormatStr("%s_totals", (const char*)task_names[j]));
+    df->Write(totals_list[j], tot_str);
+  }
+  df->Endl();    
+};
 
 void cStats::PrintHostTasksData(const cString& filename)
 {
