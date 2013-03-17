@@ -1223,6 +1223,8 @@ void cStats::PrintSingleTasksSnapshot(const cString& filename, cAvidaContext& ct
   }
   for(int j = 0; j < task_list.GetSize(); j++) {
     df->Write(task_list[j], task_names[j] );
+  }
+  for(int j = 0; j < task_list.GetSize(); j++) {
     Apto::String tot_str(Apto::FormatStr("%s_totals", (const char*)task_names[j]));
     df->Write(totals_list[j], tot_str);
   }
