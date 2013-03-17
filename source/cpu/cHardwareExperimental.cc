@@ -6714,12 +6714,12 @@ void cHardwareExperimental::UpdateGroupAttackStats(const cString& inst, sAttackR
   assert(idx >= 0);
   
   if (m_organism->IsPredFT()) {
-    m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, fr_pack_size);
-    if (has_opinion) m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, gr_pack_size + 10);
+    m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, fr_pack_size - 1);
+    if (has_opinion) m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, gr_pack_size + 10 - 1);
   }
   else if (m_organism->IsTopPredFT()) {
-    m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, fr_pack_size);
-    if (has_opinion) m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, gr_pack_size + 10);
+    m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, fr_pack_size - 1);
+    if (has_opinion) m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, gr_pack_size + 10 - 1);
   }
 }
 
