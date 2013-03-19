@@ -216,6 +216,8 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("look-ahead-intercept", &cHardwareBCR::Inst_LookAheadIntercept, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
     tInstLibEntry<tMethod>("look-ahead-ex", &cHardwareBCR::Inst_LookAheadEX, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
     tInstLibEntry<tMethod>("look-again-ex", &cHardwareBCR::Inst_LookAgainEX, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("look-ahead-ftx", &cHardwareBCR::Inst_LookAheadFTX, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("look-again-ftx", &cHardwareBCR::Inst_LookAgainFTX, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
     tInstLibEntry<tMethod>("look-around", &cHardwareBCR::Inst_LookAround, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
     tInstLibEntry<tMethod>("look-around-intercept", &cHardwareBCR::Inst_LookAroundIntercept, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
     tInstLibEntry<tMethod>("look-ft", &cHardwareBCR::Inst_LookFT, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
@@ -2551,6 +2553,28 @@ bool cHardwareBCR::Inst_LookAhead(cAvidaContext& ctx)
 
 bool cHardwareBCR::Inst_LookAheadEX(cAvidaContext& ctx)
 {
+  return DoLookAheadEX(ctx);
+}
+
+bool cHardwareBCR::Inst_LookAgainEX(cAvidaContext& ctx)
+{
+  return DoLookAgainEX(ctx);
+}
+
+
+bool cHardwareBCR::Inst_LookAheadFTX(cAvidaContext& ctx)
+{
+  return DoLookAheadEX(ctx, true);
+}
+
+bool cHardwareBCR::Inst_LookAgainFTX(cAvidaContext& ctx)
+{
+  return DoLookAgainEX(ctx, true);
+}
+
+
+bool cHardwareBCR::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
+{
   int cell_id = m_organism->GetOrgInterface().GetCellID();
   int facing = m_organism->GetOrgInterface().GetFacedDir();
   
@@ -2592,7 +2616,7 @@ bool cHardwareBCR::Inst_LookAheadEX(cAvidaContext& ctx)
   cOrgSensor::sLookOut look_results;
   look_results.value = 0;
   
-  look_results = m_sensor.SetLooking(ctx, look_init, facing, cell_id, false);
+  look_results = m_sensor.SetLooking(ctx, look_init, facing, cell_id, use_ft);
   
   // Update Sessions
   m_threads[m_cur_thread].sensor_session.habitat = look_results.habitat;
@@ -2652,7 +2676,7 @@ bool cHardwareBCR::Inst_LookAheadEX(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareBCR::Inst_LookAgainEX(cAvidaContext& ctx)
+bool cHardwareBCR::DoLookAgainEX(cAvidaContext& ctx, bool use_ft)
 {
   int cell_id = m_organism->GetOrgInterface().GetCellID();
   int facing = m_organism->GetOrgInterface().GetFacedDir();
@@ -2689,7 +2713,7 @@ bool cHardwareBCR::Inst_LookAgainEX(cAvidaContext& ctx)
   cOrgSensor::sLookOut look_results;
   look_results.value = 0;
   
-  look_results = m_sensor.SetLooking(ctx, look_init, facing, cell_id, false);
+  look_results = m_sensor.SetLooking(ctx, look_init, facing, cell_id, use_ft);
   
   if (look_results.report_type == 0) {
     setRegister(reg_travel_distance, -1, true);
@@ -2725,6 +2749,7 @@ bool cHardwareBCR::Inst_LookAgainEX(cAvidaContext& ctx)
   
   return true;
 }
+
 
 // Will return relative org facing (rotations to intercept) rather than group info for sighted org
 bool cHardwareBCR::Inst_LookAheadIntercept(cAvidaContext& ctx)

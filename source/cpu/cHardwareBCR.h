@@ -537,6 +537,8 @@ private:
   bool Inst_LookAheadIntercept(cAvidaContext& ctx);
   bool Inst_LookAheadEX(cAvidaContext& ctx);
   bool Inst_LookAgainEX(cAvidaContext& ctx);
+  bool Inst_LookAheadFTX(cAvidaContext& ctx);
+  bool Inst_LookAgainFTX(cAvidaContext& ctx);
   bool Inst_LookAround(cAvidaContext& ctx);
   bool Inst_LookAroundIntercept(cAvidaContext& ctx);
   bool Inst_LookFT(cAvidaContext& ctx);
@@ -590,7 +592,11 @@ private:
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
+
   
+  bool DoLookAheadEX(cAvidaContext& ctx, bool use_ft = false);
+  bool DoLookAgainEX(cAvidaContext& ctx, bool use_ft = false);
+
 };
 
 
