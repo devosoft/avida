@@ -29,7 +29,7 @@
 		7041AC5216558B98008413DB /* ACGenome+OSXAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7041AC5016558B98008413DB /* ACGenome+OSXAdditions.mm */; };
 		7041AC5516558DF1008413DB /* AvidaCore_Core.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC5416558DF1008413DB /* AvidaCore_Core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7041AC5616558DF1008413DB /* AvidaCore_Core.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC5416558DF1008413DB /* AvidaCore_Core.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		706B82A816F38AD4007F19FE /* ACMapView.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82A616F38AD4007F19FE /* ACMapView.h */; };
+		706B82A816F38AD4007F19FE /* ACMapView.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82A616F38AD4007F19FE /* ACMapView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		706B82A916F38AD4007F19FE /* ACMapView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 706B82A716F38AD4007F19FE /* ACMapView.mm */; };
 		706B82AC16F38B0C007F19FE /* ACScaleView.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82AA16F38B0C007F19FE /* ACScaleView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		706B82AD16F38B0C007F19FE /* ACScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 706B82AB16F38B0C007F19FE /* ACScaleView.mm */; };

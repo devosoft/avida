@@ -74,7 +74,7 @@
 		709AE9581684E50800E50275 /* WorkspaceProjectDetailViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9571684E50800E50275 /* WorkspaceProjectDetailViewController.mm */; };
 		709AE95B1684E52B00E50275 /* WorkspaceArchivesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE95A1684E52B00E50275 /* WorkspaceArchivesViewController.m */; };
 		709AE95E1684E56800E50275 /* ConfigEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE95D1684E56800E50275 /* ConfigEditViewController.m */; };
-		709AE9631684E64900E50275 /* PopulationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9621684E64900E50275 /* PopulationViewController.m */; };
+		709AE9631684E64900E50275 /* PopulationViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9621684E64900E50275 /* PopulationViewController.mm */; };
 		709AE9671684E6AB00E50275 /* StatsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9661684E6AB00E50275 /* StatsViewController.m */; };
 		709AE96B1684E6CE00E50275 /* GraphingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE96A1684E6CE00E50275 /* GraphingViewController.m */; };
 		709AE96F1684E6F900E50275 /* OrganismAnalysisViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE96E1684E6F900E50275 /* OrganismAnalysisViewController.m */; };
@@ -239,7 +239,7 @@
 		709AE95C1684E56800E50275 /* ConfigEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigEditViewController.h; sourceTree = "<group>"; };
 		709AE95D1684E56800E50275 /* ConfigEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigEditViewController.m; sourceTree = "<group>"; };
 		709AE9611684E64900E50275 /* PopulationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopulationViewController.h; sourceTree = "<group>"; };
-		709AE9621684E64900E50275 /* PopulationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PopulationViewController.m; sourceTree = "<group>"; };
+		709AE9621684E64900E50275 /* PopulationViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PopulationViewController.mm; sourceTree = "<group>"; };
 		709AE9651684E6AB00E50275 /* StatsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatsViewController.h; sourceTree = "<group>"; };
 		709AE9661684E6AB00E50275 /* StatsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatsViewController.m; sourceTree = "<group>"; };
 		709AE9691684E6CD00E50275 /* GraphingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GraphingViewController.h; sourceTree = "<group>"; };
@@ -575,7 +575,7 @@
 			isa = PBXGroup;
 			children = (
 				709AE9611684E64900E50275 /* PopulationViewController.h */,
-				709AE9621684E64900E50275 /* PopulationViewController.m */,
+				709AE9621684E64900E50275 /* PopulationViewController.mm */,
 			);
 			name = "Population View";
 			sourceTree = "<group>";
@@ -845,7 +845,7 @@
 				709AE9581684E50800E50275 /* WorkspaceProjectDetailViewController.mm in Sources */,
 				709AE95B1684E52B00E50275 /* WorkspaceArchivesViewController.m in Sources */,
 				709AE95E1684E56800E50275 /* ConfigEditViewController.m in Sources */,
-				709AE9631684E64900E50275 /* PopulationViewController.m in Sources */,
+				709AE9631684E64900E50275 /* PopulationViewController.mm in Sources */,
 				709AE9671684E6AB00E50275 /* StatsViewController.m in Sources */,
 				709AE96B1684E6CE00E50275 /* GraphingViewController.m in Sources */,
 				709AE96F1684E6F900E50275 /* OrganismAnalysisViewController.m in Sources */,
