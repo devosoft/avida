@@ -1,8 +1,8 @@
 //
-//  PopulationViewController.m
-//  avida/apps/viewer-macos
+//  ACGenome+OSXAdditions.mm
+//  avida/apps/viewer-macos/frameworks/AvidaCore-ObjC
 //
-//  Created by David M. Bryson on 12/21/12.
+//  Created by David M. Bryson on 11/15/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -27,52 +27,70 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import "PopulationViewController.h"
-
-#import <Apto/Apto.h>
+#import "ACGenome+OSXAdditions.h"
 
 
-// PopulationViewController Private Interface
+@implementation ACGenome (OSXAdditions)
+
+// NSPasteboardReading
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSPasteboardReading
 
-@interface PopulationViewController ()
++ (NSArray*) readableTypesForPasteboard:(NSPasteboard*)pboard {
+  static NSArray* readableTypes = nil;
+  if (!readableTypes) {
+    readableTypes = [[NSArray alloc] initWithObjects:ACPasteboardTypeGenome, nil];
+  }
+  return readableTypes;
+}
 
-@end
++ (NSPasteboardReadingOptions)readingOptionsForType:(NSString *)type pasteboard:(NSPasteboard *)pboard {
+  if ([type isEqualToString:ACPasteboardTypeGenome]) {
+    return NSPasteboardReadingAsKeyedArchive;
+  }
+  return 0;
+}
 
 
-// PopulationViewController Implementation
+
+// NSPasteboardWriting
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSPasteboardWriting
 
-@implementation PopulationViewController
+- (NSArray*) writableTypesForPasteboard:(NSPasteboard*)pboard {
+  static NSArray* writableTypes = nil;
+  if (!writableTypes) {
+    writableTypes = [[NSArray alloc] initWithObjects:ACPasteboardTypeGenome, nil];
+  }
+  return writableTypes;
+}
+
+- (id) pasteboardPropertyListForType:(NSString*)type {
+  if ([type isEqualToString:ACPasteboardTypeGenome]) {
+    return [NSKeyedArchiver archivedDataWithRootObject:self];
+  }
+  return nil;
+}
 
 
-// Initialization
+
+// Pasteboard Utilities
 // --------------------------------------------------------------------------------------------------------------
-#pragma mark - Initialization
+#pragma mark - Pasteboard Utilities
 
-- (PopulationViewController*) init
-{
-  
-  self = [super initWithNibName:@"Avida-Population" bundle:nil];
-  if (self) {
-    // Set the map view alignment so that it is centered when smaller than its scroll view
-    [[mapView enclosingScrollView] setDocumentViewAlignment:NSImageAlignCenter];
++ (ACGenome*) genomeFromPasteboard:(NSPasteboard*)pboard {
+  NSArray* classes = [[NSArray alloc] initWithObjects:[ACGenome class], nil];
+  NSDictionary* options = [NSDictionary dictionary];
+  NSArray* copiedItems = [pboard readObjectsForClasses:classes options:options];
+  if (copiedItems != nil && [copiedItems count] > 0) {
+    return (ACGenome*)[copiedItems objectAtIndex:0];
   }
   
-  return self;
+  return nil;
 }
 
-- (void) loadView
-{
-  [super loadView];
-
++ (void) writeGenome:(ACGenome*)genome toPasteboard:(NSPasteboard*)pboard {
+  [pboard writeObjects:[NSArray arrayWithObject:genome]];
 }
 
-
-// Actions
-// --------------------------------------------------------------------------------------------------------------
-#pragma mark - Actions
-
-
-// --------------------------------------------------------------------------------------------------------------
 @end

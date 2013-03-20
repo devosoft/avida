@@ -1,5 +1,5 @@
 //
-//  ACGenome+NSPasteboardAdditions.m
+//  ACGenome+OSXAdditions.h
 //  avida/apps/viewer-macos/frameworks/AvidaCore-ObjC
 //
 //  Created by David M. Bryson on 11/15/12.
@@ -27,59 +27,34 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import "ACGenome+NSPasteboardAdditions.h"
+#import <AppKit/AppKit.h>
 
-@implementation ACGenome (NSPasteboardAdditions)
-
-+ (NSArray*) readableTypesForPasteboard:(NSPasteboard*)pboard {
-  static NSArray* readableTypes = nil;
-  if (!readableTypes) {
-    readableTypes = [[NSArray alloc] initWithObjects:ACPasteboardTypeGenome, nil];
-  }
-  return readableTypes;
-}
-
-+ (NSPasteboardReadingOptions)readingOptionsForType:(NSString *)type pasteboard:(NSPasteboard *)pboard {
-  if ([type isEqualToString:ACPasteboardTypeGenome]) {
-    return NSPasteboardReadingAsKeyedArchive;
-  }
-  return 0;
-}
+#import <AvidaCore/ACGenome.h>
 
 
+@interface ACGenome (OSXAdditions) <NSPasteboardReading, NSPasteboardWriting>
+
+// NSPasteboardReading
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSPasteboardReading
+
++ (NSArray*) readableTypesForPasteboard:(NSPasteboard*)pboard;
++ (NSPasteboardReadingOptions)readingOptionsForType:(NSString*)type pasteboard:(NSPasteboard*)pboard;
 
 
-- (NSArray*) writableTypesForPasteboard:(NSPasteboard*)pboard {
-  static NSArray* writableTypes = nil;
-  if (!writableTypes) {
-    writableTypes = [[NSArray alloc] initWithObjects:ACPasteboardTypeGenome, nil];
-  }
-  return writableTypes;
-}
+// NSPasteboardWriting
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSPasteboardWriting
 
-- (id) pasteboardPropertyListForType:(NSString*)type {
-  if ([type isEqualToString:ACPasteboardTypeGenome]) {
-    return [NSKeyedArchiver archivedDataWithRootObject:self];
-  }
-  return nil;
-}
+- (NSArray*) writableTypesForPasteboard:(NSPasteboard*)pasteboard;
+- (id) pasteboardPropertyListForType:(NSString*)type;
 
 
+// Pasteboard Utilities
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Pasteboard Utilities
 
-
-+ (ACGenome*) genomeFromPasteboard:(NSPasteboard*)pboard {
-  NSArray* classes = [[NSArray alloc] initWithObjects:[ACGenome class], nil];
-  NSDictionary* options = [NSDictionary dictionary];
-  NSArray* copiedItems = [pboard readObjectsForClasses:classes options:options];
-  if (copiedItems != nil && [copiedItems count] > 0) {
-    return (ACGenome*)[copiedItems objectAtIndex:0];
-  }
-  
-  return nil;
-}
-
-+ (void) writeGenome:(ACGenome*)genome toPasteboard:(NSPasteboard*)pboard {
-  [pboard writeObjects:[NSArray arrayWithObject:genome]];
-}
++ (ACGenome*) genomeFromPasteboard:(NSPasteboard*)pboard;
++ (void) writeGenome:(ACGenome*)genome toPasteboard:(NSPasteboard*)pboard;
 
 @end

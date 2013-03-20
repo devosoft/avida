@@ -1,9 +1,9 @@
 //
-//  PopulationViewController.m
-//  avida/apps/viewer-macos
+//  ACProject+OSXAdditions.h
+//  avida/apps/viewer-macos/frameworks/AvidaCore-OSX
 //
-//  Created by David M. Bryson on 12/21/12.
-//  Copyright 2012 Michigan State University. All rights reserved.
+//  Created by David M. Bryson on 3/19/13.
+//  Copyright 2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,51 +27,32 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import "PopulationViewController.h"
-
+#import <AvidaCore/ACProject.h>
 #import <Apto/Apto.h>
 
+@interface ACProject (OSXAdditions) <AptoSourceListDataSource>
 
-// PopulationViewController Private Interface
+// AptoSourceListDataSource
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - AptoSourceListDataSource
 
-@interface PopulationViewController ()
+- (NSUInteger) sourceList:(AptoSourceList*)sourceList numberOfChildrenOfItem:(id)item;
+- (id) sourceList:(AptoSourceList*)aSourceList child:(NSUInteger)index ofItem:(id)item;
+- (id) sourceList:(AptoSourceList*)aSourceList objectValueForItem:(id)item;
+- (BOOL) sourceList:(AptoSourceList*)aSourceList isItemExpandable:(id)item;
 
-@end
+- (void) sourceList:(AptoSourceList*)aSourceList setObjectValue:(id)object forItem:(id)item;
 
+- (BOOL) sourceList:(AptoSourceList*)aSourceList itemHasBadge:(id)item;
+- (NSInteger) sourceList:(AptoSourceList*)aSourceList badgeValueForItem:(id)item;
 
-// PopulationViewController Implementation
-// --------------------------------------------------------------------------------------------------------------
-
-@implementation PopulationViewController
-
-
-// Initialization
-// --------------------------------------------------------------------------------------------------------------
-#pragma mark - Initialization
-
-- (PopulationViewController*) init
-{
-  
-  self = [super initWithNibName:@"Avida-Population" bundle:nil];
-  if (self) {
-    // Set the map view alignment so that it is centered when smaller than its scroll view
-    [[mapView enclosingScrollView] setDocumentViewAlignment:NSImageAlignCenter];
-  }
-  
-  return self;
-}
-
-- (void) loadView
-{
-  [super loadView];
-
-}
+- (BOOL) sourceList:(AptoSourceList*)aSourceList itemHasIcon:(id)item;
+- (NSImage*) sourceList:(AptoSourceList*)aSourceList iconForItem:(id)item;
 
 
-// Actions
-// --------------------------------------------------------------------------------------------------------------
-#pragma mark - Actions
+- (BOOL) sourceList:(AptoSourceList*)aSourceList writeItems:(NSArray*)items toPasteboard:(NSPasteboard*)pboard;
+- (NSDragOperation) sourceList:(AptoSourceList*)sourceList validateDrop:(id<NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(NSInteger)index;
+- (BOOL) sourceList:(AptoSourceList*)AptoSourceList acceptDrop:(id<NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index;
 
 
 // --------------------------------------------------------------------------------------------------------------

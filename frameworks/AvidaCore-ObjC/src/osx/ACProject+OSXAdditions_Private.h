@@ -1,9 +1,9 @@
 //
-//  ACGenome+NSPasteboardAdditions.h
+//  ACProject_Private.h
 //  avida/apps/viewer-macos/frameworks/AvidaCore-ObjC
 //
-//  Created by David M. Bryson on 11/15/12.
-//  Copyright 2012 Michigan State University. All rights reserved.
+//  Created by David M. Bryson on 2/25/13.
+//  Copyright 2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,24 +27,11 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <AppKit/AppKit.h>
-
-#import <AvidaCore/ACGenome.h>
+#import <AvidaCore/ACProject.h>
 
 
-@interface ACGenome (NSPasteboardAdditions) <NSPasteboardReading, NSPasteboardWriting>
+@interface ACProject (OSXAdditions_Private)
 
-// NSPasteboardReading
-+ (NSArray*) readableTypesForPasteboard:(NSPasteboard*)pboard;
-+ (NSPasteboardReadingOptions)readingOptionsForType:(NSString*)type pasteboard:(NSPasteboard*)pboard;
-
-// NSPasteboardWriting
-- (NSArray*) writableTypesForPasteboard:(NSPasteboard*)pasteboard;
-- (id) pasteboardPropertyListForType:(NSString*)type;
-
-
-// ACGenome utility methods
-+ (ACGenome*) genomeFromPasteboard:(NSPasteboard*)pboard;
-+ (void) writeGenome:(ACGenome*)genome toPasteboard:(NSPasteboard*)pboard;
+- (void) setupWithFreezer:(Avida::Viewer::FreezerPtr)freezer;
 
 @end

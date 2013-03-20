@@ -28,13 +28,14 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <AvidaCore/AvidaCore.h>
 
 
 // PopulationViewController Interface
 // --------------------------------------------------------------------------------------------------------------
 
 @interface PopulationViewController : NSViewController {
-  
+  IBOutlet ACMapView* mapView;
 }
 
 

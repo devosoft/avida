@@ -1,9 +1,9 @@
 //
-//  PopulationViewController.m
-//  avida/apps/viewer-macos
+//  ACProjectItem.h
+//  avida/apps/viewer-macos/frameworks/AvidaCore-OSX
 //
-//  Created by David M. Bryson on 12/21/12.
-//  Copyright 2012 Michigan State University. All rights reserved.
+//  Created by David M. Bryson on 3/20/13.
+//  Copyright 2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,52 +27,75 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import "PopulationViewController.h"
+#import <AvidaCore/ACProject.h>
+#import <Cocoa/Cocoa.h>
 
-#import <Apto/Apto.h>
+
+extern NSString* const ACPasteboardTypeProjectItem;
 
 
-// PopulationViewController Private Interface
+// ACProjectItem Interface
 // --------------------------------------------------------------------------------------------------------------
 
-@interface PopulationViewController ()
+@interface ACProjectItem : NSObject <NSPasteboardReading, NSPasteboardWriting> {
+  NSString* title;
+  Avida::Viewer::FreezerID freezer_id;
+  
+  NSInteger badgeValue;
+  NSImage* icon;
+  
+  NSArray* children;
+}
 
-@end
+@property (nonatomic, copy) NSString* title;
+@property (nonatomic, assign) Avida::Viewer::FreezerID freezer_id;
+@property NSInteger badgeValue;
+@property (nonatomic, retain) NSImage* icon;
+@property (nonatomic, copy) NSArray* children;
 
-
-// PopulationViewController Implementation
-// --------------------------------------------------------------------------------------------------------------
-
-@implementation PopulationViewController
+- (BOOL) hasBadge;
+- (BOOL) hasChildren;
+- (BOOL) hasIcon;
 
 
 // Initialization
 // --------------------------------------------------------------------------------------------------------------
 #pragma mark - Initialization
 
-- (PopulationViewController*) init
-{
-  
-  self = [super initWithNibName:@"Avida-Population" bundle:nil];
-  if (self) {
-    // Set the map view alignment so that it is centered when smaller than its scroll view
-    [[mapView enclosingScrollView] setDocumentViewAlignment:NSImageAlignCenter];
-  }
-  
-  return self;
-}
+- (ACProjectItem*) init;
 
-- (void) loadView
-{
-  [super loadView];
-
-}
++ (ACProjectItem*) itemWithTitle:(NSString*)itemTitle;
++ (ACProjectItem*) itemWithTitle:(NSString*)itemTitle icon:(NSImage*)itemIcon;
++ (ACProjectItem*) itemWithFreezerID:(Avida::Viewer::FreezerID)fid title:(NSString*)itemTitle;
++ (ACProjectItem*) itemWithFreezerID:(Avida::Viewer::FreezerID)fid title:(NSString*)itemTitle icon:(NSImage*)itemIcon;
 
 
-// Actions
+// NSPasteboardReading
 // --------------------------------------------------------------------------------------------------------------
-#pragma mark - Actions
+#pragma mark - NSPasteboardReading
+
++ (NSArray*) readableTypesForPasteboard:(NSPasteboard*)pboard;
++ (NSPasteboardReadingOptions)readingOptionsForType:(NSString*)type pasteboard:(NSPasteboard*)pboard;
+
+
+// NSPasteboardWriting
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSPasteboardWriting
+
+- (NSArray*) writableTypesForPasteboard:(NSPasteboard*)pasteboard;
+- (id) pasteboardPropertyListForType:(NSString*)type;
+
+
+// Pasteboard Utilities
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Pasteboard Utilities
+
++ (ACProjectItem*) projectItemFromPasteboard:(NSPasteboard*)pboard;
++ (void) writeProjectItem:(ACProjectItem*)item toPasteboard:(NSPasteboard*)pboard;
 
 
 // --------------------------------------------------------------------------------------------------------------
-@end
+@end;
+
+
+

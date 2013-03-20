@@ -31,269 +31,29 @@
 #import "ACProject_Private.h"
 
 
-NSString* const AvidaPasteboardTypeProjectItem = @"org.devosoft.avida.projectitem";
-
-
-// ACProjectItem Interface
-// --------------------------------------------------------------------------------------------------------------
-
-@interface ACProjectItem : NSObject {
-  NSString* title;
-  Avida::Viewer::FreezerID freezer_id;
-  
-  NSInteger badgeValue;
-  NSImage* icon;
-  
-  NSArray* children;
-}
-
-- (ACProjectItem*) init;
-
-+ (ACProjectItem*) itemWithTitle:(NSString*)itemTitle;
-+ (ACProjectItem*) itemWithTitle:(NSString*)itemTitle icon:(NSImage*)itemIcon;
-+ (ACProjectItem*) itemWithFreezerID:(Avida::Viewer::FreezerID)fid title:(NSString*)itemTitle;
-+ (ACProjectItem*) itemWithFreezerID:(Avida::Viewer::FreezerID)fid title:(NSString*)itemTitle icon:(NSImage*)itemIcon;
-
-
-@property (nonatomic, copy) NSString* title;
-@property (nonatomic, assign) Avida::Viewer::FreezerID freezer_id;
-@property NSInteger badgeValue;
-@property (nonatomic, retain) NSImage* icon;
-@property (nonatomic, copy) NSArray* children;
-
-- (BOOL) hasBadge;
-- (BOOL) hasChildren;
-- (BOOL) hasIcon;
-
-// --------------------------------------------------------------------------------------------------------------
-@end;
-
-
-// ACProjectItem Implementation
-// --------------------------------------------------------------------------------------------------------------
-
-@implementation ACProjectItem
-
-@synthesize title;
-@synthesize freezer_id;
-@synthesize badgeValue;
-@synthesize icon;
-@synthesize children;
-
-
-// ACProjectItem Initialization
-// --------------------------------------------------------------------------------------------------------------
-#pragma mark - ACProjectItem Initialization
-
-- (ACProjectItem*) init
-{
-  self = [super init];
-  
-  if (self) {
-    badgeValue = -1;
-  }
-  
-  return self;
-}
-
-
-+ (ACProjectItem*) itemWithTitle:(NSString*)itemTitle
-{
-  return [ACProjectItem itemWithTitle:itemTitle icon:nil];
-}
-
-
-+ (ACProjectItem*) itemWithTitle:(NSString*)itemTitle icon:(NSImage*)itemIcon
-{
-  ACProjectItem* item = [[ACProjectItem alloc] init];
-  
-  if (item) {
-    item.title = itemTitle;
-    item.icon = itemIcon;
-  }
-  
-  return item;
-}
-
-
-+ (ACProjectItem*) itemWithFreezerID:(Avida::Viewer::FreezerID)fid title:(NSString*)itemTitle
-{
-  return [ACProjectItem itemWithFreezerID:fid title:itemTitle icon:nil];
-}
-
-
-+ (ACProjectItem*) itemWithFreezerID:(Avida::Viewer::FreezerID)fid title:(NSString*)itemTitle icon:(NSImage*)itemIcon
-{
-  ACProjectItem* item = [[ACProjectItem alloc] init];
-  
-  if (item) {
-    item.title = itemTitle;
-    item.freezer_id = fid;
-    item.icon = itemIcon;
-  }
-  
-  return item;
-}
-
-
-
-// ACProjectItem Accessors
-// --------------------------------------------------------------------------------------------------------------
-#pragma mark - ACProjectItem Accessors
-
-- (BOOL) hasBadge
-{
-  return (badgeValue != -1);
-}
-
-
-- (BOOL) hasChildren
-{
-  return [children count] > 0;
-}
-
-
-- (BOOL) hasIcon
-{
-  return (icon != nil);
-}
-
-
-// --------------------------------------------------------------------------------------------------------------
-@end
-
-
 // ACProject Implementation
 // --------------------------------------------------------------------------------------------------------------
 
 @implementation ACProject
-
-
-// Initialization
-// --------------------------------------------------------------------------------------------------------------
-#pragma mark - Initialization
 
 + (ACProject*) projectWithFreezer:(Avida::Viewer::FreezerPtr)new_freezer
 {
   ACProject* project = [[ACProject alloc] init];
   
   if (project) {
-    project->freezer = new_freezer;
+    SEL setupSel = @selector(setupWithFreezer:);
+    assert([project respondsToSelector:setupSel]);
     
-    project->configItem = [ACProjectItem itemWithTitle:@"Configurations"];
-    project->worldItem = [ACProjectItem itemWithTitle:@"Saved Worlds"];
-    project->genomeItem = [ACProjectItem itemWithTitle:@"Genomes"];
-    
-    const Avida::Viewer::FreezerObjectType object_types[] = { Avida::Viewer::CONFIG, Avida::Viewer::WORLD, Avida::Viewer::GENOME };
-    NSArray* itemGroups = @[project->configItem, project->worldItem, project->genomeItem];
-    
-    for (NSUInteger idx = 0; idx < [itemGroups count]; idx++) {
-      Avida::Viewer::FreezerObjectType entry_type = object_types[idx];
-      NSMutableArray* items = [NSMutableArray arrayWithCapacity:new_freezer->NumEntriesOfType(entry_type)];
-      for (Avida::Viewer::Freezer::Iterator it = new_freezer->EntriesOfType(entry_type); it.Next();) {
-        Avida::Viewer::FreezerID fid = *it.Get();
-        NSString* itemName = [NSString stringWithAptoString:new_freezer->NameOf(fid)];
-        ACProjectItem* item = [ACProjectItem itemWithFreezerID:fid title:itemName];
-        [items addObject:item];
-      }
-      [[itemGroups objectAtIndex:idx] setChildren:items];
-    }
-    
-    project->sourceListItems = itemGroups;
+    NSMethodSignature* msig = [project methodSignatureForSelector:setupSel];
+    NSInvocation* setupInvocation = [NSInvocation invocationWithMethodSignature:msig];
+    [setupInvocation setSelector:setupSel];
+    [setupInvocation setTarget:project];
+    [setupInvocation setArgument:&new_freezer atIndex:0];
+    [setupInvocation invoke];
   }
   
   return project;
 }
-
-
-
-// AptoSourceListDataSource
-// --------------------------------------------------------------------------------------------------------------
-#pragma mark - AptoSourceListDataSource
-
-- (NSUInteger) sourceList:(AptoSourceList*)sourceList numberOfChildrenOfItem:(id)item
-{
-  if (item == nil) {
-    return [sourceListItems count];
-  }
-  
-  return [[item children] count];
-}
-
-
-- (id) sourceList:(AptoSourceList*)aSourceList child:(NSUInteger)index ofItem:(id)item
-{
-  if (item == nil) {
-    return [sourceListItems objectAtIndex:index];
-  }
-  
-  return [[item children] objectAtIndex:index];
-}
-
-
-- (id) sourceList:(AptoSourceList*)aSourceList objectValueForItem:(id)item
-{
-  return [item title];
-}
-
-
-- (BOOL) sourceList:(AptoSourceList*)aSourceList isItemExpandable:(id)item
-{
-  return [item hasChildren];
-}
-
-
-- (void) sourceList:(AptoSourceList*)aSourceList setObjectValue:(id)object forItem:(id)item
-{
-  [item setTitle:object];
-}
-
-
-- (BOOL) sourceList:(AptoSourceList*)aSourceList itemHasBadge:(id)item
-{
-  return [item hasBadge];
-}
-
-
-- (NSInteger) sourceList:(AptoSourceList*)aSourceList badgeValueForItem:(id)item
-{
-  return [item badgeValue];
-}
-
-
-- (BOOL) sourceList:(AptoSourceList*)aSourceList itemHasIcon:(id)item
-{
-  return [item hasIcon];
-}
-
-
-- (NSImage*) sourceList:(AptoSourceList*)aSourceList iconForItem:(id)item
-{
-  return [item icon];
-}
-
-
-// AptoSourceList Drag and Drop
-// --------------------------------------------------------------------------------------------------------------
-#pragma mark - AptoSourceList Drag and Drop
-
-- (BOOL) sourceList:(AptoSourceList*)aSourceList writeItems:(NSArray*)items toPasteboard:(NSPasteboard*)pboard
-{
-  return NO;
-}
-
-
-- (NSDragOperation) sourceList:(AptoSourceList*)sourceList validateDrop:(id<NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(NSInteger)index
-{
-  return NSDragOperationNone;
-}
-
-
-- (BOOL) sourceList:(AptoSourceList*)AptoSourceList acceptDrop:(id<NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index
-{
-  return NO;
-}
-
 
 // --------------------------------------------------------------------------------------------------------------
 @end

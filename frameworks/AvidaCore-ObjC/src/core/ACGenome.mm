@@ -32,7 +32,7 @@
 #import "ACFramework.h"
 
 
-NSString* const AvidaPasteboardTypeGenome = @"org.devosoft.avida.genome";
+NSString* const ACPasteboardTypeGenome = @"org.devosoft.avida.genome";
 
 
 @implementation ACGenome

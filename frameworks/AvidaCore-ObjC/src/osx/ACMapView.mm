@@ -29,7 +29,9 @@
 
 #import "ACMapView.h"
 
-#import "ACGenome+NSPasteboardAdditions.h"
+#import <AvidaCore/ACProjectItem.h>
+
+#import "ACGenome+OSXAdditions.h"
 
 #include "avida/viewer/Map.h"
 

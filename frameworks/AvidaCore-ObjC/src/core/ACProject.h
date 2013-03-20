@@ -28,20 +28,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <Apto/Apto.h>
 
 #include "avida/viewer/Freezer.h"
 
 @class ACProjectItem;
 
 
-extern NSString* const ACPasteboardTypeProjectItem;
-
-
 // ACProject Interface
 // --------------------------------------------------------------------------------------------------------------
 
-@interface ACProject : NSObject <AptoSourceListDataSource> {
+@interface ACProject : NSObject {
   Avida::Viewer::FreezerPtr freezer;
   
   NSArray* sourceListItems;
@@ -49,30 +45,6 @@ extern NSString* const ACPasteboardTypeProjectItem;
   ACProjectItem* worldItem;
   ACProjectItem* genomeItem;
 }
-
-
-// AptoSourceListDataSource
-// --------------------------------------------------------------------------------------------------------------
-#pragma mark - AptoSourceListDataSource
-
-- (NSUInteger) sourceList:(AptoSourceList*)sourceList numberOfChildrenOfItem:(id)item;
-- (id) sourceList:(AptoSourceList*)aSourceList child:(NSUInteger)index ofItem:(id)item;
-- (id) sourceList:(AptoSourceList*)aSourceList objectValueForItem:(id)item;
-- (BOOL) sourceList:(AptoSourceList*)aSourceList isItemExpandable:(id)item;
-
-- (void) sourceList:(AptoSourceList*)aSourceList setObjectValue:(id)object forItem:(id)item;
-
-- (BOOL) sourceList:(AptoSourceList*)aSourceList itemHasBadge:(id)item;
-- (NSInteger) sourceList:(AptoSourceList*)aSourceList badgeValueForItem:(id)item;
-
-- (BOOL) sourceList:(AptoSourceList*)aSourceList itemHasIcon:(id)item;
-- (NSImage*) sourceList:(AptoSourceList*)aSourceList iconForItem:(id)item;
-
-
-- (BOOL) sourceList:(AptoSourceList*)aSourceList writeItems:(NSArray*)items toPasteboard:(NSPasteboard*)pboard;
-- (NSDragOperation) sourceList:(AptoSourceList*)sourceList validateDrop:(id<NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(NSInteger)index;
-- (BOOL) sourceList:(AptoSourceList*)AptoSourceList acceptDrop:(id<NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index;
-
 
 // --------------------------------------------------------------------------------------------------------------
 @end
