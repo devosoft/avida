@@ -31,14 +31,15 @@
 		7041AC5616558DF1008413DB /* AvidaCore_Core.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC5416558DF1008413DB /* AvidaCore_Core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		706B82A816F38AD4007F19FE /* ACMapView.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82A616F38AD4007F19FE /* ACMapView.h */; };
 		706B82A916F38AD4007F19FE /* ACMapView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 706B82A716F38AD4007F19FE /* ACMapView.mm */; };
-		706B82AC16F38B0C007F19FE /* ACScaleView.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82AA16F38B0C007F19FE /* ACScaleView.h */; };
+		706B82AC16F38B0C007F19FE /* ACScaleView.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82AA16F38B0C007F19FE /* ACScaleView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		706B82AD16F38B0C007F19FE /* ACScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 706B82AB16F38B0C007F19FE /* ACScaleView.mm */; };
 		706B82C016F93CB1007F19FE /* ACProject+OSXAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82BE16F93CB0007F19FE /* ACProject+OSXAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		706B82C116F93CB1007F19FE /* ACProject+OSXAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 706B82BF16F93CB1007F19FE /* ACProject+OSXAdditions.mm */; };
 		706B82C316F93F27007F19FE /* ACProject+OSXAdditions_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82C216F93F27007F19FE /* ACProject+OSXAdditions_Private.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		706B82C616FA216D007F19FE /* ACProjectItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82C416FA216D007F19FE /* ACProjectItem.h */; };
+		706B82C616FA216D007F19FE /* ACProjectItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82C416FA216D007F19FE /* ACProjectItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		706B82C716FA216D007F19FE /* ACProjectItem.mm in Sources */ = {isa = PBXBuildFile; fileRef = 706B82C516FA216D007F19FE /* ACProjectItem.mm */; };
-		706B82CA16FA2376007F19FE /* ACProject_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82C916FA2376007F19FE /* ACProject_Private.h */; };
+		706B82CA16FA2376007F19FE /* ACProject_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82C916FA2376007F19FE /* ACProject_Private.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		706B82CB16FA2D12007F19FE /* ACProject_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 706B82C916FA2376007F19FE /* ACProject_Private.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		709AE9771684F52E00E50275 /* ACWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = 709AE9751684F52E00E50275 /* ACWorkspace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		709AE9781684F52E00E50275 /* ACWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = 709AE9751684F52E00E50275 /* ACWorkspace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		709AE9791684F52E00E50275 /* ACWorkspace.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9761684F52E00E50275 /* ACWorkspace.mm */; };
@@ -279,6 +280,7 @@
 				703023401672909B008C60A2 /* ACFramework.h in Headers */,
 				709AE9781684F52E00E50275 /* ACWorkspace.h in Headers */,
 				70DD5B6516DBD32300821457 /* ACProject.h in Headers */,
+				706B82CB16FA2D12007F19FE /* ACProject_Private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
