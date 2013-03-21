@@ -1186,15 +1186,15 @@ void cStats::PrintTasksData(const cString& filename)
 	df->Endl();
 }
 
-void cStats::PrintSingleTasksSnapshot(const cString& filename, cAvidaContext& ctx)
+void cStats::PrintSoloTaskSnapshot(const cString& filename, cAvidaContext& ctx)
 {
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   
   df->WriteComment("Pop potential tasks (test cpu).");
 	df->WriteTimeStamp();
-	df->WriteComment("First set of columnas gives number");
-	df->WriteComment("of organisms that can perform that particular task at least once. Second set of columns gives total number");
-  df->WriteComment("of times that task can be performed.");
+	df->WriteComment("First set of columns gives number of organisms that can perform that particular task at least once. ");
+	df->WriteComment("Second set of columns gives total number of times that task can be performed. ");
+  df->WriteComment("Orgs are tested for each resource in the environment with res level of 1 for the current test resource and levels of 0 for other resources.");
 	df->Write(m_update,   "Update");
   
   Apto::Array<int> task_list;
@@ -1211,17 +1211,23 @@ void cStats::PrintSingleTasksSnapshot(const cString& filename, cAvidaContext& ct
   for (int i = 0; i < pop.GetSize(); i++) {
     cOrganism* organism = pop[i];
     
-    // create a test-cpu for the current creature
-    cCPUTestInfo test_info;
-    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-    testcpu->TestGenome(ctx, test_info, organism->GetGenome());
-    cPhenotype& test_phenotype = test_info.GetTestPhenotype();
-    
-    for (int j = 0; j < task_list.GetSize(); j++) {
-      task_list[j] += ( test_phenotype.GetLastTaskCount()[j] == 0 ) ? 0 : 1;
-      totals_list[j] += test_phenotype.GetLastTaskCount()[j];
+    // create a test-cpu for the current creature and then test the creature using res level of 1 for each resource in the environment file
+    const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+    for (int k = 0; k < resLib.GetSize(); k++) {
+      cCPUTestInfo test_info;
+      cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
+      testcpu->SetSoloRes(k, 1.0);
+      testcpu->TestGenome(ctx, test_info, organism->GetGenome());
+      cPhenotype& test_phenotype = test_info.GetTestPhenotype();
+      
+      for (int j = 0; j < task_list.GetSize(); j++) {
+        // inc once if the task was ever performed
+        task_list[j] += ( test_phenotype.GetLastTaskCount()[j] == 0 ) ? 0 : 1;
+        // for totals, inc by actual number of times the task was performed
+        totals_list[j] += test_phenotype.GetLastTaskCount()[j];
+      }
+      delete testcpu;
     }
-    delete testcpu;
   }
   for(int j = 0; j < task_list.GetSize(); j++) {
     df->Write(task_list[j], task_names[j] );

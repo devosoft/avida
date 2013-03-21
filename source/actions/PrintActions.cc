@@ -4953,12 +4953,12 @@ public:
   }
 };
 
-class cActionPrintSingleTasksSnapshot : public cAction
+class cActionPrintSoloTaskSnapshot : public cAction
 {
 private:
   cString m_filename;
 public:
-  cActionPrintSingleTasksSnapshot(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  cActionPrintSoloTaskSnapshot(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
     if (largs == "") m_filename = "tasks-snap.dat"; else m_filename = largs.PopWord();
@@ -4966,7 +4966,7 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname=\"tasks-snap.dat\"]"; }
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetStats().PrintSingleTasksSnapshot(m_filename, ctx);
+    m_world->GetStats().PrintSoloTaskSnapshot(m_filename, ctx);
   }
 };
 
@@ -5099,7 +5099,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintThreadsData>("PrintThreadsData");
   action_lib->Register<cActionPrintTasksData>("PrintTasksData");
-  action_lib->Register<cActionPrintSingleTasksSnapshot>("PrintSingleTasksSnapshot");
+  action_lib->Register<cActionPrintSoloTaskSnapshot>("PrintSoloTaskSnapshot");
   action_lib->Register<cActionPrintHostTasksData>("PrintHostTasksData");
   action_lib->Register<cActionPrintParasiteTasksData>("PrintParasiteTasksData");
   action_lib->Register<cActionPrintTasksExeData>("PrintTasksExeData");
@@ -5141,7 +5141,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   
   action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");
   action_lib->Register<cActionPrintFemaleInstructionData>("PrintFemaleInstructionData");
-  action_lib->Register<cActionPrintSingleTasksSnapshot>("PrintSingleTasksSnapshot");
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
   action_lib->Register<cActionPrintInstructionData>("PrintInstructionData");
