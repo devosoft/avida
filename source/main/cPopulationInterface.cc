@@ -1590,6 +1590,11 @@ void cPopulationInterface::AttackFacedOrg(cAvidaContext& ctx, int loser)
   m_world->GetPopulation().AttackFacedOrg(ctx, loser);
 }
 
+void cPopulationInterface::TryWriteBirthLocData(int org_idx)
+{
+  if (m_world->GetConfig().TRACK_BIRTH_LOCS.Get()) m_world->GetStats().PrintBirthLocData(org_idx);
+}
+
 void cPopulationInterface::InjectPreyClone(cAvidaContext& ctx)
 {
   cOrganism* org_to_clone = NULL;

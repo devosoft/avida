@@ -8057,12 +8057,12 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
   
 }
 
-
 // Adds an organism to live org list  
 void  cPopulation::AddLiveOrg(cOrganism* org)
 {
   live_org_list.Push(org);
   org->SetOrgIndex(live_org_list.GetSize()-1);
+  org->GetOrgInterface().TryWriteBirthLocData(org->GetOrgIndex());
 }
 
 // Remove an organism from live org list  
@@ -8074,7 +8074,6 @@ void  cPopulation::RemoveLiveOrg(cOrganism* org)
   live_org_list.Swap(org->GetOrgIndex(), last);
   live_org_list.Pop();
 }
-
 
 // Adds an organism to a group
 void  cPopulation::JoinGroup(cOrganism* org, int group_id)

@@ -815,6 +815,7 @@ public:
   void PrintGroupAttackBits(unsigned char raw_bits);
   void PrintGroupAttackString(cString& raw_bits);
   void PrintKilledPreyFTData(const cString& filename);
+  void PrintBirthLocData(int org_idx);
   void PrintLookData(cString& string);
   void PrintLookDataOutput(cString& string);
 

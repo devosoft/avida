@@ -2373,6 +2373,39 @@ void cStats::PrintKilledPreyFTData(const cString& filename)
   df->Endl();
 }
 
+void cStats::PrintBirthLocData(int org_idx)
+{
+  cString file = "birthlocs";
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
+  
+  if (!df->HeaderDone()) {
+    df->WriteComment("Org Birth Locations");
+    df->WriteTimeStamp();
+    
+    df->WriteComment("Update");
+    df->WriteComment("OrgID");
+    df->WriteComment("ParentFT");
+    df->WriteComment("BirthCellX");
+    df->WriteComment("BirthCellY");
+    df->FlushComments();
+    df->Endl();
+  }
+  
+  bool use_av = m_world->GetConfig().USE_AVATARS.Get();
+  cOrganism* org = m_world->GetPopulation().GetLiveOrgList()[org_idx];
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+
+  int loc = org->GetCellID();
+  if (use_av) loc = org->GetOrgInterface().GetAVCellID();
+  const int locx = loc % worldx;
+  const int locy = loc / worldx;
+  const int ft = org->GetParentFT();
+  
+  std::ofstream& fp = df->OFStream();
+  fp << GetUpdate() << "," << org->GetID() << "," << locx << "," << locy << "," << ft;
+  fp << endl;
+}
+
 void cStats::PrintLookData(cString& string)
 {
   cString file = "looksettings";
