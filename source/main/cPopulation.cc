@@ -753,6 +753,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
         int avatar_target_cell = PlaceAvatar(parent_organism);
         if (avatar_target_cell != -1) {
           offspring_array[i]->GetPhenotype().SetAVBirthCellID(avatar_target_cell);
+          offspring_array[i]->GetOrgInterface().TryWriteBirthLocData(offspring_array[i]->GetOrgIndex());
           if (offspring_array[i] != parent_organism) {
             offspring_array[i]->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
           }
@@ -1189,6 +1190,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     }
     
     in_organism->GetPhenotype().SetBirthCellID(target_cell.GetID());
+    in_organism->GetOrgInterface().TryWriteBirthLocData(in_organism->GetOrgIndex());
     in_organism->GetPhenotype().SetBirthGroupID(op);
     in_organism->GetPhenotype().SetBirthForagerType(in_organism->GetForageTarget());
     Systematics::GenotypePtr genotype;
@@ -6497,6 +6499,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           new_organism->SetParentFT(forager_type);
           if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
           org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
+          new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
         }
         else org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
         
@@ -6515,6 +6518,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);        
         new_organism->GetPhenotype().SetBirthCellID(cell_id);
         org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
+        new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
       }
       
       if (org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
@@ -6523,6 +6527,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         if (avatar_cell != -1) {
           new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
           new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
+          new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
         }
       }
     }
@@ -6634,6 +6639,7 @@ void cPopulation::Inject(const Genome& genome, Systematics::Source src, cAvidaCo
     cell_array[cell_id].GetOrganism()->SetForageTarget(ctx, forager_type);
     
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthCellID(cell_id);
+    cell_array[cell_id].GetOrganism()->GetOrgInterface().TryWriteBirthLocData(cell_array[cell_id].GetOrganism()->GetOrgIndex());
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthGroupID(group_id);
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthForagerType(forager_type);
   }
@@ -6920,6 +6926,7 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org, Systematics::Sou
     int avatar_target_cell = PlaceAvatar(&orig_org);
     if (avatar_target_cell != -1) {
       new_organism->GetPhenotype().SetAVBirthCellID(avatar_target_cell);
+      new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
       new_organism->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
       if (m_world->GetConfig().AVATAR_BIRTH_FACING.Get() == 1) {
         const int rots = m_world->GetRandom().GetUInt(0,8);
@@ -8062,7 +8069,6 @@ void  cPopulation::AddLiveOrg(cOrganism* org)
 {
   live_org_list.Push(org);
   org->SetOrgIndex(live_org_list.GetSize()-1);
-  org->GetOrgInterface().TryWriteBirthLocData(org->GetOrgIndex());
 }
 
 // Remove an organism from live org list  

@@ -2402,7 +2402,7 @@ void cStats::PrintBirthLocData(int org_idx)
   const int ft = org->GetParentFT();
   
   std::ofstream& fp = df->OFStream();
-  fp << GetUpdate() << "," << org->GetID() << "," << locx << "," << locy << "," << ft;
+  fp << GetUpdate() << "," << org->GetID() << "," << ft << "," << locx << "," << locy;
   fp << endl;
 }
 
