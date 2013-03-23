@@ -1190,7 +1190,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     }
     
     in_organism->GetPhenotype().SetBirthCellID(target_cell.GetID());
-    in_organism->GetOrgInterface().TryWriteBirthLocData(in_organism->GetOrgIndex());
+//    in_organism->GetOrgInterface().TryWriteBirthLocData(in_organism->GetOrgIndex());
     in_organism->GetPhenotype().SetBirthGroupID(op);
     in_organism->GetPhenotype().SetBirthForagerType(in_organism->GetForageTarget());
     Systematics::GenotypePtr genotype;

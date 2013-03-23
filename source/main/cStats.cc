@@ -2379,14 +2379,7 @@ void cStats::PrintBirthLocData(int org_idx)
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
   
   if (!df->HeaderDone()) {
-    df->WriteComment("Org Birth Locations");
-    df->WriteTimeStamp();
-    
-    df->WriteComment("Update");
-    df->WriteComment("OrgID");
-    df->WriteComment("ParentFT");
-    df->WriteComment("BirthCellX");
-    df->WriteComment("BirthCellY");
+    df->WriteComment("Update,OrgID,ParentFT,BirthCellX,BirthCellY");
     df->FlushComments();
     df->Endl();
   }
