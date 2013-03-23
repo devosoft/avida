@@ -6256,8 +6256,7 @@ public:
   inline bool operator>=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
 };
 
-bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, 
-                                 bool load_birth_cells, bool load_avatars, bool load_rebirth) 
+bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, bool load_birth_cells, bool load_avatars, bool load_rebirth, bool load_parent_dat)
 {
   // @TODO - build in support for verifying population dimensions
   
@@ -6365,6 +6364,23 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         while (avatarstr.GetSize()) tmp.avatar_cells.Push(avatarstr.Pop(',').AsInt());
         assert(tmp.avatar_cells.GetSize() == 0 || tmp.avatar_cells.GetSize() == tmp.num_cpus);
       }
+    if (load_parent_dat) {
+      if (tmp.props->Has("parent_is_teach")) {
+        cString teachstr(tmp.props->Get("parent_is_teach"));
+        while (teachstr.GetSize()) tmp.parent_teacher.Push((bool)(teachstr.Pop(',').AsInt()));
+        assert(tmp.parent_teacher.GetSize() == 0 || tmp.parent_teacher.GetSize() == tmp.num_cpus);
+      }
+      if (tmp.props->Has("parent_ft")) {
+        cString parentftstr(tmp.props->Get("parent_ft"));
+        while (parentftstr.GetSize()) tmp.parent_ft.Push(parentftstr.Pop(',').AsInt());
+        assert(tmp.parent_ft.GetSize() == 0 || tmp.parent_ft.GetSize() == tmp.num_cpus);
+      }
+      if (tmp.props->Has("parent_merit")) {
+        cString meritstr(tmp.props->Get("parent_merit"));
+        while (meritstr.GetSize()) tmp.parent_merit.Push(meritstr.Pop(',').AsDouble());
+        assert(tmp.parent_merit.GetSize() == 0 || tmp.parent_merit.GetSize() == tmp.num_cpus);      
+      }
+    }
     }
   }
   
@@ -6444,7 +6460,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         // Set the phenotype merit from the save file
         assert(tmp.props->Has("merit"));
         double merit = Apto::StrAs(tmp.props->Get("merit"));
-        if (load_rebirth && m_world->GetConfig().INHERIT_MERIT.Get() && tmp.props->Has("parent_merit")) { 
+        if ((load_rebirth || load_parent_dat) && m_world->GetConfig().INHERIT_MERIT.Get() && tmp.props->Has("parent_merit")) {
           merit = tmp.parent_merit[cell_i]; 
         }
         
@@ -6454,7 +6470,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           phenotype.SetMerit(cMerit(new_organism->GetTestMerit(ctx)));
         }
         
-        if (tmp.offsets.GetSize() > cell_i) {
+        if (tmp.offsets.GetSize() > cell_i && !load_rebirth) {
           // Adjust initial merit to account for organism execution at the time the population was saved
           // - this factors the merit by the fraction of the gestation time remaining
           // - this will be approximate, since gestation time may vary for each organism, but it should work for many cases
@@ -6491,7 +6507,6 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           if (tmp.forager_types.GetSize() != 0) forager_type = tmp.forager_types[cell_i]; 
           new_organism->SetOpinion(group_id);
           JoinGroup(new_organism, group_id);
-          new_organism->SetForageTarget(ctx, forager_type);
           new_organism->GetPhenotype().SetBirthCellID(cell_id);
           new_organism->GetPhenotype().SetBirthGroupID(group_id);
           new_organism->GetPhenotype().SetBirthForagerType(forager_type);
@@ -6499,17 +6514,14 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           new_organism->SetParentFT(forager_type);
           if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
           org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
-          new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
+          new_organism->SetForageTarget(ctx, forager_type);
         }
         else org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
         
-        if ((load_avatars || load_birth_cells) && org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
-          int avatar_cell = -1;
-          if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
-          if (avatar_cell != -1) {
-            new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
-            new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
-          }
+        if (load_parent_dat) {
+          new_organism->SetParentFT(tmp.parent_ft[cell_i]);
+          new_organism->SetParentTeacher(tmp.parent_teacher[cell_i]);
+          if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);        
         }
       }
       else if (load_rebirth) {
@@ -6518,7 +6530,6 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);        
         new_organism->GetPhenotype().SetBirthCellID(cell_id);
         org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
-        new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
       }
       
       if (org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
@@ -6527,9 +6538,9 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         if (avatar_cell != -1) {
           new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
           new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
-          new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
         }
       }
+      if (org_survived) new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
     }
   }
   sync_events = true;

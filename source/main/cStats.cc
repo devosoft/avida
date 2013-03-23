@@ -2395,8 +2395,8 @@ void cStats::PrintBirthLocData(int org_idx)
   cOrganism* org = m_world->GetPopulation().GetLiveOrgList()[org_idx];
   const int worldx = m_world->GetConfig().WORLD_X.Get();
 
-  int loc = org->GetCellID();
-  if (use_av) loc = org->GetOrgInterface().GetAVCellID();
+  int loc = org->GetPhenotype().GetBirthCell();
+  if (use_av) loc = org->GetPhenotype().GetAVBirthCell();
   const int locx = loc % worldx;
   const int locy = loc / worldx;
   const int ft = org->GetParentFT();
