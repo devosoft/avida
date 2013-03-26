@@ -348,7 +348,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey", &cHardwareExperimental::Inst_AttackPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("attack-ft-prey", &cHardwareExperimental::Inst_AttackFTPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("attack-poison-prey", &cHardwareExperimental::Inst_AttackPoisionPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("attack-poison-prey", &cHardwareExperimental::Inst_AttackPoisonPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("attack-poison-ft-prey", &cHardwareExperimental::Inst_AttackPoisonFTPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-group", &cHardwareExperimental::Inst_AttackPreyGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-share", &cHardwareExperimental::Inst_AttackPreyShare, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-no-share", &cHardwareExperimental::Inst_AttackPreyNoShare, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -5373,12 +5374,66 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   return TestAttackResultsOut(results);
 }
 
-bool cHardwareExperimental::Inst_AttackPoisionPrey(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_AttackPoisonPrey(cAvidaContext& ctx)
 {
   if (!TestAttack(ctx)) return false;
 
   cOrganism* target = GetPreyTarget(ctx);
   int target_ft = target->GetForageTarget();
+  if (!TestPreyTarget(target)) return false;
+  
+  sAttackReg reg;
+  SetAttackReg(reg);
+  
+  if (!ExecutePoisonPreyAttack(ctx, target, reg)) return false;
+  m_organism->GetPhenotype().IncAttackedPreyFTData(target_ft);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_AttackPoisonFTPrey(cAvidaContext& ctx)
+{
+  sAttackResult results;
+  results.inst = 0;
+  results.share = 0;
+  results.success = 0;
+  results.size = 0;
+  if (!TestAttack(ctx)) return false;
+
+  const int target_reg = FindModifiedRegister(rBX);
+  int target_org_type = m_threads[m_cur_thread].reg[target_reg].value;
+  cOrganism* target = NULL; 
+  if (!m_use_avatar) { 
+    target = m_organism->GetOrgInterface().GetNeighbor();
+    if (target_org_type != target->GetForageTarget()) return false;
+    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+    if (!target->IsPreyFT())  { results.success = 1; return TestAttackResultsOut(results); }
+  }    
+  else if (m_use_avatar == 2) {
+    const Apto::Array<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetFacedPreyAVs();
+    bool target_match = false;
+    int rand_index = m_world->GetRandom().GetUInt(0, av_neighbors.GetSize());
+    int j = 0;
+    for (int i = 0; i < av_neighbors.GetSize(); i++) {
+      if (rand_index + i < av_neighbors.GetSize()) {
+        if (av_neighbors[rand_index + i]->GetForageTarget() == target_org_type) {
+          target = av_neighbors[rand_index + i];      
+          target_match = true;
+        }
+        break;
+      }
+      else {
+        if (av_neighbors[j]->GetForageTarget() == target_org_type) {
+          target = av_neighbors[j];      
+          target_match = true;
+        }
+        break;          
+        j++;
+      }
+    }
+    if (!target_match) return false;
+  }
+  int target_ft = target->GetForageTarget();
+
   if (!TestPreyTarget(target)) return false;
   
   sAttackReg reg;
