@@ -166,7 +166,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
     }
     else if (id_sought == -1) {
       bool all_global = true;
-      for (int id_sought = 0; id_sought < lib_size; id_sought++) {
+      for (id_sought = 0; id_sought < lib_size; id_sought++) {
         if (m_res_lib.GetResource(id_sought)->GetGeometry() == nGeometry::GLOBAL) {
           cOrgSensor::sLookOut globalval = GlobalVal(ctx, in_defs);
           if (globalval.value >= 1 && search_type == 0) return globalval;
