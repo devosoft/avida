@@ -41,6 +41,12 @@
 @synthesize workspace;
 
 
+- (NSArray*) activeUniverses
+{
+  return activeUniverses;
+}
+
+
 // Application Events
 // --------------------------------------------------------------------------------------------------------------
 #pragma mark - Application Events
@@ -75,6 +81,18 @@
   workspace = selectedWorkspace;
   mainWindow = [[MainWindowController alloc] initWithAvidaController:self];
   [mainWindow showWindow:self];
+}
+
+
+// Universe Management
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Universe Management
+
+- (void) attachNewUniverse:(ACUniverse*)universe
+{
+  if (![activeUniverses containsObject:universe]) {
+    [activeUniverses addObject:universe];
+  }
 }
 
 

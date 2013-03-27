@@ -1,9 +1,9 @@
 //
-//  AvidaCore_Core.h
+//  Definitions_Private.h
 //  avida/apps/viewer-macos/frameworks/AvidaCore-ObjC
 //
-//  Created by David M. Bryson on 11/15/12.
-//  Copyright 2012-2013 Michigan State University. All rights reserved.
+//  Created by David M. Bryson on 3/27/13.
+//  Copyright 2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,12 +27,4 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <Apto/Apto.h>
-
-#import <AvidaCore/ACFramework.h>
-#import <AvidaCore/ACGenome.h>
-#import <AvidaCore/ACProject.h>
-#import <AvidaCore/ACUniverse.h>
-#import <AvidaCore/ACWorkspace.h>
-
-#import <AvidaCore/Utilities.h>
+#define ACFrameworkIdentifier @"AvidaCore"

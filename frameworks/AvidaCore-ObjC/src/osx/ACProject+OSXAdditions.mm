@@ -27,16 +27,17 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
+#import "ACProject_Private.h"
 #import "ACProject+OSXAdditions.h"
 #import "ACProject+OSXAdditions_Private.h"
 
 #import "ACProjectItem.h"
 
 
-// ACProject+OSXAdditions_Private Implementation
+// ACProject Private - OSX Specific Implementation
 // --------------------------------------------------------------------------------------------------------------
 
-@implementation ACProject (OSXAdditions_Private)
+@implementation ACProject (Private)
 
 - (void) setupWithFreezer:(Avida::Viewer::FreezerPtr)new_freezer
 {

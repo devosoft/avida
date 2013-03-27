@@ -19,6 +19,7 @@
 		701BFFF113CF305200838CC9 /* OrgColorBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 701BFFF013CF305200838CC9 /* OrgColorBox.m */; };
 		701E3A1513576BD2000BFFBC /* petri128.png in Resources */ = {isa = PBXBuildFile; fileRef = 701E3A1413576BD2000BFFBC /* petri128.png */; };
 		701F535C157FBDED00DAE5FA /* avida-ed-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 701F535B157FBDED00DAE5FA /* avida-ed-icon.png */; };
+		702220E21703609900B99C52 /* Avida-Definitions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 702220E11703609900B99C52 /* Avida-Definitions.mm */; };
 		702837E5155C58B300C733D2 /* AvidaED-ExportData.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702837E4155C58B300C733D2 /* AvidaED-ExportData.xib */; };
 		702837E7155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702837E6155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib */; };
 		702837E9155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702837E8155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib */; };
@@ -157,6 +158,8 @@
 		701BFFF013CF305200838CC9 /* OrgColorBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgColorBox.m; sourceTree = "<group>"; };
 		701E3A1413576BD2000BFFBC /* petri128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = petri128.png; sourceTree = "<group>"; };
 		701F535B157FBDED00DAE5FA /* avida-ed-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "avida-ed-icon.png"; sourceTree = "<group>"; };
+		702220E01703609900B99C52 /* Avida-Definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Avida-Definitions.h"; sourceTree = "<group>"; };
+		702220E11703609900B99C52 /* Avida-Definitions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "Avida-Definitions.mm"; sourceTree = "<group>"; };
 		7026F1B11534D27F00480C8F /* libtcmalloc-1.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libtcmalloc-1.4.a"; path = "../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug/libtcmalloc-1.4.a"; sourceTree = "<group>"; };
 		702837E4155C58B300C733D2 /* AvidaED-ExportData.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-ExportData.xib"; sourceTree = "<group>"; };
 		702837E6155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-ExportGraphics-Population.xib"; sourceTree = "<group>"; };
@@ -421,6 +424,8 @@
 		7035499A1337A32D00D3865C /* Avida */ = {
 			isa = PBXGroup;
 			children = (
+				702220E01703609900B99C52 /* Avida-Definitions.h */,
+				702220E11703609900B99C52 /* Avida-Definitions.mm */,
 				70FA3F79164422750003971F /* Avida-main.mm */,
 				70FA3F7A164422750003971F /* AvidaAppDelegate.h */,
 				70FA3F7B164422750003971F /* AvidaAppDelegate.mm */,
@@ -852,6 +857,7 @@
 				709AE9731684E86100E50275 /* ActivityListViewController.m in Sources */,
 				709AE9B61695F49D00E50275 /* AvidaController.mm in Sources */,
 				705E530616973A5000392BA7 /* AvidaPreferences.m in Sources */,
+				702220E21703609900B99C52 /* Avida-Definitions.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -966,6 +972,7 @@
 				INFOPLIST_FILE = "resources/other/Avida-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = Avida;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = $BUILT_PRODUCTS_DIR/AvidaCore.framework/Versions/Current/CPPHeaders/;
 				WRAPPER_EXTENSION = app;
@@ -987,6 +994,7 @@
 				INFOPLIST_FILE = "resources/other/Avida-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = Avida;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = $BUILT_PRODUCTS_DIR/AvidaCore.framework/Versions/Current/CPPHeaders/;
 				WRAPPER_EXTENSION = app;

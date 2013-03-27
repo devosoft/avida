@@ -43,6 +43,9 @@
   
   // Main Window
   MainWindowController* mainWindow;
+  
+  // Universe Management
+  NSMutableArray* activeUniverses;
 }
 
 
@@ -50,7 +53,8 @@
 // --------------------------------------------------------------------------------------------------------------
 #pragma mark - Properties
 
-@property (readonly) ACWorkspace* workspace;
+@property (readonly, nonatomic) ACWorkspace* workspace;
+@property (readonly, nonatomic) NSArray* activeUniverses;
 
 
 // Application Events
@@ -69,4 +73,12 @@
 - (void) workspaceSelected:(ACWorkspace*)selectedWorkspace;
 
 
+// Universe Management
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Universe Management
+
+- (void) attachNewUniverse:(ACUniverse*)universe;
+
+
+// --------------------------------------------------------------------------------------------------------------
 @end

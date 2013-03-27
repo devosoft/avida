@@ -31,7 +31,10 @@
 
 
 @interface ACProject ()
-
 + (ACProject*) projectWithFreezer:(Avida::Viewer::FreezerPtr)freezer;
+@end
 
+
+@interface ACProject (Private)
+- (void) setupWithFreezer:(Avida::Viewer::FreezerPtr)new_freezer;
 @end

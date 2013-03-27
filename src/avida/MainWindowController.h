@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 10/21/10.
-//  Copyright 2010-2011 Michigan State University. All rights reserved.
+//  Copyright 2010-2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -31,6 +31,13 @@
 
 @class AvidaController;
 
+@class ActivityListViewController;
+@class ConfigEditViewController;
+@class GraphingViewController;
+@class OrganismAnalysisViewController;
+@class PopulationViewController;
+@class StatsViewController;
+
 
 // MainWindowController Interface
 // --------------------------------------------------------------------------------------------------------------
@@ -45,6 +52,12 @@
   IBOutlet NSView* tbViewStatusPanel;
   
   IBOutlet NSSplitView* splitMain;
+  
+  ConfigEditViewController* viewConfigEditCtlr;
+  GraphingViewController* viewGraphingCtlr;
+  OrganismAnalysisViewController* viewOrganismAnalysisCtlr;
+  PopulationViewController* viewPopulationCtlr;
+  StatsViewController* viewStatsCtlr;
 }
 
 
@@ -53,8 +66,6 @@
 #pragma mark - Init and Dealloc Methods
 
 - (id) initWithAvidaController:(AvidaController*)ctlr;
-
-- (void) dealloc;
 
 
 // NSWindowController

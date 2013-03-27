@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 12/21/12.
-//  Copyright 2012 Michigan State University. All rights reserved.
+//  Copyright 2012-2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -30,11 +30,15 @@
 #import <Cocoa/Cocoa.h>
 #import <AvidaCore/AvidaCore.h>
 
+@class AvidaController;
+
 
 // PopulationViewController Interface
 // --------------------------------------------------------------------------------------------------------------
 
 @interface PopulationViewController : NSViewController {
+  AvidaController* avidaCtlr;
+  
   IBOutlet ACMapView* mapView;
 }
 
@@ -43,7 +47,7 @@
 // --------------------------------------------------------------------------------------------------------------
 #pragma mark - Initialization
 
-- (PopulationViewController*) init;
+- (PopulationViewController*) initWithAvidaController:(AvidaController*)ctlr;
 
 
 // Actions

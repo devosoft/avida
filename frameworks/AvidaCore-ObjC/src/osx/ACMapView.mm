@@ -135,6 +135,15 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   selected_y = -1;
   
   [self registerForDraggedTypes:@[ACPasteboardTypeProjectItem, ACPasteboardTypeGenome]];
+  
+  // Draw a drop shadow around the map
+  NSShadow *dropShadow = [[NSShadow alloc] init];
+  [dropShadow setShadowColor:[NSColor blackColor]];
+  [dropShadow setShadowBlurRadius:5];
+  [dropShadow setShadowOffset:NSMakeSize(0,-2)];
+  
+  self.superview.wantsLayer = YES;
+  self.shadow = dropShadow;
 }
 
 
@@ -143,8 +152,11 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 #pragma mark - Drawing
 
 - (void) drawRect:(NSRect)dirtyRect {
+  
+  // Fill the map itself
   [[NSColor lightGrayColor] set];
   [NSBezierPath fillRect:dirtyRect];
+
   
   [self updateColorCache];
   

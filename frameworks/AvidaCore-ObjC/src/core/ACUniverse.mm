@@ -1,9 +1,9 @@
 //
-//  PopulationViewController.m
-//  avida/apps/viewer-macos
+//  ACUniverse.mm
+//  avida/apps/viewer-macos/frameworks/AvidaCore-ObjC
 //
-//  Created by David M. Bryson on 12/21/12.
-//  Copyright 2012 Michigan State University. All rights reserved.
+//  Created by David M. Bryson on 3/27/13.
+//  Copyright 2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,55 +27,18 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import "PopulationViewController.h"
+#import "ACUniverse.h"
 
-#import <Apto/Apto.h>
+@implementation ACUniverse
 
 
-// PopulationViewController Private Interface
+// Init and Dealloc Methods
 // --------------------------------------------------------------------------------------------------------------
+#pragma mark - Init and Dealloc Methods
 
-@interface PopulationViewController ()
-
-@end
-
-
-// PopulationViewController Implementation
-// --------------------------------------------------------------------------------------------------------------
-
-@implementation PopulationViewController
-
-
-// Initialization
-// --------------------------------------------------------------------------------------------------------------
-#pragma mark - Initialization
-
-- (PopulationViewController*) initWithAvidaController:(AvidaController*)ctlr
+- (void) dealloc
 {
-  
-  self = [super initWithNibName:@"Avida-Population" bundle:nil];
-  if (self) {
-    avidaCtlr = ctlr;
-  }
-  
-  return self;
+  delete universe;
 }
 
-- (void) loadView
-{
-  [super loadView];
-
-  // Set the map view alignment so that it is centered when smaller than its scroll view
-  NSScrollView* mapScrollView = [mapView enclosingScrollView];
-  [mapScrollView setBackgroundColor:[NSColor colorWithPatternImage:[NSImage imageNamed:@"NSTexturedFullScreenBackgroundColor"]]];
-  [mapScrollView setDocumentViewAlignment:NSImageAlignCenter];
-}
-
-
-// Actions
-// --------------------------------------------------------------------------------------------------------------
-#pragma mark - Actions
-
-
-// --------------------------------------------------------------------------------------------------------------
 @end

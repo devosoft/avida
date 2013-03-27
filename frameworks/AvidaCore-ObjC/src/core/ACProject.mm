@@ -41,15 +41,7 @@
   ACProject* project = [[ACProject alloc] init];
   
   if (project) {
-    SEL setupSel = @selector(setupWithFreezer:);
-    assert([project respondsToSelector:setupSel]);
-    
-    NSMethodSignature* msig = [project methodSignatureForSelector:setupSel];
-    NSInvocation* setupInvocation = [NSInvocation invocationWithMethodSignature:msig];
-    [setupInvocation setSelector:setupSel];
-    [setupInvocation setTarget:project];
-    [setupInvocation setArgument:&new_freezer atIndex:0];
-    [setupInvocation invoke];
+    [project setupWithFreezer:new_freezer];
   }
   
   return project;

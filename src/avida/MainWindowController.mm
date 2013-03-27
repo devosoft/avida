@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 10/21/10.
-//  Copyright 2010-2012 Michigan State University. All rights reserved.
+//  Copyright 2010-2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -30,6 +30,7 @@
 #import "MainWindowController.h"
 
 #import "AvidaController.h"
+#import "PopulationViewController.h"
 #import "WorkspaceViewController.h"
 
 
@@ -77,6 +78,8 @@ NSString* const tbStatusPanel = @"StatusPanel";
     [toolbar setAllowsUserCustomization:YES];
     [toolbar setAutosavesConfiguration:YES];
     [toolbar setDisplayMode:NSToolbarDisplayModeIconOnly];
+    
+    viewPopulationCtlr = [[PopulationViewController alloc] initWithAvidaController:ctlr];    
   }
   
   return self;
@@ -105,7 +108,9 @@ NSString* const tbStatusPanel = @"StatusPanel";
   
   CGFloat sidePaneWidth = visibleFrame.size.width / 6.0f;
   if (sidePaneWidth < 200.0f) sidePaneWidth = 200.0f;
-  [splitMain setPosition:sidePaneWidth ofDividerAtIndex:0];  
+  [splitMain setPosition:sidePaneWidth ofDividerAtIndex:0];
+  
+  [splitMain replaceSubview:splitMain.subviews[1] with:viewPopulationCtlr.view];
 }
 
 

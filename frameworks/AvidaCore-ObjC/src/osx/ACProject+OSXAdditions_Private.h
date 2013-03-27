@@ -32,6 +32,4 @@
 
 @interface ACProject (OSXAdditions_Private)
 
-- (void) setupWithFreezer:(Avida::Viewer::FreezerPtr)freezer;
-
 @end

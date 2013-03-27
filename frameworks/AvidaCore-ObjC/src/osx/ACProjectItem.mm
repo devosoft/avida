@@ -28,9 +28,11 @@
 //
 
 #import <AvidaCore/ACProjectItem.h>
+#import <AvidaCore/Definitions_Private.h>
+#import <AvidaCore/Utilities.h>
 
 
-NSString* const ACPasteboardTypeProjectItem = @"org.devosoft.avida.projectitem";
+NSString* const ACPasteboardTypeProjectItem = ACMakeIdentfier(ACFrameworkIdentifier, @"ProjectItem");
 
 
 // ACProjectItem Implementation
