@@ -5698,30 +5698,28 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   return true;
 } 
 
-//Attack organism faced by this one if you are both predators.
+//Kill (don't consume) organism faced by this one if you are both predators.
 bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
-  if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPredAV()) return false;
-  
-  cOrganism* target = NULL; 
+  if (!TestAttackPred(ctx)) return false;
+
+  cOrganism* target = NULL;
   if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
   else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPredAV();
+
+  if (target->IsPreyFT() || m_organism->IsPreyFT()) return false;
   if (target->IsDead()) return false;  
   
-  // allow only for predator vs predator
-  if (target->IsPreyFT() || m_organism->IsPreyFT()) return false;
-  
-  int target_cell = target->GetOrgInterface().GetCellID();  
-  m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
-  
-  const int out_reg = FindModifiedRegister(rBX);   
-  setInternalValue(out_reg, 1, true);   
-  
-  MakeTopPred(ctx);
+  sAttackReg reg;
+  SetAttackReg(reg);
+
+  if (!TestAttackChance(target, reg)) return false;
+  else {
+    target->Die(ctx);
+    
+    setInternalValue(reg.success_reg, 1, true);
+  }
   return true;
 } 
 
