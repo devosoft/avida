@@ -363,12 +363,10 @@ int cOrganism::ReceiveValue()
   return out_value;
 }
 
-
 void cOrganism::DoInput(const int value)
 {
   DoInput(m_input_buf, m_output_buf, value);
 }
-
 
 void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
 {
@@ -376,13 +374,11 @@ void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer,
   m_phenotype.TestInput(input_buffer, output_buffer);
 }
 
-
 void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide, cContextPhenotype* context_phenotype)
 {
   if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
   else doOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
 }
-
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
 {

@@ -5432,15 +5432,13 @@ bool cHardwareExperimental::Inst_AttackPoisonFTPrey(cAvidaContext& ctx)
     }
     if (!target_match) return false;
   }
-  int target_ft = target->GetShowForageTarget();
-
   if (!TestPreyTarget(target)) return false;
   
   sAttackReg reg;
   SetAttackReg(reg);
   
   if (!ExecutePoisonPreyAttack(ctx, target, reg)) return false;
-  m_organism->GetPhenotype().IncAttackedPreyFTData(target_ft);
+  m_organism->GetPhenotype().IncAttackedPreyFTData(target->GetForageTarget());
   return true;
 }
 
