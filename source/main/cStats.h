@@ -213,6 +213,7 @@ private:
   // ------- Division of Labor Stats ---------
   //TODO: Right place for this?
   int juv_killed;
+  int num_guard_fail;
 
 
   // --------  Organism Task Stats  ---------
@@ -888,7 +889,7 @@ public:
     
  // Division of Labor Stats
     void IncJuvKilled() { juv_killed++; }
-
+    void IncGuardFail() {num_guard_fail++;}
   
   // deme predicate stats
   void IncEventCount(int x, int y);

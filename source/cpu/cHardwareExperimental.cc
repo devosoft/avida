@@ -5929,20 +5929,27 @@ bool cHardwareExperimental::Inst_SetGuard(cAvidaContext& ctx)
   if (m_organism->GetPhenotype().GetTimeUsed() >= m_world->GetConfig().JUV_PERIOD.Get()) {
     const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
     for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) {
-        double cell_res = 0.0;
-        if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
-        else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
-        if (cell_res > 0) set_ok = true;;
-      }
+      double cell_res = 0.0;
+      if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
+      else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
+      if (cell_res > 0) set_ok = true;;
     }
   }
   if (set_ok){
     m_organism->SetGuard();
     m_organism->IncGuard();
-  }
+  } else m_world->GetStats().IncGuardFail();
   setInternalValue(FindModifiedRegister(rBX), (int) m_organism->IsGuard(), true);
   return set_ok;
+}
+
+bool cHardwareExperimental::Inst_SetGuardOnce(cAvidaContext& ctx)
+{
+  bool set_ok = false;
+  if (!m_organism->IsGuard()) set_ok = Inst_SetGuard(ctx);
+  else m_world->GetStats().IncGuardFail();
+  setInternalValue(FindModifiedRegister(rBX), set_ok, true);    
+  return set_ok;  
 }
 
 bool cHardwareExperimental::Inst_GetNumGuards(cAvidaContext& ctx)
@@ -6001,14 +6008,6 @@ bool cHardwareExperimental::Inst_GetNumJuvs(cAvidaContext& ctx)
   }
   setInternalValue(FindModifiedRegister(rBX), num_juvs, true);
   return on_den;
-}
-
-bool cHardwareExperimental::Inst_SetGuardOnce(cAvidaContext& ctx)
-{
-  bool set_ok = false;
-  if (!m_organism->IsGuard()) set_ok = Inst_SetGuard(ctx);
-  setInternalValue(FindModifiedRegister(rBX), set_ok, true);    
-  return set_ok;  
 }
 
 bool cHardwareExperimental::Inst_ActivateDisplay(cAvidaContext& ctx)
