@@ -610,6 +610,7 @@ private:
   bool Inst_AttackFTPrey(cAvidaContext& ctx); 
   bool Inst_AttackPoisonPrey(cAvidaContext& ctx);
   bool Inst_AttackPoisonFTPrey(cAvidaContext& ctx);
+  bool Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx);
   bool Inst_FightMeritOrg(cAvidaContext& ctx); 
   bool Inst_FightBonusOrg(cAvidaContext& ctx); 
   bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 

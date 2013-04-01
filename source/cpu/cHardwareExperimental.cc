@@ -350,6 +350,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("attack-ft-prey", &cHardwareExperimental::Inst_AttackFTPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-poison-prey", &cHardwareExperimental::Inst_AttackPoisonPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-poison-ft-prey", &cHardwareExperimental::Inst_AttackPoisonFTPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("attack-poison-ft-mixed-prey", &cHardwareExperimental::Inst_AttackPoisonFTMixedPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-group", &cHardwareExperimental::Inst_AttackPreyGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-share", &cHardwareExperimental::Inst_AttackPreyShare, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-no-share", &cHardwareExperimental::Inst_AttackPreyNoShare, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -5431,6 +5432,45 @@ bool cHardwareExperimental::Inst_AttackPoisonFTPrey(cAvidaContext& ctx)
       }
     }
     if (!target_match) return false;
+  }
+  if (!TestPreyTarget(target)) return false;
+  
+  sAttackReg reg;
+  SetAttackReg(reg);
+  
+  if (!ExecutePoisonPreyAttack(ctx, target, reg)) return false;
+  m_organism->GetPhenotype().IncAttackedPreyFTData(target->GetForageTarget());
+  return true;
+}
+
+bool cHardwareExperimental::Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx)
+{
+  sAttackResult results;
+  results.inst = 0;
+  results.share = 0;
+  results.success = 0;
+  results.size = 0;
+  if (!m_world->GetStats().GetNumPreyCreatures()) return false;
+
+  const int target_reg = FindModifiedRegister(rBX);
+  int ft_sought = 0;
+  bool rand_ft = true;
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    ft_sought = m_threads[m_cur_thread].reg[target_reg].value;
+    rand_ft = false;
+  }
+  if (ft_sought < -1 || !m_world->GetEnvironment().IsTargetID(ft_sought)) return false;
+
+  cOrganism* target = NULL;
+  bool have_org2use = false;
+  const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {
+    cOrganism* org = live_orgs[i];
+    if ((!rand_ft && ft_sought == org->GetShowForageTarget()) || (rand_ft && ft_sought == org->IsPreyFT())) {
+      target = org;
+      have_org2use = true;
+      break;
+    }
   }
   if (!TestPreyTarget(target)) return false;
   
