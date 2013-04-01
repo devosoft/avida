@@ -88,6 +88,8 @@ cStats::cStats(cWorld* world)
 , tot_executed(0)
 , num_kabooms(0)
 , num_kaboom_kills(0)
+, juv_killed(0)
+, num_guard_fail(0)
 , num_resamplings(0)
 , num_failedResamplings(0)
 , last_update(0)
@@ -4336,7 +4338,9 @@ void cStats::PrintDenData(const cString& filename) {
   
   int num_juvs = 0;
   int num_adults = 0;
-  int num_guards = 0;
+  int num_guards_nest = 0;
+  int num_foragers = 0;
+  int num_guards_off = 0;
   
   int population_size = m_world->GetPopulation().GetSize();
   
@@ -4363,33 +4367,24 @@ void cStats::PrintDenData(const cString& filename) {
           else
           {
             num_adults++;
-            if (cell_avs[k]->IsGuard()) num_guards++;
+            if (cell_avs[k]->IsGuard()) num_guards_nest++;
             else num_loiterers++;
           }
         }
         active_dens += (int)is_active;
         break;  // only do this once if two dens overlap
+      } 
+      else {
+	Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();
+        for (int k = 0; k < cell_avs.GetSize(); k++) {
+	      num_adults++;
+	      if (cell_avs[k]->IsGuard()) num_guards_off++;
+	      else num_foragers++;
+	}
       }
     }
   }
-  double percent_juv_guard;
-  double percent_juv_pop;
-  double percent_guards_pop;
-  
-  if (num_guards > 0){
-    percent_juv_guard = (double)num_juvs/(double)num_guards;
-  } else {
-    percent_juv_guard = 0;
-  }
-  if (population_size > 0){
-    percent_juv_pop = (double)num_juvs/(double)population_size;
-    percent_guards_pop = (double)num_guards/(double)population_size;
-  } else {
-    percent_juv_pop = 0;
-    percent_guards_pop = 0;
-  }
-  
-  
+
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   df->WriteComment("Number of juveniles and adults in dens");
   df->WriteTimeStamp();
@@ -4397,30 +4392,29 @@ void cStats::PrintDenData(const cString& filename) {
   df->WriteColumnDesc("ActiveDens [active_dens]");
   df->WriteColumnDesc("Juveniles [juveniles]");
 	df->WriteColumnDesc("Adults [adults]");
-  df->WriteColumnDesc("Guards [guards]");
+  df->WriteColumnDesc("Guards On Nest[guards nest]");
 	df->WriteColumnDesc("Loiterers [loiterers]");
   
   df->WriteColumnDesc("Juveniles Killed [juveniles killed]");
-  df->WriteColumnDesc("Ratio of Juveniles to Guards [percent juvs to guards]");
-  df->WriteColumnDesc("Ratio of Juveniles to Population [percent juvs to pop]");
-  df->WriteColumnDesc("Ratio of Guards to Population [percent guards to pop]");
-  
-	
+  df->WriteColumnDesc("Foragers [foragers]");
+  df->WriteColumnDesc("Guards Off Nest [guards off]");
+  df->WriteColumnDesc("Guard Fails [guard fails]");
+
   df->FlushComments();
   
   df->Write(m_update,   "Update");
   df->Write(active_dens,      "ActiveDens");
   df->Write(num_juvs,      "Juveniles");
 	df->Write(num_adults,    "Adults");
-	df->Write(num_guards,    "Guards");
+	df->Write(num_guards_nest,    "GuardsOnNest");
 	df->Write(num_loiterers, "Loiterers");
-  df->Write(juv_killed, "Juveniles Killed");
-  df->Write(percent_juv_guard, "Ratio of Juveniles to Guards");
-  df->Write(percent_juv_pop, "Ratio of Juveniles to Population");
-  df->Write(percent_guards_pop, "Ratio of Guards to Population");
+  df->Write(juv_killed, "JuvenilesKilled");
+  df->Write(num_foragers, "Foragers");
+  df->Write(num_guards_off, "GuardsOffNest");
+  df->Write(num_guard_fail, "Guard Failures");
   
-  
-	df->Endl();
+  df->Endl();
+  num_guard_fail=0; 
   
 }
 
