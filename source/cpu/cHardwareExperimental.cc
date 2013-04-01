@@ -5459,7 +5459,7 @@ bool cHardwareExperimental::Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx)
     ft_sought = m_threads[m_cur_thread].reg[target_reg].value;
     rand_ft = false;
   }
-  if (ft_sought < -1 || !m_world->GetEnvironment().IsTargetID(ft_sought)) return false;
+  if (ft_sought <= -1 || !m_world->GetEnvironment().IsTargetID(ft_sought)) return false;
 
   cOrganism* target = NULL;
   bool have_org2use = false;
@@ -5474,7 +5474,7 @@ bool cHardwareExperimental::Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx)
     int this_rand_idx = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
     if (!used_orgs[this_rand_idx]) {
       cOrganism* org = live_orgs[this_rand_idx];
-      if ((!rand_ft && ft_sought == org->GetShowForageTarget()) || (rand_ft && org->IsPreyFT())) {
+      if ((!rand_ft && (ft_sought == org->GetShowForageTarget() || (org->GetForageTarget() == -1 && ft_sought == org->GetParentFT()))) || (rand_ft && org->IsPreyFT())) {
         target = org;
         have_org2use = true;
         break;
