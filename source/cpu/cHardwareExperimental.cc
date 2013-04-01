@@ -5464,6 +5464,26 @@ bool cHardwareExperimental::Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx)
   cOrganism* target = NULL;
   bool have_org2use = false;
   const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+
+  Apto::Array<bool> used_orgs;
+  used_orgs.Resize(live_orgs.GetSize());
+  used_orgs.SetAll(false);
+  
+  int num_checked = 0;
+  while (num_checked < live_orgs.GetSize()) {
+    int this_rand_idx = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
+    if (!used_orgs[this_rand_idx]) {
+      cOrganism* org = live_orgs[this_rand_idx];
+      if ((!rand_ft && ft_sought == org->GetShowForageTarget()) || (rand_ft && org->IsPreyFT())) {
+        target = org;
+        have_org2use = true;
+        break;
+      }
+      used_orgs[this_rand_idx] = true;
+      num_checked++;
+    }
+  } 
+/* not actually a random walk thru org list
   for (int i = 0; i < live_orgs.GetSize(); i++) {
     cOrganism* org = live_orgs[i];
     if ((!rand_ft && ft_sought == org->GetShowForageTarget()) || (rand_ft && ft_sought == org->IsPreyFT())) {
@@ -5472,6 +5492,8 @@ bool cHardwareExperimental::Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx)
       break;
     }
   }
+*/
+
   if (!have_org2use) return false;
   else if (!TestPreyTarget(target)) return false;
   
