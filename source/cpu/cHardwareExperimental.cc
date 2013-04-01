@@ -5472,7 +5472,8 @@ bool cHardwareExperimental::Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx)
       break;
     }
   }
-  if (!TestPreyTarget(target)) return false;
+  if (!have_org2use) return false;
+  else if (!TestPreyTarget(target)) return false;
   
   sAttackReg reg;
   SetAttackReg(reg);
