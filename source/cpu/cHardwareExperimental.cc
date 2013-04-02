@@ -5316,7 +5316,7 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
   sAttackReg reg;
   SetAttackReg(reg);
   
-  if (!ExecuteAttack(ctx, target, reg)) return false;
+  if (!ExecuteAttack(ctx, target, reg, 1)) return false;
   return true;  
 }
 
