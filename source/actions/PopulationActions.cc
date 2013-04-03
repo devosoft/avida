@@ -1160,7 +1160,7 @@ public:
       cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
-        if ((resource_lib.GetResource(j)->GetHabitat() == 4 ||resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
+        if ((resource_lib.GetResource(j)->GetHabitat() == 4 ||resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0 && m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
           // for every x juvs, we require 1 adult...otherwise use killprob on the rest
           Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
           Apto::Array<cOrganism*> juvs;
