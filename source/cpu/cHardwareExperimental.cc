@@ -2069,6 +2069,9 @@ bool cHardwareExperimental::Inst_TaskInput(cAvidaContext&)
 
 bool cHardwareExperimental::Inst_TaskOutput(cAvidaContext& ctx)
 {
+  //Testing with juveniles not able to move HACK
+  if (m_organism->GetPhenotype().GetTimeUsed() < m_world->GetConfig().JUV_PERIOD.Get()) return false;
+  
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
   DataValue& reg = m_threads[m_cur_thread].reg[reg_used];
@@ -4154,6 +4157,9 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
 {
+  //Testing with juveniles not able to eat deposits HACK
+  if (m_organism->GetPhenotype().GetTimeUsed() < m_world->GetConfig().JUV_PERIOD.Get()) return false;
+  
   assert(m_organism != 0);
   const int reg = FindModifiedRegister(rBX);
   int prop_target = GetRegister(reg);
