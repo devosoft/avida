@@ -195,6 +195,7 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     
     // Movement and Navigation instructions
     tInstLibEntry<tMethod>("move", &cHardwareBCR::Inst_Move, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("juv-move", &cHardwareBCR::Inst_JuvMove, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
     tInstLibEntry<tMethod>("get-north-offset", &cHardwareBCR::Inst_GetNorthOffset, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
     tInstLibEntry<tMethod>("get-position-offset", &cHardwareBCR::Inst_GetPositionOffset, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),    
     tInstLibEntry<tMethod>("get-northerly", &cHardwareBCR::Inst_GetNortherly, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
@@ -2378,6 +2379,21 @@ bool cHardwareBCR::Inst_Move(cAvidaContext& ctx)
   else if (m_use_avatar) move_success = m_organism->MoveAV(ctx);
   const int out_reg = FindModifiedRegister(rBX);   
   setRegister(out_reg, move_success, true);   
+  return true;
+}
+
+bool cHardwareBCR::Inst_JuvMove(cAvidaContext& ctx)
+{
+  // In TestCPU, movement fails...
+  if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
+  
+  if (m_organism->GetPhenotype().GetTimeUsed() < m_world->GetConfig().JUV_PERIOD.Get()) return false;
+
+  bool move_success = false;
+  if (!m_use_avatar) move_success = m_organism->Move(ctx);
+  else if (m_use_avatar) move_success = m_organism->MoveAV(ctx);
+  const int out_reg = FindModifiedRegister(rBX);
+  setRegister(out_reg, move_success, true);
   return true;
 }
 
