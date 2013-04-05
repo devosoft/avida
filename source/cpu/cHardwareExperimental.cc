@@ -5076,28 +5076,26 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
   if (!TestAttack(ctx)) { results.success = 1; return TestAttackResultsOut(results); }
   
   int prey_count = 0;
-  int pred_count = 0;
   Apto::Array<int> neighborhood;
   if (!m_use_avatar) {
+    prey_count++; // self
     m_organism->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
     for (int j = 0; j < neighborhood.GetSize(); j++) {
       if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
           !m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsDead()) {
         if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsPreyFT()) prey_count++;
-        if (!m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsPreyFT()) pred_count++;
       }
     }
   }
   else {
+    prey_count += m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVCellID())->GetNumPreyAV(); // self cell
     m_organism->GetOrgInterface().GetAVNeighborhoodCellIDs(neighborhood);
     for (int j = 0; j < neighborhood.GetSize(); j++) {
-      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->HasPreyAV()) prey_count++;
-      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->HasPredAV()) pred_count++;
+      prey_count += m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetNumPreyAV();
     }
   }
   
-  double odds = 1.0 / ((double) (prey_count * 2));
-  odds = odds * (double) ((pred_count + 1) * 4);
+  double odds = 1.0 / ((double) (prey_count));
   
   cOrganism* target = GetPreyTarget(ctx);
   if (!TestPreyTarget(target)) { results.success = 1; return TestAttackResultsOut(results); }
