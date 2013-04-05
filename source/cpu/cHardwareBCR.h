@@ -516,6 +516,7 @@ private:
   
   // Movement and Navigation
   bool Inst_Move(cAvidaContext& ctx);
+  bool Inst_JuvMove(cAvidaContext& ctx);
   bool Inst_GetNorthOffset(cAvidaContext& ctx);
   bool Inst_GetPositionOffset(cAvidaContext& ctx);  
   bool Inst_GetNortherly(cAvidaContext& ctx); 
