@@ -4258,7 +4258,7 @@ bool cHardwareExperimental::Inst_SetRandPFTOnce(cAvidaContext& ctx)
   if (m_organism->HasSetFT()) return false;
   else {
     int prop_target = 0;
-    if (m_world->GetRandom().P(0.5)) prop_target = 1;
+    if (m_world->GetRandom().P(0.5)) prop_target = 2;
     // Set the new target and return the value
     m_organism->SetForageTarget(ctx, prop_target);
     m_organism->RecordFTSet();
