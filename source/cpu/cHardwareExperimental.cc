@@ -4274,7 +4274,7 @@ bool cHardwareExperimental::Inst_SetRandPFTOnce(cAvidaContext& ctx)
         orgs.Push(org);
       }
     }
-    if (in_use >= m_world->GetConfig().MAX_PREY.Get()) {
+    if (in_use >= m_world->GetConfig().MAX_PREY_BT.Get()) {
       orgs[m_world->GetRandom().GetUInt(0, in_use)]->Die(ctx);
     }
     
