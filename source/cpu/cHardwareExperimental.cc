@@ -4262,6 +4262,22 @@ bool cHardwareExperimental::Inst_SetRandPFTOnce(cAvidaContext& ctx)
       prop_target = 0;
       if (m_world->GetRandom().P(0.5)) prop_target = 1;
     }
+
+    int in_use = 0;
+    Apto::Array<cOrganism*> orgs;
+    const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    for (int i = 0; i < live_orgs.GetSize(); i++) {
+      cOrganism* org = live_orgs[i];
+      int this_target = org->GetForageTarget();
+      if (this_target == prop_target) {
+        in_use++;
+        orgs.Push(org);
+      }
+    }
+    if (in_use >= m_world->GetConfig().MAX_PREY.Get()) {
+      orgs[m_world->GetRandom().GetUInt(0, in_use)]->Die(ctx);
+    }
+    
     // Set the new target and return the value
     m_organism->SetForageTarget(ctx, prop_target);
     m_organism->RecordFTSet();
