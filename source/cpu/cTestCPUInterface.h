@@ -223,7 +223,7 @@ public:
   void AttackFacedOrg(cAvidaContext& ctx, int) { ; }
 
   void TryWriteBirthLocData(int) { ; }
-  void InjectPreyClone(cAvidaContext& ctx) { ; }
+  void InjectPreyClone(cAvidaContext& ctx, int gen_id) { ; }
   void KillRandPred(cAvidaContext& ctx, cOrganism* org) { ; }
   void KillRandPrey(cAvidaContext& ctx, cOrganism* org) { ; }
   void TryWriteLookData(cString& string) { ; }

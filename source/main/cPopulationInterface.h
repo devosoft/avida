@@ -258,7 +258,7 @@ public:
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   
   void TryWriteBirthLocData(int org_idx);
-  void InjectPreyClone(cAvidaContext& ctx);
+  void InjectPreyClone(cAvidaContext& ctx, int gen_id);
   void KillRandPred(cAvidaContext& ctx, cOrganism* org);
   void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
   void TryWriteLookData(cString& string);
