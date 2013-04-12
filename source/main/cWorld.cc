@@ -146,7 +146,7 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback, const Apto::Map<Ap
   // Systematics
   Systematics::ManagerPtr systematics(new Systematics::Manager);
   systematics->AttachTo(new_world);
-  systematics->RegisterRole("genotype", Systematics::ArbiterPtr(new Systematics::GenotypeArbiter(new_world, m_conf->THRESHOLD.Get())));
+  systematics->RegisterRole("genotype", Systematics::ArbiterPtr(new Systematics::GenotypeArbiter(new_world, m_conf->THRESHOLD.Get(), m_conf->DISABLE_GENOTYPE_CLASSIFICATION.Get())));
 
   
   // Setup Stats Object

@@ -6791,8 +6791,9 @@ void cHardwareExperimental::TryPreyClone(cAvidaContext& ctx)
 {
   if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
     // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
+    // but can't dump a lot b/c could end up filling world with just clones (e.g. if attack happens when world is still being populated)
     int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
-    for (int i = 0; i < num_clones; i++) m_organism->GetOrgInterface().InjectPreyClone(ctx, m_organism->SystematicsGroup("genotype")->ID());
+    for (int i = 0; i < min(2, num_clones); i++) m_organism->GetOrgInterface().InjectPreyClone(ctx, m_organism->SystematicsGroup("genotype")->ID());
   }
 }
 
