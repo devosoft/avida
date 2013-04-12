@@ -1624,6 +1624,7 @@ void cPopulationInterface::InjectPreyClone(cAvidaContext& ctx, int gen_id)
       else {
         TriedIdx.Swap(idx, --list_size);
         delete testcpu;
+        if (list_size == 1) break;
       }
     }
     else TriedIdx.Swap(idx, --list_size);
