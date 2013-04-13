@@ -36,8 +36,9 @@
 #include <cmath>
 
 
-Avida::Systematics::GenotypeArbiter::GenotypeArbiter(World* world, int threshold)
+Avida::Systematics::GenotypeArbiter::GenotypeArbiter(World* world, int threshold, bool disable_class)
   : m_threshold(threshold)
+  , m_disable_class(disable_class)
   , m_active_sz(1)
   , m_coalescent(NULL)
   , m_best(0)
@@ -342,7 +343,12 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
   
   // No matching genotype (hinted or otherwise), so create a new one
   if (!found) {
-    found = GenotypePtr(new Genotype(thisPtr(), m_next_id++, u, m_cur_update, parents));
+    if (!m_disable_class) { //It's not enabled, so keep the parents
+      found = GenotypePtr(new Genotype(thisPtr(), m_next_id++, u, m_cur_update, parents));
+    }
+    else {
+      found = GenotypePtr(new Genotype(thisPtr(), m_next_id++, u, m_cur_update, ConstGroupMembershipPtr(NULL)));
+    }
     m_active_hash[list_num].Push(found);
     resizeActiveList(found->NumUnits());
     m_active_sz[found->NumUnits()].PushRear(found, &found->m_handle);
@@ -358,7 +364,6 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
       notifyListeners(found, EVENT_ADD_THRESHOLD);
     }
   }
-  
   return found;
 }
 

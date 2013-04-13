@@ -3333,7 +3333,7 @@ bool cHardwareBCR::Inst_AttackPrey(cAvidaContext& ctx)
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
       // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
       int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
-      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx, m_organism->SystematicsGroup("genotype")->ID());
     }
     
     setRegister(success_reg, 1, true);

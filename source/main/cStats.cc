@@ -4034,7 +4034,7 @@ void cStats::PrintMimicDisplays(const cString& filename)
       int shown_ft = org->GetShowForageTarget();
       // fts may not be sequentially numbered
       for (int j = 0; j < displayed_fts.GetSize(); j++) {
-        if (displayed_fts[j] == shown_ft) {
+        if (poss_fts[j] == shown_ft) {
           displayed_fts[j]++;
           break;
         }

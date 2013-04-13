@@ -1595,7 +1595,7 @@ void cPopulationInterface::TryWriteBirthLocData(int org_idx)
   if (m_world->GetConfig().TRACK_BIRTH_LOCS.Get()) m_world->GetStats().PrintBirthLocData(org_idx);
 }
 
-void cPopulationInterface::InjectPreyClone(cAvidaContext& ctx)
+void cPopulationInterface::InjectPreyClone(cAvidaContext& ctx, int gen_id)
 {
   cOrganism* org_to_clone = NULL;
   const Apto::Array<cOrganism*, Apto::Smart>& live_org_list = GetLiveOrgList();
@@ -1607,7 +1607,9 @@ void cPopulationInterface::InjectPreyClone(cAvidaContext& ctx)
   while (org_to_clone == NULL) {
     cOrganism* org_at = TriedIdx[idx];
     // exclude pred and juvs
-    if (org_at->GetForageTarget() > -1) org_to_clone = org_at;
+    if (org_at->GetForageTarget() > -1 && org_at->SystematicsGroup("genotype")->ID() != gen_id) {
+      if (!org_at->GetPhenotype().IsClone()) org_to_clone = org_at;   // only clone orgs that can reproduce on their own
+    }
     else TriedIdx.Swap(idx, --list_size);
     if (list_size == 1) break;
     idx = m_world->GetRandom().GetUInt(list_size);
