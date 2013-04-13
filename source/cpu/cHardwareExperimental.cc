@@ -3397,11 +3397,14 @@ bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(rBX);
   int rot_dir = abs(m_threads[m_cur_thread].reg[reg_used].value) % 8;
   m_from_sensor = FromSensor(reg_used);
+  
+  if (m_use_avatar) m_organism->GetOrgInterface().SetAVFacing(rot_dir);
   // rotate to the appropriate direction
-  for (int i = 0; i < num_neighbors + 1; i++) {
-    m_organism->Rotate(-1);
-    if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == rot_dir) break;
-    else if (m_use_avatar && m_organism->GetOrgInterface().GetAVFacing() == rot_dir) break;
+  else {
+    for (int i = 0; i < num_neighbors + 1; i++) {
+      m_organism->Rotate(-1);
+      if (m_organism->GetOrgInterface().GetFacedDir() == rot_dir) break;
+    }
   }
   int current_dir = m_organism->GetOrgInterface().GetFacedDir();
   if (m_use_avatar) current_dir = m_organism->GetOrgInterface().GetAVFacing();
@@ -3468,17 +3471,18 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext&)
     else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate NW  
     
     bool found_org = false;
-    int rotates = m_organism->GetNeighborhoodSize();
-    if (m_use_avatar == 2) rotates = m_organism->GetOrgInterface().GetAVNumNeighbors();
-    for (int i = 0; i < rotates; i++) {
-      m_organism->Rotate(-1);
-      if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) { 
-        found_org = true; 
-        break; 
-      }
-      else if (m_use_avatar && m_organism->GetOrgInterface().GetAVFacing() == correct_facing)  { 
-        found_org = true; 
-        break; 
+    if (m_use_avatar == 2) {
+      m_organism->GetOrgInterface().SetAVFacing(correct_facing);
+      found_org = true;
+    }
+    else {
+      int rotates = m_organism->GetNeighborhoodSize();
+      for (int i = 0; i < rotates; i++) {
+        m_organism->Rotate(-1);
+        if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) {
+          found_org = true;
+          break;
+        }
       }
     }
     // return some data as in look sensor
@@ -3561,17 +3565,18 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext&)
     else if (y_dist < 0 && x_dist < 0) correct_facing = 3; // rotate away from NW  
     
     bool found_org = false;
-    int rotates = m_organism->GetNeighborhoodSize();
-    if (m_use_avatar == 2) rotates = m_organism->GetOrgInterface().GetAVNumNeighbors();
-    for (int i = 0; i < rotates; i++) {
-      m_organism->Rotate(-1);
-      if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) { 
-        found_org = true;
-        break;
-      }
-      else if (m_use_avatar && m_organism->GetOrgInterface().GetAVFacing() == correct_facing) {
-        found_org = true;
-        break;
+    if (m_use_avatar == 2) {
+      m_organism->GetOrgInterface().SetAVFacing(correct_facing);
+      found_org = true;
+    }
+    else {
+      int rotates = m_organism->GetNeighborhoodSize();
+      for (int i = 0; i < rotates; i++) {
+        m_organism->Rotate(-1);
+        if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) {
+          found_org = true;
+          break;
+        }
       }
     }
     // return some data as in look sensor
