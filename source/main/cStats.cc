@@ -1194,10 +1194,20 @@ void cStats::PrintSoloTaskSnapshot(const cString& filename, cAvidaContext& ctx)
   
   df->WriteComment("Pop potential tasks (test cpu).");
 	df->WriteTimeStamp();
-	df->WriteComment("First set of columns gives number of organisms that can perform that particular task at least once. ");
-	df->WriteComment("Second set of columns gives total number of times that task can be performed. ");
+	df->WriteComment("First set of columns gives number of organisms that can perform that particular reaction at least once. ");
+	df->WriteComment("Second set of columns gives total number of times that reaction can be performed. ");
+	df->WriteComment("Third set of columns gives number of organisms that can perform that particular task at least once. ");
+	df->WriteComment("Fourth set of columns gives total number of times that task can be performed. ");
   df->WriteComment("Orgs are tested for each resource in the environment with res level of 1 for the current test resource and levels of 0 for other resources.");
 	df->Write(m_update,   "Update");
+  
+  Apto::Array<int> reac_list;
+  reac_list.Resize(m_world->GetEnvironment().GetNumTasks());
+  reac_list.SetAll(0);
+  
+  Apto::Array<int> total_reacs;
+  total_reacs.Resize(m_world->GetEnvironment().GetNumTasks());
+  total_reacs.SetAll(0);
   
   Apto::Array<int> task_list;
   task_list.Resize(m_world->GetEnvironment().GetNumTasks());
@@ -1227,15 +1237,26 @@ void cStats::PrintSoloTaskSnapshot(const cString& filename, cAvidaContext& ctx)
         task_list[j] += ( test_phenotype.GetLastTaskCount()[j] == 0 ) ? 0 : 1;
         // for totals, inc by actual number of times the task was performed
         totals_list[j] += test_phenotype.GetLastTaskCount()[j];
+        // inc once if the reaction was ever performed
+        reac_list[j] += ( test_phenotype.GetLastReactionCount()[j] == 0 ) ? 0 : 1;
+        // for totals, inc by actual number of times the reaction was performed
+        total_reacs[j] += test_phenotype.GetLastReactionCount()[j];
       }
       delete testcpu;
     }
+  }
+  for(int j = 0; j < reac_list.GetSize(); j++) {
+    df->Write(reac_list[j], task_names[j] );
+  }
+  for(int j = 0; j < total_reacs.GetSize(); j++) {
+    Apto::String tot_str(Apto::FormatStr("%s_reac_totals", (const char*)task_names[j]));
+    df->Write(total_reacs[j], tot_str);
   }
   for(int j = 0; j < task_list.GetSize(); j++) {
     df->Write(task_list[j], task_names[j] );
   }
   for(int j = 0; j < task_list.GetSize(); j++) {
-    Apto::String tot_str(Apto::FormatStr("%s_totals", (const char*)task_names[j]));
+    Apto::String tot_str(Apto::FormatStr("%s_task_totals", (const char*)task_names[j]));
     df->Write(totals_list[j], tot_str);
   }
   df->Endl();    
