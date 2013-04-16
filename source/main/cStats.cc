@@ -1259,6 +1259,7 @@ void cStats::PrintSoloTaskSnapshot(const cString& filename, cAvidaContext& ctx)
     Apto::String tot_str(Apto::FormatStr("%s_task_totals", (const char*)task_names[j]));
     df->Write(totals_list[j], tot_str);
   }
+  df->Write(sum_generation.Average(),      "Generation");
   df->Endl();    
 };
 
