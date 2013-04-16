@@ -678,6 +678,31 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
         }
       }
     }
+    if (m_world->GetConfig().SET_FT_AT_BIRTH.Get()) {
+      int prop_target = 2;
+      if (m_world->GetRandom().P(0.5)) {
+        prop_target = 0;
+        if (m_world->GetRandom().P(0.5)) prop_target = 1;
+      }
+      if (m_world->GetConfig().MAX_PREY_BT.Get()) {
+        int in_use = 0;
+        Apto::Array<cOrganism*> orgs;
+        const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_world->GetPopulation().GetLiveOrgList();
+        for (int i = 0; i < live_orgs.GetSize(); i++) {
+          cOrganism* org = live_orgs[i];
+          int this_target = org->GetForageTarget();
+          if (this_target == prop_target) {
+            in_use++;
+            orgs.Push(org);
+          }
+        }
+        if (in_use >= m_world->GetConfig().MAX_PREY_BT.Get()) {
+          orgs[m_world->GetRandom().GetUInt(0, in_use)]->Die(ctx);
+        }
+      }
+      offspring_array[i]->SetForageTarget(ctx, prop_target);
+      offspring_array[i]->RecordFTSet();
+    }
     // if parent org has executed teach_offspring intruction, allow the offspring to learn parent's foraging/targeting behavior
     if (parent_organism->IsTeacher()) offspring_array[i]->SetParentTeacher(true);
     offspring_array[i]->SetParentFT(parent_organism->GetForageTarget());
@@ -4772,7 +4797,6 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   int pop_cap = m_world->GetConfig().POPULATION_CAP.Get();
   if (pop_cap > 0 && num_organisms >= pop_cap) {
     int num_kills = 1;
-//    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
     
     while (num_kills > 0) {
       int target = m_world->GetRandom().GetUInt(live_org_list.GetSize());
@@ -4791,7 +4815,6 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   int pop_eldest = m_world->GetConfig().POP_CAP_ELDEST.Get();
   if (pop_eldest > 0 && num_organisms >= pop_eldest) {
     int num_kills = 1;
-//    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
     
     while (num_kills > 0) {
       double max_age = 0.0;

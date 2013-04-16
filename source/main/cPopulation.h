@@ -106,7 +106,6 @@ private:
   int num_organisms;                   // Cell count with living organisms
   int num_prey_organisms;
   int num_pred_organisms;
-  int pop_enforce;
   int num_top_pred_organisms;
   bool m_has_predatory_res;
   
