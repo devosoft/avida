@@ -697,7 +697,11 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
           }
         }
         if (in_use >= m_world->GetConfig().MAX_PREY_BT.Get()) {
-          orgs[m_world->GetRandom().GetUInt(0, in_use)]->Die(ctx);
+          cOrganism* org = orgs[m_world->GetRandom().GetUInt(0, in_use)];
+          if (org == parent_organism) {
+            parent_alive = false;
+          }
+          org->Die(ctx);
         }
       }
       offspring_array[i]->SetForageTarget(ctx, prop_target);
