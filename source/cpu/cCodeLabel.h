@@ -53,7 +53,8 @@ public:
 
   void ReadString(const cString& label_str);
   
-  int FindSublabel(cCodeLabel& sub_label);
+  int FindSublabel(const cCodeLabel& sub_label) const;
+  inline bool Contains(const cCodeLabel& sub_label) const { return (FindSublabel(sub_label) >= 0); }
 
   inline void Clear() { m_nops.Resize(0); }
   inline void AddNop(int nop_num);

@@ -100,6 +100,12 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("thread-cancel", &cHardwareBCR::Inst_ThreadCancel, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_NONE),
     tInstLibEntry<tMethod>("thread-id", &cHardwareBCR::Inst_ThreadID, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_NONE),
     tInstLibEntry<tMethod>("yield", &cHardwareBCR::Inst_Yield, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_NONE),
+    tInstLibEntry<tMethod>("regulate-pause", &cHardwareBCR::Inst_RegulatePause, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_NONE),
+    tInstLibEntry<tMethod>("regulate-pause-sp", &cHardwareBCR::Inst_RegulatePauseSP, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_NONE),
+    tInstLibEntry<tMethod>("regulate-resume", &cHardwareBCR::Inst_RegulateResume, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_NONE),
+    tInstLibEntry<tMethod>("regulate-resume-sp", &cHardwareBCR::Inst_RegulateResumeSP, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_NONE),
+    tInstLibEntry<tMethod>("regulate-reset", &cHardwareBCR::Inst_RegulateReset, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_NONE),
+    tInstLibEntry<tMethod>("regulate-reset-sp", &cHardwareBCR::Inst_RegulateResetSP, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_NONE),
 
     // Standard Conditionals
     tInstLibEntry<tMethod>("if-n-equ", &cHardwareBCR::Inst_IfNEqu, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX?!=?CX?, else skip it"),
@@ -1420,6 +1426,78 @@ bool cHardwareBCR::Inst_Yield(cAvidaContext&)
   m_threads[m_cur_thread].wait_reg = -1;
   return true;
 }
+
+
+bool cHardwareBCR::Inst_RegulatePause(cAvidaContext&)
+{
+  readLabel(getIP(), m_threads[m_cur_thread].next_label);
+  if (m_threads[m_cur_thread].next_label.GetSize() == 0) return false;
+  for (ThreadLabelIterator it(this, m_threads[m_cur_thread].next_label, false); it.Next() >= 0;) {
+    m_threads[it.Get()].running = false;
+  }
+  return true;
+}
+
+
+bool cHardwareBCR::Inst_RegulatePauseSP(cAvidaContext&)
+{
+  readLabel(getIP(), m_threads[m_cur_thread].next_label);
+  if (m_threads[m_cur_thread].next_label.GetSize() == 0) return false;
+  for (ThreadLabelIterator it(this, m_threads[m_cur_thread].next_label); it.Next() >= 0;) {
+    m_threads[it.Get()].running = false;
+  }
+  return true;
+}
+
+
+bool cHardwareBCR::Inst_RegulateResume(cAvidaContext&)
+{
+  readLabel(getIP(), m_threads[m_cur_thread].next_label);
+  if (m_threads[m_cur_thread].next_label.GetSize() == 0) return false;
+  for (ThreadLabelIterator it(this, m_threads[m_cur_thread].next_label, false); it.Next() >= 0;) {
+    m_threads[it.Get()].running = true;
+  }
+  return true;
+}
+
+
+bool cHardwareBCR::Inst_RegulateResumeSP(cAvidaContext&)
+{
+  readLabel(getIP(), m_threads[m_cur_thread].next_label);
+  if (m_threads[m_cur_thread].next_label.GetSize() == 0) return false;
+  for (ThreadLabelIterator it(this, m_threads[m_cur_thread].next_label); it.Next() >= 0;) {
+    m_threads[it.Get()].running = true;
+  }
+  return true;
+}
+
+
+bool cHardwareBCR::Inst_RegulateReset(cAvidaContext&)
+{
+  readLabel(getIP(), m_threads[m_cur_thread].next_label);
+  if (m_threads[m_cur_thread].next_label.GetSize() == 0) return false;
+  for (ThreadLabelIterator it(this, m_threads[m_cur_thread].next_label, false); it.Next() >= 0;) {
+    Head& thread_hIP = m_threads[it.Get()].heads[hIP];
+    Head thread_start(this, 0, thread_hIP.MemSpaceIndex(), thread_hIP.MemSpaceIsGene());
+    m_threads[it.Get()].Reset(this, thread_start);
+  }
+  return true;
+}
+
+
+bool cHardwareBCR::Inst_RegulateResetSP(cAvidaContext&)
+{
+  readLabel(getIP(), m_threads[m_cur_thread].next_label);
+  if (m_threads[m_cur_thread].next_label.GetSize() == 0) return false;
+  for (ThreadLabelIterator it(this, m_threads[m_cur_thread].next_label); it.Next() >= 0;) {
+    Head& thread_hIP = m_threads[it.Get()].heads[hIP];
+    Head thread_start(this, 0, thread_hIP.MemSpaceIndex(), thread_hIP.MemSpaceIsGene());
+    m_threads[it.Get()].Reset(this, thread_start);
+  }
+  return true;
+}
+
+
 
 bool cHardwareBCR::Inst_Label(cAvidaContext&)
 {
