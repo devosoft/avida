@@ -430,9 +430,9 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
   const Apto::Coord<int> ahead_dir(faced_cell.X() - this_cell.X(), faced_cell.Y() - this_cell.Y());
 
   sSearchInfo cellResultInfo;
-  cellResultInfo.amountFound = 0;
-  cellResultInfo.has_edible = false;
-  cellResultInfo.resource_id = -9;
+  int firstVisibleID;
+  Apto::Coord<int> firstVisibleCell;
+  bool foundFirstVisible = false;
   
   Apto::Array<int, Apto::Smart> val_res;                                                     // resource ids of this habitat type
 
@@ -559,6 +559,13 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
         if (valid_cell) {
           cellResultInfo = TestCell(ctx, in_defs, this_cell, val_res, first_step, stop_at_first_found);
           first_step = false;
+          
+          if (!foundFirstVisible && cellResultInfo.has_some) {
+            firstVisibleID = cellResultInfo.resource_id;
+            firstVisibleCell = this_cell;
+            foundFirstVisible = true;
+          }
+          
           if (cellResultInfo.amountFound > 0) {
             found = true;
             totalAmount += cellResultInfo.amountFound;
@@ -582,6 +589,13 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
     // work on CENTER cell for this dist
     if (count_center) {
       cellResultInfo = TestCell(ctx, in_defs, center_cell, val_res, first_step, stop_at_first_found);
+      
+      if (!foundFirstVisible && cellResultInfo.has_some) {
+        firstVisibleID = cellResultInfo.resource_id;
+        firstVisibleCell = center_cell;
+        foundFirstVisible = true;
+      }
+      
       first_step = false;
       if (cellResultInfo.amountFound > 0) {
         found = true;
@@ -613,8 +627,18 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
   stuff_seen.search_type = search_type;
   stuff_seen.id_sought = id_sought;
   
-  if (!found) {
+  if (!found && !foundFirstVisible) {
     stuff_seen.report_type = 0;
+  } else if (!found && foundFirstVisible) {
+    stuff_seen.report_type = 1;
+    stuff_seen.distance = dist_used;
+    stuff_seen.count = 0;
+    stuff_seen.value = 0;
+    stuff_seen.group = firstVisibleID;
+    
+    int target_cell = firstVisibleCell.Y() * worldx + firstVisibleCell.X();
+    FindThing(target_cell, distance_sought, facing, stuff_seen);
+
   } else if (found) {
     stuff_seen.report_type = 1;
     stuff_seen.distance = dist_used;
@@ -675,9 +699,6 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, sLookInit& in_d
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   int target_cell_num = target_cell_coords.X() + (target_cell_coords.Y() * worldx);
   sSearchInfo returnInfo;
-  returnInfo.amountFound = 0;
-  returnInfo.resource_id = -9;
-  returnInfo.has_edible = false;
   
   int& habitat_used = in_defs.habitat;
   int& search_type = in_defs.search_type;
@@ -690,6 +711,9 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, sLookInit& in_d
       if (!TestBounds(target_cell_coords, m_soloBounds[val_res[k]])) continue;
       double cell_res = m_organism->GetOrgInterface().GetFrozenCellResVal(ctx, target_cell_num, val_res[k]);
       double edible_threshold = m_res_lib.GetResource(val_res[k])->GetThreshold();
+      
+      if (cell_res > 0) returnInfo.has_some = true;
+
       if (habitat_used == 0 || habitat_used > 5) {
         if (search_type == 0 && cell_res >= edible_threshold) {
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];                                          // get FIRST whole resource id
@@ -697,12 +721,11 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, sLookInit& in_d
           if (first_step || m_res_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
             returnInfo.amountFound += floor(cell_res / edible_threshold);                                                         
           }
-        }
-        else if (search_type == 1 && cell_res < edible_threshold && cell_res > 0) {         // only get sum amounts when < threshold if search = get counts
+        } else if (search_type == 1 && cell_res < edible_threshold && cell_res > 0) {         // only get sum amounts when < threshold if search = get counts
           if (first_step || m_res_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
             returnInfo.amountFound += cell_res;                                                         
           }
-        } 
+        }
       }
       else if ((habitat_used == 1 || habitat_used == 2) && cell_res > 0) {                              // hills and walls work with any vals > 0, not the threshold default of 1
         if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   

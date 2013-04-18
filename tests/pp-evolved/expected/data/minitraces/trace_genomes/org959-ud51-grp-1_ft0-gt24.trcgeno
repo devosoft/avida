@@ -1,18 +1,18 @@
-# Fri Apr 12 15:23:39 2013
-# Filename........: minitraces/trace_genomes/org1325-ud66-grp-1_ft-2-gt187.trcgeno
-# Update Output...: 66
+# Thu Apr 18 16:08:21 2013
+# Filename........: minitraces/trace_genomes/org959-ud51-grp-1_ft0-gt24.trcgeno
+# Update Output...: 51
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
 # 
 # Generation: 0
-# Merit...........: 53.000000
+# Merit...........: 55.000000
 # Gestation Time..: 0
 # Fitness.........: 0.000000
 # Errors..........: 0
-# Genome Size.....: 53
-# Copied Size.....: 53
-# Executed Size...: 53
+# Genome Size.....: 55
+# Copied Size.....: 55
+# Executed Size...: 55
 # Offspring.......: NONE
 # 
 # Tasks Performed:
@@ -20,7 +20,6 @@
 
 
 move
-nop-B
 IO
 nop-H
 move
@@ -28,47 +27,50 @@ fork-thread
 mov-head
 search-seq-direct-s
 zero
-dec
+sub
+nop-E
 swap-stk
-attack-prey
 nop-C
-id-thread
-if-gtr-x
-move
 learn-parent
-pop-all
-rotate-away-org-id
-nop-B
+nop-G
+dec
+rand
 nop-F
-get-north-offset
 move
 shift-l
+IO
 move
 if-gtr-x
-swap
+nop-E
 nop-A
 add
 if-not-0
 rotate-org-id
 rotate-x
 push
-nop-F
+shift-l
 IO
-IO
+nop-B
 move
-wait-cond-less
+one
+push
 rand
 push
 nand
-if-less
+look-ahead-intercept
 learn-parent
 move
+push-all
 set-forage-target
+shift-l
+push-all
+zero
 repro
-nop-A
-nop-C
-set-flow
-nand
 move
-if-less-0
+swap-stk
+id-thread
+push-all
+move
 nop-X
+fork-thread
+nop-A

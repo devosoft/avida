@@ -60,7 +60,10 @@ class cOrgSensor
   struct sSearchInfo {
     double amountFound;
     int resource_id;
-    bool has_edible;
+    bool has_edible:1;
+    bool has_some:1;
+    
+    inline sSearchInfo() : amountFound(0.0), resource_id(-9), has_edible(false), has_some(false) { ; }
   };
   struct sLookInit {
     int habitat;
