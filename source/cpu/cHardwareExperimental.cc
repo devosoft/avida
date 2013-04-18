@@ -5849,7 +5849,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
       setInternalValue(reg.bin_reg, spec_bin, true);
     }
     
-    target->Die(ctx);
+    target->Die(ctx); // kill first -- could end up being killed by MAX_PRED if parent was pred
     MakeTopPred(ctx);
     
     setInternalValue(reg.success_reg, 1, true);
@@ -6628,8 +6628,8 @@ bool cHardwareExperimental::ExecuteAttack(cAvidaContext& ctx, cOrganism* target,
   setInternalValue(reg.success_reg, 1, true);
   ApplyKilledPreyBonus(target, reg, effic);
 
+  target->Die(ctx); // kill first -- could end up being killed by inject clone or MAX_PRED if parent was pred
   MakePred(ctx);
-  target->Die(ctx); // kill first -- could end up being killed by inject clone
   TryPreyClone(ctx);
   return true;
 }
@@ -6647,8 +6647,8 @@ bool cHardwareExperimental::ExecuteShareAttack(cAvidaContext& ctx, cOrganism* ta
     ApplySharedKilledPreyResBins(target, reg, effic, pack[i], share);
   }
 
+  target->Die(ctx); // kill first -- could end up being killed by inject clone or MAX_PRED if parent was pred
   MakePred(ctx);
-  target->Die(ctx); // kill first -- could end up being killed by inject clone
   TryPreyClone(ctx);
   setInternalValue(reg.success_reg, 1, true);
   return true;
@@ -6664,8 +6664,8 @@ bool cHardwareExperimental::ExecuteFakeShareAttack(cAvidaContext& ctx, cOrganism
   ApplySharedKilledPreyBonus(target, reg, effic, m_organism, share);
   ApplySharedKilledPreyResBins(target, reg, effic, m_organism, share);
   
+  target->Die(ctx); // kill first -- could end up being killed by inject clone or MAX_PRED if parent was pred
   MakePred(ctx);
-  target->Die(ctx); // kill first -- could end up being killed by inject clone
   TryPreyClone(ctx);
   setInternalValue(reg.success_reg, 1, true);
   return true;
@@ -6694,8 +6694,8 @@ bool cHardwareExperimental::ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganis
   if (target->GetForageTarget() == 2) effic *= -1;
   ApplyKilledPreyBonus(target, reg, effic);
   ApplyKilledPreyResBins(target, reg, effic);
+  target->Die(ctx); // kill first -- could end up being killed by inject clone or MAX_PRED if parent was pred
   MakePred(ctx);
-  target->Die(ctx); // kill first -- could end up being killed by inject clone
   TryPreyClone(ctx);
   setInternalValue(reg.success_reg, 1, true);
   if (to_die) m_organism->Die(ctx); // poisoned to death
