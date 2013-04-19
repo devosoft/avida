@@ -1,21 +1,21 @@
-# Fri Apr 12 15:23:38 2013
-# Filename........: archive/ft0_grp-1_056-aaaab.org
+# Thu Apr 18 16:08:20 2013
+# Filename........: archive/ft0_grp-1_055-aaaaq.org
 # Update Output...: 50
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
 # 
 # Generation: 0
-# Merit...........: 56.000000
+# Merit...........: 55.000000
 # Gestation Time..: 0
 # Fitness.........: 0.000000
 # Errors..........: 0
-# Genome Size.....: 56
-# Copied Size.....: 56
-# Executed Size...: 56
+# Genome Size.....: 55
+# Copied Size.....: 55
+# Executed Size...: 55
 # Last Birth Group ID........: -1
 # Last Birth Forager Type....: 0
-# Last Birth Cell............: 56706
+# Last Birth Cell............: 60712
 # Offspring.......: NONE
 # 
 # Tasks Performed:
@@ -30,15 +30,13 @@ fork-thread
 mov-head
 search-seq-direct-s
 zero
-rotate-x
+sub
 nop-E
-add
+swap-stk
 nop-C
-rotate-away-org-id
 learn-parent
 nop-G
 dec
-nop-H
 rand
 nop-F
 move
@@ -46,27 +44,28 @@ shift-l
 IO
 move
 if-gtr-x
-get-north-offset
+nop-E
 nop-A
 add
 if-not-0
 rotate-org-id
 rotate-x
 push
-inc
+shift-l
 IO
 nop-B
 move
 one
 push
 rand
-shift-r
+push
 nand
 look-ahead-intercept
 learn-parent
-nop-C
+move
+push-all
 set-forage-target
-if-equ-0
+shift-l
 push-all
 zero
 repro
@@ -76,5 +75,5 @@ id-thread
 push-all
 move
 nop-X
-swap-stk
+fork-thread
 nop-A

@@ -1,6 +1,6 @@
-# Fri Apr 12 15:23:41 2013
-# Filename........: archive/ft-2_grp-1_053-aaaaq.org
-# Update Output...: 100
+# Thu Apr 18 16:08:21 2013
+# Filename........: minitraces/trace_genomes/org1086-ud59-grp-1_ft0-gt48.trcgeno
+# Update Output...: 59
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
@@ -13,9 +13,6 @@
 # Genome Size.....: 53
 # Copied Size.....: 53
 # Executed Size...: 53
-# Last Birth Group ID........: -1
-# Last Birth Forager Type....: -2
-# Last Birth Cell............: 58226
 # Offspring.......: NONE
 # 
 # Tasks Performed:
@@ -23,31 +20,31 @@
 
 
 move
-nop-B
+get-north-offset
 IO
 nop-H
 move
 fork-thread
 mov-head
-search-seq-direct-s
-zero
+shift-r
+dec
 dec
 swap-stk
-attack-prey
+if-less-0
 nop-C
-id-thread
+teach-offspring
 if-gtr-x
 move
 learn-parent
-pop-all
+nop-C
 rotate-away-org-id
+rand
 nop-B
 nop-F
 get-north-offset
 move
 shift-l
 move
-if-gtr-x
 swap
 nop-A
 add
@@ -55,15 +52,15 @@ if-not-0
 rotate-org-id
 rotate-x
 push
-nop-F
+one
 IO
-IO
+nop-B
 move
 wait-cond-less
 rand
 push
 nand
-if-less
+look-ahead-intercept
 learn-parent
 move
 set-forage-target
