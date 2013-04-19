@@ -274,7 +274,7 @@ private:
     bool av_input;
     bool av_output;
     sIO_avatar() : av_cell_id(-1), av_facing(0), av_faced_cell(-1), av_input(false), av_output(false) { ; }
-    sIO_avatar(int av_cell_id, int av_facing, int av_faced_cell, bool input, bool output) : av_cell_id(av_cell_id), av_facing(av_facing), av_faced_cell(av_faced_cell), av_input(input), av_output(output) { ; }
+    sIO_avatar(int in_av_cell_id, int in_av_facing, int in_av_faced_cell, bool input, bool output) : av_cell_id(in_av_cell_id), av_facing(in_av_facing), av_faced_cell(in_av_faced_cell), av_input(input), av_output(output) { ; }
   };
 
   Apto::Array<sIO_avatar, Apto::Smart> m_avatars;

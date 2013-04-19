@@ -234,7 +234,7 @@ public:
   bool FacedHasAV(int av_num = 0) { return false; }
   bool FacedHasPredAV(int av_num = 0) { return false; }
   bool FacedHasPreyAV(int av_num = 0) { return false; }
-  void AddIOAV(int av_cell_id, int av_facing, bool input, bool output) { ; }
+  void AddIOAV(int in_av_cell_id, int in_av_facing, bool input, bool output) { ; }
   void AddPredPreyAV(int av_cell_id) { ; }
   void SwitchPredPrey(int av_num = 0) { ; }
   void RemoveAllAV() { ; }

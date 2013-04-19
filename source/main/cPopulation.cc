@@ -6358,7 +6358,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       if (tmp.props->Has("parent_merit")) {
         cString meritstr(tmp.props->Get("parent_merit"));
         while (meritstr.GetSize()) tmp.parent_merit.Push(meritstr.Pop(',').AsDouble());
-        assert(tmp.parent_merit.GetSize() == 0 || tmp.parent_merit.GetSize() == tmp.num_cpus);      
+        assert(tmp.parent_merit.GetSize() == 0 || tmp.parent_merit.GetSize() == tmp.num_cpus);
       }
     }
     else {
@@ -7983,16 +7983,16 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
   }
   
   if (m_world->GetConfig().USE_AVATARS.Get() && cell.HasAV()) {
-    Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();    
+    Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();
     
     // on den, kill juvs only
     if (cell_has_den) {
-      Apto::Array<cOrganism*> juvs;   
+      Apto::Array<cOrganism*> juvs;
       juvs.Resize(0);
       int num_juvs = 0;
       int num_guards = 0;
       for (int k = 0; k < cell_avs.GetSize(); k++) {
-        if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) { 
+        if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) {
           num_juvs++;
           juvs.Push(cell_avs[k]);
         }
@@ -8003,10 +8003,10 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
         int unguarded_juvs = num_juvs - guarded_juvs;
         for (int k = 0; k < unguarded_juvs; k++) {
           if (ctx.GetRandom().P(pred_odds) && !juvs[k]->IsDead()) {
-            if (!juvs[k]->IsRunning()) KillOrganism(GetCell(juvs[k]->GetCellID()), ctx); 
+            if (!juvs[k]->IsRunning()) KillOrganism(GetCell(juvs[k]->GetCellID()), ctx);
             else {
-                juvs[k]->GetPhenotype().SetToDie();
-                m_world->GetStats().IncJuvKilled();
+              juvs[k]->GetPhenotype().SetToDie();
+              m_world->GetStats().IncJuvKilled();
             }
           }
         }
@@ -8029,14 +8029,14 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
     // an adult would only be targeted off of a den
     if (target_org->GetPhenotype().GetTimeUsed() < juv_age || !cell_has_den) {
       if (ctx.GetRandom().P(pred_odds) && !target_org->IsDead()) {
-          if (!target_org->IsRunning()) KillOrganism(GetCell(target_org->GetCellID()), ctx);
-          else target_org->GetPhenotype().SetToDie();
+        if (!target_org->IsRunning()) KillOrganism(GetCell(target_org->GetCellID()), ctx);
+        else target_org->GetPhenotype().SetToDie();
       }
     }
   }
 }
 
-void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {                     
+void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
   const cResourceLib & resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
   int deme_res_index = -1;
