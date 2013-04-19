@@ -6557,14 +6557,14 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);        
         new_organism->GetPhenotype().SetBirthCellID(cell_id);
         org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
-      }
       
-      if (org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
-        int avatar_cell = -1;
-        if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
-        if (avatar_cell != -1) {
-          new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
-          new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
+        if (org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
+          int avatar_cell = -1;
+          if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
+          if (avatar_cell != -1) {
+            new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+            new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
+          }
         }
       }
       if (org_survived) new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
