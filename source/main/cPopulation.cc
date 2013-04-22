@@ -1206,12 +1206,12 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
           if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
             op = (int) abs(ctx.GetRandom().GetDouble());
             in_organism->SetOpinion(op);
-            JoinGroup(in_organism, op);                    
+            JoinGroup(in_organism, op);
           }
           else if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) {
             op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResourceLib().GetSize() + 1);
             in_organism->SetOpinion(op);
-            JoinGroup(in_organism, op);          
+            JoinGroup(in_organism, op);
           }
         }
       }
@@ -1231,7 +1231,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     else genotype->SetLastGroupID(in_organism->GetParentGroup());
     genotype->SetLastForagerType(in_organism->GetParentFT());      
   }
-  
+
   bool org_survived = true;
   // For tolerance_window, we cheated by dumping doomed offspring into cell (X * Y) - 1 ...now that we updated the stats, we need to 
   // kill that org. @JJB
@@ -6409,6 +6409,11 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       }
     }
     }
+    if (m_world->GetConfig().USE_AVATARS.Get() && !tmp.avatar_cells.GetSize()) {
+      cString avatarstr(tmp.props->Get("avatar_cell"));
+      while (avatarstr.GetSize()) tmp.avatar_cells.Push(avatarstr.Pop(',').AsInt());
+      assert(tmp.avatar_cells.GetSize() == 0 || tmp.avatar_cells.GetSize() == tmp.num_cpus);
+    }
   }
   
   // Sort genotypes in descending order according to their id_num
@@ -6451,7 +6456,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     // otherwise, we insert as many organisms as we need
     for (int cell_i = 0; cell_i < tmp.num_cpus; cell_i++) {
       int cell_id = 0;
-      if (!load_birth_cells) cell_id = (structured) ? (tmp.cells[cell_i] + cellid_offset) : (u_cell_id++ + cellid_offset);
+      if (!load_birth_cells && !load_rebirth) cell_id = (structured) ? (tmp.cells[cell_i] + cellid_offset) : (u_cell_id++ + cellid_offset);
       else cell_id = (structured) ? (tmp.birth_cells[cell_i] + cellid_offset) : (u_cell_id++ + cellid_offset);
       
       // Set up lineage, including lineage label (0 if not loaded)
@@ -6539,9 +6544,9 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           new_organism->GetPhenotype().SetBirthForagerType(forager_type);
           new_organism->SetParentGroup(group_id);
           new_organism->SetParentFT(forager_type);
-          if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
+          if (tmp.parent_merit.GetSize()) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
           org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
-          new_organism->SetForageTarget(ctx, forager_type);
+          if (org_survived) new_organism->SetForageTarget(ctx, forager_type, true);
         }
         else org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
         
@@ -6554,7 +6559,8 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       else if (load_rebirth) {
         new_organism->SetParentFT(tmp.parent_ft[cell_i]);
         new_organism->SetParentTeacher(tmp.parent_teacher[cell_i]);
-        if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);        
+        if (tmp.parent_merit.GetSize()) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
+        
         new_organism->GetPhenotype().SetBirthCellID(cell_id);
         org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
       }

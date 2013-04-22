@@ -127,8 +127,8 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
 { 
   m_old_peakx = m_peakx;
   m_old_peaky = m_peaky;
-  if (m_habitat == 2) generateBarrier(m_world->GetDefaultContext());
-  else if (m_habitat == 1) generateHills(m_world->GetDefaultContext());
+  if (m_habitat == 2) generateBarrier(ctx);
+  else if (m_habitat == 1) generateHills(ctx);
   else if (m_probabilistic) UpdateProbabilisticRes();
   else updatePeakRes(ctx);
 }

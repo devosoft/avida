@@ -596,7 +596,7 @@ public:
   
   int GetForageTarget() const { return m_forage_target; }
   int GetShowForageTarget() const { return m_show_ft; }
-  void SetForageTarget(cAvidaContext& ctx, int forage_target);
+  void SetForageTarget(cAvidaContext& ctx, int forage_target, bool inject = false);
   void SetPredFT(cAvidaContext& ctx) { SetForageTarget(ctx, -2); }
   void SetTopPredFT(cAvidaContext& ctx) { SetForageTarget(ctx, -3); }
   bool IsPreyFT() { return m_forage_target > -2; }

@@ -2934,7 +2934,7 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   InstructionSequence& child_seq = *child_seq_p;  
 
   // Perform Copy Mutations...
-  if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
+  if (m_organism->GetCopyMutProb() > 0 && (m_organism->GetForageTarget() < -1 || !m_world->GetConfig().PREY_MUT_OFF.Get())) { // Skip this if no mutations....
     for (int i = 0; i < child_seq.GetSize(); i++) {
 //    for (int i = 0; i < m_memory.GetSize(); i++) {
       if (m_organism->TestCopyMut(ctx)) child_seq[i] = m_inst_set->GetRandomInst(ctx);
@@ -2942,7 +2942,7 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   }
   
   // Handle Divide Mutations...
-  Divide_DoMutations(ctx);
+  if (m_organism->GetForageTarget() < -1 || !m_world->GetConfig().PREY_MUT_OFF.Get()) Divide_DoMutations(ctx);
   
   const bool viable = Divide_CheckViable(ctx, org_genome.GetSize(), child_seq.GetSize(), 1);
   if (viable == false) return false;
@@ -5579,7 +5579,7 @@ bool cHardwareExperimental::Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx)
       used_orgs[this_rand_idx] = true;
       num_checked++;
     }
-  } 
+  }
 /* not actually a random walk thru org list
   for (int i = 0; i < live_orgs.GetSize(); i++) {
     cOrganism* org = live_orgs[i];
@@ -5877,11 +5877,10 @@ bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
   if (!TestAttackChance(target, reg)) return false;
   else {
     target->Die(ctx);
-    
     setInternalValue(reg.success_reg, 1, true);
   }
   return true;
-} 
+}
 
 //Attack organism faced by this one if you are both predators or both prey. 
 bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)

@@ -805,6 +805,7 @@ public:
   CONFIG_ADD_VAR(MAX_PREY_BT, int, 0, "Population cap on number of prey (random prey will be removed when cap is exceeded) based on FT.");
   CONFIG_ADD_VAR(TRACK_GROUP_ATTACK_DETAILS, int, 0, "Track details around execution of EVERY group attack instructions for every update. \n  1 = as string in one file. \n  2 = as bits in new file for every update that this is on!");
   CONFIG_ADD_VAR(MARKING_EXPIRE_DATE, int, -1, " Number of updates markings in cells will remain effective on territory move.");
+  CONFIG_ADD_VAR(PREY_MUT_OFF, int, 0, "Turn off prey mutations in the exp hardware repro inst.");
 		
 
   // -------- Deme network config options --------

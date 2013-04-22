@@ -1186,36 +1186,36 @@ bool cOrganism::HasOpinion() {
   else return true;
 }
 
-void cOrganism::SetForageTarget(cAvidaContext& ctx, int forage_target) {
+void cOrganism::SetForageTarget(cAvidaContext& ctx, int forage_target, bool inject) {
   if (forage_target > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
   // if using avatars, make sure you swap avatar lists if the org type changes!
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     // change to pred
     if (forage_target == -2 && m_forage_target > -2) {
-      m_interface->DecNumPreyOrganisms();
+      if (!inject) m_interface->DecNumPreyOrganisms();
       m_interface->IncNumPredOrganisms();
     }
     else if (forage_target == -2 && m_forage_target < -2) {
-      m_interface->DecNumTopPredOrganisms();
+      if (!inject) m_interface->DecNumTopPredOrganisms();
       m_interface->IncNumPredOrganisms();
     }
     // change to top pred
     else if (forage_target < -2 && m_forage_target > -2) {
-      m_interface->DecNumPreyOrganisms();
+      if (!inject) m_interface->DecNumPreyOrganisms();
       m_interface->IncNumTopPredOrganisms();
     }
     else if (forage_target < -2 && m_forage_target == -2) {
-      m_interface->DecNumPredOrganisms();
+      if (!inject) m_interface->DecNumPredOrganisms();
       m_interface->IncNumTopPredOrganisms();
     }
     // change to prey
     else if (forage_target > -2 && m_forage_target == -2) {
       m_interface->IncNumPreyOrganisms();
-      m_interface->DecNumPredOrganisms();
+      if (!inject) m_interface->DecNumPredOrganisms();
     }
     else if (forage_target > -2 && m_forage_target < -2) {
       m_interface->IncNumPreyOrganisms();
-      m_interface->DecNumTopPredOrganisms();
+      if (!inject) m_interface->DecNumTopPredOrganisms();
     }
   }
   m_forage_target = forage_target;

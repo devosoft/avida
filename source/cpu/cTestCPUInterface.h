@@ -221,7 +221,6 @@ public:
   void IncNumPredOrganisms() { ; }
   void IncNumTopPredOrganisms() { ; }
   void AttackFacedOrg(cAvidaContext& ctx, int) { ; }
-
   void TryWriteBirthLocData(int) { ; }
   void InjectPreyClone(cAvidaContext& ctx, int gen_id) { ; }
   void KillRandPred(cAvidaContext& ctx, cOrganism* org) { ; }
