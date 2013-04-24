@@ -8784,20 +8784,43 @@ void cPopulation::MixPopulation(cAvidaContext& ctx)
 
 int cPopulation::PlaceAvatar(cOrganism* parent)
 {
-  int avatar_target_cell = parent->GetOrgInterface().GetAVCellID();
-  const int avatar_birth = m_world->GetConfig().AVATAR_BIRTH.Get();
-  if (avatar_birth == 1) avatar_target_cell = m_world->GetRandom().GetUInt(world_x * world_y);
-  else if (avatar_birth == 2) avatar_target_cell = parent->GetOrgInterface().GetAVFacedCellID();
-  else if (avatar_birth == 3) { 
-    avatar_target_cell += 1;
-    if (avatar_target_cell >= world_x * world_y) avatar_target_cell = 0;
+  int avatar_target_cell = -1;
+  
+  switch (m_world->GetConfig().AVATAR_BIRTH.Get()) {
+    // Random
+    case 1:
+      avatar_target_cell = m_world->GetRandom().GetUInt(world_x * world_y);
+      break;
+      
+    // Parent Facing
+    case 2:
+      avatar_target_cell = parent->GetOrgInterface().GetAVFacedCellID();
+      break;
+      
+    // Next Cell
+    case 3:
+      avatar_target_cell += 1;
+      if (avatar_target_cell >= world_x * world_y) avatar_target_cell = 0;
+      break;
+      
+    // World Center
+    case 4:
+      avatar_target_cell = (world_x * world_y) * 0.5;
+      break;
+      
+    // Parent Facing
+    default:
+      avatar_target_cell = parent->GetOrgInterface().GetAVCellID();
+      break;
   }
-    if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1 && avatar_target_cell >= 0) {
+  
+  if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1 && avatar_target_cell >= 0) {
     int dest_x = avatar_target_cell % m_world->GetConfig().WORLD_X.Get();
     int dest_y = avatar_target_cell / m_world->GetConfig().WORLD_X.Get();
     if (dest_x == 0 || dest_y == 0 || dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) {
       return -1;
     }
   }
+  
   return avatar_target_cell;
 }
