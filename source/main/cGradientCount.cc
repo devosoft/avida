@@ -73,7 +73,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
                                int halo_anchor_x, int halo_anchor_y, int move_speed, 
                                double plateau_inflow, double plateau_outflow, double cone_inflow, double cone_outflow,
                                double gradient_inflow, int is_plateau_common, double floor, int habitat, int min_size, 
-                               int max_size, int config, int count, double init_plat)
+                               int max_size, int config, int count, double init_plat, double threshold, double damage)
   : m_world(world)
   , m_peakx(peakx), m_peaky(peaky)
   , m_height(height), m_spread(spread), m_plateau(plateau), m_decay(decay)
@@ -85,6 +85,8 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_gradient_inflow(gradient_inflow), m_is_plateau_common(is_plateau_common), m_floor(floor) 
   , m_habitat(habitat), m_min_size(min_size), m_max_size(max_size), m_config(config), m_count(count)
   , m_initial_plat(init_plat)
+  , m_threshold(threshold)
+  , m_damage(damage)
   , m_geometry(geometry)
   , m_initial(false)
   , m_move_y_scaler(0.5)
@@ -163,6 +165,7 @@ void cGradientCount::updatePeakRes(cAvidaContext& ctx)
   // only update resource values at declared update timesteps if there is resource left in the cone
   if (has_edible && m_counter < m_decay && GetModified()) {
     if (m_predator) UpdatePredatoryRes(ctx);
+    if (m_damage) UpdateDamagingRes(ctx);
     return;
   } 
                    
@@ -186,6 +189,7 @@ void cGradientCount::updatePeakRes(cAvidaContext& ctx)
   || m_gradient_inflow != 0 || (m_move_a_scaler == 1 && m_just_reset)) fillinResourceValues();
 
   if (m_predator) UpdatePredatoryRes(ctx);
+  if (m_damage) UpdateDamagingRes(ctx);
 }
 
 void cGradientCount::generatePeak(cAvidaContext& ctx)
@@ -936,6 +940,18 @@ void cGradientCount::SetPredatoryResource(double odds, int juvsper)
   m_predator = true;
   m_pred_odds = odds;
   m_guarded_juvs_per_adult = juvsper;
+}
+
+void cGradientCount::UpdateDamagingRes(cAvidaContext& ctx)
+{
+  // we don't call this for walls and hills because they never move
+  if (m_damage) {
+    for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
+      if (Element(m_plateau_cell_IDs[i]).GetAmount() >= m_threshold) {
+        m_world->GetPopulation().ExecuteDamagingResource(ctx, m_plateau_cell_IDs[i], m_damage);
+      }
+    }
+  }
 }
 
 void cGradientCount::SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells)

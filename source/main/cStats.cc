@@ -4364,9 +4364,7 @@ void cStats::PrintDenData(const cString& filename) {
   int num_guards_nest = 0;
   int num_foragers = 0;
   int num_guards_off = 0;
-  
-  int population_size = m_world->GetPopulation().GetSize();
-  
+    
   int num_loiterers = 0;
   int active_dens = 0;
   

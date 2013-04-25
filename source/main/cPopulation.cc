@@ -189,7 +189,6 @@ cPopulation::cPopulation(cWorld* world)
 , num_prey_organisms(0)
 , num_pred_organisms(0)
 , num_top_pred_organisms(0)
-, m_has_predatory_res(false)
 , sync_events(false)
 , m_hgt_resid(-1)
 {
@@ -373,7 +372,7 @@ void cPopulation::SetupCellGrid()
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(), 
                            res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetDamage(),
                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
                            ); 
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
@@ -1733,7 +1732,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   // get the resource library
   const cResourceLib& resource_lib = environment.GetResourceLib();
   
-  // test for death by predatory resource
+  // test for death by predatory resource or injury
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     if (resource_lib.GetResource(i)->IsPredatory()) {
       // get the destination cell resource levels
@@ -1747,8 +1746,8 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
         }
       }
     }
+    if (resource_lib.GetResource(i)->GetDamage()) InjureOrg(GetCell(true_cell), resource_lib.GetResource(i)->GetDamage());
   }
-  
   // movement fails if there are any barrier resources in the faced cell (unless the org is already on a barrier,
   // which would happen if we built a new barrier under an org and we need to let it get off)
   bool curr_is_barrier = false;
@@ -2011,6 +2010,30 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   
   // Alert the scheduler that this cell has a 0 merit.
   AdjustSchedule(in_cell, cMerit(0));
+}
+
+void cPopulation::InjureOrg(cPopulationCell& in_cell, double injury)
+{
+  if (injury == 0) return;
+  cOrganism* target = in_cell.GetOrganism();
+  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+    double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+    target_merit -= target_merit * injury;
+    target->UpdateMerit(target_merit);
+  }
+  Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
+  for (int i = 0; i < target_reactions.GetSize(); i++) {
+    target->GetPhenotype().SetReactionCount(i, target_reactions[i] - (int)((target_reactions[i] * injury)));
+  }
+  const double target_bonus = target->GetPhenotype().GetCurBonus();
+  target->GetPhenotype().SetCurBonus(target_bonus - (target_bonus * injury));
+  
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+    Apto::Array<double> target_bins = target->GetRBins();
+    for (int i = 0; i < target_bins.GetSize(); i++) {
+      target->AddToRBin(i, -1 * (target_bins[i] * injury));
+    }
+  }
 }
 
 void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance) 
@@ -7829,7 +7852,7 @@ void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int verbosity, c
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(),
                            res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(),
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetDamage(),
                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge()); 
     } 
   }
@@ -7939,10 +7962,9 @@ void cPopulation::SetPredatoryResource(const cString res_name, const double odds
       resource_count.SetPredatoryResource(global_res_index, odds, juvsper);
     }
   }
-  m_has_predatory_res = true; 
 }
 
-void cPopulation::SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow, 
+void cPopulation::SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow,
   const double outflow, const double lambda, const double theta, const int x, const int y, const int count)
 {
   const cResourceLib & resource_lib = environment.GetResourceLib();
@@ -8042,6 +8064,19 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
   }
 }
 
+void cPopulation::ExecuteDamagingResource(cAvidaContext& ctx, const int cell_id, const double damage)
+{
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
+  
+  if (m_world->GetConfig().USE_AVATARS.Get() && cell.HasAV()) {
+    Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();
+    for (int i = 0; i < cell_avs.GetSize(); i++) {
+      InjureOrg(GetCell(cell_avs[i]->GetCellID()), damage);
+    }
+  }
+  else if (!m_world->GetConfig().USE_AVATARS.Get() && cell.IsOccupied()) InjureOrg(GetCell(cell_id), damage);
+}
+
 void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
   const cResourceLib & resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
@@ -8090,7 +8125,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(), 
                            res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetDamage(),
                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
                            ); 
       

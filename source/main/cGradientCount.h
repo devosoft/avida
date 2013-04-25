@@ -65,6 +65,8 @@ private:
   int m_config; 
   int m_count;
   double m_initial_plat;
+  double m_threshold;
+  double m_damage;
   
   int m_geometry;
   
@@ -117,7 +119,7 @@ public:
                  int halo_anchor_x, int halo_anchor_y, int move_speed, double plateau_inflow, double plateau_outflow,
                  double cone_inflow, double cone_outflow, double gradient_inflow, int is_plateau_common, 
                  double floor, int habitat, int min_size, int max_size, int config, int count, 
-                 double init_plat);
+                 double init_plat, double threshold, double damage);
   ~cGradientCount();
 
   void UpdateCount(cAvidaContext& ctx);
@@ -158,7 +160,9 @@ public:
   void SetGradPlatVarInflow(double mean, double variance, int type);
   
   void SetPredatoryResource(double odds, int juvsper);
-  void UpdatePredatoryRes(cAvidaContext& ctx); 
+  void UpdatePredatoryRes(cAvidaContext& ctx);
+
+  void UpdateDamagingRes(cAvidaContext& ctx);
   
   void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells);
   void BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells);
