@@ -1746,7 +1746,12 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
         }
       }
     }
-    if (resource_lib.GetResource(i)->GetDamage()) InjureOrg(GetCell(true_cell), resource_lib.GetResource(i)->GetDamage());
+    if (resource_lib.GetResource(i)->GetDamage()) {
+      double dest_cell_resources = GetCellResVal(ctx, dest_cell_id, i);
+      if (dest_cell_resources > resource_lib.GetResource(i)->GetThreshold()) {
+        InjureOrg(GetCell(true_cell), resource_lib.GetResource(i)->GetDamage());
+      }
+    }
   }
   // movement fails if there are any barrier resources in the faced cell (unless the org is already on a barrier,
   // which would happen if we built a new barrier under an org and we need to let it get off)
