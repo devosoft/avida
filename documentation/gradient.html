@@ -350,6 +350,17 @@ Predatory resources are gradient resources with teeth. See SetPredatoryResource 
   <td>1</td>
 </tr>
 <tr>
+  <td class="resall">move_resistance</td>
+  <td>
+    How resistant is a resource (currently only halo resources) to movement.
+    When set to > 0, this value specifies how likely the resource will remain
+    motionless for the next update cycle. A random number is selected from
+    [0, 2 + move_resistance). When less than 2, the resource will move randomly
+    in one direction. Otherwise, the resource will remain in place.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
   <td class="resall">common</td>
   <td>
 	In determining the cell values within the plateau, do we treat them as a

@@ -117,6 +117,7 @@ public:
   virtual void SetGradHaloX(int) { ; }
   virtual void SetGradHaloY(int) { ; }
   virtual void SetGradMoveSpeed(int) { ; }
+  virtual void SetGradMoveResistance(int) { ; }
   virtual void SetGradPlatInflow(double) { ; }
   virtual void SetGradPlatOutflow(double) { ; }
   virtual void SetGradConeInflow(double) { ; }
