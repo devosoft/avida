@@ -1200,6 +1200,7 @@ void cStats::PrintSoloTaskSnapshot(const cString& filename, cAvidaContext& ctx)
 	df->WriteComment("Fourth set of columns gives total number of times that task can be performed. ");
   df->WriteComment("Orgs are tested for each resource in the environment with res level of 1 for the current test resource and levels of 0 for other resources.");
 	df->Write(m_update,   "Update");
+	df->Write(sum_generation.Average(),      "Generation");
   
   Apto::Array<int> reac_list;
   reac_list.Resize(m_world->GetEnvironment().GetNumTasks());

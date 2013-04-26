@@ -136,6 +136,7 @@ private:
   double m_predator_odds;
   bool m_predator;
   double m_guard_juvs_per;
+  double m_damage;
   double m_prob_detect;
 	bool hgt_metabolize;
 	bool collectable;
@@ -217,6 +218,7 @@ public:
   int GetConfig() { return m_config; }
   int GetCount() { return m_count; }
   double GetResistance() { return m_resistance; }
+  double GetDamage() { return m_damage; }
   bool GetGradient() { return isgradient; }
   double GetInitialPlatVal() { return m_init_plat; }
   double GetThreshold() { return m_threshold; }
@@ -303,6 +305,7 @@ public:
   void SetConfig(int _config) { m_config = _config; }
   void SetCount(int _count) { m_count = _count; }
   void SetResistance(double _resistance) { m_resistance = _resistance; }
+  void SetDamage(double _damage) { m_damage = _damage; }
   void SetThreshold(double _threshold) { m_threshold = _threshold; } 
   void SetRefuge(int _refuge) { m_refuge = _refuge; }
   void SetGradient(bool _gradient) { isgradient = _gradient; }

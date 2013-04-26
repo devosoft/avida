@@ -136,6 +136,7 @@ public:
   virtual void SetGradResistance(double) { ; }
   virtual void SetGradThreshold(double) { ; }
   virtual void SetGradRefuge(int) { ; }
+  virtual void SetGradDamage(double) { ; }
 
   virtual void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy) { (void)ctx, (void)worldx, (void)worldy; }
   
