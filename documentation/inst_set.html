@@ -123,6 +123,12 @@ define how that instruction should be used.  The exact format is as follows:
     CPU cost to be paid AFTER the instruction is executed the first time (e.g. pseudo post-kill handling time in 
     predators). Post costs are only applied if the instruction executes successfully (differs from regular costs).
   </dd>
+<dt><strong>bonus_cost</strong>
+<dd>
+  The cost in units (double) of current bonus to successfully execute the instruction. bonus_cost is not
+  applied if an instruction fails for some other reason. Ultimately this is similar to res_costs when converting a common,
+  specific resource, but much simpiler.
+</dd>
 </dl>
 
 <p>&nbsp;</p>
