@@ -70,7 +70,7 @@ from -1 to 1, without first changing to 0
 cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay, 
                                int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep,  
                                int worldx, int worldy, int geometry, int halo, int halo_inner_radius, int halo_width,
-                               int halo_anchor_x, int halo_anchor_y, int move_speed, 
+                               int halo_anchor_x, int halo_anchor_y, int move_speed, int move_resistance,
                                double plateau_inflow, double plateau_outflow, double cone_inflow, double cone_outflow,
                                double gradient_inflow, int is_plateau_common, double floor, int habitat, int min_size, 
                                int max_size, int config, int count, double init_plat, double threshold, double damage)
@@ -80,7 +80,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_max_x(max_x), m_max_y(max_y), m_min_x(min_x), m_min_y(min_y)
   , m_move_a_scaler(move_a_scaler), m_updatestep(updatestep)
   , m_halo(halo), m_halo_inner_radius(halo_inner_radius), m_halo_width(halo_width)
-  , m_halo_anchor_x(halo_anchor_x), m_halo_anchor_y(halo_anchor_y), m_move_speed(move_speed)
+  , m_halo_anchor_x(halo_anchor_x), m_halo_anchor_y(halo_anchor_y), m_move_speed(move_speed), m_move_resistance(move_resistance)
   , m_plateau_inflow(plateau_inflow), m_plateau_outflow(plateau_outflow), m_cone_inflow(cone_inflow), m_cone_outflow(cone_outflow)
   , m_gradient_inflow(gradient_inflow), m_is_plateau_common(is_plateau_common), m_floor(floor) 
   , m_habitat(habitat), m_min_size(min_size), m_max_size(max_size), m_config(config), m_count(count)
@@ -218,25 +218,27 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
   // for halo's we generate a random location on the orbit,
   else if (m_halo) {
     if (m_move_a_scaler > 1) {
-      m_halo_dir = (rng.GetUInt(0,2) == 1) ? -1 : 1;
+      m_halo_dir = (rng.GetUInt(0,2) == 0) ? -1 : 1;
+      setHaloDirection(ctx);
+      
       m_changling = (rng.GetUInt(0,2) == 1) ? -1 : 1;
     }
     const int chooseUpDown = rng.GetUInt(0,2);
     if (chooseUpDown == 0) {
-    int chooseEW = rng.GetUInt(0,2);
+      int chooseEW = rng.GetUInt(0,2);
       if (chooseEW == 0) {
         m_peakx = rng.GetUInt(max(0,m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height + 1),
                               m_halo_anchor_x - m_halo_inner_radius - temp_height);
       } else {
         m_peakx = rng.GetUInt(max(0,m_halo_anchor_x + m_halo_inner_radius + temp_height + 1),
-                              m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height); 
+                              m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height);
       }
       m_peaky = rng.GetUInt(max(0,m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height + 1),
                             m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height);
     }
     else {
       int chooseNS = rng.GetUInt(0,2);
-      if (chooseNS == 0) { 
+      if (chooseNS == 0) {
         m_peaky = rng.GetUInt(max(0,m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height + 1),
                               m_halo_anchor_y - m_halo_inner_radius - temp_height);
       } else {
@@ -497,8 +499,23 @@ int cGradientCount::setHaloOrbit(cAvidaContext& ctx, int current_orbit)
     else random_shift = 1;
   }
   // if changing direction of rotation, we just switch sign of rotation
-  if (random_shift == 1) m_halo_dir = m_halo_dir * -1;  
+  if (random_shift == 1) setHaloDirection(ctx);
   return current_orbit;
+}
+
+inline void cGradientCount::setHaloDirection(cAvidaContext& ctx)
+{
+  if (m_move_resistance > 0) {
+    // Move resistance adds a bias for remaining in place and makes directional adjustment random
+    switch (ctx.GetRandom().GetUInt(2 + m_move_resistance)) {
+      case 0: m_halo_dir = -1; break;
+      case 1: m_halo_dir = 1; break;
+      default: m_halo_dir = 0; break;
+    }
+  } else {
+    // No resitance (default) simply toggles direction at timeout
+    m_halo_dir *= -1;
+  }
 }
 
 void cGradientCount::moveHaloPeak(int current_orbit)

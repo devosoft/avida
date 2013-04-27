@@ -52,6 +52,7 @@ private:
   int m_halo_anchor_x;
   int m_halo_anchor_y;
   int m_move_speed;
+  int m_move_resistance;
   double m_plateau_inflow;
   double m_plateau_outflow;
   double m_cone_inflow;
@@ -116,7 +117,7 @@ public:
   cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,              
                  int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep, 
                  int worldx, int worldy, int geometry,int halo, int halo_inner_radius, int halo_width,
-                 int halo_anchor_x, int halo_anchor_y, int move_speed, double plateau_inflow, double plateau_outflow,
+                 int halo_anchor_x, int halo_anchor_y, int move_speed, int move_resistance, double plateau_inflow, double plateau_outflow,
                  double cone_inflow, double cone_outflow, double gradient_inflow, int is_plateau_common, 
                  double floor, int habitat, int min_size, int max_size, int config, int count, 
                  double init_plat, double threshold, double damage);
@@ -144,6 +145,7 @@ public:
   void SetGradHaloX(int halo_anchor_x) { m_halo_anchor_x = halo_anchor_x; }
   void SetGradHaloY(int halo_anchor_y) { m_halo_anchor_y = halo_anchor_y; }
   void SetGradMoveSpeed(int move_speed) { m_move_speed = move_speed; }
+  void SetGradMoveResistance(int move_resistance) { m_move_resistance = move_resistance; }
   void SetGradPlatInflow(double plateau_inflow) { m_plateau_inflow = plateau_inflow; }
   void SetGradPlatOutflow(double plateau_outflow) { m_plateau_outflow = plateau_outflow; }
   void SetGradConeInflow(double cone_inflow) { m_cone_inflow = cone_inflow; }
@@ -192,6 +194,8 @@ private:
   void updateBounds(int x, int y);
   void resetUsedBounds();
   void clearExistingProbRes();
+  
+  inline void setHaloDirection(cAvidaContext& ctx);
 };
 
 #endif
