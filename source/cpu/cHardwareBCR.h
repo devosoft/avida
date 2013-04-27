@@ -574,9 +574,12 @@ private:
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_LearnParent(cAvidaContext& ctx);
   
+  bool Inst_ModifySimpDisplay(cAvidaContext& ctx);
+  bool Inst_ReadLastSimpDisplay(cAvidaContext& ctx);
+  bool Inst_KillDisplay(cAvidaContext& ctx);
+  
   // Predator-Prey Instructions
   bool Inst_AttackPrey(cAvidaContext& ctx);
-
   
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);

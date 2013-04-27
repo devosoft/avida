@@ -252,6 +252,10 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareBCR::Inst_TeachOffspring, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
     tInstLibEntry<tMethod>("learn-parent", &cHardwareBCR::Inst_LearnParent, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
 
+    tInstLibEntry<tMethod>("modify-simp-display", &cHardwareBCR::Inst_ModifySimpDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("read-simp-display", &cHardwareBCR::Inst_ReadLastSimpDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("kill-display", &cHardwareBCR::Inst_KillDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+
     tInstLibEntry<tMethod>("attack-prey", &cHardwareBCR::Inst_AttackPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
 
     // Control-type Instructions
@@ -3343,6 +3347,70 @@ bool cHardwareBCR::Inst_LearnParent(cAvidaContext& ctx)
     }
   }
   return !halt;
+}
+
+bool cHardwareBCR::Inst_ModifySimpDisplay(cAvidaContext& ctx)
+{
+  bool message_used = false;
+  for (int i = 0; i < 4; i++) {
+    if (m_inst_set->IsNop(getIP().NextInst())) {
+      getIP().Advance();
+      int this_nop = m_inst_set->GetNopMod(getIP().GetInst());
+      switch (this_nop) {
+        case 0:
+          m_organism->SetSimpDisplay(0, GetRegister(rAX));
+        case 1:
+          m_organism->SetSimpDisplay(1, GetRegister(rBX));
+        case 2:
+          m_organism->SetSimpDisplay(2, GetRegister(rCX));
+        default:
+          if (!message_used) m_organism->SetSimpDisplay(3, GetRegister(this_nop));
+          message_used = true;
+      }
+    }
+    else break;
+  } 
+  return true;
+}
+
+bool cHardwareBCR::Inst_ReadLastSimpDisplay(cAvidaContext& ctx)
+{
+  if (!m_sensor.HasSeenDisplay()) return false;
+  sOrgDisplay& last_seen = m_sensor.GetLastSeenDisplay();
+  bool message_read = false;
+  for (int i = 0; i < 4; i++) {
+    if (m_inst_set->IsNop(getIP().NextInst())) { 
+      getIP().Advance();
+      int this_nop = m_inst_set->GetNopMod(getIP().GetInst());
+      switch (this_nop) {
+        case 0:
+          setRegister(rAX, last_seen.distance, true);
+        case 1:
+          setRegister(rBX, last_seen.direction, true);
+        case 2:
+          setRegister(rCX, last_seen.value, true);
+        default:
+          if (!message_read) setRegister(this_nop, last_seen.message, true);
+          message_read = true;
+      }
+    }
+    else if (!m_inst_set->IsNop(getIP().NextInst()) && i == 0) { 
+      setRegister(rAX, last_seen.distance, true);
+      setRegister(rBX, last_seen.direction, true);
+      setRegister(rCX, last_seen.value, true);
+      setRegister(rDX, last_seen.message, true);
+      break;
+    }    
+    else break;
+  } 
+  return true;
+}
+
+bool cHardwareBCR::Inst_KillDisplay(cAvidaContext& ctx)
+{
+  if (!m_organism->IsDisplaying()) return false;
+  m_organism->KillDisplay();
+  return true;
 }
 
 //Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions.
