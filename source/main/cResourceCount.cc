@@ -223,11 +223,11 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
 				const int& in_height, const int& in_spread, const double& in_plateau, const int& in_decay,
         const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
         const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
-        const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed,
+        const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed, const int& in_move_resistance,
         const double& in_plateau_inflow, const double& in_plateau_outflow, const double& in_cone_inflow, const double& in_cone_outflow,
         const double& in_gradient_inflow, const int& in_is_plateau_common, const double& in_floor, const int& in_habitat, 
-        const int& in_min_size, const int& in_max_size, const int& in_config, const int& in_count, const double& in_resistance, 
-        const double& in_init_plat, const double& in_threshold, const int& in_refuge, const bool& isgradient)
+        const int& in_min_size, const int& in_max_size, const int& in_config, const int& in_count, const double& in_resistance,
+        const double& in_damage, const double& in_init_plat, const double& in_threshold, const int& in_refuge, const bool& isgradient)
 {
   (void)in_threshold;
   (void)in_refuge;
@@ -312,10 +312,11 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
       spatial_resource_count[res_index] = new cGradientCount(world, in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay,                                
                                                       in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
                                                       tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, 
-                                                      in_halo_width, in_halo_anchor_x, in_halo_anchor_y, in_move_speed,
+                                                      in_halo_width, in_halo_anchor_x, in_halo_anchor_y, in_move_speed, in_move_resistance,
                                                       in_plateau_inflow, in_plateau_outflow, in_cone_inflow, in_cone_outflow,
                                                       in_gradient_inflow, in_is_plateau_common, in_floor, in_habitat, 
-                                                      in_min_size, in_max_size, in_config, in_count, in_init_plat);
+                                                      in_min_size, in_max_size, in_config, in_count, in_init_plat, in_threshold,
+                                                      in_damage);
       spatial_resource_count[res_index]->RateAll(0);
     }
     
@@ -359,11 +360,11 @@ void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const i
                       const int& height, const int& spread, const double& plateau, const int& decay, 
                       const int& max_x, const int& min_x, const int& max_y, const int& min_y, const double& move_a_scaler,
                       const int& updatestep, const int& halo, const int& halo_inner_radius, const int& halo_width,
-                      const int& halo_anchor_x, const int& halo_anchor_y, const int& move_speed, 
+                      const int& halo_anchor_x, const int& halo_anchor_y, const int& move_speed, const int& move_resistance,
                       const double& plateau_inflow, const double& plateau_outflow, const double& cone_inflow, const double& cone_outflow,
                       const double& gradient_inflow, const int& is_plateau_common, const double& floor, const int& habitat, 
                       const int& min_size, const int& max_size, const int& config, const int& count, const double& resistance, 
-                      const double& plat_val, const double& threshold, const int& refuge) 
+                      const double& damage,const double& plat_val, const double& threshold, const int& refuge)
 {
   (void)world;
   
@@ -392,6 +393,7 @@ void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const i
   spatial_resource_count[res_id]->SetGradHaloX(halo_anchor_x);
   spatial_resource_count[res_id]->SetGradHaloY(halo_anchor_y);
   spatial_resource_count[res_id]->SetGradMoveSpeed(move_speed);
+  spatial_resource_count[res_id]->SetGradMoveResistance(move_resistance);
   spatial_resource_count[res_id]->SetGradPlatInflow(plateau_inflow);
   spatial_resource_count[res_id]->SetGradPlatOutflow(plateau_outflow);
   spatial_resource_count[res_id]->SetGradConeInflow(cone_inflow);
@@ -405,8 +407,10 @@ void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const i
   spatial_resource_count[res_id]->SetGradConfig(config);
   spatial_resource_count[res_id]->SetGradCount(count);
   spatial_resource_count[res_id]->SetGradResistance(resistance);
+  spatial_resource_count[res_id]->SetGradDamage(damage);
   spatial_resource_count[res_id]->SetGradThreshold(threshold);
   spatial_resource_count[res_id]->SetGradRefuge(refuge);
+  spatial_resource_count[res_id]->SetGradDamage(damage);
   
   spatial_resource_count[res_id]->ResetGradRes(ctx, worldx, worldy);
 }

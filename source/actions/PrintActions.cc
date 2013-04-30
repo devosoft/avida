@@ -1111,31 +1111,29 @@ public:
     }
     
     Apto::Array<int, Apto::Smart> birth_groups_checked;
-    Systematics::GroupPtr bg = it->Next();
     
     for (int i = 0; i < num_groups; i++) {
+      Systematics::GroupPtr bg = it->Next();
       bool already_used = false;
+      
+      if (!bg) break;
+
       if (bg && ((bool)Apto::StrAs(bg->Properties().Get("threshold")) || i == 0)) {
         int last_birth_group_id = Apto::StrAs(bg->Properties().Get("last_group_id")); 
         int last_birth_cell = Apto::StrAs(bg->Properties().Get("last_birth_cell"));
         int last_birth_forager_type = Apto::StrAs(bg->Properties().Get("last_forager_type")); 
         if (i != 0) {
           for (int j = 0; j < birth_groups_checked.GetSize(); j++) {
-            if (last_birth_group_id == birth_groups_checked[j]) { 
-              already_used = true; 
+            if (last_birth_group_id == birth_groups_checked[j]) {
+              already_used = true;
               i--;
-              break; 
+              break;
             }
           }
         }
         if (!already_used) birth_groups_checked.Push(last_birth_group_id);
-        if (already_used) {
-          if (bg == it->Next()) break; // no more to check
-          else {
-            bg = it->Next();
-            continue;
-          }
-        }
+        if (already_used) continue;
+        
         cString filename(m_filename);
         if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->Properties().Get("name").StringValue());
         else filename = filename.Set(filename + "grp%d_ft%d", last_birth_group_id, last_birth_forager_type); 
@@ -1146,9 +1144,6 @@ public:
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
         testcpu->PrintGenome(ctx2, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
         delete testcpu;
-        
-        if (bg == it->Next()) break; // no more to check
-        else bg = it->Next();
       }
     }
   }
@@ -1180,10 +1175,13 @@ public:
     for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2 && *itr != -3) num_fts++;
     
     Apto::Array<int, Apto::Smart> birth_forage_types_checked;
-    Systematics::GroupPtr bg = it->Next();
     
     for (int i = 0; i < num_fts; i++) {
       bool already_used = false;
+      Systematics::GroupPtr bg = it->Next();
+      
+      if (!bg) break;
+      
       if (bg && ((bool)Apto::StrAs(bg->Properties().Get("threshold")) || i == 0)) {
         int last_birth_group_id = Apto::StrAs(bg->Properties().Get("last_group_id")); 
         int last_birth_cell = Apto::StrAs(bg->Properties().Get("last_birth_cell"));
@@ -1198,13 +1196,9 @@ public:
           }
         }
         if (!already_used) birth_forage_types_checked.Push(last_birth_forager_type);
-        if (already_used) {
-          if (bg == it->Next()) break; // no more to check
-          else {
-            bg = it->Next();
-            continue;
-          }
-        }
+        if (already_used) continue;
+        
+        
         cString filename(m_filename);
         if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->Properties().Get("name").StringValue());
         else filename = filename.Set(filename + ".ft%d_grp%d", last_birth_forager_type, last_birth_group_id); 
@@ -1215,9 +1209,6 @@ public:
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
         testcpu->PrintGenome(ctx2, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
         delete testcpu;
-
-        if (bg == it->Next()) break; // no more to check
-        else bg = it->Next();
       }
     }
   }

@@ -106,9 +106,7 @@ private:
   int num_organisms;                   // Cell count with living organisms
   int num_prey_organisms;
   int num_pred_organisms;
-  int pop_enforce;
   int num_top_pred_organisms;
-  bool m_has_predatory_res;
   
   Apto::Array<cDeme> deme_array;            // Deme structure of the population.
  
@@ -170,6 +168,7 @@ public:
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
   void KillOrganism(cAvidaContext& ctx, int in_cell) { KillOrganism(cell_array[in_cell], ctx); } 
+  void InjureOrg(cPopulationCell& in_cell, double injury);
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
@@ -385,8 +384,9 @@ public:
                                 const double outflow, const double lambda, const double theta, const int x, const int y, const int count);
   void UpdateInflow(const cString& res_name, const double change);
   void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
-  bool HasPredatoryRes() { return m_has_predatory_res; }
  
+  void ExecuteDamagingResource(cAvidaContext& ctx, const int cell_id, const double damage);
+
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  
   // Remove an org from live org list

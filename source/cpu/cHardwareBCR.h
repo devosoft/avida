@@ -426,6 +426,12 @@ private:
   bool Inst_ThreadCancel(cAvidaContext& ctx);
   bool Inst_ThreadID(cAvidaContext& ctx);
   bool Inst_Yield(cAvidaContext& ctx);
+  bool Inst_RegulatePause(cAvidaContext& ctx);
+  bool Inst_RegulatePauseSP(cAvidaContext& ctx);
+  bool Inst_RegulateResume(cAvidaContext& ctx);
+  bool Inst_RegulateResumeSP(cAvidaContext& ctx);
+  bool Inst_RegulateReset(cAvidaContext& ctx);
+  bool Inst_RegulateResetSP(cAvidaContext& ctx);
   
   // Flow Control
   bool Inst_Label(cAvidaContext& ctx);
@@ -568,9 +574,12 @@ private:
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_LearnParent(cAvidaContext& ctx);
   
+  bool Inst_ModifySimpDisplay(cAvidaContext& ctx);
+  bool Inst_ReadLastSimpDisplay(cAvidaContext& ctx);
+  bool Inst_KillDisplay(cAvidaContext& ctx);
+  
   // Predator-Prey Instructions
   bool Inst_AttackPrey(cAvidaContext& ctx);
-
   
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
@@ -597,6 +606,38 @@ private:
   
   bool DoLookAheadEX(cAvidaContext& ctx, bool use_ft = false);
   bool DoLookAgainEX(cAvidaContext& ctx, bool use_ft = false);
+  
+private:
+  class ThreadLabelIterator
+  {
+  private:
+    cHardwareBCR* m_hw;
+    const cCodeLabel m_label;
+    bool m_is_specific;
+    int m_next_idx;
+    int m_cur_id;
+    
+  public:
+    ThreadLabelIterator(cHardwareBCR* hw, const cCodeLabel& label, bool specific = true)
+      : m_hw(hw), m_label(label), m_is_specific(specific), m_next_idx(0), m_cur_id(-1) { ; }
+    
+    inline int Next()
+    {
+      for (; m_next_idx < m_hw->m_threads.GetSize(); m_next_idx++) {
+        const cCodeLabel& thread_label = m_hw->m_threads[m_next_idx].next_label;
+        if ((m_is_specific && m_label == thread_label) || thread_label.Contains(m_label)) {
+          m_cur_id = m_next_idx;
+          m_next_idx++;
+          return m_cur_id;
+        }
+      }
+      m_cur_id = -1;
+      return m_cur_id;
+    }
+    
+    inline int Get() const { return m_cur_id; }
+    inline void Reset() { m_next_idx = 0; m_cur_id = -1; }
+  };
 
 };
 

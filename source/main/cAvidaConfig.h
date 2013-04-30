@@ -720,7 +720,7 @@ public:
   CONFIG_ADD_VAR(DEADLY_BOUNDARIES, int, 0, "Are bounded grid border cell deadly? If == 1, orgs stepping onto boundary cells will disappear into oblivion (aka die)");
   CONFIG_ADD_VAR(STEP_COUNTING_ERROR, int, 0, "% chance a step is not counted as part of easterly/northerly travel.");
   CONFIG_ADD_VAR(USE_AVATARS, int, 0, "Set orgs to move & navigate in solo avatar worlds(1=yes, 2=yes, with org interactions).");
-  CONFIG_ADD_VAR(AVATAR_BIRTH, int, 0, "0 Same as parent \n 1 Random \n 2 Cell faced by parent avatar \n 3 next grid cell");
+  CONFIG_ADD_VAR(AVATAR_BIRTH, int, 0, "0 = Same as parent\n1 = Random\n2 = Cell faced by parent avatar\n3 = next grid cell\n4 = Center of the world");
   CONFIG_ADD_VAR(AVATAR_BIRTH_FACING, int, 0, "0 North \n 1 Random");
   CONFIG_ADD_VAR(TRACK_BIRTH_LOCS, int, 0, "Log and print locations for all births place.");
 
@@ -733,6 +733,7 @@ public:
   CONFIG_ADD_VAR(TRACK_LOOK_OUTPUT, int, 0, "# track (final) output from sensor use");
   CONFIG_ADD_VAR(USE_DISPLAY, int, 0, "If 1, org display data is always 'on' (visible). If 2, org display is on and sensor does not set potential data.");
   CONFIG_ADD_VAR(USE_MIMICS, int, 0, "If 1, org's with forage target of 1 can show a deceptive ft number (as seen by other orgs via sensor)");
+  CONFIG_ADD_VAR(SET_FT_AT_BIRTH, int, 0, "Should offspring set forage target at birth? 0: No 1: Yes");
 
   // -------- Pheromone config options --------
   CONFIG_ADD_GROUP(PHEROMONE_GROUP, "Pheromone Settings");
@@ -804,6 +805,7 @@ public:
   CONFIG_ADD_VAR(MAX_PREY_BT, int, 0, "Population cap on number of prey (random prey will be removed when cap is exceeded) based on FT.");
   CONFIG_ADD_VAR(TRACK_GROUP_ATTACK_DETAILS, int, 0, "Track details around execution of EVERY group attack instructions for every update. \n  1 = as string in one file. \n  2 = as bits in new file for every update that this is on!");
   CONFIG_ADD_VAR(MARKING_EXPIRE_DATE, int, -1, " Number of updates markings in cells will remain effective on territory move.");
+  CONFIG_ADD_VAR(PREY_MUT_OFF, int, 0, "Turn off prey mutations in the exp hardware repro inst.");
 		
 
   // -------- Deme network config options --------

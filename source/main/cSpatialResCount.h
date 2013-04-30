@@ -117,6 +117,7 @@ public:
   virtual void SetGradHaloX(int) { ; }
   virtual void SetGradHaloY(int) { ; }
   virtual void SetGradMoveSpeed(int) { ; }
+  virtual void SetGradMoveResistance(int) { ; }
   virtual void SetGradPlatInflow(double) { ; }
   virtual void SetGradPlatOutflow(double) { ; }
   virtual void SetGradConeInflow(double) { ; }
@@ -135,6 +136,7 @@ public:
   virtual void SetGradResistance(double) { ; }
   virtual void SetGradThreshold(double) { ; }
   virtual void SetGradRefuge(int) { ; }
+  virtual void SetGradDamage(double) { ; }
 
   virtual void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy) { (void)ctx, (void)worldx, (void)worldy; }
   

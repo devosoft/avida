@@ -113,6 +113,7 @@ private:
   int m_halo_anchor_x;
   int m_halo_anchor_y;
   int m_move_speed;
+  int m_move_resistance;
   double m_plateau_inflow;
   double m_plateau_outflow;
   double m_cone_inflow;
@@ -135,6 +136,7 @@ private:
   double m_predator_odds;
   bool m_predator;
   double m_guard_juvs_per;
+  double m_damage;
   double m_prob_detect;
 	bool hgt_metabolize;
 	bool collectable;
@@ -202,6 +204,7 @@ public:
   int GetHaloAnchorX() { return m_halo_anchor_x; }
   int GetHaloAnchorY() { return m_halo_anchor_y; }
   int GetMoveSpeed() { return m_move_speed; }
+  int GetMoveResistance() { return m_move_resistance; }
   double GetPlateauInflow() { return m_plateau_inflow; }
   double GetPlateauOutflow() { return m_plateau_outflow; }
   double GetConeInflow() { return m_cone_inflow; }
@@ -215,6 +218,7 @@ public:
   int GetConfig() { return m_config; }
   int GetCount() { return m_count; }
   double GetResistance() { return m_resistance; }
+  double GetDamage() { return m_damage; }
   bool GetGradient() { return isgradient; }
   double GetInitialPlatVal() { return m_init_plat; }
   double GetThreshold() { return m_threshold; }
@@ -286,7 +290,8 @@ public:
   void SetHaloAnchorX(int _halo_anchor_x) { m_halo_anchor_x = _halo_anchor_x; }
   void SetHaloAnchorY(int _halo_anchor_y) { m_halo_anchor_y = _halo_anchor_y; }
   void SetMoveSpeed(int _move_speed) { m_move_speed = _move_speed; }
-  void SetPlateauInflow(double _plateau_inflow) { m_plateau_inflow = _plateau_inflow; }  
+  void SetMoveResistance(int _move_resistance) { m_move_speed = _move_resistance; }
+  void SetPlateauInflow(double _plateau_inflow) { m_plateau_inflow = _plateau_inflow; }
   void SetPlateauOutflow(double _plateau_outflow) { m_plateau_outflow = _plateau_outflow; } 
   void SetConeInflow(double _cone_inflow) { m_cone_inflow = _cone_inflow; }  
   void SetConeOutflow(double _cone_outflow) { m_cone_outflow = _cone_outflow; } 
@@ -300,6 +305,7 @@ public:
   void SetConfig(int _config) { m_config = _config; }
   void SetCount(int _count) { m_count = _count; }
   void SetResistance(double _resistance) { m_resistance = _resistance; }
+  void SetDamage(double _damage) { m_damage = _damage; }
   void SetThreshold(double _threshold) { m_threshold = _threshold; } 
   void SetRefuge(int _refuge) { m_refuge = _refuge; }
   void SetGradient(bool _gradient) { isgradient = _gradient; }

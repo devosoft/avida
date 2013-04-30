@@ -75,6 +75,7 @@ protected:
   Apto::Array<double> m_inst_energy_cost;
   Apto::Array<double> m_inst_res_cost;
   Apto::Array<double> m_inst_fem_res_cost;
+  Apto::Array<double> m_inst_bonus_cost;
   Apto::Array<int> m_thread_inst_cost;
   Apto::Array<int> m_thread_inst_post_cost;
   Apto::Array<int> m_active_thread_costs;
@@ -90,6 +91,7 @@ protected:
     bool m_has_female_costs:1;
     bool m_has_choosy_female_costs:1;
     bool m_has_post_costs:1;
+    bool m_has_bonus_costs:1;
   };
   
   int m_task_switching_cost;
