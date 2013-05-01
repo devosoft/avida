@@ -242,6 +242,17 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "math_3AK") NewTask(name, "Math 3AK ((X+Y)^2+(Y+Z)^2+(Z+X)^2)", &cTaskLib::Task_Math3in_AK);  
   else if (name == "math_3AL") NewTask(name, "Math 3AL ((X-Y)^2+(X-Z)^2)", &cTaskLib::Task_Math3in_AL);  
   else if (name == "math_3AM") NewTask(name, "Math 3AM ((X+Y)^2+(Y+Z)^2)", &cTaskLib::Task_Math3in_AM);  
+
+  //Fibonacci individual tasks
+  if (name == "fib_1") NewTask(name, "First Fib number (0)", &cTaskLib::Task_Fib1);
+  else if (name == "fib_2") NewTask(name, "Second and Third Fib number (1)", &cTaskLib::Task_Fib2);
+  else if (name == "fib_4") NewTask(name, "Fourth Fib number (2)", &cTaskLib::Task_Fib4);
+  else if (name == "fib_5") NewTask(name, "Fifth Fib number (3)", &cTaskLib::Task_Fib5);
+  else if (name == "fib_6") NewTask(name, "Sixth Fib number (5)", &cTaskLib::Task_Fib6);
+  else if (name == "fib_7") NewTask(name, "Seventh Fib number (8)", &cTaskLib::Task_Fib7);
+  else if (name == "fib_8") NewTask(name, "Eighth Fib number (13)", &cTaskLib::Task_Fib8);
+  else if (name == "fib_9") NewTask(name, "Ninth Fib number (21)", &cTaskLib::Task_Fib9);
+  else if (name == "fib_10") NewTask(name, "Tenth Fib number (34)", &cTaskLib::Task_Fib10);
   
   // Matching Tasks
   if (name == "matchstr") Load_MatchStr(name, info, envreqs, feedback);
@@ -1880,6 +1891,132 @@ double cTaskLib::Task_Math3in_AM(cTaskContext& ctx) const //((X+Y)^2+(Y+Z)^2)
       }
     }
   }
+  return 0.0;
+}
+
+double cTaskLib::Task_Fib1(cTaskContext& ctx) const
+{
+  const int test_output = ctx.GetOutputBuffer()[0];
+  const int input_size = ctx.GetInputBuffer().GetNumStored();
+  for (int i = 0; i < input_size ; i++)
+    {
+      if ( test_output == 0)
+	{
+	  return 1.0;
+	}
+    }
+  return 0.0;
+}
+
+double cTaskLib::Task_Fib2(cTaskContext& ctx) const
+{
+  const int test_output = ctx.GetOutputBuffer()[0];
+  const int input_size = ctx.GetInputBuffer().GetNumStored();
+  for (int i = 0; i < input_size ; i++)
+    {
+      if ( test_output == 1)
+	{
+	  return 1.0;
+	}
+    }
+  return 0.0;
+}
+
+double cTaskLib::Task_Fib4(cTaskContext& ctx) const
+{
+  const int test_output = ctx.GetOutputBuffer()[0];
+  const int input_size = ctx.GetInputBuffer().GetNumStored();
+  for (int i = 0; i < input_size ; i++)
+    {
+      if ( test_output == 2)
+	{
+	  return 1.0;
+	}
+    }
+  return 0.0;
+}
+
+double cTaskLib::Task_Fib5(cTaskContext& ctx) const
+{
+  const int test_output = ctx.GetOutputBuffer()[0];
+  const int input_size = ctx.GetInputBuffer().GetNumStored();
+  for (int i = 0; i < input_size ; i++)
+    {
+      if ( test_output == 3)
+	{
+	  return 1.0;
+	}
+    }
+  return 0.0;
+}
+
+double cTaskLib::Task_Fib6(cTaskContext& ctx) const
+{
+  const int test_output = ctx.GetOutputBuffer()[0];
+  const int input_size = ctx.GetInputBuffer().GetNumStored();
+  for (int i = 0; i < input_size ; i++)
+    {
+      if ( test_output == 5)
+	{
+	  return 1.0;
+	}
+    }
+  return 0.0;
+}
+
+double cTaskLib::Task_Fib7(cTaskContext& ctx) const
+{
+  const int test_output = ctx.GetOutputBuffer()[0];
+  const int input_size = ctx.GetInputBuffer().GetNumStored();
+  for (int i = 0; i < input_size ; i++)
+    {
+      if ( test_output == 8)
+	{
+	  return 1.0;
+	}
+    }
+  return 0.0;
+}
+
+double cTaskLib::Task_Fib8(cTaskContext& ctx) const
+{
+  const int test_output = ctx.GetOutputBuffer()[0];
+  const int input_size = ctx.GetInputBuffer().GetNumStored();
+  for (int i = 0; i < input_size ; i++)
+    {
+      if ( test_output == 13)
+	{
+	  return 1.0;
+	}
+    }
+  return 0.0;
+}
+
+double cTaskLib::Task_Fib9(cTaskContext& ctx) const
+{
+  const int test_output = ctx.GetOutputBuffer()[0];
+  const int input_size = ctx.GetInputBuffer().GetNumStored();
+  for (int i = 0; i < input_size ; i++)
+    {
+      if ( test_output == 21)
+	{
+	  return 1.0;
+	}
+    }
+  return 0.0;
+}
+
+double cTaskLib::Task_Fib10(cTaskContext& ctx) const
+{
+  const int test_output = ctx.GetOutputBuffer()[0];
+  const int input_size = ctx.GetInputBuffer().GetNumStored();
+  for (int i = 0; i < input_size ; i++)
+    {
+      if ( test_output == 34)
+	{
+	  return 1.0;
+	}
+    }
   return 0.0;
 }
 

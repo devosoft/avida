@@ -241,6 +241,17 @@ private:
   double Task_Math3in_AK(cTaskContext& ctx) const;
   double Task_Math3in_AL(cTaskContext& ctx) const;
   double Task_Math3in_AM(cTaskContext& ctx) const;
+
+  //Fibonacci individual numbers tasks
+  double Task_Fib1(cTaskContext& ctx) const;
+  double Task_Fib2(cTaskContext& ctx) const;
+  double Task_Fib4(cTaskContext& ctx) const;
+  double Task_Fib5(cTaskContext& ctx) const;
+  double Task_Fib6(cTaskContext& ctx) const;
+  double Task_Fib7(cTaskContext& ctx) const;
+  double Task_Fib8(cTaskContext& ctx) const;
+  double Task_Fib9(cTaskContext& ctx) const;
+  double Task_Fib10(cTaskContext& ctx) const;
   
   // Matching Tasks
   void Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
