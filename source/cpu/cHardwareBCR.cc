@@ -125,6 +125,7 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("swap-stk", &cHardwareBCR::Inst_SwitchStack, INST_CLASS_DATA, 0, "Toggle which stack is currently being used"),
     tInstLibEntry<tMethod>("swap-stk-top", &cHardwareBCR::Inst_SwapStackTop, INST_CLASS_DATA, 0, "Swap the values at the top of both stacks"),
     tInstLibEntry<tMethod>("swap", &cHardwareBCR::Inst_Swap, INST_CLASS_DATA, 0, "Swap the contents of ?BX? with ?CX?"),
+    tInstLibEntry<tMethod>("copy-val", &cHardwareBCR::Inst_CopyVal, INST_CLASS_DATA, 0, "Put the contents of ?BX? in ?CX?"),
     
     tInstLibEntry<tMethod>("shift-r", &cHardwareBCR::Inst_ShiftR, INST_CLASS_ARITHMETIC_LOGIC, 0, "Shift bits in ?BX? right by one (divide by two)"),
     tInstLibEntry<tMethod>("shift-l", &cHardwareBCR::Inst_ShiftL, INST_CLASS_ARITHMETIC_LOGIC, 0, "Shift bits in ?BX? left by one (multiply by two)"),
@@ -214,6 +215,8 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("rotate-home", &cHardwareBCR::Inst_RotateHome, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
     tInstLibEntry<tMethod>("rotate-to-unoccupied-cell", &cHardwareBCR::Inst_RotateUnoccupiedCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
     tInstLibEntry<tMethod>("rotate-x", &cHardwareBCR::Inst_RotateX, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("rotate-org-id", &cHardwareBCR::Inst_RotateOrgID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("rotate-away-org-id", &cHardwareBCR::Inst_RotateAwayOrgID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
     
     // Resource and Topography Sensing
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareBCR::Inst_SenseResourceID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT), 
@@ -1663,6 +1666,14 @@ bool cHardwareBCR::Inst_Swap(cAvidaContext&)
   return true;
 }
 
+bool cHardwareBCR::Inst_CopyVal(cAvidaContext&)
+{
+  const int op1 = FindModifiedRegister(rBX);
+  const int op2 = FindModifiedNextRegister(op1);
+  m_threads[m_cur_thread].reg[op2] = m_threads[m_cur_thread].reg[op1];
+  return true;
+}
+
 bool cHardwareBCR::Inst_ShiftR(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
@@ -2588,6 +2599,192 @@ bool cHardwareBCR::Inst_RotateX(cAvidaContext&)
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(rot_dir);
   setRegister(reg_used, rot_num * rot_dir, true);
   return true;
+}
+
+// Will rotate organism to face a specified other org
+bool cHardwareBCR::Inst_RotateOrgID(cAvidaContext&)
+{
+  if (m_use_avatar && m_use_avatar != 2) return false;
+  // Will rotate organism to face a specificied other org
+  const int id_sought_reg = FindModifiedRegister(rBX);
+  const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
+  const int worldx = m_world->GetPopulation().GetWorldX();
+  const int worldy = m_world->GetPopulation().GetWorldY();
+  int max_dist = 0;
+  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
+  m_world->GetConfig().LOOK_DIST.Get() != -1 ? max_dist = m_world->GetConfig().LOOK_DIST.Get() : max_dist = long_axis;
+  bool have_org2use = false;
+  
+  // return false if invalid number or self
+  if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
+  
+  // if valid number, does the value represent a living organism?
+  cOrganism* target_org  = NULL;
+  const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {  
+    cOrganism* org = live_orgs[i];
+    if (id_sought == org->GetID()) {
+      target_org = org;
+      have_org2use = true;
+      break;
+    }
+  }
+  if (!have_org2use) return false;
+  else {
+    int target_org_cell = target_org->GetOrgInterface().GetCellID();
+    int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
+    if (m_use_avatar == 2) {
+      target_org_cell = target_org->GetOrgInterface().GetAVCellID();
+      searching_org_cell = m_organism->GetOrgInterface().GetAVCellID();
+      if (target_org_cell == searching_org_cell) return true; // avatars in same cell
+    }
+    const int target_x = target_org_cell % worldx;
+    const int target_y = target_org_cell / worldx;
+    const int searching_x = searching_org_cell % worldx;
+    const int searching_y = searching_org_cell / worldx;
+    const int x_dist = target_x - searching_x;
+    const int y_dist = target_y - searching_y;
+    
+    const int travel_dist = max(abs(x_dist), abs(y_dist));
+    if (travel_dist > max_dist) return false;
+    
+    int correct_facing = 0;
+    if (y_dist < 0 && x_dist == 0) correct_facing = 0; // rotate N    
+    else if (y_dist < 0 && x_dist > 0) correct_facing = 1; // rotate NE
+    else if (y_dist == 0 && x_dist > 0) correct_facing = 2; // rotate E
+    else if (y_dist > 0 && x_dist > 0) correct_facing = 3; // rotate SE
+    else if (y_dist > 0 && x_dist == 0) correct_facing = 4; // rotate S
+    else if (y_dist > 0 && x_dist < 0) correct_facing = 5; // rotate SW
+    else if (y_dist == 0 && x_dist < 0) correct_facing = 6; // rotate W
+    else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate NW  
+    
+    bool found_org = false;
+    if (m_use_avatar == 2) {
+      m_organism->GetOrgInterface().SetAVFacing(correct_facing);
+      found_org = true;
+    }
+    else {
+      int rotates = m_organism->GetNeighborhoodSize();
+      for (int i = 0; i < rotates; i++) {
+        m_organism->Rotate(-1);
+        if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) {
+          found_org = true;
+          break;
+        }
+      }
+    }
+    // return some data as in look sensor
+    if (found_org) {
+      int dist_reg = FindModifiedNextRegister(id_sought_reg);
+      int dir_reg = FindModifiedNextRegister(dist_reg);
+      int fat_reg = FindModifiedNextRegister(dir_reg);
+      int ft_reg = FindModifiedNextRegister(fat_reg); 
+      int group_reg = FindModifiedNextRegister(ft_reg);
+      
+      setRegister(dist_reg, -2, true);
+      setRegister(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true);
+      setRegister(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
+      setRegister(ft_reg, target_org->GetForageTarget(), true);
+      if (target_org->HasOpinion()) {
+        setRegister(group_reg, target_org->GetOpinion().first, true);
+      }
+      if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());    
+    }        
+    return true;
+  }
+}
+
+// Will rotate organism to face away from a specificied other org
+bool cHardwareBCR::Inst_RotateAwayOrgID(cAvidaContext&)
+{
+  if (m_use_avatar && m_use_avatar != 2) return false;
+  // Will rotate organism to face a specificied other org
+  const int id_sought_reg = FindModifiedRegister(rBX);
+  const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
+  const int worldx = m_world->GetPopulation().GetWorldX();
+  const int worldy = m_world->GetPopulation().GetWorldY();
+  int max_dist = 0;
+  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
+  m_world->GetConfig().LOOK_DIST.Get() != -1 ? max_dist = m_world->GetConfig().LOOK_DIST.Get() : max_dist = long_axis;
+  bool have_org2use = false;
+  
+  // return false if invalid number or self
+  if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
+  
+  // if valid number, does the value represent a living organism?
+  cOrganism* target_org = NULL;
+  const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {  
+    cOrganism* org = live_orgs[i];
+    if (id_sought == org->GetID()) {
+      target_org = org;
+      have_org2use = true;
+      break;
+    }
+  }
+  if (!have_org2use) return false;
+  else {
+    int target_org_cell = target_org->GetOrgInterface().GetCellID();
+    int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
+    if (m_use_avatar == 2) {
+      target_org_cell = target_org->GetOrgInterface().GetAVCellID();
+      searching_org_cell = m_organism->GetOrgInterface().GetAVCellID();
+      if (target_org_cell == searching_org_cell) return true; // avatars in same cell
+    }
+    const int target_x = target_org_cell % worldx;
+    const int target_y = target_org_cell / worldx;
+    const int searching_x = searching_org_cell % worldx;
+    const int searching_y = searching_org_cell / worldx;
+    const int x_dist =  target_x - searching_x;
+    const int y_dist = target_y - searching_y;
+    
+    const int travel_dist = max(abs(x_dist), abs(y_dist));
+    if (travel_dist > max_dist) return false;
+    
+    int correct_facing = 0;
+    if (y_dist < 0 && x_dist == 0) correct_facing = 4; // rotate away from N    
+    else if (y_dist < 0 && x_dist > 0) correct_facing = 5; // rotate away from NE
+    else if (y_dist == 0 && x_dist > 0) correct_facing = 6; // rotate away from E
+    else if (y_dist > 0 && x_dist > 0) correct_facing = 7; // rotate away from SE
+    else if (y_dist > 0 && x_dist == 0) correct_facing = 0; // rotate away from S
+    else if (y_dist > 0 && x_dist < 0) correct_facing = 1; // rotate away from SW
+    else if (y_dist == 0 && x_dist < 0) correct_facing = 2; // rotate away from W
+    else if (y_dist < 0 && x_dist < 0) correct_facing = 3; // rotate away from NW  
+    
+    bool found_org = false;
+    if (m_use_avatar == 2) {
+      m_organism->GetOrgInterface().SetAVFacing(correct_facing);
+      found_org = true;
+    }
+    else {
+      int rotates = m_organism->GetNeighborhoodSize();
+      for (int i = 0; i < rotates; i++) {
+        m_organism->Rotate(-1);
+        if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) {
+          found_org = true;
+          break;
+        }
+      }
+    }
+    // return some data as in look sensor
+    if (found_org) {
+      int dist_reg = FindModifiedNextRegister(id_sought_reg);
+      int dir_reg = FindModifiedNextRegister(dist_reg);
+      int fat_reg = FindModifiedNextRegister(dir_reg);
+      int ft_reg = FindModifiedNextRegister(fat_reg); 
+      int group_reg = FindModifiedNextRegister(ft_reg);
+      
+      setRegister(dist_reg, -2, true);
+      setRegister(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true);
+      setRegister(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
+      setRegister(ft_reg, target_org->GetForageTarget(), true);  
+      if (target_org->HasOpinion()) {
+        setRegister(group_reg, target_org->GetOpinion().first, true);
+      }
+      if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());     
+    }       
+    return true;
+  }
 }
 
 bool cHardwareBCR::Inst_SenseResourceID(cAvidaContext& ctx)
