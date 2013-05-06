@@ -452,6 +452,7 @@ private:
   bool Inst_SwitchStack(cAvidaContext& ctx);
   bool Inst_SwapStackTop(cAvidaContext& ctx);
   bool Inst_Swap(cAvidaContext& ctx);
+  bool Inst_CopyVal(cAvidaContext& ctx);
 
   // Single-Argument Math
   bool Inst_ShiftR(cAvidaContext& ctx);
@@ -535,6 +536,8 @@ private:
   bool Inst_RotateHome(cAvidaContext& ctx);
   bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateX(cAvidaContext& ctx);
+  bool Inst_RotateOrgID(cAvidaContext& ctx);
+  bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
 
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
