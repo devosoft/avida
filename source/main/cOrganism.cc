@@ -1187,7 +1187,9 @@ bool cOrganism::HasOpinion() {
 }
 
 void cOrganism::SetForageTarget(cAvidaContext& ctx, int forage_target, bool inject) {
-  if (forage_target > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
+  if (m_parent_ft <= -2 && m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_interface->KillRandPred(ctx, this);
+  else if (forage_target > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
+
   // if using avatars, make sure you swap avatar lists if the org type changes!
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     // change to pred
@@ -1231,11 +1233,7 @@ void cOrganism::CopyParentFT(cAvidaContext& ctx) {
       copy_ft = false;
     }
   }
-  if (copy_ft) {
-    if (m_parent_ft <= -2 && m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_interface->KillRandPred(ctx, this);
-    else if (m_parent_ft > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
-    SetForageTarget(ctx, m_parent_ft);
-  }
+  if (copy_ft) SetForageTarget(ctx, m_parent_ft);
 }
 
 /*! Called when an organism receives a flash from a neighbor. */
