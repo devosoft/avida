@@ -290,7 +290,7 @@ public:
   void SetHaloAnchorX(int _halo_anchor_x) { m_halo_anchor_x = _halo_anchor_x; }
   void SetHaloAnchorY(int _halo_anchor_y) { m_halo_anchor_y = _halo_anchor_y; }
   void SetMoveSpeed(int _move_speed) { m_move_speed = _move_speed; }
-  void SetMoveResistance(int _move_resistance) { m_move_speed = _move_resistance; }
+  void SetMoveResistance(int _move_resistance) { m_move_resistance = _move_resistance; }
   void SetPlateauInflow(double _plateau_inflow) { m_plateau_inflow = _plateau_inflow; }
   void SetPlateauOutflow(double _plateau_outflow) { m_plateau_outflow = _plateau_outflow; } 
   void SetConeInflow(double _cone_inflow) { m_cone_inflow = _cone_inflow; }  
