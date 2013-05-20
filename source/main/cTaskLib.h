@@ -202,6 +202,7 @@ private:
   double Task_Math1in_AN(cTaskContext& ctx) const;
   double Task_Math1in_AO(cTaskContext& ctx) const;
   double Task_Math1in_AP(cTaskContext& ctx) const;
+  double Task_Math1in_AS(cTaskContext& ctx) const;
 
   // Arbitrary 2-Input Math Tasks
   double Task_Math2in_AA(cTaskContext& ctx) const;
@@ -226,6 +227,10 @@ private:
   double Task_Math2in_AT(cTaskContext& ctx) const;
   double Task_Math2in_AU(cTaskContext& ctx) const;
   double Task_Math2in_AV(cTaskContext& ctx) const;
+  double Task_Math2in_AX(cTaskContext& ctx) const;
+  double Task_Math2in_AY(cTaskContext& ctx) const;
+  double Task_Math2in_AZ(cTaskContext& ctx) const;
+  double Task_Math2in_AAA(cTaskContext& ctx) const;
 
   // Arbitrary 3-Input Math Tasks
   double Task_Math3in_AA(cTaskContext& ctx) const;
