@@ -564,6 +564,20 @@ automate some tedium.
   This will break any spatial structure your population may have had.
 </dd>
 <dt><strong>
+  WRITE_INJECT_INITIAL [<span class="cmdargopt">file='events_inj.cfg'</span>]
+  [<span class="cmdargopt">start_cell=0</span>] [<span class="cmdargopt">lineage=0</span>]
+</strong></dt>
+<dd>
+  Creates an <a href="events.html">events file</a> which injects all the genotypes of the current 
+  batch before update 0 (same as WRITE_INJECT_EVENTS but doesn't cause no organism errors).  Injection starts at the given start_cell id and increments 
+  upward.  All injected organisms are assigned the given lineage label and start 
+  with the relevant merit; num_cpus copies of each genotype are injected.
+  <br />
+  <strong>Warning:</strong> injection is in order that the genotypes appear in the batch.  
+  This will break any spatial structure your population may have had.
+</dd>
+
+<dt><strong>
   WRITE_COMPETITION [<span class="cmdargopt">join_UD=0</span>]
   [<span class="cmdargopt">start_merit=50000</span>] [<span class="cmdargopt">file='events_comp.cfg'</span>]
   [<span class="cmdargopt">batch_A=cur_batch-1</span>] 

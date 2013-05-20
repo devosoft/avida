@@ -6676,6 +6676,42 @@ void cAnalyze::WriteInjectEvents(cString cur_string)
   }
 }
 
+void cAnalyze::WriteInjectInitial(cString cur_string)
+{
+  // Load in the variables...
+  cString filename("events_inj.cfg");
+  int start_cell = 0;
+  int lineage = 0;
+  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
+  if (cur_string.GetSize() != 0) start_cell = cur_string.PopWord().AsInt();
+  if (cur_string.GetSize() != 0) lineage = cur_string.PopWord().AsInt();
+  
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  ofstream& fp = df->OFStream();
+  
+  int org_count = 0;
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * genotype = NULL;
+  while ((genotype = batch_it.Next()) != NULL) {
+    const int cur_count = genotype->GetNumCPUs();
+    org_count += cur_count;
+    const Genome& base_genome = genotype->GetGenome();
+    ConstInstructionSequencePtr base_seq_p;
+    ConstGeneticRepresentationPtr rep_p = base_genome.Representation();
+    base_seq_p.DynamicCastFrom(rep_p);
+    const InstructionSequence& genome = *base_seq_p;
+    
+    fp << "i InjectSequence "
+      << genome.AsString() << " "
+      << start_cell << " "
+      << start_cell + cur_count << " "
+      << genotype->GetMerit() << " "
+      << lineage << " "
+      << endl;
+    start_cell += cur_count;
+  }
+}
+
 
 void cAnalyze::WriteCompetition(cString cur_string)
 {
@@ -9818,6 +9854,7 @@ void cAnalyze::SetupCommandDefLibrary()
   // Build input files for avida...
   AddLibraryDef("WRITE_CLONE", &cAnalyze::WriteClone);
   AddLibraryDef("WRITE_INJECT_EVENTS", &cAnalyze::WriteInjectEvents);
+  AddLibraryDef("WRITE_INJECT_INITIAL", &cAnalyze::WriteInjectInitial);
   AddLibraryDef("WRITE_COMPETITION", &cAnalyze::WriteCompetition);
   
   // Automated analysis

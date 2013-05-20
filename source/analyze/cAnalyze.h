@@ -269,6 +269,7 @@ private:
   // Build Input Files for Avida
   void WriteClone(cString cur_string);
   void WriteInjectEvents(cString cur_string);
+  void WriteInjectInitial(cString cur_string);
   void WriteCompetition(cString cur_string);
   
   // Automated analysis...
