@@ -615,18 +615,21 @@ void cGradientCount::movePeak()
   int temp_height = 0;
   if (m_plateau < 0) temp_height = 1;
   else temp_height = m_height;
-
-  int temp_peakx = m_peakx + (int)(m_move_y_scaler + 0.5) * m_movesignx;
-  int temp_peaky = m_peaky + (int)(m_move_y_scaler + 0.5) * m_movesigny;
   
-  if (temp_peakx > (m_max_x - temp_height)) m_movesignx = -1;
-  if (temp_peakx < (m_min_x + temp_height + 1)) m_movesignx = 1; 
-  
-  if (temp_peaky > (m_max_y - temp_height)) m_movesigny = -1;
-  if (temp_peaky < (m_min_y + temp_height + 1)) m_movesigny = 1;
-  
-  m_peakx = (int) (m_peakx + (m_movesignx * m_move_y_scaler) + .5);
-  m_peaky = (int) (m_peaky + (m_movesigny * m_move_y_scaler) + .5);
+  int num_steps = m_move_speed > 1 ? m_move_speed : 1;
+  for (int i = 0; i < num_steps; i++) {
+    int temp_peakx = m_peakx + (int)(m_move_y_scaler + 0.5) * m_movesignx;
+    int temp_peaky = m_peaky + (int)(m_move_y_scaler + 0.5) * m_movesigny;
+    
+    if (temp_peakx > (m_max_x - temp_height)) m_movesignx = -1;
+    if (temp_peakx < (m_min_x + temp_height + 1)) m_movesignx = 1; 
+    
+    if (temp_peaky > (m_max_y - temp_height)) m_movesigny = -1;
+    if (temp_peaky < (m_min_y + temp_height + 1)) m_movesigny = 1;
+    
+    m_peakx = (int) (m_peakx + (m_movesignx * m_move_y_scaler) + .5);
+    m_peaky = (int) (m_peaky + (m_movesigny * m_move_y_scaler) + .5);
+  }
 }  
 
 void cGradientCount::generateBarrier(cAvidaContext& ctx)

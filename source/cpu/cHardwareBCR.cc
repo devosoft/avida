@@ -3203,6 +3203,17 @@ cOrgSensor::sLookOut cHardwareBCR::InitLooking(cAvidaContext& ctx, sLookRegAssig
 
 void cHardwareBCR::LookResults(sLookRegAssign& regs, cOrgSensor::sLookOut& results)
 {
+  if (m_world->GetConfig().TRACK_LOOK_SETTINGS.Get()) {
+    cString look_string = "";
+    look_string += cStringUtil::Stringf("%d", m_organism->GetForageTarget());
+    look_string += cStringUtil::Stringf(",%d", results.report_type);
+    look_string += cStringUtil::Stringf(",%d", results.habitat);
+    look_string += cStringUtil::Stringf(",%d", results.distance);
+    look_string += cStringUtil::Stringf(",%d", results.search_type);
+    look_string += cStringUtil::Stringf(",%d", results.id_sought);
+    m_organism->GetOrgInterface().TryWriteLookData(look_string);
+  }
+  
   // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
   // return defaults for failed to find
   if (results.report_type == 0) {
@@ -3249,6 +3260,21 @@ void cHardwareBCR::LookResults(sLookRegAssign& regs, cOrgSensor::sLookOut& resul
       else if (target_reg == 13) setRegister(regs.ft, rand, true);  
     }
   }
+  if (m_world->GetConfig().TRACK_LOOK_OUTPUT.Get()) {
+    cString look_string = "";
+    look_string += cStringUtil::Stringf("%d", m_organism->GetForageTarget());
+    look_string += cStringUtil::Stringf(",%d", results.report_type);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.habitat].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.distance].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.search_type].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.id_sought].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.count].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.value].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.group].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.ft].value);
+    m_organism->GetOrgInterface().TryWriteLookOutput(look_string);
+  }
+  
   return;
 }
 
