@@ -2348,7 +2348,7 @@ void cStats::PrintGroupAttackBits(unsigned char raw_bits)
 
 void cStats::PrintGroupAttackString(cString& string)
 {
-  cString file = "looksettings";
+  cString file = "attack_outcomes.dat";
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
   
   if (!df->HeaderDone()) {
@@ -2426,7 +2426,7 @@ void cStats::PrintBirthLocData(int org_idx)
 
 void cStats::PrintLookData(cString& string)
 {
-  cString file = "looksettings";
+  cString file = "looksettings.dat";
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
   
   if (!df->HeaderDone()) {
