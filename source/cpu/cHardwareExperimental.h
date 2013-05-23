@@ -405,6 +405,7 @@ private:
   bool Inst_IfLessConsensus(cAvidaContext& ctx);
   bool Inst_IfLessConsensus24(cAvidaContext& ctx);
   bool Inst_IfStackGreater(cAvidaContext& ctx);
+  bool Inst_IfNest(cAvidaContext& ctx);
   bool Inst_Label(cAvidaContext& ctx);
 
   // Stack and Register Operations

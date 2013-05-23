@@ -143,6 +143,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("if-less-cons-24", &cHardwareExperimental::Inst_IfLessConsensus24, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if Count(?BX[0:23]?) < Count(?CX[0:23]?), else skip it"),
     
     tInstLibEntry<tMethod>("if-stk-gtr", &cHardwareExperimental::Inst_IfStackGreater, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if the top of the current stack > inactive stack, else skip it"),
+    tInstLibEntry<tMethod>("if-nest", &cHardwareExperimental::Inst_IfNest, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if the organism is on the nest/den, else skip it"),
     
     // Core ALU Operations
     tInstLibEntry<tMethod>("pop", &cHardwareExperimental::Inst_Pop, INST_CLASS_DATA, 0, "Remove top number from stack and place into ?BX?"),
@@ -1786,6 +1787,25 @@ bool cHardwareExperimental::Inst_IfStackGreater(cAvidaContext&)
   if (getStack(cur_stack).Peek().value <=  getStack(!cur_stack).Peek().value) getIP().Advance();
   return true;
 }
+
+bool cHardwareExperimental::Inst_IfNest(cAvidaContext& ctx) // Execute next if org on nest
+{
+  bool set_ok = false;
+
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) {
+      double cell_res = 0.0;
+      if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
+      else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
+      if (cell_res > 0) set_ok = true;
+    }
+  }
+
+  if (set_ok) getIP().Advance();
+  return true;
+}
+
 
 bool cHardwareExperimental::Inst_Label(cAvidaContext&)
 {
