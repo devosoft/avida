@@ -2450,7 +2450,7 @@ void cStats::PrintLookData(cString& string)
 
 void cStats::PrintLookDataOutput(cString& string)
 {
-  cString file = "lookoutput";
+  cString file = "lookoutput.dat";
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
   
   if (!df->HeaderDone()) {
@@ -2468,6 +2468,31 @@ void cStats::PrintLookDataOutput(cString& string)
     df->WriteComment("Value");
     df->WriteComment("Group");
     df->WriteComment("FT");
+    df->FlushComments();
+    df->Endl();
+  }
+  
+  std::ofstream& fp = df->OFStream();
+  fp << GetUpdate() << "," << string << endl;
+}
+
+void cStats::PrintLookEXDataOutput(cString& string)
+{
+  cString file = "lookoutput.dat";
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
+  
+  if (!df->HeaderDone()) {
+    df->WriteComment("Final (used) Look Output to Registers");
+    df->WriteTimeStamp();
+    
+    df->WriteComment("Update");
+    df->WriteComment("ThisOrgForageTarget");
+    df->WriteComment("AnyFound");
+    df->WriteComment("Habitat");
+    df->WriteComment("SoughtID");
+    df->WriteComment("TravelDistance");
+    df->WriteComment("Deviance");
+    df->WriteComment("CountValue");
     df->FlushComments();
     df->Endl();
   }

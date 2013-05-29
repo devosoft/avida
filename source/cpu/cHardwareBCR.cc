@@ -2913,6 +2913,17 @@ bool cHardwareBCR::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
   
   look_results = m_sensor.SetLooking(ctx, look_init, facing, cell_id, use_ft);
   
+  if (m_world->GetConfig().TRACK_LOOK_SETTINGS.Get()) {
+    cString look_string = "";
+    look_string += cStringUtil::Stringf("%d", m_organism->GetForageTarget());
+    look_string += cStringUtil::Stringf(",%d", look_results.report_type);
+    look_string += cStringUtil::Stringf(",%d", look_results.habitat);
+    look_string += cStringUtil::Stringf(",%d", look_results.distance);
+    look_string += cStringUtil::Stringf(",%d", look_results.search_type);
+    look_string += cStringUtil::Stringf(",%d", look_results.id_sought);
+    m_organism->GetOrgInterface().TryWriteLookData(look_string);
+  }
+  
   // Update Sessions
   m_threads[m_cur_thread].sensor_session.habitat = look_results.habitat;
   m_threads[m_cur_thread].sensor_session.distance = look_init.distance;
@@ -2967,6 +2978,17 @@ bool cHardwareBCR::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
       else if ((target_reg == 12 || target_reg == 13) && reg_id_found != -1) setRegister(reg_id_found, rand, true);
     }
   }
+  if (m_world->GetConfig().TRACK_LOOK_OUTPUT.Get()) {
+    cString look_string = "";
+    look_string += cStringUtil::Stringf("%d", m_organism->GetForageTarget());
+    look_string += cStringUtil::Stringf(",%d", look_results.report_type);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[reg_habitat].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[reg_id_sought].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[reg_travel_distance].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[reg_deviance].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[reg_cv].value);
+    m_organism->GetOrgInterface().TryWriteLookEXOutput(look_string);
+  }  
   
   return true;
 }
@@ -2993,7 +3015,6 @@ bool cHardwareBCR::DoLookAgainEX(cAvidaContext& ctx, bool use_ft)
   
   const int reg_session = FindUpstreamModifiedRegister(0, -1);
   
-  
   const int reg_travel_distance = FindModifiedNextRegister(rDX);  // ?rDX?
   const int reg_deviance = FindNextRegister(reg_travel_distance);           // rDX + 1 = rEX
   const int reg_cv = FindNextRegister(reg_deviance);                        // rDX + 2 = rFX
@@ -3009,6 +3030,17 @@ bool cHardwareBCR::DoLookAgainEX(cAvidaContext& ctx, bool use_ft)
   look_results.value = 0;
   
   look_results = m_sensor.SetLooking(ctx, look_init, facing, cell_id, use_ft);
+  
+  if (m_world->GetConfig().TRACK_LOOK_SETTINGS.Get()) {
+    cString look_string = "";
+    look_string += cStringUtil::Stringf("%d", m_organism->GetForageTarget());
+    look_string += cStringUtil::Stringf(",%d", look_results.report_type);
+    look_string += cStringUtil::Stringf(",%d", look_results.habitat);
+    look_string += cStringUtil::Stringf(",%d", look_results.distance);
+    look_string += cStringUtil::Stringf(",%d", look_results.search_type);
+    look_string += cStringUtil::Stringf(",%d", look_results.id_sought);
+    m_organism->GetOrgInterface().TryWriteLookData(look_string);
+  }
   
   if (look_results.report_type == 0) {
     setRegister(reg_travel_distance, -1, true);
@@ -3041,7 +3073,17 @@ bool cHardwareBCR::DoLookAgainEX(cAvidaContext& ctx, bool use_ft)
       else if ((target_reg == 12 || target_reg == 13) && reg_id_found != -1) setRegister(reg_id_found, rand, true);
     }
   }
-  
+  if (m_world->GetConfig().TRACK_LOOK_OUTPUT.Get()) {
+    cString look_string = "";
+    look_string += cStringUtil::Stringf("%d", m_organism->GetForageTarget());
+    look_string += cStringUtil::Stringf(",%d", look_results.report_type);
+    look_string += cStringUtil::Stringf(",%d", look_results.habitat);
+    look_string += cStringUtil::Stringf(",%d", look_results.id_sought);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[reg_travel_distance].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[reg_deviance].value);
+    look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[reg_cv].value);
+    m_organism->GetOrgInterface().TryWriteLookEXOutput(look_string);
+  }  
   return true;
 }
 
@@ -3273,8 +3315,7 @@ void cHardwareBCR::LookResults(sLookRegAssign& regs, cOrgSensor::sLookOut& resul
     look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.group].value);
     look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[regs.ft].value);
     m_organism->GetOrgInterface().TryWriteLookOutput(look_string);
-  }
-  
+  }  
   return;
 }
 
