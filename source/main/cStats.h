@@ -819,6 +819,7 @@ public:
   void PrintBirthLocData(int org_idx);
   void PrintLookData(cString& string);
   void PrintLookDataOutput(cString& string);
+  void PrintLookEXDataOutput(cString& string);
 
   void PrintCountData(const cString& filename);
   void PrintThreadsData(const cString& filename);

@@ -263,6 +263,7 @@ public:
   void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
   void TryWriteLookData(cString& string);
   void TryWriteLookOutput(cString& string);
+  void TryWriteLookEXOutput(cString& string);
   
 // -------- Avatar support -------- @JJB
 private:
