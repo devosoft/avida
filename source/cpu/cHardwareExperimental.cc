@@ -318,8 +318,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("deposit-all-as-specific", &cHardwareExperimental::Inst_DepositAllAsSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("nop-deposit-specific", &cHardwareExperimental::Inst_NopDepositSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("nop-deposit-resource", &cHardwareExperimental::Inst_NopDepositResource, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("nop-deposit-all-as-specific", &cHardwareExperimental::Inst_NopDepositAllAsSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("nop-collect-edible", &cHardwareExperimental::Inst_NopCollectEdible, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
+    tInstLibEntry<tMethod>("nop-deposit-all-as-specific", &cHardwareExperimental::Inst_NopDepositAllAsSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("nop2-deposit-all-as-specific", &cHardwareExperimental::Inst_Nop2DepositAllAsSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("nop-collect-edible", &cHardwareExperimental::Inst_NopCollectEdible, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("nop2-collect-edible", &cHardwareExperimental::Inst_Nop2CollectEdible, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-res-stored", &cHardwareExperimental::Inst_GetResStored, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("get-specific-stored", &cHardwareExperimental::Inst_GetSpecificStored, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
  
@@ -4546,6 +4548,51 @@ bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bo
   return false;
 }
 
+bool cHardwareExperimental::FakeActualCollect(cAvidaContext& ctx, int bin_used, bool unit)
+{
+    // Set up res_change and max total
+    double cell_res = 0.0;
+    if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, bin_used);
+    else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, bin_used);
+    
+    Apto::Array<double> res_change(m_world->GetEnvironment().GetResourceLib().GetSize());
+    res_change.SetAll(0.0);
+    double total = m_organism->GetRBinsTotal();
+    double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
+    bool has_max = max > 0 ? true : false;
+    double res_consumed = 0.0;
+    
+    // Collect a unit or some ABSORB_RESOURCE_FRACTION
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    if (unit) {
+        double threshold = resource_lib.GetResource(bin_used)->GetThreshold();
+        if (cell_res >= threshold) {
+            res_consumed = threshold;
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        res_consumed = cell_res * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get();
+    }
+    
+    if (has_max && res_consumed + total >= max) {
+        res_consumed = max - total;
+        res_change[bin_used] = -1 * res_consumed;
+    }
+    else res_change[bin_used] = -1 * res_consumed;
+    
+    if (res_consumed > 0) {
+      //org does not get the resource but it is taken from environment
+        if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
+        else if (m_use_avatar) m_organism->GetOrgInterface().UpdateAVResources(ctx, res_change);
+        return true;
+    }
+    return false;
+}
+
+
 bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
 {
   int absorb_type = m_world->GetConfig().MULTI_ABSORB_TYPE.Get();
@@ -4785,6 +4832,82 @@ bool cHardwareExperimental::Inst_NopDepositAllAsSpecific(cAvidaContext& ctx)
   return success;
 }
 
+bool cHardwareExperimental::Inst_Nop2DepositAllAsSpecific(cAvidaContext& ctx)
+{
+  const int spec_res = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  bool success = false;
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  // only allow deposits on dens
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 4) {
+      double cell_res = 0.0;
+      if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
+      else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
+      if (cell_res > resource_lib.GetResource(i)->GetThreshold()) {
+        double total_deposit = 0.0;
+        for (int j = 0; j < resource_lib.GetSize(); j++) {
+          double resource_amount = m_organism->GetRBins()[j];
+          m_organism->AddToRBin(j, -1 * resource_amount);
+          // resource doesn't get added to total_deposit
+        }
+        if (total_deposit > 0) {
+          Apto::Array<double> res_change(resource_lib.GetSize());
+          res_change.SetAll(0.0);
+          res_change[spec_res] = total_deposit;
+          if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
+          else if (m_use_avatar) m_organism->GetOrgInterface().UpdateAVResources(ctx, res_change);
+          success = true;
+          m_organism->IncNumDeposits();
+          m_organism->IncAmountDeposited(total_deposit);
+        }
+        break;
+      }
+    }
+  }
+  int out_reg = FindModifiedRegister(rBX);
+  if (success) setInternalValue(out_reg, 1, true);
+  else if (!success) setInternalValue(out_reg, -1, true);
+  return success;
+}
+
+bool cHardwareExperimental::Inst_Nop2CollectEdible(cAvidaContext& ctx)
+{
+  int absorb_type = m_world->GetConfig().MULTI_ABSORB_TYPE.Get();
+  
+  double cell_res = 0.0;
+  int res_id = -1;
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  if (absorb_type == 1) {
+    for (int i = 0; i < resource_lib.GetSize(); i++) {
+      if (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5) {
+        if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
+        else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
+        if (cell_res >= resource_lib.GetResource(i)->GetThreshold()) {
+          res_id = i;
+          break;
+        }
+      }
+    }
+  }
+  else if (absorb_type == 2) {
+    for (int i = resource_lib.GetSize(); i > 0 ; i--) {
+      if (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() > 5) {
+        if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i - 1);
+        else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i - 1);
+        if (cell_res >= resource_lib.GetResource(i - 1)->GetThreshold()) {
+          res_id = i - 1;
+          break;
+        }
+      }
+    }
+  }
+  else m_world->GetDriver().Feedback().Error("Instruction collect-edible only operational for MULTI_ABSORB_TYPE 1 or 2");
+  bool success = false;
+  if (res_id != -1) success = FakeActualCollect(ctx, res_id, true);
+  return success;
+}
+
+
 bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
 {
   int absorb_type = m_world->GetConfig().MULTI_ABSORB_TYPE.Get();  
@@ -4832,6 +4955,8 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
   }
   return false;
 }
+
+
 
 bool cHardwareExperimental::Inst_GetResStored(cAvidaContext& ctx)
 {
