@@ -571,6 +571,7 @@ private:
   bool Inst_GetFacedOrgDensity(cAvidaContext& ctx);
   
   bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit);
+  bool FakeActualCollect(cAvidaContext& ctx, int bin_used, bool unit);
   bool Inst_CollectEdible(cAvidaContext& ctx);
   bool Inst_CollectSpecific(cAvidaContext& ctx);
   bool Inst_DepositResource(cAvidaContext& ctx);
@@ -579,7 +580,9 @@ private:
   bool Inst_NopDepositResource(cAvidaContext& ctx);
   bool Inst_NopDepositSpecific(cAvidaContext& ctx);    
   bool Inst_NopDepositAllAsSpecific(cAvidaContext& ctx);
+  bool Inst_Nop2DepositAllAsSpecific(cAvidaContext& ctx);
   bool Inst_NopCollectEdible(cAvidaContext& ctx);
+  bool Inst_Nop2CollectEdible(cAvidaContext& ctx);
   bool Inst_GetResStored(cAvidaContext& ctx);
   bool Inst_GetSpecificStored(cAvidaContext& ctx);
 
