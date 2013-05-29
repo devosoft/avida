@@ -477,6 +477,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     
     // Suicide
     tInstLibEntry<tMethod>("kazi",	&cHardwareCPU::Inst_Kazi, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("kazi1", &cHardwareCPU::Inst_Kazi1, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("kazi2", &cHardwareCPU::Inst_Kazi2, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("kazi3", &cHardwareCPU::Inst_Kazi3, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("kazi4", &cHardwareCPU::Inst_Kazi4, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("kazi5", &cHardwareCPU::Inst_Kazi5, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("poison", &cHardwareCPU::Inst_Poison),
@@ -3484,6 +3488,118 @@ bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
     }
     
   if (ctx.GetRandom().P(percent_prob)) m_organism->Kaboom(distance, ctx);
+  return true;
+}
+
+bool cHardwareCPU::Inst_Kazi1(cAvidaContext& ctx)
+{
+  assert(m_world->GetConfig().KABOOM_PROB.Get() != -1 || m_world->GetConfig().KABOOM1_HAMMING.Get() != -1);
+  const int reg_used = FindModifiedRegister(REG_AX);
+  //These must always be set in the if, they can't both be adjustable, so don't do it
+  int distance = -1;
+  double percent_prob = 1.0;
+  if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM1_HAMMING.Get() == -1) {
+    //Case where Probability is static and hamming distance is adjustable
+    int get_reg_value = GetRegister(reg_used);
+    //MAX_GENOME_SIZE and MIN_GENOME_SIZE should be set for these experiments, otherwise hamming distance doesn't make sense
+    int genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+    percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+    distance = (get_reg_value % genome_size);
+  } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM1_HAMMING.Get() != -1) {
+    //Case where both Probability and Hamming Distance are static
+    percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+    distance = (int) m_world->GetConfig().KABOOM1_HAMMING.Get();
+  } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() == -1 && (int) m_world->GetConfig().KABOOM1_HAMMING.Get() != -1) {
+    //Case where Probability is adjustable and Hamming distance isn't
+    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+    distance = (int) m_world->GetConfig().KABOOM1_HAMMING.Get();
+  }
+  
+  if ( ctx.GetRandom().P(percent_prob) ) m_organism->Kaboom(distance, ctx);
+  return true;
+}
+
+bool cHardwareCPU::Inst_Kazi2(cAvidaContext& ctx)
+{
+  assert(m_world->GetConfig().KABOOM_PROB.Get() != -1 || m_world->GetConfig().KABOOM2_HAMMING.Get() != -1);
+  const int reg_used = FindModifiedRegister(REG_AX);
+  //These must always be set in the if, they can't both be adjustable, so don't do it
+  int distance = -1;
+  double percent_prob = 1.0;
+  if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM2_HAMMING.Get() == -1) {
+    //Case where Probability is static and hamming distance is adjustable
+    int get_reg_value = GetRegister(reg_used);
+    //MAX_GENOME_SIZE and MIN_GENOME_SIZE should be set for these experiments, otherwise hamming distance doesn't make sense
+    int genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+    percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+    distance = (get_reg_value % genome_size);
+  } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM2_HAMMING.Get() != -1) {
+    //Case where both Probability and Hamming Distance are static
+    percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+    distance = (int) m_world->GetConfig().KABOOM2_HAMMING.Get();
+  } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() == -1 && (int) m_world->GetConfig().KABOOM2_HAMMING.Get() != -1) {
+    //Case where Probability is adjustable and Hamming distance isn't
+    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+    distance = (int) m_world->GetConfig().KABOOM2_HAMMING.Get();
+  }
+  
+  if ( ctx.GetRandom().P(percent_prob) ) m_organism->Kaboom(distance, ctx);
+  return true;
+}
+
+bool cHardwareCPU::Inst_Kazi3(cAvidaContext& ctx)
+{
+  assert(m_world->GetConfig().KABOOM_PROB.Get() != -1 || m_world->GetConfig().KABOOM3_HAMMING.Get() != -1);
+  const int reg_used = FindModifiedRegister(REG_AX);
+  //These must always be set in the if, they can't both be adjustable, so don't do it
+  int distance = -1;
+  double percent_prob = 1.0;
+  if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM3_HAMMING.Get() == -1) {
+    //Case where Probability is static and hamming distance is adjustable
+    int get_reg_value = GetRegister(reg_used);
+    //MAX_GENOME_SIZE and MIN_GENOME_SIZE should be set for these experiments, otherwise hamming distance doesn't make sense
+    int genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+    percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+    distance = (get_reg_value % genome_size);
+  } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM3_HAMMING.Get() != -1) {
+    //Case where both Probability and Hamming Distance are static
+    percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+    distance = (int) m_world->GetConfig().KABOOM3_HAMMING.Get();
+  } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() == -1 && (int) m_world->GetConfig().KABOOM3_HAMMING.Get() != -1) {
+    //Case where Probability is adjustable and Hamming distance isn't
+    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+    distance = (int) m_world->GetConfig().KABOOM3_HAMMING.Get();
+  }
+  
+  if ( ctx.GetRandom().P(percent_prob) ) m_organism->Kaboom(distance, ctx);
+  return true;
+}
+
+bool cHardwareCPU::Inst_Kazi4(cAvidaContext& ctx)
+{
+  assert(m_world->GetConfig().KABOOM_PROB.Get() != -1 || m_world->GetConfig().KABOOM4_HAMMING.Get() != -1);
+  const int reg_used = FindModifiedRegister(REG_AX);
+  //These must always be set in the if, they can't both be adjustable, so don't do it
+  int distance = -1;
+  double percent_prob = 1.0;
+  if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM4_HAMMING.Get() == -1) {
+    //Case where Probability is static and hamming distance is adjustable
+    int get_reg_value = GetRegister(reg_used);
+    //MAX_GENOME_SIZE and MIN_GENOME_SIZE should be set for these experiments, otherwise hamming distance doesn't make sense
+    int genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+    percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+    distance = (get_reg_value % genome_size);
+  } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM4_HAMMING.Get() != -1) {
+    //Case where both Probability and Hamming Distance are static
+    percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+    distance = (int) m_world->GetConfig().KABOOM4_HAMMING.Get();
+  } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() == -1 && (int) m_world->GetConfig().KABOOM4_HAMMING.Get() != -1) {
+    //Case where Probability is adjustable and Hamming distance isn't
+    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+    distance = (int) m_world->GetConfig().KABOOM4_HAMMING.Get();
+  }
+  
+  if ( ctx.GetRandom().P(percent_prob) ) m_organism->Kaboom(distance, ctx);
   return true;
 }
 

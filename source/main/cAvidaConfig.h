@@ -573,9 +573,13 @@ public:
   CONFIG_ADD_GROUP(KABOOM_GROUP, "Kaboom");
   CONFIG_ADD_VAR(KABOOM_PROB, double, -1, "The probability (in decimal) that an explosion will occur when the instruction is encountered. -1 is default probability and allows the organism to change the probability.");
   CONFIG_ADD_VAR(KABOOM_RADIUS, int, 2, "Radius of all explosions (kaboom and kaboom5)");
-  CONFIG_ADD_VAR(KABOOM_HAMMING, int, 0, "Hamming distance of kaboom's threshold, set to -1 to have adjustable, default is 0 for cheaters.");
-  CONFIG_ADD_VAR(KABOOM5_HAMMING, int, 5, "Hamming distance of kaboom5's threshold, set to -1 to have adjustable, default is 5 for altruists.");
-  CONFIG_ADD_VAR(NO_MUT_INSTS, cString, "", "A list of the instruction symbols that should not be able to be mutated out.");
+  CONFIG_ADD_VAR(KABOOM_HAMMING, int, 0, "Hamming distance of kaboom's threshold, set to -1 to have adjustable, default is 0 for clone altruists.");
+  CONFIG_ADD_VAR(KABOOM1_HAMMING, int, 1, "Hamming distance of kaboom1's threshold, set to -1 to have adjustable, default is 1.");
+  CONFIG_ADD_VAR(KABOOM2_HAMMING, int, 2, "Hamming distance of kaboom2's threshold, set to -1 to have adjustable, default is 2.");
+  CONFIG_ADD_VAR(KABOOM3_HAMMING, int, 3, "Hamming distance of kaboom3's threshold, set to -1 to have adjustable, default is 3.");
+  CONFIG_ADD_VAR(KABOOM4_HAMMING, int, 4, "Hamming distance of kaboom4's threshold, set to -1 to have adjustable, default is 4.");
+  CONFIG_ADD_VAR(KABOOM5_HAMMING, int, 5, "Hamming distance of kaboom5's threshold, set to -1 to have adjustable, default is 5 for clan altruists.");
+  CONFIG_ADD_VAR(NO_MUT_INSTS, cString, "", "A list of the instruction symbols that should not be able to be mutated out, NOT checked for all mutation types.");
 
   // -------- Geneology config options --------
   CONFIG_ADD_GROUP(GENEOLOGY_GROUP, "Geneology");
