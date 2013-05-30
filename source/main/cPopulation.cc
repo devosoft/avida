@@ -6450,12 +6450,13 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
   Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
   Systematics::ArbiterPtr bgm = classmgr->ArbiterForRole("genotype");
   
+  bool some_missing = false;
   for (int i = genotypes.GetSize() - 1; i >= 0; i--) {
     // Fix Parent IDs
     cString nparentstr;
     int pcount = 0;
     cString lparentstr = (const char*)genotypes[i].props->Get("parents");
-    if (lparentstr == "(none)") lparentstr = ""; 
+    if (lparentstr == "(none)") lparentstr = "";
     cStringList opidlist(lparentstr, ',');
     while (opidlist.GetSize()) {
       int opid = opidlist.Pop().AsInt();
@@ -6466,16 +6467,20 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           break;
         }
       }
-      assert(npid != -1);
-      if (pcount) nparentstr += ",";
-      nparentstr += cStringUtil::Convert(npid);
-      pcount++; 
+      // only for pop saves that include historic (i.e. parent id found):
+      if (npid != -1) {
+        if (pcount) nparentstr += ",";
+        nparentstr += cStringUtil::Convert(npid);
+        pcount++;
+      }
     }
+    if (!nparentstr.GetSize() && !some_missing) some_missing = true;
     genotypes[i].props->Set("parents", (const char*)nparentstr);
     
     genotypes[i].bg = bgm->LegacyLoad(&genotypes[i].props);
   }
   
+  if (some_missing) m_world->GetDriver().Feedback().Warning("Some parents not found in loaded pop file. Defaulting to parent ID of '(none)' for those genomes.");
   
   // Process genotypes, inject into organisms as necessary
   int u_cell_id = 0;
