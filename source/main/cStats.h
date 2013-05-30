@@ -182,6 +182,7 @@ private:
 
   // --------  Population Stats  ---------
   int num_births;
+  int cumulative_births;
   int num_deaths;
   int num_breed_in;
   int num_breed_true;
@@ -690,6 +691,7 @@ public:
   // Information retrieval section...
 
   int GetNumBirths() const          { return num_births; }
+  int GetCumulativeBirths() const   { return cumulative_births; }
   int GetNumDeaths() const          { return num_deaths; }
   int GetBreedIn() const            { return num_breed_in; }
   int GetBreedTrue() const          { return num_breed_true; }
@@ -884,13 +886,13 @@ public:
     
  // Kaboom stats
   void IncKaboom() { num_kabooms++; }
-    void IncKaboomKills() {num_kaboom_kills++;}
+  void IncKaboomKills() {num_kaboom_kills++;}
   void AddHamDistance(int distance) { hd_list.Push(distance); }
   void PrintKaboom(const cString& filename);
     
  // Division of Labor Stats
-    void IncJuvKilled() { juv_killed++; }
-    void IncGuardFail() {num_guard_fail++;}
+  void IncJuvKilled() { juv_killed++; }
+  void IncGuardFail() {num_guard_fail++;}
   
   // deme predicate stats
   void IncEventCount(int x, int y);

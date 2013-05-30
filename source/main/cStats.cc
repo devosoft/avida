@@ -72,6 +72,7 @@ cStats::cStats(cWorld* world)
 , min_gestation_time(INT_MAX)
 , min_genome_length(INT_MAX)
 , num_births(0)
+, cumulative_births(0)
 , num_deaths(0)
 , num_breed_in(0)
 , num_breed_true(0)
@@ -374,6 +375,7 @@ mgr->Register(name, activate); \
   
   // Current Counts...
   m_data_manager.Add("num_births",     "Count of Births in Population",          &cStats::GetNumBirths);
+  m_data_manager.Add("cumulative_births", "Total Births over Time",              &cStats::GetCumulativeBirths);
   m_data_manager.Add("num_deaths",     "Count of Deaths in Population",          &cStats::GetNumDeaths);
   m_data_manager.Add("breed_in",       "Count of Non-Breed-True Births",         &cStats::GetBreedIn);
   m_data_manager.Add("breed_true",     "Count of Breed-True Births",             &cStats::GetBreedTrue);
@@ -527,6 +529,7 @@ void cStats::RecordBirth(bool breed_true)
   
   tot_organisms++;
   num_births++;
+  cumulative_births++;
   
   if (breed_true) num_breed_true++;
   else num_breed_in++;
