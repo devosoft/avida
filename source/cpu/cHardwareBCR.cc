@@ -490,8 +490,10 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       m_advance_ip = true;
       Head& ip = m_threads[m_cur_thread].heads[hIP];
       ip.Adjust();
-    
       
+      // Print the status of this CPU at each step...
+      if (m_tracer) m_tracer->TraceHardware(ctx, *this);
+    
       // Find the instruction to be executed
       const Instruction cur_inst = ip.GetInst();
       
@@ -502,6 +504,9 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
         return false;
       }
       
+      // Print the short form status of this CPU at each step... 
+      if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true);
+    
       bool exec = true;
       int exec_success = 0;
 
@@ -511,6 +516,7 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       if (behav_class < BEHAV_CLASS_NONE && m_behav_class_used[behav_class]) {
         m_threads[m_cur_thread].active = false;
         m_threads[m_cur_thread].wait_reg = -1;
+        if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true, exec_success);
         continue;
       }
 
@@ -537,14 +543,6 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
         }
         
         if (exec == true) {
-          if (m_tracer) {
-            // Print the status of this CPU at each step...
-            m_tracer->TraceHardware(ctx, *this);
-            
-            // Print the short form status of this CPU at each step...
-            m_tracer->TraceHardware(ctx, *this, false, true);
-          }
-          
           if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
             SingleProcess_PayPostResCosts(ctx, cur_inst);
             SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread);
@@ -565,7 +563,6 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
         
         // Pay the additional death_cost of the instruction now
         phenotype.IncTimeUsed(addl_time_cost);
-
 
         // mark behavior class as used, when appropriate
         if (behav_class < BEHAV_CLASS_NONE) m_behav_class_used[behav_class] = true;
@@ -593,7 +590,10 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
         }
       }
       
-      if (phenotype.GetToDelete()) break;
+      if (phenotype.GetToDelete()) {
+        if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true, exec_success);
+        break;
+      }
     }
     
     if (phenotype.GetToDelete()) break;
@@ -724,6 +724,7 @@ void cHardwareBCR::SetupMiniTraceFileHeader(Avida::Output::File& df, const int g
   df.WriteComment(" ");
   df.WriteComment("Exec Stats Columns:");
   df.WriteComment("CPU Cycle");
+  df.WriteComment("MicroOp");
   df.WriteComment("Current Update");
   df.WriteComment("Register Contents (CPU Cycle Origin of Contents)");
   df.WriteComment("Current Thread");
@@ -752,6 +753,7 @@ void cHardwareBCR::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
 {
   // basic status info
   fp << m_cycle_count << " ";
+  fp << m_cur_uop << " ";
   fp << m_world->GetStats().GetUpdate() << " ";
   for (int i = 0; i < NUM_REGISTERS; i++) {
     DataValue& reg = m_threads[m_cur_thread].reg[i];
