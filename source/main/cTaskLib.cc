@@ -327,6 +327,9 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "eat-target-nor") Load_ConsumeTargetNor(name, info, envreqs, feedback);
   else if (name == "eat-target-xor") Load_ConsumeTargetXor(name, info, envreqs, feedback);
   else if (name == "eat-target-equ") Load_ConsumeTargetEqu(name, info, envreqs, feedback);
+  
+  //Explosions
+  if (name == "exploded") Load_Exploded(name, info, envreqs, feedback);
 
   // String matching
   if (name == "all-ones") Load_AllOnes(name, info, envreqs, feedback);
@@ -3945,6 +3948,29 @@ double cTaskLib::Task_ConsumeTargetEqu(cTaskContext& ctx) const
   // If the organism is on the right resource...
   if (target_res == des_target) {
     reward = Task_Equ(ctx);
+  }
+  return reward;
+}
+
+/* Reward organisms for executing the explode command*/
+void cTaskLib::Load_Exploded(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "Exploded", &cTaskLib::Task_Exploded, 0, args);
+  
+  // Add this target id to the list in the instructions file.
+  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+}
+
+double cTaskLib::Task_Exploded(cTaskContext& ctx) const
+{
+  bool exploded = ctx.GetOrganism()->GetPhenotype().GetKaboomExecuted();
+  double reward = 0.0;
+  // If the organism has executed an explode instruction
+  if (exploded) {
+    reward = 1;
   }
   return reward;
 }
