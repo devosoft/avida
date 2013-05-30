@@ -286,7 +286,8 @@ private:
   bool parent_true;      // Is this genome an exact copy of its parent's?
   bool parent_sex;       // Did the parent divide with sex?
   int  parent_cross_num; // How many corssovers did the parent do?
-  bool born_parent_group;// Was offspring born into the parent's group? 
+  bool born_parent_group;// Was offspring born into the parent's group?
+  bool kaboom_executed; // Has organism executed an explode instruction?
 
   // 6. Child information...
   bool copy_true;        // Can this genome produce an exact copy of itself?
@@ -608,6 +609,9 @@ public:
   
   void SetReactionCount(int index, int val) { cur_reaction_count[index] = val; }
   void SetStolenReactionCount(int index, int val) { cur_stolen_reaction_count[index] = val; }
+  
+  bool GetKaboomExecuted() {return kaboom_executed;} //@AEJ
+  void SetKaboomExecuted(bool value) {kaboom_executed = value;} //@AEJ
 
   void SetCurRBinsAvail(const Apto::Array<double>& in_avail) { cur_rbins_avail = in_avail; }
   void SetCurRbinsTotal(const Apto::Array<double>& in_total) { cur_rbins_total = in_total; }

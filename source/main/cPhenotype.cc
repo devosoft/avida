@@ -310,6 +310,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   total_energy_donated    = in_phen.total_energy_donated;
   total_energy_received   = in_phen.total_energy_received;
   total_energy_applied    = in_phen.total_energy_applied;
+  kaboom_executed         = in_phen.kaboom_executed;
   
   // 6. Child information...
   copy_true               = in_phen.copy_true;       
@@ -531,6 +532,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   is_modified   = false;
   is_fertile    = parent_phenotype.last_child_fertile;
   is_mutated    = false;
+  kaboom_executed = false;
   if (m_world->GetConfig().INHERIT_MULTITHREAD.Get()) {
     is_multi_thread = parent_phenotype.is_multi_thread;
   } else {
@@ -747,6 +749,7 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   parent_cross_num    = 0;
   to_die = false;
   to_delete = false;
+  kaboom_executed = false;
   
   is_energy_requestor = false;
   is_energy_donor = false;
@@ -981,6 +984,7 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   (void) parent_true;
   (void) parent_sex;
   (void) parent_cross_num;
+  (void) kaboom_executed;
   
   // Reset child info...
   (void) copy_true;
@@ -1201,6 +1205,7 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   (void) parent_true;
   (void) parent_sex;
   (void) parent_cross_num;
+  (void) kaboom_executed;
   
   // Reset child info...
   (void) copy_true;
@@ -1406,6 +1411,7 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   is_energy_receiver = false;
   has_used_donated_energy = false;
   has_open_energy_request = false;
+  kaboom_executed = false;
   
   // Setup child info...
   copy_true          = false;
@@ -2205,6 +2211,7 @@ void cPhenotype::NewTrial()
   (void) parent_true;
   (void) parent_sex;
   (void) parent_cross_num;
+  (void) kaboom_executed;
 }
 
 /**
