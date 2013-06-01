@@ -1,4 +1,4 @@
-# Thu Apr 18 16:08:23 2013
+# Sat Jun  1 18:46:57 2013
 # Filename........: archive/ft-1_grp-1_075-aaaag.org
 # Update Output...: 100
 # Is Viable.......: 0

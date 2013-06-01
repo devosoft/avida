@@ -450,11 +450,11 @@ void cResourceCount::SetGradientInflow(const int& res_id, const double& inflow)
   spatial_resource_count[res_id]->SetGradientInflow(inflow);
 }
 
-void cResourceCount::SetGradPlatVarInflow(const int& res_id, const double& mean, const double& variance, const int& type) 
+void cResourceCount::SetGradPlatVarInflow(cAvidaContext& ctx, const int& res_id, const double& mean, const double& variance, const int& type) 
 {
   assert(res_id >= 0 && res_id < resource_count.GetSize());
   assert(spatial_resource_count[res_id]->GetSize() > 0);
-  spatial_resource_count[res_id]->SetGradPlatVarInflow(mean, variance, type);
+  spatial_resource_count[res_id]->SetGradPlatVarInflow(ctx, mean, variance, type);
 }
 
 void cResourceCount::SetPredatoryResource(const int& res_id, const double& odds, const int& juvsper) 

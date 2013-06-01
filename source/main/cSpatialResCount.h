@@ -123,7 +123,7 @@ public:
   virtual void SetGradConeInflow(double) { ; }
   virtual void SetGradConeOutflow(double) { ; }
   virtual void SetGradientInflow(double) { ; }
-  virtual void SetGradPlatVarInflow(double, double, int) { ; }
+  virtual void SetGradPlatVarInflow(cAvidaContext& ctx, double, double, int) { ; }
   virtual void SetPredatoryResource(double, int) { ; }
   virtual void SetProbabilisticResource(cAvidaContext& ctx, double, double, double, double, double, int, int, int) { ; }
   virtual void SetGradPlatIsCommon(bool) { ; }

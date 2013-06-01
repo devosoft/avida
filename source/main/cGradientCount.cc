@@ -915,27 +915,27 @@ void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
   m_initial = false;
 }
 
-void cGradientCount::SetGradPlatVarInflow(double mean, double variance, int type)
+void cGradientCount::SetGradPlatVarInflow(cAvidaContext& ctx, double mean, double variance, int type)
 {
   if (variance > 0) {
     m_mean_plat_inflow = mean;
     m_var_plat_inflow = variance;
     double the_inflow = 0;
     if (type == 0) {
-      the_inflow = abs(m_world->GetRandom().GetRandNormal(mean, variance));
+      the_inflow = abs(ctx.GetRandom().GetRandNormal(mean, variance));
       SetGradPlatInflow(the_inflow);
     }
     else if (type < 0) { 
-      the_inflow = abs(m_world->GetRandom().GetRandNormal(0, variance));
+      the_inflow = abs(ctx.GetRandom().GetRandNormal(0, variance));
       if (mean - the_inflow < 0) the_inflow = mean;
       SetGradPlatInflow(mean - the_inflow);
     }
     else if (type == 1) {
-      the_inflow = abs(m_world->GetRandom().GetRandNormal(0, variance));
+      the_inflow = abs(ctx.GetRandom().GetRandNormal(0, variance));
       SetGradPlatInflow(mean + the_inflow);
     }
     else if (type == 2) {
-      the_inflow = m_world->GetRandom().GetRandNormal(0, variance);
+      the_inflow = ctx.GetRandom().GetRandNormal(0, variance);
       if (mean + the_inflow < 0) the_inflow = mean;
       SetGradPlatInflow(mean + the_inflow);
     }
@@ -1034,7 +1034,7 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lambda, do
       if (!loop_once) max_unused_idx = max_idx;
     }
     
-    int cell_idx = m_world->GetRandom().GetUInt(max_unused_idx + 1);
+    int cell_idx = ctx.GetRandom().GetUInt(max_unused_idx + 1);
     int cell_id = cell_id_array[cell_idx];
     int this_x = cell_id % worldx;
     int this_y = cell_id / worldx;  

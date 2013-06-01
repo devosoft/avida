@@ -562,7 +562,7 @@ private:
   
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
-  void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
+  void LookResults(cAvidaContext& ctx, sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
 
   bool TestAttack(cAvidaContext& ctx);
   void InjureOrg(cOrganism* target);
@@ -573,7 +573,7 @@ private:
   bool ExecuteAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds = -1);  
 
   bool TestAttackResultsOut(sAttackResult& results);
-  bool TestAttackChance(cOrganism* target, sAttackReg& reg, double odds = -1);
+  bool TestAttackChance(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds = -1);
   void ApplyKilledPreyMerit(cOrganism* target, double effic);
   void ApplyKilledPreyReactions(cOrganism* target);
   void ApplyKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic);

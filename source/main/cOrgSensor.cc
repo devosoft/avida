@@ -63,8 +63,8 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
-      int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
-      int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
+      int randsign = ctx.GetRandom().GetUInt(0,2) ? -1 : 1;
+      int rand = ctx.GetRandom().GetInt(INT_MAX) * randsign;
       int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
       if (target_reg == 1) habitat_used = rand;
       else if (target_reg == 2) distance_sought = rand;
@@ -661,7 +661,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
       const cPopulationCell* first_good_cell = m_organism->GetOrgInterface().GetCell(first_success_cell.Y() * worldx + first_success_cell.X());
       cOrganism* first_org = first_good_cell->GetOrganism();
       if (m_use_avatar) {
-        if (search_type == 0) first_org = first_good_cell->GetRandAV();
+        if (search_type == 0) first_org = first_good_cell->GetRandAV(ctx);
         else if (search_type > 0) first_org = first_good_cell->GetRandPredAV();
         else if (search_type < 0) first_org = first_good_cell->GetRandPreyAV();
       }

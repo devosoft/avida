@@ -1,6 +1,6 @@
-# Thu Apr 18 16:08:21 2013
-# Filename........: minitraces/trace_genomes/org981-ud53-grp-1_ft-2-gt310.trcgeno
-# Update Output...: 53
+# Sat Jun  1 18:46:54 2013
+# Filename........: minitraces/trace_genomes/org1163-ud61-grp-1_ft-2-gt18.trcgeno
+# Update Output...: 61
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
@@ -30,7 +30,7 @@ fork-thread
 mov-head
 nop-X
 zero
-if-gtr-0
+dec
 swap-stk
 get-north-offset
 nop-H

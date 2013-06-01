@@ -428,7 +428,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SetGradPlatVarInflow(m_res_name, m_mean, m_variance, m_type);        
+    m_world->GetPopulation().SetGradPlatVarInflow(ctx, m_res_name, m_mean, m_variance, m_type);
   } 
 };
 

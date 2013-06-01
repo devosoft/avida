@@ -1678,7 +1678,7 @@ bool cHardwareTransSMT::Inst_Apoptosis(cAvidaContext& ctx)
 
 
 //43
-bool cHardwareTransSMT::Inst_RotateLeft(cAvidaContext&)
+bool cHardwareTransSMT::Inst_RotateLeft(cAvidaContext& ctx)
 {
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   
@@ -1686,13 +1686,13 @@ bool cHardwareTransSMT::Inst_RotateLeft(cAvidaContext&)
   if (num_neighbors == 0) return false;
   
   // Always rotate at least once.
-  m_organism->Rotate(1);
+  m_organism->Rotate(ctx, 1);
   
   return true;
 }
 
 //44
-bool cHardwareTransSMT::Inst_RotateRight(cAvidaContext&)
+bool cHardwareTransSMT::Inst_RotateRight(cAvidaContext& ctx)
 {
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   
@@ -1700,7 +1700,7 @@ bool cHardwareTransSMT::Inst_RotateRight(cAvidaContext&)
   if (num_neighbors == 0) return false;
   
   // Always rotate at least once.
-  m_organism->Rotate(-1);
+  m_organism->Rotate(ctx, -1);
   
   return true;
 }

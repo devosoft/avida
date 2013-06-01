@@ -239,7 +239,7 @@ void cOrganism::initialize(cAvidaContext& ctx)
 	// disposal.
 	if (m_world->GetConfig().RANDOMIZE_RAW_MATERIAL_AMOUNT.Get()) {
 		int raw_mat = m_world->GetConfig().RAW_MATERIAL_AMOUNT.Get();
-		m_self_raw_materials = m_world->GetRandom().GetUInt(0, raw_mat+1); 
+		m_self_raw_materials = ctx.GetRandom().GetUInt(0, raw_mat+1);
 	}
 }
 
@@ -421,7 +421,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   if (m_world->GetEnvironment().UseNeighborInput()) {
     const int num_neighbors = m_interface->GetNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
-      m_interface->Rotate();
+      m_interface->Rotate(ctx);
       cOrganism * cur_neighbor = m_interface->GetNeighbor();
       if (cur_neighbor == NULL) continue;
       
@@ -433,7 +433,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   if (m_world->GetEnvironment().UseNeighborOutput()) {
     const int num_neighbors = m_interface->GetNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
-      m_interface->Rotate();
+      m_interface->Rotate(ctx);
       cOrganism * cur_neighbor = m_interface->GetNeighbor();
       if (cur_neighbor == NULL) continue;
       
@@ -531,7 +531,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   if (m_world->GetEnvironment().UseNeighborInput()) {
     const int num_neighbors = m_interface->GetAVNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
-      m_interface->Rotate();
+      m_interface->Rotate(ctx);
       const Apto::Array<cOrganism*>& cur_neighbors = m_interface->GetFacedAVs();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
@@ -544,7 +544,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   if (m_world->GetEnvironment().UseNeighborOutput()) {
     const int num_neighbors = m_interface->GetAVNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
-      m_interface->Rotate();
+      m_interface->Rotate(ctx);
       const Apto::Array<cOrganism*>& cur_neighbors = m_interface->GetFacedAVs();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
@@ -1060,7 +1060,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
   if (m_interface->Move(ctx, fromcellID, destcellID)) {
     //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
     //Skip counting if random < chance of miscounting a step.
-    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get()==0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
+    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get()==0 || ctx.GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {
       if (facing == 0) m_northerly = m_northerly - 1;       // N
       else if (facing == 1) {                           // NE
         m_northerly = m_northerly - 1; 
@@ -1247,7 +1247,7 @@ void cOrganism::SendFlash(cAvidaContext& ctx) {
   
   // Check to see if we should lose the flash:
   if((m_world->GetConfig().SYNC_FLASH_LOSSRATE.Get() > 0.0) &&
-     (m_world->GetRandom().P(m_world->GetConfig().SYNC_FLASH_LOSSRATE.Get()))) {
+     (ctx.GetRandom().P(m_world->GetConfig().SYNC_FLASH_LOSSRATE.Get()))) {
     return;
   }
   
@@ -1258,9 +1258,9 @@ void cOrganism::SendFlash(cAvidaContext& ctx) {
 }
 
 
-cOrganism::Neighborhood cOrganism::GetNeighborhood() {
+cOrganism::Neighborhood cOrganism::GetNeighborhood(cAvidaContext& ctx) {
 	Neighborhood neighbors;
-	for(int i=0; i<GetNeighborhoodSize(); ++i, Rotate(1)) {
+	for(int i=0; i<GetNeighborhoodSize(); ++i, Rotate(ctx, 1)) {
 		if(IsNeighborCellOccupied()) {
 			neighbors.insert(GetNeighbor()->GetID());
 		}
@@ -1269,21 +1269,21 @@ cOrganism::Neighborhood cOrganism::GetNeighborhood() {
 }
 
 
-void cOrganism::LoadNeighborhood() {
+void cOrganism::LoadNeighborhood(cAvidaContext& ctx) {
 	InitNeighborhood();
-	m_neighborhood->neighbors = GetNeighborhood();
+	m_neighborhood->neighbors = GetNeighborhood(ctx);
 	m_neighborhood->loaded = true;
 }
 
 
-bool cOrganism::HasNeighborhoodChanged() {
+bool cOrganism::HasNeighborhoodChanged(cAvidaContext& ctx) {
 	InitNeighborhood();
 	// Must have loaded the neighborhood first:
 	if(!m_neighborhood->loaded) return false;
 	
 	// Ok, get the symmetric difference between the old neighborhood and the current neighborhood:
 	Neighborhood symdiff;
-	Neighborhood current = GetNeighborhood();	
+	Neighborhood current = GetNeighborhood(ctx);
 	std::set_symmetric_difference(m_neighborhood->neighbors.begin(),
 																m_neighborhood->neighbors.end(),
 																current.begin(),
@@ -1529,7 +1529,7 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
   if (m_interface->MoveAV(ctx)) {
     //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
     //Skip counting if random < chance of miscounting a step.
-    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get() == 0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {   
+    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get() == 0 || ctx.GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {
       int facing = m_interface->GetAVFacing();
 
       if (facing == 0)

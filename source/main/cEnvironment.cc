@@ -1577,7 +1577,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       if (cellid != -1) { // can't do this in the test cpu
         cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
         if (cell.CountGenomeFragments() > 0) {
-          InstructionSequence fragment = cell.PopGenomeFragment();
+          InstructionSequence fragment = cell.PopGenomeFragment(ctx);
           consumed = local_task_quality * fragment.GetSize();
           result.Consume(in_resource->GetID(), fragment.GetSize(), true);
           m_world->GetStats().GenomeFragmentMetabolized(taskctx.GetOrganism(), fragment);

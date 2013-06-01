@@ -1929,11 +1929,11 @@ bool cHardwareExperimental::Inst_One(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Rand(cAvidaContext&)
+bool cHardwareExperimental::Inst_Rand(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
-  setInternalValue(reg_used, m_world->GetRandom().GetInt(INT_MAX) * randsign, false);
+  int randsign = ctx.GetRandom().GetUInt(0,2) ? -1 : 1;
+  setInternalValue(reg_used, ctx.GetRandom().GetInt(INT_MAX) * randsign, false);
   return true;
 }
 
@@ -3264,15 +3264,15 @@ bool cHardwareExperimental::Inst_ZeroPosOffset(cAvidaContext&) {
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateLeftOne(cAvidaContext&)
+bool cHardwareExperimental::Inst_RotateLeftOne(cAvidaContext& ctx)
 {
-  m_organism->Rotate(1);
+  m_organism->Rotate(ctx, 1);
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateRightOne(cAvidaContext&)
+bool cHardwareExperimental::Inst_RotateRightOne(cAvidaContext& ctx)
 {
-  m_organism->Rotate(-1);
+  m_organism->Rotate(ctx, -1);
   return true;
 }
 
@@ -3290,7 +3290,7 @@ bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
   
   double max_res = 0;
   for(int i = 0; i < actualNeighborhoodSize; i++) {
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
     Apto::Array<double> faced_res;
     if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
     else if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
@@ -3302,7 +3302,7 @@ bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
       Apto::Array<double> faced_res;
       if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
       else if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
-      if (faced_res[group] != max_res) m_organism->Rotate(1);
+      if (faced_res[group] != max_res) m_organism->Rotate(ctx, 1);
     }
   }
   int res_diff = 0;
@@ -3325,7 +3325,7 @@ bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
   
   double max_res = 0;
   for(int i = 0; i < actualNeighborhoodSize; i++) {
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
     double faced_res = 0.0;
     if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedResourceVal(ctx, ft);
     else if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, ft);
@@ -3337,7 +3337,7 @@ bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
       double faced_res = 0.0;
       if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedResourceVal(ctx, ft);
       else faced_res = m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, ft);
-      if (faced_res != max_res) m_organism->Rotate(1);
+      if (faced_res != max_res) m_organism->Rotate(ctx, 1);
     }
   }
   int res_diff = 0;
@@ -3348,7 +3348,7 @@ bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateHome(cAvidaContext&)
+bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
 {
   // Will rotate organism to face birth cell if org never used zero-easterly or zero-northerly. Otherwise will rotate org
   // to face the 'marked' spot where those instructions were executed.
@@ -3367,14 +3367,14 @@ bool cHardwareExperimental::Inst_RotateHome(cAvidaContext&)
   int rotates = m_organism->GetNeighborhoodSize();
   if (m_use_avatar) rotates = m_organism->GetOrgInterface().GetAVNumNeighbors();
   for (int i = 0; i < rotates; i++) {
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
     if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
     else if (m_use_avatar && m_organism->GetOrgInterface().GetAVFacing() == correct_facing) break;
   }
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext&)
+bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   const int reg_used = FindModifiedRegister(rBX);
@@ -3386,13 +3386,13 @@ bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext&)
       setInternalValue(reg_used, 1, true);      
       return true;
     }
-    m_organism->Rotate(1); // continue to rotate
+    m_organism->Rotate(ctx, 1); // continue to rotate
   }  
   setInternalValue(reg_used, 0, true);
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateX(cAvidaContext&)
+bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
 {
   int num_neighbors = m_organism->GetNeighborhoodSize();
   if (m_use_avatar) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
@@ -3407,7 +3407,7 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext&)
   rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
   rot_num = abs(rot_num);
   if (rot_num > 7) rot_num = rot_num % 8;
-  for (int i = 0; i < rot_num; i++) m_organism->Rotate(rot_dir);
+  for (int i = 0; i < rot_num; i++) m_organism->Rotate(ctx, rot_dir);
   setInternalValue(reg_used, rot_num * rot_dir, true);
   return true;
 }
@@ -3423,11 +3423,11 @@ bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
   int rot_dir = abs(m_threads[m_cur_thread].reg[reg_used].value) % 8;
   m_from_sensor = FromSensor(reg_used);
   
-  if (m_use_avatar) m_organism->GetOrgInterface().SetAVFacing(rot_dir);
+  if (m_use_avatar) m_organism->GetOrgInterface().SetAVFacing(ctx, rot_dir);
   // rotate to the appropriate direction
   else {
     for (int i = 0; i < num_neighbors + 1; i++) {
-      m_organism->Rotate(-1);
+      m_organism->Rotate(ctx, -1);
       if (m_organism->GetOrgInterface().GetFacedDir() == rot_dir) break;
     }
   }
@@ -3438,7 +3438,7 @@ bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
 }
 
 // Will rotate organism to face a specified other org
-bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext&)
+bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   // Will rotate organism to face a specificied other org
@@ -3497,13 +3497,13 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext&)
     
     bool found_org = false;
     if (m_use_avatar == 2) {
-      m_organism->GetOrgInterface().SetAVFacing(correct_facing);
+      m_organism->GetOrgInterface().SetAVFacing(ctx, correct_facing);
       found_org = true;
     }
     else {
       int rotates = m_organism->GetNeighborhoodSize();
       for (int i = 0; i < rotates; i++) {
-        m_organism->Rotate(-1);
+        m_organism->Rotate(ctx, -1);
         if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) {
           found_org = true;
           break;
@@ -3532,7 +3532,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext&)
 }
 
 // Will rotate organism to face away from a specificied other org
-bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext&)
+bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   // Will rotate organism to face a specificied other org
@@ -3591,13 +3591,13 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext&)
     
     bool found_org = false;
     if (m_use_avatar == 2) {
-      m_organism->GetOrgInterface().SetAVFacing(correct_facing);
+      m_organism->GetOrgInterface().SetAVFacing(ctx, correct_facing);
       found_org = true;
     }
     else {
       int rotates = m_organism->GetNeighborhoodSize();
       for (int i = 0; i < rotates; i++) {
-        m_organism->Rotate(-1);
+        m_organism->Rotate(ctx, -1);
         if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) {
           found_org = true;
           break;
@@ -3636,7 +3636,7 @@ bool cHardwareExperimental::Inst_RotateNeuronAVLeft(cAvidaContext& ctx)
 
   avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
 
-  return m_organism->GetOrgInterface().RotateAV(-1, avatar_num);
+  return m_organism->GetOrgInterface().RotateAV(ctx, -1, avatar_num);
 }
 
 // Rotate the register-value-selected avatar, right by one
@@ -3647,7 +3647,7 @@ bool cHardwareExperimental::Inst_RotateNeuronAVRight(cAvidaContext& ctx)
 
   avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
 
-  return m_organism->GetOrgInterface().RotateAV(1, avatar_num);
+  return m_organism->GetOrgInterface().RotateAV(ctx, 1, avatar_num);
 }
 
 // Rotate the register-value-selected avatar, by the register set amount
@@ -3661,7 +3661,7 @@ bool cHardwareExperimental::Inst_RotateNeuronAVbyX(cAvidaContext& ctx)
 
   avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
 
-  return m_organism->GetOrgInterface().RotateAV(rotate, avatar_num);
+  return m_organism->GetOrgInterface().RotateAV(ctx, rotate, avatar_num);
 }
 
 // Move the register-value-selected avatar forward into its faced cell
@@ -3904,7 +3904,7 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
-      int rand = m_world->GetRandom().GetInt(INT_MAX);
+      int rand = ctx.GetRandom().GetInt(INT_MAX);
       search_dir = rand % 3;
     }
   }
@@ -3961,7 +3961,7 @@ bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
-      int rand = m_world->GetRandom().GetInt(INT_MAX);
+      int rand = ctx.GetRandom().GetInt(INT_MAX);
       search_dir = rand % 3;
     }
   }
@@ -4015,7 +4015,7 @@ bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const
   look_results.forage = -9;
 
   look_results = InitLooking(ctx, reg_defs, look_dir, cell_id, use_ft);
-  LookResults(reg_defs, look_results);
+  LookResults(ctx, reg_defs, look_results);
   return true;
 }
 
@@ -4037,7 +4037,7 @@ cOrgSensor::sLookOut cHardwareExperimental::InitLooking(cAvidaContext& ctx, sLoo
   return m_sensor.SetLooking(ctx, reg_init, facing, cell_id, use_ft);
 }    
 
-void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookOut& results)
+void cHardwareExperimental::LookResults(cAvidaContext& ctx, sLookRegAssign& regs, cOrgSensor::sLookOut& results)
 {
   // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
   // return defaults for failed to find
@@ -4112,8 +4112,8 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
-      int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
-      int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
+      int randsign = ctx.GetRandom().GetUInt(0,2) ? -1 : 1;
+      int rand = ctx.GetRandom().GetInt(INT_MAX) * randsign;
       int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
       
       if (target_reg == 6) setInternalValue(regs.habitat, rand, true);
@@ -4233,7 +4233,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   if (prop_target == -2 && old_target > -2) MakePred(ctx);
   else if (prop_target == -3 && old_target > -2) MakeTopPred(ctx);
   else if (m_use_avatar && prop_target > -2 && old_target <= -2 && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-    m_organism->GetOrgInterface().SwitchPredPrey();
+    m_organism->GetOrgInterface().SwitchPredPrey(ctx);
     m_organism->SetForageTarget(ctx, prop_target);
   }
   else m_organism->SetForageTarget(ctx, prop_target);
@@ -4257,14 +4257,14 @@ bool cHardwareExperimental::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
   int cap = 0;
   if (m_world->GetConfig().POPULATION_CAP.Get()) cap = m_world->GetConfig().POPULATION_CAP.Get();
   else if (m_world->GetConfig().POP_CAP_ELDEST.Get()) cap = m_world->GetConfig().POP_CAP_ELDEST.Get();
-//  if (cap && (m_organism->GetOrgInterface().GetLiveOrgList().GetSize() >= (((double)(cap)) * 0.5)) && m_world->GetRandom().P(0.5)) {
+//  if (cap && (m_organism->GetOrgInterface().GetLiveOrgList().GetSize() >= (((double)(cap)) * 0.5)) && ctx.GetRandom().P(0.5)) {
     if (m_organism->HasSetFT()) return false;
     else {
       int num_fts = 0;
       std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
       set <int>::iterator itr;
       for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2 && *itr != -3) num_fts++;
-      int prop_target = m_world->GetRandom().GetUInt(num_fts);
+      int prop_target = ctx.GetRandom().GetUInt(num_fts);
       if (num_fts == 0) {
         if (m_world->GetEnvironment().IsTargetID(-1)) prop_target = -1;
       }
@@ -4292,9 +4292,9 @@ bool cHardwareExperimental::Inst_SetRandPFTOnce(cAvidaContext& ctx)
   if (m_organism->HasSetFT()) return false;
   else {
     int prop_target = 2;
-    if (m_world->GetRandom().P(0.5)) {
+    if (ctx.GetRandom().P(0.5)) {
       prop_target = 0;
-      if (m_world->GetRandom().P(0.5)) prop_target = 1;
+      if (ctx.GetRandom().P(0.5)) prop_target = 1;
     }
 
     int in_use = 0;
@@ -4309,7 +4309,7 @@ bool cHardwareExperimental::Inst_SetRandPFTOnce(cAvidaContext& ctx)
       }
     }
     if (m_world->GetConfig().MAX_PREY_BT.Get() && in_use >= m_world->GetConfig().MAX_PREY_BT.Get()) {
-      orgs[m_world->GetRandom().GetUInt(0, in_use)]->Die(ctx);
+      orgs[ctx.GetRandom().GetUInt(0, in_use)]->Die(ctx);
     }
     
     // Set the new target and return the value
@@ -5033,7 +5033,7 @@ bool cHardwareExperimental::Inst_GetOpinion(cAvidaContext& ctx)
 }
 
 //! An organism joins a group by setting it opinion to the group id. 
-bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext&)
+bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 {
   int opinion = m_world->GetConfig().DEFAULT_GROUP.Get();
   // Check if the org is currently part of a group
@@ -5057,13 +5057,13 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext&)
     if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() > 0) {
       int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
       double prob_failure = (double) percent_failure / 100.0;
-      double rand = m_world->GetRandom().GetDouble();
+      double rand = ctx.GetRandom().GetDouble();
       if (rand <= prob_failure) return true;
     }
     
     // If tolerances are on the org must pass immigration chance 
     if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
-      m_organism->GetOrgInterface().AttemptImmigrateGroup(prop_group_id, m_organism);
+      m_organism->GetOrgInterface().AttemptImmigrateGroup(ctx,prop_group_id, m_organism);
       return true;
     }
     else {
@@ -5097,7 +5097,7 @@ bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
   
   /*// TEMP CODE FOR PRED JOIN RANDOM GROUP JUST TO START SOME TESTS
    int group = m_world->GetConfig().DEFAULT_GROUP.Get();
-   const int prop_group_id = m_world->GetRandom().GetUInt(0,1000);
+   const int prop_group_id = ctx.GetRandom().GetUInt(0,1000);
    if (m_organism->HasOpinion()) {
    group = m_organism->GetOpinion().first;
    if (group == prop_group_id) return false;
@@ -5192,7 +5192,7 @@ bool cHardwareExperimental::Inst_AdoptPredGroup(cAvidaContext& ctx)
   if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) == 0) return false;
   
   // Attempt to immigrate to the target group
-  m_organism->GetOrgInterface().AttemptImmigrateGroup(prop_group_id, m_organism);
+  m_organism->GetOrgInterface().AttemptImmigrateGroup(ctx, prop_group_id, m_organism);
   return true;
 }
 
@@ -5219,7 +5219,7 @@ bool cHardwareExperimental::Inst_GetPredGroupID(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext&)
+bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
 //Get ID of organism faced by this one, if there is an organism in front.
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -5228,7 +5228,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext&)
   else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasAV()) return false;
   
   if (!m_use_avatar) neighbor = m_organism->GetOrgInterface().GetNeighbor();
-  else if (m_use_avatar == 2) neighbor = m_organism->GetOrgInterface().GetRandFacedAV();
+  else if (m_use_avatar == 2) neighbor = m_organism->GetOrgInterface().GetRandFacedAV(ctx);
   if (neighbor->IsDead())  return false;  
   
   const int out_reg = FindModifiedRegister(rBX);
@@ -5532,7 +5532,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   else if (m_use_avatar == 2) {
     const Apto::Array<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetFacedPreyAVs();
     bool target_match = false;
-    int rand_index = m_world->GetRandom().GetUInt(0, av_neighbors.GetSize());
+    int rand_index = ctx.GetRandom().GetUInt(0, av_neighbors.GetSize());
     int j = 0;
     for (int i = 0; i < av_neighbors.GetSize(); i++) {
       if (rand_index + i < av_neighbors.GetSize()) {
@@ -5603,7 +5603,7 @@ bool cHardwareExperimental::Inst_AttackPoisonFTPrey(cAvidaContext& ctx)
   else if (m_use_avatar == 2) {
     const Apto::Array<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetFacedPreyAVs();
     bool target_match = false;
-    int rand_index = m_world->GetRandom().GetUInt(0, av_neighbors.GetSize());
+    int rand_index = ctx.GetRandom().GetUInt(0, av_neighbors.GetSize());
     int j = 0;
     for (int i = 0; i < av_neighbors.GetSize(); i++) {
       if (rand_index + i < av_neighbors.GetSize()) {
@@ -5660,7 +5660,7 @@ bool cHardwareExperimental::Inst_AttackPoisonFTPreyGenetic(cAvidaContext& ctx)
   else if (m_use_avatar == 2) {
     const Apto::Array<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetFacedPreyAVs();
     bool target_match = false;
-    int rand_index = m_world->GetRandom().GetUInt(0, av_neighbors.GetSize());
+    int rand_index = ctx.GetRandom().GetUInt(0, av_neighbors.GetSize());
     int j = 0;
     for (int i = 0; i < av_neighbors.GetSize(); i++) {
       if (rand_index + i < av_neighbors.GetSize()) {
@@ -5719,7 +5719,7 @@ bool cHardwareExperimental::Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx)
   
   int num_checked = 0;
   while (num_checked < live_orgs.GetSize()) {
-    int this_rand_idx = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
+    int this_rand_idx = ctx.GetRandom().GetInt(0, live_orgs.GetSize());
     if (!used_orgs[this_rand_idx]) {
       cOrganism* org = live_orgs[this_rand_idx];
       if ((!rand_ft && (ft_sought == org->GetShowForageTarget() || (org->GetForageTarget() == -1 && ft_sought == org->GetParentFT()))) || (rand_ft && org->IsPreyFT())) {
@@ -5972,7 +5972,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   sAttackReg reg;
   SetAttackReg(reg);
 
-  if (!TestAttackChance(target, reg)) return false;
+  if (!TestAttackChance(ctx, target, reg)) return false;
   else {
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
       const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
@@ -6025,7 +6025,7 @@ bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
   sAttackReg reg;
   SetAttackReg(reg);
 
-  if (!TestAttackChance(target, reg)) return false;
+  if (!TestAttackChance(ctx, target, reg)) return false;
   else {
     target->Die(ctx);
     setInternalValue(reg.success_reg, 1, true);
@@ -6224,7 +6224,7 @@ bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
       if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1 && 
           ((( prop_target == -2  || prop_target == -3) && old_target != -2 && old_target != -3) ||
           (prop_target != -2  && prop_target != -3 && (old_target == -2 || old_target == -3)))) {
-        m_organism->GetOrgInterface().SwitchPredPrey();
+        m_organism->GetOrgInterface().SwitchPredPrey(ctx);
         m_organism->CopyParentFT(ctx);
       }
       else m_organism->CopyParentFT(ctx);
@@ -6685,7 +6685,7 @@ void cHardwareExperimental::MakePred(cAvidaContext& ctx)
     if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-      m_organism->GetOrgInterface().SwitchPredPrey();
+      m_organism->GetOrgInterface().SwitchPredPrey(ctx);
       m_organism->SetPredFT(ctx);
     }
     else m_organism->SetPredFT(ctx);
@@ -6698,7 +6698,7 @@ void cHardwareExperimental::MakeTopPred(cAvidaContext& ctx)
     if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-      m_organism->GetOrgInterface().SwitchPredPrey();
+      m_organism->GetOrgInterface().SwitchPredPrey(ctx);
       m_organism->SetTopPredFT(ctx);
     }
     else m_organism->SetTopPredFT(ctx);
@@ -6769,7 +6769,7 @@ void cHardwareExperimental::SetAttackReg(sAttackReg& reg)
 
 bool cHardwareExperimental::ExecuteAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds)
 {
-  if (!TestAttackChance(target, reg, odds)) return false;
+  if (!TestAttackChance(ctx, target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
   if (m_organism->IsTopPredFT()) effic *= effic;
   ApplyKilledPreyMerit(target, effic);
@@ -6788,7 +6788,7 @@ bool cHardwareExperimental::ExecuteAttack(cAvidaContext& ctx, cOrganism* target,
 
 bool cHardwareExperimental::ExecuteShareAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, Apto::Array<cOrganism*>& pack, double odds)
 {
-  if (!TestAttackChance(target, reg, odds)) return false;
+  if (!TestAttackChance(ctx, target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
   if (m_organism->IsTopPredFT()) effic *= effic;
   ApplyKilledPreyReactions(target);           // reactions can't be shared
@@ -6808,7 +6808,7 @@ bool cHardwareExperimental::ExecuteShareAttack(cAvidaContext& ctx, cOrganism* ta
 
 bool cHardwareExperimental::ExecuteFakeShareAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double share, double odds)
 {
-  if (!TestAttackChance(target, reg, odds)) return false;
+  if (!TestAttackChance(ctx, target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
   if (m_organism->IsTopPredFT()) effic *= effic;
   ApplyKilledPreyReactions(target);           // reactions can't be shared
@@ -6826,7 +6826,7 @@ bool cHardwareExperimental::ExecuteFakeShareAttack(cAvidaContext& ctx, cOrganism
 bool cHardwareExperimental::ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds)
 {
   // poison affects merit
-  if (!TestAttackChance(target, reg, odds)) return false;
+  if (!TestAttackChance(ctx, target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
   if (target->GetForageTarget() == 2) effic = m_world->GetConfig().PRED_EFFICIENCY_POISON.Get();
   
@@ -6854,11 +6854,11 @@ bool cHardwareExperimental::ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganis
   return true;
 }
 
-bool cHardwareExperimental::TestAttackChance(cOrganism* target, sAttackReg& reg, double odds)
+bool cHardwareExperimental::TestAttackChance(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds)
 {
   bool success = true;
   if (odds == -1) odds = m_world->GetConfig().PRED_ODDS.Get();
-  if (m_world->GetRandom().GetDouble() >= odds ||
+  if (ctx.GetRandom().GetDouble() >= odds ||
       (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
     InjureOrg(target);
     setInternalValue(reg.success_reg, -1, true);

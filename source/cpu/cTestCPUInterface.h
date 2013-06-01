@@ -96,7 +96,7 @@ public:
   void GetNeighborhoodCellIDs(Apto::Array<int>& list) { ; }
   void GetAVNeighborhoodCellIDs(Apto::Array<int>& list, int av_num = 0) { ; }
   int GetNeighborCellContents() { return 0; }
-  void Rotate(int direction = 1) { ; }
+  void Rotate(cAvidaContext& ctx, int direction = 1) { ; }
   
   void Breakpoint() { ; }
   int GetInputAt(int& input_pointer);
@@ -208,7 +208,7 @@ public:
   double CalcGroupOddsImmigrants(int, int) { return 0.0; }
   double CalcGroupOddsOffspring(cOrganism*) { return 0.0; }
   double CalcGroupOddsOffspring(int) { return 0.0; }
-  bool AttemptImmigrateGroup(int, cOrganism*) { return false; }
+  bool AttemptImmigrateGroup(cAvidaContext& ctx, int, cOrganism*) { return false; }
   void PushToleranceInstExe(int, cAvidaContext&) { ; }
   int& GetGroupIntolerances(int, int, int) { return *(new int(0)); }
 
@@ -234,9 +234,9 @@ public:
   bool FacedHasAV(int av_num = 0) { return false; }
   bool FacedHasPredAV(int av_num = 0) { return false; }
   bool FacedHasPreyAV(int av_num = 0) { return false; }
-  void AddIOAV(int in_av_cell_id, int in_av_facing, bool input, bool output) { ; }
-  void AddPredPreyAV(int av_cell_id) { ; }
-  void SwitchPredPrey(int av_num = 0) { ; }
+  void AddIOAV(cAvidaContext& ctx, int in_av_cell_id, int in_av_facing, bool input, bool output) { ; }
+  void AddPredPreyAV(cAvidaContext& ctx, int av_cell_id) { ; }
+  void SwitchPredPrey(cAvidaContext& ctx, int av_num = 0) { ; }
   void RemoveAllAV() { ; }
   int GetAVFacing(int av_num = 0) { return 0; }
   int GetAVCellID(int av_num = 0) { return -1; }
@@ -251,13 +251,13 @@ public:
   int GetAVDataUpdate(int av_num = 0) { return -1; }
   int GetAVDataTerritory(int av_num = 0) { return -1; }
   int FindAV(bool input, bool output, int av_num = 0) { return -1; }
-  void SetAVFacing(int av_facing, int av_num = 0) { ; }
-  bool SetAVCellID(int av_cell_id, int av_num = 0) { return false; }
-  void SetAVFacedCellID(int av_num = 0) { ; }
+  void SetAVFacing(cAvidaContext& ctx, int av_facing, int av_num = 0) { ; }
+  bool SetAVCellID(cAvidaContext& ctx, int av_cell_id, int av_num = 0) { return false; }
+  void SetAVFacedCellID(cAvidaContext& ctx, int av_num = 0) { ; }
   void SetAVCellData(const int newData, const int org_id, int av_num = 0) { ; }
   bool MoveAV(cAvidaContext& ctx, int av_num = 0) { return false; }
-  bool RotateAV(int increment, int av_num = 0) { return false; }
-  cOrganism* GetRandFacedAV(int av_num = 0) { return NULL; }
+  bool RotateAV(cAvidaContext& ctx, int increment, int av_num = 0) { return false; }
+  cOrganism* GetRandFacedAV(cAvidaContext& ctx, int av_num = 0) { return NULL; }
   cOrganism* GetRandFacedPredAV(int av_num = 0) { return NULL; }
   cOrganism* GetRandFacedPreyAV(int av_num = 0) { return NULL; }
   Apto::Array<cOrganism*> GetFacedAVs(int av_num = 0);

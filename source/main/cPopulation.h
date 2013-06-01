@@ -378,7 +378,7 @@ public:
   void UpdateGradientConeInflow(const cString res_name, const double inflow);
   void UpdateGradientConeOutflow(const cString res_name, const double outflow);
   void UpdateGradientInflow(const cString res_name, const double inflow);
-  void SetGradPlatVarInflow(const cString res_name, const double mean, const double variance, const int type);
+  void SetGradPlatVarInflow(cAvidaContext& ctx, const cString res_name, const double mean, const double variance, const int type);
   void SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob);
   void SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow, 
                                 const double outflow, const double lambda, const double theta, const int x, const int y, const int count);
@@ -417,7 +417,7 @@ public:
   int CalcGroupToleranceImmigrants(int group_id, int mating_type = -1);
   int CalcGroupToleranceOffspring(cOrganism* parent_organism);
   double CalcGroupOddsImmigrants(int group_id, int mating_type  = -1);
-  bool AttemptImmigrateGroup(int group_id, cOrganism* org);
+  bool AttemptImmigrateGroup(cAvidaContext& ctx, int group_id, cOrganism* org);
   double CalcGroupOddsOffspring(int group_id);
   double CalcGroupOddsOffspring(cOrganism* parent);
   bool AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring);
@@ -452,7 +452,7 @@ private:
   int UpdateEmptyCellIDArray(int deme_id = -1);
   Apto::Array<int>& GetEmptyCellIDArray() { return empty_cell_id_array; }
   void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
-  int FindRandEmptyCell();
+  int FindRandEmptyCell(cAvidaContext& ctx);
   
   // Update statistics collecting...
   void UpdateDemeStats(cAvidaContext& ctx); 
@@ -475,7 +475,7 @@ private:
   void SetupMiniTrace(cOrganism* in_organism);
   void PrintMiniTraceGenome(cOrganism* in_organism, cString& filename);
   
-  int PlaceAvatar(cOrganism* parent);
+  int PlaceAvatar(cAvidaContext& ctx, cOrganism* parent);
   
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
 };

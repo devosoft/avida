@@ -655,7 +655,7 @@ void cHardwareBase::doSlipMutation(cAvidaContext& ctx, InstructionSequence& geno
           //Scrambled order
         case 3:
         {
-          int copy_index = m_world->GetRandom().GetInt(insertion_length - i);
+          int copy_index = ctx.GetRandom().GetInt(insertion_length - i);
           int test = 0;
           int passed = copy_index;
           while (passed >= 0) {
@@ -727,7 +727,7 @@ void cHardwareBase::doTransMutation(cAvidaContext& ctx, InstructionSequence& gen
         Apto::Array<bool> copied_so_far(insertion_length);
         copied_so_far.SetAll(false);
         for (int i = 0; i < insertion_length; i++) {
-          int copy_index = m_world->GetRandom().GetInt(insertion_length - i);
+          int copy_index = ctx.GetRandom().GetInt(insertion_length - i);
           int test = 0;
           int passed = copy_index;
           while (passed >= 0) {
@@ -790,7 +790,7 @@ void cHardwareBase::doLGTMutation(cAvidaContext& ctx, InstructionSequence& genom
         case 1:
         {
           for (int i = 0; i < ins_seq.GetSize(); i++) {
-            int copy_index = m_world->GetRandom().GetInt(ins_seq.GetSize() - i);
+            int copy_index = ctx.GetRandom().GetInt(ins_seq.GetSize() - i);
             genome[ins_loc + i] = ins_seq[copy_index];
             ins_seq[copy_index] = ins_seq[ins_seq.GetSize() - i - 1];
           }

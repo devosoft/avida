@@ -2410,9 +2410,9 @@ bool cHardwareCPU::Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_IfP0p125(cAvidaContext&)
+bool cHardwareCPU::Inst_IfP0p125(cAvidaContext& ctx)
 {
-  if (m_world->GetRandom().P(0.875)) {
+  if (ctx.GetRandom().P(0.875)) {
     getIP().Advance();
   }
   
@@ -2420,9 +2420,9 @@ bool cHardwareCPU::Inst_IfP0p125(cAvidaContext&)
 }
 
 
-bool cHardwareCPU::Inst_IfP0p25(cAvidaContext&)
+bool cHardwareCPU::Inst_IfP0p25(cAvidaContext& ctx)
 {
-  if (m_world->GetRandom().P(0.75)) {
+  if (ctx.GetRandom().P(0.75)) {
     getIP().Advance();
   }
   
@@ -2430,9 +2430,9 @@ bool cHardwareCPU::Inst_IfP0p25(cAvidaContext&)
 }
 
 
-bool cHardwareCPU::Inst_IfP0p50(cAvidaContext&)
+bool cHardwareCPU::Inst_IfP0p50(cAvidaContext& ctx)
 {
-  if (m_world->GetRandom().P(0.5)) {
+  if (ctx.GetRandom().P(0.5)) {
     getIP().Advance();
   }
   
@@ -2440,9 +2440,9 @@ bool cHardwareCPU::Inst_IfP0p50(cAvidaContext&)
 }
 
 
-bool cHardwareCPU::Inst_IfP0p75(cAvidaContext&)
+bool cHardwareCPU::Inst_IfP0p75(cAvidaContext& ctx)
 {
-  if (m_world->GetRandom().P(0.25)) {
+  if (ctx.GetRandom().P(0.25)) {
     getIP().Advance();
   }
   
@@ -2998,10 +2998,10 @@ bool cHardwareCPU::Inst_Nand(cAvidaContext&)
   return true;
 }
 
-bool cHardwareCPU::Inst_NandTreatable(cAvidaContext&)
+bool cHardwareCPU::Inst_NandTreatable(cAvidaContext& ctx)
 {
   /*	
-   if (!m_organism->GetDeme()->isTreatable() && m_world->GetRandom().P(probFail))
+   if (!m_organism->GetDeme()->isTreatable() && ctx.GetRandom().P(probFail))
    return true;
    
    const int dst = FindModifiedRegister(REG_BX);
@@ -3721,7 +3721,7 @@ bool cHardwareCPU::Inst_RelinquishEnergyToNeighborOrganisms(cAvidaContext& ctx)
       // count neighboring organisms
       numOcuppiedNeighbors++;
     }
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
   }
   
   for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
@@ -3729,7 +3729,7 @@ bool cHardwareCPU::Inst_RelinquishEnergyToNeighborOrganisms(cAvidaContext& ctx)
       // give energy testament to neighboring organisms
       m_organism->GetNeighbor()->GetPhenotype().EnergyTestament(stored_energy/numOcuppiedNeighbors);
     }
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
   }
   
   m_world->GetStats().SumEnergyTestamentToNeighborOrganisms().Add(stored_energy);
@@ -4553,9 +4553,9 @@ bool cHardwareCPU::Inst_DonateRandom(cAvidaContext& ctx)
 	
   // Turn to a random neighbor, get it, and turn back...
   int neighbor_id = ctx.GetRandom().GetInt(m_organism->GetNeighborhoodSize());
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, 1);
   cOrganism* neighbor = m_organism->GetNeighbor();
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, -1);
   
   // Donate only if we have found a neighbor.
   if (neighbor != NULL) {
@@ -4584,7 +4584,7 @@ bool cHardwareCPU::Inst_DonateKin(cAvidaContext& ctx)
   
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, 1);
   cOrganism * neighbor = m_organism->GetNeighbor();
   
   // If there is no max distance, just take the random neighbor we're facing.
@@ -4610,14 +4610,14 @@ bool cHardwareCPU::Inst_DonateKin(cAvidaContext& ctx)
           break;
         }
       }
-      m_organism->Rotate(1);
+      m_organism->Rotate(ctx, 1);
       neighbor_id++;
     }
     if (found == false) neighbor = NULL;
   }
   
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, -1);
   
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL){
@@ -4641,7 +4641,7 @@ bool cHardwareCPU::Inst_DonateEditDist(cAvidaContext& ctx)
   
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, 1);
   cOrganism* neighbor = m_organism->GetNeighbor();
   
   // If there is no max edit distance, take the random neighbor we're facing.
@@ -4704,14 +4704,14 @@ bool cHardwareCPU::Inst_DonateEditDist(cAvidaContext& ctx)
         
         break;
       }
-      m_organism->Rotate(1);
+      m_organism->Rotate(ctx, 1);
       neighbor_id++;
     }
     if (found == false) neighbor = NULL;
   }
   
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, -1);
   
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL){
@@ -4765,7 +4765,7 @@ bool cHardwareCPU::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
 	
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, 1);
   cOrganism * neighbor = m_organism->GetNeighbor();
 	
 	
@@ -4802,14 +4802,14 @@ bool cHardwareCPU::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
       break;
     }
     
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
     neighbor_id++;
   }
 	
   if (found == false) neighbor = NULL;
 	
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, -1);
 	
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
@@ -4863,7 +4863,7 @@ bool cHardwareCPU::Inst_DonateShadedGreenBeard(cAvidaContext& ctx)
   // although it randomizes the neighbor, does not take into account whether
   // a neigbhor is there or not. 
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, 1);
   cOrganism * neighbor = m_organism->GetNeighbor();
 	
   int max_id = neighbor_id + num_neighbors;
@@ -4930,14 +4930,14 @@ bool cHardwareCPU::Inst_DonateShadedGreenBeard(cAvidaContext& ctx)
       break;
     }
 		
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
     neighbor_id++;
   }
 	
   if (found == false) neighbor = NULL;
 	
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, -1);
 	
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
@@ -4983,7 +4983,7 @@ bool cHardwareCPU::Inst_DonateTrueGreenBeard(cAvidaContext& ctx)
 	
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, 1);
   cOrganism * neighbor = m_organism->GetNeighbor();
 	
   int max_id = neighbor_id + num_neighbors;
@@ -5004,14 +5004,14 @@ bool cHardwareCPU::Inst_DonateTrueGreenBeard(cAvidaContext& ctx)
       break;
     }
 		
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
     neighbor_id++;
   }
 	
   if (found == false) neighbor = NULL;
 	
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, -1);
 	
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
@@ -5061,7 +5061,7 @@ bool cHardwareCPU::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
 	
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, 1);
   cOrganism * neighbor = m_organism->GetNeighbor();
 	
   int max_id = neighbor_id + num_neighbors;
@@ -5134,14 +5134,14 @@ bool cHardwareCPU::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
       break;
     }
 		
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
     neighbor_id++;
   }
 	
   if (found == false) neighbor = NULL;
   
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, -1);
 	
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
@@ -5187,7 +5187,7 @@ bool cHardwareCPU::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
 	
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, 1);
   cOrganism * neighbor = m_organism->GetNeighbor();
 	
   int max_id = neighbor_id + num_neighbors;
@@ -5233,14 +5233,14 @@ bool cHardwareCPU::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
       break;
     }
     
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
     neighbor_id++;
   }
 	
   if (found == false) neighbor = NULL;
 	
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, -1);
 	
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
@@ -5279,7 +5279,7 @@ bool cHardwareCPU::Inst_DonateGreenBeardSameLocus(cAvidaContext& ctx)
 	
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, 1);
   cOrganism * neighbor = m_organism->GetNeighbor();
 	
   int max_id = neighbor_id + num_neighbors;
@@ -5303,14 +5303,14 @@ bool cHardwareCPU::Inst_DonateGreenBeardSameLocus(cAvidaContext& ctx)
       }
     }
 		
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
     neighbor_id++;
   }
 	
   if (found == false) neighbor = NULL;
 	
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, -1);
 	
   // Donate only if we have found a valid receiver
   if (neighbor != NULL) {
@@ -5875,7 +5875,7 @@ bool cHardwareCPU::Inst_IOBufAdd0(cAvidaContext&)
   return true; 
 }
 
-bool cHardwareCPU::Inst_RotateL(cAvidaContext&)
+bool cHardwareCPU::Inst_RotateL(cAvidaContext& ctx)
 {
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   
@@ -5885,7 +5885,7 @@ bool cHardwareCPU::Inst_RotateL(cAvidaContext&)
   ReadLabel();
   
   // Always rotate at least once.
-  m_organism->Rotate(-1);
+  m_organism->Rotate(ctx, -1);
   
   // If there is no label, then the one rotation was all we want.
   if (!GetLabel().GetSize()) return true;
@@ -5901,12 +5901,12 @@ bool cHardwareCPU::Inst_RotateL(cAvidaContext&)
     }
     
     // Otherwise keep rotating...
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
   }
   return true;
 }
 
-bool cHardwareCPU::Inst_RotateR(cAvidaContext&)
+bool cHardwareCPU::Inst_RotateR(cAvidaContext& ctx)
 {
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   
@@ -5916,7 +5916,7 @@ bool cHardwareCPU::Inst_RotateR(cAvidaContext&)
   ReadLabel();
   
   // Always rotate at least once.
-  m_organism->Rotate(1);
+  m_organism->Rotate(ctx, 1);
   
   // If there is no label, then the one rotation was all we want.
   if (!GetLabel().GetSize()) return true;
@@ -5932,27 +5932,27 @@ bool cHardwareCPU::Inst_RotateR(cAvidaContext&)
     }
     
     // Otherwise keep rotating...
-    m_organism->Rotate(-1);
+    m_organism->Rotate(ctx, -1);
   }
   return true;
 }
 
-bool cHardwareCPU::Inst_RotateLeftOne(cAvidaContext&)
+bool cHardwareCPU::Inst_RotateLeftOne(cAvidaContext& ctx)
 {
-  m_organism->Rotate(1);
+  m_organism->Rotate(ctx, 1);
   return true;
 }
 
-bool cHardwareCPU::Inst_RotateRightOne(cAvidaContext&)
+bool cHardwareCPU::Inst_RotateRightOne(cAvidaContext& ctx)
 {
-  m_organism->Rotate(-1);
+  m_organism->Rotate(ctx, -1);
   return true;
 }
 
 /**
  Rotate to facing specified by following label
  */
-bool cHardwareCPU::Inst_RotateLabel(cAvidaContext&)
+bool cHardwareCPU::Inst_RotateLabel(cAvidaContext& ctx)
 {
   int standardNeighborhoodSize, actualNeighborhoodSize, newFacing, currentFacing;
   actualNeighborhoodSize = m_organism->GetNeighborhoodSize();
@@ -5970,12 +5970,12 @@ bool cHardwareCPU::Inst_RotateLabel(cAvidaContext&)
     currentFacing = m_organism->GetFacing();
     if (newFacing == currentFacing)
       break;
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
   }
   return true;
 }
 
-bool cHardwareCPU::Inst_RotateUnoccupiedCell(cAvidaContext&)
+bool cHardwareCPU::Inst_RotateUnoccupiedCell(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
   
@@ -5984,13 +5984,13 @@ bool cHardwareCPU::Inst_RotateUnoccupiedCell(cAvidaContext&)
       GetRegister(reg_used) = 1;      
       return true;
     }
-    m_organism->Rotate(1); // continue to rotate
+    m_organism->Rotate(ctx, 1); // continue to rotate
   }  
   GetRegister(reg_used) = 0;
   return true;
 }
 
-bool cHardwareCPU::Inst_RotateOccupiedCell(cAvidaContext&)
+bool cHardwareCPU::Inst_RotateOccupiedCell(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
   
@@ -5999,7 +5999,7 @@ bool cHardwareCPU::Inst_RotateOccupiedCell(cAvidaContext&)
       GetRegister(reg_used) = 1;      
       return true;
     }
-    m_organism->Rotate(1); // continue to rotate
+    m_organism->Rotate(ctx, 1); // continue to rotate
   }  
   GetRegister(reg_used) = 0;
   return true;
@@ -6007,17 +6007,17 @@ bool cHardwareCPU::Inst_RotateOccupiedCell(cAvidaContext&)
 
 bool cHardwareCPU::Inst_RotateNextOccupiedCell(cAvidaContext& ctx)
 {
-  m_organism->Rotate(1);
+  m_organism->Rotate(ctx, 1);
   return Inst_RotateOccupiedCell(ctx);
 }
 
 bool cHardwareCPU::Inst_RotateNextUnoccupiedCell(cAvidaContext& ctx)
 {
-  m_organism->Rotate(1); // continue to rotate
+  m_organism->Rotate(ctx, 1); // continue to rotate
   return Inst_RotateUnoccupiedCell(ctx);
 }
 
-bool cHardwareCPU::Inst_RotateEventCell(cAvidaContext&)
+bool cHardwareCPU::Inst_RotateEventCell(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
   
@@ -6026,7 +6026,7 @@ bool cHardwareCPU::Inst_RotateEventCell(cAvidaContext&)
       GetRegister(reg_used) = 1;      
       return true;
     }
-    m_organism->Rotate(1); // continue to rotate
+    m_organism->Rotate(ctx, 1); // continue to rotate
   }  
   GetRegister(reg_used) = 0;
   return true;
@@ -6042,7 +6042,7 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
   const Apto::Array<double> current_res = m_organism->GetOrgInterface().GetResources(ctx);
   double max_res = 0;
   for(int i = 0; i < actualNeighborhoodSize; i++) {
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
     Apto::Array<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
     if (faced_res[opinion] > max_res) max_res = faced_res[opinion];
   } 
@@ -6050,7 +6050,7 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
   if (max_res > current_res[opinion]) {
     for(int i = 0; i < actualNeighborhoodSize; i++) {
       Apto::Array<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
-      if (faced_res[opinion] != max_res) m_organism->Rotate(1);
+      if (faced_res[opinion] != max_res) m_organism->Rotate(ctx, 1);
     }
   }
   // return % change
@@ -6062,7 +6062,7 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_RotateHome(cAvidaContext&)
+bool cHardwareCPU::Inst_RotateHome(cAvidaContext& ctx)
 {
   // Will rotate organism to face birth cell if org never used zero-easterly or zero-northerly. Otherwise will rotate org
   // to face the 'marked' spot where those instructions were executed.
@@ -6078,7 +6078,7 @@ bool cHardwareCPU::Inst_RotateHome(cAvidaContext&)
   else if (northerly == 0 && easterly > 0) correct_facing = 6; // rotate W
   else if (northerly > 0 && easterly > 0) correct_facing = 7; // rotate NW  
   for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
     if (m_organism->GetFacedDir() == correct_facing) break;
   }
   return true;
@@ -6113,7 +6113,7 @@ bool cHardwareCPU::Inst_Tumble(cAvidaContext& ctx)
     int irot = ctx.GetRandom().GetUInt(num_neighbors-1);
     // Treat as base 0 number of turns to make
     for (int i = 0; i <= irot; i++) {
-      m_organism->Rotate(1);
+      m_organism->Rotate(ctx, 1);
     }
   }
   // Logging
@@ -6235,20 +6235,20 @@ bool cHardwareCPU::Inst_MoveToEvent(cAvidaContext& ctx)
       GetRegister(reg_used) = 1;
       return true;
     }
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
   }
   Inst_Move(ctx);
   GetRegister(reg_used) = 0;
   return true;
 }
 
-bool cHardwareCPU::Inst_IfNeighborEventInUnoccupiedCell(cAvidaContext&)
+bool cHardwareCPU::Inst_IfNeighborEventInUnoccupiedCell(cAvidaContext& ctx)
 {
   for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
     if (m_organism->GetNeighborCellContents() > 0 && !m_organism->IsNeighborCellOccupied()) { 
       return true;
     }
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
   }
   getIP().Advance();
   return true;
@@ -8223,7 +8223,7 @@ bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
   Apto::Array<double> cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
-      (m_world->GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
+      (ctx.GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
     num_rotations = ctx.GetRandom().GetUInt(m_organism->GetNeighborhoodSize());
   } else {
     // Find which neighbor has the strongest pheromone
@@ -8281,7 +8281,7 @@ bool cHardwareCPU::Inst_ExploitForward5(cAvidaContext& ctx)
   Apto::Array<double> cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
-      (m_world->GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
+      (ctx.GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
     num_rotations = ctx.GetRandom().GetUInt(m_organism->GetNeighborhoodSize());
   } else {
     // Find which neighbor has the strongest pheromone
@@ -8346,7 +8346,7 @@ bool cHardwareCPU::Inst_ExploitForward3(cAvidaContext& ctx)
   Apto::Array<double> cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
-      (m_world->GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
+      (ctx.GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
     num_rotations = ctx.GetRandom().GetUInt(m_organism->GetNeighborhoodSize());
   } else {
     // Find which neighbor has the strongest pheromone
@@ -8399,7 +8399,7 @@ bool cHardwareCPU::Inst_Explore(cAvidaContext& ctx)
   // Rotate randomly.  Code taken from tumble.
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   for (unsigned int i = 0; i < ctx.GetRandom().GetUInt(num_neighbors); i++) {
-    m_organism->Rotate(1);  // Rotate doesn't rotate N times, just once.
+    m_organism->Rotate(ctx, 1);  // Rotate doesn't rotate N times, just once.
   }
   
   m_organism->Move(ctx);
@@ -9225,20 +9225,20 @@ bool cHardwareCPU::Inst_GetCycles(cAvidaContext&)
 
 
 //! Loads the current neighborhood into the organism's memory.
-bool cHardwareCPU::Inst_GetNeighborhood(cAvidaContext&)
+bool cHardwareCPU::Inst_GetNeighborhood(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  m_organism->LoadNeighborhood();
+  m_organism->LoadNeighborhood(ctx);
   
   return true;
 }
 
 
 //! Test if the current neighborhood has changed from that in the organism's memory.
-bool cHardwareCPU::Inst_IfNeighborhoodChanged(cAvidaContext&)
+bool cHardwareCPU::Inst_IfNeighborhoodChanged(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (!m_organism->HasNeighborhoodChanged()) {
+  if (!m_organism->HasNeighborhoodChanged(ctx)) {
     getIP().Advance();
   }
 	
@@ -9426,7 +9426,7 @@ bool cHardwareCPU::Inst_DonateFacingRawMaterialsOtherSpecies(cAvidaContext& ctx)
 }
 
 /* Donate a string that you have produced to the facing organism */
-bool cHardwareCPU::Inst_DonateFacingString(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateFacingString(cAvidaContext& ctx)
 {
   // Get faced neighbor
   cOrganism * neighbor = m_organism->GetNeighbor();
@@ -9442,7 +9442,7 @@ bool cHardwareCPU::Inst_DonateFacingString(cAvidaContext&)
       // sometimes the donation will fail. 
       // get the probability of failure
       unsigned int prob_fail = m_world->GetConfig().DONATION_FAILURE_PERCENT.Get(); 
-      unsigned int rand_num = m_world->GetRandom().GetUInt(0, 100); 
+      unsigned int rand_num = ctx.GetRandom().GetUInt(0, 100); 
       // neighbor donates to organism.
       if (rand_num < prob_fail) { 
         // EXIT
@@ -9464,7 +9464,7 @@ bool cHardwareCPU::Inst_DonateFacingString(cAvidaContext&)
 }
 
 /* Donate raw materials to the facing organism. */
-bool cHardwareCPU::Inst_DonateFacingRawMaterials(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateFacingRawMaterials(cAvidaContext& ctx)
 {
   
   // Get faced neighbor
@@ -9481,7 +9481,7 @@ bool cHardwareCPU::Inst_DonateFacingRawMaterials(cAvidaContext&)
       // sometimes the donation will fail. 
       // get the probability of failure
       unsigned int prob_fail = m_world->GetConfig().DONATION_FAILURE_PERCENT.Get(); 
-      unsigned int rand_num = m_world->GetRandom().GetUInt(0, 100); 
+      unsigned int rand_num = ctx.GetRandom().GetUInt(0, 100); 
       // neighbor donates to organism.
       if (rand_num < prob_fail) { 
         // EXIT
@@ -9496,7 +9496,7 @@ bool cHardwareCPU::Inst_DonateFacingRawMaterials(cAvidaContext&)
       // adding a new comment.
       if (m_world->GetConfig().ROTATE_ON_DONATE.Get()) {
         while (neighbor->GetNeighbor() != m_organism) {
-          neighbor->Rotate(1);
+          neighbor->Rotate(ctx, 1);
         }
       }
       
@@ -9617,7 +9617,7 @@ bool cHardwareCPU::Inst_RotateToDifferentTag(cAvidaContext& ctx)
 	
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(ctx, 1);
   cOrganism * neighbor = m_organism->GetNeighbor();
 	
   int max_id = neighbor_id + num_neighbors;
@@ -9639,7 +9639,7 @@ bool cHardwareCPU::Inst_RotateToDifferentTag(cAvidaContext& ctx)
       break;
     }
 		
-    m_organism->Rotate(1);
+    m_organism->Rotate(ctx, 1);
     neighbor_id++;
   }
 	
@@ -9773,7 +9773,7 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
     if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() != 0) {
       int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
       double prob_failure = abs((double) percent_failure / 100.0);
-      double rand = m_world->GetRandom().GetDouble();
+      double rand = ctx.GetRandom().GetDouble();
       if (rand <= prob_failure && percent_failure > 0) return true;
       else if (rand <= prob_failure && percent_failure < 0) {
         m_organism->Die(ctx);
@@ -9783,7 +9783,7 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
 
     // If tolerances are on the org must pass immigration chance 
     if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
-      m_organism->GetOrgInterface().AttemptImmigrateGroup(prop_group_id, m_organism);
+      m_organism->GetOrgInterface().AttemptImmigrateGroup(ctx, prop_group_id, m_organism);
       return true;
     }
     else {
@@ -9842,7 +9842,7 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
   if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() != 0) {
     int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
     double prob_failure = abs((double) percent_failure / 100.0);
-    double rand = m_world->GetRandom().GetDouble();
+    double rand = ctx.GetRandom().GetDouble();
     if (rand <= prob_failure && percent_failure > 0) return true;
     else if (rand <= prob_failure && percent_failure < 0) {
       m_organism->Die(ctx);
@@ -9879,7 +9879,7 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
   if (new_opinion == -1) return false;
   
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
-    m_organism->GetOrgInterface().AttemptImmigrateGroup(new_opinion, m_organism);
+    m_organism->GetOrgInterface().AttemptImmigrateGroup(ctx, new_opinion, m_organism);
   }
   else {
     m_organism->GetOrgInterface().SetOpinion(new_opinion, m_organism);

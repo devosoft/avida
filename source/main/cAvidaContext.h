@@ -36,6 +36,7 @@ class cAvidaContext
 private:
   Avida::WorldDriver* m_driver;
   Apto::Random* m_rng;
+
   bool m_analyze;
   bool m_testing;
   bool m_org_faults;

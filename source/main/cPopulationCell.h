@@ -155,8 +155,8 @@ public:
   inline int GetNumAV() const { return GetNumPreyAV() + GetNumPredAV(); }
   inline int GetNumPredAV() const { return m_av_pred.GetSize(); }
   inline int GetNumPreyAV() const { return m_av_prey.GetSize(); }
-  void AddPredAV(cOrganism* org);
-  void AddPreyAV(cOrganism* org);
+  void AddPredAV(cAvidaContext& ctx, cOrganism* org);
+  void AddPreyAV(cAvidaContext& ctx, cOrganism* org);
   void RemovePredAV(cOrganism* org);
   void RemovePreyAV(cOrganism* org);
   inline bool HasInputAV() const { return GetNumAVInputs() > 0; }
@@ -165,7 +165,7 @@ public:
   inline bool HasPredAV() const { return GetNumPredAV() > 0; }
   inline bool HasPreyAV() const { return GetNumPreyAV() > 0; }
   bool HasOutputAV(cOrganism* org);
-  cOrganism* GetRandAV() const;
+  cOrganism* GetRandAV(cAvidaContext& ctx) const;
   cOrganism* GetRandPredAV() const;
   cOrganism* GetRandPreyAV() const;
   Apto::Array<cOrganism*> GetCellInputAVs();
@@ -192,7 +192,7 @@ public:
 	//! Retrieve the number of genome fragments currently found in this cell.
 	unsigned int CountGenomeFragments() const;
 	//! Remove and return the front genome fragment.
-	InstructionSequence PopGenomeFragment();
+	InstructionSequence PopGenomeFragment(cAvidaContext& ctx);
 	//! Retrieve the list of fragments from this cell.
 	fragment_list_type& GetFragments();
 	//! Clear all fragments from this cell, adjust resources as required.
