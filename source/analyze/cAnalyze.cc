@@ -6704,7 +6704,7 @@ void cAnalyze::WriteInjectInitial(cString cur_string)
     fp << "i InjectSequence "
       << genome.AsString() << " "
       << start_cell << " "
-      << start_cell + cur_count << " "
+      << start_cell + 1 << " "
       << genotype->GetMerit() << " "
       << lineage << " "
       << endl;
