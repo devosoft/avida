@@ -6683,7 +6683,7 @@ void cAnalyze::WriteInjectInitial(cString cur_string)
   int start_cell = 0;
   int lineage = 0;
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-  if (cur_string.GetSize() != 0) start_cell = cur_string.PopWord().AsInt();
+  //if (cur_string.GetSize() != 0) start_cell = cur_string.PopWord().AsInt();
   if (cur_string.GetSize() != 0) lineage = cur_string.PopWord().AsInt();
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
