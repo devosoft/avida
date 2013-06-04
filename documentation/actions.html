@@ -257,6 +257,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintMicroTraces">PrintMicroTraces</a><br>
       <a href="#PrintMultiProcessData">PrintMultiProcessData</a><br>
       <a href="#PrintMutationRateData">PrintMutationRateData</a><br>
+      <a href="#PrintNavTrace">PrintNavTrace</a><br>
       <a href="#PrintNewReactionData">PrintNewReactionData</a><br>
     <td valign="top">
       <a href="#PrintNewTasksData">PrintNewTasksData</a><br>
@@ -1226,7 +1227,7 @@ change the course of the run.  There are a wide variety of these.
 </li>
 <li><p>
   <strong><a name="FlushTopNavTrace">FlushTopNavTrace</a></strong>
-  Force printing of nav trace (as set up by PrintTopNavTrace) even if all candidate orgs have not been
+  Force printing of nav trace (as set up by PrintTopNavTrace or PrintNavTrace) even if all candidate orgs have not been
   evaluated / reproduced.
     </p>
 </li>
@@ -2670,6 +2671,14 @@ a single, complete file for each trigger.
   (aver, stdev, skew, cur). Useful only when mutation rate is set per organism.
 
   </p>
+</li>
+<li><p>
+  <strong><a name="PrintNavTrace">PrintNavTrace</a></strong>
+  Record and print some nav data up to first reproduction for best of orgs alive now, including trace execution,
+  locations, and facings. Will print these data for the org that reproduces in shortest amount of time (as measured by cycles).
+  Will print nothing if any of the candidate orgs are still alive when avida exits and no FlushTopNavTrace events were called.
+  Will override TopNavTrace is both are active (i.e., will ignore the reaction hierarchy TopNav uses).
+    </p>
 </li>
 <li><p>
   <strong><a name="PrintNewReactionData">PrintNewReactionData</a></strong>

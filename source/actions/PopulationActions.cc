@@ -5384,6 +5384,25 @@ public:
   }
 };
 
+class cActionPrintNavTrace : public cAction
+{
+private:
+  
+public:
+  cActionPrintNavTrace(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args)
+  {
+  }
+  
+  static const cString GetDescription() { return "Arguments: ''"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().SetNavTrace(true);
+    m_world->GetPopulation().SetTopNavQ();
+  }
+};
+
 /* Force Printing of current TopNacTrace even if orgs still being tracked. */
 class cActionFlushTopNavTrace : public cAction
 {
@@ -5399,7 +5418,7 @@ public:
 
   void Process(cAvidaContext& ctx)
   { 
-    m_world->GetStats().PrintTopNavTrace();
+    m_world->GetStats().PrintTopNavTrace(true);
   }
 };
 
@@ -5571,6 +5590,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionLoadMiniTraceQ>("LoadMiniTraceQ");
   action_lib->Register<cActionPrintReproData>("PrintReproData");
   action_lib->Register<cActionPrintTopNavTrace>("PrintTopNavTrace");
+  action_lib->Register<cActionPrintTopNavTrace>("PrintNavTrace");
   action_lib->Register<cActionFlushTopNavTrace>("FlushTopNavTrace");
 
   action_lib->Register<cActionRemovePredators>("RemovePredators");

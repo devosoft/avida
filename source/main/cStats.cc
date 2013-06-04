@@ -111,6 +111,7 @@ cStats::cStats(cWorld* world)
 , pred_entropy(0.0)
 , topreac(-1)
 , topcycle(-1)
+, firstnavtrace(false)
 , m_deme_num_repls(0)
 , m_deme_num_repls_treatable(0)
 , m_deme_num_repls_untreatable(0)
@@ -4934,28 +4935,32 @@ void cStats::PrintMicroTraces(Apto::Array<char, Apto::Smart>& exec_trace, int bi
 
 void cStats::UpdateTopNavTrace(cOrganism* org, bool force_update)
 {
-  // 'best' org is the one among the orgs with the highest reaction achieved that reproduced in the least number of cycles
-  // using cycles, so any inst executions in parallel multi-threads are only counted as one exec
   int best_reac = -1;
   Apto::Array<int> reaction_count = org->GetPhenotype().GetCurReactionCount();
-  for (int i = reaction_count.GetSize() -1; i >= 0; i--) {
-    if (reaction_count[i] > 0) {
-      best_reac = i;
-      break;
+  if (!firstnavtrace) {
+    // 'best' org is the one among the orgs with the highest reaction achieved that reproduced in the least number of cycles
+    // using cycles, so any inst executions in parallel multi-threads are only counted as one exec
+    for (int i = reaction_count.GetSize() -1; i >= 0; i--) {
+      if (reaction_count[i] > 0) {
+        best_reac = i;
+        break;
+      }
     }
   }
   int cycle = org->GetPhenotype().GetTimeUsed();
   bool new_winner = false;
-  if (best_reac >= topreac) {
+  if (best_reac >= topreac && !firstnavtrace) {
     if (best_reac == topreac && cycle < topcycle) new_winner = true;
     else if (best_reac > topreac) new_winner = true;
   }
+  else if (cycle < topcycle) new_winner = true;
   if (new_winner || force_update) {
     topreac = best_reac;
     topcycle = cycle;
     topgenid = org->SystematicsGroup("genotype")->ID();
     topid = org->GetID();
     topbirthud = org->GetPhenotype().GetUpdateBorn();
+    toprepro = org->GetPhenotype().GetNumExecs();
     topgenome = Genome(org->SystematicsGroup("genotype")->Properties().Get("genome"));
     
     Apto::Array<char, Apto::Smart> trace = org->GetHardware().GetMicroTrace();
@@ -4981,6 +4986,8 @@ void cStats::UpdateTopNavTrace(cOrganism* org, bool force_update)
       topnavtraceupdate[i] = traceupdate[i];
     }
     
+    topstart = org->GetPhenotype().GetNumExecs() - toptrace.GetSize();
+
     Apto::Array<int> reaction_cycles = org->GetPhenotype().GetFirstReactionCycles();
     Apto::Array<int> reaction_execs = org->GetPhenotype().GetFirstReactionExecs();
     
@@ -5003,10 +5010,10 @@ void cStats::UpdateTopNavTrace(cOrganism* org, bool force_update)
     if (org->HasOpinion()) topgroup = org->GetOpinion().first;
     else topgroup = org->GetParentGroup();
   }
-  if (m_world->GetPopulation().GetTopNavQ().GetSize() <= 1) PrintTopNavTrace();
+  if (m_world->GetPopulation().GetTopNavQ().GetSize() <= 1) PrintTopNavTrace(true);
 }
 
-void cStats::PrintTopNavTrace()
+void cStats::PrintTopNavTrace(bool flush)
 {
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "navtrace.dat");
   
@@ -5015,6 +5022,9 @@ void cStats::PrintTopNavTrace()
   df->WriteComment("GenotypeID");
   df->WriteComment("OrgID");
   df->WriteComment("Cycle at First Reproduction (parallel multithread execs = 1 cycle)");
+  df->WriteComment("Exec Count at Trace Start");
+  df->WriteComment("Exec Count at First Reproduction");
+
   df->WriteComment("Reaction Counts at First Reproduction");
   df->WriteComment("CPU Cycle at First Trigger of Each Reaction");
   df->WriteComment("Exec Count at First Trigger (== index into execution trace and nav traces)");
@@ -5037,7 +5047,7 @@ void cStats::PrintTopNavTrace()
   }
   
   if (topreactions.GetSize()) {
-    fp << topgenid << " " << topid << " " << topcycle << " ";
+    fp << topgenid << " " << topid << " " << topcycle << " " << topstart << " " << toprepro << " ";
     // reaction related
     for (int i = 0; i < topreactions.GetSize() - 1; i++) {
       fp << topreactions[i] << ",";
@@ -5054,7 +5064,7 @@ void cStats::PrintTopNavTrace()
     }
     fp << topreactionexecs[topreactionexecs.GetSize() - 1] << " ";
     
-    // instruction exec sequence related (printed in reverse order to get firs exec as first printed)
+    // instruction exec sequence related
     for (int i = 0; i < topnavtraceupdate.GetSize() - 1; i++) {
       fp << topnavtraceupdate[i] << ",";
     }
@@ -5083,6 +5093,11 @@ void cStats::PrintTopNavTrace()
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
     testcpu->PrintGenome(ctx2, topgenome, genfile, m_world->GetStats().GetUpdate());
     delete testcpu;
+  }
+  if (flush) {
+    topreac = -1;
+    topcycle = -1;
+    m_world->GetPopulation().GetTopNavQ().Resize(0);
   }
 }
 

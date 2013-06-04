@@ -286,7 +286,7 @@ public:
   const Apto::Array<int, Apto::Smart>& GetMiniTraceQueue() const { return minitrace_queue; }
   void AppendRecordReproQ(cOrganism* new_org);
   void SetTopNavQ();
-  Apto::Array<cOrganism*, Apto::Smart> GetTopNavQ() { return topnav_q; }
+  Apto::Array<cOrganism*, Apto::Smart>& GetTopNavQ() { return topnav_q; }
   
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
