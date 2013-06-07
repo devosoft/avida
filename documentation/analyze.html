@@ -569,11 +569,10 @@ automate some tedium.
 </strong></dt>
 <dd>
   Creates an <a href="events.html">events file</a> which injects all the genotypes of the current 
-  batch before update 0 (same as WRITE_INJECT_EVENTS but doesn't cause no organism errors).  Injection starts at the given start_cell id and increments 
-  upward.  All injected organisms are assigned the given lineage label and start 
-  with the relevant merit; num_cpus copies of each genotype are injected.
+  batch before update 0 (same as WRITE_INJECT_EVENTS but doesn't cause no organism errors).  Injection starts at 0 (this is made for reintroduction of single organisms only!) and injects a single organism only.  Injected organism is assigned the given lineage label and starts
+  with the relevant merit.
   <br />
-  <strong>Warning:</strong> injection is in order that the genotypes appear in the batch.  
+  <strong>Warning:</strong> injection is in order that the genotypes appear in the batch and doesn't take into account the original location.
   This will break any spatial structure your population may have had.
 </dd>
 
