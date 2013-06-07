@@ -260,6 +260,7 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("kill-display", &cHardwareBCR::Inst_KillDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
 
     tInstLibEntry<tMethod>("attack-prey", &cHardwareBCR::Inst_AttackPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("attack-ft-prey", &cHardwareBCR::Inst_AttackFTPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
 
     // Control-type Instructions
     tInstLibEntry<tMethod>("scramble-registers", &cHardwareBCR::Inst_ScrambleReg, INST_CLASS_DATA, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
@@ -3679,78 +3680,64 @@ bool cHardwareBCR::Inst_KillDisplay(cAvidaContext& ctx)
 //Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions.
 bool cHardwareBCR::Inst_AttackPrey(cAvidaContext& ctx)
 {
-  assert(m_organism != 0);
-  if (!testAttack(ctx)) return false;
-  
-  cOrganism* target = NULL;
-  if (!m_use_avatar) {
-    target = m_organism->GetOrgInterface().GetNeighbor();
-  }
-  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
-  
-  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-  if (!target->IsPreyFT()) return false;
-  
-  if (target->IsDead()) return false;
-  
-  const int success_reg = FindModifiedRegister(rBX);
-  const int bonus_reg = FindModifiedNextRegister(success_reg);
-  const int bin_reg = FindModifiedNextRegister(bonus_reg);
-  
-  if (ctx.GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() ||
-      (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    injureOrg(target);
-    setRegister(success_reg, -1, true);
-    setRegister(bonus_reg, -1, true);
-    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setRegister(bin_reg, -1, true);
-    return false;
-  }
-  else {
-    // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
-    if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
-      const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-      double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
-      attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
-      m_organism->UpdateMerit(attacker_merit);
-    }
-    
-    // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
-    const Apto::Array<int>& target_reactions = target->GetPhenotype().GetLastReactionCount();
-    const Apto::Array<int>& org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
-    for (int i = 0; i < org_reactions.GetSize(); i++) {
-      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
-    }
-    
-    // and add current merit bonus after adjusting for conversion efficiency
-    const double target_bonus = target->GetPhenotype().GetCurBonus();
-    m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
-    
-    // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
-    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-      const Apto::Array<double>& target_bins = target->GetRBins();
-      for (int i = 0; i < target_bins.GetSize(); i++) {
-        m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
-        target->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
-      }
-      const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
-      setRegister(bin_reg, spec_bin, true);
-    }
-    
-    // if you weren't a predator before, you are now!
-    target->Die(ctx); // kill first -- could end up being killed by inject clone or MAX_PRED if parent was pred
-    makePred(ctx);
-    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
-      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
-      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx, m_organism->SystematicsGroup("genotype")->ID());
-    }
-    
-    setRegister(success_reg, 1, true);
-    setRegister(bonus_reg, (int) (target_bonus), true);
-  }
-  return true;
-} 		
+  if (!testAttack(ctx)) { return false; }
+  cOrganism* target = getPreyTarget(ctx);
+  if (!testPreyTarget(target)) { return false; }
 
+  sAttackReg reg;
+  setAttackReg(reg);
+  
+  if (!executeAttack(ctx, target, reg)) return false;
+
+  return true;
+}
+
+bool cHardwareBCR::Inst_AttackFTPrey(cAvidaContext& ctx)
+{
+  if (!testAttack(ctx)) { return false; }
+
+  const int target_reg = FindModifiedRegister(rBX);
+  int target_org_type = m_threads[m_cur_thread].reg[target_reg].value;
+  cOrganism* target = NULL; 
+  if (!m_use_avatar) { 
+    target = m_organism->GetOrgInterface().GetNeighbor();
+    if (target_org_type != target->GetForageTarget())  { return false; }
+    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+    if (!target->IsPreyFT())  { return false; }
+  }    
+  else if (m_use_avatar == 2) {
+    const Apto::Array<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetFacedPreyAVs();
+    bool target_match = false;
+    int rand_index = ctx.GetRandom().GetUInt(0, av_neighbors.GetSize());
+    int j = 0;
+    for (int i = 0; i < av_neighbors.GetSize(); i++) {
+      if (rand_index + i < av_neighbors.GetSize()) {
+        if (av_neighbors[rand_index + i]->GetForageTarget() == target_org_type) {
+          target = av_neighbors[rand_index + i];      
+          target_match = true;
+        }
+        break;
+      }
+      else {
+        if (av_neighbors[j]->GetForageTarget() == target_org_type) {
+          target = av_neighbors[j];      
+          target_match = true;
+        }
+        break;          
+        j++;
+      }
+    }
+    if (!target_match)  { return false; }
+  } 
+  if (!testPreyTarget(target))  { return false; }
+  
+  sAttackReg reg;
+  setAttackReg(reg);
+  
+  if (!executeAttack(ctx, target, reg)) return false;
+
+  return true;
+}
 
 bool cHardwareBCR::Inst_ScrambleReg(cAvidaContext& ctx)
 {
@@ -3802,30 +3789,7 @@ bool cHardwareBCR::DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit)
 }
 
 
-void cHardwareBCR::injureOrg(cOrganism* target)
-{
-  double injury = m_world->GetConfig().PRED_INJURY.Get();
-  if (injury == 0) return;
-  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
-    double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-    target_merit -= target_merit * injury;
-    target->UpdateMerit(target_merit);
-  }
-  const Apto::Array<int>& target_reactions = target->GetPhenotype().GetLastReactionCount();
-  for (int i = 0; i < target_reactions.GetSize(); i++) {
-    target->GetPhenotype().SetReactionCount(i, target_reactions[i] - (int)((target_reactions[i] * injury)));
-  }
-  const double target_bonus = target->GetPhenotype().GetCurBonus();
-  target->GetPhenotype().SetCurBonus(target_bonus - (target_bonus * injury));
-  
-  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-    Apto::Array<double> target_bins = target->GetRBins();
-    for (int i = 0; i < target_bins.GetSize(); i++) {
-      target->AddToRBin(i, -1 * (target_bins[i] * injury));
-    }
-  }
-}
-
+// PRED-PREY SUPPORT
 void cHardwareBCR::makePred(cAvidaContext& ctx)
 {
   if (m_organism->IsPreyFT()) {
@@ -3853,6 +3817,48 @@ void cHardwareBCR::makeTopPred(cAvidaContext& ctx)
   else if (m_organism->IsPredFT()) m_organism->SetTopPredFT(ctx);
 }
 
+void cHardwareBCR::setAttackReg(sAttackReg& reg)
+{
+  reg.success_reg = FindModifiedRegister(rBX);
+  reg.bonus_reg = FindModifiedNextRegister(reg.success_reg);
+  reg.bin_reg = FindModifiedNextRegister(reg.bonus_reg);
+}
+
+bool cHardwareBCR::executeAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds)
+{
+  if (!testAttackChance(ctx, target, reg, odds)) return false;
+  double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
+  if (m_organism->IsTopPredFT()) effic *= effic;
+  applyKilledPreyMerit(target, effic);
+  applyKilledPreyReactions(target);
+
+  // keep returns in same order as legacy code (important if reg assignments are shared)
+  applyKilledPreyResBins(target, reg, effic);
+  setRegister(reg.success_reg, 1, true);
+  applyKilledPreyBonus(target, reg, effic);
+
+  target->Die(ctx); // kill first -- could end up being killed by inject clone or MAX_PRED if parent was pred
+  makePred(ctx);
+  tryPreyClone(ctx);
+  return true;
+}
+
+cOrganism* cHardwareBCR::getPreyTarget(cAvidaContext& ctx)
+{
+  cOrganism* target = NULL;
+  if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
+  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();  
+  return target;
+}
+
+bool cHardwareBCR::testPreyTarget(cOrganism* target)
+{
+  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+  bool success = true;
+  if (!target->IsPreyFT() || target->IsDead()) success = false;
+  return success;
+}
+
 bool cHardwareBCR::testAttack(cAvidaContext& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -3871,4 +3877,96 @@ bool cHardwareBCR::testAttack(cAvidaContext& ctx)
     }
   }
   return true;
+}
+
+bool cHardwareBCR::testAttackChance(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds)
+{
+  bool success = true;
+  if (odds == -1) odds = m_world->GetConfig().PRED_ODDS.Get();
+  if (ctx.GetRandom().GetDouble() >= odds ||
+      (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+    injureOrg(target);
+    setRegister(reg.success_reg, -1, true);
+    setRegister(reg.bonus_reg, -1, true);
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setRegister(reg.bin_reg, -1, true);
+    success = false;
+  }
+  return success;
+}
+
+void cHardwareBCR::applyKilledPreyMerit(cOrganism* target, double effic)
+{
+  // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+    const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+    double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+    attacker_merit += target_merit * effic;
+    m_organism->UpdateMerit(attacker_merit);
+  }
+}
+
+void cHardwareBCR::applyKilledPreyReactions(cOrganism* target)
+{
+  // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
+  Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
+  Apto::Array<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+  for (int i = 0; i < org_reactions.GetSize(); i++) {
+    m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
+  }
+}
+
+void cHardwareBCR::applyKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic)
+{
+  // and add current merit bonus after adjusting for conversion efficiency
+  const double target_bonus = target->GetPhenotype().GetCurBonus();
+  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * effic));
+  setRegister(reg.bonus_reg, (int) (target_bonus), true);
+}
+
+void cHardwareBCR::applyKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic)
+{
+  // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+    Apto::Array<double> target_bins = target->GetRBins();
+    for (int i = 0; i < target_bins.GetSize(); i++) {
+      m_organism->AddToRBin(i, target_bins[i] * effic);
+      if (effic > 0) target->AddToRBin(i, -1 * (target_bins[i] * effic));
+    }
+    const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+    setRegister(reg.bin_reg, spec_bin, true);
+  }
+}
+
+void cHardwareBCR::tryPreyClone(cAvidaContext& ctx)
+{
+  if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+    // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
+    // but can't dump a lot b/c could end up filling world with just clones (e.g. if attack happens when world is still being populated)
+    int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
+    for (int i = 0; i < min(2, num_clones); i++) m_organism->GetOrgInterface().InjectPreyClone(ctx, m_organism->SystematicsGroup("genotype")->ID());
+  }
+}
+
+void cHardwareBCR::injureOrg(cOrganism* target)
+{
+  double injury = m_world->GetConfig().PRED_INJURY.Get();
+  if (injury == 0) return;
+  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+    double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+    target_merit -= target_merit * injury;
+    target->UpdateMerit(target_merit);
+  }
+  Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
+  for (int i = 0; i < target_reactions.GetSize(); i++) {
+    target->GetPhenotype().SetReactionCount(i, target_reactions[i] - (int)((target_reactions[i] * injury)));
+  }
+  const double target_bonus = target->GetPhenotype().GetCurBonus();
+  target->GetPhenotype().SetCurBonus(target_bonus - (target_bonus * injury));
+  
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+    Apto::Array<double> target_bins = target->GetRBins();
+    for (int i = 0; i < target_bins.GetSize(); i++) {
+      target->AddToRBin(i, -1 * (target_bins[i] * injury));
+    }
+  }
 }

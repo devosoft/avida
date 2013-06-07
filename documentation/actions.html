@@ -148,6 +148,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#KillWithinRadiusBelowResourceThreshold">KillWithinRadiusBelowResourceThreshold</a><br>
       <a href="#KillWithinRadiusBelowResourceThresholdTestAll">KillWithinRadiusBelowResourceThresholdTestAll</a><br>
       <a href="#KillWithinRadiusMeanBelowResourceThreshold">KillWithinRadiusMeanBelowResourceThreshold</a><br>
+      <a href="#LoadMiniTraceQ">LoadMiniTraceQ</a><br>
       <a href="#LoadPopulation">LoadPopulation</a><br>
       <a href="#MeasureDemeNetworks">MeasureDemeNetworks</a><br>
       <a href="#MixPopulation">MixPopulation</a><br>
@@ -1484,6 +1485,20 @@ change the course of the run.  There are a wide variety of these.
   
   </p>
 </li>
+  <li><p>
+    <strong><a name="LoadMiniTraceQ">LoadMiniTraceQ</a></strong>
+    <i> [string filename]] [int orgs_per=1] [boolean print_genomes=1] [boolean print_reacs=0]</i>
+    </p>
+    <p>Record minitraces for pre-specificied genotypes. Genotypes need to be specified in a config file. Will print the
+    minitraces for genotypes from loaded pops or births. E.g., the following would add two genotypes to the minitrace q:
+    <br />  i LoadMiniTraceQ file=first_last.spop:orgs_per=1:print_genomes=1
+    <br /> Provided there was a 'first_last' config file with the following:
+    <br /> #format id
+    <br /> #  1: ID
+    <br /> 284
+    <br /> 213
+    </p>
+  </li>
 <li><p>
   <strong><a name="MeasureDemeNetworks">MeasureDemeNetworks</a></strong>
   </p>

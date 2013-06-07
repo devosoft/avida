@@ -414,11 +414,29 @@ private:
   
   
   // ---------- Predator-Prey Support Functions -----------
+  struct sAttackReg {
+    int success_reg;
+    int bonus_reg;
+    int bin_reg;
+  };
+  
   void injureOrg(cOrganism* target);
   void makePred(cAvidaContext& ctx);
   void makeTopPred(cAvidaContext& ctx);
   bool testAttack(cAvidaContext& ctx);
+  bool testAttackPred(cAvidaContext& ctx);
+  cOrganism* getPreyTarget(cAvidaContext& ctx);
+  bool testPreyTarget(cOrganism* target);
+  void setAttackReg(sAttackReg& reg);
+  bool executeAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds = -1);
   
+  bool testAttackChance(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds = -1);
+  void applyKilledPreyMerit(cOrganism* target, double effic);
+  void applyKilledPreyReactions(cOrganism* target);
+  void applyKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic);
+  void applyKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic);
+
+  void tryPreyClone(cAvidaContext& ctx);  
   
   // ---------- Instruction Library -----------
   // Multi-threading
@@ -583,6 +601,7 @@ private:
   
   // Predator-Prey Instructions
   bool Inst_AttackPrey(cAvidaContext& ctx);
+  bool Inst_AttackFTPrey(cAvidaContext& ctx);
   
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
