@@ -147,7 +147,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
     // if number didn't represent a living org, we default to WalkCells searching for anybody, skipping FindOrg
     if (!done_setting_org && id_sought != -1) id_sought = -1;    
     // if sought org was is in live org list, we jump to FindOrg, skipping WalkCells (search_type ignored for this case)
-    if (done_setting_org && id_sought != -1) return FindOrg(target_org, distance_sought, facing);
+    if (done_setting_org && id_sought != -1) return FindOrg(ctx, target_org, distance_sought, facing);
   }
 
   /*  APW TODO
@@ -184,7 +184,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   return WalkCells(ctx, in_defs, facing, cell_id);
 }    
 
-cOrgSensor::sLookOut cOrgSensor::FindOrg(cOrganism* target_org, const int distance_sought, const int facing)
+cOrgSensor::sLookOut cOrgSensor::FindOrg(cAvidaContext& ctx, cOrganism* target_org, const int distance_sought, const int facing)
 {
   sLookOut org_search;
   org_search.report_type = 1;
@@ -208,7 +208,9 @@ cOrgSensor::sLookOut cOrgSensor::FindOrg(cOrganism* target_org, const int distan
     org_search.forage = target_org->GetForageTarget();  
     if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(target_org->GetOrgDisplayData());
     if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) SetPotentialDisplayData(org_search);
-    if (m_world->GetConfig().USE_MIMICS.Get() && org_search.forage == 1) org_search.forage = target_org->GetShowForageTarget();
+    if (m_world->GetConfig().USE_MIMICS.Get() && org_search.forage == 1) {
+      if (ctx.GetRandom().P(m_world->GetConfig().MIMIC_ODDS.Get())) org_search.forage = target_org->GetShowForageTarget();
+    }
   }
   return org_search;
 }
@@ -677,7 +679,9 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
       }
       stuff_seen.forage = first_org->GetForageTarget();   
       if ((first_org->IsDisplaying()  || m_world->GetConfig().USE_DISPLAY.Get()) && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());            
-      if (m_world->GetConfig().USE_MIMICS.Get() && stuff_seen.forage == 1) stuff_seen.forage = first_org->GetShowForageTarget();
+      if (m_world->GetConfig().USE_MIMICS.Get() && stuff_seen.forage == 1) {
+        if (ctx.GetRandom().P(m_world->GetConfig().MIMIC_ODDS.Get())) stuff_seen.forage = first_org->GetShowForageTarget();
+      }
     }
     
     if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) SetPotentialDisplayData(stuff_seen);   
