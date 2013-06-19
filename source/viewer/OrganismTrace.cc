@@ -291,14 +291,12 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
   snapshot->AddMemSpace("genome", memory, mutated);
   
   // - handle all heads that are in the first part of the memory space
-  if (hw.GetType() != HARDWARE_TYPE_CPU_MBE) {
-    for (int i = 0; i < hw.GetNumHeads(); i++) {
-      Apto::String name = "FLOW";
-      if (i == 0) name = "IP";
-      if (i == 1) name = "READ";
-      if (i == 2) name = "WRITE";
-      if (hw.GetHead(i).GetPosition() < m_genome_length) snapshot->AddHead(name, 0, hw.GetHead(i).GetPosition());
-    }
+  for (int i = 0; i < hw.GetNumHeads(); i++) {
+    Apto::String name = "FLOW";
+    if (i == 0) name = "IP";
+    if (i == 1) name = "READ";
+    if (i == 2) name = "WRITE";
+    if (hw.GetHead(i).GetPosition() < m_genome_length) snapshot->AddHead(name, 0, hw.GetHead(i).GetPosition());
   }
   // - handle the offspring part of the memory
   memory.Resize(hw.GetMemory().GetSize() - memory.GetSize());

@@ -1,8 +1,8 @@
 /*
- *  cHardwareBCR.h
+ *  cHardwareGP8.h
  *  Avida
  *
- *  Created by David on 11/2/2012 based on cHardwareMBE.h
+ *  Created by David on 6/19/2013 based on cHardwareBCR.h
  *  Copyright 1999-2013 Michigan State University. All rights reserved.
  *
  *
@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef cHardwareBCR_h
-#define cHardwareBCR_h
+#ifndef cHardwareGP8_h
+#define cHardwareGP8_h
 
 #include "avida/Avida.h"
 
@@ -46,25 +46,25 @@ class cInstSet;
 class cOrganism;
 
 
-class cHardwareBCR : public cHardwareBase
+class cHardwareGP8 : public cHardwareBase
 {
 public:
-  typedef bool (cHardwareBCR::*tMethod)(cAvidaContext& ctx);
+  typedef bool (cHardwareGP8::*tMethod)(cAvidaContext& ctx);
 
 private:
   // --------  Structure Constants  --------
-  static const int NUM_REGISTERS = 12;
+  static const int NUM_REGISTERS = 8;
   static const int NUM_BEHAVIORS = 3; // num inst types capable of storing their own data
   static const int NUM_HEADS = NUM_REGISTERS;
-  enum { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX, rIX, rJX, rKX, rLX };
-  enum { hIP, hREAD, hWRITE, hFLOW, hFLOW2, hFLOW3, hFLOW4, hFLOW5, hFLOW6, hFLOW7, hFLOW8, hFLOW9 };
+  enum { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX };
+  enum { hIP, hREAD, hWRITE, hFLOW, hFLOW2, hFLOW3, hFLOW4, hFLOW5 };
   static const int NUM_NOPS = NUM_REGISTERS;
   static const int MAX_THREADS = NUM_NOPS;
   static const int MAX_MEM_SPACES = NUM_NOPS;
   
   
   // --------  Static Variables  --------
-  static tInstLib<cHardwareBCR::tMethod>* s_inst_slib;
+  static tInstLib<cHardwareGP8::tMethod>* s_inst_slib;
   
 
 private:
@@ -89,7 +89,7 @@ private:
   class Head
   {
   protected:
-    cHardwareBCR* m_hw;
+    cHardwareGP8* m_hw;
     int m_pos;
     unsigned int m_ms:31;
     bool m_is_gene:1;
@@ -97,10 +97,10 @@ private:
     void fullAdjust(int mem_size = -1);
     
   public:
-    inline Head(cHardwareBCR* hw = NULL, int pos = 0, unsigned int ms = 0, bool is_gene = false)
+    inline Head(cHardwareGP8* hw = NULL, int pos = 0, unsigned int ms = 0, bool is_gene = false)
       : m_hw(hw), m_pos(pos), m_ms(ms), m_is_gene(is_gene) { ; }
     
-    inline void Reset(cHardwareBCR* hw, int pos, unsigned int ms, bool is_gene)
+    inline void Reset(cHardwareGP8* hw, int pos, unsigned int ms, bool is_gene)
       { m_hw = hw; m_pos = pos; m_ms = ms; m_is_gene = is_gene; }
     
     inline cCPUMemory& GetMemory() { return (m_is_gene) ? m_hw->m_genes[m_ms].memory : m_hw->m_mem_array[m_ms]; }
@@ -202,8 +202,8 @@ private:
       bool wait_greater:1;
       bool wait_equal:1;
       bool wait_less:1;
-      int wait_reg:5;
-      unsigned int wait_dst:4;
+      int wait_reg:4;
+      unsigned int wait_dst:3;
     };
     int wait_value;
     
@@ -216,7 +216,7 @@ private:
     inline Thread() { ; }
     inline ~Thread() { ; }
     
-    void Reset(cHardwareBCR* in_hardware, const Head& start_pos);
+    void Reset(cHardwareGP8* in_hardware, const Head& start_pos);
     
   private:
     Thread(const Thread& thread);
@@ -271,25 +271,26 @@ private:
     bool m_no_cpu_cycle_time:1;
     
     bool m_slip_read_head:1;
-    
-    unsigned int m_waiting_threads:4;
-    unsigned int m_running_threads:4;
   };
+  
+  unsigned int m_waiting_threads;
+  unsigned int m_running_threads;
+  
   bool m_behav_class_used[3];
   
   cHeadCPU m_placeholder_head;
   
   
 private:
-  cHardwareBCR(const cHardwareBCR&); // @not_implemented
-  cHardwareBCR& operator=(const cHardwareBCR&); // @not_implemented
+  cHardwareGP8(const cHardwareGP8&); // @not_implemented
+  cHardwareGP8& operator=(const cHardwareGP8&); // @not_implemented
   
   
 public:
-  cHardwareBCR(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
-  ~cHardwareBCR() { ; }
+  cHardwareGP8(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
+  ~cHardwareGP8() { ; }
   
-  static tInstLib<cHardwareBCR::tMethod>* GetInstLib() { return s_inst_slib; }
+  static tInstLib<cHardwareGP8::tMethod>* GetInstLib() { return s_inst_slib; }
   
   
   // --------  Core Execution Methods  --------
@@ -298,7 +299,7 @@ public:
 
   
   // --------  Helper Methods  --------
-  int GetType() const { return HARDWARE_TYPE_CPU_BCR; }
+  int GetType() const { return HARDWARE_TYPE_CPU_GP8; }
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
   void SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype);
@@ -561,16 +562,8 @@ private:
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
   bool Inst_SenseNest(cAvidaContext& ctx);
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
-  bool Inst_LookAhead(cAvidaContext& ctx);
-  bool Inst_LookAheadIntercept(cAvidaContext& ctx);
   bool Inst_LookAheadEX(cAvidaContext& ctx);
   bool Inst_LookAgainEX(cAvidaContext& ctx);
-  bool Inst_LookAheadFTX(cAvidaContext& ctx);
-  bool Inst_LookAgainFTX(cAvidaContext& ctx);
-  bool Inst_LookAround(cAvidaContext& ctx);
-  bool Inst_LookAroundIntercept(cAvidaContext& ctx);
-  bool Inst_LookFT(cAvidaContext& ctx);
-  bool Inst_LookAroundFT(cAvidaContext& ctx);
 
   // Foraging
   bool Inst_SetForageTarget(cAvidaContext& ctx);
@@ -579,15 +572,8 @@ private:
   bool Inst_GetForageTarget(cAvidaContext& ctx);
   
   // Collection
-  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit);
   bool Inst_CollectSpecific(cAvidaContext& ctx);
   bool Inst_GetResStored(cAvidaContext& ctx);
-
-  // Groups 
-  bool Inst_SetOpinion(cAvidaContext& ctx);
-  bool Inst_GetOpinion(cAvidaContext& ctx);
-  bool Inst_JoinGroup(cAvidaContext& ctx);
-  bool Inst_GetGroupID(cAvidaContext& ctx);
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
@@ -607,25 +593,11 @@ private:
   bool Inst_ScrambleReg(cAvidaContext& ctx);
 
 private:
-  static tInstLib<cHardwareBCR::tMethod>* initInstLib();
+  static tInstLib<cHardwareGP8::tMethod>* initInstLib();
   
   // ---------- Some Instruction Helpers -----------
-  struct sLookRegAssign {
-    int habitat;
-    int distance;
-    int search_type;
-    int id_sought;
-    int count;
-    int value;
-    int group;
-    int ft;
-  };
-  
-  bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
-  cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
-  void LookResults(cAvidaContext& ctx, sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
+  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit);
 
-  
   bool DoLookAheadEX(cAvidaContext& ctx, bool use_ft = false);
   bool DoLookAgainEX(cAvidaContext& ctx, bool use_ft = false);
   
@@ -633,14 +605,14 @@ private:
   class ThreadLabelIterator
   {
   private:
-    cHardwareBCR* m_hw;
+    cHardwareGP8* m_hw;
     const cCodeLabel m_label;
     bool m_is_specific;
     int m_next_idx;
     int m_cur_id;
     
   public:
-    ThreadLabelIterator(cHardwareBCR* hw, const cCodeLabel& label, bool specific = true)
+    ThreadLabelIterator(cHardwareGP8* hw, const cCodeLabel& label, bool specific = true)
       : m_hw(hw), m_label(label), m_is_specific(specific), m_next_idx(0), m_cur_id(-1) { ; }
     
     inline int Next()
@@ -664,7 +636,7 @@ private:
 };
 
 
-inline cHardwareBCR::DataValue& cHardwareBCR::DataValue::operator=(const DataValue& i)
+inline cHardwareGP8::DataValue& cHardwareGP8::DataValue::operator=(const DataValue& i)
 {
   value = i.value;
   originated = i.originated;
@@ -677,7 +649,7 @@ inline cHardwareBCR::DataValue& cHardwareBCR::DataValue::operator=(const DataVal
 
 
 
-inline void cHardwareBCR::Head::Adjust()
+inline void cHardwareGP8::Head::Adjust()
 {
   const int mem_size = GetMemory().GetSize();
   
@@ -696,17 +668,17 @@ inline void cHardwareBCR::Head::Adjust()
 }
 
 
-inline bool cHardwareBCR::Head::operator==(const Head& rhs) const
+inline bool cHardwareGP8::Head::operator==(const Head& rhs) const
 {
   return m_hw == rhs.m_hw && m_pos == rhs.m_pos && m_ms == rhs.m_ms && m_is_gene == rhs.m_is_gene;
 }
 
-inline Instruction cHardwareBCR::Head::PrevInst()
+inline Instruction cHardwareGP8::Head::PrevInst()
 {
   return (AtFront()) ? GetMemory()[GetMemory().GetSize() - 1] : GetMemory()[m_pos - 1];
 }
 
-inline Instruction cHardwareBCR::Head::NextInst()
+inline Instruction cHardwareGP8::Head::NextInst()
 {
   return (AtEnd()) ? m_hw->GetInstSet().GetInstError() : GetMemory()[m_pos + 1];
 }
@@ -715,7 +687,7 @@ inline Instruction cHardwareBCR::Head::NextInst()
 
 
 
-inline cHardwareBCR::DataValue cHardwareBCR::stackPop()
+inline cHardwareGP8::DataValue cHardwareGP8::stackPop()
 {
   if (m_threads[m_cur_thread].cur_stack == 0) {
     return m_threads[m_cur_thread].stack.Pop();
@@ -724,7 +696,7 @@ inline cHardwareBCR::DataValue cHardwareBCR::stackPop()
   }
 }
 
-inline cHardwareBCR::Stack& cHardwareBCR::getStack(int stack_id)
+inline cHardwareGP8::Stack& cHardwareGP8::getStack(int stack_id)
 {
   if (stack_id == 0) {
     return m_threads[m_cur_thread].stack;
@@ -733,14 +705,14 @@ inline cHardwareBCR::Stack& cHardwareBCR::getStack(int stack_id)
   }
 }
 
-inline void cHardwareBCR::switchStack()
+inline void cHardwareGP8::switchStack()
 {
   m_threads[m_cur_thread].cur_stack++;
   if (m_threads[m_cur_thread].cur_stack > 1) m_threads[m_cur_thread].cur_stack = 0;
 }
 
 
-inline int cHardwareBCR::GetStack(int depth, int stack_id, int in_thread) const
+inline int cHardwareGP8::GetStack(int depth, int stack_id, int in_thread) const
 {
   DataValue value;
 
@@ -754,7 +726,7 @@ inline int cHardwareBCR::GetStack(int depth, int stack_id, int in_thread) const
   return value.value;
 }
 
-inline void cHardwareBCR::setRegister(int reg_num, int value, bool from_env)
+inline void cHardwareGP8::setRegister(int reg_num, int value, bool from_env)
 {
   DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
@@ -765,7 +737,7 @@ inline void cHardwareBCR::setRegister(int reg_num, int value, bool from_env)
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
-inline void cHardwareBCR::setRegister(int reg_num, int value, const DataValue& src)
+inline void cHardwareGP8::setRegister(int reg_num, int value, const DataValue& src)
 {
   DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
@@ -776,7 +748,7 @@ inline void cHardwareBCR::setRegister(int reg_num, int value, const DataValue& s
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
-inline void cHardwareBCR::setRegister(int reg_num, int value, const DataValue& op1, const DataValue& op2)
+inline void cHardwareGP8::setRegister(int reg_num, int value, const DataValue& op1, const DataValue& op2)
 {
   DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;

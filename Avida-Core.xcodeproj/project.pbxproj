@@ -185,7 +185,8 @@
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
 		70DF729013BE20130085F85E /* World.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DF728F13BE20130085F85E /* World.cc */; };
 		70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* Driver.cc */; };
-		70FA3F7F164423120003971F /* cHardwareMBE.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A4A7025163B01E000C07E82 /* cHardwareMBE.cc */; };
+		70E57E3B17724A6D0024DF09 /* cHardwareGP8.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E57E3917724A6D0024DF09 /* cHardwareGP8.cc */; };
+		70E57E3C17724A6D0024DF09 /* cHardwareGP8.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E57E3A17724A6D0024DF09 /* cHardwareGP8.h */; };
 		70FA3F83164425EB0003971F /* cHardwareBCR.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FA3F81164425EA0003971F /* cHardwareBCR.cc */; };
 		70FA3F84164425EB0003971F /* cHardwareBCR.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FA3F82164425EA0003971F /* cHardwareBCR.h */; };
 		70FA7AC8138C308000DC70D4 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
@@ -260,8 +261,6 @@
 		42C27C810FDC22AC00C45B78 /* cDemeNetworkUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeNetworkUtils.h; sourceTree = "<group>"; };
 		42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeTopologyNetwork.cc; sourceTree = "<group>"; };
 		42C27C830FDC22AC00C45B78 /* cDemeTopologyNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeTopologyNetwork.h; sourceTree = "<group>"; };
-		4A4A7023163B01AF00C07E82 /* cHardwareMBE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cHardwareMBE.h; sourceTree = "<group>"; };
-		4A4A7025163B01E000C07E82 /* cHardwareMBE.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareMBE.cc; sourceTree = "<group>"; };
 		4A587EEA1332B6590037A393 /* cGradientCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cGradientCount.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		4A587EEB1332B6590037A393 /* cGradientCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cGradientCount.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		4ABC70211350AF3000EB56AA /* gradient.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = gradient.html; sourceTree = "<group>"; };
@@ -790,6 +789,8 @@
 		70DF728F13BE20130085F85E /* World.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = World.cc; sourceTree = "<group>"; };
 		70E130E30C4551E900CE9249 /* cASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASTVisitor.h; sourceTree = "<group>"; };
 		70E14D4B1279FA5B0059FB9D /* Driver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Driver.cc; sourceTree = "<group>"; };
+		70E57E3917724A6D0024DF09 /* cHardwareGP8.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareGP8.cc; sourceTree = "<group>"; };
+		70E57E3A17724A6D0024DF09 /* cHardwareGP8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cHardwareGP8.h; sourceTree = "<group>"; };
 		70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotypeBatch.cc; sourceTree = "<group>"; };
 		70F27F0C13B4E59F008A88A7 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		70F7DE76092967A8009E311D /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
@@ -1593,8 +1594,8 @@
 				70FA3F81164425EA0003971F /* cHardwareBCR.cc */,
 				70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */,
 				70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */,
-				4A4A7023163B01AF00C07E82 /* cHardwareMBE.h */,
-				4A4A7025163B01E000C07E82 /* cHardwareMBE.cc */,
+				70E57E3A17724A6D0024DF09 /* cHardwareGP8.h */,
+				70E57E3917724A6D0024DF09 /* cHardwareGP8.cc */,
 				70B1A6530B7E238F00067486 /* cHardwareExperimental.h */,
 				70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */,
 				70C5BD6A0905CE5F0028A785 /* cHardwareManager.h */,
@@ -1821,6 +1822,7 @@
 				705E53D116A7102100392BA7 /* Manager.h in Headers */,
 				705E53D816A7109300392BA7 /* Types.h in Headers */,
 				705E53DA16A7119300392BA7 /* Socket.h in Headers */,
+				70E57E3C17724A6D0024DF09 /* cHardwareGP8.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2077,11 +2079,11 @@
 				7000B64E15C6E90D00EE3F14 /* Clade.cc in Sources */,
 				7000B64F15C6E90D00EE3F14 /* CladeArbiter.cc in Sources */,
 				704C6298160CA62F004E9B25 /* cMigrationMatrix.cc in Sources */,
-				70FA3F7F164423120003971F /* cHardwareMBE.cc in Sources */,
 				70FA3F83164425EB0003971F /* cHardwareBCR.cc in Sources */,
 				705E53D516A7103600392BA7 /* File.cc in Sources */,
 				705E53D616A7103600392BA7 /* Manager.cc in Sources */,
 				705E53DC16A7162600392BA7 /* Socket.cc in Sources */,
+				70E57E3B17724A6D0024DF09 /* cHardwareGP8.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
