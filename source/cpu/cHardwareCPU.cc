@@ -7811,6 +7811,7 @@ bool cHardwareCPU::Inst_RetrieveMessage(cAvidaContext&)
   
   GetRegister(label_reg) = retrieved.second.GetLabel();
   GetRegister(data_reg) = retrieved.second.GetData();
+  if(m_world->GetConfig().NET_LOG_RETMESSAGES.Get()) m_world->GetStats().LogRetMessage(retrieved.second);
   return true;
 }
 
