@@ -4274,11 +4274,11 @@ void cStats::LogMessage(const cOrgMessage& msg, bool dropped, bool lost) {
                                               lost));
 }
 
-/*! Log only retrieved messages message. @ AEJ
+/*! Log only retrieved messages message. Not currently recording sender's deme. @ AEJ
  */
 void cStats::LogRetMessage(const cOrgMessage& msg) {
 	m_retmessage_log.push_back(message_log_entry_t(GetUpdate(),
-                                              msg.GetSender()->GetDeme()->GetID(),
+                                              0,
                                               msg.GetSenderCellID(),
                                               msg.GetReceiverCellID(),
                                               msg.GetTransCellID(),
@@ -4328,8 +4328,6 @@ void cStats::PrintRetMessageLog(const cString& filename) {
     df->Write(i->transmit_cell, "Transmission_cell [trs]");
 		df->Write(i->msg_data, "Message data [data]");
 		df->Write(i->msg_label, "Message label [label]");
-		df->Write(i->dropped, "Dropped [dropped]");
-		df->Write(i->lost, "Lost [lost]");
 		df->Endl();
 	}
   
