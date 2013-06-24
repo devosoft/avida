@@ -31,7 +31,7 @@
 #import <AvidaCore/AvidaCore_Core.h>
 
 // OSX Specific
-#import <AvidaCore/ACGenome+NSPasteboardAdditions.h>
+#import <AvidaCore/ACGenome+OSXAdditions.h>
 #import <AvidaCore/ACMapView.h>
 #import <AvidaCore/ACProject+OSXAdditions.h>
 #import <AvidaCore/ACScaleView.h>
