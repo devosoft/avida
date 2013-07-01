@@ -4274,6 +4274,20 @@ void cStats::LogMessage(const cOrgMessage& msg, bool dropped, bool lost) {
                                               lost));
 }
 
+/*! Log only retrieved messages message. Not currently recording sender's deme. @ AEJ
+ */
+void cStats::LogRetMessage(const cOrgMessage& msg) {
+	m_retmessage_log.push_back(message_log_entry_t(GetUpdate(),
+                                              0,
+                                              msg.GetSenderCellID(),
+                                              msg.GetReceiverCellID(),
+                                              msg.GetTransCellID(),
+                                              msg.GetData(),
+                                              msg.GetLabel(),
+                                              false,
+                                              false));
+}
+
 /*! Prints logged messages.
  */
 void cStats::PrintMessageLog(const cString& filename) {
@@ -4296,6 +4310,28 @@ void cStats::PrintMessageLog(const cString& filename) {
 	}
   
 	m_message_log.clear();
+}
+
+/*! Prints logged retrieved messages.
+ */
+void cStats::PrintRetMessageLog(const cString& filename) {
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  
+	df->WriteComment("Log of all messages sent in population.");
+  df->WriteTimeStamp();
+  
+	for(message_log_t::iterator i=m_retmessage_log.begin(); i!=m_retmessage_log.end(); ++i) {
+		df->Write(i->update, "Update [update]");
+		df->Write(i->deme, "Deme ID [deme]");
+		df->Write(i->src_cell, "Source [src]");
+		df->Write(i->dst_cell, "Destination [dst]");
+    df->Write(i->transmit_cell, "Transmission_cell [trs]");
+		df->Write(i->msg_data, "Message data [data]");
+		df->Write(i->msg_label, "Message label [label]");
+		df->Endl();
+	}
+  
+	m_retmessage_log.clear();
 }
 
 

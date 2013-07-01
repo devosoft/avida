@@ -930,8 +930,12 @@ public:
   void PrintPredicatedMessages(const cString& filename);
   //! Log a message.
   void LogMessage(const cOrgMessage& msg, bool dropped, bool lost);
+  //! Log a retrieved message.
+  void LogRetMessage(const cOrgMessage& msg);
   //! Prints logged messages.
   void PrintMessageLog(const cString& filename);
+  //! Prints logged retrieved messages.
+  void PrintRetMessageLog(const cString& filename);
 
 protected:
   /*! List of all active message predicates.  The idea here is that the predicates,
@@ -949,6 +953,7 @@ protected:
   };
   typedef std::vector<message_log_entry_t> message_log_t; //!< Type for message log.
   message_log_t m_message_log; //!< Log for messages.
+  message_log_t m_retmessage_log; //!< Log for retrieved messages.
 
   // -------- End messaging support --------
 

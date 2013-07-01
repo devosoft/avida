@@ -90,6 +90,7 @@ STATS_OUT_FILE(PrintVarianceData,           variance.dat        );
 STATS_OUT_FILE(PrintCountData,              count.dat           );
 STATS_OUT_FILE(PrintMessageData,            message.dat         );
 STATS_OUT_FILE(PrintMessageLog,             message_log.dat     );
+STATS_OUT_FILE(PrintRetMessageLog,          retmessage_log.dat  );
 STATS_OUT_FILE(PrintInterruptData,          interrupt.dat       );
 STATS_OUT_FILE(PrintTotalsData,             totals.dat          );
 STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
@@ -5086,6 +5087,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintCountData>("PrintCountData");
   action_lib->Register<cActionPrintMessageData>("PrintMessageData");
   action_lib->Register<cActionPrintMessageLog>("PrintMessageLog");
+  action_lib->Register<cActionPrintRetMessageLog>("PrintRetMessageLog");
   action_lib->Register<cActionPrintInterruptData>("PrintInterruptData");
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintThreadsData>("PrintThreadsData");

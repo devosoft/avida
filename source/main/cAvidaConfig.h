@@ -591,6 +591,7 @@ public:
   CONFIG_ADD_GROUP(ORGANISM_NETWORK_GROUP, "Organism Network Communication");
   CONFIG_ADD_VAR(NET_DROP_PROB, double, 0.0, "Message drop rate");
   CONFIG_ADD_VAR(NET_LOG_MESSAGES, int, 0, "Whether all messages are logged; 0=false (default), 1=true.");
+  CONFIG_ADD_VAR(NET_LOG_RETMESSAGES, int, 0, "Whether retrieved messages are logged; 0=false (default), 1=true.");
 
 
   // -------- Organism Messaging config options --------
