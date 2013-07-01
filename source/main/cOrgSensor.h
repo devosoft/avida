@@ -116,6 +116,7 @@ class cOrgSensor
   sSearchInfo TestCell(cAvidaContext& ctx, sLookInit& in_defs, const Apto::Coord<int>& target_cell_coords,
                       const Apto::Array<int, Apto::Smart>& val_res, bool first_step, bool stop_at_first_found);
   sLookOut WalkCells(cAvidaContext& ctx, sLookInit& in_defs, const int facing, const int cell_id);
+  sLookOut WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int facing, const int cell_id);
   sLookOut FindOrg(cOrganism* target_org, const int distance, const int facing);
   sLookOut FindResCenter(cAvidaContext& ctx, const int res_id, const int distance_sought, const int facing);
   void FindThing(int target_cell, const int distance_sought, const int facing, cOrgSensor::sLookOut& org_search, cOrganism* target_org = NULL);
