@@ -159,6 +159,7 @@ public:
   bool IsTerminator(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsTerminator(); }
   bool ShouldStall(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldStall(); }
   bool ShouldSleep(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldSleep(); }
+  bool IsImmediateValue(const Instruction& inst) const { return (inst != GetInstError() && m_inst_lib->Get(GetLibFunctionIndex(inst)).IsImmediateValue()); }
   
   unsigned int GetFlags(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).GetFlags(); }
   

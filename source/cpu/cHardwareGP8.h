@@ -49,7 +49,8 @@ class cOrganism;
 class cHardwareGP8 : public cHardwareBase
 {
 public:
-  typedef bool (cHardwareGP8::*tMethod)(cAvidaContext& ctx);
+  typedef bool (cHardwareGP8::*InstMethod)(cAvidaContext& ctx);
+  typedef int (cHardwareGP8::*ImmMethod)(cAvidaContext& ctx);
 
 private:
   // --------  Structure Constants  --------
@@ -57,14 +58,26 @@ private:
   static const int NUM_BEHAVIORS = 3; // num inst types capable of storing their own data
   static const int NUM_HEADS = NUM_REGISTERS;
   enum { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX };
-  enum { hIP, hREAD, hWRITE, hFLOW, hFLOW2, hFLOW3, hFLOW4, hFLOW5 };
+  enum { hIP = 0, hREAD, hWRITE, hFLOW, hFLOW2, hFLOW3, hFLOW4, hFLOW5 };
+  enum { uREAD = 0x1, uWRITE = 0x2, uATTACK = 0x4 };
+  enum { aEAT, aMOVE, aROTATE };
   static const int NUM_NOPS = NUM_REGISTERS;
-  static const int MAX_THREADS = NUM_NOPS;
   static const int MAX_MEM_SPACES = NUM_NOPS;
   
   
+  // --------  Data Structures  --------
+  class GP8Inst;
+  class GP8InstLib;
+
+  struct AttackRegisters {
+    int success_reg;
+    int bonus_reg;
+    int bin_reg;
+  };
+
+
   // --------  Static Variables  --------
-  static tInstLib<cHardwareGP8::tMethod>* s_inst_slib;
+  static GP8InstLib* s_inst_slib;
   
 
 private:
@@ -233,7 +246,9 @@ private:
   
 private:
   // --------  Member Variables  --------
-  const tMethod* m_functions;
+  const InstMethod* m_functions;
+  const unsigned int* m_hw_units;
+  const ImmMethod* m_imm_methods;
 
   // Genes
   Apto::Array<Gene> m_genes;
@@ -264,19 +279,35 @@ private:
     
     int m_use_avatar:3;
     
-    bool m_advance_ip:1;         // Should the IP advance after this instruction?
+    bool m_hw_queue_eat:1;    // Is an eat queued?
+    bool m_hw_queue_move:1;   // Is a move queued?
+    bool m_hw_queue_rotate:1; // Is a rotate queued?
+    
+    unsigned int m_hw_queue_rotate_num:3; // Queued number of rotations
+    bool m_hw_queue_rotate_reverse:1;     // Should rotates be reverse (negative)
+    
+    bool m_advance_ip:1;  // Should the IP advance after this instruction?
     bool m_spec_stall:1;
     bool m_spec_die:1;
     
     bool m_no_cpu_cycle_time:1;
-    
     bool m_slip_read_head:1;
+    bool m_juv_enabled:1;
   };
   
   unsigned int m_waiting_threads;
   unsigned int m_running_threads;
   
-  bool m_behav_class_used[3];
+  unsigned int m_hw_busy;
+
+  char m_hw_queue[3];
+  int m_hw_queued;
+  
+  Apto::Array<int> m_hw_queue_eat_threads;
+  
+  
+  Apto::Array<int>* m_action_side_effect_queue;
+
   
   cHeadCPU m_placeholder_head;
   
@@ -290,7 +321,7 @@ public:
   cHardwareGP8(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareGP8() { ; }
   
-  static tInstLib<cHardwareGP8::tMethod>* GetInstLib() { return s_inst_slib; }
+  static cInstLib* GetInstLib() { return s_inst_slib; }
   
   
   // --------  Core Execution Methods  --------
@@ -351,6 +382,9 @@ public:
 
   
 private:
+  
+  static GP8InstLib* getInstLib() { return s_inst_slib; }
+
   // --------  Core Execution Methods  --------
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst);
   void internalReset();
@@ -386,9 +420,9 @@ private:
   
   
   // ---------- Instruction Helpers -----------
-  int FindModifiedRegister(int default_register);
-  int FindModifiedNextRegister(int default_register);
-  int FindModifiedPreviousRegister(int default_register);
+  int FindModifiedRegister(int default_register, bool accept_immediate = false);
+  int FindModifiedNextRegister(int default_register, bool accept_immediate = false);
+  int FindModifiedPreviousRegister(int default_register, bool accept_immediate = false);
   int FindModifiedHead(int default_head);
   int FindNextRegister(int base_reg);
   int FindUpstreamModifiedRegister(int offset, int default_register);
@@ -398,7 +432,8 @@ private:
   inline Head& getHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
   inline Head& getIP() { return m_threads[m_cur_thread].heads[hIP]; }
 
-  int getRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].value; }
+  inline int getRegister(cAvidaContext& ctx, int reg_id);
+  inline DataValue getRegisterData(cAvidaContext& ctx, int reg_id);
 
   
   // --------  Division Support  -------
@@ -415,12 +450,6 @@ private:
   
   
   // ---------- Predator-Prey Support Functions -----------
-  struct sAttackReg {
-    int success_reg;
-    int bonus_reg;
-    int bin_reg;
-  };
-  
   void injureOrg(cOrganism* target);
   void makePred(cAvidaContext& ctx);
   void makeTopPred(cAvidaContext& ctx);
@@ -428,110 +457,92 @@ private:
   bool testAttackPred(cAvidaContext& ctx);
   cOrganism* getPreyTarget(cAvidaContext& ctx);
   bool testPreyTarget(cOrganism* target);
-  void setAttackReg(sAttackReg& reg);
-  bool executeAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds = -1);
+  void setAttackReg(AttackRegisters& reg);
+  bool executeAttack(cAvidaContext& ctx, cOrganism* target, AttackRegisters& reg, double odds = -1);
   
-  bool testAttackChance(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds = -1);
+  bool testAttackChance(cAvidaContext& ctx, cOrganism* target, AttackRegisters& reg, double odds = -1);
   void applyKilledPreyMerit(cOrganism* target, double effic);
   void applyKilledPreyReactions(cOrganism* target);
-  void applyKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic);
-  void applyKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic);
+  void applyKilledPreyBonus(cOrganism* target, AttackRegisters& reg, double effic);
+  void applyKilledPreyResBins(cOrganism* target, AttackRegisters& reg, double effic);
 
   void tryPreyClone(cAvidaContext& ctx);  
   
   // ---------- Instruction Library -----------
   // Multi-threading
-  bool Inst_ThreadCreate(cAvidaContext& ctx);
-  bool Inst_ThreadCancel(cAvidaContext& ctx);
-  bool Inst_ThreadID(cAvidaContext& ctx);
-  bool Inst_Yield(cAvidaContext& ctx);
   bool Inst_RegulatePause(cAvidaContext& ctx);
-  bool Inst_RegulatePauseSP(cAvidaContext& ctx);
   bool Inst_RegulateResume(cAvidaContext& ctx);
-  bool Inst_RegulateResumeSP(cAvidaContext& ctx);
   bool Inst_RegulateReset(cAvidaContext& ctx);
-  bool Inst_RegulateResetSP(cAvidaContext& ctx);
+  bool Inst_WaitCondition_Equal(cAvidaContext& ctx);
+  bool Inst_WaitCondition_Less(cAvidaContext& ctx);
+  bool Inst_WaitCondition_Greater(cAvidaContext& ctx);
+  bool Inst_Yield(cAvidaContext& ctx);
   
-  // Flow Control
+  // Flow-Control
+  bool Inst_SetMemory(cAvidaContext& ctx);
+  bool Inst_MoveHead(cAvidaContext& ctx);
+  bool Inst_JumpHead(cAvidaContext& ctx);
+  bool Inst_GetHead(cAvidaContext& ctx);
+  bool Inst_Search_Label_S(cAvidaContext& ctx);
+  bool Inst_Search_Label_D(cAvidaContext& ctx);
+  bool Inst_Search_Seq_D(cAvidaContext& ctx);
   bool Inst_Label(cAvidaContext& ctx);
+
+  // Standard Conditionals
   bool Inst_IfNEqu(cAvidaContext& ctx);
   bool Inst_IfLess(cAvidaContext& ctx);
   bool Inst_IfNotZero(cAvidaContext& ctx);
   bool Inst_IfEqualZero(cAvidaContext& ctx);
   bool Inst_IfGreaterThanZero(cAvidaContext& ctx);
   bool Inst_IfLessThanZero(cAvidaContext& ctx);
-  bool Inst_IfGtrX(cAvidaContext& ctx);
-  bool Inst_IfEquX(cAvidaContext& ctx);
-
-  // Stack and Register Operations
-  bool Inst_Pop(cAvidaContext& ctx);
-  bool Inst_Push(cAvidaContext& ctx);
-  bool Inst_PopAll(cAvidaContext& ctx);
-  bool Inst_PushAll(cAvidaContext& ctx);
-  bool Inst_SwitchStack(cAvidaContext& ctx);
-  bool Inst_SwapStackTop(cAvidaContext& ctx);
-  bool Inst_Swap(cAvidaContext& ctx);
-  bool Inst_CopyVal(cAvidaContext& ctx);
 
   // Single-Argument Math
   bool Inst_ShiftR(cAvidaContext& ctx);
   bool Inst_ShiftL(cAvidaContext& ctx);
   bool Inst_Inc(cAvidaContext& ctx);
   bool Inst_Dec(cAvidaContext& ctx);
-  bool Inst_Zero(cAvidaContext& ctx);
-  bool Inst_One(cAvidaContext& ctx);
-  bool Inst_Rand(cAvidaContext& ctx);
   
   // Double Argument Math
   bool Inst_Add(cAvidaContext& ctx);
   bool Inst_Sub(cAvidaContext& ctx);
+  bool Inst_Nand(cAvidaContext& ctx);
+  
   bool Inst_Mult(cAvidaContext& ctx);
   bool Inst_Div(cAvidaContext& ctx);
   bool Inst_Mod(cAvidaContext& ctx);
-  bool Inst_Nand(cAvidaContext& ctx);
 
-  // I/O and Sensory
-  bool Inst_TaskIO(cAvidaContext& ctx);
+  // Values
+  bool Inst_Zero(cAvidaContext& ctx);
+  bool Inst_One(cAvidaContext& ctx);
+  bool Inst_MaxInt(cAvidaContext& ctx);
+  bool Inst_Rand(cAvidaContext& ctx);
+  
+  int Val_Zero(cAvidaContext& ctx);
+  int Val_One(cAvidaContext& ctx);
+  int Val_MaxInt(cAvidaContext& ctx);
+  int Val_Rand(cAvidaContext& ctx);
+  
+  // Stack Operations
+  bool Inst_Pop(cAvidaContext& ctx);
+  bool Inst_Push(cAvidaContext& ctx);
+  bool Inst_PopAll(cAvidaContext& ctx);
+  bool Inst_PushAll(cAvidaContext& ctx);
+  bool Inst_SwitchStack(cAvidaContext& ctx);
+  bool Inst_Swap(cAvidaContext& ctx);
+
+  // I/O
   bool Inst_TaskInput(cAvidaContext& ctx);
   bool Inst_TaskOutput(cAvidaContext& ctx);
 
-  // Head-based Instructions
-  bool Inst_SetMemory(cAvidaContext& ctx);
-  bool Inst_MoveHead(cAvidaContext& ctx);
-  bool Inst_MoveHeadIfNEqu(cAvidaContext& ctx);
-  bool Inst_MoveHeadIfLess(cAvidaContext& ctx);
-  bool Inst_JumpHead(cAvidaContext& ctx);
-  bool Inst_GetHead(cAvidaContext& ctx);
-  bool Inst_Divide(cAvidaContext& ctx);
-  bool Inst_DivideMemory(cAvidaContext& ctx);
+  // Reproductive Operation
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
-
-  bool Inst_Search_Label_Direct_S(cAvidaContext& ctx);
-  bool Inst_Search_Label_Direct_F(cAvidaContext& ctx);
-  bool Inst_Search_Label_Direct_B(cAvidaContext& ctx);
-  bool Inst_Search_Label_Direct_D(cAvidaContext& ctx);
-  bool Inst_Search_Seq_Comp_S(cAvidaContext& ctx);
-  bool Inst_Search_Seq_Comp_F(cAvidaContext& ctx);
-  bool Inst_Search_Seq_Comp_B(cAvidaContext& ctx);
-  bool Inst_Search_Seq_Comp_D(cAvidaContext& ctx);
-
-  // Thread Execution Control
-  bool Inst_WaitCondition_Equal(cAvidaContext& ctx);
-  bool Inst_WaitCondition_Less(cAvidaContext& ctx);
-  bool Inst_WaitCondition_Greater(cAvidaContext& ctx);
+  bool Inst_DivideMemory(cAvidaContext& ctx);
+  bool Inst_DidCopyLabel(cAvidaContext& ctx);
   
-  // Replication
-  bool Inst_IfCopiedCompLabel(cAvidaContext& ctx);
-  bool Inst_IfCopiedDirectLabel(cAvidaContext& ctx);
-  bool Inst_IfCopiedCompSeq(cAvidaContext& ctx);
-  bool Inst_IfCopiedDirectSeq(cAvidaContext& ctx);
-  bool Inst_DidCopyCompLabel(cAvidaContext& ctx);
-  bool Inst_DidCopyDirectLabel(cAvidaContext& ctx);
-  bool Inst_DidCopyCompSeq(cAvidaContext& ctx);
-  bool Inst_DidCopyDirectSeq(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
+  
   bool Inst_Die(cAvidaContext& ctx);
   
   // State Grid Navigation
@@ -542,35 +553,27 @@ private:
   
   // Movement and Navigation
   bool Inst_Move(cAvidaContext& ctx);
-  bool Inst_JuvMove(cAvidaContext& ctx);
   bool Inst_GetNorthOffset(cAvidaContext& ctx);
-  bool Inst_GetPositionOffset(cAvidaContext& ctx);  
-  bool Inst_GetNortherly(cAvidaContext& ctx); 
-  bool Inst_GetEasterly(cAvidaContext& ctx);
-  bool Inst_ZeroEasterly(cAvidaContext& ctx);
-  bool Inst_ZeroNortherly(cAvidaContext& ctx);
-  bool Inst_ZeroPosOffset(cAvidaContext& ctx);
   
   // Rotation
-  bool Inst_RotateHome(cAvidaContext& ctx);
-  bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateX(cAvidaContext& ctx);
   bool Inst_RotateOrgID(cAvidaContext& ctx);
   bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
 
   // Resource and Topography Sensing
-  bool Inst_SenseResourceID(cAvidaContext& ctx); 
+  bool Inst_SetForageTarget(cAvidaContext& ctx);
+  bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
+  bool Inst_SetRandForageTargetOnce(cAvidaContext& ctx);
+  bool Inst_GetForageTarget(cAvidaContext& ctx);
+
+  bool Inst_SenseResourceID(cAvidaContext& ctx);
   bool Inst_SenseNest(cAvidaContext& ctx);
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_LookAheadEX(cAvidaContext& ctx);
   bool Inst_LookAgainEX(cAvidaContext& ctx);
 
-  // Foraging
-  bool Inst_SetForageTarget(cAvidaContext& ctx);
-  bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
-  bool Inst_SetRandForageTargetOnce(cAvidaContext& ctx);
-  bool Inst_GetForageTarget(cAvidaContext& ctx);
-  
+  bool Inst_Eat(cAvidaContext& ctx);
+
   // Collection
   bool Inst_CollectSpecific(cAvidaContext& ctx);
   bool Inst_GetResStored(cAvidaContext& ctx);
@@ -581,19 +584,14 @@ private:
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_LearnParent(cAvidaContext& ctx);
   
-  bool Inst_ModifySimpDisplay(cAvidaContext& ctx);
-  bool Inst_ReadLastSimpDisplay(cAvidaContext& ctx);
-  bool Inst_KillDisplay(cAvidaContext& ctx);
-  
   // Predator-Prey Instructions
   bool Inst_AttackPrey(cAvidaContext& ctx);
-  bool Inst_AttackFTPrey(cAvidaContext& ctx);
   
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
 
 private:
-  static tInstLib<cHardwareGP8::tMethod>* initInstLib();
+  static GP8InstLib* initInstLib();
   
   // ---------- Some Instruction Helpers -----------
   bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit);
@@ -602,6 +600,58 @@ private:
   bool DoLookAgainEX(cAvidaContext& ctx, bool use_ft = false);
   
 private:
+  class GP8Inst : public cInstLibEntry
+  {
+  private:
+    const InstMethod m_function;
+    const unsigned int m_hw_units;
+    const ImmMethod m_imm_method;
+    
+  public:
+    GP8Inst(const cString& name, InstMethod function, InstructionClass _class, unsigned int flags,
+            const cString& desc, unsigned int hw_units, ImmMethod imm_method = NULL)
+      : cInstLibEntry(name, _class, flags, desc, BEHAV_CLASS_NONE)
+      , m_function(function), m_hw_units(hw_units), m_imm_method(imm_method)
+    {
+    }
+    
+    InstMethod Function() const { return m_function; }
+    unsigned int HWUnits() const { return m_hw_units; }
+    ImmMethod ImmediateMethod() const { return m_imm_method; }
+  };
+  
+  
+  class GP8InstLib : public cInstLib
+  {
+  private:
+    const GP8Inst* m_entries;
+    cString* m_nopmod_names;
+    const int* m_nopmods;
+    const InstMethod* m_functions;
+    const unsigned int* m_hw_units;
+    const ImmMethod* m_imm_methods;
+    
+  public:
+    GP8InstLib(int size, const GP8Inst* entries, cString* nopmod_names, const int* nopmods, const InstMethod* functions,
+               const unsigned int* hw_units, const ImmMethod* imm_methods, int def, int null_inst)
+      : cInstLib(size, def, null_inst), m_entries(entries), m_nopmod_names(nopmod_names), m_nopmods(nopmods)
+      , m_functions(functions), m_hw_units(hw_units), m_imm_methods(imm_methods)
+    {
+      for (int i = 0; i < m_size; i++) m_namemap.Set((const char*)m_entries[i].GetName(), i);
+    }
+    
+    const InstMethod* Functions() const { return m_functions; }
+    const unsigned int* HWUnits() const { return m_hw_units; }
+    const ImmMethod* ImmediateMethods() const { return m_imm_methods; }
+    
+    const cInstLibEntry& Get(int i) const { assert(i < m_size); return m_entries[i]; }
+    
+    const cString& GetNopName(const unsigned int idx) { return m_nopmod_names[idx]; }
+    int GetNopMod(const unsigned int idx) { return m_nopmods[idx]; }
+    int GetNopMod(const Instruction& inst) { return GetNopMod(inst.GetOp()); }
+  };
+
+  
   class ThreadLabelIterator
   {
   private:
@@ -686,6 +736,25 @@ inline Instruction cHardwareGP8::Head::NextInst()
 
 
 
+inline int cHardwareGP8::getRegister(cAvidaContext& ctx, int reg_id)
+{
+  if (reg_id >= NUM_REGISTERS) {
+    return (this->*(m_imm_methods[reg_id]))(ctx);
+  }
+  return m_threads[m_cur_thread].reg[reg_id].value;
+}
+
+inline cHardwareGP8::DataValue cHardwareGP8::getRegisterData(cAvidaContext& ctx, int reg_id)
+{
+  if (reg_id >= NUM_REGISTERS) {
+    DataValue dv;
+    dv.originated = m_cycle_count;
+    dv.value = (this->*(m_imm_methods[reg_id]))(ctx);
+    return dv;
+  }
+  return m_threads[m_cur_thread].reg[reg_id];
+}
+
 
 inline cHardwareGP8::DataValue cHardwareGP8::stackPop()
 {
@@ -728,6 +797,8 @@ inline int cHardwareGP8::GetStack(int depth, int stack_id, int in_thread) const
 
 inline void cHardwareGP8::setRegister(int reg_num, int value, bool from_env)
 {
+  if (reg_num > NUM_REGISTERS) return;
+
   DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = from_env;
@@ -739,6 +810,8 @@ inline void cHardwareGP8::setRegister(int reg_num, int value, bool from_env)
 
 inline void cHardwareGP8::setRegister(int reg_num, int value, const DataValue& src)
 {
+  if (reg_num > NUM_REGISTERS) return;
+  
   DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
@@ -750,6 +823,8 @@ inline void cHardwareGP8::setRegister(int reg_num, int value, const DataValue& s
 
 inline void cHardwareGP8::setRegister(int reg_num, int value, const DataValue& op1, const DataValue& op2)
 {
+  if (reg_num > NUM_REGISTERS) return;
+
   DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;

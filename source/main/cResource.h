@@ -213,6 +213,7 @@ public:
   int GetIsPlateauCommon() { return m_is_plateau_common; }
   double GetFloor() { return m_floor; }
   int GetHabitat() { return m_habitat; }
+  bool IsNest() { return (m_habitat == 3 || m_habitat == 4); }
   int GetMinSize() { return m_min_size; }
   int GetMaxSize() { return m_max_size; }
   int GetConfig() { return m_config; }
