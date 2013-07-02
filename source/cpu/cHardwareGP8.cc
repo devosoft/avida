@@ -550,8 +550,7 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (phenotype.GetToDelete()) break;
   }
   
-  
-  for (int hw_action = 0; hw_action < m_hw_queued; hw_action++) {
+  for (int hw_action = 0; hw_action < m_hw_queued && !phenotype.GetToDelete(); hw_action++) {
     switch (m_hw_queue[hw_action]) {
       case aEAT:
         m_action_side_effect_queue = &m_hw_queue_eat_threads;
@@ -593,12 +592,7 @@ bool cHardwareGP8::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instructi
   // Copy Instruction locally to handle stochastic effects
   Instruction actual_inst = cur_inst;
   
-#ifdef EXECUTION_ERRORS
-  // If there is an execution error, execute a random instruction.
-  if (m_organism->TestExeErr()) actual_inst = m_inst_set->GetRandomInst(ctx);
-#endif /* EXECUTION_ERRORS */
-  
-  // Get a pointer to the corrisponding method...
+  // Get a pointer to the corresponding method...
   int inst_idx = m_inst_set->GetLibFunctionIndex(actual_inst);
   
   // Mark the instruction as executed

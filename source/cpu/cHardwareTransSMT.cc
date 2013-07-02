@@ -287,8 +287,7 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
   
   // Kill creatures who have reached their max num of instructions executed
   const int max_executed = m_organism->GetMaxExecuted();
-  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
-      || phenotype.GetToDie()) {
+  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed) || phenotype.GetToDie()) {
     m_organism->Die(ctx);
   }
   
@@ -305,11 +304,6 @@ bool cHardwareTransSMT::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Inst
   // Copy Instruction locally to handle stochastic effects
   Instruction actual_inst = cur_inst;
   
-#ifdef EXECUTION_ERRORS
-  // If there is an execution error, execute a random instruction.
-  if (m_organism->TestExeErr()) actual_inst = m_inst_set->GetRandomInst(ctx);
-#endif /* EXECUTION_ERRORS */
-	
   // Get a pointer to the corrisponding method...
   int inst_idx = m_inst_set->GetLibFunctionIndex(actual_inst);
   
