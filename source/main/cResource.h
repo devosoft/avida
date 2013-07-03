@@ -65,6 +65,7 @@ public:
   bool GetModified() { return m_modified; }
   int GetGeometry() { return geometry; }
 
+
   void SetCellAmount(int cell_id, double res);
   void SetGeometry(int in_geometry) { geometry = in_geometry; }
   void SetInitial(double initial) { m_initial = initial; }
@@ -75,6 +76,7 @@ public:
   // diffusion res only
   virtual double SumAll() const { return 0; }
   virtual int GetCellListSize() const { return 0; }
+
 
   virtual void SetCellList(Apto::Array<cCellResource> *in_cell_list_ptr) { ; }
   virtual void StateAll() { ; }
@@ -103,7 +105,7 @@ public:
   virtual void SetOutflowY1(int in_outflowY1) { ; }
   virtual void SetOutflowY2(int in_outflowY2) { ; }
   virtual void SetPointers() { ; }
-  
+
   // dynamic res only
   virtual int GetCurrPeakX() { return 0; }
   virtual int GetCurrPeakY() { return 0; }

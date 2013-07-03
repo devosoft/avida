@@ -52,6 +52,7 @@ namespace Avida {
     private:
       // Config Settings
       int m_threshold;
+      bool m_disable_class;
       
       // Internal Data Structures
       Apto::List<GenotypePtr, Apto::SparseVector> m_active_hash[HASH_SIZE];
@@ -117,7 +118,7 @@ namespace Avida {
       
       
     public:
-      GenotypeArbiter(Universe* universe, int threshold);
+      GenotypeArbiter(Universe* universe, int threshold, bool disable_class = false);
       ~GenotypeArbiter();
       
       // Arbiter Interface Methods

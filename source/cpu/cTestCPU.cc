@@ -53,7 +53,9 @@ cTestCPU::cTestCPU(cAvidaContext& ctx, cWorld* world)
   , m_cell_resource_count(this, 0)
 {
   m_world = world;
-  m_use_manual_inputs = false;
+	m_use_manual_inputs = false;
+  m_test_solo_res = -1;
+  m_test_solo_res_lev = 0;
   InitResources(ctx);
 }
 
@@ -103,8 +105,9 @@ void cTestCPU::InitResources(cAvidaContext& ctx, int res_method, cResourceHistor
     m_cell_resource_count.Set(ctx, i, 0.0);
   }
     
-  SetResourceUpdate(ctx, m_res_update, false);
+  if (m_test_solo_res == -1) SetResourceUpdate(ctx, m_res_update, false);
   // Round down to the closest update to choose how to initialize resources
+  else m_resource_count.Set(ctx, m_test_solo_res, m_test_solo_res_lev);
 }
 
 void cTestCPU::UpdateResources(cAvidaContext& ctx, int cpu_cycles_used)

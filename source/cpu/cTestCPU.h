@@ -53,6 +53,8 @@ private:
   int cur_receive;  
   bool m_use_random_inputs;
   bool m_use_manual_inputs;
+  int m_test_solo_res;
+  double m_test_solo_res_lev;
   
   // Resource settings. Reinitialized from cCPUTestInfo on each test.
   eTestCPUResourceMethod m_res_method;
@@ -115,6 +117,8 @@ public:
   
   cPopulationCell& GetCell(int cell_id) { ; }
   void KillOrganism(cAvidaContext& ctx, int cell_id) { ; }
+  
+  void SetSoloRes(int res_id, double res_amount) { m_test_solo_res = res_id; m_test_solo_res_lev = res_amount; }
 };
 
 

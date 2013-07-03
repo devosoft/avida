@@ -84,7 +84,9 @@ namespace Avida {
       
       
     public:
-      LIB_EXPORT Freezer(const Apto::String& dir);
+      LIB_EXPORT static FreezerPtr LoadWithPath(const Apto::String& dir);
+      LIB_EXPORT static FreezerPtr CreateWithPath(const Apto::String& dir);
+      
       LIB_EXPORT ~Freezer();
       
       LIB_EXPORT int NumEntriesOfType(FreezerObjectType type) const { return m_entries[type].GetSize(); }
@@ -142,6 +144,10 @@ namespace Avida {
         }
         LIB_EXPORT inline const FreezerID* Next() { ++m_id.identifier; return Get(); }
       };
+      
+      
+    private:
+      LIB_LOCAL Freezer(const Apto::String& dir);
     };
     
   };

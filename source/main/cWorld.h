@@ -69,7 +69,6 @@ protected:
   Data::ManagerPtr m_data_mgr;
 
   Apto::RNG::AvidaRNG m_rng;
-  Apto::RNG::AvidaRNG m_srng; // second random number seq to be used for random sampling etc without changing run processes
   
 
   cWorld(cAvidaConfig* cfg, const cString& wd);
@@ -90,7 +89,6 @@ public:
   cHardwareManager& GetHardwareManager() { return *m_hw_mgr; }
   cPopulation& GetPopulation() { return *m_pop; }
   Apto::Random& GetRandom() { return m_rng; }
-  Apto::Random& GetRandomSample() { return m_srng; }
   cStats& GetStats() { return *m_stats; }
   
   Data::ManagerPtr& GetDataManager() { return m_data_mgr; }

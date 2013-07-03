@@ -48,11 +48,11 @@ using namespace AvidaTools;
 
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
 : m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
-, m_minitrace(false), m_microtrace(false), m_topnavtrace(false)
+, m_minitrace(false), m_microtrace(false), m_topnavtrace(false), m_reprotrace(false)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
 , m_has_res_costs(m_inst_set->HasResCosts()), m_has_fem_res_costs(m_inst_set->HasFemResCosts())
 , m_has_female_costs(m_inst_set->HasFemaleCosts()), m_has_choosy_female_costs(m_inst_set->HasChoosyFemaleCosts())
-, m_has_post_costs(inst_set->HasPostCosts())
+, m_has_post_costs(inst_set->HasPostCosts()), m_has_bonus_costs(inst_set->HasBonusCosts())
 {
 	m_task_switching_cost=0;
 	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_res_costs | m_has_fem_res_costs | m_has_female_costs |
@@ -102,6 +102,11 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
   if (m_has_post_costs) {
     m_thread_inst_post_cost.Resize(num_inst_cost);
     for (int i = 0; i < num_inst_cost; i++) m_thread_inst_post_cost[i] = m_inst_set->GetPostCost(Instruction(i));
+  }
+
+  if (m_has_bonus_costs) {
+    m_inst_bonus_cost.Resize(num_inst_cost);
+    for (int i = 0; i < num_inst_cost; i++) m_inst_bonus_cost[i] = m_inst_set->GetBonusCost(Instruction(i));
   }
 
   internalReset();
@@ -643,7 +648,7 @@ void cHardwareBase::doSlipMutation(cAvidaContext& ctx, InstructionSequence& geno
           //Scrambled order
         case 3:
         {
-          int copy_index = m_world->GetRandom().GetInt(insertion_length - i);
+          int copy_index = ctx.GetRandom().GetInt(insertion_length - i);
           int test = 0;
           int passed = copy_index;
           while (passed >= 0) {
@@ -715,7 +720,7 @@ void cHardwareBase::doTransMutation(cAvidaContext& ctx, InstructionSequence& gen
         Apto::Array<bool> copied_so_far(insertion_length);
         copied_so_far.SetAll(false);
         for (int i = 0; i < insertion_length; i++) {
-          int copy_index = m_world->GetRandom().GetInt(insertion_length - i);
+          int copy_index = ctx.GetRandom().GetInt(insertion_length - i);
           int test = 0;
           int passed = copy_index;
           while (passed >= 0) {
@@ -778,7 +783,7 @@ void cHardwareBase::doLGTMutation(cAvidaContext& ctx, InstructionSequence& genom
         case 1:
         {
           for (int i = 0; i < ins_seq.GetSize(); i++) {
-            int copy_index = m_world->GetRandom().GetInt(ins_seq.GetSize() - i);
+            int copy_index = ctx.GetRandom().GetInt(ins_seq.GetSize() - i);
             genome[ins_loc + i] = ins_seq[copy_index];
             ins_seq[copy_index] = ins_seq[ins_seq.GetSize() - i - 1];
           }
@@ -1234,6 +1239,10 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const Instruct
     if (res_stored < res_req) return false;
   }
 
+  if (m_has_bonus_costs) {
+    if (m_organism->GetPhenotype().GetCurBonus() < m_inst_set->GetBonusCost(cur_inst)) return false;
+  }
+
   //@CHC: If this organism is female, or a choosy female, we may need to impose additional costs for her to execute the instruction
   int per_use_cost = 0;
   if (m_has_costs) {
@@ -1311,6 +1320,8 @@ void cHardwareBase::SingleProcess_PayPostResCosts(cAvidaContext& ctx, const Inst
     double cost = res_req * -1.0;
     m_organism->AddToRBin(resource, cost); 
   }
+  if (m_has_bonus_costs) m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() - m_inst_set->GetBonusCost(cur_inst));
+
   return;
 }
 

@@ -295,11 +295,11 @@ cOrganism * cPopulationCell::RemoveOrganism(cAvidaContext& ctx)
  */
 
 // Adds an organism to the cell's predator (input) avatars, then keeps the list mixed by swapping the new avatar into a random position in the array
-void cPopulationCell::AddPredAV(cOrganism* org)
+void cPopulationCell::AddPredAV(cAvidaContext& ctx, cOrganism* org)
 {
   m_av_pred.Push(org);
   // Swaps the added avatar into a random position in the array
-  int loc = m_world->GetRandom().GetUInt(0, m_av_pred.GetSize());
+  int loc = ctx.GetRandom().GetUInt(0, m_av_pred.GetSize());
   cOrganism* exist_org = m_av_pred[loc];
   m_av_pred.Swap(loc, m_av_pred.GetSize() - 1);
   exist_org->SetAVInIndex(m_av_pred.GetSize() - 1);
@@ -307,11 +307,11 @@ void cPopulationCell::AddPredAV(cOrganism* org)
 }
 
 // Adds an organism to the cell's prey (output) avatars, then keeps the list mixed by swapping the new avatar into a random position in the array
-void cPopulationCell::AddPreyAV(cOrganism* org)
+void cPopulationCell::AddPreyAV(cAvidaContext& ctx, cOrganism* org)
 {
   m_av_prey.Push(org);
   // Swaps the added avatar into a random position in the array
-  int loc = m_world->GetRandom().GetUInt(0, m_av_prey.GetSize());
+  int loc = ctx.GetRandom().GetUInt(0, m_av_prey.GetSize());
   cOrganism* exist_org = m_av_prey[loc];
   m_av_prey.Swap(loc, m_av_prey.GetSize() - 1);
   exist_org->SetAVOutIndex(m_av_prey.GetSize() - 1);
@@ -359,10 +359,10 @@ bool cPopulationCell::HasOutputAV(cOrganism* org)
 
 // Randomly returns an avatar from the cell, all avatars equally likely
 //********** DO NOT CALL FROM VIEWER OR DATA COLLECTION, DOING SO WILL AFFECT RESULTS DURING RUN **********
-cOrganism* cPopulationCell::GetRandAV() const
+cOrganism* cPopulationCell::GetRandAV(cAvidaContext& ctx) const
 {
   if (HasAV()) {
-    int rand = m_world->GetRandom().GetUInt(0, GetNumAV());
+    int rand = ctx.GetRandom().GetUInt(0, GetNumAV());
     if (rand < GetNumAVInputs()) {
       return m_av_pred[rand];
     }
@@ -496,10 +496,10 @@ unsigned int cPopulationCell::CountGenomeFragments() const {
 
 /*! Remove and return a random genome fragment.
  */
-InstructionSequence cPopulationCell::PopGenomeFragment() {
+InstructionSequence cPopulationCell::PopGenomeFragment(cAvidaContext& ctx) {
 	assert(m_hgt!=0);
 	fragment_list_type::iterator i = m_hgt->fragments.begin();
-	std::advance(i, m_world->GetRandom().GetUInt(0, m_hgt->fragments.size()));	
+	std::advance(i, ctx.GetRandom().GetUInt(0, m_hgt->fragments.size()));
 	InstructionSequence tmp = *i;
 	m_hgt->fragments.erase(i);
 	return tmp;

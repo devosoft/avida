@@ -48,10 +48,12 @@
 #include "cEnvironment.h"
 #include "cUserFeedback.h"
 
-#include <map>
-#include <set>
-#include <numeric>
 #include <algorithm>
+#include <iterator>
+#include <map>
+#include <numeric>
+#include <set>
+
 #include "stdlib.h"
 
 using namespace Avida;
@@ -769,7 +771,7 @@ public:
     
     while (num_to_kill > 0)
     {
-      int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize() - 1);
+      int target_cell = ctx.GetRandom().GetInt(0, pop.GetSize() - 1);
       cPopulationCell& cell = pop.GetCell(target_cell);                                         
       if (cell.IsOccupied())
       {
@@ -2210,8 +2212,8 @@ public:
     long cells_empty = 0;
     
     for(int i=0; i < m_numkills; i++) {
-      target_cell = m_world->GetRandom().GetInt(0, m_world->GetPopulation().GetSize()-1);
-      level = m_world->GetPopulation().GetResources().GetSpatialResource(res_id).GetAmount(target_cell); 
+      target_cell = ctx.GetRandom().GetInt(0, m_world->GetPopulation().GetSize()-1);
+      level = m_world->GetPopulation().GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell); 
       cells_scanned++;
       
       if(level < m_threshold) {
@@ -2294,8 +2296,8 @@ public:
     
     for (int i = 0; i < m_numradii; i++) {
       
-      int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
-      double level = pop.GetResources().GetSpatialResource(res_id).GetAmount(target_cell); 
+      int target_cell = ctx.GetRandom().GetInt(0, pop.GetSize()-1);
+      double level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell); 
       
       if(level < m_threshold) {
         const int current_row = target_cell / world_x;
@@ -2407,7 +2409,7 @@ public:
     
     for (int i = 0; i < m_numradii; i++) {
       
-      int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
+      int target_cell = ctx.GetRandom().GetInt(0, pop.GetSize()-1);
       resourcesum.Clear();
       
       const int current_row = target_cell / world_x;
@@ -2552,7 +2554,7 @@ public:
     
     for (int i = 0; i < m_numradii; i++) {
       
-      int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
+      int target_cell = ctx.GetRandom().GetInt(0, pop.GetSize()-1);
       resourcesum.Clear();
       
       // Get the level of adversity.  Bounded by [0,1]
@@ -2689,7 +2691,7 @@ public:
 		
 		for (int i = 0; i < m_numradii; i++) {
 			
-			int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
+			int target_cell = ctx.GetRandom().GetInt(0, pop.GetSize()-1);
 			const int current_row = target_cell / world_x;
 			const int current_col = target_cell % world_x;
 			
@@ -2797,7 +2799,7 @@ public:
   void Process(cAvidaContext& ctx) {
 		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
 			cOrganism* org = m_world->GetPopulation().GetCell(i).GetOrganism();			
-			if(org && (m_donation_p > 0.0) && m_world->GetRandom().P(m_donation_p)) {
+			if(org && (m_donation_p > 0.0) && ctx.GetRandom().P(m_donation_p)) {
 				org->GetOrgInterface().DoHGTDonation(ctx);
 			}
 		}
@@ -2872,8 +2874,8 @@ private:
   bool m_random;
   bool m_rand_prey;
   bool m_rand_pred;
-  bool m_next_prey;
-  bool m_next_pred;
+  int m_next_prey;
+  int m_next_pred;
   bool m_save_dominants;
   bool m_save_groups;
   bool m_save_foragers;
@@ -3033,6 +3035,25 @@ public:
   }
 };
 
+class cActionPrintNavTrace : public cAction
+{
+private:
+  
+public:
+  cActionPrintNavTrace(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args)
+  {
+  }
+  
+  static const cString GetDescription() { return "Arguments: ''"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().SetNavTrace(true);
+    m_world->GetPopulation().SetTopNavQ();
+  }
+};
+
 /* Force Printing of current TopNacTrace even if orgs still being tracked. */
 class cActionFlushTopNavTrace : public cAction
 {
@@ -3048,7 +3069,7 @@ public:
 
   void Process(cAvidaContext& ctx)
   { 
-    m_world->GetStats().PrintTopNavTrace();
+    m_world->GetStats().PrintTopNavTrace(true);
   }
 };
 
@@ -3171,6 +3192,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionLoadMiniTraceQ>("LoadMiniTraceQ");
   action_lib->Register<cActionPrintReproData>("PrintReproData");
   action_lib->Register<cActionPrintTopNavTrace>("PrintTopNavTrace");
+  action_lib->Register<cActionPrintTopNavTrace>("PrintNavTrace");
   action_lib->Register<cActionFlushTopNavTrace>("FlushTopNavTrace");
 
   action_lib->Register<cActionRemovePredators>("RemovePredators");

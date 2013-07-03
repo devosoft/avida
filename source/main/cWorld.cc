@@ -99,7 +99,6 @@ bool cWorld::setup(Universe* new_world, cUserFeedback* feedback, const Apto::Map
   // Setup Random Number Generator
   m_rng.ResetSeed(m_conf->RANDOM_SEED.Get());
   m_ctx = new cAvidaContext(NULL, m_rng);
-  m_srng.ResetSeed(m_conf->RANDOM_SEED.Get());
   
   // Initialize new API-based data structures here for now
   {
@@ -129,7 +128,7 @@ bool cWorld::setup(Universe* new_world, cUserFeedback* feedback, const Apto::Map
   // Systematics
   Systematics::ManagerPtr systematics(new Systematics::Manager);
   systematics->AttachTo(new_world);
-  systematics->RegisterRole("genotype", Systematics::ArbiterPtr(new Systematics::GenotypeArbiter(new_world, m_conf->THRESHOLD.Get())));
+  systematics->RegisterRole("genotype", Systematics::ArbiterPtr(new Systematics::GenotypeArbiter(new_world, m_conf->THRESHOLD.Get(), m_conf->DISABLE_GENOTYPE_CLASSIFICATION.Get())));
 
   
   // Setup Stats Object

@@ -75,6 +75,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#CountMultipleOpinions">CountMultipleOpinions</a><br>
       <a href="#CountOpinions">CountOpinions</a><br>
       <a href="#DecayPoints">DecayPoints</a><br>
+      <a href="#DecInflow">DecInflow</a><br>
       <a href="#DelayedDemeEvent">DelayedDemeEvent</a><br>
       <a href="#DelayedDemeEventsPerSlots">DelayedDemeEventsPerSlots</a><br>
       <a href="#DeletionLandscape">DeletionLandscape</a><br>
@@ -115,6 +116,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#FlushTopNavTrace">FlushTopNavTrace</a><br>
       <a href="#FullLandscape">FullLandscape</a><br>
       <a href="#HillClimb">HillClimb</a><br>
+      <a href="#IncInflow">IncInflow</a><br>
       <a href="#Inject">Inject</a><br>
       <a href="#InjectAll">InjectAll</a><br>
       <a href="#InjectAllRandomRepro">InjectAllRandomRepro</a><br>
@@ -146,6 +148,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#KillWithinRadiusBelowResourceThreshold">KillWithinRadiusBelowResourceThreshold</a><br>
       <a href="#KillWithinRadiusBelowResourceThresholdTestAll">KillWithinRadiusBelowResourceThresholdTestAll</a><br>
       <a href="#KillWithinRadiusMeanBelowResourceThreshold">KillWithinRadiusMeanBelowResourceThreshold</a><br>
+      <a href="#LoadMiniTraceQ">LoadMiniTraceQ</a><br>
       <a href="#LoadPopulation">LoadPopulation</a><br>
       <a href="#MeasureDemeNetworks">MeasureDemeNetworks</a><br>
       <a href="#MixPopulation">MixPopulation</a><br>
@@ -235,6 +238,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintGermlineData">PrintGermlineData</a><br>
       <a href="#PrintGroupIds">PrintGroupIds</a><br>
       <a href="#PrintGroupsFormedData">PrintGroupsFormedData</a><br>
+      <a href="#PrintKilledPreyFTData">PrintKilledPreyFTData</a><br>
       <a href="#PrintHGTData">PrintHGTData</a><br>
       <a href="#PrintHostPhenotypeData">PrintHostPhenotypeData</a><br>
       <a href="#PrintHostTasksData">PrintHostTasksData</a><br>
@@ -254,6 +258,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintMicroTraces">PrintMicroTraces</a><br>
       <a href="#PrintMultiProcessData">PrintMultiProcessData</a><br>
       <a href="#PrintMutationRateData">PrintMutationRateData</a><br>
+      <a href="#PrintNavTrace">PrintNavTrace</a><br>
       <a href="#PrintNewReactionData">PrintNewReactionData</a><br>
     <td valign="top">
       <a href="#PrintNewTasksData">PrintNewTasksData</a><br>
@@ -296,6 +301,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintTasksData">PrintTasksData</a><br>
       <a href="#PrintTasksExeData">PrintTasksExeData</a><br>
       <a href="#PrintTaskSnapshot">PrintTaskSnapshot</a><br>
+      <a href="#PrintSoloTaskSnapshot">PrintSoloTaskSnapshot</a><br>
       <a href="#PrintTasksQualData">PrintTasksQualData</a><br>
       <a href="#PrintTimeData">PrintTimeData</a><br>
       <a href="#PrintTopNavTrace">PrintTopNavTrace</a><br>
@@ -1222,7 +1228,7 @@ change the course of the run.  There are a wide variety of these.
 </li>
 <li><p>
   <strong><a name="FlushTopNavTrace">FlushTopNavTrace</a></strong>
-  Force printing of nav trace (as set up by PrintTopNavTrace) even if all candidate orgs have not been
+  Force printing of nav trace (as set up by PrintTopNavTrace or PrintNavTrace) even if all candidate orgs have not been
   evaluated / reproduced.
     </p>
 </li>
@@ -1479,6 +1485,20 @@ change the course of the run.  There are a wide variety of these.
   
   </p>
 </li>
+  <li><p>
+    <strong><a name="LoadMiniTraceQ">LoadMiniTraceQ</a></strong>
+    <i> [string filename]] [int orgs_per=1] [boolean print_genomes=1] [boolean print_reacs=0]</i>
+    </p>
+    <p>Record minitraces for pre-specificied genotypes. Genotypes need to be specified in a config file. Will print the
+    minitraces for genotypes from loaded pops or births. E.g., the following would add two genotypes to the minitrace q:
+    <br />  i LoadMiniTraceQ file=first_last.spop:orgs_per=1:print_genomes=1
+    <br /> Provided there was a 'first_last' config file with the following:
+    <br /> #format id
+    <br /> #  1: ID
+    <br /> 284
+    <br /> 213
+    </p>
+  </li>
 <li><p>
   <strong><a name="MeasureDemeNetworks">MeasureDemeNetworks</a></strong>
   </p>
@@ -2589,6 +2609,13 @@ a single, complete file for each trigger.
   Prints the header and body data of all messages sent between organisms, even if the messages failed. NET_LOG_MESSAGES must be set to 1 in avida.cfg for this to work.
   </p>
 </li>
+  <li><p>
+    <strong><a name="PrintRetMessageLog">PrintRetMessageLog</a></strong>
+    </p>
+    <p>
+    Prints the header and body data of retrieved messages sent between organisms, meaning the messages that the receiving organism actually retrieved. NET_LOG_RETMESSAGES must be set to 1 in avida.cfg for this to work.
+    </p>
+  </li>
 <li><p>
   <strong><a name="PrintMigrationData">PrintMigrationData</a></strong>
   <i>[string fname="migration.dat"]</i>
@@ -2617,7 +2644,7 @@ a single, complete file for each trigger.
     born with those genotypes, removing the genotype instance from the 'to-do' list with each new trace. Random option
     is not currently compatible with (will override) other save_ arguements or orgs_per.
     </p>
-    <p> Minitraces are currently only fully implemented for the experimental hardware and partially for 
+    <p> Minitraces are currently only fully implemented for the experimental and BCR hardware and partially for
     the SMT hardware because of differences in the way some minitrace variables are tracked by the 
     different hardware types.
     </p>
@@ -2666,6 +2693,14 @@ a single, complete file for each trigger.
   (aver, stdev, skew, cur). Useful only when mutation rate is set per organism.
 
   </p>
+</li>
+<li><p>
+  <strong><a name="PrintNavTrace">PrintNavTrace</a></strong>
+  Record and print some nav data up to first reproduction for best of orgs alive now, including trace execution,
+  locations, and facings. Will print these data for the org that reproduces in shortest amount of time (as measured by cycles).
+  Will print nothing if any of the candidate orgs are still alive when avida exits and no FlushTopNavTrace events were called.
+  Will override TopNavTrace is both are active (i.e., will ignore the reaction hierarchy TopNav uses).
+    </p>
 </li>
 <li><p>
   <strong><a name="PrintNewReactionData">PrintNewReactionData</a></strong>
@@ -3227,7 +3262,7 @@ a single, complete file for each trigger.
 <UL>
 <li><p>
   <strong><a name="LoadPopulation">LoadPopulation</a></strong>
-  <i>&lt;cString fname&gt; [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0] [bool load_birth_cells=0] [bool load_avatars=0] [bool load_rebirth]</i>
+  <i>&lt;cString fname&gt; [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0] [bool load_birth_cells=0] [bool load_avatars=0] [bool load_rebirth] [bool load_parent_dat]</i>
   </p>
   <p>
     Sets up a population based on a save file such as written out by
@@ -3241,10 +3276,14 @@ a single, complete file for each trigger.
   would have been collected as the org moved around the world.<br>
   e.g to load a population with birth cells and group ids, but without cell, lineage, or update offsets:<br>
   i LoadPopulation -1 0 0 1 1 0<br>
-  <i>load_rebirth</i> will override load_groups, load_birth_cells, load avatars and inject orgs into their saved birth cells, 
+  <i>load_rebirth</i> will override load_groups, load_birth_cells, load avatars and inject orgs into their saved birth cells,
   put avatars in their birth cells (if avatars are on), assign parent's merit to org (if inherit merit is on) and assign the 
   parent's forage target if the parent was a 'teacher' <br>
   i LoadPopulation -1 0 0 0 0 0 1<br>
+  </p>
+  <p>
+  <i>load_parent_dat</i> will assign parent's merit to org (if inherit merit is on) and assign the
+  parent's forage target if the parent was a 'teacher', without putting orgs into their birth cells (as in load_rebirth) <br>
   </p>
 </li>
 <li><p>

@@ -45,8 +45,13 @@ IF(UNIX)
       SET(COMPILER_WARNING_FLAGS "")
       SET(COMPILER_OPTIMIZATION_FLAGS "-funroll-loops -mp1 -pc64")
     ELSE (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
-      SET(COMPILER_WARNING_FLAGS "-Wextra -Wno-unused-parameter -Wno-unknown-pragmas -Wno-trigraphs")
-      SET(COMPILER_OPTIMIZATION_FLAGS "-funroll-loops -fstrict-aliasing -ftree-vectorize -fvisibility-inlines-hidden")
+      IF (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*")
+        SET(COMPILER_WARNING_FLAGS "-Wextra -Wno-unused-parameter -Wno-unknown-pragmas -Wno-trigraphs")
+        SET(COMPILER_OPTIMIZATION_FLAGS "-funroll-loops -fstrict-aliasing -fvisibility-inlines-hidden")
+      ELSE (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*")
+        SET(COMPILER_WARNING_FLAGS "-Wextra -Wno-unused-parameter -Wno-unknown-pragmas -Wno-trigraphs")
+        SET(COMPILER_OPTIMIZATION_FLAGS "-funroll-loops -fstrict-aliasing -ftree-vectorize -fvisibility-inlines-hidden")
+      ENDIF (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*")
     ENDIF (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
   ENDIF (CMAKE_CXX_COMPILER MATCHES ".*pathCC.*")
 
@@ -54,8 +59,12 @@ IF(UNIX)
   IF (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
     SET(HAVE_FUSED_MADD FALSE)
   ELSE (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
-    SET(CMAKE_REQUIRED_FLAGS "-mno-fused-madd")
-    CHECK_C_SOURCE_COMPILES("int main() { return 0; }" HAVE_FUSED_MADD)
+    IF (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*")
+      SET(HAVE_FUSED_MADD FALSE)
+    ELSE (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*")
+      SET(CMAKE_REQUIRED_FLAGS "-mno-fused-madd")
+      CHECK_C_SOURCE_COMPILES("int main() { return 0; }" HAVE_FUSED_MADD)
+    ENDIF (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*")
   ENDIF (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
   SET(CMAKE_REQUIRED_FLAGS "")
 
@@ -170,9 +179,8 @@ SET(CPU_SOURCES
   ${CPU_DIR}/cHardwareBCR.cc
   ${CPU_DIR}/cHardwareCPU.cc
   ${CPU_DIR}/cHardwareExperimental.cc
+  ${CPU_DIR}/cHardwareGP8.cc
   ${CPU_DIR}/cHardwareManager.cc
-  ${CPU_DIR}/cHardwareMBE.cc
-  ${CPU_DIR}/cHardwareMGE.cc
   ${CPU_DIR}/cHardwareStatusPrinter.cc
   ${CPU_DIR}/cHardwareTransSMT.cc
   ${CPU_DIR}/cHeadCPU.cc
@@ -421,7 +429,7 @@ IF(AVD_CMDLINE)
   SOURCE_GROUP(target\\avida FILES ${AVIDA_CMDLINE_SOURCES})
   ADD_EXECUTABLE(avida ${AVIDA_CMDLINE_SOURCES})
 
-  SET(AVIDA_CMDLINE_LIBS avida-core aptostatic)  
+  SET(AVIDA_CMDLINE_LIBS aptostatic avida-core aptostatic)  
   IF(AVD_ENABLE_TCMALLOC)
     LIST(APPEND AVIDA_CMDLINE_LIBS tcmalloc-1.4)
   ENDIF(AVD_ENABLE_TCMALLOC)  

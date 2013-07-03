@@ -103,7 +103,6 @@ private:
   int num_organisms;                   // Cell count with living organisms
   int num_prey_organisms;
   int num_pred_organisms;
-  int pop_enforce;
   int num_top_pred_organisms;
   
   // Outside interactions...
@@ -164,6 +163,7 @@ public:
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
   void KillOrganism(cAvidaContext& ctx, int in_cell) { KillOrganism(cell_array[in_cell], ctx); } 
+  void InjureOrg(cPopulationCell& in_cell, double injury);
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian
   // movement that cannot be directly handled in cHardwareCPU.cc
@@ -196,7 +196,7 @@ public:
   bool SaveStructuredSystematicsGroup(const Systematics::RoleID& role, const cString& filename);
   bool LoadStructuredSystematicsGroup(cAvidaContext& ctx, const Systematics::RoleID& role, const cString& filename);
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0,
-                      bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false, bool load_rebirth = false);
+                      bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false, bool load_rebirth = false, bool load_parent_dat = false);
   bool SaveFlameData(const cString& filename);
   
   void SetMiniTraceQueue(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool print_reacs, const bool use_micro = false);
@@ -211,7 +211,7 @@ public:
   const Apto::Array<int, Apto::Smart>& GetMiniTraceQueue() const { return minitrace_queue; }
   void AppendRecordReproQ(cOrganism* new_org);
   void SetTopNavQ();
-  Apto::Array<cOrganism*, Apto::Smart> GetTopNavQ() { return topnav_q; }
+  Apto::Array<cOrganism*, Apto::Smart>& GetTopNavQ() { return topnav_q; }
   
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
@@ -283,7 +283,7 @@ public:
   int CalcGroupToleranceImmigrants(int group_id, int mating_type = -1);
   int CalcGroupToleranceOffspring(cOrganism* parent_organism);
   double CalcGroupOddsImmigrants(int group_id, int mating_type  = -1);
-  bool AttemptImmigrateGroup(int group_id, cOrganism* org);
+  bool AttemptImmigrateGroup(cAvidaContext& ctx, int group_id, cOrganism* org);
   double CalcGroupOddsOffspring(int group_id);
   double CalcGroupOddsOffspring(cOrganism* parent);
   bool AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring);
@@ -310,7 +310,7 @@ private:
   void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   Apto::Array<int>& GetEmptyCellIDArray() { return empty_cell_id_array; }
   void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
-  int FindRandEmptyCell();
+  int FindRandEmptyCell(cAvidaContext& ctx);
   
   // Update statistics collecting...
   void UpdateOrganismStats(cAvidaContext& ctx);
@@ -329,7 +329,7 @@ private:
   void SetupMiniTrace(cOrganism* in_organism);
   void PrintMiniTraceGenome(cOrganism* in_organism, cString& filename);
   
-  int PlaceAvatar(cOrganism* parent);
+  int PlaceAvatar(cAvidaContext& ctx, cOrganism* parent);
   
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
 };

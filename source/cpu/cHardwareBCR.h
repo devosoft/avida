@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 11/2/2012 based on cHardwareMBE.h
- *  Copyright 2012 Michigan State University. All rights reserved.
+ *  Copyright 1999-2013 Michigan State University. All rights reserved.
  *
  *
  *  This file is part of Avida.
@@ -179,6 +179,8 @@ private:
     inline void Clear(int sz) { delete [] m_stack; m_sz = sz; m_stack = new DataValue[sz]; }
   };
   
+  
+  
 
   struct Thread
   {
@@ -206,6 +208,8 @@ private:
     cCodeLabel read_label;
     cCodeLabel read_seq;
     cCodeLabel next_label;
+    
+    cOrgSensor::sLookInit sensor_session;
     
     inline Thread() { ; }
     inline ~Thread() { ; }
@@ -245,6 +249,7 @@ private:
   
 
   cOrgSensor m_sensor;
+  Apto::Array<cOrgSensor::sLookInit> m_sensor_sessions;
   
   // Flags
   struct {
@@ -383,6 +388,7 @@ private:
   int FindModifiedPreviousRegister(int default_register);
   int FindModifiedHead(int default_head);
   int FindNextRegister(int base_reg);
+  int FindUpstreamModifiedRegister(int offset, int default_register);
   
   int calcCopiedSize(const int parent_size, const int child_size);
   
@@ -406,11 +412,29 @@ private:
   
   
   // ---------- Predator-Prey Support Functions -----------
+  struct sAttackReg {
+    int success_reg;
+    int bonus_reg;
+    int bin_reg;
+  };
+  
   void injureOrg(cOrganism* target);
   void makePred(cAvidaContext& ctx);
   void makeTopPred(cAvidaContext& ctx);
   bool testAttack(cAvidaContext& ctx);
+  bool testAttackPred(cAvidaContext& ctx);
+  cOrganism* getPreyTarget(cAvidaContext& ctx);
+  bool testPreyTarget(cOrganism* target);
+  void setAttackReg(sAttackReg& reg);
+  bool executeAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds = -1);
   
+  bool testAttackChance(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds = -1);
+  void applyKilledPreyMerit(cOrganism* target, double effic);
+  void applyKilledPreyReactions(cOrganism* target);
+  void applyKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic);
+  void applyKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic);
+
+  void tryPreyClone(cAvidaContext& ctx);  
   
   // ---------- Instruction Library -----------
   // Multi-threading
@@ -418,6 +442,12 @@ private:
   bool Inst_ThreadCancel(cAvidaContext& ctx);
   bool Inst_ThreadID(cAvidaContext& ctx);
   bool Inst_Yield(cAvidaContext& ctx);
+  bool Inst_RegulatePause(cAvidaContext& ctx);
+  bool Inst_RegulatePauseSP(cAvidaContext& ctx);
+  bool Inst_RegulateResume(cAvidaContext& ctx);
+  bool Inst_RegulateResumeSP(cAvidaContext& ctx);
+  bool Inst_RegulateReset(cAvidaContext& ctx);
+  bool Inst_RegulateResetSP(cAvidaContext& ctx);
   
   // Flow Control
   bool Inst_Label(cAvidaContext& ctx);
@@ -438,6 +468,7 @@ private:
   bool Inst_SwitchStack(cAvidaContext& ctx);
   bool Inst_SwapStackTop(cAvidaContext& ctx);
   bool Inst_Swap(cAvidaContext& ctx);
+  bool Inst_CopyVal(cAvidaContext& ctx);
 
   // Single-Argument Math
   bool Inst_ShiftR(cAvidaContext& ctx);
@@ -508,6 +539,7 @@ private:
   
   // Movement and Navigation
   bool Inst_Move(cAvidaContext& ctx);
+  bool Inst_JuvMove(cAvidaContext& ctx);
   bool Inst_GetNorthOffset(cAvidaContext& ctx);
   bool Inst_GetPositionOffset(cAvidaContext& ctx);  
   bool Inst_GetNortherly(cAvidaContext& ctx); 
@@ -520,6 +552,8 @@ private:
   bool Inst_RotateHome(cAvidaContext& ctx);
   bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateX(cAvidaContext& ctx);
+  bool Inst_RotateOrgID(cAvidaContext& ctx);
+  bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
 
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
@@ -527,6 +561,10 @@ private:
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_LookAhead(cAvidaContext& ctx);
   bool Inst_LookAheadIntercept(cAvidaContext& ctx);
+  bool Inst_LookAheadEX(cAvidaContext& ctx);
+  bool Inst_LookAgainEX(cAvidaContext& ctx);
+  bool Inst_LookAheadFTX(cAvidaContext& ctx);
+  bool Inst_LookAgainFTX(cAvidaContext& ctx);
   bool Inst_LookAround(cAvidaContext& ctx);
   bool Inst_LookAroundIntercept(cAvidaContext& ctx);
   bool Inst_LookFT(cAvidaContext& ctx);
@@ -555,14 +593,20 @@ private:
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_LearnParent(cAvidaContext& ctx);
   
+  bool Inst_ModifySimpDisplay(cAvidaContext& ctx);
+  bool Inst_ReadLastSimpDisplay(cAvidaContext& ctx);
+  bool Inst_KillDisplay(cAvidaContext& ctx);
+  
   // Predator-Prey Instructions
   bool Inst_AttackPrey(cAvidaContext& ctx);
-
+  bool Inst_AttackFTPrey(cAvidaContext& ctx);
   
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
 
-
+private:
+  static tInstLib<cHardwareBCR::tMethod>* initInstLib();
+  
   // ---------- Some Instruction Helpers -----------
   struct sLookRegAssign {
     int habitat;
@@ -577,10 +621,44 @@ private:
   
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
-  void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
+  void LookResults(cAvidaContext& ctx, sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
+
+  
+  bool DoLookAheadEX(cAvidaContext& ctx, bool use_ft = false);
+  bool DoLookAgainEX(cAvidaContext& ctx, bool use_ft = false);
   
 private:
-  static tInstLib<cHardwareBCR::tMethod>* initInstLib();
+  class ThreadLabelIterator
+  {
+  private:
+    cHardwareBCR* m_hw;
+    const cCodeLabel m_label;
+    bool m_is_specific;
+    int m_next_idx;
+    int m_cur_id;
+    
+  public:
+    ThreadLabelIterator(cHardwareBCR* hw, const cCodeLabel& label, bool specific = true)
+      : m_hw(hw), m_label(label), m_is_specific(specific), m_next_idx(0), m_cur_id(-1) { ; }
+    
+    inline int Next()
+    {
+      for (; m_next_idx < m_hw->m_threads.GetSize(); m_next_idx++) {
+        const cCodeLabel& thread_label = m_hw->m_threads[m_next_idx].next_label;
+        if ((m_is_specific && m_label == thread_label) || thread_label.Contains(m_label)) {
+          m_cur_id = m_next_idx;
+          m_next_idx++;
+          return m_cur_id;
+        }
+      }
+      m_cur_id = -1;
+      return m_cur_id;
+    }
+    
+    inline int Get() const { return m_cur_id; }
+    inline void Reset() { m_next_idx = 0; m_cur_id = -1; }
+  };
+
 };
 
 

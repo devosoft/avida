@@ -117,7 +117,8 @@ private:
   Apto::Array<int> cur_from_sensor_count;           // Use of inputs that originated from sensory data were used in execution of this instruction.
   Apto::Array< Apto::Array<int> > cur_group_attack_count;
   Apto::Array< Apto::Array<int> > cur_top_pred_group_attack_count;
-
+  Apto::Array<int> cur_killed_targets;
+  
   Apto::Array<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB
   Apto::Array<double> sensed_resources;            // Resources which the organism has sensed; @JEB
   Apto::Array<double> cur_task_time;               // Time at which each task was last performed; WRE 03-18-07
@@ -166,6 +167,7 @@ private:
   Apto::Array<int> last_sense_count;   // Total times resource combinations have been sensed; @JEB
   Apto::Array< Apto::Array<int> > last_group_attack_count;
   Apto::Array< Apto::Array<int> > last_top_pred_group_attack_count;
+  Apto::Array<int> last_killed_targets;
 
   double last_fitness;            // Used to determine sterilization.
   int last_cpu_cycles_used;
@@ -206,7 +208,8 @@ private:
   bool to_die;		 // Has organism has triggered something fatal?
   bool to_delete;        // Should this organism be deleted when finished?
   bool is_injected;      // Was this organism injected into the population?
-  bool is_donor_cur;     // Has this organism attempted to donate merit?  
+  bool is_clone;      // Was this organism created as a clone in the population?
+  bool is_donor_cur;     // Has this organism attempted to donate merit?
   bool is_donor_last;    // Did this organism's parent attempt to donate merit? 
   bool is_donor_rand;    // Has this organism attempted a random donation?
   bool is_donor_rand_last; // Did this org's parent attempt to donate randomly
@@ -262,7 +265,8 @@ private:
   bool parent_true;      // Is this genome an exact copy of its parent's?
   bool parent_sex;       // Did the parent divide with sex?
   int  parent_cross_num; // How many corssovers did the parent do?
-  bool born_parent_group;// Was offspring born into the parent's group? 
+  bool born_parent_group;// Was offspring born into the parent's group?
+  bool kaboom_executed; // Has organism executed an explode instruction?
 
   // 6. Child information...
   bool copy_true;        // Can this genome produce an exact copy of itself?
@@ -470,6 +474,7 @@ public:
   int GetNumDonationsLocusLast() const { assert(initialized == true); return num_donations_locus_last; }
 
   bool IsInjected() const { assert(initialized == true); return is_injected; }
+  bool IsClone() const { assert(initialized == true); return is_clone; }
   bool IsDonorCur() const { assert(initialized == true); return is_donor_cur; }
   bool IsDonorLast() const { assert(initialized == true); return is_donor_last; }
   bool IsDonorRand() const { assert(initialized == true); return is_donor_rand; }
@@ -550,6 +555,9 @@ public:
   
   void SetReactionCount(int index, int val) { cur_reaction_count[index] = val; }
   void SetStolenReactionCount(int index, int val) { cur_stolen_reaction_count[index] = val; }
+  
+  bool GetKaboomExecuted() {return kaboom_executed;} //@AEJ
+  void SetKaboomExecuted(bool value) {kaboom_executed = value;} //@AEJ
 
   void SetCurRBinsAvail(const Apto::Array<double>& in_avail) { cur_rbins_avail = in_avail; }
   void SetCurRbinsTotal(const Apto::Array<double>& in_total) { cur_rbins_total = in_total; }
@@ -595,6 +603,8 @@ public:
   void IncCurFromSensorInstCount(int _inst_num)  { assert(initialized == true); cur_from_sensor_count[_inst_num]++; }
   void IncCurGroupAttackInstCount(int _inst_num, int pack_size_idx)  { assert(initialized == true); cur_group_attack_count[_inst_num][pack_size_idx]++; }
   void IncCurTopPredGroupAttackInstCount(int _inst_num, int pack_size_idx)  { assert(initialized == true); cur_top_pred_group_attack_count[_inst_num][pack_size_idx]++; }
+  void IncAttackedPreyFTData(int target_ft);
+  Apto::Array<int> GetKilledPreyFTData() { return cur_killed_targets; }
   
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }
@@ -615,6 +625,7 @@ public:
   void SetLastMatingDisplayB(int _last_mating_display_b) { last_mating_display_b = _last_mating_display_b; } //@CHC
   
   bool& IsInjected() { assert(initialized == true); return is_injected; }
+  bool& IsClone() { assert(initialized == true); return is_clone; }
   bool& IsModifier() { assert(initialized == true); return is_modifier; }
   bool& IsModified() { assert(initialized == true); return is_modified; }
   bool& IsFertile()  { assert(initialized == true); return is_fertile; }

@@ -197,6 +197,7 @@ private:
   double Task_Math1in_AN(cTaskContext& ctx) const;
   double Task_Math1in_AO(cTaskContext& ctx) const;
   double Task_Math1in_AP(cTaskContext& ctx) const;
+  double Task_Math1in_AS(cTaskContext& ctx) const;
 
   // Arbitrary 2-Input Math Tasks
   double Task_Math2in_AA(cTaskContext& ctx) const;
@@ -221,6 +222,10 @@ private:
   double Task_Math2in_AT(cTaskContext& ctx) const;
   double Task_Math2in_AU(cTaskContext& ctx) const;
   double Task_Math2in_AV(cTaskContext& ctx) const;
+  double Task_Math2in_AX(cTaskContext& ctx) const;
+  double Task_Math2in_AY(cTaskContext& ctx) const;
+  double Task_Math2in_AZ(cTaskContext& ctx) const;
+  double Task_Math2in_AAA(cTaskContext& ctx) const;
 
   // Arbitrary 3-Input Math Tasks
   double Task_Math3in_AA(cTaskContext& ctx) const;
@@ -236,6 +241,17 @@ private:
   double Task_Math3in_AK(cTaskContext& ctx) const;
   double Task_Math3in_AL(cTaskContext& ctx) const;
   double Task_Math3in_AM(cTaskContext& ctx) const;
+
+  //Fibonacci individual numbers tasks
+  double Task_Fib1(cTaskContext& ctx) const;
+  double Task_Fib2(cTaskContext& ctx) const;
+  double Task_Fib4(cTaskContext& ctx) const;
+  double Task_Fib5(cTaskContext& ctx) const;
+  double Task_Fib6(cTaskContext& ctx) const;
+  double Task_Fib7(cTaskContext& ctx) const;
+  double Task_Fib8(cTaskContext& ctx) const;
+  double Task_Fib9(cTaskContext& ctx) const;
+  double Task_Fib10(cTaskContext& ctx) const;
   
   // Matching Tasks
   void Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
@@ -301,8 +317,35 @@ private:
 	
   // Feed Specific Tasks
   void Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetEcho(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetNand(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetAnd(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetOrn(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetOr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetAndn(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetNor(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetXor(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTargetEqu(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
   double Task_ConsumeTarget(cTaskContext& ctx) const; 
+  double Task_ConsumeTargetEcho(cTaskContext& ctx) const;
+  double Task_ConsumeTargetNand(cTaskContext& ctx) const;
+  double Task_ConsumeTargetAnd(cTaskContext& ctx) const;
+  double Task_ConsumeTargetOrn(cTaskContext& ctx) const;
+  double Task_ConsumeTargetOr(cTaskContext& ctx) const;
+  double Task_ConsumeTargetAndn(cTaskContext& ctx) const;
+  double Task_ConsumeTargetNor(cTaskContext& ctx) const;
+  double Task_ConsumeTargetXor(cTaskContext& ctx) const;
+  double Task_ConsumeTargetEqu(cTaskContext& ctx) const;
   
+  // Explosion Task
+  void Load_Exploded(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  double Task_Exploded(cTaskContext& ctx) const;
+
+  double Task_XorMax(cTaskContext& ctx) const;
+
+  void Load_CollectOddCell(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  double Task_CollectOddCell(cTaskContext& ctx) const;
+
   // String Matching Tasks
 	void Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
 	double Task_AllOnes(cTaskContext& ctx) const;

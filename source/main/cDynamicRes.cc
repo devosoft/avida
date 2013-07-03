@@ -35,6 +35,7 @@ cDynamicRes::cDynamicRes(cWorld* world, cResourceDef& res_def, int worldx, int w
   : cResource()
   , m_world(world)
   , m_res_def(res_def)
+
   , m_initial(false)
   , m_move_y_scaler(0.5)
   , m_counter(0)
@@ -105,6 +106,7 @@ void cDynamicRes::updatePeakRes(cAvidaContext& ctx)
   // only update resource values at declared update timesteps if there is resource left in the cone
   if (has_edible && m_counter < m_res_def.GetDecay() && GetModified()) {
     if (m_res_def.IsPredatory()) updatePredatoryRes(ctx);
+    if (m_damage) UpdateDamagingRes(ctx);
     return;
   } 
                    
@@ -128,6 +130,8 @@ void cDynamicRes::updatePeakRes(cAvidaContext& ctx)
   || m_res_def.GetDynamicResInflow() != 0 || (m_res_def.GetMoveScaler() == 1 && m_just_reset)) fillinResourceValues();
 
   if (m_res_def.IsPredatory()) updatePredatoryRes(ctx);
+  if (m_predator) UpdatePredatoryRes(ctx);
+  if (m_damage) UpdateDamagingRes(ctx);
 }
 
 void cDynamicRes::generatePeak(cAvidaContext& ctx)
@@ -156,12 +160,14 @@ void cDynamicRes::generatePeak(cAvidaContext& ctx)
   // for halo's we generate a random location on the orbit,
   else if (m_res_def.IsHalo()) {
     if (m_res_def.GetMoveScaler() > 1) {
-      m_halo_dir = (rng.GetUInt(0,2) == 1) ? -1 : 1;
+      m_halo_dir = (rng.GetUInt(0,2) == 0) ? -1 : 1;
+      setHaloDirection(ctx);
+      
       m_changling = (rng.GetUInt(0,2) == 1) ? -1 : 1;
     }
     const int chooseUpDown = rng.GetUInt(0,2);
     if (chooseUpDown == 0) {
-    int chooseEW = rng.GetUInt(0,2);
+      int chooseEW = rng.GetUInt(0,2);
       if (chooseEW == 0) {
         m_res_def.GetPeakX() = rng.GetUInt(max(0,m_res_def.GetHaloX() - m_res_def.GetHaloInnerRadius() - m_res_def.GetHaloWidth() + temp_height),
                               m_res_def.GetHaloX() - m_res_def.GetHaloInnerRadius() - temp_height + 1);
@@ -183,6 +189,7 @@ void cDynamicRes::generatePeak(cAvidaContext& ctx)
       }
       m_res_def.GetPeakX() = rng.GetUInt(max(0,m_res_def.GetHaloX() - m_res_def.GetHaloInnerRadius() - m_res_def.GetHaloWidth() + temp_height),
                             m_res_def.GetHaloX() + m_res_def.GetHaloInnerRadius() + m_res_def.GetHaloWidth() - temp_height + 1);
+
     }
   }
   assert(m_res_def.GetPeakX() >= 0 && m_res_def.GetPeakY() >= 0 && m_res_def.GetPeakX() < GetX() && m_res_def.GetPeakY() < GetY());
@@ -350,7 +357,7 @@ void cDynamicRes::getCurrentPlatValues()
         }
         plateau_cell ++;
       }
-    }        
+    }
   }
   m_ave_plat_cell_loss = amount_devoured / plateau_cell;
 } 
@@ -358,7 +365,7 @@ void cDynamicRes::getCurrentPlatValues()
 void cDynamicRes::moveRes(cAvidaContext& ctx)
 {
   // for halo peaks, find current orbit. Add 1 to distance to account for the anchor grid cell
-  int current_orbit = max(abs(m_res_def.GetHaloX() - m_res_def.GetPeakX()), abs(m_res_def.GetHaloY() - m_res_def.GetPeakY())) + 1;  
+  int current_orbit = max(abs(m_res_def.GetHaloX() - m_res_def.GetPeakX()), abs(m_res_def.GetHaloY() - m_res_def.GetPeakY())) + 1;
 
   // if we are working with moving resources and it's time to update direction
   if (m_move_counter == m_res_def.GetUpdateStep() && m_res_def.GetMoveScaler() > 1) {
@@ -397,8 +404,8 @@ int cDynamicRes::setHaloOrbit(cAvidaContext& ctx, int current_orbit)
   // if halo width > the height of the halo resource, the resource will be bounded inside the halo but the orbit can vary within those bounds
   // halo's are actually square in avida because, at a given orbit, this keeps a constant distance (in number of steps and org would have to take)
   //    between the anchor point and any orbit
-  
-  //choose to change orbit (0) or direction (1)    
+
+  //choose to change orbit (0) or direction (1)
   int random_shift = ctx.GetRandom().GetUInt(0,2);
   // if changing orbit, choose to go in or out one orbit
   // then figure out if we need change the x or the y to shift orbit (based on what quadrant we're in)
@@ -412,7 +419,6 @@ int cDynamicRes::setHaloOrbit(cAvidaContext& ctx, int current_orbit)
       int orbit_shift = 1;
       if (!ctx.GetRandom().GetUInt(0,2)) orbit_shift = -1;
       current_orbit += orbit_shift;
-      
       // we have to check that we are still going to be within the halo after an orbit change
       // if we go out of bounds, we need to go the other way instead, taking two steps back on current_orbit
       if (current_orbit > (m_res_def.GetHaloInnerRadius() + m_res_def.GetHaloWidth() - temp_height + 2) ||
@@ -424,6 +430,8 @@ int cDynamicRes::setHaloOrbit(cAvidaContext& ctx, int current_orbit)
         orbit_shift *= -1;
         current_orbit += 2 * orbit_shift;
       }
+      
+      if (current_orbit < 0) current_orbit = abs(current_orbit); // went passed anchor origin to the other side
 
       if (abs(m_res_def.GetHaloY() - m_res_def.GetPeakY()) > abs(m_res_def.GetHaloX() - m_res_def.GetPeakX())) m_res_def.GetPeakY() = m_old_peaky + orbit_shift;
       else m_res_def.GetPeakX() = m_old_peakx + orbit_shift;  
@@ -432,8 +440,23 @@ int cDynamicRes::setHaloOrbit(cAvidaContext& ctx, int current_orbit)
     else random_shift = 1;
   }
   // if changing direction of rotation, we just switch sign of rotation
-  if (random_shift == 1) m_halo_dir = m_halo_dir * -1;
+  if (random_shift == 1) setHaloDirection(ctx);
   return current_orbit;
+}
+
+inline void cDynamicRes::setHaloDirection(cAvidaContext& ctx)
+{
+  if (m_move_resistance > 0) {
+    // Move resistance adds a bias for remaining in place and makes directional adjustment random
+    switch (ctx.GetRandom().GetUInt(2 + m_move_resistance)) {
+      case 0: m_halo_dir = -1; break;
+      case 1: m_halo_dir = 1; break;
+      default: m_halo_dir = 0; break;
+    }
+  } else {
+    // No resitance (default) simply toggles direction at timeout
+    m_halo_dir *= -1;
+  }
 }
 
 void cDynamicRes::moveHaloPeak(int current_orbit)
@@ -448,62 +471,85 @@ void cDynamicRes::moveHaloPeak(int current_orbit)
   if (m_changling == 1) {
     // check to make sure the move will not put peak beyond the bounds (at corner) of the orbit
     // if it will go beyond the bounds of the orbit, turn the corner (e.g. if move = 5 & space to move on x =2, move 2 on x and 3 on y)
+    int max_orbit_x = m_halo_anchor_x + current_orbit - 1;
+    int min_orbit_x = m_halo_anchor_x - current_orbit + 1;
     int next_posx = m_res_def.GetPeakX() + (m_halo_dir * m_res_def.GetMoveSpeed());
-    int max_orbit_x = m_res_def.GetHaloX() + current_orbit - 1;
-    int min_orbit_x = m_res_def.GetHaloX() - current_orbit + 1;
     int current_x = m_res_def.GetPeakX();
     if (next_posx > max_orbit_x) {
+      // turning this corner means changing the sign of the movement once we switch from moving along x to moving along y
       m_res_def.GetPeakX() = max_orbit_x;
-      if (m_res_def.GetPeakY() > m_res_def.GetHaloY()) {      
-        // turning this corner means changing the sign of the movement once we switch from moving along x to moving along y
-        m_halo_dir *= -1;
-        m_res_def.GetPeakY() = m_res_def.GetPeakY() + m_halo_dir * (m_res_def.GetMoveSpeed() - abs(m_res_def.GetPeakX() - current_x)); 
-      } else {
-        m_res_def.GetPeakY() = m_res_def.GetPeakY() + m_halo_dir * (m_res_def.GetMoveSpeed() - abs(m_res_def.GetPeakX() - current_x));
-      }
+      if (m_res_def.GetPeakY() > m_halo_anchor_y) m_halo_dir *= -1;
+      m_res_def.GetPeakY() = m_res_def.GetPeakY() + m_halo_dir * (m_res_def.GetMoveSpeed() - abs(m_res_def.GetPeakX() - current_x));
       m_changling *= -1;
     }
-    else if (next_posx < min_orbit_x) { 
-      m_res_def.GetPeakX() = min_orbit_x;          
-      if (m_res_def.GetPeakY() > m_res_def.GetHaloY()) {
-        m_res_def.GetPeakY() = m_res_def.GetPeakY() + m_halo_dir * (m_res_def.GetMoveSpeed() - abs(m_res_def.GetPeakX() - current_x));
-      } else {
-        m_halo_dir *= -1;
-        m_res_def.GetPeakY() = m_res_def.GetPeakY() + m_halo_dir * (m_res_def.GetMoveSpeed() - abs(m_res_def.GetPeakX() - current_x));
-      }
-      m_changling *= -1;          
+    else if (next_posx < min_orbit_x) {
+      m_res_def.GetPeakX() = min_orbit_x;
+      if (!(m_res_def.GetPeakY() > m_halo_anchor_y)) m_halo_dir *= -1;
+      m_res_def.GetPeakY() = m_res_def.GetPeakY() + m_halo_dir * (m_res_def.GetMoveSpeed() - abs(m_res_def.GetPeakX() - current_x));
+      m_changling *= -1;
     }
-    else m_res_def.GetPeakX() = m_res_def.GetPeakX() + (m_halo_dir * m_res_def.GetMoveSpeed());   
-  } 
+    else m_res_def.GetPeakX() = m_res_def.GetPeakX() + (m_halo_dir * m_res_def.GetMoveSpeed());
+  }
   else {
+    int max_orbit_y = m_halo_anchor_y + current_orbit - 1;
+    int min_orbit_y = m_halo_anchor_y - current_orbit + 1;
     int next_posy = m_res_def.GetPeakY() + (m_halo_dir * m_res_def.GetMoveSpeed());
-    int max_orbit_y = m_res_def.GetHaloY() + current_orbit - 1;
-    int min_orbit_y = m_res_def.GetHaloY() - current_orbit + 1;
     int current_y = m_res_def.GetPeakY();
-    
     if (next_posy > max_orbit_y) {
       m_res_def.GetPeakY() = max_orbit_y;
-      if (m_res_def.GetPeakX() < m_res_def.GetHaloX()) {
-        m_res_def.GetPeakX() = m_res_def.GetPeakX() + m_halo_dir * (m_res_def.GetMoveSpeed() - abs(m_res_def.GetPeakY() - current_y));
-      } else {
-        m_halo_dir *= -1;
-        m_res_def.GetPeakX() = m_res_def.GetPeakX() + m_halo_dir * (m_res_def.GetMoveSpeed() - abs(m_res_def.GetPeakY() - current_y));
-      }
-      m_changling *= -1;      
-    } else if (next_posy < min_orbit_y) { 
-      m_res_def.GetPeakY() = min_orbit_y;          
-      if (m_res_def.GetPeakX() < m_res_def.GetHaloX()) { 
-        m_halo_dir *= -1;
-        m_res_def.GetPeakX() = m_res_def.GetPeakX() + m_halo_dir * (m_res_def.GetMoveSpeed() - abs(m_res_def.GetPeakY() - current_y));
-      } else {
-        m_res_def.GetPeakX() = m_res_def.GetPeakX() + m_halo_dir * (m_res_def.GetMoveSpeed() - abs(m_res_def.GetPeakY() - current_y));
-      }
+      if (!(m_res_def.GetPeakX() < m_halo_anchor_x)) m_halo_dir *= -1;
+      m_res_def.GetPeakX() = m_res_def.GetPeakX() + m_halo_dir * (m_res_def.GetMoveSpeed() - abs(m_res_def.GetPeakY() - current_y));
       m_changling *= -1;
-    } else {
+    }
+    else if (next_posy < min_orbit_y) {
+      m_res_def.GetPeakY() = min_orbit_y;
+      if (m_res_def.GetPeakX() < m_halo_anchor_x) m_halo_dir *= -1;
+      m_res_def.GetPeakX() = m_res_def.GetPeakX() + m_halo_dir * (m_res_def.GetMoveSpeed() - abs(m_res_def.GetPeakY() - current_y));
+      m_changling *= -1;
+    }
+    else {
       m_res_def.GetPeakY() = m_res_def.GetPeakY() + (m_halo_dir * m_res_def.GetMoveSpeed());
     }
   }
+  confirmHaloPeak();
+}
+
+void cGradientCount::confirmHaloPeak()
+{
+  // this function corrects for situations where a change in orbit and direction and changling at the same time caused the halo to jump out of it's orbital bounds
+  if (m_changling == 1) {
+    int l_y_min = m_halo_anchor_y - m_halo_inner_radius - m_halo_width + m_height + 1;
+    int l_y_max = m_halo_anchor_y - m_halo_inner_radius - m_height - 1;
+    int r_y_min = m_halo_anchor_y + m_halo_inner_radius + m_height + 1;
+    int r_y_max = m_halo_anchor_y + m_halo_inner_radius + m_halo_width - m_height - 1;
+    // top
+    if (m_res_def.GetPeakY() < m_halo_anchor_y) {
+      if (m_res_def.GetPeakY() < l_y_min) m_res_def.GetPeakY() = l_y_min;
+      else if (m_res_def.GetPeakY() > l_y_max) m_res_def.GetPeakY() = l_y_max;
+    } // bottom
+    else if (m_res_def.GetPeakY() > m_halo_anchor_y) {
+      if (m_res_def.GetPeakY() < r_y_min) m_res_def.GetPeakY() = r_y_min;
+      else if (m_res_def.GetPeakY() > r_y_max) m_res_def.GetPeakY() = r_y_max;
+    }
+  }
+  else {
+    int l_x_min = m_halo_anchor_x - m_halo_inner_radius - m_halo_width + m_height + 1;
+    int l_x_max = m_halo_anchor_x - m_halo_inner_radius - m_height - 1;
+    int r_x_min = m_halo_anchor_x + m_halo_inner_radius + m_height + 1;
+    int r_x_max = m_halo_anchor_x + m_halo_inner_radius + m_halo_width - m_height - 1;
+    // left
+    if (m_res_def.GetPeakX() < m_halo_anchor_x) {
+      if (m_res_def.GetPeakX() < l_x_min) m_res_def.GetPeakX() = l_x_min;
+      else if (m_res_def.GetPeakX() > l_x_max) m_res_def.GetPeakX() = l_x_max;
+    } // right
+    else if (m_res_def.GetPeakX() > m_halo_anchor_x) {
+      if (m_res_def.GetPeakX() < r_x_min) m_res_def.GetPeakX() = r_x_min;
+      else if (m_res_def.GetPeakX() > r_x_max) m_res_def.GetPeakX() = r_x_max;
+    }
+  }
   assert(m_res_def.GetPeakX() >= 0 && m_res_def.GetPeakY() >= 0 && m_res_def.GetPeakX() < GetX() && m_res_def.GetPeakY() < GetY());
+  assert(max(abs(m_halo_anchor_x - m_res_def.GetPeakX()), abs(m_halo_anchor_y - m_res_def.GetPeakY())) > m_halo_inner_radius);
+  assert(max(abs(m_halo_anchor_x - m_res_def.GetPeakX()), abs(m_halo_anchor_y - m_peaky)) < m_halo_inner_radius + m_halo_width);
 }
 
 void cDynamicRes::movePeak()
@@ -524,7 +570,7 @@ void cDynamicRes::movePeak()
   
   m_res_def.GetPeakX() = (int) (m_res_def.GetPeakX() + (m_movesignx * m_move_y_scaler) + .5);
   m_res_def.GetPeakY() = (int) (m_res_def.GetPeakY() + (m_movesigny * m_move_y_scaler) + .5);
-}  
+}
 
 void cDynamicRes::generateBarrier(cAvidaContext& ctx)
 // If habitat == 2 we are creating barriers to movement (walls), not really gradient resources
@@ -821,20 +867,20 @@ void cDynamicRes::SetPlatVarInflow(double mean, double variance, int type)
     m_var_plat_inflow = variance;
     double the_inflow = 0;
     if (type == 0) {
-      the_inflow = abs(m_world->GetRandom().GetRandNormal(mean, variance));
+      the_inflow = abs(ctx.GetRandom().GetRandNormal(mean, variance));
       GetResDef()->SetPlateauInflow(the_inflow);
     }
     else if (type < 0) { 
-      the_inflow = abs(m_world->GetRandom().GetRandNormal(0, variance));
+      the_inflow = abs(ctx.GetRandom().GetRandNormal(0, variance));
       if (mean - the_inflow < 0) the_inflow = mean;
       GetResDef()->SetPlateauInflow(mean - the_inflow);
     }
     else if (type == 1) {
-      the_inflow = abs(m_world->GetRandom().GetRandNormal(0, variance));
+      the_inflow = abs(ctx.GetRandom().GetRandNormal(0, variance));
       GetResDef()->SetPlateauInflow(mean + the_inflow);
     }
     else if (type == 2) {
-      the_inflow = m_world->GetRandom().GetRandNormal(0, variance);
+      the_inflow = ctx.GetRandom().GetRandNormal(0, variance);
       if (mean + the_inflow < 0) the_inflow = mean;
       GetResDef()->SetPlateauInflow(mean + the_inflow);
     }
@@ -852,6 +898,35 @@ void cDynamicRes::updatePredatoryRes(cAvidaContext& ctx)
       }
     }
   }
+}
+
+void cDynamicRes::SetPredatoryResource(double odds, int juvsper)
+{
+  m_predator = true;
+  m_pred_odds = odds;
+  m_guarded_juvs_per_adult = juvsper;
+}
+
+void cDynamicRes::UpdateDamagingRes(cAvidaContext& ctx)
+{
+  // we don't call this for walls and hills because they never move
+  if (m_damage) {
+    for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
+      if (Element(m_plateau_cell_IDs[i]).GetAmount() >= m_threshold) {
+        m_world->GetPopulation().ExecuteDamagingResource(ctx, m_plateau_cell_IDs[i], m_damage);
+      }
+    }
+  }
+}
+
+void cDynamicRes::SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells)
+{
+  m_probabilistic = true;
+  m_initial_plat = initial;
+  m_plateau_inflow = inflow;
+  m_plateau_outflow = outflow;
+  
+  BuildProbabilisticRes(ctx, lambda, theta, x , y, num_cells);
 }
 
 void cDynamicRes::BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells)
@@ -904,7 +979,7 @@ void cDynamicRes::BuildProbabilisticRes(cAvidaContext& ctx, double lambda, doubl
       if (!loop_once) max_unused_idx = max_idx;
     }
     
-    int cell_idx = m_world->GetRandom().GetUInt(max_unused_idx + 1);
+    int cell_idx = ctx.GetRandom().GetUInt(max_unused_idx + 1);
     int cell_id = cell_id_array[cell_idx];
     int this_x = cell_id % worldx;
     int this_y = cell_id / worldx;  

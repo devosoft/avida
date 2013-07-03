@@ -68,9 +68,8 @@ void Avida::Viewer::ClassificationInfo::Update()
   int count = 0;
   while (count < num_colors && it->Next()) {
     const int cur_color = MapColorOf(it->Get())->color;
-    const int cur_id = it->Get()->ID();
     if (cur_color >= 0) {
-      assert(m_color_chart_id[cur_color] == cur_id);     // If it has a color, the color should point back to it.
+      assert(m_color_chart_id[cur_color] == it->Get()->ID());     // If it has a color, the color should point back to it.
       assert(m_color_chart_ptr[cur_color] == it->Get());  // ...and so should the pointer.
       free_color[cur_color] = false;
     }

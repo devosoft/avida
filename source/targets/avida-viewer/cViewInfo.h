@@ -59,6 +59,7 @@ class sGenotypeViewInfo : public Systematics::GroupData
 public:
   char symbol;
   
+  static const Apto::String ObjectKey;
   bool Serialize(ArchivePtr ar) const;
   
   sGenotypeViewInfo() : symbol(0) { ; }

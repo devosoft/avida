@@ -48,8 +48,10 @@ class cOrgSensor
   sOrgDisplay m_last_seen_display;
   bool m_has_seen_display;
 
+  const cResourceLib& m_res_lib;
+  
   void ResetOrgSensor();
-
+  
   public:
   cOrgSensor(cWorld* world, cOrganism* in_organism);
   
@@ -57,13 +59,30 @@ class cOrgSensor
   struct sSearchInfo {
     double amountFound;
     int resource_id;
-    bool has_edible;
+    bool has_edible:1;
+    bool has_some:1;
+    
+    inline sSearchInfo() : amountFound(0.0), resource_id(-9), has_edible(false), has_some(false) { ; }
   };
   struct sLookInit {
     int habitat;
     int distance;
     int search_type;
     int id_sought;
+    
+    inline sLookInit()
+      : habitat(std::numeric_limits<int>::min()), distance(std::numeric_limits<int>::max())
+      , search_type(0), id_sought(-1)
+    {
+    }
+    
+    inline void Clear()
+    {
+      habitat = std::numeric_limits<int>::min();
+      distance = std::numeric_limits<int>::max();
+      search_type = 0;
+      id_sought = -1;
+    }
   };
   struct sLookOut {
     int report_type;
@@ -75,6 +94,13 @@ class cOrgSensor
     int value;
     int group;
     int forage;
+    int deviance;
+    
+    inline sLookOut()
+      : report_type(0), habitat(0), distance(-1), search_type(0), id_sought(-1), count(0), value(0)
+      , group(-9), forage(-9), deviance(0)
+    {
+    }
   }; 
   struct sBounds {
     int min_x;
@@ -86,7 +112,7 @@ class cOrgSensor
   
   void Reset() { ResetOrgSensor(); }
   const sLookOut SetLooking(cAvidaContext& ctx, sLookInit& in_defs, int facing, int cell_id, bool use_ft);
-  sSearchInfo TestCell(cAvidaContext& ctx, const cResourceDefLib& resource_lib, const int habitat_used, const int search_type, 
+  sSearchInfo TestCell(cAvidaContext& ctx, const cResourceDefLib& resource_lib, const int habitat_used, const int search_type,
                       const Apto::Coord<int>& target_cell_coords, const Apto::Array<int, Apto::Smart>& val_res, bool first_step,
                       bool stop_at_first_found);
   sLookOut WalkCells(cAvidaContext& ctx, const cResourceDefLib& resource_lib, const int habitat_used, const int search_type,

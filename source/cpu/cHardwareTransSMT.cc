@@ -262,7 +262,7 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (m_tracer) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
-    const Instruction& cur_inst = IP().GetInst();
+    const Instruction cur_inst = IP().GetInst();
 		
     // Test if costs have been paid and it is okay to execute this now...
     bool exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
@@ -287,8 +287,7 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
   
   // Kill creatures who have reached their max num of instructions executed
   const int max_executed = m_organism->GetMaxExecuted();
-  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
-      || phenotype.GetToDie()) {
+  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed) || phenotype.GetToDie()) {
     m_organism->Die(ctx);
   }
   
@@ -305,11 +304,6 @@ bool cHardwareTransSMT::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Inst
   // Copy Instruction locally to handle stochastic effects
   Instruction actual_inst = cur_inst;
   
-#ifdef EXECUTION_ERRORS
-  // If there is an execution error, execute a random instruction.
-  if (m_organism->TestExeErr()) actual_inst = m_inst_set->GetRandomInst(ctx);
-#endif /* EXECUTION_ERRORS */
-	
   // Get a pointer to the corrisponding method...
   int inst_idx = m_inst_set->GetLibFunctionIndex(actual_inst);
   
@@ -1162,7 +1156,9 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   
   // Make sure this divide will produce a viable offspring.
   m_cur_child = mem_space_used; // save current child memory space for use by dependent functions (e.g. calcCopiedSize())
-  if (!Divide_CheckViable(ctx, m_mem_array[0].GetSize(), write_head_pos)) return false;
+  
+  //Genome size gets a + 1 to handle heads, so we have to adjust size when it's sent to CheckViable
+  if (!Divide_CheckViable(ctx, m_mem_array[0].GetSize() - 1, write_head_pos)) return false;
   
   // Since the divide will now succeed, set up the information to be sent to the new organism
   m_mem_array[mem_space_used].Resize(write_head_pos);
@@ -1676,7 +1672,7 @@ bool cHardwareTransSMT::Inst_Apoptosis(cAvidaContext& ctx)
 
 
 //43
-bool cHardwareTransSMT::Inst_RotateLeft(cAvidaContext&)
+bool cHardwareTransSMT::Inst_RotateLeft(cAvidaContext& ctx)
 {
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   
@@ -1684,13 +1680,13 @@ bool cHardwareTransSMT::Inst_RotateLeft(cAvidaContext&)
   if (num_neighbors == 0) return false;
   
   // Always rotate at least once.
-  m_organism->Rotate(1);
+  m_organism->Rotate(ctx, 1);
   
   return true;
 }
 
 //44
-bool cHardwareTransSMT::Inst_RotateRight(cAvidaContext&)
+bool cHardwareTransSMT::Inst_RotateRight(cAvidaContext& ctx)
 {
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   
@@ -1698,7 +1694,7 @@ bool cHardwareTransSMT::Inst_RotateRight(cAvidaContext&)
   if (num_neighbors == 0) return false;
   
   // Always rotate at least once.
-  m_organism->Rotate(-1);
+  m_organism->Rotate(ctx, -1);
   
   return true;
 }

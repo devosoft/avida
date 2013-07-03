@@ -55,6 +55,7 @@ m_use_specific_inputs(false), m_specific_inputs(), m_mask(0)
 {
   mut_rates.Setup(world);
   if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) possible_group_ids.insert(m_world->GetConfig().DEFAULT_GROUP.Get());
+  pp_fts.Resize(0);
 }
 
 cEnvironment::~cEnvironment()
@@ -135,8 +136,6 @@ bool cEnvironment::AssertInputValid(void* input, const cString& name, const cStr
   }
   return true;
 }
-
-
 
 bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedback& feedback)
 {
@@ -717,6 +716,10 @@ bool cEnvironment::LoadDynamicResource(cString desc, Feedback& feedback)
         if (!AssertInputInt(var_value, "move_speed", var_type, feedback)) return false;
         new_resource->SetMoveSpeed( var_value.AsInt() );
       }
+      else if (var_name == "move_resistance") {
+        if (!AssertInputInt(var_value, "move_resistance", var_type, feedback)) return false;
+        new_resource->SetMoveResistance( var_value.AsInt() );
+      }
       else if (var_name == "halo_width") {
         if (!AssertInputInt(var_value, "halo_width", var_type, feedback)) return false;
         new_resource->SetHaloWidth( var_value.AsInt() );
@@ -778,6 +781,10 @@ bool cEnvironment::LoadDynamicResource(cString desc, Feedback& feedback)
         if (!AssertInputDouble(var_value, "resistance", var_type, feedback)) return false;
         new_resource->SetResistance( var_value.AsDouble() );
       }
+      else if (var_name == "damage") {
+        if (!AssertInputDouble(var_value, "damage", var_type, feedback)) return false;
+        new_resource->SetDamage( var_value.AsDouble() );
+      } 
       else if (var_name == "threshold") {
         if (!AssertInputDouble(var_value, "threshold", var_type, feedback)) return false;
         new_resource->SetThreshold( var_value.AsDouble() );
@@ -1555,7 +1562,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       if (cellid != -1) { // can't do this in the test cpu
         cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
         if (cell.CountGenomeFragments() > 0) {
-          InstructionSequence fragment = cell.PopGenomeFragment();
+          InstructionSequence fragment = cell.PopGenomeFragment(ctx);
           consumed = local_task_quality * fragment.GetSize();
           result.Consume(in_resource->GetID(), fragment.GetSize(), true);
           m_world->GetStats().GenomeFragmentMetabolized(taskctx.GetOrganism(), fragment);
@@ -1851,6 +1858,13 @@ bool cEnvironment::SetResourceOutflow(const cString& name, double _outflow )
   return true;
 }
 
+bool cEnvironment::ChangeResource(cReaction* reaction, const cString& res, int process_num)
+{
+  cReactionProcess* process = reaction->GetProcess(process_num);
+  process->SetResource(m_world->GetEnvironment().GetResourceLib().GetResource(res));
+  return true;
+}
+
 /*
  helper function that checks if this is a valid group id. The ids are specified
  in the environment file as tasks.
@@ -1885,4 +1899,63 @@ bool cEnvironment::IsHabitat(int test_habitat)
     val = true;
   }
   return val;
+}
+
+void cEnvironment::SetAttackPreyFTList()
+{
+  bool has_pred = false;
+  int offset = 1;
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    has_pred = true;
+    offset = 3;
+  }
+  
+  // ft's may not be sequentially numbered
+  bool dec_prey = false;
+  bool dec_pred = false;
+  bool dec_tpred = false;
+  int num_targets = 0;
+  std::set<int> fts_avail = GetTargetIDs();
+  set <int>::iterator itr;
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) {
+    num_targets++;
+    if (*itr == -1 && !dec_prey) {
+      offset--;
+      dec_prey = true;
+    }
+    if (*itr == -2 && !dec_pred) {
+      offset--;
+      dec_pred = true;
+    }
+    if (*itr == -3 && !dec_tpred) {
+      offset--;
+      dec_tpred = true;
+    }
+  }
+  
+  Apto::Array<int> raw_target_list;
+  raw_target_list.Resize(num_targets);
+  raw_target_list.SetAll(0);
+  int this_index = 0;
+  for (itr = fts_avail.begin(); itr!=fts_avail.end(); itr++) {
+    raw_target_list[this_index] = *itr;
+    this_index++;
+  }
+  
+  Apto::Array<int> target_list;
+  int tot_targets = num_targets + offset;
+  target_list.Resize(tot_targets);
+  target_list.SetAll(0);
+  
+  target_list[0] = -1;
+  if (has_pred) {
+    target_list[0] = -3;
+    target_list[1] = -2;
+    target_list[2] = -1;
+  }
+  
+  for (int i = 0; i < raw_target_list.GetSize(); i++) {
+    if (raw_target_list[i] >= 0) target_list[i + offset] = raw_target_list[i];
+  }
+  pp_fts = target_list;
 }

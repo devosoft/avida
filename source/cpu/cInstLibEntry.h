@@ -31,6 +31,7 @@ namespace nInstFlag {
   const unsigned int SLEEP = 0x10;
   const unsigned int PROMOTER = 0x20;
   const unsigned int TERMINATOR = 0x40;
+  const unsigned int IMMEDIATE_VALUE = 0x80;
 }
 
 enum InstructionClass {
@@ -84,6 +85,7 @@ public:
   inline bool IsTerminator() const { return (m_flags & nInstFlag::TERMINATOR) != 0; }
   inline bool ShouldStall() const { return (m_flags & nInstFlag::STALL) != 0; }
   inline bool ShouldSleep() const { return (m_flags & nInstFlag::SLEEP) != 0; }
+  inline bool IsImmediateValue() const { return (m_flags & nInstFlag::IMMEDIATE_VALUE) != 0; }
 };
 
 #endif

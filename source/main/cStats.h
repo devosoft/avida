@@ -169,6 +169,7 @@ private:
 
   // --------  Population Stats  ---------
   int num_births;
+  int cumulative_births;
   int num_deaths;
   int num_breed_in;
   int num_breed_true;
@@ -200,6 +201,7 @@ private:
   // ------- Division of Labor Stats ---------
   //TODO: Right place for this?
   int juv_killed;
+  int num_guard_fail;
 
 
   // --------  Organism Task Stats  ---------
@@ -337,12 +339,15 @@ private:
   Apto::Array<int> topreactioncycles;
   Apto::Array<int> topreactionexecs;
   int topreac;
-  int topcycle;   
+  int topcycle;
   int topid;
   int topgenid;
   int toptarget;
   int topgroup;
   int topbirthud;
+  int topstart;
+  int toprepro;
+  bool firstnavtrace;
   Genome topgenome;
     
 public:
@@ -608,6 +613,7 @@ public:
   // Information retrieval section...
 
   int GetNumBirths() const          { return num_births; }
+  int GetCumulativeBirths() const   { return cumulative_births; }
   int GetNumDeaths() const          { return num_deaths; }
   int GetBreedIn() const            { return num_breed_in; }
   int GetBreedTrue() const          { return num_breed_true; }
@@ -729,11 +735,19 @@ public:
   void PrintPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
   void PrintTopPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
   void PrintGroupAttackData(const cString& filename, const cString& inst_set);
+  void PrintGroupAttackBits(unsigned char raw_bits);
+  void PrintGroupAttackString(cString& raw_bits);
+  void PrintKilledPreyFTData(const cString& filename);
+  void PrintBirthLocData(int org_idx);
+  void PrintLookData(cString& string);
+  void PrintLookDataOutput(cString& string);
+  void PrintLookEXDataOutput(cString& string);
 
   void PrintCountData(const cString& filename);
   void PrintThreadsData(const cString& filename);
   void PrintTotalsData(const cString& filename);
   void PrintTasksData(const cString& filename);
+  void PrintSoloTaskSnapshot(const cString& filename, cAvidaContext& ctx);
   void PrintHostTasksData(const cString& filename);
   void PrintParasiteTasksData(const cString& filename);
   void PrintTasksExeData(const cString& filename);
@@ -765,6 +779,7 @@ public:
   void PrintGroupsFormedData(const cString& filename);
   void PrintGroupIds(const cString& filename);
   void PrintTargets(const cString& filename);
+  void PrintMimicDisplays(const cString& filename);
   void PrintTopPredTargets(const cString& filename);
   void PrintGroupTolerance(const cString& filename); 
   void PrintGroupMTTolerance(const cString& filename); 
@@ -782,24 +797,24 @@ public:
   void PrintMiniTraceReactions(cOrganism* org);
   void PrintMicroTraces(Apto::Array<char, Apto::Smart>& exec_trace, int birth_update, int org_id, int ft, int gen_id);
   void UpdateTopNavTrace(cOrganism* org, bool force_update = false);
-  void PrintTopNavTrace();
+  void SetNavTrace(bool use_first) { firstnavtrace = use_first; }
+  void PrintTopNavTrace(bool flush = false);
   void PrintReproData(cOrganism* org);
     
  // Kaboom stats
   void IncKaboom() { num_kabooms++; }
-    void IncKaboomKills() {num_kaboom_kills++;}
+  void IncKaboomKills() {num_kaboom_kills++;}
   void AddHamDistance(int distance) { hd_list.Push(distance); }
   void PrintKaboom(const cString& filename);
     
  // Division of Labor Stats
-    void IncJuvKilled() { juv_killed++; }
-
+  void IncJuvKilled() { juv_killed++; }
+  void IncGuardFail() {num_guard_fail++;}
   
   // ----------- Sexual selection output -----------
 public:
   void PrintSuccessfulMates(cString& filename);
   // ----------- End sexual selection output -----------
-
 
   // -------- Tolerance support --------
 public:

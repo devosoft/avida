@@ -586,6 +586,35 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
         }
       }
     }
+    if (m_world->GetConfig().SET_FT_AT_BIRTH.Get()) {
+      int prop_target = 2;
+      if (ctx.GetRandom().P(0.5)) {
+        prop_target = 0;
+        if (ctx.GetRandom().P(0.5)) prop_target = 1;
+      }
+      if (m_world->GetConfig().MAX_PREY_BT.Get()) {
+        int in_use = 0;
+        Apto::Array<cOrganism*> orgs;
+        const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_world->GetPopulation().GetLiveOrgList();
+        for (int i = 0; i < live_orgs.GetSize(); i++) {
+          cOrganism* org = live_orgs[i];
+          int this_target = org->GetForageTarget();
+          if (this_target == prop_target) {
+            in_use++;
+            orgs.Push(org);
+          }
+        }
+        if (in_use >= m_world->GetConfig().MAX_PREY_BT.Get()) {
+          cOrganism* org = orgs[ctx.GetRandom().GetUInt(0, in_use)];
+          if (org == parent_organism) {
+            parent_alive = false;
+          }
+          org->Die(ctx);
+        }
+      }
+      offspring_array[i]->SetForageTarget(ctx, prop_target);
+      offspring_array[i]->RecordFTSet();
+    }
     // if parent org has executed teach_offspring intruction, allow the offspring to learn parent's foraging/targeting behavior
     if (parent_organism->IsTeacher()) offspring_array[i]->SetParentTeacher(true);
     offspring_array[i]->SetParentFT(parent_organism->GetForageTarget());
@@ -658,15 +687,16 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       bool org_survived = ActivateOrganism(ctx, offspring_array[i], GetCell(target_cells[i]));
       // only assign an avatar cell if the org lived through birth and it isn't the parent
       if (m_world->GetConfig().USE_AVATARS.Get() && org_survived) {
-        int avatar_target_cell = PlaceAvatar(parent_organism);
+        int avatar_target_cell = PlaceAvatar(ctx, parent_organism);
         if (avatar_target_cell != -1) {
           offspring_array[i]->GetPhenotype().SetAVBirthCellID(avatar_target_cell);
+          offspring_array[i]->GetOrgInterface().TryWriteBirthLocData(offspring_array[i]->GetOrgIndex());
           if (offspring_array[i] != parent_organism) {
-            offspring_array[i]->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
+            offspring_array[i]->GetOrgInterface().AddPredPreyAV(ctx, avatar_target_cell);
           }
           if (m_world->GetConfig().AVATAR_BIRTH_FACING.Get() == 1) {
-            const int rots = m_world->GetRandom().GetUInt(0,8);
-            for (int j = 0; j < rots; j++) offspring_array[i]->Rotate(rots);
+            const int rots = ctx.GetRandom().GetUInt(0,8);
+            for (int j = 0; j < rots; j++) offspring_array[i]->Rotate(ctx, rots);
           }
         }
         else KillOrganism(GetCell(target_cells[i]), ctx);
@@ -999,8 +1029,8 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   num_organisms++;
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     // ft should be nearly always -1 so long as it is not being inherited
-    if (in_organism->GetForageTarget() > -2) num_prey_organisms++;
-    else if (in_organism->GetForageTarget() < -2) num_top_pred_organisms++;
+    if (in_organism->IsPreyFT()) num_prey_organisms++;
+    else if (in_organism->IsTopPredFT()) num_top_pred_organisms++;
     else num_pred_organisms++;
   }
   
@@ -1050,12 +1080,12 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
           if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
             op = (int) abs(ctx.GetRandom().GetDouble());
             in_organism->SetOpinion(op);
-            JoinGroup(in_organism, op);                    
+            JoinGroup(in_organism, op);
           }
           else if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) {
             op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResDefLib().GetSize() + 1);
             in_organism->SetOpinion(op);
-            JoinGroup(in_organism, op);          
+            JoinGroup(in_organism, op);
           }
         }
       }
@@ -1063,6 +1093,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     }
     
     in_organism->GetPhenotype().SetBirthCellID(target_cell.GetID());
+//    in_organism->GetOrgInterface().TryWriteBirthLocData(in_organism->GetOrgIndex());
     in_organism->GetPhenotype().SetBirthGroupID(op);
     in_organism->GetPhenotype().SetBirthForagerType(in_organism->GetForageTarget());
     Systematics::GenotypePtr genotype;
@@ -1074,7 +1105,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     else genotype->SetLastGroupID(in_organism->GetParentGroup());
     genotype->SetLastForagerType(in_organism->GetParentFT());      
   }
-  
+
   bool org_survived = true;
   // For tolerance_window, we cheated by dumping doomed offspring into cell (X * Y) - 1 ...now that we updated the stats, we need to 
   // kill that org. @JJB
@@ -1234,7 +1265,10 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomTraceQ(int max_samples)
   used_orgs.SetAll(false);
   
   while (bg_id_list.GetSize() < max_bgs) {
-    int this_rand_sample = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
+    Apto::RNG::AvidaRNG rng(0);
+    cAvidaContext ctx2(&m_world->GetDriver(), rng);
+    int this_rand_sample = ctx2.GetRandom().GetInt(0, live_orgs.GetSize());
+
     if (!used_orgs[this_rand_sample]) {
       cOrganism* rand_org = live_orgs[this_rand_sample];
       bg_id_list.Push(rand_org->SystematicsGroup("genotype")->ID());
@@ -1259,10 +1293,13 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomPreyTraceQ(int max_samples)
   used_orgs.SetAll(false);
   
   while (bg_id_list.GetSize() < max_bgs) {
-    int this_rand_sample = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
+    Apto::RNG::AvidaRNG rng(0);
+    cAvidaContext ctx2(&m_world->GetDriver(), rng);
+    int this_rand_sample = ctx2.GetRandom().GetInt(0, live_orgs.GetSize());
+
     if (!used_orgs[this_rand_sample]) {
       cOrganism* rand_org = live_orgs[this_rand_sample];
-      if (rand_org->GetForageTarget() > -2) {
+      if (rand_org->IsPreyFT()) {
         bg_id_list.Push(rand_org->SystematicsGroup("genotype")->ID());
         used_orgs[this_rand_sample] = true;
       }
@@ -1286,10 +1323,13 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomPredTraceQ(int max_samples)
   used_orgs.SetAll(false);
   
   while (bg_id_list.GetSize() < max_bgs) {
-    int this_rand_sample = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
+    Apto::RNG::AvidaRNG rng(0);
+    cAvidaContext ctx2(&m_world->GetDriver(), rng);
+    int this_rand_sample = ctx2.GetRandom().GetInt(0, live_orgs.GetSize());
+
     if (!used_orgs[this_rand_sample]) {
       cOrganism* rand_org = live_orgs[this_rand_sample];
-      if (rand_org->GetForageTarget() <= -2) {
+      if (!rand_org->IsPreyFT()) {
         bg_id_list.Push(rand_org->SystematicsGroup("genotype")->ID());
         used_orgs[this_rand_sample] = true;
       }
@@ -1576,7 +1616,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   // get the resource library
   const cResourceDefLib& resource_lib = environment.GetResDefLib();
   
-  // test for death by predatory resource
+  // test for death by predatory resource or injury
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     if (resource_lib.GetResDef(i)->IsPredatory()) {
       // get the destination cell resource levels
@@ -1590,8 +1630,13 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
         }
       }
     }
+    if (resource_lib.GetResource(i)->GetDamage()) {
+      double dest_cell_resources = GetCellResVal(ctx, dest_cell_id, i);
+      if (dest_cell_resources > resource_lib.GetResource(i)->GetThreshold()) {
+        InjureOrg(GetCell(true_cell), resource_lib.GetResource(i)->GetDamage());
+      }
+    }
   }
-  
   // movement fails if there are any barrier resources in the faced cell (unless the org is already on a barrier,
   // which would happen if we built a new barrier under an org and we need to let it get off)
   bool curr_is_barrier = false;
@@ -1751,14 +1796,14 @@ void cPopulation::KillRandPred(cAvidaContext& ctx, cOrganism* org)
   int list_size = TriedIdx.GetSize();
   for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
   
-  int idx = m_world->GetRandom().GetUInt(list_size);
+  int idx = ctx.GetRandom().GetUInt(list_size);
   while (org_to_kill == org) {
     cOrganism* org_at = TriedIdx[idx];
     // exclude prey
-    if (org_at->GetParentFT() <= -2 || org_at->GetForageTarget() <= -2) org_to_kill = org_at;
+    if (org_at->GetParentFT() <= -2 || !org_at->IsPreyFT()) org_to_kill = org_at;
     else TriedIdx.Swap(idx, --list_size);
     if (list_size == 1) break;
-    idx = m_world->GetRandom().GetUInt(list_size);
+    idx = ctx.GetRandom().GetUInt(list_size);
   }
   if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
 }
@@ -1771,14 +1816,14 @@ void cPopulation::KillRandPrey(cAvidaContext& ctx, cOrganism* org)
   int list_size = TriedIdx.GetSize();
   for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
   
-  int idx = m_world->GetRandom().GetUInt(list_size);
+  int idx = ctx.GetRandom().GetUInt(list_size);
   while (org_to_kill == org) {
     cOrganism* org_at = TriedIdx[idx];
     // exclude predators and juvenilles with predatory parents (include juvs with non-predatory parents)
     if (org_at->GetForageTarget() > -1 || (org_at->GetForageTarget() == -1 && org_at->GetParentFT() > -2)) org_to_kill = org_at;
     else TriedIdx.Swap(idx, --list_size);
     if (list_size == 1) break;
-    idx = m_world->GetRandom().GetUInt(list_size);
+    idx = ctx.GetRandom().GetUInt(list_size);
   }
   if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
 }
@@ -1831,6 +1876,30 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   
   // Alert the scheduler that this cell has a 0 merit.
   AdjustSchedule(in_cell, cMerit(0));
+}
+
+void cPopulation::InjureOrg(cPopulationCell& in_cell, double injury)
+{
+  if (injury == 0) return;
+  cOrganism* target = in_cell.GetOrganism();
+  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+    double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+    target_merit -= target_merit * injury;
+    target->UpdateMerit(target_merit);
+  }
+  Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
+  for (int i = 0; i < target_reactions.GetSize(); i++) {
+    target->GetPhenotype().SetReactionCount(i, target_reactions[i] - (int)((target_reactions[i] * injury)));
+  }
+  const double target_bonus = target->GetPhenotype().GetCurBonus();
+  target->GetPhenotype().SetCurBonus(target_bonus - (target_bonus * injury));
+  
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+    Apto::Array<double> target_bins = target->GetRBins();
+    for (int i = 0; i < target_bins.GetSize(); i++) {
+      target->AddToRBin(i, -1 * (target_bins[i] * injury));
+    }
+  }
 }
 
 void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance) 
@@ -2020,6 +2089,7 @@ void cPopulation::PrintDonationStats()
  
  Defaulting is established in Inject or ActivateOffspring methods of this class.
  
+
  @MRR May 2007
  **/
 void cPopulation::CCladeSetupOrganism(cOrganism*)
@@ -2050,10 +2120,9 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   int pop_cap = m_world->GetConfig().POPULATION_CAP.Get();
   if (pop_cap > 0 && num_organisms >= pop_cap) {
     int num_kills = 1;
-//    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
     
     while (num_kills > 0) {
-      int target = m_world->GetRandom().GetUInt(live_org_list.GetSize());
+      int target = ctx.GetRandom().GetUInt(live_org_list.GetSize());
       int cell_id = live_org_list[target]->GetCellID();
       if (cell_id == parent_cell.GetID()) { 
         target++;
@@ -2069,7 +2138,6 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   int pop_eldest = m_world->GetConfig().POP_CAP_ELDEST.Get();
   if (pop_eldest > 0 && num_organisms >= pop_eldest) {
     int num_kills = 1;
-//    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
     
     while (num_kills > 0) {
       double max_age = 0.0;
@@ -2083,7 +2151,7 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
             cell_id = live_org_list[i]->GetCellID();
           }
           else if (age == max_age) {
-            double msr = m_world->GetRandom().GetDouble();
+            double msr = ctx.GetRandom().GetDouble();
             if (msr > max_msr) {
               max_msr = msr;
               cell_id = live_org_list[i]->GetCellID();
@@ -2097,25 +2165,25 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   }
   
   // for juvs with non-predatory parents...
-  if (m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get() && parent_cell.GetOrganism()->GetForageTarget() > -2) {
+  if (m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get() && parent_cell.GetOrganism()->IsPreyFT()) {
     KillRandPrey(ctx, parent_cell.GetOrganism());
   }
   
-    
+
   // This block should be changed to a switch statment with functions handling
   // the cases. For now, a bunch of if's that return if they handle.
   
   if (birth_method == POSITION_OFFSPRING_FULL_SOUP_RANDOM) {
     // Look randomly within empty cells first, if requested
     if (m_world->GetConfig().PREFER_EMPTY.Get()) {
-      int cell_id = FindRandEmptyCell();
-      if (cell_id == -1) return GetCell(m_world->GetRandom().GetUInt(cell_array.GetSize()));
+      int cell_id = FindRandEmptyCell(ctx);
+      if (cell_id == -1) return GetCell(ctx.GetRandom().GetUInt(cell_array.GetSize()));
       else return GetCell(cell_id);
     }
     
-    int out_pos = m_world->GetRandom().GetUInt(cell_array.GetSize());
+    int out_pos = ctx.GetRandom().GetUInt(cell_array.GetSize());
     while (parent_ok == false && out_pos == parent_cell.GetID()) {
-      out_pos = m_world->GetRandom().GetUInt(cell_array.GetSize());
+      out_pos = ctx.GetRandom().GetUInt(cell_array.GetSize());
     }
     return GetCell(out_pos);
   }
@@ -2152,9 +2220,9 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
     tList<cPopulationCell>* disp_list = &conn_list;
     
     // hop through connection lists based on the dispersal rate
-    int hops = m_world->GetRandom().GetRandPoisson(m_world->GetConfig().DISPERSAL_RATE.Get());
+    int hops = ctx.GetRandom().GetRandPoisson(m_world->GetConfig().DISPERSAL_RATE.Get());
     for (int i = 0; i < hops; i++) {
-      disp_list = &(disp_list->GetPos(m_world->GetRandom().GetUInt(disp_list->GetSize()))->ConnectionList());
+      disp_list = &(disp_list->GetPos(ctx.GetRandom().GetUInt(disp_list->GetSize()))->ConnectionList());
       if (disp_list->GetSize() == 0) break;
     }
     
@@ -2195,7 +2263,7 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   if (found_list.GetSize() == 0) return parent_cell;
   
   // Choose the organism randomly from those in the list, and return it.
-  int choice = m_world->GetRandom().GetUInt(found_list.GetSize());
+  int choice = ctx.GetRandom().GetUInt(found_list.GetSize());
   return *( found_list.GetPos(choice) );
 }
 
@@ -2257,21 +2325,21 @@ void cPopulation::PositionMerit(cPopulationCell & parent_cell,
 
 
 
-int cPopulation::FindRandEmptyCell()
+int cPopulation::FindRandEmptyCell(cAvidaContext& ctx)
 {
   int world_size = cell_array.GetSize();
   // full world
   if (num_organisms >= world_size) return -1;
 
   Apto::Array<int>& cells = GetEmptyCellIDArray();
-  int cell_idx = m_world->GetRandom().GetUInt(world_size);
+  int cell_idx = ctx.GetRandom().GetUInt(world_size);
   int cell_id = cells[cell_idx];
   while (GetCell(cell_id).IsOccupied()) {
     // no need to pop this cell off the array, just move it and don't check that far anymore
     cells.Swap(cell_idx, --world_size);
     // if ran out of cells to check (e.g. with birth chamber weirdness)
     if (world_size == 1) return -1;
-    cell_idx = m_world->GetRandom().GetUInt(world_size); 
+    cell_idx = m_world->GetRandom().GetUInt(world_size);
     cell_id = cells[cell_idx];
   }
   return cell_id;
@@ -2577,7 +2645,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
     const cMerit cur_merit = phenotype.GetMerit();
     const double cur_fitness = phenotype.GetFitness();
     
-    if (organism->GetForageTarget() > -2) {
+    if (organism->IsPreyFT()) {
       stats.SumPreyFitness().Add(cur_fitness);
       stats.SumPreyGestation().Add(phenotype.GetGestationTime());
       stats.SumPreyMerit().Add(cur_merit.GetDouble());
@@ -2593,7 +2661,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
         prey_from_sensor_exec_counts[j].Add(organism->GetPhenotype().GetLastFromSensorInstCount()[j]);
       }
     }
-    else if (organism->GetForageTarget() == -2) {
+    else if (organism->IsPredFT()) {
       stats.SumPredFitness().Add(cur_fitness);
       stats.SumPredGestation().Add(phenotype.GetGestationTime());
       stats.SumPredMerit().Add(cur_merit.GetDouble());
@@ -2839,7 +2907,8 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
           const int p_ft = org->GetParentFT();
           const int p_teach = (bool) (org->HadParentTeacher());
           const double p_merit = org->GetParentMerit();
-          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell, av_bcell, p_ft, p_teach, p_merit));                  
+          
+          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell, av_bcell, p_ft, p_teach, p_merit));
         }
       } else {
         map_entry = new sGroupInfo(genotype);
@@ -2906,7 +2975,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
     
     pforagestr.Set("%d", cells[0].parent_ft);
     pteachstr.Set("%d", cells[0].parent_is_teacher);
-    pmeritstr.Set("%.4d", cells[0].parent_merit);
+    pmeritstr.Set("%f", cells[0].parent_merit);
     
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
       cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
@@ -2932,7 +3001,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
         
         pforagestr += cStringUtil::Stringf(",%d",cells[cell_i].parent_ft);
         pteachstr += cStringUtil::Stringf(",%d",cells[cell_i].parent_is_teacher);
-        pmeritstr += cStringUtil::Stringf(",%.4d",cells[cell_i].parent_merit);
+        pmeritstr += cStringUtil::Stringf(",%f",cells[cell_i].parent_merit);
       }
     }
 
@@ -3166,8 +3235,7 @@ public:
   inline bool operator>=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
 };
 
-bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, 
-                                 bool load_birth_cells, bool load_avatars, bool load_rebirth) 
+bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, bool load_birth_cells, bool load_avatars, bool load_rebirth, bool load_parent_dat)
 {
   // @TODO - build in support for verifying population dimensions
   
@@ -3242,7 +3310,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       if (tmp.props->Has("parent_merit")) {
         cString meritstr(tmp.props->Get("parent_merit"));
         while (meritstr.GetSize()) tmp.parent_merit.Push(meritstr.Pop(',').AsDouble());
-        assert(tmp.parent_merit.GetSize() == 0 || tmp.parent_merit.GetSize() == tmp.num_cpus);      
+        assert(tmp.parent_merit.GetSize() == 0 || tmp.parent_merit.GetSize() == tmp.num_cpus);
       }
     }
     else {
@@ -3275,6 +3343,28 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         while (avatarstr.GetSize()) tmp.avatar_cells.Push(avatarstr.Pop(',').AsInt());
         assert(tmp.avatar_cells.GetSize() == 0 || tmp.avatar_cells.GetSize() == tmp.num_cpus);
       }
+    if (load_parent_dat) {
+      if (tmp.props->Has("parent_is_teach")) {
+        cString teachstr(tmp.props->Get("parent_is_teach"));
+        while (teachstr.GetSize()) tmp.parent_teacher.Push((bool)(teachstr.Pop(',').AsInt()));
+        assert(tmp.parent_teacher.GetSize() == 0 || tmp.parent_teacher.GetSize() == tmp.num_cpus);
+      }
+      if (tmp.props->Has("parent_ft")) {
+        cString parentftstr(tmp.props->Get("parent_ft"));
+        while (parentftstr.GetSize()) tmp.parent_ft.Push(parentftstr.Pop(',').AsInt());
+        assert(tmp.parent_ft.GetSize() == 0 || tmp.parent_ft.GetSize() == tmp.num_cpus);
+      }
+      if (tmp.props->Has("parent_merit")) {
+        cString meritstr(tmp.props->Get("parent_merit"));
+        while (meritstr.GetSize()) tmp.parent_merit.Push(meritstr.Pop(',').AsDouble());
+        assert(tmp.parent_merit.GetSize() == 0 || tmp.parent_merit.GetSize() == tmp.num_cpus);      
+      }
+    }
+    }
+    if (m_world->GetConfig().USE_AVATARS.Get() && !tmp.avatar_cells.GetSize()) {
+      cString avatarstr(tmp.props->Get("avatar_cell"));
+      while (avatarstr.GetSize()) tmp.avatar_cells.Push(avatarstr.Pop(',').AsInt());
+      assert(tmp.avatar_cells.GetSize() == 0 || tmp.avatar_cells.GetSize() == tmp.num_cpus);
     }
   }
   
@@ -3284,12 +3374,13 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
   Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
   Systematics::ArbiterPtr bgm = classmgr->ArbiterForRole("genotype");
   
+  bool some_missing = false;
   for (int i = genotypes.GetSize() - 1; i >= 0; i--) {
     // Fix Parent IDs
     cString nparentstr;
     int pcount = 0;
     cString lparentstr = (const char*)genotypes[i].props->Get("parents");
-    if (lparentstr == "(none)") lparentstr = ""; 
+    if (lparentstr == "(none)") lparentstr = "";
     cStringList opidlist(lparentstr, ',');
     while (opidlist.GetSize()) {
       int opid = opidlist.Pop().AsInt();
@@ -3300,16 +3391,20 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           break;
         }
       }
-      assert(npid != -1);
-      if (pcount) nparentstr += ",";
-      nparentstr += cStringUtil::Convert(npid);
-      pcount++; 
+      // only for pop saves that include historic (i.e. parent id found):
+      if (npid != -1) {
+        if (pcount) nparentstr += ",";
+        nparentstr += cStringUtil::Convert(npid);
+        pcount++;
+      }
     }
+    if (!nparentstr.GetSize() && !some_missing) some_missing = true;
     genotypes[i].props->Set("parents", (const char*)nparentstr);
     
     genotypes[i].bg = bgm->LegacyLoad(&genotypes[i].props);
   }
   
+  if (some_missing) m_world->GetDriver().Feedback().Warning("Some parents not found in loaded pop file. Defaulting to parent ID of '(none)' for those genomes.");
   
   // Process genotypes, inject into organisms as necessary
   int u_cell_id = 0;
@@ -3318,7 +3413,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     // otherwise, we insert as many organisms as we need
     for (int cell_i = 0; cell_i < tmp.num_cpus; cell_i++) {
       int cell_id = 0;
-      if (!load_birth_cells) cell_id = (structured) ? (tmp.cells[cell_i] + cellid_offset) : (u_cell_id++ + cellid_offset);
+      if (!load_birth_cells && !load_rebirth) cell_id = (structured) ? (tmp.cells[cell_i] + cellid_offset) : (u_cell_id++ + cellid_offset);
       else cell_id = (structured) ? (tmp.birth_cells[cell_i] + cellid_offset) : (u_cell_id++ + cellid_offset);
       
       // Set up lineage, including lineage label (0 if not loaded)
@@ -3358,18 +3453,29 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       if (merit > 0) {
         phenotype.SetMerit(cMerit(merit));
       } else {
-        phenotype.SetMerit(cMerit(new_organism->GetTestMerit(ctx)));
-      }
-      
-      if (tmp.offsets.GetSize() > cell_i) {
-        // Adjust initial merit to account for organism execution at the time the population was saved
-        // - this factors the merit by the fraction of the gestation time remaining
-        // - this will be approximate, since gestation time may vary for each organism, but it should work for many cases
-        double gest_time = Apto::StrAs(tmp.props->Get("gest_time"));
-        double gest_remain = gest_time - (double)tmp.offsets[cell_i];
-        if (gest_remain > 0.0 && gest_time > 0.0) {
-          double new_merit = phenotype.GetMerit().GetDouble() * (gest_time / gest_remain);
-          phenotype.SetMerit(cMerit(new_merit));
+        // Set the phenotype merit from the save file
+        assert(tmp.props->Has("merit"));
+        double merit = Apto::StrAs(tmp.props->Get("merit"));
+        if ((load_rebirth || load_parent_dat) && m_world->GetConfig().INHERIT_MERIT.Get() && tmp.props->Has("parent_merit")) {
+          merit = tmp.parent_merit[cell_i]; 
+        }
+        
+        if (merit > 0) {
+          phenotype.SetMerit(cMerit(merit));
+        } else {
+          phenotype.SetMerit(cMerit(new_organism->GetTestMerit(ctx)));
+        }
+        
+        if (tmp.offsets.GetSize() > cell_i && !load_rebirth) {
+          // Adjust initial merit to account for organism execution at the time the population was saved
+          // - this factors the merit by the fraction of the gestation time remaining
+          // - this will be approximate, since gestation time may vary for each organism, but it should work for many cases
+          double gest_time = Apto::StrAs(tmp.props->Get("gest_time"));
+          double gest_remain = gest_time - (double)tmp.offsets[cell_i];
+          if (gest_remain > 0.0 && gest_time > 0.0) {
+            double new_merit = phenotype.GetMerit().GetDouble() * (gest_time / gest_remain);
+            phenotype.SetMerit(cMerit(new_merit));
+          }
         }
       }
       
@@ -3397,25 +3503,27 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           if (tmp.forager_types.GetSize() != 0) forager_type = tmp.forager_types[cell_i]; 
           new_organism->SetOpinion(group_id);
           JoinGroup(new_organism, group_id);
-          new_organism->SetForageTarget(ctx, forager_type);
           new_organism->GetPhenotype().SetBirthCellID(cell_id);
           new_organism->GetPhenotype().SetBirthGroupID(group_id);
           new_organism->GetPhenotype().SetBirthForagerType(forager_type);
           new_organism->SetParentGroup(group_id);
           new_organism->SetParentFT(forager_type);
+          if (tmp.parent_merit.GetSize()) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
           org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
+          if (org_survived) new_organism->SetForageTarget(ctx, forager_type, true);
         }
         else org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
         
-        if ((load_avatars || load_birth_cells) && org_survived && m_world->GetConfig().USE_AVATARS.Get()) { //**
-          int avatar_cell = -1;
-          if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
-          if (avatar_cell != -1) new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+        if (load_parent_dat) {
+          new_organism->SetParentFT(tmp.parent_ft[cell_i]);
+          new_organism->SetParentTeacher(tmp.parent_teacher[cell_i]);
+          if (tmp.props->Has("parent_merit")) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);        
         }
       }
       else if (load_rebirth) {
         new_organism->SetParentFT(tmp.parent_ft[cell_i]);
         new_organism->SetParentTeacher(tmp.parent_teacher[cell_i]);
+        if (tmp.parent_merit.GetSize()) new_organism->SetParentMerit(tmp.parent_merit[cell_i]);
         
         new_organism->GetPhenotype().SetBirthCellID(cell_id);
         org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
@@ -3424,8 +3532,12 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       if (org_survived && m_world->GetConfig().USE_AVATARS.Get()) { //**
         int avatar_cell = -1;
         if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
-        if (avatar_cell != -1) new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+        if (avatar_cell != -1) {
+          new_organism->GetOrgInterface().AddPredPreyAV(ctx, avatar_cell);
+          new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
+        }
       }
+      if (org_survived) new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
     }
   }
   sync_events = true;
@@ -3490,6 +3602,7 @@ void cPopulation::Inject(const Genome& genome, Systematics::Source src, cAvidaCo
     cell_array[cell_id].GetOrganism()->SetForageTarget(ctx, forager_type);
     
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthCellID(cell_id);
+    cell_array[cell_id].GetOrganism()->GetOrgInterface().TryWriteBirthLocData(cell_array[cell_id].GetOrganism()->GetOrgIndex());
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthGroupID(group_id);
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthForagerType(forager_type);
   }
@@ -3622,13 +3735,14 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org, Systematics::Sou
   bool org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
   // only assign an avatar cell if the org lived through birth
   if (m_world->GetConfig().USE_AVATARS.Get() && org_survived) {
-    int avatar_target_cell = PlaceAvatar(&orig_org);
+    int avatar_target_cell = PlaceAvatar(ctx, &orig_org);
     if (avatar_target_cell != -1) {
       new_organism->GetPhenotype().SetAVBirthCellID(avatar_target_cell);
-      new_organism->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
+      new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
+      new_organism->GetOrgInterface().AddPredPreyAV(ctx, avatar_target_cell);
       if (m_world->GetConfig().AVATAR_BIRTH_FACING.Get() == 1) {
-        const int rots = m_world->GetRandom().GetUInt(0,8);
-        for (int j = 0; j < rots; j++) new_organism->Rotate(rots);
+        const int rots = ctx.GetRandom().GetUInt(0,8);
+        for (int j = 0; j < rots; j++) new_organism->Rotate(ctx, rots);
       }
     }
     else KillOrganism(GetCell(cell_id), ctx);
@@ -3762,7 +3876,7 @@ void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads, cAvidaCon
   // Remove the proper number of cells.
   const int removal_size = num_organisms - transfer_size;
   for (int i = 0; i < removal_size; i++) {
-    int j = (int) m_world->GetRandom().GetUInt(transfer_pool.size());
+    int j = (int) ctx.GetRandom().GetUInt(transfer_pool.size());
     KillOrganism(cell_array[transfer_pool[j]], ctx); 
     transfer_pool[j] = transfer_pool.back();
     transfer_pool.pop_back();
@@ -3772,7 +3886,7 @@ void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads, cAvidaCon
 void cPopulation::RemovePredators(cAvidaContext& ctx)
 {
   for (int i = 0; i < live_org_list.GetSize(); i++) {
-    if (live_org_list[i]->GetForageTarget() <= -2) live_org_list[i]->Die(ctx);
+    if (!live_org_list[i]->IsPreyFT()) live_org_list[i]->Die(ctx);
   }
 }
 
@@ -4317,7 +4431,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
   // Pick which orgs should be in the next generation. (Filling all cells)
   Apto::Array<int> new_orgs(num_cells);
   for (int i = 0; i < num_cells; i++) {
-    double birth_choice = (double) m_world->GetRandom().GetDouble(total_fitness);
+    double birth_choice = (double) ctx.GetRandom().GetDouble(total_fitness);
     double test_total = 0;
     for (int test_org = 0; test_org < num_cells; test_org++) {
       test_total += org_fitness[test_org];
@@ -4444,7 +4558,6 @@ void  cPopulation::RemoveLiveOrg(cOrganism* org)
   live_org_list.Swap(org->GetOrgIndex(), last);
   live_org_list.Pop();
 }
-
 
 // Adds an organism to a group
 void  cPopulation::JoinGroup(cOrganism* org, int group_id)
@@ -4754,7 +4867,7 @@ double cPopulation::CalcGroupOddsImmigrants(int group_id, int mating_type)
 }
 
 // Returns true if the org successfully passes immigration tolerance and joins the group 
-bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
+bool cPopulation::AttemptImmigrateGroup(cAvidaContext& ctx, int group_id, cOrganism* org)
 {
   bool immigrate = false;
   // If non-standard group, automatic success
@@ -4776,7 +4889,7 @@ bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
     }
     double probability_immigration = CalcGroupOddsImmigrants(group_id, mating_type);
     
-    double rand = m_world->GetRandom().GetDouble();
+    double rand = ctx.GetRandom().GetDouble();
     if (rand <= probability_immigration) immigrate = true;
   }
   
@@ -4851,12 +4964,12 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() < 0) {
     const int parent_group = parent->GetOpinion().first;
     const double prob_immigrate = ((double) m_world->GetConfig().TOLERANCE_WINDOW.Get() * -1.0) / 100.0;
-    double rand = m_world->GetRandom().GetDouble();
+    double rand = ctx.GetRandom().GetDouble();
     if (rand <= prob_immigrate) {
       const int num_groups = GetResources().GetSize();
       int target_group; 
       do {
-        target_group = m_world->GetRandom().GetUInt(num_groups);
+        target_group = ctx.GetRandom().GetUInt(num_groups);
       } while (target_group == parent_group);
       offspring->SetOpinion(target_group);
       JoinGroup(offspring, target_group);
@@ -4883,8 +4996,8 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
     // offspring first attempt to join the parent group and if unsuccessful attempt to immigrate
     const double prob_parent_allows = parent_tolerance / tolerance_max;
     const double prob_group_allows = parent_group_tolerance / tolerance_max;
-    double rand2 = m_world->GetRandom().GetDouble();
-    double rand = m_world->GetRandom().GetDouble();
+    double rand2 = ctx.GetRandom().GetDouble();
+    double rand = ctx.GetRandom().GetDouble();
     
     bool join_parent_group = false;
     
@@ -4922,7 +5035,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
       // Find another group at random, which is not the parent's
       int target_group;
       do {
-        target_group = m_world->GetRandom().GetUInt(num_groups);
+        target_group = ctx.GetRandom().GetUInt(num_groups);
       } while (target_group == parent_group);
       
       // If there are no members currently of the target group, offspring has 100% chance of immigrating
@@ -4933,7 +5046,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
       } else {
         double probability_born_target_group = CalcGroupOddsImmigrants(target_group, -1);
         
-        rand = m_world->GetRandom().GetDouble();
+        rand = ctx.GetRandom().GetDouble();
         // Calculate if the offspring successfully immigrates
         if (rand <= probability_born_target_group) {
           // Offspring joins target group
@@ -5080,7 +5193,7 @@ void cPopulation::MixPopulation(cAvidaContext& ctx)
   }
   
   // Shuffle them:
-  std::random_shuffle(population.begin(), population.end(), m_world->GetRandom());
+  std::random_shuffle(population.begin(), population.end(), ctx.GetRandom());
   
   // Reset the organism pointers of all cells:
   for(int i=0; i<cell_array.GetSize(); ++i) {
@@ -5094,22 +5207,45 @@ void cPopulation::MixPopulation(cAvidaContext& ctx)
   }
 }
 
-int cPopulation::PlaceAvatar(cOrganism* parent)
+int cPopulation::PlaceAvatar(cAvidaContext& ctx, cOrganism* parent)
 {
-  int avatar_target_cell = parent->GetOrgInterface().GetAVCellID();
-  const int avatar_birth = m_world->GetConfig().AVATAR_BIRTH.Get();
-  if (avatar_birth == 1) avatar_target_cell = m_world->GetRandom().GetUInt(world_x * world_y);
-  else if (avatar_birth == 2) avatar_target_cell = parent->GetOrgInterface().GetAVFacedCellID();
-  else if (avatar_birth == 3) { 
-    avatar_target_cell += 1;
-    if (avatar_target_cell >= world_x * world_y) avatar_target_cell = 0;
+  int avatar_target_cell = -1;
+  
+  switch (m_world->GetConfig().AVATAR_BIRTH.Get()) {
+    // Random
+    case 1:
+      avatar_target_cell = ctx.GetRandom().GetUInt(world_x * world_y);
+      break;
+      
+    // Parent Facing
+    case 2:
+      avatar_target_cell = parent->GetOrgInterface().GetAVFacedCellID();
+      break;
+      
+    // Next Cell
+    case 3:
+      avatar_target_cell += 1;
+      if (avatar_target_cell >= world_x * world_y) avatar_target_cell = 0;
+      break;
+      
+    // World Center
+    case 4:
+      avatar_target_cell = (world_x * world_y) * 0.5;
+      break;
+      
+    // Parent Facing
+    default:
+      avatar_target_cell = parent->GetOrgInterface().GetAVCellID();
+      break;
   }
-    if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1 && avatar_target_cell >= 0) {
+  
+  if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1 && avatar_target_cell >= 0) {
     int dest_x = avatar_target_cell % m_world->GetConfig().WORLD_X.Get();
     int dest_y = avatar_target_cell / m_world->GetConfig().WORLD_X.Get();
     if (dest_x == 0 || dest_y == 0 || dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) {
       return -1;
     }
   }
+  
   return avatar_target_cell;
 }

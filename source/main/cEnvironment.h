@@ -73,10 +73,10 @@ private:
   
   Apto::Array<cStateGrid*> m_state_grids;
 
-	std::set<int> possible_group_ids;
+  std::set<int> possible_group_ids;
   std::set<int> possible_target_ids;
   std::set<int> possible_habitats;
-
+  Apto::Array<int> pp_fts;
   
   cEnvironment(); // @not_implemented
   cEnvironment(const cEnvironment&); // @not_implemented
@@ -140,14 +140,17 @@ public:
   bool SetReactionTask(const cString& name, const cString& task);
   bool SetResourceInflow(const cString& name, double _inflow );
   bool SetResourceOutflow(const cString& name, double _outflow );
+  bool ChangeResource(cReaction* reaction, const cString& res, int process_num = 0);
 	
   void AddGroupID(int new_id) { possible_group_ids.insert(new_id); }
   bool IsGroupID(int test_id);
   std::set<int> GetGroupIDs() { return possible_group_ids; }
 
-  void AddTargetID(int new_id) { possible_target_ids.insert(new_id); }
+  void AddTargetID(int new_id) { possible_target_ids.insert(new_id); SetAttackPreyFTList(); }
   bool IsTargetID(int test_id);
   std::set<int> GetTargetIDs() { return possible_target_ids; }
+  void SetAttackPreyFTList();
+  Apto::Array<int> GetAttackPreyFTList() { return pp_fts; }
 
   void AddHabitat(int new_habitat) { possible_habitats.insert(new_habitat); }
   bool IsHabitat(int test_habitat);

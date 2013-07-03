@@ -51,6 +51,7 @@ cInstSet::cInstSet(const cInstSet& _in)
   , m_has_female_costs(_in.m_has_female_costs)
   , m_has_choosy_female_costs(_in.m_has_choosy_female_costs)
   , m_has_post_costs(_in.m_has_post_costs)
+  , m_has_bonus_costs(_in.m_has_bonus_costs)
 {
   m_mutation_index = new cOrderedWeightedIndex(*_in.m_mutation_index);
 }
@@ -71,6 +72,7 @@ cInstSet& cInstSet::operator=(const cInstSet& _in)
   m_has_female_costs = _in.m_has_female_costs;
   m_has_choosy_female_costs = _in.m_has_choosy_female_costs;
   m_has_post_costs = _in.m_has_post_costs;
+  m_has_bonus_costs = _in.m_has_bonus_costs;
 
   m_mutation_index = new cOrderedWeightedIndex(*_in.m_mutation_index);
   return *this;
@@ -111,6 +113,7 @@ Instruction cInstSet::ActivateNullInst()
   m_lib_name_map[inst_id].res_cost = 0.0; 
   m_lib_name_map[inst_id].fem_res_cost = 0.0; 
   m_lib_name_map[inst_id].post_cost = 0;
+  m_lib_name_map[inst_id].bonus_cost = 0.0;
   
   return Instruction(inst_id);
 }
@@ -163,6 +166,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
   schema.Define("res_cost", 0.0);
   schema.Define("redundancy", 1.0);
   schema.Define("fem_res_cost", 0.0);  
+  schema.Define("bonus_cost", 0.0);
   
   // String  
   schema.Define("inst_code", "");
@@ -234,15 +238,16 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     m_lib_name_map[inst_id].female_cost = args->Int(4);
     m_lib_name_map[inst_id].choosy_female_cost = args->Int(5);
     m_lib_name_map[inst_id].post_cost = args->Int(6);
+    m_lib_name_map[inst_id].bonus_cost = args->Double(4);
     
     if (m_lib_name_map[inst_id].cost > 1) m_has_costs = true;
     if (m_lib_name_map[inst_id].ft_cost) m_has_ft_costs = true;
-    if (m_lib_name_map[inst_id].energy_cost) m_has_energy_costs = true;
-    if (m_lib_name_map[inst_id].res_cost) m_has_res_costs = true;   
+    if (m_lib_name_map[inst_id].res_cost) m_has_res_costs = true;
     if (m_lib_name_map[inst_id].fem_res_cost) m_has_fem_res_costs = true;   
     if (m_lib_name_map[inst_id].female_cost) m_has_female_costs = true;
     if (m_lib_name_map[inst_id].choosy_female_cost) m_has_choosy_female_costs = true;
     if (m_lib_name_map[inst_id].post_cost > 1) m_has_post_costs = true;
+    if (m_lib_name_map[inst_id].bonus_cost) m_has_bonus_costs = true;
     
     // Parse the instruction code
     cString inst_code = (const char*)args->String(0);

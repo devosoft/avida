@@ -60,7 +60,6 @@ private:
   
   double m_cur_min;
   double m_cur_max;
-  double m_target_min;
   double m_target_max;
   double m_rescale_rate_min;
   double m_rescale_rate_max;
@@ -68,7 +67,7 @@ private:
 public:
   DoublePropMapMode(cWorld* world, const Apto::String& prop_id, const Apto::String& prop_desc)
   : m_prop_id(prop_id), m_prop_desc(prop_desc), m_color_count(SCALE_MAX + Avida::Viewer::MAP_RESERVED_COLORS), m_scale_labels(SCALE_LABELS)
-  , m_cur_min(0.0), m_cur_max(0.0), m_target_min(0.0), m_target_max(0.0), m_rescale_rate_min(0.0), m_rescale_rate_max(0.0)
+  , m_cur_min(0.0), m_cur_max(0.0), m_target_max(0.0), m_rescale_rate_min(0.0), m_rescale_rate_max(0.0)
   {
     m_color_grid.Resize(world->GetPopulation().GetSize());
     m_color_grid.SetAll(-4);

@@ -97,8 +97,8 @@ public:
   virtual int GetFacedCellID() = 0;
   virtual int GetFacedDir() = 0; // Returns the human interpretable facing of this org.
   virtual int GetNeighborCellContents() = 0;
-  virtual void Rotate(int direction = 1) = 0;
   virtual void KillOrganism(cAvidaContext& ctx, int cell_id) = 0;
+  virtual void Rotate(cAvidaContext& ctx, int direction = 1) = 0;
   
   virtual bool GetLGTFragment(cAvidaContext& ctx, int region, const Genome& dest_genome, InstructionSequence& seq) = 0;
   
@@ -165,10 +165,12 @@ public:
   virtual double CalcGroupOddsImmigrants(int group_id, int mating_type) = 0;
   virtual double CalcGroupOddsOffspring(cOrganism* parent) = 0;
   virtual double CalcGroupOddsOffspring(int group_id) = 0;
-  virtual bool AttemptImmigrateGroup(int group_id, cOrganism* org) = 0;
+  virtual bool AttemptImmigrateGroup(cAvidaContext& ctx, int group_id, cOrganism* org) = 0;
   virtual void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx) = 0; 
   virtual int& GetGroupIntolerances(int group_id, int tol_num, int mating_type) = 0;
   
+  virtual void TryWriteGroupAttackBits(unsigned char raw_bits) = 0;
+  virtual void TryWriteGroupAttackString(cString& string) = 0;
   virtual void DecNumPreyOrganisms() = 0;
   virtual void DecNumPredOrganisms() = 0;
   virtual void DecNumTopPredOrganisms() = 0;
@@ -176,18 +178,23 @@ public:
   virtual void IncNumPredOrganisms() = 0;
   virtual void IncNumTopPredOrganisms() = 0;
   virtual void AttackFacedOrg(cAvidaContext& ctx, int loser) = 0;
-  virtual void InjectPreyClone(cAvidaContext& ctx) = 0;
+  
+  virtual void TryWriteBirthLocData(int org_idx) = 0;
+  virtual void InjectPreyClone(cAvidaContext& ctx, int gen_id) = 0;
   virtual void KillRandPred(cAvidaContext& ctx, cOrganism* org) = 0;
   virtual void KillRandPrey(cAvidaContext& ctx, cOrganism* org) = 0;
+  virtual void TryWriteLookData(cString& string) = 0;
+  virtual void TryWriteLookOutput(cString& string) = 0;
+  virtual void TryWriteLookEXOutput(cString& string) = 0;
   
   virtual bool HasOutputAV(int av_num = 0) = 0;
   virtual bool FacedHasOutputAV(int av_num = 0) = 0;
   virtual bool FacedHasAV(int av_num = 0) = 0;
   virtual bool FacedHasPredAV(int av_num = 0) = 0;
   virtual bool FacedHasPreyAV(int av_num = 0) = 0;
-  virtual void AddIOAV(int av_cell_id, int av_facing, bool input, bool output) = 0;
-  virtual void AddPredPreyAV(int av_cell_id) = 0;
-  virtual void SwitchPredPrey(int av_num = 0) = 0;
+  virtual void AddIOAV(cAvidaContext& ctx, int av_cell_id, int av_facing, bool input, bool output) = 0;
+  virtual void AddPredPreyAV(cAvidaContext& ctx, int av_cell_id) = 0;
+  virtual void SwitchPredPrey(cAvidaContext& ctx, int av_num = 0) = 0;
   virtual void RemoveAllAV() = 0;
   virtual int GetAVFacing(int av_num = 0) = 0;
   virtual int GetAVCellID(int av_num = 0) = 0;
@@ -202,13 +209,13 @@ public:
   virtual int GetAVDataUpdate(int av_num = 0) = 0;
   virtual int GetAVDataTerritory(int av_num = 0) = 0;
   virtual int FindAV(bool input, bool output, int av_num = 0) = 0;
-  virtual void SetAVFacing(int av_facing, int av_num = 0) = 0;
-  virtual bool SetAVCellID(int av_cell_id, int av_num = 0) = 0;
-  virtual void SetAVFacedCellID(int av_num = 0) = 0;
+  virtual void SetAVFacing(cAvidaContext& ctx, int av_facing, int av_num = 0) = 0;
+  virtual bool SetAVCellID(cAvidaContext& ctx, int av_cell_id, int av_num = 0) = 0;
+  virtual void SetAVFacedCellID(cAvidaContext& ctx, int av_num = 0) = 0;
   virtual void SetAVCellData(const int newData, const int org_id, int av_num = 0) = 0;
   virtual bool MoveAV(cAvidaContext& ctx, int av_num = 0) = 0;
-  virtual bool RotateAV(int increment, int av_num = 0) = 0;
-  virtual cOrganism* GetRandFacedAV(int av_num = 0) = 0;
+  virtual bool RotateAV(cAvidaContext& ctx, int increment, int av_num = 0) = 0;
+  virtual cOrganism* GetRandFacedAV(cAvidaContext& ctx, int av_num = 0) = 0;
   virtual cOrganism* GetRandFacedPredAV(int av_num = 0) = 0;
   virtual cOrganism* GetRandFacedPreyAV(int av_num = 0) = 0;
 

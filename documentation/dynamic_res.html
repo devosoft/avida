@@ -397,6 +397,17 @@ Predatory resources are gradient resources with teeth. See SetPredatoryResource 
   <td>1</td>
 </tr>
 <tr>
+  <td class="resall">move_resistance</td>
+  <td>
+    How resistant is a resource (currently only halo resources) to movement.
+    When set to > 0, this value specifies how likely the resource will remain
+    motionless for the next update cycle. A random number is selected from
+    [0, 2 + move_resistance). When less than 2, the resource will move randomly
+    in one direction. Otherwise, the resource will remain in place.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
   <td class="resall">common</td>
   <td>
 	In determining the cell values within the plateau, do we treat them as a
@@ -501,6 +512,14 @@ Predatory resources are gradient resources with teeth. See SetPredatoryResource 
   Setting resistance to 0 for a wall allows orgs to pass through it (creating a linear landmark rather than a barrier).
   </td>
   <td>1.0</td> 
+</tr>
+<tr>  
+  <td class="reshills"><font color="#9C1FFE">damage</font></td>
+  <td>
+  This is implemented as a simple way of injuring an org if they touch a resource (or if the resource touches them, if it's moving).
+  The damage amount is applied as a fractional decrease in merit, bonus, internal resources, and reaction counts.
+  </td>
+  <td>0.0</td>
 </tr>
 </tr>
 </table>

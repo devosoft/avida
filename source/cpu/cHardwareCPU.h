@@ -246,7 +246,7 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype) { (void)df, (void)gen_id, (void)genotype; }
+  void SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype);
   void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp) { (void)ctx, (void)fp; }
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) { (void)fp, (void)exec_success; }
 
@@ -403,6 +403,7 @@ private:
   bool Inst_Dec(cAvidaContext& ctx);
   bool Inst_All1s(cAvidaContext& ctx);
   bool Inst_Zero(cAvidaContext& ctx);
+  bool Inst_One(cAvidaContext& ctx);
   bool Inst_Not(cAvidaContext& ctx);
   bool Inst_Neg(cAvidaContext& ctx);
   bool Inst_Square(cAvidaContext& ctx);
@@ -454,6 +455,10 @@ private:
   bool Inst_Sterilize(cAvidaContext& ctx);
 
   bool Inst_Kazi(cAvidaContext& ctx);
+  bool Inst_Kazi1(cAvidaContext& ctx);
+  bool Inst_Kazi2(cAvidaContext& ctx);
+  bool Inst_Kazi3(cAvidaContext& ctx);
+  bool Inst_Kazi4(cAvidaContext& ctx);
   bool Inst_Kazi5(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
   bool Inst_Poison(cAvidaContext& ctx);
@@ -499,7 +504,7 @@ private:
   bool Inst_Collect(cAvidaContext& ctx);
   bool Inst_CollectNoEnvRemove(cAvidaContext& ctx);
   bool Inst_Destroy(cAvidaContext& ctx);
-  bool Inst_NopCollect(cAvidaContext& ctx);  
+  bool Inst_NopCollect(cAvidaContext& ctx);
   bool Inst_CollectUnitProbabilistic(cAvidaContext& ctx);
   bool Inst_CollectSpecific(cAvidaContext& ctx);
   bool Inst_IfResources(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
@@ -509,6 +514,7 @@ private:
   bool Inst_DonateRandom(cAvidaContext& ctx);
   bool Inst_DonateKin(cAvidaContext& ctx);
   bool Inst_DonateEditDist(cAvidaContext& ctx);
+  bool Inst_GetFacedEditDistance(cAvidaContext& ctx);
   bool Inst_DonateGreenBeardGene(cAvidaContext& ctx);
   bool Inst_DonateTrueGreenBeard(cAvidaContext& ctx);
   bool Inst_DonateShadedGreenBeard(cAvidaContext& ctx);
@@ -523,6 +529,8 @@ private:
   bool Inst_DonateResource0(cAvidaContext& ctx);
   bool Inst_DonateResource1(cAvidaContext& ctx);
   bool Inst_DonateResource2(cAvidaContext& ctx);
+  bool Inst_DonateSpecific(cAvidaContext& ctx);
+
 
   bool Inst_SearchF(cAvidaContext& ctx);
   bool Inst_SearchB(cAvidaContext& ctx);

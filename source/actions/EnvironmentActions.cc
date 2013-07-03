@@ -406,7 +406,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().GetResources().SetDynamicResPlatVarInflow(m_res_name, m_mean, m_variance, m_type);
-  } 
+  }
 };
 
 class cActionSetPredatoryResource : public cAction
@@ -491,6 +491,54 @@ public:
   void Process(cAvidaContext& ctx)
   {
     m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name)->SetProbabilisticResource(ctx, m_initial, m_inflow, m_outflow, m_lambda, m_theta, m_x, m_y, m_count);
+  } 
+};
+
+class cActionDecInflow : public cAction
+{
+private:
+  cString m_res_name;
+  double m_inflow_change;
+  
+public:
+  cActionDecInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow_change(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_inflow_change = largs.PopWord().AsDouble();
+    
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow_change>"; }
+  
+  void Process(cAvidaContext&)
+  {
+    m_world->GetPopulation().UpdateInflow(m_res_name, -1 * m_inflow_change);
+  } 
+};
+
+class cActionIncInflow : public cAction
+{
+private:
+  cString m_res_name;
+  double m_inflow_change;
+  
+public:
+  cActionIncInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow_change(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_inflow_change = largs.PopWord().AsDouble();
+    
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow_change>"; }
+  
+  void Process(cAvidaContext&)
+  {
+    m_world->GetPopulation().UpdateInflow(m_res_name, m_inflow_change);
   } 
 };
 
@@ -1097,7 +1145,6 @@ class cActionSetOptimizeMinMax : public cAction
 
 
 
-
 class cActionSetConfig : public cAction
 {
 private:
@@ -1143,6 +1190,8 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetDynamicResPlatVarInflow>("SetDynamicResPlatVarInflow");
   action_lib->Register<cActionSetPredatoryResource>("SetPredatoryResource");
   action_lib->Register<cActionSetProbabilisticResource>("SetProbabilisticResource");
+  action_lib->Register<cActionDecInflow>("DecInflow");
+  action_lib->Register<cActionIncInflow>("IncInflow");
 
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");

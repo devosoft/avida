@@ -49,7 +49,7 @@ void cCodeLabel::ReadString(const cString& label_str)
 
 // This function returns true if the sub_label can be found within
 // the label affected.
-int cCodeLabel::FindSublabel(cCodeLabel & sub_label)
+int cCodeLabel::FindSublabel(const cCodeLabel& sub_label) const
 {
   bool error = false;
 

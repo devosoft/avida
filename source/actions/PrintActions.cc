@@ -156,6 +156,7 @@ STATS_OUT_FILE(PrintKaboom, kabooms.dat);
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
 STATS_OUT_FILE(PrintGroupIds,                 groupids.dat);
 STATS_OUT_FILE(PrintTargets,                  targets.dat);
+STATS_OUT_FILE(PrintMimicDisplays,            mimics.dat);
 STATS_OUT_FILE(PrintTopPredTargets,           top_pred_targets.dat);
 STATS_OUT_FILE(PrintToleranceInstructionData, toleranceinstruction.dat); 
 STATS_OUT_FILE(PrintToleranceData,            tolerance.dat);
@@ -219,7 +220,6 @@ public:
     m_world->GetStats().PrintResourceLocData(m_filename, ctx);
   }
 };
-
 
 class cActionPrintResWallLocData : public cAction
 {
@@ -295,7 +295,6 @@ public:
     m_world->GetStats().PrintDataFile(m_filename, m_format, ',');
   }
 };
-
 
 class cActionPrintInstructionData : public cAction, public Data::Recorder
 {
@@ -561,6 +560,32 @@ public:
   void Process(cAvidaContext& ctx)
   {
     m_world->GetStats().PrintGroupAttackData(m_filename, m_inst_set);
+  }
+};
+
+class cActionPrintKilledPreyFTData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintKilledPreyFTData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args)
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "killed_prey.dat";
+    }
+    if (m_filename == "") m_filename.Set("killed_prey.dat");
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"killed_prey.dat\"]"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintKilledPreyFTData(m_filename);
   }
 };
 
@@ -1035,31 +1060,29 @@ public:
     }
     
     Apto::Array<int, Apto::Smart> birth_groups_checked;
-    Systematics::GroupPtr bg = it->Next();
     
     for (int i = 0; i < num_groups; i++) {
+      Systematics::GroupPtr bg = it->Next();
       bool already_used = false;
+      
+      if (!bg) break;
+
       if (bg && ((bool)Apto::StrAs(bg->Properties().Get("threshold")) || i == 0)) {
         int last_birth_group_id = Apto::StrAs(bg->Properties().Get("last_group_id")); 
         int last_birth_cell = Apto::StrAs(bg->Properties().Get("last_birth_cell"));
         int last_birth_forager_type = Apto::StrAs(bg->Properties().Get("last_forager_type")); 
         if (i != 0) {
           for (int j = 0; j < birth_groups_checked.GetSize(); j++) {
-            if (last_birth_group_id == birth_groups_checked[j]) { 
-              already_used = true; 
+            if (last_birth_group_id == birth_groups_checked[j]) {
+              already_used = true;
               i--;
-              break; 
+              break;
             }
           }
         }
         if (!already_used) birth_groups_checked.Push(last_birth_group_id);
-        if (already_used) {
-          if (bg == it->Next()) break; // no more to check
-          else {
-            bg = it->Next();
-            continue;
-          }
-        }
+        if (already_used) continue;
+        
         cString filename(m_filename);
         if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->Properties().Get("name").StringValue());
         else filename = filename.Set(filename + "grp%d_ft%d", last_birth_group_id, last_birth_forager_type); 
@@ -1070,9 +1093,6 @@ public:
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
         testcpu->PrintGenome(ctx2, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
         delete testcpu;
-        
-        if (bg == it->Next()) break; // no more to check
-        else bg = it->Next();
       }
     }
   }
@@ -1104,10 +1124,13 @@ public:
     for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2 && *itr != -3) num_fts++;
     
     Apto::Array<int, Apto::Smart> birth_forage_types_checked;
-    Systematics::GroupPtr bg = it->Next();
     
     for (int i = 0; i < num_fts; i++) {
       bool already_used = false;
+      Systematics::GroupPtr bg = it->Next();
+      
+      if (!bg) break;
+      
       if (bg && ((bool)Apto::StrAs(bg->Properties().Get("threshold")) || i == 0)) {
         int last_birth_group_id = Apto::StrAs(bg->Properties().Get("last_group_id")); 
         int last_birth_cell = Apto::StrAs(bg->Properties().Get("last_birth_cell"));
@@ -1122,13 +1145,9 @@ public:
           }
         }
         if (!already_used) birth_forage_types_checked.Push(last_birth_forager_type);
-        if (already_used) {
-          if (bg == it->Next()) break; // no more to check
-          else {
-            bg = it->Next();
-            continue;
-          }
-        }
+        if (already_used) continue;
+        
+        
         cString filename(m_filename);
         if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->Properties().Get("name").StringValue());
         else filename = filename.Set(filename + ".ft%d_grp%d", last_birth_forager_type, last_birth_group_id); 
@@ -1139,9 +1158,6 @@ public:
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
         testcpu->PrintGenome(ctx2, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
         delete testcpu;
-
-        if (bg == it->Next()) break; // no more to check
-        else bg = it->Next();
       }
     }
   }
@@ -4061,7 +4077,7 @@ public:
     const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
     for (int i = 0; i < live_orgs.GetSize(); i++) {
       cOrganism* org = live_orgs[i];
-      if (org->GetForageTarget() <= -2) continue;
+      if (!org->IsPreyFT()) continue;
       const int id = org->GetID();
       int num_neighbors = 0;
       neighborhood.Resize(0);
@@ -4072,7 +4088,7 @@ public:
         org->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
         for (int j = 0; j < neighborhood.GetSize(); j++) {
           if (m_world->GetPopulation().GetCell(neighborhood[j]).IsOccupied()) {
-            if (m_world->GetPopulation().GetCell(neighborhood[j]).GetOrganism()->GetForageTarget() > -2) {
+            if (m_world->GetPopulation().GetCell(neighborhood[j]).GetOrganism()->IsPreyFT()) {
               num_neighbors++;
             }
           }
@@ -4417,6 +4433,23 @@ public:
   }
 };
 
+class cActionPrintSoloTaskSnapshot : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintSoloTaskSnapshot(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "tasks-snap.dat"; else m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"tasks-snap.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintSoloTaskSnapshot(m_filename, ctx);
+  }
+};
+
 
 //Prints data about the 'offspring' from the birth chamber that were chosen as mates during the current update
 class cActionPrintSuccessfulMates : public cAction
@@ -4541,6 +4574,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintThreadsData>("PrintThreadsData");
   action_lib->Register<cActionPrintTasksData>("PrintTasksData");
+  action_lib->Register<cActionPrintSoloTaskSnapshot>("PrintSoloTaskSnapshot");
   action_lib->Register<cActionPrintHostTasksData>("PrintHostTasksData");
   action_lib->Register<cActionPrintParasiteTasksData>("PrintParasiteTasksData");
   action_lib->Register<cActionPrintTasksExeData>("PrintTasksExeData");
@@ -4578,6 +4612,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPredatorFromSensorInstructionData>("PrintPredatorFromSensorInstructionData");
   action_lib->Register<cActionPrintTopPredatorFromSensorInstructionData>("PrintTopPredatorFromSensorInstructionData");
   action_lib->Register<cActionPrintGroupAttackData>("PrintGroupAttackData");
+  action_lib->Register<cActionPrintKilledPreyFTData>("PrintKilledPreyFTData");
   
   action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");
   action_lib->Register<cActionPrintFemaleInstructionData>("PrintFemaleInstructionData");
@@ -4694,6 +4729,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); 
   action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); 
   action_lib->Register<cActionPrintTargets>("PrintTargets");
+  action_lib->Register<cActionPrintMimicDisplays>("PrintMimicDisplays");
   action_lib->Register<cActionPrintTopPredTargets>("PrintTopPredTargets");
   
   action_lib->Register<cActionPrintHGTData>("PrintHGTData");

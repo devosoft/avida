@@ -1,0 +1,16 @@
+#filetype population_data
+#format update ave_fitness ave_gest ave_merit ave_age generation ave_length entropy num_cpus
+#  
+# Legend:
+#  1: Update
+#  2: Average Fitness
+#  3: Average Gestation Time
+#  4: Average Merit
+#  5: Average Age
+#  6: Generation
+#  7: Count of Organisms in Population
+
+
+0 0 0 2453.52 0 0 915 
+50 0.118799 296.006 2083.48 45.333 0.0977444 931 
+100 0.64515 2024.01 371.268 59.7257 0.661943 988 

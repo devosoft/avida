@@ -42,6 +42,7 @@
 
 #include <algorithm>
 #include <iomanip>
+#include <iterator>
 #include <utility>
 
 using namespace std;
@@ -49,7 +50,6 @@ using namespace Avida;
 
 // Referenced external properties
 // --------------------------------------------------------------------------------------------------------------
-
 static const Apto::BasicString<Apto::ThreadSafe> s_ext_prop_name_instset("instset");
 
 
@@ -180,11 +180,13 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_northerly(0)
   , m_easterly(0)
   , m_forage_target(-1)
+  , m_show_ft(-1)
   , m_has_set_ft(false)
   , m_teach(false)
   , m_parent_teacher(false)
   , m_parent_ft(-1)
   , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
+  , m_p_merit(0)
   , m_beggar(false)
   , m_guard(false)
   , m_num_guard(0)
@@ -231,13 +233,9 @@ void cOrganism::initialize(cAvidaContext& ctx)
 	// disposal.
 	if (m_world->GetConfig().RANDOMIZE_RAW_MATERIAL_AMOUNT.Get()) {
 		int raw_mat = m_world->GetConfig().RAW_MATERIAL_AMOUNT.Get();
-		m_self_raw_materials = m_world->GetRandom().GetUInt(0, raw_mat+1); 
+		m_self_raw_materials = ctx.GetRandom().GetUInt(0, raw_mat+1);
 	}
-
-
 }
-
-
 
 cOrganism::~cOrganism()
 {  
@@ -358,12 +356,10 @@ int cOrganism::ReceiveValue()
   return out_value;
 }
 
-
 void cOrganism::DoInput(const int value)
 {
   DoInput(m_input_buf, m_output_buf, value);
 }
-
 
 void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
 {
@@ -371,13 +367,11 @@ void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer,
   m_phenotype.TestInput(input_buffer, output_buffer);
 }
 
-
 void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide, cContextPhenotype* context_phenotype)
 {
   if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
   else doOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
 }
-
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
 {
@@ -417,7 +411,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   if (m_world->GetEnvironment().UseNeighborInput()) {
     const int num_neighbors = m_interface->GetNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
-      m_interface->Rotate();
+      m_interface->Rotate(ctx);
       cOrganism * cur_neighbor = m_interface->GetNeighbor();
       if (cur_neighbor == NULL) continue;
       
@@ -429,7 +423,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   if (m_world->GetEnvironment().UseNeighborOutput()) {
     const int num_neighbors = m_interface->GetNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
-      m_interface->Rotate();
+      m_interface->Rotate(ctx);
       cOrganism * cur_neighbor = m_interface->GetNeighbor();
       if (cur_neighbor == NULL) continue;
       
@@ -480,7 +474,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   if (m_world->GetEnvironment().UseNeighborInput()) {
     const int num_neighbors = m_interface->GetAVNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
-      m_interface->Rotate();
+      m_interface->Rotate(ctx);
       const Apto::Array<cOrganism*>& cur_neighbors = m_interface->GetFacedAVs();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
@@ -493,7 +487,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   if (m_world->GetEnvironment().UseNeighborOutput()) {
     const int num_neighbors = m_interface->GetAVNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
-      m_interface->Rotate();
+      m_interface->Rotate(ctx);
       const Apto::Array<cOrganism*>& cur_neighbors = m_interface->GetFacedAVs();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
@@ -623,7 +617,7 @@ void cOrganism::PrintStatus(ostream& fp)
 {
   fp << "---------------------------" << endl;
 	fp << "U:" << m_world->GetStats().GetUpdate() << endl;
-  if (m_hardware->GetType() != HARDWARE_TYPE_CPU_MGE && m_hardware->GetType() != HARDWARE_TYPE_CPU_MBE) m_hardware->PrintStatus(fp);
+  if (m_hardware->GetType() != HARDWARE_TYPE_CPU_GP8) m_hardware->PrintStatus(fp);
   m_phenotype.PrintStatus(fp);
   fp << endl;
   
@@ -849,7 +843,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
   if (m_interface->Move(ctx, fromcellID, destcellID)) {
     //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
     //Skip counting if random < chance of miscounting a step.
-    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get()==0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
+    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get()==0 || ctx.GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {
       if (facing == 0) m_northerly = m_northerly - 1;       // N
       else if (facing == 1) {                           // NE
         m_northerly = m_northerly - 1; 
@@ -925,39 +919,42 @@ bool cOrganism::HasOpinion() {
   else return true;
 }
 
-void cOrganism::SetForageTarget(cAvidaContext& ctx, int forage_target) {
-  if (forage_target > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
+void cOrganism::SetForageTarget(cAvidaContext& ctx, int forage_target, bool inject) {
+  if (m_parent_ft <= -2 && m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_interface->KillRandPred(ctx, this);
+  else if (forage_target > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
+
   // if using avatars, make sure you swap avatar lists if the org type changes!
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     // change to pred
     if (forage_target == -2 && m_forage_target > -2) {
-      m_interface->DecNumPreyOrganisms();
+      if (!inject) m_interface->DecNumPreyOrganisms();
       m_interface->IncNumPredOrganisms();
     }
     else if (forage_target == -2 && m_forage_target < -2) {
-      m_interface->DecNumTopPredOrganisms();
+      if (!inject) m_interface->DecNumTopPredOrganisms();
       m_interface->IncNumPredOrganisms();
     }
     // change to top pred
     else if (forage_target < -2 && m_forage_target > -2) {
-      m_interface->DecNumPreyOrganisms();
+      if (!inject) m_interface->DecNumPreyOrganisms();
       m_interface->IncNumTopPredOrganisms();
     }
     else if (forage_target < -2 && m_forage_target == -2) {
-      m_interface->DecNumPredOrganisms();
+      if (!inject) m_interface->DecNumPredOrganisms();
       m_interface->IncNumTopPredOrganisms();
     }
     // change to prey
     else if (forage_target > -2 && m_forage_target == -2) {
       m_interface->IncNumPreyOrganisms();
-      m_interface->DecNumPredOrganisms();
+      if (!inject) m_interface->DecNumPredOrganisms();
     }
     else if (forage_target > -2 && m_forage_target < -2) {
       m_interface->IncNumPreyOrganisms();
-      m_interface->DecNumTopPredOrganisms();
+      if (!inject) m_interface->DecNumTopPredOrganisms();
     }
   }
   m_forage_target = forage_target;
+  if (m_show_ft == -1) m_show_ft = m_forage_target;
 }
 
 void cOrganism::CopyParentFT(cAvidaContext& ctx) {
@@ -969,17 +966,12 @@ void cOrganism::CopyParentFT(cAvidaContext& ctx) {
       copy_ft = false;
     }
   }
-  if (copy_ft) {
-    if (m_parent_ft <= -2 && m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_interface->KillRandPred(ctx, this);
-    else if (m_parent_ft > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
-    SetForageTarget(ctx, m_parent_ft);
-  }
+  if (copy_ft) SetForageTarget(ctx, m_parent_ft);
 }
 
-
-cOrganism::Neighborhood cOrganism::GetNeighborhood() {
+cOrganism::Neighborhood cOrganism::GetNeighborhood(cAvidaContext& ctx) {
 	Neighborhood neighbors;
-	for(int i=0; i<GetNeighborhoodSize(); ++i, Rotate(1)) {
+	for(int i=0; i<GetNeighborhoodSize(); ++i, Rotate(ctx, 1)) {
 		if(IsNeighborCellOccupied()) {
 			neighbors.insert(GetNeighbor()->GetID());
 		}
@@ -988,21 +980,21 @@ cOrganism::Neighborhood cOrganism::GetNeighborhood() {
 }
 
 
-void cOrganism::LoadNeighborhood() {
+void cOrganism::LoadNeighborhood(cAvidaContext& ctx) {
 	InitNeighborhood();
-	m_neighborhood->neighbors = GetNeighborhood();
+	m_neighborhood->neighbors = GetNeighborhood(ctx);
 	m_neighborhood->loaded = true;
 }
 
 
-bool cOrganism::HasNeighborhoodChanged() {
+bool cOrganism::HasNeighborhoodChanged(cAvidaContext& ctx) {
 	InitNeighborhood();
 	// Must have loaded the neighborhood first:
 	if(!m_neighborhood->loaded) return false;
 	
 	// Ok, get the symmetric difference between the old neighborhood and the current neighborhood:
 	Neighborhood symdiff;
-	Neighborhood current = GetNeighborhood();	
+	Neighborhood current = GetNeighborhood(ctx);
 	std::set_symmetric_difference(m_neighborhood->neighbors.begin(),
 																m_neighborhood->neighbors.end(),
 																current.begin(),
@@ -1232,7 +1224,7 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
   if (m_interface->MoveAV(ctx)) {
     //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
     //Skip counting if random < chance of miscounting a step.
-    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get() == 0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {   
+    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get() == 0 || ctx.GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {
       int facing = m_interface->GetAVFacing();
 
       if (facing == 0)

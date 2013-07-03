@@ -68,6 +68,7 @@ cStats::cStats(cWorld* world)
 , min_gestation_time(INT_MAX)
 , min_genome_length(INT_MAX)
 , num_births(0)
+, cumulative_births(0)
 , num_deaths(0)
 , num_breed_in(0)
 , num_breed_true(0)
@@ -84,6 +85,8 @@ cStats::cStats(cWorld* world)
 , tot_executed(0)
 , num_kabooms(0)
 , num_kaboom_kills(0)
+, juv_killed(0)
+, num_guard_fail(0)
 , num_resamplings(0)
 , num_failedResamplings(0)
 , last_update(0)
@@ -104,6 +107,7 @@ cStats::cStats(cWorld* world)
 , pred_entropy(0.0)
 , topreac(-1)
 , topcycle(-1)
+, firstnavtrace(false)
 , m_donate_to_donor (0)
 , m_donate_to_facing (0)
 {
@@ -363,6 +367,7 @@ mgr->Register(name, activate); \
   
   // Current Counts...
   m_data_manager.Add("num_births",     "Count of Births in Population",          &cStats::GetNumBirths);
+  m_data_manager.Add("cumulative_births", "Total Births over Time",              &cStats::GetCumulativeBirths);
   m_data_manager.Add("num_deaths",     "Count of Deaths in Population",          &cStats::GetNumDeaths);
   m_data_manager.Add("breed_in",       "Count of Non-Breed-True Births",         &cStats::GetBreedIn);
   m_data_manager.Add("breed_true",     "Count of Breed-True Births",             &cStats::GetBreedTrue);
@@ -516,6 +521,7 @@ void cStats::RecordBirth(bool breed_true)
   
   tot_organisms++;
   num_births++;
+  cumulative_births++;
   
   if (breed_true) num_breed_true++;
   else num_breed_in++;
@@ -1018,7 +1024,6 @@ void cStats::PrintThreadsData(const cString& filename)
 }
 
 
-
 void cStats::PrintTasksData(const cString& filename)
 {
 	cString file = filename;
@@ -1043,6 +1048,82 @@ void cStats::PrintTasksData(const cString& filename)
 	}
 	df->Endl();
 }
+
+void cStats::PrintSoloTaskSnapshot(const cString& filename, cAvidaContext& ctx)
+{
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  
+  df->WriteComment("Pop potential tasks (test cpu).");
+	df->WriteTimeStamp();
+	df->WriteComment("First set of columns gives number of organisms that can perform that particular reaction at least once. ");
+	df->WriteComment("Second set of columns gives total number of times that reaction can be performed. ");
+	df->WriteComment("Third set of columns gives number of organisms that can perform that particular task at least once. ");
+	df->WriteComment("Fourth set of columns gives total number of times that task can be performed. ");
+  df->WriteComment("Orgs are tested for each resource in the environment with res level of 1 for the current test resource and levels of 0 for other resources.");
+	df->Write(m_update,   "Update");
+	df->Write(sum_generation.Average(),      "Generation");
+  
+  Apto::Array<int> reac_list;
+  reac_list.Resize(m_world->GetEnvironment().GetNumTasks());
+  reac_list.SetAll(0);
+  
+  Apto::Array<int> total_reacs;
+  total_reacs.Resize(m_world->GetEnvironment().GetNumTasks());
+  total_reacs.SetAll(0);
+  
+  Apto::Array<int> task_list;
+  task_list.Resize(m_world->GetEnvironment().GetNumTasks());
+  task_list.SetAll(0);
+  
+  Apto::Array<int> totals_list;
+  totals_list.Resize(m_world->GetEnvironment().GetNumTasks());
+  totals_list.SetAll(0);
+  
+  const Apto::Array <cOrganism*, Apto::Smart> pop = m_world->GetPopulation().GetLiveOrgList();
+	df->Write(pop.GetSize(),   "PopSize");
+  
+  for (int i = 0; i < pop.GetSize(); i++) {
+    cOrganism* organism = pop[i];
+    
+    // create a test-cpu for the current creature and then test the creature using res level of 1 for each resource in the environment file
+    const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+    for (int k = 0; k < resLib.GetSize(); k++) {
+      cCPUTestInfo test_info;
+      cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
+      testcpu->SetSoloRes(k, 1.0);
+      testcpu->TestGenome(ctx, test_info, organism->GetGenome());
+      cPhenotype& test_phenotype = test_info.GetTestPhenotype();
+      
+      for (int j = 0; j < task_list.GetSize(); j++) {
+        // inc once if the task was ever performed
+        task_list[j] += ( test_phenotype.GetLastTaskCount()[j] == 0 ) ? 0 : 1;
+        // for totals, inc by actual number of times the task was performed
+        totals_list[j] += test_phenotype.GetLastTaskCount()[j];
+        // inc once if the reaction was ever performed
+        reac_list[j] += ( test_phenotype.GetLastReactionCount()[j] == 0 ) ? 0 : 1;
+        // for totals, inc by actual number of times the reaction was performed
+        total_reacs[j] += test_phenotype.GetLastReactionCount()[j];
+      }
+      delete testcpu;
+    }
+  }
+  for(int j = 0; j < reac_list.GetSize(); j++) {
+    df->Write(reac_list[j], task_names[j] );
+  }
+  for(int j = 0; j < total_reacs.GetSize(); j++) {
+    Apto::String tot_str(Apto::FormatStr("%s_reac_totals", (const char*)task_names[j]));
+    df->Write(total_reacs[j], tot_str);
+  }
+  for(int j = 0; j < task_list.GetSize(); j++) {
+    df->Write(task_list[j], task_names[j] );
+  }
+  for(int j = 0; j < task_list.GetSize(); j++) {
+    Apto::String tot_str(Apto::FormatStr("%s_task_totals", (const char*)task_names[j]));
+    df->Write(totals_list[j], tot_str);
+  }
+  df->Write(sum_generation.Average(),      "Generation");
+  df->Endl();    
+};
 
 void cStats::PrintHostTasksData(const cString& filename)
 {
@@ -1603,7 +1684,9 @@ void cStats::SetGroupAttackInstNames(const cString& inst_set) {
   for (int i = 0; i < m_is_inst_names_map[inst_set].GetSize(); i++) {
     inst = m_is_inst_names_map[inst_set][i];
     if (inst == "attack-prey" || inst == "attack-ft-prey" || inst == "attack-prey-group" ||
-        inst == "attack-prey-share" || inst == "attack-prey-group-share") {
+        inst == "attack-prey-share" || inst == "attack-prey-group-share" ||
+        inst == "attack-prey-no-share" || inst=="attack-prey-fake-share" ||
+        inst == "attack-prey-fake-group-share") {
       names.Push(inst);
     }
   }
@@ -1659,8 +1742,174 @@ void cStats::PrintGroupAttackData(const cString& filename, const cString& inst_s
   }
 }
 
+void cStats::PrintGroupAttackBits(unsigned char raw_bits)
+{
+  cString filename = cStringUtil::Stringf("group_attack_bits-%d.dat", m_world->GetStats().GetUpdate());
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  
+  if (!df->HeaderDone()) {
+    df->WriteComment("Condensed Group Attack Results during this update (this is a binary file to be post-process converted to bit string -- left to right bits): \n# Size (3 bit): potential group size, not including self \n# Success: (2 bit) 0 == sucess, 1 == no prey failure, 2 == no friends failure, 3 == chance failure \n# Share (2 bit): 0 == no, 1 == yes, 2 == fake \n# Inst (1 bit): 0 == solo attack inst, 1 == group attack inst");
+    df->WriteTimeStamp();
+    df->Endl();
+  }  
+  std::ofstream& fp = df->OFStream();
+  fp << raw_bits << endl;
+}
 
+void cStats::PrintGroupAttackString(cString& string)
+{
+  cString file = "attack_outcomes.dat";
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
+  
+  if (!df->HeaderDone()) {
+    df->WriteComment("Group Attack Circumstances");
+    df->WriteTimeStamp();
+    
+    df->WriteComment("Update");
+    df->WriteComment("Size: potential group size, not including self");
+    df->WriteComment("Success: 0 == sucess, 1 == no prey failure, 2 == no friends failure, 3 == chance failure");
+    df->WriteComment("SharedKill: 0 == no, 1 == yes, 2 == fake");
+    df->WriteComment("Inst: 0 == solo attack inst, 1 == group attack inst");
+    df->FlushComments();
+    df->Endl();
+  }
+  
+  std::ofstream& fp = df->OFStream();
+  fp << GetUpdate() << "," << string << endl;
+}
 
+void cStats::PrintKilledPreyFTData(const cString& filename)
+{
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  
+  df->WriteComment("Record of orgs killed by predators by victim forage type.");
+  df->WriteTimeStamp();
+  
+  df->Write(m_update, "Update");
+  
+  Apto::Array<int> poss_targets = m_world->GetEnvironment().GetAttackPreyFTList();
+  Apto::Array<int> org_targets;
+  org_targets.Resize(poss_targets.GetSize());
+  org_targets.SetAll(0);
+  
+  const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {
+    Apto::Array<int> killed_list = live_orgs[i]->GetPhenotype().GetKilledPreyFTData();
+    if (killed_list.GetSize() > 0) {
+      assert(killed_list.GetSize() == org_targets.GetSize());
+      for (int i = 0; i < killed_list.GetSize(); i++) org_targets[i] += killed_list[i];
+    }
+  }
+
+  for (int target = 0; target < org_targets.GetSize(); target++) {
+    df->Write(poss_targets[target], "Killed FT ID");
+    df->Write(org_targets[target], "Num Orgs Killed");
+  }
+  df->Endl();
+}
+
+void cStats::PrintBirthLocData(int org_idx)
+{
+  cString file = "birthlocs";
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
+  
+  if (!df->HeaderDone()) {
+    df->WriteComment("Update,OrgID,ParentFT,BirthCellX,BirthCellY");
+    df->FlushComments();
+    df->Endl();
+  }
+  
+  bool use_av = m_world->GetConfig().USE_AVATARS.Get();
+  cOrganism* org = m_world->GetPopulation().GetLiveOrgList()[org_idx];
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+
+  int loc = org->GetPhenotype().GetBirthCell();
+  if (use_av) loc = org->GetPhenotype().GetAVBirthCell();
+  const int locx = loc % worldx;
+  const int locy = loc / worldx;
+  const int ft = org->GetParentFT();
+  
+  std::ofstream& fp = df->OFStream();
+  fp << GetUpdate() << "," << org->GetID() << "," << ft << "," << locx << "," << locy;
+  fp << endl;
+}
+
+void cStats::PrintLookData(cString& string)
+{
+  cString file = "looksettings.dat";
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
+  
+  if (!df->HeaderDone()) {
+    df->WriteComment("Final (used) Look Settings");
+    df->WriteTimeStamp();
+    
+    df->WriteComment("Update");
+    df->WriteComment("ThisOrgForageTarget");
+    df->WriteComment("AnyFound");
+    df->WriteComment("Habitat");
+    df->WriteComment("Distance");
+    df->WriteComment("SearchType");
+    df->WriteComment("SoughtID");
+    df->FlushComments();
+    df->Endl();
+  }
+  
+  std::ofstream& fp = df->OFStream();
+  fp << GetUpdate() << "," << string << endl;
+}
+
+void cStats::PrintLookDataOutput(cString& string)
+{
+  cString file = "lookoutput.dat";
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
+  
+  if (!df->HeaderDone()) {
+    df->WriteComment("Final (used) Look Output to Registers");
+    df->WriteTimeStamp();
+    
+    df->WriteComment("Update");
+    df->WriteComment("ThisOrgForageTarget");
+    df->WriteComment("AnyFound");
+    df->WriteComment("Habitat");
+    df->WriteComment("Distance");
+    df->WriteComment("SearchType");
+    df->WriteComment("SoughtID");
+    df->WriteComment("Count");
+    df->WriteComment("Value");
+    df->WriteComment("Group");
+    df->WriteComment("FT");
+    df->FlushComments();
+    df->Endl();
+  }
+  
+  std::ofstream& fp = df->OFStream();
+  fp << GetUpdate() << "," << string << endl;
+}
+
+void cStats::PrintLookEXDataOutput(cString& string)
+{
+  cString file = "lookoutput.dat";
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
+  
+  if (!df->HeaderDone()) {
+    df->WriteComment("Final (used) Look Output to Registers");
+    df->WriteTimeStamp();
+    
+    df->WriteComment("Update");
+    df->WriteComment("ThisOrgForageTarget");
+    df->WriteComment("AnyFound");
+    df->WriteComment("Habitat");
+    df->WriteComment("SoughtID");
+    df->WriteComment("TravelDistance");
+    df->WriteComment("Deviance");
+    df->WriteComment("CountValue");
+    df->FlushComments();
+    df->Endl();
+  }
+  
+  std::ofstream& fp = df->OFStream();
+  fp << GetUpdate() << "," << string << endl;
+}
 
 /*! Prints the cell data from every cell */
 void cStats::PrintCellData(const cString& filename)
@@ -2485,6 +2734,53 @@ void cStats::PrintTargets(const cString& filename)
   df->Endl();
 }
 
+void cStats::PrintMimicDisplays(const cString& filename)
+{
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteComment("FTs being displayed by mimics on update boundary (true mimic ft == 1).");
+  df->WriteTimeStamp();
+  
+  df->Write(m_update, "Update");
+  
+  std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+  
+  Apto::Array<int> poss_fts;
+  poss_fts.Resize(0);
+  
+  set <int>::iterator itr;
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) {
+    if (*itr >= 0) {
+      poss_fts.Resize(poss_fts.GetSize() + 1);
+      poss_fts[poss_fts.GetSize() - 1] = *itr;
+    }
+  }
+  
+  Apto::Array<int> displayed_fts;
+  displayed_fts.Resize(poss_fts.GetSize());
+  displayed_fts.SetAll(0);
+  
+  const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_world->GetPopulation().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {
+    cOrganism* org = live_orgs[i];
+    if (org->GetForageTarget() == 1) {
+      int shown_ft = org->GetShowForageTarget();
+      // fts may not be sequentially numbered
+      for (int j = 0; j < displayed_fts.GetSize(); j++) {
+        if (poss_fts[j] == shown_ft) {
+          displayed_fts[j]++;
+          break;
+        }
+      }
+    }
+  }
+      
+  for (int target = 0; target < poss_fts.GetSize(); target++) {
+    df->Write(poss_fts[target], "Displayed FT");
+    df->Write(displayed_fts[target], "Num Orgs Displaying this FT");
+  }
+  df->Endl();
+}
+
 /*
  Print data regarding the living org targets.
  */
@@ -2615,6 +2911,29 @@ void cStats::PrintHGTData(const cString& filename) {
 
 
 
+/*! Prints logged retrieved messages.
+ */
+void cStats::PrintRetMessageLog(const cString& filename) {
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  
+	df->WriteComment("Log of all messages sent in population.");
+  df->WriteTimeStamp();
+  
+	for(message_log_t::iterator i=m_retmessage_log.begin(); i!=m_retmessage_log.end(); ++i) {
+		df->Write(i->update, "Update [update]");
+		df->Write(i->deme, "Deme ID [deme]");
+		df->Write(i->src_cell, "Source [src]");
+		df->Write(i->dst_cell, "Destination [dst]");
+    df->Write(i->transmit_cell, "Transmission_cell [trs]");
+		df->Write(i->msg_data, "Message data [data]");
+		df->Write(i->msg_label, "Message label [label]");
+		df->Endl();
+	}
+  
+	m_retmessage_log.clear();
+}
+
+
 
 /* Add the time between two tasks */
 void cStats::AddTaskSwitchTime(int t1, int t2, int time) {
@@ -2631,10 +2950,10 @@ void cStats::PrintDenData(const cString& filename) {
   
   int num_juvs = 0;
   int num_adults = 0;
-  int num_guards = 0;
-  
-  int population_size = m_world->GetPopulation().GetSize();
-  
+  int num_guards_nest = 0;
+  int num_foragers = 0;
+  int num_guards_off = 0;
+    
   int num_loiterers = 0;
   int active_dens = 0;
   
@@ -2658,33 +2977,24 @@ void cStats::PrintDenData(const cString& filename) {
           else
           {
             num_adults++;
-            if (cell_avs[k]->IsGuard()) num_guards++;
+            if (cell_avs[k]->IsGuard()) num_guards_nest++;
             else num_loiterers++;
           }
         }
         active_dens += (int)is_active;
         break;  // only do this once if two dens overlap
+      } 
+      else {
+	Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();
+        for (int k = 0; k < cell_avs.GetSize(); k++) {
+	      num_adults++;
+	      if (cell_avs[k]->IsGuard()) num_guards_off++;
+	      else num_foragers++;
+	}
       }
     }
   }
-  double percent_juv_guard;
-  double percent_juv_pop;
-  double percent_guards_pop;
-  
-  if (num_guards > 0){
-    percent_juv_guard = (double)num_juvs/(double)num_guards;
-  } else {
-    percent_juv_guard = 0;
-  }
-  if (population_size > 0){
-    percent_juv_pop = (double)num_juvs/(double)population_size;
-    percent_guards_pop = (double)num_guards/(double)population_size;
-  } else {
-    percent_juv_pop = 0;
-    percent_guards_pop = 0;
-  }
-  
-  
+
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   df->WriteComment("Number of juveniles and adults in dens");
   df->WriteTimeStamp();
@@ -2692,30 +3002,29 @@ void cStats::PrintDenData(const cString& filename) {
   df->WriteColumnDesc("ActiveDens [active_dens]");
   df->WriteColumnDesc("Juveniles [juveniles]");
 	df->WriteColumnDesc("Adults [adults]");
-  df->WriteColumnDesc("Guards [guards]");
+  df->WriteColumnDesc("Guards On Nest[guards nest]");
 	df->WriteColumnDesc("Loiterers [loiterers]");
   
   df->WriteColumnDesc("Juveniles Killed [juveniles killed]");
-  df->WriteColumnDesc("Ratio of Juveniles to Guards [percent juvs to guards]");
-  df->WriteColumnDesc("Ratio of Juveniles to Population [percent juvs to pop]");
-  df->WriteColumnDesc("Ratio of Guards to Population [percent guards to pop]");
-  
-	
+  df->WriteColumnDesc("Foragers [foragers]");
+  df->WriteColumnDesc("Guards Off Nest [guards off]");
+  df->WriteColumnDesc("Guard Fails [guard fails]");
+
   df->FlushComments();
   
   df->Write(m_update,   "Update");
   df->Write(active_dens,      "ActiveDens");
   df->Write(num_juvs,      "Juveniles");
 	df->Write(num_adults,    "Adults");
-	df->Write(num_guards,    "Guards");
+	df->Write(num_guards_nest,    "GuardsOnNest");
 	df->Write(num_loiterers, "Loiterers");
-  df->Write(juv_killed, "Juveniles Killed");
-  df->Write(percent_juv_guard, "Ratio of Juveniles to Guards");
-  df->Write(percent_juv_pop, "Ratio of Juveniles to Population");
-  df->Write(percent_guards_pop, "Ratio of Guards to Population");
+  df->Write(juv_killed, "JuvenilesKilled");
+  df->Write(num_foragers, "Foragers");
+  df->Write(num_guards_off, "GuardsOffNest");
+  df->Write(num_guard_fail, "Guard Failures");
   
-  
-	df->Endl();
+  df->Endl();
+  num_guard_fail=0; 
   
 }
 
@@ -3039,28 +3348,32 @@ void cStats::PrintMicroTraces(Apto::Array<char, Apto::Smart>& exec_trace, int bi
 
 void cStats::UpdateTopNavTrace(cOrganism* org, bool force_update)
 {
-  // 'best' org is the one among the orgs with the highest reaction achieved that reproduced in the least number of cycles
-  // using cycles, so any inst executions in parallel multi-threads are only counted as one exec
   int best_reac = -1;
   Apto::Array<int> reaction_count = org->GetPhenotype().GetCurReactionCount();
-  for (int i = reaction_count.GetSize() -1; i >= 0; i--) {
-    if (reaction_count[i] > 0) {
-      best_reac = i;
-      break;
+  if (!firstnavtrace) {
+    // 'best' org is the one among the orgs with the highest reaction achieved that reproduced in the least number of cycles
+    // using cycles, so any inst executions in parallel multi-threads are only counted as one exec
+    for (int i = reaction_count.GetSize() -1; i >= 0; i--) {
+      if (reaction_count[i] > 0) {
+        best_reac = i;
+        break;
+      }
     }
   }
   int cycle = org->GetPhenotype().GetTimeUsed();
   bool new_winner = false;
-  if (best_reac >= topreac) {
+  if (best_reac >= topreac && !firstnavtrace) {
     if (best_reac == topreac && cycle < topcycle) new_winner = true;
     else if (best_reac > topreac) new_winner = true;
   }
+  else if (cycle < topcycle) new_winner = true;
   if (new_winner || force_update) {
     topreac = best_reac;
     topcycle = cycle;
     topgenid = org->SystematicsGroup("genotype")->ID();
     topid = org->GetID();
     topbirthud = org->GetPhenotype().GetUpdateBorn();
+    toprepro = org->GetPhenotype().GetNumExecs();
     topgenome = Genome(org->SystematicsGroup("genotype")->Properties().Get("genome"));
     
     Apto::Array<char, Apto::Smart> trace = org->GetHardware().GetMicroTrace();
@@ -3086,6 +3399,8 @@ void cStats::UpdateTopNavTrace(cOrganism* org, bool force_update)
       topnavtraceupdate[i] = traceupdate[i];
     }
     
+    topstart = org->GetPhenotype().GetNumExecs() - toptrace.GetSize();
+
     Apto::Array<int> reaction_cycles = org->GetPhenotype().GetFirstReactionCycles();
     Apto::Array<int> reaction_execs = org->GetPhenotype().GetFirstReactionExecs();
     
@@ -3108,10 +3423,10 @@ void cStats::UpdateTopNavTrace(cOrganism* org, bool force_update)
     if (org->HasOpinion()) topgroup = org->GetOpinion().first;
     else topgroup = org->GetParentGroup();
   }
-  if (m_world->GetPopulation().GetTopNavQ().GetSize() <= 1) PrintTopNavTrace();
+  if (m_world->GetPopulation().GetTopNavQ().GetSize() <= 1) PrintTopNavTrace(true);
 }
 
-void cStats::PrintTopNavTrace()
+void cStats::PrintTopNavTrace(bool flush)
 {
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "navtrace.dat");
   
@@ -3120,6 +3435,9 @@ void cStats::PrintTopNavTrace()
   df->WriteComment("GenotypeID");
   df->WriteComment("OrgID");
   df->WriteComment("Cycle at First Reproduction (parallel multithread execs = 1 cycle)");
+  df->WriteComment("Exec Count at Trace Start");
+  df->WriteComment("Exec Count at First Reproduction");
+
   df->WriteComment("Reaction Counts at First Reproduction");
   df->WriteComment("CPU Cycle at First Trigger of Each Reaction");
   df->WriteComment("Exec Count at First Trigger (== index into execution trace and nav traces)");
@@ -3142,7 +3460,7 @@ void cStats::PrintTopNavTrace()
   }
   
   if (topreactions.GetSize()) {
-    fp << topgenid << " " << topid << " " << topcycle << " ";
+    fp << topgenid << " " << topid << " " << topcycle << " " << topstart << " " << toprepro << " ";
     // reaction related
     for (int i = 0; i < topreactions.GetSize() - 1; i++) {
       fp << topreactions[i] << ",";
@@ -3159,7 +3477,7 @@ void cStats::PrintTopNavTrace()
     }
     fp << topreactionexecs[topreactionexecs.GetSize() - 1] << " ";
     
-    // instruction exec sequence related (printed in reverse order to get firs exec as first printed)
+    // instruction exec sequence related
     for (int i = 0; i < topnavtraceupdate.GetSize() - 1; i++) {
       fp << topnavtraceupdate[i] << ",";
     }
@@ -3188,6 +3506,11 @@ void cStats::PrintTopNavTrace()
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
     testcpu->PrintGenome(ctx2, topgenome, genfile, m_world->GetStats().GetUpdate());
     delete testcpu;
+  }
+  if (flush) {
+    topreac = -1;
+    topcycle = -1;
+    m_world->GetPopulation().GetTopNavQ().Resize(0);
   }
 }
 
