@@ -86,6 +86,7 @@
   [super loadView];
   
   sourceList.dataSource = project;
+  [sourceList setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
   [sourceList expandItem:nil expandChildren:YES];
 }
 

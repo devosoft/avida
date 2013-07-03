@@ -30,10 +30,12 @@
 #import <Foundation/Foundation.h>
 
 #include "avida/core/World.h"
+#include "avida/viewer.h"
 
 
 @interface ACUniverse : NSObject {
   Avida::World* universe;
+  Avida::Viewer::Driver* driver;  
 }
 
 
@@ -41,6 +43,26 @@
 // --------------------------------------------------------------------------------------------------------------
 #pragma mark - Properties
 
+
+// Status Checks
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Status Checks
+
+- (bool) hasStarted;
+- (bool) willPauseNow;
+- (bool) willPause;
+- (bool) isPaused;
+- (bool) hasFinished;
+
+// Actions
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Actions
+
+- (void) pause;
+- (void) pauseAt:(Avida::Update)update;
+- (void) resume;
+- (void) end;
+- (void) sync;
 
 
 // --------------------------------------------------------------------------------------------------------------

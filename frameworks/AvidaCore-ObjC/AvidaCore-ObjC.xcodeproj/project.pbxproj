@@ -454,6 +454,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -482,6 +483,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = AvidaCore;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx10.7;
 				USER_HEADER_SEARCH_PATHS = "../../../../avida-core/include/public/ ../../../../libs/apto/include/";
 				WRAPPER_EXTENSION = framework;
@@ -496,6 +498,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -518,6 +521,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = AvidaCore;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx10.7;
 				USER_HEADER_SEARCH_PATHS = "../../../../avida-core/include/public/ ../../../../libs/apto/include/";
 				WRAPPER_EXTENSION = framework;

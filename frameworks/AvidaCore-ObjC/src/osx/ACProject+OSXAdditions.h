@@ -54,6 +54,8 @@
 - (NSDragOperation) sourceList:(AptoSourceList*)sourceList validateDrop:(id<NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(NSInteger)index;
 - (BOOL) sourceList:(AptoSourceList*)AptoSourceList acceptDrop:(id<NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index;
 
+- (id<NSPasteboardWriting>) sourceList:(AptoSourceList*)aSourceList pasteboardWriterForItem:(id)item;
+
 
 // --------------------------------------------------------------------------------------------------------------
 @end

@@ -39,6 +39,7 @@
 #pragma mark Global Constants
 
 NSString* const tbShowWorkspace = @"ShowWorkspace";
+NSString* const tbRunControls = @"RunControls";
 NSString* const tbViewSelect = @"ViewSelect";
 NSString* const tbStatusPanel = @"StatusPanel";
 
@@ -47,6 +48,10 @@ NSString* const tbStatusPanel = @"StatusPanel";
 // --------------------------------------------------------------------------------------------------------------
 
 @interface MainWindowController ()
+
+- (void) setInterfaceRunning;
+- (void) setInterfacePaused;
+
 - (NSToolbarItem*) toolbarItemWithIdentifier:(NSString*)identifier
                                        label:(NSString*)label
                                  paleteLabel:(NSString*)paletteLabel
@@ -88,6 +93,48 @@ NSString* const tbStatusPanel = @"StatusPanel";
 
 - (void) dealloc
 {
+}
+
+
+// Actions
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Actions
+
+- (IBAction) toggleRunState:(id)sender
+{
+  if ([currentUniverse willPauseNow]) {
+//    if ([currentRun numOrganisms] == 0 && ![currentRun hasPendingInjects] && [ancestorArray count] == 0) {
+//      NSAlert* alert = [[NSAlert alloc] init];
+//      [alert addButtonWithTitle:@"OK"];
+//      [alert setMessageText:@"Unable to resume experiment; there is no start organism in the petri dish."];
+//      [alert setInformativeText:@"Please drag an organism from the freezer into the settings panel or the petri dish."];
+//      [alert setAlertStyle:NSWarningAlertStyle];
+//      [alert beginSheetModalForWindow:[self window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
+//      [sender setState:NSOffState];
+//      return;
+//    }
+    
+//    if (runActive == NO) {
+//      [self activateRun];
+//    }
+    
+    [currentUniverse resume];
+    [self setInterfaceRunning];
+  } else {
+    [currentUniverse pause];
+    [self setInterfacePaused];
+  }
+}
+
+
+- (void) setInterfaceRunning
+{
+  
+}
+
+- (void) setInterfacePaused
+{
+  
 }
 
 
@@ -205,6 +252,15 @@ NSString* const tbStatusPanel = @"StatusPanel";
                                       itemContent:tbViewShowWorkspace
                                            action:nil
                                              menu:nil];
+  } else if ([itemIdentifier isEqualToString:tbRunControls]) {
+    toolbarItem = [self toolbarItemWithIdentifier:tbRunControls
+                                            label:@""
+                                      paleteLabel:@"Run Controls"
+                                          toolTip:@""
+                                           target:self
+                                      itemContent:tbViewRunControls
+                                           action:nil
+                                             menu:nil];
   } else if ([itemIdentifier isEqualToString:tbViewSelect]) {
     toolbarItem = [self toolbarItemWithIdentifier:tbViewSelect
                                             label:@"View Mode"
@@ -232,6 +288,8 @@ NSString* const tbStatusPanel = @"StatusPanel";
 - (NSArray*) toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar
 {
   return @[tbShowWorkspace,
+           NSToolbarSpaceItemIdentifier,
+           tbRunControls,
            NSToolbarFlexibleSpaceItemIdentifier,
            tbViewSelect,
            NSToolbarFlexibleSpaceItemIdentifier,
@@ -242,6 +300,7 @@ NSString* const tbStatusPanel = @"StatusPanel";
 - (NSArray*) toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar
 {
   return @[tbShowWorkspace,
+           tbRunControls,
            tbViewSelect,
            tbStatusPanel,
            NSToolbarSpaceItemIdentifier,

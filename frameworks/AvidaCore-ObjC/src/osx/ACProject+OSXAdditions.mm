@@ -149,7 +149,8 @@
 
 - (BOOL) sourceList:(AptoSourceList*)aSourceList writeItems:(NSArray*)items toPasteboard:(NSPasteboard*)pboard
 {
-  return NO;
+  [pboard writeObjects:items];
+  return YES;
 }
 
 
@@ -164,6 +165,12 @@
   return NO;
 }
 
+
+- (id<NSPasteboardWriting>) sourceList:(AptoSourceList*)aSourceList pasteboardWriterForItem:(id)item
+{
+  if ([item hasChildren]) return nil;
+  return (id <NSPasteboardWriting>)item;
+}
 
 // --------------------------------------------------------------------------------------------------------------
 @end

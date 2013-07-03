@@ -121,6 +121,24 @@ NSString* const ACPasteboardTypeProjectItem = ACMakeIdentfier(ACFrameworkIdentif
 
 
 
+- (void) encodeWithCoder:(NSCoder*)encoder {
+  [encoder encodeObject:title forKey:@"title"];
+  [encoder encodeInt:freezer_id.type forKey:@"type"];
+  [encoder encodeInt:freezer_id.identifier forKey:@"identifier"];
+  [encoder encodeInteger:badgeValue forKey:@"badgeValue"];
+  [encoder encodeObject:icon forKey:@"icon"];
+}
+
+- (id) initWithCoder:(NSCoder*)decoder {
+  title = [decoder decodeObjectForKey:@"title"];
+  freezer_id.type = (Avida::Viewer::FreezerObjectType)[decoder decodeIntForKey:@"type"];
+  freezer_id.identifier = (Avida::Viewer::FreezerObjectType)[decoder decodeIntForKey:@"identifier"];
+  badgeValue = [decoder decodeIntegerForKey:@"badgeValue"];
+  icon = [decoder decodeObjectForKey:@"icon"];
+  return self;
+}
+
+
 // NSPasteboardReading
 // --------------------------------------------------------------------------------------------------------------
 #pragma mark - NSPasteboardReading
@@ -133,7 +151,7 @@ NSString* const ACPasteboardTypeProjectItem = ACMakeIdentfier(ACFrameworkIdentif
   return readableTypes;
 }
 
-+ (NSPasteboardReadingOptions)readingOptionsForType:(NSString *)type pasteboard:(NSPasteboard *)pboard {
++ (NSPasteboardReadingOptions)readingOptionsForType:(NSString*)type pasteboard:(NSPasteboard*)pboard {
   if ([type isEqualToString:ACPasteboardTypeProjectItem]) {
     return NSPasteboardReadingAsKeyedArchive;
   }

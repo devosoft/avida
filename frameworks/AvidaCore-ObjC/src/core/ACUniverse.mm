@@ -38,7 +38,65 @@
 
 - (void) dealloc
 {
-  delete universe;
+  if (driver) {
+    delete driver;
+    driver = NULL;
+  } else {
+    delete universe;
+    universe = NULL;
+  }
+}
+
+
+// Status Checks
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Status Checks
+
+- (bool) hasStarted {
+  return driver->HasStarted();
+}
+
+- (bool) willPauseNow {
+  return (driver->GetPauseState() == Avida::Viewer::DRIVER_PAUSED);
+}
+
+- (bool) willPause {
+  return (driver->GetPauseAt() >= 0);
+}
+
+- (bool) isPaused {
+  return driver->IsPaused();
+}
+
+- (bool) hasFinished {
+  return driver->HasFinished();
+}
+
+
+// Actions
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Actions
+
+- (void) pause {
+  driver->Pause();
+}
+
+- (void) pauseAt:(Avida::Update)update {
+  driver->PauseAt(update);
+}
+
+
+- (void) resume {
+  driver->Resume();
+}
+
+
+- (void) end {
+  driver->Finish();
+}
+
+- (void) sync {
+  driver->Sync();
 }
 
 @end

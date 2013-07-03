@@ -29,6 +29,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import <AvidaCore/AvidaCore.h>
+
+
 @class AvidaController;
 
 @class ActivityListViewController;
@@ -49,6 +52,7 @@
   IBOutlet NSToolbar* toolbar;
   IBOutlet NSView* tbViewShowWorkspace;
   IBOutlet NSView* tbViewViewSelect;
+  IBOutlet NSView* tbViewRunControls;
   IBOutlet NSView* tbViewStatusPanel;
   
   IBOutlet NSSplitView* splitMain;
@@ -58,6 +62,8 @@
   OrganismAnalysisViewController* viewOrganismAnalysisCtlr;
   PopulationViewController* viewPopulationCtlr;
   StatsViewController* viewStatsCtlr;
+  
+  ACUniverse* currentUniverse;
 }
 
 
@@ -66,6 +72,13 @@
 #pragma mark - Init and Dealloc Methods
 
 - (id) initWithAvidaController:(AvidaController*)ctlr;
+
+
+// Actions
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - Actions
+
+- (IBAction) toggleRunState:(id)sender;
 
 
 // NSWindowController

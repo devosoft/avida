@@ -37,7 +37,7 @@ extern NSString* const ACPasteboardTypeProjectItem;
 // ACProjectItem Interface
 // --------------------------------------------------------------------------------------------------------------
 
-@interface ACProjectItem : NSObject <NSPasteboardReading, NSPasteboardWriting> {
+@interface ACProjectItem : NSObject <NSCoding, NSPasteboardReading, NSPasteboardWriting> {
   NSString* title;
   Avida::Viewer::FreezerID freezer_id;
   
@@ -68,6 +68,14 @@ extern NSString* const ACPasteboardTypeProjectItem;
 + (ACProjectItem*) itemWithTitle:(NSString*)itemTitle icon:(NSImage*)itemIcon;
 + (ACProjectItem*) itemWithFreezerID:(Avida::Viewer::FreezerID)fid title:(NSString*)itemTitle;
 + (ACProjectItem*) itemWithFreezerID:(Avida::Viewer::FreezerID)fid title:(NSString*)itemTitle icon:(NSImage*)itemIcon;
+
+
+// NSCoder
+// --------------------------------------------------------------------------------------------------------------
+#pragma mark - NSCoder
+
+- (void) encodeWithCoder:(NSCoder*)encoder;
+- (id) initWithCoder:(NSCoder*)decoder;
 
 
 // NSPasteboardReading
