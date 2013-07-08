@@ -51,8 +51,10 @@ namespace Avida {
       
 
       // Interface Methods
-      
       LIB_EXPORT virtual ResourceQuantity AmountAt(const Structure::Coord& location, Update current_update) = 0;
+      LIB_EXPORT virtual void SetAmountAt(ResourceQuantity amount, const Structure::Coord& location, Update current_update) = 0;
+      LIB_EXPORT virtual ResourceQuantity ModifyAmountAt(ResourceQuantity adjust_amount, const Structure::Coord& location,
+                                                         Update current_update) = 0;
       
       LIB_EXPORT virtual void PerformUpdate(Avida::Context& ctx, Update current_update) = 0;
       LIB_EXPORT virtual void DefinitionChanged(Update current_update) = 0;

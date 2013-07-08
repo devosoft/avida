@@ -28,7 +28,6 @@
 
 #include "cOrgInterface.h"
 #include "cWorld.h"
-#include "cGenomeUtil.h"
 #include "cPopulationCell.h"
 
 class cAvidaContext;
@@ -119,7 +118,6 @@ public:
   int GetCurrPeakY(cAvidaContext& ctx, int res_id);
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id); 
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id);
-  cPopulationResources* GetResourceCount();
   void TriggerDoUpdates(cAvidaContext& ctx);
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void Die(cAvidaContext& ctx);
@@ -141,41 +139,6 @@ public:
   void RotateToGreatestReputationWithDifferentTag(int tag);
   void RotateToGreatestReputationWithDifferentLineage(int line);
 
-  // -------- HGT support --------
-public:
-  //! Container type for fragments used during HGT.
-  typedef cPopulationCell::fragment_list_type fragment_list_type;
-  //! Match record, used to indicate the region within a genome that should be mutated.
-  typedef cGenomeUtil::substring_match substring_match;
-  //! Called when this organism is the donor during conjugation.
-  void DoHGTDonation(cAvidaContext& ctx);
-  //! Called when this organism "requests" an HGT conjugation.
-  void DoHGTConjugation(cAvidaContext& ctx);
-  //! Perform an HGT mutation on this offspring.
-  void DoHGTMutation(cAvidaContext& ctx, Genome& offspring);
-
-protected:
-	//! Place the fragment at the location of best match.
-	void HGTMatchPlacement(cAvidaContext& ctx, const InstructionSequence& offspring,
-												 fragment_list_type::iterator& selected,
-												 substring_match& location);
-	//! Place the fragment at the location of best match, with redundant instructions trimmed.
-	void HGTTrimmedPlacement(cAvidaContext& ctx, const InstructionSequence& offspring,
-													 fragment_list_type::iterator& selected,
-													 substring_match& location);	
-	//! Place the fragment at a random location.
-	void HGTRandomPlacement(cAvidaContext& ctx, const InstructionSequence& offspring,
-													fragment_list_type::iterator& selected,
-													substring_match& location);
-  //! Support for stateful HGT mutations.
-  struct HGTSupport {
-		fragment_list_type _pending; //!< HGT fragments that are awaiting an offspring.
-	};
-	HGTSupport* m_hgt_support; //!< Lazily-initialized pointer to HGT data.
-	//! Initialize HGT support.
-	inline void InitHGTSupport() { if(!m_hgt_support) { m_hgt_support = new HGTSupport(); } }
-	//! Called when this organism is the receiver of an HGT donation.
-	void ReceiveHGTDonation(const InstructionSequence& fragment);
   
 public:
   void AddLiveOrg(); 

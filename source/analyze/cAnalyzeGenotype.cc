@@ -31,8 +31,6 @@
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
-#include "cPhenPlastGenotype.h"
-#include "cPlasticPhenotype.h"
 #include "cTestCPU.h"
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
@@ -139,14 +137,11 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
 , parent_muts(_gen.parent_muts)
 , knockout_stats(NULL)
 , m_land(NULL)
-, m_phenplast_stats(NULL)
 {
   if (_gen.knockout_stats != NULL) {
     knockout_stats = new cAnalyzeKnockouts;
     *knockout_stats = *(_gen.knockout_stats);
   }
-  if (_gen.m_phenplast_stats != NULL)
-    m_phenplast_stats = new cPhenPlastSummary(*_gen.m_phenplast_stats);
 }
 
 cAnalyzeGenotype::~cAnalyzeGenotype()
@@ -529,17 +524,6 @@ void cAnalyzeGenotype::CheckLand() const
   }
 }
 
-void cAnalyzeGenotype::CheckPhenPlast() const
-{
-  // Implicit genotype recalculation if required
-  if (m_phenplast_stats == NULL) {
-    cCPUTestInfo test_info;
-    
-    cPhenPlastGenotype pp(m_genome, 1000, test_info, m_world, m_world->GetDefaultContext());
-    m_phenplast_stats = new cPhenPlastSummary(pp);
-  }
-}
-
 
 
 void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
@@ -561,10 +545,17 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
   }
   
   // Handling recalculation here
-  cPhenPlastGenotype recalc_data(m_genome, num_trials, *test_info, m_world, ctx);
+  cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   
-  // The most likely phenotype will be assigned to the phenotype stats
-  const cPlasticPhenotype* likely_phenotype = recalc_data.GetMostLikelyPhenotype();
+  test_cpu->TestGenome(ctx, test_info, m_genome);
+  
+  
+  if (test_cpu) delete test_cpu;
+
+  
+  cPhenotype* likely_phenotype = &m_cpu_test_info.GetColonyOrganism()->GetPhenotype();
+  
+  
   
   viable                = likely_phenotype->IsViable();
   m_env_inputs          = likely_phenotype->GetEnvInputs();
@@ -586,7 +577,7 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
   rbins_total           = likely_phenotype->GetLastRBinsTotal();
   rbins_avail           = likely_phenotype->GetLastRBinsAvail();
   collect_spec_counts   = likely_phenotype->GetLastCollectSpecCounts();
-  m_mating_type 		= likely_phenotype->GetMatingType(); //@CHC
+  m_mating_type         = likely_phenotype->GetMatingType(); //@CHC
   m_mate_preference     = likely_phenotype->GetMatePreference(); //@CHC
   m_mating_display_a    = likely_phenotype->GetCurMatingDisplayA();
   m_mating_display_b    = likely_phenotype->GetCurMatingDisplayB();
@@ -613,12 +604,6 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
     ancestor_dist = parent_genotype->GetAncestorDist() + parent_dist;
   }
   
-  // Summarize plasticity information if multiple recalculations performed
-  if (num_trials > 1){
-    if (m_phenplast_stats != NULL)
-      delete m_phenplast_stats;
-    m_phenplast_stats = new cPhenPlastSummary(recalc_data);
-  }
   
   delete local_test_info;
 }

@@ -31,7 +31,6 @@
 
 #include "cMutationRates.h"
 #include "tList.h"
-#include "cGenomeUtil.h"
 
 class cHardwareBase;
 class cPopulation;
@@ -85,9 +84,9 @@ private:
 public:
   typedef std::set<cPopulationCell*> neighborhood_type; //!< Type for cell neighborhoods.
 
-  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_migrant(false), m_can_input(false), m_can_output(false), m_hgt(0) { ; }
+  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_migrant(false), m_can_input(false), m_can_output(false) { ; }
   cPopulationCell(const cPopulationCell& in_cell);
-  ~cPopulationCell() { delete m_mut_rates; delete m_hgt; }
+  ~cPopulationCell() { delete m_mut_rates; }
 
   void operator=(const cPopulationCell& in_cell);
 
@@ -177,33 +176,6 @@ public:
   bool GetCanInput() { return m_can_input; }
   bool GetCanOutput() { return m_can_output; }
 
-	// -------- HGT support --------
-public:
-	typedef cGenomeUtil::fragment_list_type fragment_list_type; //!< Type for the list of genome fragments.
-	//! Diffuse genome fragments from this cell to its neighbors.
-	void DiffuseGenomeFragments();
-	//! Add fragments from the passed-in genome to the HGT fragments contained in this cell.
-	void AddGenomeFragments(cAvidaContext& ctx, const InstructionSequence& genome);
-	//! Retrieve the number of genome fragments currently found in this cell.
-	unsigned int CountGenomeFragments() const;
-	//! Remove and return the front genome fragment.
-	InstructionSequence PopGenomeFragment(cAvidaContext& ctx);
-	//! Retrieve the list of fragments from this cell.
-	fragment_list_type& GetFragments();
-	//! Clear all fragments from this cell, adjust resources as required.
-	void ClearFragments(cAvidaContext& ctx);
-
-private:
-  //! Contains HGT-related information for this cell.
-  struct HGTSupport {
-    // WARNING: the default operator= is used in cPopulationCell's copy ctor and operator=.
-    fragment_list_type fragments; //!< Fragments located in this cell.
-  };
-  HGTSupport* m_hgt; //!< Lazily-initialized pointer to the HGT support struct.
-  //! Initialize HGT support in this cell.
-  inline void InitHGTSupport() { if(!m_hgt) { m_hgt = new HGTSupport(); } }
-  //! Is HGT initialized?
-  inline bool IsHGTInitialized() const { return m_hgt != 0; }
 };
 
 inline int cPopulationCell::GetInputAt(int& input_pointer)

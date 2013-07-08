@@ -115,7 +115,6 @@ public:
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id) { return 0; } 
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
 
-  cPopulationResources* GetResourceCount() { return NULL; }
   void TriggerDoUpdates(cAvidaContext&) { }
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateAVResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
@@ -164,14 +163,6 @@ public:
 	//! Select a new network link.
 	bool NetworkSelect(int) { return false; }	
 
-	//! HGT donation (does nothing).
-	void DoHGTDonation(cAvidaContext&) { ; }
-	//! HGT conjugation (does nothing).
-	void DoHGTConjugation(cAvidaContext&) { ; }
-	//! HGT mutation (does nothing).
-	void DoHGTMutation(cAvidaContext&, Genome&) { ; }
-	//! Receive HGT donation (does nothing).
-	void ReceiveHGTDonation(const InstructionSequence&) { ; }
   
   bool Move(cAvidaContext&, int, int) { return false; }
 

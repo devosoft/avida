@@ -56,8 +56,6 @@
 #include "cLandscape.h"
 #include "cModularityAnalysis.h"
 #include "cPhenotype.h"
-#include "cPhenPlastGenotype.h"
-#include "cPlasticPhenotype.h"
 #include "cReaction.h"
 #include "cReactionProcess.h"
 #include "cResourceDef.h"

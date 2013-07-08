@@ -32,7 +32,6 @@
 #include "cEnvReqs.h"
 #include "cInitFile.h"
 #include "cOrganism.h"
-#include "cPhenPlastUtil.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cReaction.h"
@@ -546,11 +545,6 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
         if (!AssertInputBool(var_value, "collectable", var_type, feedback)) return false;
         new_resource->SetCollectable(var_value.AsInt());
       }
-      else if (var_name == "hgt") {
-        // this resource is for HGT -- corresponds to genome fragments present in cells.
-        if (!AssertInputBool(var_value, "hgt", var_type, feedback)) return false;
-        new_resource->SetHGTMetabolize(var_value.AsInt());
-      }
       else {
         feedback.Error("unknown variable '%s' in resource '%s'", (const char*)var_name, (const char*)name);
         return false;
@@ -563,28 +557,6 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
     // within its own type
     resource_lib.SetResourceIndex(new_resource);
     
-    // Prevent misconfiguration of HGT:
-    
-    if (new_resource->GetHGTMetabolize() &&
-        ( (new_resource->GetGeometry() != nGeometry::GLOBAL)
-         || (new_resource->GetInitial() > 0.0)
-         || (new_resource->GetInflow() > 0.0)
-         || (new_resource->GetOutflow() > 0.0)
-         || (new_resource->GetInflowX1() != -99)
-         || (new_resource->GetInflowX2() != -99)
-         || (new_resource->GetInflowY1() != -99)
-         || (new_resource->GetInflowY2() != -99)
-         || (new_resource->GetXDiffuse() != 1.0)
-         || (new_resource->GetXGravity() != 0.0)
-         || (new_resource->GetYDiffuse() != 1.0)
-         || (new_resource->GetYGravity() != 0.0))) {
-          feedback.Error("misconfigured HGT resource: %s", (const char*)name);
-          return false;
-        }
-    if (new_resource->GetHGTMetabolize() && !m_world->GetConfig().ENABLE_HGT.Get()) {
-      feedback.Error("resource configured to use HGT, but HGT not enabled");
-      return false;
-    }
     
     // If there are valid values for X/Y1's but not for X/Y2's assume that
     // the user is interested only in one point and set the X/Y2's to the
@@ -1506,10 +1478,6 @@ double cEnvironment::GetTaskProbability(cAvidaContext& ctx, cTaskContext& taskct
         force_mark_task = true;
     }
   }
-  if (test_plasticity){  //We have to test for plasticity, so try to get it
-    int task_id = taskctx.GetTaskEntry()->GetID();
-    task_prob = cPhenPlastUtil::GetTaskProbability(ctx, m_world, taskctx.GetOrganism()->SystematicsGroup("genotype"), task_id);
-  }
   force_mark_task = force_mark_task && (task_prob > 0.0);  //If the task isn't demonstrated, we don't need to worry about marking it.
   return task_prob;
 }
@@ -1547,29 +1515,6 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       // Test if infinite resource
       consumed = max_consumed * local_task_quality * task_plasticity_modifier;
       
-    } else if (in_resource->GetHGTMetabolize()) {
-      /* HGT Metabolism
-       This bit of code is triggered when ENABLE_HGT=1 and a resource has hgt=1.
-       Here's the idea: Each cell in the environment holds a buffer of genome fragments,
-       where these fragments are drawn from the remains of organisms that have died.
-       These remains are a potential source of energy to the current inhabitant of the
-       cell.  This code metabolizes one of those fragments by pretending that it's just
-       another resource.  Task quality can be used to control the conversion of fragments
-       to bonus, but the amount of resource consumed is always equal to the length of the
-       fragment.
-       */
-      int cellid = taskctx.GetOrganism()->GetCellID();
-      if (cellid != -1) { // can't do this in the test cpu
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
-        if (cell.CountGenomeFragments() > 0) {
-          InstructionSequence fragment = cell.PopGenomeFragment(ctx);
-          consumed = local_task_quality * fragment.GetSize();
-          result.Consume(in_resource->GetID(), fragment.GetSize(), true);
-          m_world->GetStats().GenomeFragmentMetabolized(taskctx.GetOrganism(), fragment);
-        }
-      }
-      // if we can't metabolize a fragment, stop here.
-      if (consumed == 0.0) { continue; }
     } else {
       // Otherwise we're using a finite resource
       const int res_id = in_resource->GetID();

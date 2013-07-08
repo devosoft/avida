@@ -614,12 +614,6 @@ protected:
   std::map < int, cStringSupport >* m_string_map;
 
 
-  // -------- HGT conjugation support --------
-public:
-  //! Called when this individual is the donor organism during conjugation.
-  void DoHGTDonation();
-
-
   // -------- Division of Labor support --------
 public:
   int GetNumOfPointMutationsApplied() {return m_num_point_mut; } //! number of point mutations applied to org.

@@ -237,7 +237,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cDynamicRes.cc
   ${MAIN_DIR}/cEnvironment.cc
   ${MAIN_DIR}/cEventList.cc
-  ${MAIN_DIR}/cGenomeUtil.cc
   ${MAIN_DIR}/cLandscape.cc
   ${MAIN_DIR}/cMigrationMatrix.cc
   ${MAIN_DIR}/cMutationRates.cc
@@ -246,20 +245,13 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cOrgSensor.cc
   ${MAIN_DIR}/cParasite.cc
   ${MAIN_DIR}/cPhenotype.cc
-  ${MAIN_DIR}/cPhenPlastGenotype.cc
-  ${MAIN_DIR}/cPhenPlastUtil.cc
-  ${MAIN_DIR}/cPlasticPhenotype.cc
   ${MAIN_DIR}/cPopulation.cc
-  ${MAIN_DIR}/cPopulationResources.cc
   ${MAIN_DIR}/cPopulationCell.cc
   ${MAIN_DIR}/cPopulationInterface.cc
   ${MAIN_DIR}/cReaction.cc
   ${MAIN_DIR}/cReactionLib.cc
   ${MAIN_DIR}/cReactionResult.cc
   ${MAIN_DIR}/cResourceDef.cc
-  ${MAIN_DIR}/cResource.cc
-  ${MAIN_DIR}/cResourceElement.cc
-  ${MAIN_DIR}/cResourcePopulationInterface.cc
   ${MAIN_DIR}/cStats.cc
   ${MAIN_DIR}/cTaskLib.cc
   ${MAIN_DIR}/cWorld.cc

@@ -351,14 +351,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   }
 
 	
-  // HGT Mutations - NOT COUNTED
-	// HGT is a location-dependent random process; each type is tested over in
-	// cPopulationInterface.
-	if(m_world->GetConfig().ENABLE_HGT.Get()) {
-		m_organism->GetOrgInterface().DoHGTMutation(ctx, m_organism->OffspringGenome());
-	}
-  
-  
   // Divide Mutations
   if (m_organism->TestDivideMut(ctx) && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());

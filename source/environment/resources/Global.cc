@@ -68,6 +68,30 @@ Avida::Environment::ResourceQuantity Avida::Environment::Resources::Global::Amou
 }
 
 
+void Avida::Environment::Resources::Global::SetAmountAt(ResourceQuantity amount, const Structure::Coord& location,
+                                                        Update current_update)
+{
+  (void)location;
+  
+  m_quantity = amount;
+  m_last_updated = current_update;  
+}
+
+
+Avida::Environment::ResourceQuantity Avida::Environment::Resources::Global::ModifyAmountAt(ResourceQuantity adjust_amount,
+                                                                                           const Structure::Coord& location,
+                                                                                           Update current_update)
+{
+  (void)location;
+  
+  updateTo(current_update);
+  m_quantity += adjust_amount;
+  m_last_updated = current_update;
+  
+  return m_quantity;
+}
+
+
 void Avida::Environment::Resources::Global::PerformUpdate(Avida::Context& ctx, Update current_update)
 {
   ;

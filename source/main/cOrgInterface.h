@@ -43,7 +43,6 @@ class cOrganism;
 class cOrgMessage;
 class cOrgSinkMessage;
 class cPopulationCell;
-class cPopulationResources;
 class cString;
 
 using namespace Avida;
@@ -119,7 +118,6 @@ public:
   virtual int GetCurrPeakY(cAvidaContext& ctx, int res_id) = 0;
   virtual int GetFrozenPeakX(cAvidaContext& ctx, int res_id) = 0; 
   virtual int GetFrozenPeakY(cAvidaContext& ctx, int res_id) = 0;
-  virtual cPopulationResources* GetResourceCount() = 0;
   virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
   virtual void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
   virtual void Die(cAvidaContext& ctx) = 0;
@@ -135,11 +133,6 @@ public:
   virtual void RotateToGreatestReputationWithDifferentTag(int tag) =0;
   virtual void RotateToGreatestReputationWithDifferentLineage(int line) =0;	
 
-  virtual void DoHGTDonation(cAvidaContext& ctx) = 0;
-  virtual void DoHGTConjugation(cAvidaContext& ctx) = 0;
-  virtual void DoHGTMutation(cAvidaContext& ctx, Genome& offspring) = 0;
-  virtual void ReceiveHGTDonation(const InstructionSequence& fragment) = 0;
-  
   virtual bool Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;
 
   virtual void AddLiveOrg() = 0;

@@ -101,7 +101,6 @@ cResourceDef::cResourceDef(const cString & _name, int _id)
   , m_guard_juvs_per(0)
   , m_prob_detect(1.0)
   , m_probabilistic(false)
-  , hgt_metabolize(false)
   , collectable(true)
 {
 }

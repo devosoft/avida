@@ -48,6 +48,9 @@ namespace Avida {
         
         
         LIB_EXPORT ResourceQuantity AmountAt(const Structure::Coord& location, Update current_update);
+        LIB_EXPORT void SetAmountAt(ResourceQuantity amount, const Structure::Coord& location, Update current_update);
+        LIB_EXPORT ResourceQuantity ModifyAmountAt(ResourceQuantity adjust_amount, const Structure::Coord& location,
+                                                   Update current_update);
         
         LIB_EXPORT void PerformUpdate(Avida::Context& ctx, Update current_update);
         LIB_EXPORT void DefinitionChanged(Update current_update);

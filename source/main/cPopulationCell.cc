@@ -45,7 +45,6 @@ cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
 , m_spec_state(in_cell.m_spec_state)
 , m_can_input(false)
 , m_can_output(false)
-, m_hgt(0)
 {
   // Copy the mutation rates into a new structure
   m_mut_rates = new cMutationRates(*in_cell.m_mut_rates);
@@ -55,11 +54,6 @@ cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
   cPopulationCell* test_cell;
   while ((test_cell = const_cast<cPopulationCell*>(conn_it.Next()))) m_connections.PushRear(test_cell);
 	
-	// copy the hgt information, if needed.
-	if(in_cell.m_hgt) {
-		InitHGTSupport();
-		*m_hgt = *in_cell.m_hgt;
-	}
 }
 
 void cPopulationCell::operator=(const cPopulationCell& in_cell)
@@ -85,15 +79,6 @@ void cPopulationCell::operator=(const cPopulationCell& in_cell)
 		tConstListIterator<cPopulationCell> conn_it(in_cell.m_connections);
 		cPopulationCell* test_cell;
 		while ((test_cell = const_cast<cPopulationCell*>(conn_it.Next()))) m_connections.PushRear(test_cell);
-		
-		// copy hgt information, if needed.
-		delete m_hgt;
-		m_hgt = 0;
-		if (in_cell.m_hgt) {
-			InitHGTSupport();
-			*m_hgt = *in_cell.m_hgt;
-		}
-	}
 }
 
 void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates& in_rates, int x, int y)
@@ -433,94 +418,7 @@ Apto::Array<cOrganism*> cPopulationCell::GetCellAVs()
 
 
 
-/*! Diffuse genome fragments from this cell to its neighbors.
- 
- NOTE: This method is for OUTGOING diffusion only.
- 
- There are many possible ways in which genome fragments could be diffused.  We'll
- put in the framework to support those other mechanisms, but we're not going to 
- worry about this until we need it.  Not terribly interested in recreating an
- artificial chemistry here...
- */
-void cPopulationCell::DiffuseGenomeFragments() {
-	InitHGTSupport();
-	
-	switch(m_world->GetConfig().HGT_DIFFUSION_METHOD.Get()) {
-			case 0: { // none
-				break;
-			}
-			default: {
-        m_world->GetDriver().Feedback().Error("Invalid HGT_DIFFUSION_METHOD");
-        m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
-			}
-	}
-}
 
-/*! Add fragments from the passed-in genome to the HGT fragments contained in this cell.
- 
- Split the passed-in genome into fragments according to a normal distribution specified
- by HGT_FRAGMENT_SIZE_MEAN and HGT_FRAGMENT_SIZE_VARIANCE.  These fragments are added
- to this cell's fragment list.
- 
- As a safety measure, we also remove old fragments to conserve memory.  Specifically, we
- remove old fragments until at most HGT_MAX_FRAGMENTS_PER_CELL fragments remain.
- */
-void cPopulationCell::AddGenomeFragments(cAvidaContext& ctx, const InstructionSequence& genome) {
-	assert(genome.GetSize()>0); // oh, sweet sanity.
-	InitHGTSupport();
-	
-	m_world->GetPopulation().GetResources().AdjustHGTResource(ctx, genome.GetSize());
-	
-	cGenomeUtil::RandomSplit(ctx, 
-													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
-													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
-													 genome,
-													 m_hgt->fragments);
-	
-	// pop off the front of this cell's buffer until we have <= HGT_MAX_FRAGMENTS_PER_CELL.
-	while(m_hgt->fragments.size()>(unsigned int)m_world->GetConfig().HGT_MAX_FRAGMENTS_PER_CELL.Get()) {
-		m_world->GetPopulation().GetResources().AdjustHGTResource(ctx, -m_hgt->fragments.front().GetSize());
-		m_hgt->fragments.pop_front();
-	}
-}
-
-/*! Retrieve the number of genome fragments currently found in this cell.
- */
-unsigned int cPopulationCell::CountGenomeFragments() const {
-	if(IsHGTInitialized()) {
-		return m_hgt->fragments.size();
-	} else {
-		return 0;
-	}
-}
-
-/*! Remove and return a random genome fragment.
- */
-InstructionSequence cPopulationCell::PopGenomeFragment(cAvidaContext& ctx) {
-	assert(m_hgt!=0);
-	fragment_list_type::iterator i = m_hgt->fragments.begin();
-	std::advance(i, ctx.GetRandom().GetUInt(0, m_hgt->fragments.size()));
-	InstructionSequence tmp = *i;
-	m_hgt->fragments.erase(i);
-	return tmp;
-}
-
-/*! Retrieve the list of fragments from this cell.
- */
-cPopulationCell::fragment_list_type& cPopulationCell::GetFragments() {
-	InitHGTSupport();
-	return m_hgt->fragments;
-}
-
-/*!	Clear all fragments from this cell, adjust resources as required.
- */
-void cPopulationCell::ClearFragments(cAvidaContext& ctx) {
-	InitHGTSupport();
-	for(fragment_list_type::iterator i=m_hgt->fragments.begin(); i!=m_hgt->fragments.end(); ++i) {
-		m_world->GetPopulation().GetResources().AdjustHGTResource(ctx, -i->GetSize());
-	}
-	m_hgt->fragments.clear();
-}
 
 void cPopulationCell::SetCellData(int data, int org_id)
 {

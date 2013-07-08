@@ -2878,38 +2878,6 @@ void cStats::PrintTopPredTargets(const cString& filename)
 
 
 
-/*! Called when an organism metabolizes a genome fragment.
- */
-void cStats::GenomeFragmentMetabolized(cOrganism*, const InstructionSequence& fragment) {
-	m_hgt_metabolized.Add(fragment.GetSize());
-}
-
-/*! Called when a fragment is inserted into an offspring's genome via HGT.
- */
-void cStats::GenomeFragmentInserted(cOrganism*, const InstructionSequence& fragment, const cGenomeUtil::substring_match&) {
-	m_hgt_inserted.Add(fragment.GetSize());
-}
-
-/*!	Print HGT statistics.
- */
-void cStats::PrintHGTData(const cString& filename) {
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment("Horizontal gene transfer statistics");
-  df->WriteTimeStamp();
-	df->Write(GetUpdate(), "Update [update]");
-	df->Write(m_hgt_metabolized.Count(), "Total count of metabolized genome fragments [metcount]");
-	df->Write(m_hgt_metabolized.Sum(), "Total size of metabolized genome fragments [metsize]");
-	df->Write(m_hgt_inserted.Count(), "Total count of insertion events [inscount]");
-	df->Write(m_hgt_inserted.Sum(), "Total size of insertion events [inssize]");
-	df->Endl();
-  
-	m_hgt_metabolized.Clear();
-	m_hgt_inserted.Clear();
-}
-
-
-
 
 /*! Prints logged retrieved messages.
  */

@@ -218,12 +218,6 @@ public:
   virtual void InheritState(cHardwareBase&) { ; }
   
   
-	// -------- HGT --------
-	//! Retrieve a genome fragment extending downstream from the read head.
-	virtual InstructionSequence GetGenomeFragment(unsigned int downstream);
-	//! Insert a genome fragment at the current write head.
-	virtual void InsertGenomeFragment(const InstructionSequence& fragment);
-  
 protected:
   void ResizeCostArrays(int new_size);
 

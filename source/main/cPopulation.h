@@ -28,8 +28,6 @@
 #include "cBirthChamber.h"
 #include "cOrgInterface.h"
 #include "cPopulationInterface.h"
-#include "cPopulationResources.h"
-#include "cResourcePopulationInterface.h"
 #include "cString.h"
 #include "cWorld.h"
 #include "tList.h"
@@ -59,12 +57,11 @@ public:
 typedef Apto::SmartPtr<cPopulationOrgStatProvider, Apto::InternalRCObject> cPopulationOrgStatProviderPtr;
 
 
-class cPopulation : public Data::ArgumentedProvider, public cResourcePopulationInterface
+class cPopulation : public Data::ArgumentedProvider
 {
 private:
   // Components...
   cWorld* m_world;
-  cPopulationResources m_pop_res;           // Resources available
   Apto::PriorityScheduler* m_scheduler;                // Handles allocation of CPU cycles
   Apto::Array<cPopulationCell> cell_array;  // Local cells composing the population
   Apto::Array<int> empty_cell_id_array;     // Used for PREFER_EMPTY birth methods
@@ -123,8 +120,6 @@ public:
   ~cPopulation();
 
 
-  cPopulationResources& GetResources() { return m_pop_res; }
-  
   // Data::Provider
   Data::ConstDataSetPtr Provides() const;
   void UpdateProvidedValues(Update current_update);

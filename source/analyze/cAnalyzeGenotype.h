@@ -33,11 +33,9 @@
 #include "cGenotypeData.h"
 #include "cInstSet.h"
 #include "cLandscape.h"
-#include "cPhenPlastGenotype.h"
 #include "cString.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
-#include "cPhenPlastSummary.h"
 
 // cAnalyzeGenotype    : Collection of information about loaded genotypes
 
@@ -193,8 +191,6 @@ private:
   cString task_order;
 
   
-  // Group 6: Phenotypic Plasticity
-  mutable cPhenPlastSummary* m_phenplast_stats;
   
   int NumCompare(double new_val, double old_val) const {
     if (new_val == old_val) return  0;
@@ -208,8 +204,6 @@ private:
   int CalcMaxGestation() const;
   void CalcKnockouts(bool check_pairs = false, bool check_chart = false) const;
   void CheckLand() const;
-  void CheckPhenPlast() const;
-  void SummarizePhenotypicPlasticity(const cPhenPlastGenotype& pp) const;
   
 public:
   cAnalyzeGenotype(cWorld* world, const Genome& genome);

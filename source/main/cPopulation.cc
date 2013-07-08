@@ -54,7 +54,6 @@
 #include "cParasite.h"
 #include "cPhenotype.h"
 #include "cPopulationCell.h"
-#include "cPopulationResources.h"
 #include "cResourceDef.h"
 #include "cStats.h"
 #include "cTestCPU.h"
@@ -256,58 +255,6 @@ void cPopulation::SetupCellGrid()
   }
   
   BuildTimeSlicer();
-  
-  // Setup the resources...
-  const cResourceDefLib& resource_lib = environment.GetResDefLib();
-  int global_res_index = -1;
-  
-  cPopulationResources m_pop_res(this, resource_lib.GetSize());
-  m_pop_res.ResizeSpatialGrids(world_x, world_y, geometry);
-  m_pop_res.SetX(world_x);
-  m_pop_res.SetY(world_y);
-  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    
-    // check to see if this is the hgt resource:
-    if (res->GetHGTMetabolize()) {
-      if (m_pop_res.GetHGTResidID() != -1) {
-        m_world->GetDriver().Feedback().Error("Only one HGT resource is currently supported.");
-        m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
-      }
-      m_pop_res.GetHGTResidID() = i;
-    }
-    
-    global_res_index++;
-    m_world->GetStats().SetResourceName(global_res_index, res->GetName());
-    const double decay = 1.0 - res->GetOutflow();
-    if (!res->IsSpatial()) {
-      m_pop_res.SetupGlobalRes(m_world, global_res_index, res->GetName(), res->GetInitial(),
-                               res->GetInflow(), decay, res->GetGeometry(), m_world->GetVerbosity());
-    } else {
-      if (res->IsDynamic()) {
-        m_pop_res.SetupDynamicRes(m_world, global_res_index, res, m_world->GetVerbosity());
-      } else if (res->IsDiffusion()) {
-        m_pop_res.SetupDiffusionRes(m_world, global_res_index, res->GetName(), res->GetInitial(), res->GetInflow(), decay,
-                                    res->GetGeometry(), res->GetXDiffuse(),
-                                    res->GetXGravity(), res->GetYDiffuse(),
-                                    res->GetYGravity(), res->GetInflowX1(),
-                                    res->GetInflowX2(), res->GetInflowY1(),
-                                    res->GetInflowY2(), res->GetOutflowX1(),
-                                    res->GetOutflowX2(), res->GetOutflowY1(),
-                                    res->GetOutflowY2(), res->GetCellListPtr(),
-                                    res->GetCellIdListPtr(), m_world->GetVerbosity());
-      } else {
-        m_world->GetDriver().Feedback().Error("Spatial resource \"%s\"is not a diffusion or dynamic resource.", (const char*)res->GetName());
-        m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
-      }
-    }
-  }
-  
-  // if HGT is on, make sure there's a resource for it:
-  if (m_world->GetConfig().ENABLE_HGT.Get() && (m_pop_res.GetHGTResidID() == -1)) {
-    m_world->GetDriver().Feedback().Warning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
-  }
 }
 
 void cPopulation::ResizeCellGrid(int x, int y)
@@ -1858,16 +1805,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   }
   
   
-  // If HGT is turned on and there's a possibility of natural competence,
-  // this organism's genome needs to be split up into fragments
-  // and deposited in its cell.  We then also have to add the size of this genome to
-  // the HGT resource.
-  if (m_world->GetConfig().ENABLE_HGT.Get()
-      && (m_world->GetConfig().HGT_COMPETENCE_P.Get() > 0.0)) {
-    ConstInstructionSequencePtr seq;
-    seq.DynamicCastFrom(organism->GetGenome().Representation());
-    in_cell.AddGenomeFragments(ctx, *seq);
-  }
   
   // And clear it!
   in_cell.RemoveOrganism(ctx); 

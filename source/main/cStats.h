@@ -34,7 +34,6 @@
 
 #include "cBirthEntry.h"
 #include "cDoubleSum.h"
-#include "cGenomeUtil.h"
 #include "cOrganism.h"
 #include "cRunningAverage.h"
 #include "cRunningStats.h"
@@ -872,17 +871,6 @@ protected:
 	std::map <int, int> m_tags;
 
 
-	// -------- HGT support --------
-private:
-	cDoubleSum m_hgt_metabolized; //!< Total length of metabolized genome fragments.
-	cDoubleSum m_hgt_inserted; //!< Total length of inserted genome fragments.
-public:
-	//! Called when an organism metabolizes a genome fragment.
-	void GenomeFragmentMetabolized(cOrganism* organism, const InstructionSequence& fragment);
-	//! Called when an organism inserts a genome fragment.
-	void GenomeFragmentInserted(cOrganism* organism, const InstructionSequence& fragment, const cGenomeUtil::substring_match& location);
-	//! Print HGT statistics.
-	void PrintHGTData(const cString& filename);
 
 	// -------- Multiprocess support --------
 private:

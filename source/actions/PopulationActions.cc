@@ -2739,75 +2739,6 @@ public:
 };
 
 
-/*! Diffuse HGT genome fragments.
- 
- If HGT is enabled, each cell will gradually (ok, ok - it'll happen quickly) build up
- a buffer of genome fragments.  This event triggers the diffusion of those fragments.
- 
- For right now, we evaluate each cell in order; fix this if we start seeing diffusion
- artifacts.
- 
- The actual code for performing the diffusion lives over in cPopulationCell::DiffuseGenomeFragments().
- */
-class cActionDiffuseHGTGenomeFragments : public cAction {
-public:
-	static const cString GetDescription() { return "Arguments: <none>"; }
-	
-	//! Constructor.
-	cActionDiffuseHGTGenomeFragments(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
-	}
-	
-	//! Process this event.
-	void Process(cAvidaContext&) {
-		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
-			m_world->GetPopulation().GetCell(i).DiffuseGenomeFragments();
-		}
-	}
-};
-
-/*! Avidian conjugation.
- 
- This event is an approximation of bacterial conjugation.  Behind the scenes, this
- is implemented as intra-lifetime HGT, and so requires that HGT be enabled.
- 
- Each time this event runs, each individual in the population has a configurable
- probability of being the conjugate "donor."  If so, a genome fragment from that
- individual is deposited in a buffer in the receiving organism.  When the receiver
- next replicates, that fragment will be incorporated into its offspring.
- 
- \todo I suppose that the fragment could be inserted at runtime, but I fear there
- would be... complications... to runtime changes to an organism's genome...
- */
-class cActionAvidianConjugation : public cAction {
-public:
-	static const cString GetDescription() { return "Arguments: (prob. of donation)"; }
-  
-	//! Constructor.
-  cActionAvidianConjugation(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_donation_p(-1.0) {
-		cString largs(args);
-		if(largs.GetSize()) {
-			m_donation_p = largs.PopWord().AsDouble();
-		} 
-		
-		if((m_donation_p < 0.0) || (m_donation_p > 1.0)) {
-			world->GetDriver().Feedback().Error("Conjugate event must include probability of donation [0..1].");
-      world->GetDriver().Abort(Avida::INVALID_CONFIG);
-		}
-  }
-  
-	//! Process this event.
-  void Process(cAvidaContext& ctx) {
-		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
-			cOrganism* org = m_world->GetPopulation().GetCell(i).GetOrganism();			
-			if(org && (m_donation_p > 0.0) && ctx.GetRandom().P(m_donation_p)) {
-				org->GetOrgInterface().DoHGTDonation(ctx);
-			}
-		}
-	}
-  
-private:
-	double m_donation_p; //!< Per-individual probability of being a conjugate donor.
-};
 
 
 
@@ -3184,9 +3115,6 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
   action_lib->Register<cActionKillMeanBelowThresholdPaintable>("KillMeanBelowThresholdPaintable");
 	
-  action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
-  action_lib->Register<cActionAvidianConjugation>("AvidianConjugation");
-  
   action_lib->Register<cActionPrintMiniTraces>("PrintMiniTraces");
   action_lib->Register<cActionPrintMicroTraces>("PrintMicroTraces");
   action_lib->Register<cActionLoadMiniTraceQ>("LoadMiniTraceQ");

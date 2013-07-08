@@ -25,8 +25,6 @@
 
 #include <fstream>
 
-#include "cPopulationResources.h"
-#include "cResourcePopulationInterface.h"
 #include "cString.h"
 #include "cCPUTestInfo.h"
 #include "cWorld.h"
@@ -35,12 +33,11 @@
 class cAvidaContext;
 class cBioGroup;
 class cInstSet;
-class cResource;
 
 using namespace Avida;
 
 
-class cTestCPU : public cResourcePopulationInterface
+class cTestCPU
 {
 public:
 
@@ -56,11 +53,6 @@ private:
   double m_test_solo_res_lev;
   
 
-  // Actual CPU resources.
-  cPopulationResources m_resource_count;
-  cPopulationResources m_faced_cell_resource_count;
-  cPopulationResources m_cell_resource_count;
-    
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
   bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome, int cur_depth);
@@ -102,7 +94,6 @@ public:
   
   // Used by cTestCPUInterface to get/update resources
   void ModifyResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  cPopulationResources& GetResourceCount() { return m_resource_count; }
   
   cPopulationCell& GetCell(int cell_id) { ; }
   void KillOrganism(cAvidaContext& ctx, int cell_id) { ; }

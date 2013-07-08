@@ -121,7 +121,6 @@ private:
   double m_prob_detect;
   bool m_probabilistic;
   
-  bool hgt_metabolize;
   bool collectable;
 
   cResourceDef(); // @not_implemented
@@ -150,10 +149,8 @@ public:
   void SetOutflow(double _outflow) { outflow = _outflow; }
   void SetSpatial(bool _spatial) { isspatial = _spatial; }
 
-  bool GetHGTMetabolize() const { return hgt_metabolize; }
   bool GetCollectable() { return collectable; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
-  void SetHGTMetabolize(int _in) { hgt_metabolize = _in; }
 
   // diffusion resources (old spatial resources)
   bool IsDiffusion() { return isdiffusion; }
