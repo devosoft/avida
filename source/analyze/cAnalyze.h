@@ -51,7 +51,6 @@ class cCPUTestInfo;
 class cEnvironment;
 class cInitFile;
 class cInstSet;
-class cResourceHistory;
 class cTestCPU;
 class cWorld;
 template <class T> class tDataEntry;
@@ -89,11 +88,6 @@ private:
   cWorld* m_world;
   cAvidaContext& m_ctx;
   cAnalyzeJobQueue m_jobqueue;
-
-  // This is the storage for the resource information from resource.dat.
-  cResourceHistory* m_resources;
-  int m_resource_time_spent_offset; // The amount to offset the time spent when 
-                                    // beginning, using resources that change
 
   int interactive_depth;  // How nested are we if in interactive mode?
 
@@ -140,8 +134,7 @@ public:
   
   void AlignCurrentBatch() { CommandAlign(""); }
   
-  static void PopCommonCPUTestParameters(cWorld* in_world, cString& cur_string, cCPUTestInfo& test_info,
-    cResourceHistory* in_resource_history = NULL, int in_resource_time_spent_offset = 0);
+  static void PopCommonCPUTestParameters(cWorld* in_world, cString& cur_string, cCPUTestInfo& test_info);
     
   // structure for phenotype statistics, used in CommandPrintPhenotypes
   struct p_stats {
@@ -201,7 +194,6 @@ private:
   void LoadSequence(cString cur_string);
   // Clears the current time oriented list of resources and loads in a new one
   // from a file specified by the user, or resource.dat by default.
-  void LoadResources(cString cur_string);
   void LoadFile(cString cur_string);
   
   // Reduction and Sampling

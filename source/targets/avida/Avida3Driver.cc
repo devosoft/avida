@@ -56,6 +56,16 @@ void Avida3Driver::Run()
 //    if (m_world->GetConfig().ANALYZE_MODE.Get() == 2) analyze.RunInteractive();
 //    return;
 //  }
+
+  const int rand_seed = cfg->RANDOM_SEED.Get();
+  std::cout << "Random Seed: " << rand_seed;
+  if (rand_seed != world->GetRandom().Seed()) std::cout << " -> " << world->GetRandom().Seed();
+  std::cout << std::endl;
+  
+  if (cfg->VERBOSITY.Get() > VERBOSE_NORMAL) std::cout << "Data Directory: " << opath << std::endl;
+  
+  std::cout << std::endl;
+
   
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();

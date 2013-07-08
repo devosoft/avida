@@ -76,15 +76,6 @@ int main(int argc, char * argv[])
   Avida::Structure::Controller* structure = new Avida::Structure::Types::TwoDimensionalGrid();
   Avida::World::ManagerPtr world(Avida::World::Manager::CreateWithTopLevelStructure(universe, structure));
   
-  const int rand_seed = cfg->RANDOM_SEED.Get();
-  std::cout << "Random Seed: " << rand_seed;
-  if (rand_seed != world->GetRandom().Seed()) std::cout << " -> " << world->GetRandom().Seed();
-  std::cout << std::endl;
-
-  if (cfg->VERBOSITY.Get() > VERBOSE_NORMAL) std::cout << "Data Directory: " << opath << std::endl;
-
-  std::cout << std::endl;
-  
   (new Avida3Driver(universe, feedback))->Run();
   
   return 0;

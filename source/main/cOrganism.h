@@ -173,10 +173,6 @@ public:
 
   bool IsDead() { return m_is_dead; }
 
-  bool GetPheromoneStatus() { return m_pher_drop; }
-  void TogglePheromone() { m_pher_drop = (m_pher_drop == true) ? false : true; }
-  void SetPheromone(bool newval) { m_pher_drop = newval; }
-
   const cStateGrid& GetStateGrid() const;
 
   double GetVitality() const;

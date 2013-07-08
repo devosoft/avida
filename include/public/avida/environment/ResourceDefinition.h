@@ -26,6 +26,7 @@
 #define AvidaEnvironmentResourceDefinition_h
 
 #include "avida/environment/Types.h"
+#include "avida/util/ArgParser.h"
 
 
 namespace Avida {
@@ -39,12 +40,18 @@ namespace Avida {
     private:
       const ResourceID m_id;
       const Apto::String m_name;
+      
+      Util::Args* m_arguments;
 
     public:
-      ResourceDefinition(const ResourceID& resource_id, const Apto::String& resource_name) : m_id(resource_id), m_name(resource_name) { ; }
+      LIB_EXPORT inline ResourceDefinition(const ResourceID& resource_id, const Apto::String& resource_name, Util::Args* args)
+        : m_id(resource_id), m_name(resource_name), m_arguments(args) { ; }
+      LIB_EXPORT ~ResourceDefinition();
       
       LIB_EXPORT inline const ResourceID& GetID() const { return m_id; }
       LIB_EXPORT inline const Apto::String& Name() const { return m_name; }
+      
+      LIB_EXPORT inline const Util::Args& Arguments() const { return *m_arguments; }
             
     };
     

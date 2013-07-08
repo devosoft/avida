@@ -61,7 +61,6 @@
 #include "cReaction.h"
 #include "cReactionProcess.h"
 #include "cResourceDef.h"
-#include "cResourceHistory.h"
 #include "cStringIterator.h"
 #include "cTestCPU.h"
 #include "cUserFeedback.h"
@@ -239,25 +238,6 @@ void cAnalyze::LoadSequence(cString cur_string)
   batch[cur_batch].SetAligned(false);
 }
 
-// Clears the current time oriented list of resources and loads in a new one
-// from a file specified by the user, or resource.dat by default.
-void cAnalyze::LoadResources(cString cur_string)
-{
-  delete m_resources;
-  m_resources = new cResourceHistory;
-  
-  int words = cur_string.CountNumWords();
-  
-  cString filename = "resource.dat";
-  if (words >= 1)
-		filename = cur_string.PopWord();
-  if (words >= 2)
-		m_resource_time_spent_offset = cur_string.PopWord().AsInt();
-  
-  cout << "Loading Resources from: " << filename << endl;
-  
-  if (!m_resources->LoadFile(filename, m_world->GetWorkingDir())) cerr << "error: failed to load resource file" << endl;
-}
 
 double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype* genotype, double mu) 
 {
@@ -9651,11 +9631,10 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
 }
 
 
-void cAnalyze::PopCommonCPUTestParameters(cWorld* in_world, cString& cur_string, cCPUTestInfo& test_info, cResourceHistory* in_resource_history, int in_resource_time_spent_offset)
+void cAnalyze::PopCommonCPUTestParameters(cWorld* in_world, cString& cur_string, cCPUTestInfo& test_info)
 {
   Apto::Array<int> manual_inputs;  // Used only if manual inputs are specified
   cString msg;                // Holds any information we may want to send the driver to display
-  int use_resources      = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 0;
   int update             = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : -1;
   bool use_random_inputs = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() == 1: false;
   bool use_manual_inputs = false;
@@ -9679,7 +9658,6 @@ void cAnalyze::PopCommonCPUTestParameters(cWorld* in_world, cString& cur_string,
     test_info.UseManualInputs(manual_inputs);
   else
     test_info.UseRandomInputs(use_random_inputs); 
-  test_info.SetResourceOptions(use_resources, in_resource_history, update, in_resource_time_spent_offset);
 }
 
 
@@ -9782,7 +9760,6 @@ void cAnalyze::SetupCommandDefLibrary()
   
   AddLibraryDef("LOAD_ORGANISM", &cAnalyze::LoadOrganism);
   AddLibraryDef("LOAD_SEQUENCE", &cAnalyze::LoadSequence);
-  AddLibraryDef("LOAD_RESOURCES", &cAnalyze::LoadResources);
   AddLibraryDef("LOAD", &cAnalyze::LoadFile);
   
   // Reduction and sampling commands...

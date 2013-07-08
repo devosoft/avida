@@ -31,8 +31,16 @@ static const double UPDATE_STEP(1.0 / 10000.0);
 static const double EPSILON(1.0e-15);
 static const int PRECALC_DISTANCE(100);
 
+enum { ARGD_INITIAL = 0, ARGD_INFLOW, ARGD_OUTFLOW };
 
-Avida::Environment::Resources::Global::Global(ResourceDefinition& def) : Resource(def) { ; }
+
+Avida::Environment::Resources::Global::Global(ResourceDefinition& def) : Resource(def), m_last_updated(0)
+{
+  m_quantity = m_def.Arguments().Double(ARGD_INITIAL);
+  m_inflow_precalc.Resize(PRECALC_DISTANCE + 1);
+  m_outflow_precalc.Resize(PRECALC_DISTANCE + 1);
+  DefinitionChanged(m_last_updated);
+}
 
 Avida::Environment::Resources::Global::~Global() { ; }
 
@@ -43,6 +51,7 @@ void Avida::Environment::Resources::Global::Initialize()
   
   schema.Define("initial", 0.0);
   schema.Define("inflow", 0.0);
+  schema.Define("outflow", 0.0);
   
   Library::Instance().RegisterResourceType("global", schema, Create);
 }
@@ -51,10 +60,11 @@ void Avida::Environment::Resources::Global::Initialize()
 Avida::Environment::ResourceQuantity Avida::Environment::Resources::Global::AmountAt(const Structure::Coord& location,
                                                                                      Update current_update)
 {
-  assert(false);
-  // @TOOD
+  (void)location;
   
-  return 0.0;
+  updateTo(current_update);
+  
+  return m_quantity;
 }
 
 
@@ -63,10 +73,45 @@ void Avida::Environment::Resources::Global::PerformUpdate(Avida::Context& ctx, U
   ;
 }
 
+void Avida::Environment::Resources::Global::DefinitionChanged(Update current_update)
+{
+  updateTo(current_update);
+  
+  double step_inflow = m_def.Arguments().Double(ARGD_INFLOW) * UPDATE_STEP;
+  double step_outflow = pow(m_def.Arguments().Double(ARGD_OUTFLOW), UPDATE_STEP);
+  
+  m_inflow_precalc[0] = 0.0;
+  m_outflow_precalc[0] = 0.0;
+  for (int i = 1; i <= PRECALC_DISTANCE; i++) {
+    m_inflow_precalc[i] = m_inflow_precalc[i - 1] * step_outflow + step_inflow;
+    m_outflow_precalc[i] = m_outflow_precalc[i - 1] * step_outflow;
+  }
+}
+
 Avida::Environment::Resources::Global* Avida::Environment::Resources::Global::Create(ResourceDefinition& def,
                                                                                      Structure::Controller& structure)
 {
   (void)structure;
   
   return new Global(def);
+}
+
+
+void Avida::Environment::Resources::Global::updateTo(Update current_update)
+{
+  // Determine how many update steps have progressed
+  int num_steps = static_cast<int>(static_cast<double>(current_update - m_last_updated) / UPDATE_STEP);
+  
+  // Set last updated based on the actual resource steps that will be calculated (may be remaining time)
+  m_last_updated += Update(num_steps * UPDATE_STEP);
+  
+  
+  while (num_steps > PRECALC_DISTANCE) {
+    m_quantity *= m_outflow_precalc[PRECALC_DISTANCE];
+    m_quantity += m_inflow_precalc[PRECALC_DISTANCE];
+    num_steps -= PRECALC_DISTANCE;
+  }
+  
+  m_quantity *= m_outflow_precalc[num_steps];
+  m_quantity += m_inflow_precalc[num_steps];
 }

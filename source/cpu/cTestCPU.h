@@ -36,7 +36,6 @@ class cAvidaContext;
 class cBioGroup;
 class cInstSet;
 class cResource;
-class cResourceHistory;
 
 using namespace Avida;
 
@@ -56,11 +55,6 @@ private:
   int m_test_solo_res;
   double m_test_solo_res_lev;
   
-  // Resource settings. Reinitialized from cCPUTestInfo on each test.
-  eTestCPUResourceMethod m_res_method;
-  const cResourceHistory* m_res;
-  int m_res_update;
-  int m_res_cpu_cycle_offset;
 
   // Actual CPU resources.
   cPopulationResources m_resource_count;
@@ -76,11 +70,6 @@ private:
   cTestCPU(const cTestCPU&); // @not_implemented
   cTestCPU& operator=(const cTestCPU&); // @not_implemented
   
-  // Internal methods for setting up and updating resources
-  void InitResources(cAvidaContext& ctx, int res_method = RES_INITIAL, cResourceHistory* res = NULL, int update = 0, int cpu_cycle_offset = 0);
-  void UpdateResources(cAvidaContext& ctx, int cpu_cycles_used);
-  inline void SetResourceUpdate(cAvidaContext& ctx, int update, bool exact = true);
-  inline void SetResource(cAvidaContext& ctx, int id, double new_level);
   
 public:
   cTestCPU(cAvidaContext& ctx, cWorld* world);

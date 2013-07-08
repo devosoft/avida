@@ -35,7 +35,11 @@ namespace Avida {
       class Global : public Resource
       {
       private:
+        Update m_last_updated;
         ResourceQuantity m_quantity;
+        Apto::Array<ResourceQuantity> m_inflow_precalc;
+        Apto::Array<ResourceQuantity> m_outflow_precalc;
+        
         
       public:
         LIB_EXPORT ~Global();
@@ -46,14 +50,15 @@ namespace Avida {
         LIB_EXPORT ResourceQuantity AmountAt(const Structure::Coord& location, Update current_update);
         
         LIB_EXPORT void PerformUpdate(Avida::Context& ctx, Update current_update);
-        
-        
+        LIB_EXPORT void DefinitionChanged(Update current_update);
         
         
       private:
         LIB_LOCAL Global(ResourceDefinition& def);
         
         LIB_LOCAL static Global* Create(ResourceDefinition& def, Structure::Controller& structure);
+        
+        LIB_LOCAL void updateTo(Update current_update);
       };
       
     };

@@ -36,7 +36,7 @@ Avida::Hardware::Manager::~Manager()
 }
 
 
-Avida::Hardware::ManagerPtr Avida::Hardware::Manager::Create(Universe* universe)
+Avida::Hardware::ManagerPtr Avida::Hardware::Manager::CreateFor(Universe* universe)
 {
   ManagerPtr mgr(new Manager(universe));
   

@@ -45,7 +45,6 @@ cInstSet::cInstSet(const cInstSet& _in)
   , m_mutation_index(NULL)
   , m_has_costs(_in.m_has_costs)
   , m_has_ft_costs(_in.m_has_ft_costs)
-  , m_has_energy_costs(_in.m_has_energy_costs)
   , m_has_res_costs(_in.m_has_res_costs)
   , m_has_fem_res_costs(_in.m_has_fem_res_costs)
   , m_has_female_costs(_in.m_has_female_costs)
@@ -66,7 +65,6 @@ cInstSet& cInstSet::operator=(const cInstSet& _in)
   m_mutation_index = NULL;
   m_has_costs = _in.m_has_costs;
   m_has_ft_costs = _in.m_has_ft_costs;
-  m_has_energy_costs = _in.m_has_energy_costs;
   m_has_res_costs = _in.m_has_res_costs;
   m_has_fem_res_costs = _in.m_has_fem_res_costs;
   m_has_female_costs = _in.m_has_female_costs;

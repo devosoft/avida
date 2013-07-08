@@ -223,7 +223,6 @@
 		70D5B4F214F4009000D15FFD /* cOrgSensor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4AC3D9F2144E087000CAEA62 /* cOrgSensor.cc */; };
 		70D5B4F314F4009000D15FFD /* InstructionSequence.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB811358BD6F0000B036 /* InstructionSequence.cc */; };
 		70D5B4F614F4009000D15FFD /* cContextPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C11F3412B944F40092B40D /* cContextPhenotype.cc */; };
-		70D5B4F714F4009000D15FFD /* cResourceHistory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */; };
 		70D5B4F814F4009000D15FFD /* cGenotypeData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70AD4F9E0F194DD400AA50AC /* cGenotypeData.cc */; };
 		70D5B4F914F4009000D15FFD /* cPlasticPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */; };
 		70D5B4FA14F4009000D15FFD /* cBirthGlobalHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447C940F83D72600E1BF72 /* cBirthGlobalHandler.cc */; };
@@ -238,7 +237,6 @@
 		70DF729013BE20130085F85E /* Universe.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DF728F13BE20130085F85E /* Universe.cc */; };
 		70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* Driver.cc */; };
 		70E57E3B17724A6D0024DF09 /* cHardwareGP8.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E57E3917724A6D0024DF09 /* cHardwareGP8.cc */; };
-		70E57E3C17724A6D0024DF09 /* cHardwareGP8.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E57E3A17724A6D0024DF09 /* cHardwareGP8.h */; };
 		70FA3F83164425EB0003971F /* cHardwareBCR.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FA3F81164425EA0003971F /* cHardwareBCR.cc */; };
 		70FA3F84164425EB0003971F /* cHardwareBCR.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FA3F82164425EA0003971F /* cHardwareBCR.h */; };
 		70FA7AC8138C308000DC70D4 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
@@ -691,8 +689,6 @@
 		7099EF4E0B2FBC85001269F6 /* cTextViewerDriver_Base.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextViewerDriver_Base.cc; sourceTree = "<group>"; };
 		7099EF4F0B2FBC85001269F6 /* cTextViewerDriver_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextViewerDriver_Base.h; sourceTree = "<group>"; };
 		7099EF500B2FBC85001269F6 /* cView_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cView_Base.h; sourceTree = "<group>"; };
-		709A1E540EB69DA6006090AF /* cResourceHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cResourceHistory.h; sourceTree = "<group>"; };
-		709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cResourceHistory.cc; sourceTree = "<group>"; };
 		709CDEA2149BF18100995644 /* Listener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Listener.h; sourceTree = "<group>"; };
 		709CDEA5149BF69000995644 /* Arbiter.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Arbiter.cc; sourceTree = "<group>"; };
 		709CDEA6149BF69000995644 /* Group.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Group.cc; sourceTree = "<group>"; };
@@ -1970,8 +1966,6 @@
 				70B0872308F5E82D00FC65FE /* cResourceDef.cc */,
 				70B0871608F5E81000FC65FE /* cResourceElement.h */,
 				70B0872608F5E82D00FC65FE /* cResourceElement.cc */,
-				709A1E540EB69DA6006090AF /* cResourceHistory.h */,
-				709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */,
 				4A8F3D9516AF26D300B6747C /* cResourcePopulationInterface.h */,
 				4A8F3D9416AF26D300B6747C /* cResourcePopulationInterface.cc */,
 				70310E690EDD09260044971B /* cStateGrid.h */,
@@ -2309,7 +2303,6 @@
 				7023EC850C0A431B00362B9C /* cReactionResult.cc in Sources */,
 				7023EC860C0A431B00362B9C /* cResourceDef.cc in Sources */,
 				7023EC870C0A431B00362B9C /* cResource.cc in Sources */,
-				70D5B4F714F4009000D15FFD /* cResourceHistory.cc in Sources */,
 				70D5B4F214F4009000D15FFD /* cOrgSensor.cc in Sources */,
 				7023EC8B0C0A431B00362B9C /* cResourceElement.cc in Sources */,
 				7023EC8C0C0A431B00362B9C /* cDiffusionRes.cc in Sources */,
@@ -2498,7 +2491,7 @@
 					../libs/apto/include/,
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2526,7 +2519,7 @@
 					include/private/,
 					../libs/apto/include/,
 				);
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",

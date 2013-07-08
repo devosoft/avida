@@ -35,7 +35,6 @@
 #include "cPhenotype.h"
 #include "cPopulationResources.h"
 #include "cResourceDef.h"
-#include "cResourceHistory.h"
 #include "cStringUtil.h"
 #include "cTestCPUInterface.h"
 #include "cWorld.h"
@@ -60,17 +59,8 @@ cTestCPU::cTestCPU(cAvidaContext& ctx, cWorld* world)
 }
 
  
-void cTestCPU::InitResources(cAvidaContext& ctx, int res_method, cResourceHistory* res, int update, int cpu_cycle_offset)
+void cTestCPU::InitResources(cAvidaContext& ctx)
 {  
-
-  m_res_method = (eTestCPUResourceMethod)res_method;
-  // Make sure it's valid
-  if (res_method < 0 || res_method >= RES_LAST) m_res_method = RES_INITIAL;
-  
-  // Setup the resources...
-  m_res = res;
-  m_res_cpu_cycle_offset = cpu_cycle_offset;
-  m_res_update = update;
 
   // Adjust updates if time_spent_offset is greater than a time slice
   int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();

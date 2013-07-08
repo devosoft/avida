@@ -28,7 +28,6 @@
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
-#include "cResourceHistory.h"
 
 #include <cassert>
 
@@ -40,10 +39,6 @@ cCPUTestInfo::cCPUTestInfo(int max_tests)
   , m_tracer(NULL)
   , m_cur_sg(0)
   , org_array(max_tests)
-  , m_res_method(RES_INITIAL)
-  , m_res(NULL)
-  , m_res_update(0)
-  , m_res_cpu_cycle_offset(0)
 {
   org_array.SetAll(NULL);
   Clear();
@@ -72,10 +67,6 @@ cCPUTestInfo& cCPUTestInfo::operator=(const cCPUTestInfo& test_info)
   cycle_to = test_info.cycle_to;
   used_inputs = test_info.used_inputs; 
   org_array = test_info.org_array;
-  m_res_method = test_info.m_res_method;
-  m_res = NULL;  //Beware -- Resource history is NOT COPIED.
-  m_res_update = test_info.m_res_update;
-  m_res_cpu_cycle_offset = test_info.m_res_cpu_cycle_offset;
   return *this;
 }
 

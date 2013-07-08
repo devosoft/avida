@@ -107,9 +107,6 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "equ_dup") NewTask(name, "Equals_dup", &cTaskLib::Task_Equ);
   
   else if (name == "xor-max") NewTask(name, "Xor-max", &cTaskLib::Task_XorMax);
-	// resoruce dependent version
-  else if (name == "nand-resourceDependent") NewTask(name, "Nand-resourceDependent", &cTaskLib::Task_Nand_ResourceDependent);
-  else if (name == "nor-resourceDependent") NewTask(name, "Nor-resourceDependent", &cTaskLib::Task_Nor_ResourceDependent);
 	
   // All 3-Input Logic Functions
   if (name == "logic_3AA")      NewTask(name, "Logic 3AA (A+B+C == 0)", &cTaskLib::Task_Logic3in_AA);
@@ -3426,35 +3423,6 @@ double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
   return reward;
 }
 
-void cTaskLib::Load_CollectOddCell(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
-{
-  cArgSchema schema;
-  
-  schema.AddEntry("even_or_odd", 0, 0);
-  
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
-  if (args) NewTask(name, "collect-odd-cell", &cTaskLib::Task_CollectOddCell, 0, args);
-}
-
-double cTaskLib::Task_CollectOddCell(cTaskContext& ctx) const
-{
-  int even_odds = ctx.GetTaskEntry()->GetArguments().GetInt(0);
-  
-  double reward = 0.0;
-  // If the organism is in an odd cell...
-  int cell_id_mod_2 = ctx.GetOrganism()->GetCellID()%2;
-  if (even_odds == 0) {
-    if (cell_id_mod_2 != 0){
-      reward = 1;
-    }
-  }
-  else {
-    if (cell_id_mod_2 == 0){
-      reward = 1;
-    }
-  }
-  return reward;
-}
 
 /* Reward organisms for having found a targeted resource*/
 void cTaskLib::Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
@@ -3472,118 +3440,118 @@ void cTaskLib::Load_ConsumeTarget(const cString& name, const cString& argstr, cE
 /* Reward organisms for having found a targeted resource + performing logic*/
 void cTaskLib::Load_ConsumeTargetEcho(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
-  schema.AddEntry("target_id", 0, 1);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  schema.Define("target_id", 1);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "ConsumeTargetEcho", &cTaskLib::Task_ConsumeTargetEcho, 0, args);
 
   // Add this target id to the list in the instructions file. 
-  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+  m_world->GetEnvironment().AddTargetID(args->Int(0));
 }
 
 /* Reward organisms for having found a targeted resource + performing logic*/
 void cTaskLib::Load_ConsumeTargetNand(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
-  schema.AddEntry("target_id", 0, 1);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  schema.Define("target_id", 1);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "ConsumeTargetNand", &cTaskLib::Task_ConsumeTargetNand, 0, args);
 
   // Add this target id to the list in the instructions file. 
-  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+  m_world->GetEnvironment().AddTargetID(args->Int(0));
 }
 
 /* Reward organisms for having found a targeted resource + performing logic*/
 void cTaskLib::Load_ConsumeTargetAnd(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
-  schema.AddEntry("target_id", 0, 1);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  schema.Define("target_id", 1);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "ConsumeTargetAnd", &cTaskLib::Task_ConsumeTargetAnd, 0, args);
 
   // Add this target id to the list in the instructions file. 
-  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+  m_world->GetEnvironment().AddTargetID(args->Int(0));
 }
 
 /* Reward organisms for having found a targeted resource + performing logic*/
 void cTaskLib::Load_ConsumeTargetOrn(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
-  schema.AddEntry("target_id", 0, 1);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  schema.Define("target_id", 1);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "ConsumeTargetOrn", &cTaskLib::Task_ConsumeTargetOrn, 0, args);
 
   // Add this target id to the list in the instructions file. 
-  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+  m_world->GetEnvironment().AddTargetID(args->Int(0));
 }
 
 /* Reward organisms for having found a targeted resource + performing logic*/
 void cTaskLib::Load_ConsumeTargetOr(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
-  schema.AddEntry("target_id", 0, 1);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  schema.Define("target_id", 1);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "ConsumeTargetOr", &cTaskLib::Task_ConsumeTargetOr, 0, args);
 
   // Add this target id to the list in the instructions file. 
-  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+  m_world->GetEnvironment().AddTargetID(args->Int(0));
 }
 
 /* Reward organisms for having found a targeted resource + performing logic*/
 void cTaskLib::Load_ConsumeTargetAndn(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
-  schema.AddEntry("target_id", 0, 1);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  schema.Define("target_id", 1);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "ConsumeTargetAndn", &cTaskLib::Task_ConsumeTargetAndn, 0, args);
 
   // Add this target id to the list in the instructions file. 
-  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+  m_world->GetEnvironment().AddTargetID(args->Int(0));
 }
 
 /* Reward organisms for having found a targeted resource + performing logic*/
 void cTaskLib::Load_ConsumeTargetNor(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
-  schema.AddEntry("target_id", 0, 1);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  schema.Define("target_id", 1);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "ConsumeTargetNor", &cTaskLib::Task_ConsumeTargetNor, 0, args);
 
   // Add this target id to the list in the instructions file. 
-  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+  m_world->GetEnvironment().AddTargetID(args->Int(0));
 }
 
 /* Reward organisms for having found a targeted resource + performing logic*/
 void cTaskLib::Load_ConsumeTargetXor(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
-  schema.AddEntry("target_id", 0, 1);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  schema.Define("target_id", 1);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "ConsumeTargetXor", &cTaskLib::Task_ConsumeTargetXor, 0, args);
 
   // Add this target id to the list in the instructions file. 
-  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+  m_world->GetEnvironment().AddTargetID(args->Int(0));
 }
 
 /* Reward organisms for having found a targeted resource + performing logic*/
 void cTaskLib::Load_ConsumeTargetEqu(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
-  schema.AddEntry("target_id", 0, 1);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  schema.Define("target_id", 1);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "ConsumeTargetEqu", &cTaskLib::Task_ConsumeTargetEqu, 0, args);
 
   // Add this target id to the list in the instructions file. 
-  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+  m_world->GetEnvironment().AddTargetID(args->Int(0));
 }
 
 double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
@@ -3602,7 +3570,7 @@ double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
 
 double cTaskLib::Task_ConsumeTargetEcho(cTaskContext& ctx) const
 {
-  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int des_target = ctx.GetTaskEntry()->GetArguments().Int(0);
   
   double reward = 0.0;
   int target_res = ctx.GetOrganism()->GetForageTarget();
@@ -3616,7 +3584,7 @@ double cTaskLib::Task_ConsumeTargetEcho(cTaskContext& ctx) const
 
 double cTaskLib::Task_ConsumeTargetNand(cTaskContext& ctx) const
 {
-  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int des_target = ctx.GetTaskEntry()->GetArguments().Int(0);
   
   double reward = 0.0;
   int target_res = ctx.GetOrganism()->GetForageTarget();
@@ -3630,7 +3598,7 @@ double cTaskLib::Task_ConsumeTargetNand(cTaskContext& ctx) const
 
 double cTaskLib::Task_ConsumeTargetAnd(cTaskContext& ctx) const
 {
-  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int des_target = ctx.GetTaskEntry()->GetArguments().Int(0);
   
   double reward = 0.0;
   int target_res = ctx.GetOrganism()->GetForageTarget();
@@ -3644,7 +3612,7 @@ double cTaskLib::Task_ConsumeTargetAnd(cTaskContext& ctx) const
 
 double cTaskLib::Task_ConsumeTargetOrn(cTaskContext& ctx) const
 {
-  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int des_target = ctx.GetTaskEntry()->GetArguments().Int(0);
   
   double reward = 0.0;
   int target_res = ctx.GetOrganism()->GetForageTarget();
@@ -3658,7 +3626,7 @@ double cTaskLib::Task_ConsumeTargetOrn(cTaskContext& ctx) const
 
 double cTaskLib::Task_ConsumeTargetOr(cTaskContext& ctx) const
 {
-  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int des_target = ctx.GetTaskEntry()->GetArguments().Int(0);
   
   double reward = 0.0;
   int target_res = ctx.GetOrganism()->GetForageTarget();
@@ -3672,7 +3640,7 @@ double cTaskLib::Task_ConsumeTargetOr(cTaskContext& ctx) const
 
 double cTaskLib::Task_ConsumeTargetAndn(cTaskContext& ctx) const
 {
-  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int des_target = ctx.GetTaskEntry()->GetArguments().Int(0);
   
   double reward = 0.0;
   int target_res = ctx.GetOrganism()->GetForageTarget();
@@ -3686,7 +3654,7 @@ double cTaskLib::Task_ConsumeTargetAndn(cTaskContext& ctx) const
 
 double cTaskLib::Task_ConsumeTargetNor(cTaskContext& ctx) const
 {
-  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int des_target = ctx.GetTaskEntry()->GetArguments().Int(0);
   
   double reward = 0.0;
   int target_res = ctx.GetOrganism()->GetForageTarget();
@@ -3700,7 +3668,7 @@ double cTaskLib::Task_ConsumeTargetNor(cTaskContext& ctx) const
 
 double cTaskLib::Task_ConsumeTargetXor(cTaskContext& ctx) const
 {
-  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int des_target = ctx.GetTaskEntry()->GetArguments().Int(0);
   
   double reward = 0.0;
   int target_res = ctx.GetOrganism()->GetForageTarget();
@@ -3714,7 +3682,7 @@ double cTaskLib::Task_ConsumeTargetXor(cTaskContext& ctx) const
 
 double cTaskLib::Task_ConsumeTargetEqu(cTaskContext& ctx) const
 {
-  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int des_target = ctx.GetTaskEntry()->GetArguments().Int(0);
   
   double reward = 0.0;
   int target_res = ctx.GetOrganism()->GetForageTarget();
@@ -3729,13 +3697,14 @@ double cTaskLib::Task_ConsumeTargetEqu(cTaskContext& ctx) const
 /* Reward organisms for executing the explode command*/
 void cTaskLib::Load_Exploded(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
-  cArgSchema schema;
+  Util::ArgSchema schema;
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  schema.Define("target_id", 1);
+  Util::Args* args = Util::Args::Load((const char*)argstr, schema, ',', '=', &feedback);
   if (args) NewTask(name, "Exploded", &cTaskLib::Task_Exploded, 0, args);
   
   // Add this target id to the list in the instructions file.
-  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+  m_world->GetEnvironment().AddTargetID(args->Int(0));
 }
 
 double cTaskLib::Task_Exploded(cTaskContext& ctx) const

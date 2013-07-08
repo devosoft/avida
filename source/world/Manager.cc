@@ -29,7 +29,7 @@
 
 Avida::World::Manager::Manager(Universe* universe, Structure::Controller* structure) : m_universe(universe)
 {
-  m_top_level = ContainerPtr(new Container(universe, structure));
+  m_top_level = ContainerPtr(new Container(m_universe, structure));
 }
 
 Avida::World::Manager::~Manager()
