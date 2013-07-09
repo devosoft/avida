@@ -35,7 +35,6 @@
 
 #include "cAction.h"
 #include "cActionLibrary.h"
-#include "cCodeLabel.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"

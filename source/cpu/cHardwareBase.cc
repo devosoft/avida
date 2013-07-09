@@ -26,7 +26,6 @@
 #include "avida/core/UniverseDriver.h"
 
 #include "cAvidaContext.h"
-#include "cCodeLabel.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
@@ -1329,25 +1328,6 @@ void cHardwareBase::SingleProcess_SetPostCPUCosts(cAvidaContext&, const Instruct
   return;
 }
 
-
-/*! Retrieve a fragment of this organism's genome that extends downstream from the read head.
- */
-InstructionSequence cHardwareBase::GetGenomeFragment(unsigned int downstream) {
-	cHeadCPU tmp(GetHead(nHardware::HEAD_READ));
-	InstructionSequence fragment(downstream);
-	for(; downstream>0; --downstream, tmp.Advance()) { 
-		fragment.Append(tmp.GetInst());
-	}
-	return fragment;
-}
-
-/*! Insert a genome fragment at the current write head.
- */
-void cHardwareBase::InsertGenomeFragment(const InstructionSequence& fragment) {
-	cHeadCPU& wh = GetHead(nHardware::HEAD_WRITE);
-	wh.GetMemory().Insert(wh.GetPosition(), fragment);
-	wh.Adjust();
-}
 
 void cHardwareBase::SetMiniTrace(const cString& filename)
 {

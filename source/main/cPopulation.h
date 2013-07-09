@@ -36,7 +36,6 @@
 #include <map>
 
 class cAvidaContext;
-class cCodeLabel;
 class cEnvironment;
 class cLineage;
 class cOrganism;

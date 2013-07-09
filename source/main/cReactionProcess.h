@@ -81,7 +81,7 @@ public:
     , sterilize(false)
     , depletable(true)
     , internal(false)
-    , m_ppmethod(DEFAULT)
+    , m_ppmethod(DEFAULT_BONUS)
     , detect(NULL)
     , detection_threshold(0.0)
     , detection_error(0.0)

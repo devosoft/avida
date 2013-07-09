@@ -24,7 +24,6 @@
 #include "avida/core/Genome.h"
 #include "avida/core/GlobalObject.h"
 
-#include "cHardwareBCR.h"
 #include "cHardwareCPU.h"
 #include "cHardwareExperimental.h"
 #include "cHardwareGP8.h"
@@ -126,19 +125,16 @@ bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, int st
   switch (hw_type)
   {
     case HARDWARE_TYPE_CPU_ORIGINAL:
-      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareCPU::GetInstLib(), stack_size, uops_per_cycle);
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareCPU::InstructionLibrary(), stack_size, uops_per_cycle);
       break;
     case HARDWARE_TYPE_CPU_TRANSSMT:
-      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareTransSMT::GetInstLib(), stack_size, uops_per_cycle);
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareTransSMT::InstructionLibrary(), stack_size, uops_per_cycle);
       break;
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareExperimental::GetInstLib(), stack_size, uops_per_cycle);
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareExperimental::InstructionLibrary(), stack_size, uops_per_cycle);
       break;
     case HARDWARE_TYPE_CPU_GP8:
-      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareGP8::GetInstLib(), stack_size, uops_per_cycle);
-      break;
-    case HARDWARE_TYPE_CPU_BCR:
-      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareBCR::GetInstLib(), stack_size, uops_per_cycle);
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareGP8::InstructionLibrary(), stack_size, uops_per_cycle);
       break;
     default:
       if (feedback) feedback->Error("unknown/unsupported hw_type specified for instset '%s'", (const char*)name);
@@ -210,9 +206,6 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
       break;
     case HARDWARE_TYPE_CPU_GP8:
       hw = new cHardwareGP8(ctx, m_world, org, inst_set);
-      break;
-    case HARDWARE_TYPE_CPU_BCR:
-      hw = new cHardwareBCR(ctx, m_world, org, inst_set);
       break;
     default:
       assert(false);

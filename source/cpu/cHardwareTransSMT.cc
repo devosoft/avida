@@ -25,7 +25,6 @@
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
-#include "cInstLib.h"
 #include "cInstSet.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
@@ -33,7 +32,6 @@
 #include "cPhenotype.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
-#include "tInstLibEntry.h"
 #include "cParasite.h"
 
 #include "AvidaTools.h"
@@ -42,94 +40,95 @@
 
 using namespace std;
 using namespace AvidaTools;
+using namespace Avida::Hardware::InstructionFlags;
 
-tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::s_inst_slib = cHardwareTransSMT::initInstLib();
 
-tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
+StaticTableInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::s_inst_slib = cHardwareTransSMT::initInstLib();
+
+StaticTableInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
 {
-  struct cNOPEntry {
-    cNOPEntry(const cString &name, int nop_mod):name(name), nop_mod(nop_mod){}
-    cString name;
+  struct NOPEntry {
+    Apto::String name;
     int nop_mod;
+    inline NOPEntry(const Apto::String& name, int nop_mod) : name(name), nop_mod(nop_mod) { ; }
   };
-  static const cNOPEntry s_n_array[] = {
-    cNOPEntry("Nop-A", STACK_AX),
-    cNOPEntry("Nop-B", STACK_BX),
-    cNOPEntry("Nop-C", STACK_CX),
-    cNOPEntry("Nop-D", STACK_DX),
+  
+  static const NOPEntry s_n_array[] = {
+    NOPEntry("Nop-A", STACK_AX),
+    NOPEntry("Nop-B", STACK_BX),
+    NOPEntry("Nop-C", STACK_CX),
+    NOPEntry("Nop-D", STACK_DX),
   };
 	
-  static const tInstLibEntry<tMethod> s_f_array[] = {
-    tInstLibEntry<tMethod>("Nop-A", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP), // 1
-    tInstLibEntry<tMethod>("Nop-B", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP), // 2
-    tInstLibEntry<tMethod>("Nop-C", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP), // 3
-    tInstLibEntry<tMethod>("Nop-D", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP), // 4
-    tInstLibEntry<tMethod>("Nop-X", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP), // 5
-    tInstLibEntry<tMethod>("Val-Shift-R", &cHardwareTransSMT::Inst_ShiftR), // 6
-    tInstLibEntry<tMethod>("Val-Shift-L", &cHardwareTransSMT::Inst_ShiftL), // 7
-    tInstLibEntry<tMethod>("Val-Nand", &cHardwareTransSMT::Inst_Val_Nand), // 8
-    tInstLibEntry<tMethod>("Val-Add", &cHardwareTransSMT::Inst_Val_Add), // 9
-    tInstLibEntry<tMethod>("Val-Sub", &cHardwareTransSMT::Inst_Val_Sub), // 10
-    tInstLibEntry<tMethod>("Val-Mult", &cHardwareTransSMT::Inst_Val_Mult), // 11
-    tInstLibEntry<tMethod>("Val-Div", &cHardwareTransSMT::Inst_Val_Div), // 12
-    tInstLibEntry<tMethod>("Val-Mod", &cHardwareTransSMT::Inst_Val_Mod), // 13
-    tInstLibEntry<tMethod>("Val-Inc", &cHardwareTransSMT::Inst_Val_Inc), // 14
-    tInstLibEntry<tMethod>("Val-Dec", &cHardwareTransSMT::Inst_Val_Dec), // 15
-    tInstLibEntry<tMethod>("SetMemory", &cHardwareTransSMT::Inst_SetMemory), // 16
-    tInstLibEntry<tMethod>("Divide", &cHardwareTransSMT::Inst_Divide), // 17
-    tInstLibEntry<tMethod>("Inst-Read", &cHardwareTransSMT::Inst_HeadRead), // 18
-    tInstLibEntry<tMethod>("Inst-Write", &cHardwareTransSMT::Inst_HeadWrite), // 19
-    tInstLibEntry<tMethod>("If-Equal", &cHardwareTransSMT::Inst_IfEqual), // 20
-    tInstLibEntry<tMethod>("If-Not-Equal", &cHardwareTransSMT::Inst_IfNotEqual), // 21
-    tInstLibEntry<tMethod>("If-Less", &cHardwareTransSMT::Inst_IfLess), // 22
-    tInstLibEntry<tMethod>("If-Greater", &cHardwareTransSMT::Inst_IfGreater), // 23
-    tInstLibEntry<tMethod>("Head-Push", &cHardwareTransSMT::Inst_HeadPush), // 24
-    tInstLibEntry<tMethod>("Head-Pop", &cHardwareTransSMT::Inst_HeadPop), // 25
-    tInstLibEntry<tMethod>("Head-Move", &cHardwareTransSMT::Inst_HeadMove), // 26
-    tInstLibEntry<tMethod>("Search", &cHardwareTransSMT::Inst_Search), // 27
-    tInstLibEntry<tMethod>("Push-Next", &cHardwareTransSMT::Inst_PushNext), // 28
-    tInstLibEntry<tMethod>("Push-Prev", &cHardwareTransSMT::Inst_PushPrevious), // 29
-    tInstLibEntry<tMethod>("Push-Comp", &cHardwareTransSMT::Inst_PushComplement), // 30
-    tInstLibEntry<tMethod>("Val-Delete", &cHardwareTransSMT::Inst_ValDelete), // 31
-    tInstLibEntry<tMethod>("Val-Copy", &cHardwareTransSMT::Inst_ValCopy), // 32
-    tInstLibEntry<tMethod>("IO", &cHardwareTransSMT::Inst_IO), // 33
-    tInstLibEntry<tMethod>("Thread-Create", &cHardwareTransSMT::Inst_ThreadCreate), // 34
-    tInstLibEntry<tMethod>("Thread-Cancel", &cHardwareTransSMT::Inst_ThreadCancel), // 35
-    tInstLibEntry<tMethod>("Thread-Kill", &cHardwareTransSMT::Inst_ThreadKill), // 36
-    tInstLibEntry<tMethod>("Inject", &cHardwareTransSMT::Inst_Inject), // 37
-    tInstLibEntry<tMethod>("Apoptosis", &cHardwareTransSMT::Inst_Apoptosis), // 38
-    tInstLibEntry<tMethod>("Rotate-Left", &cHardwareTransSMT::Inst_RotateLeft), // 43
-    tInstLibEntry<tMethod>("Rotate-Right", &cHardwareTransSMT::Inst_RotateRight), // 44
-    tInstLibEntry<tMethod>("Call-Flow", &cHardwareTransSMT::Inst_CallFlow), // 45
-    tInstLibEntry<tMethod>("Call-Label", &cHardwareTransSMT::Inst_CallLabel), // 46
-    tInstLibEntry<tMethod>("Return", &cHardwareTransSMT::Inst_Return), // 47
-    tInstLibEntry<tMethod>("If-Greater-Equal", &cHardwareTransSMT::Inst_IfGreaterEqual), // 48
-    tInstLibEntry<tMethod>("Divide-Erase", &cHardwareTransSMT::Inst_Divide_Erase), // 49
-    tInstLibEntry<tMethod>("Divide-Sex-Erase", &cHardwareTransSMT::Inst_Divide_Sex_Erase), // 50
-    tInstLibEntry<tMethod>("Divide-Sex", &cHardwareTransSMT::Inst_Divide_Sex), // 51
-    tInstLibEntry<tMethod>("Divide-Asex-Wait", &cHardwareTransSMT::Inst_Divide_Asex_Wait), // 52
-    tInstLibEntry<tMethod>("Collect-Unit", &cHardwareTransSMT::Inst_Collect_Unit), // 53
+  static const StaticTableInstLib<tMethod>::MethodEntry s_f_array[] = {
+    StaticTableInstLib<tMethod>::MethodEntry("Nop-A", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP, NOP), // 1
+    StaticTableInstLib<tMethod>::MethodEntry("Nop-B", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP, NOP), // 2
+    StaticTableInstLib<tMethod>::MethodEntry("Nop-C", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP, NOP), // 3
+    StaticTableInstLib<tMethod>::MethodEntry("Nop-D", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP, NOP), // 4
+    StaticTableInstLib<tMethod>::MethodEntry("Nop-X", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP), // 5
+    StaticTableInstLib<tMethod>::MethodEntry("Val-Shift-R", &cHardwareTransSMT::Inst_ShiftR), // 6
+    StaticTableInstLib<tMethod>::MethodEntry("Val-Shift-L", &cHardwareTransSMT::Inst_ShiftL), // 7
+    StaticTableInstLib<tMethod>::MethodEntry("Val-Nand", &cHardwareTransSMT::Inst_Val_Nand), // 8
+    StaticTableInstLib<tMethod>::MethodEntry("Val-Add", &cHardwareTransSMT::Inst_Val_Add), // 9
+    StaticTableInstLib<tMethod>::MethodEntry("Val-Sub", &cHardwareTransSMT::Inst_Val_Sub), // 10
+    StaticTableInstLib<tMethod>::MethodEntry("Val-Mult", &cHardwareTransSMT::Inst_Val_Mult), // 11
+    StaticTableInstLib<tMethod>::MethodEntry("Val-Div", &cHardwareTransSMT::Inst_Val_Div), // 12
+    StaticTableInstLib<tMethod>::MethodEntry("Val-Mod", &cHardwareTransSMT::Inst_Val_Mod), // 13
+    StaticTableInstLib<tMethod>::MethodEntry("Val-Inc", &cHardwareTransSMT::Inst_Val_Inc), // 14
+    StaticTableInstLib<tMethod>::MethodEntry("Val-Dec", &cHardwareTransSMT::Inst_Val_Dec), // 15
+    StaticTableInstLib<tMethod>::MethodEntry("SetMemory", &cHardwareTransSMT::Inst_SetMemory), // 16
+    StaticTableInstLib<tMethod>::MethodEntry("Divide", &cHardwareTransSMT::Inst_Divide), // 17
+    StaticTableInstLib<tMethod>::MethodEntry("Inst-Read", &cHardwareTransSMT::Inst_HeadRead), // 18
+    StaticTableInstLib<tMethod>::MethodEntry("Inst-Write", &cHardwareTransSMT::Inst_HeadWrite), // 19
+    StaticTableInstLib<tMethod>::MethodEntry("If-Equal", &cHardwareTransSMT::Inst_IfEqual), // 20
+    StaticTableInstLib<tMethod>::MethodEntry("If-Not-Equal", &cHardwareTransSMT::Inst_IfNotEqual), // 21
+    StaticTableInstLib<tMethod>::MethodEntry("If-Less", &cHardwareTransSMT::Inst_IfLess), // 22
+    StaticTableInstLib<tMethod>::MethodEntry("If-Greater", &cHardwareTransSMT::Inst_IfGreater), // 23
+    StaticTableInstLib<tMethod>::MethodEntry("Head-Push", &cHardwareTransSMT::Inst_HeadPush), // 24
+    StaticTableInstLib<tMethod>::MethodEntry("Head-Pop", &cHardwareTransSMT::Inst_HeadPop), // 25
+    StaticTableInstLib<tMethod>::MethodEntry("Head-Move", &cHardwareTransSMT::Inst_HeadMove), // 26
+    StaticTableInstLib<tMethod>::MethodEntry("Search", &cHardwareTransSMT::Inst_Search), // 27
+    StaticTableInstLib<tMethod>::MethodEntry("Push-Next", &cHardwareTransSMT::Inst_PushNext), // 28
+    StaticTableInstLib<tMethod>::MethodEntry("Push-Prev", &cHardwareTransSMT::Inst_PushPrevious), // 29
+    StaticTableInstLib<tMethod>::MethodEntry("Push-Comp", &cHardwareTransSMT::Inst_PushComplement), // 30
+    StaticTableInstLib<tMethod>::MethodEntry("Val-Delete", &cHardwareTransSMT::Inst_ValDelete), // 31
+    StaticTableInstLib<tMethod>::MethodEntry("Val-Copy", &cHardwareTransSMT::Inst_ValCopy), // 32
+    StaticTableInstLib<tMethod>::MethodEntry("IO", &cHardwareTransSMT::Inst_IO), // 33
+    StaticTableInstLib<tMethod>::MethodEntry("Thread-Create", &cHardwareTransSMT::Inst_ThreadCreate), // 34
+    StaticTableInstLib<tMethod>::MethodEntry("Thread-Cancel", &cHardwareTransSMT::Inst_ThreadCancel), // 35
+    StaticTableInstLib<tMethod>::MethodEntry("Thread-Kill", &cHardwareTransSMT::Inst_ThreadKill), // 36
+    StaticTableInstLib<tMethod>::MethodEntry("Inject", &cHardwareTransSMT::Inst_Inject), // 37
+    StaticTableInstLib<tMethod>::MethodEntry("Apoptosis", &cHardwareTransSMT::Inst_Apoptosis), // 38
+    StaticTableInstLib<tMethod>::MethodEntry("Rotate-Left", &cHardwareTransSMT::Inst_RotateLeft), // 43
+    StaticTableInstLib<tMethod>::MethodEntry("Rotate-Right", &cHardwareTransSMT::Inst_RotateRight), // 44
+    StaticTableInstLib<tMethod>::MethodEntry("Call-Flow", &cHardwareTransSMT::Inst_CallFlow), // 45
+    StaticTableInstLib<tMethod>::MethodEntry("Call-Label", &cHardwareTransSMT::Inst_CallLabel), // 46
+    StaticTableInstLib<tMethod>::MethodEntry("Return", &cHardwareTransSMT::Inst_Return), // 47
+    StaticTableInstLib<tMethod>::MethodEntry("If-Greater-Equal", &cHardwareTransSMT::Inst_IfGreaterEqual), // 48
+    StaticTableInstLib<tMethod>::MethodEntry("Divide-Erase", &cHardwareTransSMT::Inst_Divide_Erase), // 49
+    StaticTableInstLib<tMethod>::MethodEntry("Divide-Sex-Erase", &cHardwareTransSMT::Inst_Divide_Sex_Erase), // 50
+    StaticTableInstLib<tMethod>::MethodEntry("Divide-Sex", &cHardwareTransSMT::Inst_Divide_Sex), // 51
+    StaticTableInstLib<tMethod>::MethodEntry("Divide-Asex-Wait", &cHardwareTransSMT::Inst_Divide_Asex_Wait), // 52
+    StaticTableInstLib<tMethod>::MethodEntry("Collect-Unit", &cHardwareTransSMT::Inst_Collect_Unit), // 53
     
-    tInstLibEntry<tMethod>("NULL", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP) // Last Instruction Always NULL
+    StaticTableInstLib<tMethod>::MethodEntry("NULL", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP) // Last Instruction Always NULL
   };
 	
-  const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
+  const int n_size = sizeof(s_n_array)/sizeof(NOPEntry);
 	
-  static cString n_names[n_size];
   static int nop_mods[n_size];
   for (int i = 0; i < n_size; i++){
-    n_names[i] = s_n_array[i].name;
     nop_mods[i] = s_n_array[i].nop_mod;
   }
 	
-  const int f_size = sizeof(s_f_array)/sizeof(tInstLibEntry<tMethod>);
+  const int f_size = sizeof(s_f_array)/sizeof(StaticTableInstLib<tMethod>::MethodEntry);
   static tMethod functions[f_size];
   for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
 	
 	const int def = 0;
   const int null_inst = f_size - 1;
 	
-  return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
+  return new StaticTableInstLib<tMethod>(f_size, s_f_array, nop_mods, functions, def, null_inst);
 }
 
 cHardwareTransSMT::cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)

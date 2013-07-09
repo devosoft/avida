@@ -33,9 +33,6 @@
  * The cHeadCPU class contains a pointer to locations in memory for a CPU.
  **/
 
-class cCodeLabel;
-class cString;
-
 using namespace Avida;
 
 

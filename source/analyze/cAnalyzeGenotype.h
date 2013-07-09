@@ -26,6 +26,7 @@
 #include "apto/core/RWLock.h"
 #include "avida/core/Genome.h"
 #include "avida/core/Properties.h"
+#include "avida/systematics/Unit.h"
 
 #include <fstream>
 
@@ -353,27 +354,6 @@ public:
   double GetComplexity() const { CheckLand(); return m_land->GetComplexity(); }
   double GetLandscapeFitness() const { CheckLand(); return m_land->GetAveFitness(); }
 
-  
-  // Phenotypic Plasticity accessors
-  int    GetNumPhenotypes()     const { CheckPhenPlast(); return m_phenplast_stats->m_num_phenotypes; }
-  double GetPhenotypicEntropy() const { CheckPhenPlast(); return m_phenplast_stats->m_phenotypic_entropy; }
-  double GetMaximumFitness()    const { CheckPhenPlast(); return m_phenplast_stats->m_max_fitness; }
-  double GetMaximumFitnessFrequency() const {CheckPhenPlast(); return m_phenplast_stats->m_min_fit_frequency;}
-  double GetMinimumFitness()    const { CheckPhenPlast(); return m_phenplast_stats->m_min_fitness; }
-  double GetMinimumFitnessFrequency() const {CheckPhenPlast(); return m_phenplast_stats->m_min_fit_frequency;}
-  double GetAverageFitness()    const { CheckPhenPlast(); return m_phenplast_stats->m_avg_fitness; }
-  double GetLikelyFrequency()  const { CheckPhenPlast(); return m_phenplast_stats->m_likely_frequency; }
-  double GetLikelyFitness()     const { CheckPhenPlast(); return m_phenplast_stats->m_likely_fitness; }
-  int    GetNumTrials()         const { CheckPhenPlast(); return m_phenplast_stats->m_recalculate_trials; }
-  double GetViableProbability()  const { CheckPhenPlast(); return m_phenplast_stats->m_viable_probability; }
-  double GetTaskProbability(int task_id) const { 
-    if (task_id >= m_world->GetEnvironment().GetNumTasks()) return 0.0;
-    CheckPhenPlast();
-    return m_phenplast_stats->m_task_probabilities[task_id];
-  }
-  cString DescTaskProb(int task_id) const;
-  Apto::Array<double> GetTaskProbabilities() const { CheckPhenPlast(); return m_phenplast_stats->m_task_probabilities; }
-    
   
   double GetFitnessRatio() const { return fitness_ratio; }
   double GetEfficiencyRatio() const { return efficiency_ratio; }

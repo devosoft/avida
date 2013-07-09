@@ -25,10 +25,9 @@
 
 #include <iostream>
 
-#include "avida/core/InstructionSequence.h"
+#include "avida/hardware/InstLib.h"
 
 #include "cString.h"
-#include "cInstLib.h"
 #include "cOrderedWeightedIndex.h"
 
 using namespace std;
@@ -49,13 +48,17 @@ class cWorld;
 
 const int MAX_INSTSET_SIZE = 255;
 
+
+using namespace Avida::Hardware;
+
+
 class cInstSet
 {
 public:
   cWorld* m_world;
   cString m_name;
   int m_hw_type;
-  cInstLib* m_inst_lib;
+  InstLib* m_inst_lib;
   
   struct sInstEntry {
     int lib_fun_id;
@@ -94,7 +97,7 @@ public:
   cInstSet(); // @not_implemented
 
 public:
-  inline cInstSet(cWorld* world, const cString& name, int hw_type, cInstLib* inst_lib, int stack_size, int uops_per_cycle)
+  inline cInstSet(cWorld* world, const cString& name, int hw_type, InstLib* inst_lib, int stack_size, int uops_per_cycle)
     : m_world(world), m_name(name), m_hw_type(hw_type), m_inst_lib(inst_lib), m_mutation_index(NULL)
     , m_has_costs(false), m_has_ft_costs(false), m_has_res_costs(false), m_has_fem_res_costs(false)
     , m_has_female_costs(false), m_has_choosy_female_costs(false), m_has_post_costs(false), m_has_bonus_costs(false), m_stack_size(stack_size)
@@ -107,8 +110,8 @@ public:
   int GetHardwareType() const { return m_hw_type; }
 
   // Accessors
-  const cString& GetName(int id) const { return m_inst_lib->GetName(m_lib_name_map[id].lib_fun_id); }
-  const cString& GetName(const Instruction& inst) const { return GetName(inst.GetOp()); }
+  const Apto::String& GetName(int id) const { return m_inst_lib->NameOf(m_lib_name_map[id].lib_fun_id); }
+  const Apto::String& GetName(const Instruction& inst) const { return GetName(inst.GetOp()); }
   
   int GetRedundancy(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].redundancy; }
   int GetCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].cost; }
@@ -128,7 +131,7 @@ public:
   int GetNopMod(const Instruction& inst) const
   {
     int nopmod = m_lib_nopmod_map[inst.GetOp()];
-    return m_inst_lib->GetNopMod(nopmod);
+    return m_inst_lib->NopModOf(nopmod);
   }
 
   Instruction GetRandomInst(cAvidaContext& ctx) const;
@@ -151,14 +154,14 @@ public:
   
   // Instruction Analysis.
   int IsNop(const Instruction& inst) const { return (inst.GetOp() < m_lib_nopmod_map.GetSize()); }
-  bool IsLabel(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsLabel(); }
-  bool IsPromoter(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsPromoter(); }
-  bool IsTerminator(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsTerminator(); }
-  bool ShouldStall(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldStall(); }
-  bool ShouldSleep(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldSleep(); }
-  bool IsImmediateValue(const Instruction& inst) const { return (inst != GetInstError() && m_inst_lib->Get(GetLibFunctionIndex(inst)).IsImmediateValue()); }
+  bool IsLabel(const Instruction& inst) const { return m_inst_lib->EntryAt(GetLibFunctionIndex(inst)).IsLabel(); }
+  bool IsPromoter(const Instruction& inst) const { return m_inst_lib->EntryAt(GetLibFunctionIndex(inst)).IsPromoter(); }
+  bool IsTerminator(const Instruction& inst) const { return m_inst_lib->EntryAt(GetLibFunctionIndex(inst)).IsTerminator(); }
+  bool ShouldStall(const Instruction& inst) const { return m_inst_lib->EntryAt(GetLibFunctionIndex(inst)).ShouldStall(); }
+  bool ShouldSleep(const Instruction& inst) const { return m_inst_lib->EntryAt(GetLibFunctionIndex(inst)).ShouldSleep(); }
+  bool IsImmediateValue(const Instruction& inst) const { return (inst != GetInstError() && m_inst_lib->EntryAt(GetLibFunctionIndex(inst)).IsImmediateValue()); }
   
-  unsigned int GetFlags(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).GetFlags(); }
+  unsigned int GetFlags(const Instruction& inst) const { return m_inst_lib->EntryAt(GetLibFunctionIndex(inst)).Flags(); }
   
 
   // Insertion of new instructions...
@@ -169,14 +172,14 @@ public:
   void SetRedundancy(const Instruction& inst, int _redundancy) { m_lib_name_map[inst.GetOp()].redundancy = _redundancy; m_mutation_index->SetWeight(inst.GetOp(), _redundancy);}
 
   // accessors for instruction library
-  cInstLib* GetInstLib() { return m_inst_lib; }
-  const cInstLib* GetInstLib() const { return m_inst_lib; }
+  InstLib* InstructionLibrary() { return m_inst_lib; }
+  const InstLib* InstructionLibrary() const { return m_inst_lib; }
 
   inline Instruction GetInst(const cString& in_name) const;
   cString FindBestMatch(const cString& in_name) const;
   bool InstInSet(const cString& in_name) const;
 
-  Instruction GetInstDefault() const { return Instruction(m_inst_lib->GetInstDefault()); }
+  Instruction GetInstDefault() const { return Instruction(m_inst_lib->InstDefault()); }
   Instruction GetInstError() const { return Instruction(255); }
   
   bool LoadWithStringList(const cStringList& sl, cUserFeedback* errors = NULL);
@@ -188,7 +191,7 @@ public:
 inline Instruction cInstSet::GetInst(const cString & in_name) const
 {
   for (int i = 0; i < m_lib_name_map.GetSize(); i++) {
-    if (m_inst_lib->GetName(m_lib_name_map[i].lib_fun_id) == in_name) {
+    if (m_inst_lib->NameOf(m_lib_name_map[i].lib_fun_id) == in_name) {
       return Instruction(i);
     }
   }

@@ -28,11 +28,9 @@
 #include "cCodeLabel.h"
 #include "cHeadCPU.h"
 #include "cCPUMemory.h"
-#include "cCPUStack.h"
 #include "cHardwareBase.h"
 #include "cString.h"
 #include "cStats.h"
-#include "tInstLib.h"
 
 #include "nHardware.h"
 
@@ -43,10 +41,9 @@
 * Each organism may have a cHardwareCPU structure which keeps track of the
 * current status of all the components of the simulated hardware.
 *
-* @see cHardwareCPU_Thread, cCPUStack, cCPUMemory, cInstSet
+* @see cHardwareCPU_Thread, cCPUMemory, cInstSet
 **/
 
-class cInstLib;
 class cInstSet;
 class cOrganism;
 
@@ -62,8 +59,30 @@ protected:
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
   enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
   static const int NUM_NOPS = 3;
+  static const int STACK_SIZE = 10;
 
-  // --------  Data Structures  --------
+  // --------  Data Structures  --------  
+  
+  class Stack
+  {
+  private:
+    int m_stack[STACK_SIZE];
+    int m_sp;
+    
+  public:
+    inline Stack() : m_sp(0) { Clear(); }
+    inline Stack(const Stack& is) : m_sp(is.m_sp) { Clear(); for (int i = 0; i < STACK_SIZE; i++) m_stack[i] = is.m_stack[i]; }
+    
+    inline void operator=(const Stack& is) { m_sp = is.m_sp; Clear(); for (int i = 0; i < STACK_SIZE; i++) m_stack[i] = is.m_stack[i]; }
+    
+    inline void Push(int value) { if (--m_sp < 0) m_sp = STACK_SIZE - 1; m_stack[(int)m_sp] = value; }
+    inline int Pop() { int v = m_stack[m_sp]; m_stack[m_sp] = 0; if (++m_sp == STACK_SIZE) m_sp = 0; return v; }
+    inline int& Peek() { return m_stack[m_sp]; }
+    inline const int& Peek() const { return m_stack[m_sp]; }
+    inline const int& Get(int d = 0) const { assert(d >= 0); int p = d + m_sp; return m_stack[(p >= STACK_SIZE) ? (p - STACK_SIZE) : p]; }
+    inline void Clear() { for (int i = 0; i < STACK_SIZE; i++) m_stack[i] = 0; }
+  };
+  
   struct cLocalThread
   {
   private:
@@ -72,7 +91,7 @@ protected:
   public:
     int reg[NUM_REGISTERS];
     cHeadCPU heads[NUM_HEADS];
-    cCPUStack stack;
+    Stack stack;
     unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
     unsigned char cur_head;
 
@@ -95,15 +114,15 @@ protected:
 
 
   // --------  Static Variables  --------
-  static tInstLib<tMethod>* s_inst_slib;
-  static tInstLib<tMethod>* initInstLib(void);
+  static StaticTableInstLib<tMethod>* s_inst_slib;
+  static StaticTableInstLib<tMethod>* initInstLib(void);
 
 
   // --------  Member Variables  --------
   const tMethod* m_functions;
 
   cCPUMemory m_memory;          // Memory...
-  cCPUStack m_global_stack;     // A stack that all threads share.
+  Stack m_global_stack;     // A stack that all threads share.
 
   Apto::Array<cLocalThread> m_threads;
   int m_thread_id_chart;
@@ -146,7 +165,7 @@ protected:
   // <-- Epigenetic State
   bool m_epigenetic_state;
   int m_epigenetic_saved_reg[NUM_REGISTERS];
-  cCPUStack m_epigenetic_saved_stack;
+  Stack m_epigenetic_saved_stack;
   // Epigenetic State -->
 
 
@@ -155,7 +174,6 @@ protected:
   // --------  Stack Manipulation...  --------
   inline void StackPush(int value);
   inline int StackPop();
-  inline void StackFlip();
   inline void StackClear();
   inline void SwitchStack();
 
@@ -235,7 +253,7 @@ public:
   cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareCPU() { ; }
 
-  static tInstLib<tMethod>* GetInstLib() { return s_inst_slib; }
+  static InstLib* InstructionLibrary() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-heads.cfg"; }
 
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
@@ -888,15 +906,6 @@ inline int cHardwareCPU::StackPop()
   }
 
   return pop_value;
-}
-
-inline void cHardwareCPU::StackFlip()
-{
-  if (m_threads[m_cur_thread].cur_stack == 0) {
-    m_threads[m_cur_thread].stack.Flip();
-  } else {
-    m_global_stack.Flip();
-  }
 }
 
 inline int cHardwareCPU::GetStack(int depth, int stack_id, int in_thread) const

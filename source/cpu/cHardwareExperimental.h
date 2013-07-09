@@ -24,6 +24,7 @@
 #define cHardwareExperimental_h
 
 #include "avida/Avida.h"
+#include "avida/hardware/InstLib.h"
 
 #include "cCodeLabel.h"
 #include "cCPUMemory.h"
@@ -36,7 +37,6 @@
 
 #include "nHardware.h"
 
-#include "tInstLib.h"
 #include "cEnvironment.h"
 
 #include <cstring>
@@ -49,10 +49,12 @@
  * @see cCPUMemory, cInstSet
  **/
 
-class cInstLib;
 class cInstSet;
 class cMutation;
 class cOrganism;
+
+using namespace Avida::Hardware;
+
 
 class cHardwareExperimental : public cHardwareBase
 {
@@ -68,8 +70,8 @@ private:
   
   
   // --------  Static Variables  --------
-  static tInstLib<cHardwareExperimental::tMethod>* s_inst_slib;
-  static tInstLib<cHardwareExperimental::tMethod>* initInstLib(void);
+  static StaticTableInstLib<cHardwareExperimental::tMethod>* s_inst_slib;
+  static StaticTableInstLib<cHardwareExperimental::tMethod>* initInstLib(void);
   
   
   // --------  Define Internal Data Structures  --------
@@ -235,7 +237,7 @@ public:
   cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareExperimental() { ; }
   
-  static tInstLib<cHardwareExperimental::tMethod>* GetInstLib() { return s_inst_slib; }
+  static InstLib* InstructionLibrary() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-experimental.cfg"; }
   
   
@@ -653,7 +655,7 @@ private:
   std::pair<bool, int> m_last_cell_data; // If cell data has been previously collected, and it's value
   
   // ---------- Some Instruction Helpers -----------
-  inline const cString& GetCurInstName() { return m_inst_set->GetName(m_threads[m_cur_thread].heads[nHardware::HEAD_IP].GetInst()); }
+  inline const Apto::String& GetCurInstName() { return m_inst_set->GetName(m_threads[m_cur_thread].heads[nHardware::HEAD_IP].GetInst()); }
   
   struct sLookRegAssign {
     int habitat;

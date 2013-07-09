@@ -25,6 +25,7 @@
 #define cHardwareGP8_h
 
 #include "avida/Avida.h"
+#include "avida/hardware/InstLib.h"
 
 #include "cCodeLabel.h"
 #include "cCPUMemory.h"
@@ -36,14 +37,14 @@
 #include "cStats.h"
 #include "cString.h"
 
-#include "tInstLib.h"
 #include "cEnvReqs.h"
 #include "cEnvironment.h"
 
 
-class cInstLib;
 class cInstSet;
 class cOrganism;
+
+using namespace Avida::Hardware;
 
 
 class cHardwareGP8 : public cHardwareBase
@@ -321,7 +322,7 @@ public:
   cHardwareGP8(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareGP8() { ; }
   
-  static cInstLib* GetInstLib() { return s_inst_slib; }
+  static InstLib* InstructionLibrary() { return s_inst_slib; }
   
   
   // --------  Core Execution Methods  --------
@@ -600,7 +601,7 @@ private:
   bool DoLookAgainEX(cAvidaContext& ctx, bool use_ft = false);
   
 private:
-  class GP8Inst : public cInstLibEntry
+  class GP8Inst : public InstLib::Entry
   {
   private:
     const InstMethod m_function;
@@ -608,9 +609,9 @@ private:
     const ImmMethod m_imm_method;
     
   public:
-    GP8Inst(const cString& name, InstMethod function, InstructionClass _class, unsigned int flags,
-            const cString& desc, unsigned int hw_units, ImmMethod imm_method = NULL)
-      : cInstLibEntry(name, _class, flags, desc, BEHAV_CLASS_NONE)
+    GP8Inst(const Apto::String& name, InstMethod function, InstructionClass _class, unsigned int flags,
+            const Apto::String& desc, unsigned int hw_units, ImmMethod imm_method = NULL)
+      : Entry(name, _class, flags, desc)
       , m_function(function), m_hw_units(hw_units), m_imm_method(imm_method)
     {
     }
@@ -621,7 +622,7 @@ private:
   };
   
   
-  class GP8InstLib : public cInstLib
+  class GP8InstLib : public InstLib
   {
   private:
     const GP8Inst* m_entries;
@@ -634,21 +635,20 @@ private:
   public:
     GP8InstLib(int size, const GP8Inst* entries, cString* nopmod_names, const int* nopmods, const InstMethod* functions,
                const unsigned int* hw_units, const ImmMethod* imm_methods, int def, int null_inst)
-      : cInstLib(size, def, null_inst), m_entries(entries), m_nopmod_names(nopmod_names), m_nopmods(nopmods)
+      : InstLib(size, def, null_inst), m_entries(entries), m_nopmod_names(nopmod_names), m_nopmods(nopmods)
       , m_functions(functions), m_hw_units(hw_units), m_imm_methods(imm_methods)
     {
-      for (int i = 0; i < m_size; i++) m_namemap.Set((const char*)m_entries[i].GetName(), i);
+      for (int i = 0; i < m_size; i++) m_namemap.Set((const char*)m_entries[i].Name(), i);
     }
     
     const InstMethod* Functions() const { return m_functions; }
     const unsigned int* HWUnits() const { return m_hw_units; }
     const ImmMethod* ImmediateMethods() const { return m_imm_methods; }
     
-    const cInstLibEntry& Get(int i) const { assert(i < m_size); return m_entries[i]; }
+    const Entry& Get(int i) const { assert(i < m_size); return m_entries[i]; }
     
     const cString& GetNopName(const unsigned int idx) { return m_nopmod_names[idx]; }
     int GetNopMod(const unsigned int idx) { return m_nopmods[idx]; }
-    int GetNopMod(const Instruction& inst) { return GetNopMod(inst.GetOp()); }
   };
 
   

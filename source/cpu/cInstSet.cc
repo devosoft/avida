@@ -89,7 +89,7 @@ Instruction cInstSet::GetRandomInst(cAvidaContext& ctx) const
 Instruction cInstSet::ActivateNullInst()
 {  
   const int inst_id = m_lib_name_map.GetSize();
-  const int null_fun_id = m_inst_lib->GetInstNull();
+  const int null_fun_id = m_inst_lib->InstNull();
   
   assert(inst_id < MAX_INSTSET_SIZE);
   
@@ -123,8 +123,8 @@ cString cInstSet::FindBestMatch(const cString& in_name) const
   cString best_name("");
   
   for (int i = 0; i < m_lib_name_map.GetSize(); i++) {
-    const cString & cur_name = m_inst_lib->GetName(m_lib_name_map[i].lib_fun_id);
-    const int cur_dist = cStringUtil::EditDistance(cur_name, in_name);
+    const Apto::String& cur_name = m_inst_lib->NameOf(m_lib_name_map[i].lib_fun_id);
+    const int cur_dist = cStringUtil::EditDistance((const char*)cur_name, in_name);
     if (cur_dist < best_dist) {
       best_dist = cur_dist;
       best_name = cur_name;
@@ -140,7 +140,7 @@ bool cInstSet::InstInSet(const cString& in_name) const
   cString best_name("");
   
   for (int i = 0; i < m_lib_name_map.GetSize(); i++) {
-    const cString& cur_name = m_inst_lib->GetName(m_lib_name_map[i].lib_fun_id);
+    const Apto::String& cur_name = m_inst_lib->NameOf(m_lib_name_map[i].lib_fun_id);
     if (cur_name == in_name) return true;
   }
   return false;
@@ -185,12 +185,12 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     
     // Lookup the instruction name in the library
     inst_name = cur_line.Pop(':');
-    int fun_id = m_inst_lib->GetIndex(inst_name);
+    int fun_id = m_inst_lib->IndexOf((const char*)inst_name);
     if (fun_id == -1) {
       // Oh oh!  Didn't find an instruction!
       Apto::String a_inst_name((const char*)inst_name);
       if (feedback) feedback->Error("unknown instruction '%s' (Best match = '%s')",
-                                    (const char*)inst_name, (const char*)m_inst_lib->GetNearMatch(a_inst_name));
+                                    (const char*)inst_name, (const char*)m_inst_lib->NearMatch(a_inst_name));
       success = false;
       continue;
     }
@@ -203,7 +203,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     }
     
     // Check to make sure we are not inserting the special NULL instruction
-    if (fun_id == m_inst_lib->GetInstNull()) {
+    if (fun_id == m_inst_lib->InstNull()) {
       if (feedback) feedback->Error("invalid use of NULL instruction");
       success = false;
       continue;

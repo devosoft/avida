@@ -50,8 +50,7 @@ using namespace AvidaTools;
 
 cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)
   : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(NULL)
-  , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_driver(NULL), m_data_mgr(NULL)
-  , m_own_driver(false)
+  , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_data_mgr(NULL)
 {
 }
 
@@ -82,18 +81,12 @@ cWorld::~cWorld()
   // Delete Last
   delete m_conf; m_conf = NULL;
 
-  // cleanup driver object, if needed
-  if (m_own_driver) { delete m_driver; m_driver = NULL; }
-  
   delete m_ctx;
-  delete m_new_world;
 }
 
 
 bool cWorld::setup(Universe* new_world, cUserFeedback* feedback, const Apto::Map<Apto::String, Apto::String>* defs)
 {
-  m_new_world = new_world;
-  
   bool success = true;
   
   // Setup Random Number Generator
@@ -152,10 +145,6 @@ bool cWorld::setup(Universe* new_world, cUserFeedback* feedback, const Apto::Map
   if (!success) return success;
   
   
-  // @MRR CClade Tracking
-//	if (m_conf->TRACK_CCLADES.Get() > 0)
-//		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
-  
   const bool revert_fatal = m_conf->REVERT_FATAL.Get() > 0.0;
   const bool revert_neg = m_conf->REVERT_DETRIMENTAL.Get() > 0.0;
   const bool revert_neut = m_conf->REVERT_NEUTRAL.Get() > 0.0;
@@ -203,16 +192,4 @@ void cWorld::GetEvents(cAvidaContext& ctx)
   m_event_list->Process(ctx);
 }
 
-
-void cWorld::SetDriver(UniverseDriver* driver, bool take_ownership)
-{
-  // cleanup current driver, if needed
-  if (m_own_driver) delete m_driver;
-  if (m_ctx) delete m_ctx;
-  m_ctx = new cAvidaContext(driver, m_rng);
-  
-  // store new driver information
-  m_driver = driver;
-  m_own_driver = take_ownership;
-}
 

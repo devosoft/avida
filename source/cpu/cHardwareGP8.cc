@@ -38,8 +38,6 @@
 #include "cStateGrid.h"
 #include "cWorld.h"
 
-#include "tInstLibEntry.h"
-
 #include <climits>
 #include <fstream>
 #include <iomanip>
@@ -47,6 +45,7 @@
 using namespace std;
 using namespace Avida;
 using namespace AvidaTools;
+using namespace Avida::Hardware::InstructionFlags;
 
 
 cHardwareGP8::GP8InstLib* cHardwareGP8::s_inst_slib = cHardwareGP8::initInstLib();
@@ -73,25 +72,25 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
   static const GP8Inst s_f_array[] = {
     /*
      Note: all entries of cNOPEntryCPU s_n_array must have corresponding in the same order in
-     tInstLibEntry<tMethod> s_f_array, and these entries must be the first elements of s_f_array.
+     InstLib Entries s_f_array, and these entries must be the first elements of s_f_array.
      */
 #define INST(NAME, FUNC, CLS, FLAGS, UNITS, DESC) GP8Inst(NAME, &cHardwareGP8::FUNC, INST_CLASS_ ## CLS, FLAGS, DESC, UNITS)
 #define INSTI(NAME, FUNC, VAL, CLS, FLAGS, UNITS, DESC) GP8Inst(NAME, &cHardwareGP8::FUNC, INST_CLASS_ ## CLS, FLAGS, DESC, UNITS, &cHardwareGP8::VAL)
-    INST("nop-A", Inst_Nop, NOP, nInstFlag::NOP, 0, "No-operation; modifies other instructions"),
-    INST("nop-B", Inst_Nop, NOP, nInstFlag::NOP, 0, "No-operation; modifies other instructions"),
-    INST("nop-C", Inst_Nop, NOP, nInstFlag::NOP, 0, "No-operation; modifies other instructions"),
-    INST("nop-D", Inst_Nop, NOP, nInstFlag::NOP, 0, "No-operation; modifies other instructions"),
-    INST("nop-E", Inst_Nop, NOP, nInstFlag::NOP, 0, "No-operation; modifies other instructions"),
-    INST("nop-F", Inst_Nop, NOP, nInstFlag::NOP, 0, "No-operation; modifies other instructions"),
-    INST("nop-G", Inst_Nop, NOP, nInstFlag::NOP, 0, "No-operation; modifies other instructions"),
-    INST("nop-H", Inst_Nop, NOP, nInstFlag::NOP, 0, "No-operation; modifies other instructions"),
+    INST("nop-A", Inst_Nop, NOP, NOP, 0, "No-operation; modifies other instructions"),
+    INST("nop-B", Inst_Nop, NOP, NOP, 0, "No-operation; modifies other instructions"),
+    INST("nop-C", Inst_Nop, NOP, NOP, 0, "No-operation; modifies other instructions"),
+    INST("nop-D", Inst_Nop, NOP, NOP, 0, "No-operation; modifies other instructions"),
+    INST("nop-E", Inst_Nop, NOP, NOP, 0, "No-operation; modifies other instructions"),
+    INST("nop-F", Inst_Nop, NOP, NOP, 0, "No-operation; modifies other instructions"),
+    INST("nop-G", Inst_Nop, NOP, NOP, 0, "No-operation; modifies other instructions"),
+    INST("nop-H", Inst_Nop, NOP, NOP, 0, "No-operation; modifies other instructions"),
     
     INST("NULL", Inst_Nop, NOP, 0, 0, "True no-operation instruction: does nothing"),
     INST("nop-X", Inst_Nop, NOP, 0, 0, "True no-operation instruction: does nothing"),
     
     // Genes
-    INST("promoter", Inst_Nop, FLOW_CONTROL, nInstFlag::PROMOTER, 0, "True no-operation instruction: does nothing"),
-    INST("terminator", Inst_Nop, FLOW_CONTROL, nInstFlag::TERMINATOR, 0, "True no-operation instruction: does nothing"),
+    INST("promoter", Inst_Nop, FLOW_CONTROL, PROMOTER, 0, "True no-operation instruction: does nothing"),
+    INST("terminator", Inst_Nop, FLOW_CONTROL, TERMINATOR, 0, "True no-operation instruction: does nothing"),
     
     // Multi-Threading
     INST("regulate-pause", Inst_RegulatePause, OTHER, 0, 0, ""),
@@ -107,7 +106,7 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
     INST("mov-head", Inst_MoveHead, FLOW_CONTROL, 0, 0, "Move head ?IP? to the flow head"),
     INST("jmp-head", Inst_JumpHead, FLOW_CONTROL, 0, 0, "Move head ?Flow? by amount in ?CX? register"),
     INST("get-head", Inst_GetHead, FLOW_CONTROL, 0, 0, "Copy the position of the ?IP? head into ?CX?"),
-    INST("label", Inst_Label, FLOW_CONTROL, nInstFlag::LABEL, 0, ""),
+    INST("label", Inst_Label, FLOW_CONTROL, LABEL, 0, ""),
     INST("search-lbl-s", Inst_Search_Label_S, FLOW_CONTROL, 0, 0, "Find direct label from genome start and move the flow head"),
     INST("search-lbl-d", Inst_Search_Label_D, FLOW_CONTROL, 0, 0, "Find direct label backward and move the flow head"),
     INST("search-seq-d", Inst_Search_Seq_D, FLOW_CONTROL, 0, 0, "Find complement template backward and move the flow head"),
@@ -134,10 +133,10 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
     INST("div", Inst_Div, ARITHMETIC_LOGIC, 0, 0, "Divide BX by CX and place the result in ?BX?"),
     INST("mod", Inst_Mod, ARITHMETIC_LOGIC, 0, 0, ""),
     
-    INSTI("zero", Inst_Zero, Val_Zero, ARITHMETIC_LOGIC, nInstFlag::IMMEDIATE_VALUE, 0, "Set ?BX? to 0"),
-    INSTI("one", Inst_One, Val_One, ARITHMETIC_LOGIC, nInstFlag::IMMEDIATE_VALUE, 0, "Set ?BX? to 1"),
-    INSTI("maxint", Inst_MaxInt, Val_MaxInt, ARITHMETIC_LOGIC, nInstFlag::IMMEDIATE_VALUE, 0, "Set ?BX? to MAX_INT"),
-    INSTI("rand", Inst_Rand, Val_Rand, ARITHMETIC_LOGIC, nInstFlag::IMMEDIATE_VALUE, 0, "Set ?BX? to rand number"),
+    INSTI("zero", Inst_Zero, Val_Zero, ARITHMETIC_LOGIC, IMMEDIATE_VALUE, 0, "Set ?BX? to 0"),
+    INSTI("one", Inst_One, Val_One, ARITHMETIC_LOGIC, IMMEDIATE_VALUE, 0, "Set ?BX? to 1"),
+    INSTI("maxint", Inst_MaxInt, Val_MaxInt, ARITHMETIC_LOGIC, IMMEDIATE_VALUE, 0, "Set ?BX? to MAX_INT"),
+    INSTI("rand", Inst_Rand, Val_Rand, ARITHMETIC_LOGIC, IMMEDIATE_VALUE, 0, "Set ?BX? to rand number"),
     
     INST("pop", Inst_Pop, DATA, 0, 0, "Remove top number from stack and place into ?BX?"),
     INST("push", Inst_Push, DATA, 0, 0, "Copy number from ?BX? and place it into the stack"),
@@ -146,19 +145,19 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
     INST("swap-stk", Inst_SwitchStack, DATA, 0, 0, "Toggle which stack is currently being used"),
     INST("swap", Inst_Swap, DATA, 0, 0, "Swap the contents of ?BX? with ?CX?"),
     
-    INST("input", Inst_TaskInput, ENVIRONMENT, nInstFlag::STALL, 0, "Input new number into ?BX?"),
-    INST("output", Inst_TaskOutput, ENVIRONMENT, nInstFlag::STALL, 0, "Output ?BX?"),
+    INST("input", Inst_TaskInput, ENVIRONMENT, STALL, 0, "Input new number into ?BX?"),
+    INST("output", Inst_TaskOutput, ENVIRONMENT, STALL, 0, "Output ?BX?"),
     
     // Replication Instructions
     INST("h-read", Inst_HeadRead, LIFECYCLE, 0, uREAD, "Read instruction from ?read-head? to ?AX?; advance the head."),
     INST("h-write", Inst_HeadWrite, LIFECYCLE, 0, uWRITE, "Write to ?write-head? instruction from ?AX?; advance the head."),
     INST("h-copy", Inst_HeadCopy, LIFECYCLE, 0, (uREAD & uWRITE), "Copy from read-head to write-head; advance both"),
-    INST("divide-memory", Inst_DivideMemory, LIFECYCLE, nInstFlag::STALL, 0, "Divide memory space."),
+    INST("divide-memory", Inst_DivideMemory, LIFECYCLE, STALL, 0, "Divide memory space."),
     INST("did-copy-lbl", Inst_DidCopyLabel, OTHER, 0, 0, "Execute next if we copied direct match of the attached label"),
     
-    INST("repro", Inst_Repro, LIFECYCLE, nInstFlag::STALL, 0, "Instantly reproduces the organism"),
+    INST("repro", Inst_Repro, LIFECYCLE, STALL, 0, "Instantly reproduces the organism"),
     
-    INST("die", Inst_Die, LIFECYCLE, nInstFlag::STALL, 0, "Instantly kills the organism"),
+    INST("die", Inst_Die, LIFECYCLE, STALL, 0, "Instantly kills the organism"),
     
     // State Grid instructions
     INST("sg-move", Inst_SGMove, ENVIRONMENT, 0, 0, ""),
@@ -167,39 +166,39 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
     INST("sg-sense", Inst_SGSense, ENVIRONMENT, 0, 0, ""),
     
     // Movement and Navigation instructions
-    INST("move", Inst_Move, ENVIRONMENT, nInstFlag::STALL, 0, ""),
+    INST("move", Inst_Move, ENVIRONMENT, STALL, 0, ""),
     INST("get-north-offset", Inst_GetNorthOffset, ENVIRONMENT, 0, 0, ""),
 
     // Rotation
-    INST("rotate-x", Inst_RotateX, ENVIRONMENT, nInstFlag::STALL, 0, ""),
-    INST("rotate-org-id", Inst_RotateOrgID, ENVIRONMENT, nInstFlag::STALL, 0, ""),
-    INST("rotate-away-org-id", Inst_RotateAwayOrgID, ENVIRONMENT, nInstFlag::STALL, 0, ""),
+    INST("rotate-x", Inst_RotateX, ENVIRONMENT, STALL, 0, ""),
+    INST("rotate-org-id", Inst_RotateOrgID, ENVIRONMENT, STALL, 0, ""),
+    INST("rotate-away-org-id", Inst_RotateAwayOrgID, ENVIRONMENT, STALL, 0, ""),
     
     // Resource and Topography Sensing
-    INST("set-forage-target", Inst_SetForageTarget, ENVIRONMENT, nInstFlag::STALL, 0, ""),
-    INST("set-ft-once", Inst_SetForageTargetOnce, ENVIRONMENT, nInstFlag::STALL, 0, ""),
-    INST("set-rand-ft-once", Inst_SetRandForageTargetOnce, ENVIRONMENT, nInstFlag::STALL, 0, ""),
+    INST("set-forage-target", Inst_SetForageTarget, ENVIRONMENT, STALL, 0, ""),
+    INST("set-ft-once", Inst_SetForageTargetOnce, ENVIRONMENT, STALL, 0, ""),
+    INST("set-rand-ft-once", Inst_SetRandForageTargetOnce, ENVIRONMENT, STALL, 0, ""),
     INST("get-forage-target", Inst_GetForageTarget, ENVIRONMENT, 0, 0, ""),
 
-    INST("sense-resource-id", Inst_SenseResourceID, ENVIRONMENT, nInstFlag::STALL, 0, ""),
-    INST("sense-nest", Inst_SenseNest, ENVIRONMENT, nInstFlag::STALL, 0, ""),
-    INST("sense-faced-habitat", Inst_SenseFacedHabitat, ENVIRONMENT, nInstFlag::STALL, 0, ""),
-    INST("look-ahead-ex", Inst_LookAheadEX, ENVIRONMENT, nInstFlag::STALL, 0, ""),
-    INST("look-again-ex", Inst_LookAgainEX, ENVIRONMENT, nInstFlag::STALL, 0, ""),
+    INST("sense-resource-id", Inst_SenseResourceID, ENVIRONMENT, STALL, 0, ""),
+    INST("sense-nest", Inst_SenseNest, ENVIRONMENT, STALL, 0, ""),
+    INST("sense-faced-habitat", Inst_SenseFacedHabitat, ENVIRONMENT, STALL, 0, ""),
+    INST("look-ahead-ex", Inst_LookAheadEX, ENVIRONMENT, STALL, 0, ""),
+    INST("look-again-ex", Inst_LookAgainEX, ENVIRONMENT, STALL, 0, ""),
 
-    INST("eat", Inst_Eat, ENVIRONMENT, nInstFlag::STALL, 0, ""),
+    INST("eat", Inst_Eat, ENVIRONMENT, STALL, 0, ""),
 
     
-    INST("collect-specific", Inst_CollectSpecific, ENVIRONMENT, nInstFlag::STALL, 0, ""),
-    INST("get-res-stored", Inst_GetResStored, ENVIRONMENT, nInstFlag::STALL, 0, ""),
+    INST("collect-specific", Inst_CollectSpecific, ENVIRONMENT, STALL, 0, ""),
+    INST("get-res-stored", Inst_GetResStored, ENVIRONMENT, STALL, 0, ""),
  
     // Org Interaction instructions
-    INST("get-faced-org-id", Inst_GetFacedOrgID, ENVIRONMENT, nInstFlag::STALL, 0, ""),
+    INST("get-faced-org-id", Inst_GetFacedOrgID, ENVIRONMENT, STALL, 0, ""),
     
     INST("teach-offspring", Inst_TeachOffspring, ENVIRONMENT, 0, 0, ""),
-    INST("learn-parent", Inst_LearnParent, ENVIRONMENT, nInstFlag::STALL, 0, ""),
+    INST("learn-parent", Inst_LearnParent, ENVIRONMENT, STALL, 0, ""),
 
-    INST("attack-prey", Inst_AttackPrey, ENVIRONMENT, nInstFlag::STALL, uATTACK, ""),
+    INST("attack-prey", Inst_AttackPrey, ENVIRONMENT, STALL, uATTACK, ""),
 
     // Control-type Instructions
     INST("scramble-registers", Inst_ScrambleReg, DATA, 0, 0, ""),

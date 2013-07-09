@@ -57,14 +57,10 @@ cPopulationInterface::cPopulationInterface(cWorld* world)
 , m_prevseen_cell_id(-1)
 , m_prev_task_cell(-1)
 , m_num_task_cells(0)
-, m_hgt_support(NULL)
 {
 }
 
 cPopulationInterface::~cPopulationInterface() {
-  if (m_hgt_support) {
-    delete m_hgt_support;
-  }
 }
 
 cOrganism* cPopulationInterface::GetOrganism() {

@@ -763,7 +763,6 @@ public:
   void PrintResourceData(const cString& filename);
   void PrintResourceLocData(const cString& filename, cAvidaContext& ctx);
   void PrintResWallLocData(const cString& filename, cAvidaContext& ctx);
-  void PrintSpatialResData(const cString& filename, int i);
   void PrintTimeData(const cString& filename);
   void PrintDivideMutData(const cString& filename);
   void PrintMutationRateData(const cString& filename);

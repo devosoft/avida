@@ -36,7 +36,6 @@
 #include "tBuffer.h"
 
 class cAvidaContext;
-class cCodeLabel;
 class cCPUMemory;
 class cHeadCPU;
 class cMutation;

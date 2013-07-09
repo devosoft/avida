@@ -23,16 +23,18 @@
 #define cHardwareTransSMT_h
 
 #include "avida/Avida.h"
+#include "avida/hardware/InstLib.h"
 
 #include "cAvidaContext.h"
 #include "cCodeLabel.h"
 #include "cContextPhenotype.h"
 #include "cCPUMemory.h"
-#include "cCPUStack.h"
 #include "cHeadCPU.h"
 #include "cHardwareBase.h"
 #include "cString.h"
-#include "tInstLib.h"
+
+
+using namespace Avida::Hardware;
 
 
 class cHardwareTransSMT : public cHardwareBase
@@ -48,6 +50,7 @@ protected:
   static const int NUM_NOPS = 4;
   static const int MAX_MEMSPACE_LABEL = 3;
   static const int MAX_THREAD_LABEL = 3;
+  static const int STACK_SIZE = 10;
 
   enum tStacks { STACK_AX = 0, STACK_BX, STACK_CX, STACK_DX };
   
@@ -56,12 +59,32 @@ protected:
   static const int THREAD_LBLS_HASH_FACTOR = 4; // Sets hast table size to (NUM_NOPS^MAX_THREAD_LABEL) / FACTOR
 
   // --------  Data Structures  --------
+  class LocalStack
+  {
+  private:
+    int m_stack[STACK_SIZE];
+    int m_sp;
+    
+  public:
+    inline LocalStack() : m_sp(0) { Clear(); }
+    inline LocalStack(const LocalStack& is) : m_sp(is.m_sp) { Clear(); for (int i = 0; i < STACK_SIZE; i++) m_stack[i] = is.m_stack[i]; }
+    
+    inline void operator=(const LocalStack& is) { m_sp = is.m_sp; Clear(); for (int i = 0; i < STACK_SIZE; i++) m_stack[i] = is.m_stack[i]; }
+    
+    inline void Push(int value) { if (--m_sp < 0) m_sp = STACK_SIZE - 1; m_stack[(int)m_sp] = value; }
+    inline int Pop() { int v = m_stack[m_sp]; m_stack[m_sp] = 0; if (++m_sp == STACK_SIZE) m_sp = 0; return v; }
+    inline int& Peek() { return m_stack[m_sp]; }
+    inline const int& Peek() const { return m_stack[m_sp]; }
+    inline const int& Get(int d = 0) const { assert(d >= 0); int p = d + m_sp; return m_stack[(p >= STACK_SIZE) ? (p - STACK_SIZE) : p]; }
+    inline void Clear() { for (int i = 0; i < STACK_SIZE; i++) m_stack[i] = 0; }
+  };
+
   class cLocalThread
   {
   public:
     cHeadCPU heads[nHardware::NUM_HEADS];
     unsigned char cur_head;
-    cCPUStack local_stacks[NUM_LOCAL_STACKS];
+    LocalStack local_stacks[NUM_LOCAL_STACKS];
     
     bool advance_ip;         // Should the IP advance after this instruction?
 	bool skipExecution;
@@ -81,15 +104,15 @@ protected:
   };
   
   // --------  Static Variables  --------
-  static tInstLib<cHardwareTransSMT::tMethod>* s_inst_slib;
-  static tInstLib<cHardwareTransSMT::tMethod>* initInstLib(void);
+  static StaticTableInstLib<cHardwareTransSMT::tMethod>* s_inst_slib;
+  static StaticTableInstLib<cHardwareTransSMT::tMethod>* initInstLib(void);
     
 
   // --------  Member Variables  --------
   const tMethod* m_functions;
 
   // Stacks
-  cCPUStack m_global_stacks[NUM_GLOBAL_STACKS];
+  LocalStack m_global_stacks[NUM_GLOBAL_STACKS];
 	
   // Memory
   Apto::Array<cCPUMemory, Apto::ManagedPointer> m_mem_array;
@@ -105,10 +128,10 @@ protected:
   	
 
   // --------  Stack Manipulation...  --------
-  inline cCPUStack& Stack(int stack_id); 
-  inline const cCPUStack& Stack(int stack_id) const;
-  inline cCPUStack& Stack(int stack_id, int in_thread);
-  inline const cCPUStack& Stack(int stack_id, int in_thread) const;
+  inline LocalStack& Stack(int stack_id);
+  inline const LocalStack& Stack(int stack_id) const;
+  inline LocalStack& Stack(int stack_id, int in_thread);
+  inline const LocalStack& Stack(int stack_id, int in_thread) const;
 
   int FindModifiedStack(int default_stack);
   int FindModifiedNextStack(int default_stack);
@@ -181,7 +204,7 @@ public:
   cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareTransSMT() { ; }
 
-  static cInstLib* GetInstLib() { return s_inst_slib; }
+  static InstLib* InstructionLibrary() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-transsmt.cfg"; }
 	
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
@@ -329,7 +352,7 @@ inline int cHardwareTransSMT::GetStack(int depth, int stack_id, int in_thread) c
   return Stack(stack_id, in_thread).Get(depth);
 }
 
-inline cCPUStack& cHardwareTransSMT::Stack(int stack_id)
+inline cHardwareTransSMT::LocalStack& cHardwareTransSMT::Stack(int stack_id)
 {
   if (stack_id >= NUM_STACKS) stack_id = 0;
   if (stack_id < NUM_LOCAL_STACKS)
@@ -338,7 +361,7 @@ inline cCPUStack& cHardwareTransSMT::Stack(int stack_id)
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
 }
 
-inline const cCPUStack& cHardwareTransSMT::Stack(int stack_id) const 
+inline const cHardwareTransSMT::LocalStack& cHardwareTransSMT::Stack(int stack_id) const
 {
   if (stack_id >= NUM_STACKS) stack_id = 0;
   if (stack_id < NUM_LOCAL_STACKS)
@@ -347,7 +370,7 @@ inline const cCPUStack& cHardwareTransSMT::Stack(int stack_id) const
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
 }
 
-inline cCPUStack& cHardwareTransSMT::Stack(int stack_id, int in_thread) 
+inline cHardwareTransSMT::LocalStack& cHardwareTransSMT::Stack(int stack_id, int in_thread)
 {
   if (stack_id >= NUM_STACKS || stack_id < 0) stack_id = 0;
   if (in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
@@ -358,7 +381,7 @@ inline cCPUStack& cHardwareTransSMT::Stack(int stack_id, int in_thread)
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
 }
 
-inline const cCPUStack& cHardwareTransSMT::Stack(int stack_id, int in_thread) const 
+inline const cHardwareTransSMT::LocalStack& cHardwareTransSMT::Stack(int stack_id, int in_thread) const
 {
   if (stack_id >= NUM_STACKS || stack_id < 0) stack_id = 0;
   if (in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;

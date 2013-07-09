@@ -44,7 +44,6 @@
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
-#include "cCodeLabel.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
@@ -172,7 +171,6 @@ public:
 
 cPopulation::cPopulation(cWorld* world)  
 : m_world(world)
-, m_pop_res(this, 0)
 , m_scheduler(NULL)
 , birth_chamber(world)
 , print_mini_trace_genomes(false)
@@ -1006,13 +1004,6 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
       }
     }
     in_organism->GetPhenotype().SetCurBonusInstCount(num_rewarded_instructions);
-  }
-  // ok, after we've gone through all that, there's a catch.  It is possible that the
-  // cell into which this organism has been injected is in fact a "gateway" to another
-  // world.  if so, we then migrate this organism out of this world and empty the cell.
-  if(m_world->IsWorldBoundary(target_cell)) {
-    m_world->MigrateOrganism(in_organism, target_cell, in_organism->GetPhenotype().GetMerit(), in_organism->GetLineageLabel());
-    KillOrganism(target_cell, ctx);
   }
   
   if (assign_group) {

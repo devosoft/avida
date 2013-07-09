@@ -173,10 +173,8 @@ SET(CPU_DIR ${PROJECT_SOURCE_DIR}/source/cpu)
 SET(CPU_SOURCES
   ${CPU_DIR}/cCodeLabel.cc
   ${CPU_DIR}/cCPUMemory.cc
-  ${CPU_DIR}/cCPUStack.cc
   ${CPU_DIR}/cCPUTestInfo.cc
   ${CPU_DIR}/cHardwareBase.cc
-  ${CPU_DIR}/cHardwareBCR.cc
   ${CPU_DIR}/cHardwareCPU.cc
   ${CPU_DIR}/cHardwareExperimental.cc
   ${CPU_DIR}/cHardwareGP8.cc
