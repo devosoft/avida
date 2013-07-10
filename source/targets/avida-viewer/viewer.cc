@@ -20,8 +20,9 @@
 
 #include <csignal>
 
+#include "avida/core/Avida.h"
+#include "avida/core/Version.h"
 #include "apto/core/FileSystem.h"
-#include "avida/Avida.h"
 #include "avida/core/Universe.h"
 #include "avida/util/CmdLine.h"
 

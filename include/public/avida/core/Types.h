@@ -25,6 +25,17 @@
 #ifndef AvidaCoreTypes_h
 #define AvidaCoreTypes_h
 
+#ifndef DEBUG
+# ifndef NDEBUG
+#  define NDEBUG
+# endif
+#endif
+
+#ifndef NULL
+# define NULL 0
+#endif
+
+
 #include "apto/core.h"
 #include "apto/malloc.h"
 #include "avida/core/Definitions.h"

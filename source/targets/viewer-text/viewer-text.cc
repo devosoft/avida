@@ -21,7 +21,6 @@
 
 #include <csignal>
 
-#include "avida/Avida.h"
 #include "AvidaTools.h"
 
 #include "cAvidaConfig.h"

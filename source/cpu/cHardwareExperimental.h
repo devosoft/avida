@@ -23,10 +23,9 @@
 #ifndef cHardwareExperimental_h
 #define cHardwareExperimental_h
 
-#include "avida/Avida.h"
 #include "avida/hardware/InstLib.h"
+#include "avida/util/NopSequence.h"
 
-#include "cCodeLabel.h"
 #include "cCPUMemory.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
@@ -147,9 +146,9 @@ private:
     };
     int wait_value;
     
-    cCodeLabel read_label;
-    cCodeLabel read_seq;
-    cCodeLabel next_label;
+    Util::NopSequence read_label;
+    Util::NopSequence read_seq;
+    Util::NopSequence next_label;
     
     inline cLocalThread() { ; }
     cLocalThread(cHardwareExperimental* in_hardware, int in_id = -1) { Reset(in_hardware, in_id); }
@@ -319,19 +318,19 @@ private:
   
   
   // --------  Label Manipulation  -------
-  const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
-  cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
-  void ReadLabel(int max_size=cCodeLabel::MAX_LENGTH);
+  const Util::NopSequence& GetLabel() const { return m_threads[m_cur_thread].next_label; }
+  Util::NopSequence& GetLabel() { return m_threads[m_cur_thread].next_label; }
+  void ReadLabel();
   cHeadCPU FindLabelStart(bool mark_executed);
   cHeadCPU FindLabelForward(bool mark_executed);
   cHeadCPU FindLabelBackward(bool mark_executed);
   cHeadCPU FindNopSequenceStart(bool mark_executed);
   cHeadCPU FindNopSequenceForward(bool mark_executed);
   cHeadCPU FindNopSequenceBackward(bool mark_executed);
-  inline const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
-  inline const cCodeLabel& GetReadSequence() const { return m_threads[m_cur_thread].read_seq; }
-  inline cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
-  inline cCodeLabel& GetReadSequence() { return m_threads[m_cur_thread].read_seq; }
+  inline const Util::NopSequence& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
+  inline const Util::NopSequence& GetReadSequence() const { return m_threads[m_cur_thread].read_seq; }
+  inline Util::NopSequence& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
+  inline Util::NopSequence& GetReadSequence() { return m_threads[m_cur_thread].read_seq; }
   
   
   // --------  Thread Manipulation  -------

@@ -26,23 +26,21 @@
 
 #include "apto/core/StringUtils.h"
 
+
 Apto::String Avida::Version::Banner()
 {
   Apto::String banner("Avida ");
   banner += Avida::Version::String();
   banner += "\n";
   banner += "--------------------------------------------------------------------------------\n";
-  banner += "by Charles Ofria\n";
-  
-  banner += "Lead Developer: David M. Bryson\n\n";
+  banner += "by Charles Ofria and David M. Bryson\n\n";
   
   banner += "Active developers include:\n";
-  banner += "Rose Canino-Koning, Heather J. Goldsby, Anya E. Johnson, Neem Serra,\n";
-  banner += "Aaron P. Wagner, Bess Walker, and Luis Zaman\n\n";
+  banner += "Rose Canino-Koning, Anya E. Johnson, Aaron P. Wagner, and Luis Zaman\n\n";
   
   banner += "For a more complete list of contributors, see the AUTHORS file.\n\n";
   
-  banner += "Copyright 1999-2012 Michigan State University.\n";
+  banner += "Copyright 1999-2013 Michigan State University.\n";
   banner += "Copyright 1993-2003 California Institute of Technology.\n\n";
   
   banner += "Avida comes with ABSOLUTELY NO WARRANTY.\n";

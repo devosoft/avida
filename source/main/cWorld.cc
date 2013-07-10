@@ -21,7 +21,6 @@
 
 #include "cWorld.h"
 
-#include "avida/Avida.h"
 #include "AvidaTools.h"
 
 #include "avida/data/Manager.h"

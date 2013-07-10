@@ -8,7 +8,6 @@
 #ifndef cViewInfo_h
 #define cViewInfo_h
 
-#include "avida/Avida.h"
 #include "avida/systematics/Group.h"
 
 #include "cInstSet.h"

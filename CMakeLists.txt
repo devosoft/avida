@@ -171,7 +171,6 @@ LIST(APPEND AVIDA_CORE_SOURCES ${CORE_SOURCES})
 # The cpu directory
 SET(CPU_DIR ${PROJECT_SOURCE_DIR}/source/cpu)
 SET(CPU_SOURCES
-  ${CPU_DIR}/cCodeLabel.cc
   ${CPU_DIR}/cCPUMemory.cc
   ${CPU_DIR}/cCPUTestInfo.cc
   ${CPU_DIR}/cHardwareBase.cc

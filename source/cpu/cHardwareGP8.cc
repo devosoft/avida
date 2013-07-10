@@ -46,6 +46,7 @@ using namespace std;
 using namespace Avida;
 using namespace AvidaTools;
 using namespace Avida::Hardware::InstructionFlags;
+using namespace Avida::Util;
 
 
 cHardwareGP8::GP8InstLib* cHardwareGP8::s_inst_slib = cHardwareGP8::initInstLib();
@@ -805,7 +806,7 @@ void cHardwareGP8::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
 
 void cHardwareGP8::FindLabelStart(Head& head, Head& default_pos, bool mark_executed)
 {
-  const cCodeLabel& search_label = GetLabel();
+  const NopSequence& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) {
@@ -854,7 +855,7 @@ void cHardwareGP8::FindLabelStart(Head& head, Head& default_pos, bool mark_execu
 
 void cHardwareGP8::FindNopSequenceStart(Head& head, Head& default_pos, bool mark_executed)
 {
-  const cCodeLabel& search_label = GetLabel();
+  const NopSequence& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) {
@@ -900,7 +901,7 @@ void cHardwareGP8::FindNopSequenceStart(Head& head, Head& default_pos, bool mark
 
 void cHardwareGP8::FindLabelForward(Head& head, Head& default_pos, bool mark_executed)
 {
-  const cCodeLabel& search_label = GetLabel();
+  const NopSequence& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) {
@@ -955,7 +956,7 @@ void cHardwareGP8::FindLabelForward(Head& head, Head& default_pos, bool mark_exe
 
 void cHardwareGP8::FindLabelBackward(Head& head, Head& default_pos, bool mark_executed)
 {
-  const cCodeLabel& search_label = GetLabel();
+  const NopSequence& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) {
@@ -1011,7 +1012,7 @@ void cHardwareGP8::FindLabelBackward(Head& head, Head& default_pos, bool mark_ex
 
 void cHardwareGP8::FindNopSequenceForward(Head& head, Head& default_pos, bool mark_executed)
 {
-  const cCodeLabel& search_label = GetLabel();
+  const NopSequence& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) {
@@ -1066,7 +1067,7 @@ void cHardwareGP8::FindNopSequenceForward(Head& head, Head& default_pos, bool ma
 
 void cHardwareGP8::FindNopSequenceBackward(Head& head, Head& default_pos, bool mark_executed)
 {
-  const cCodeLabel& search_label = GetLabel();
+  const NopSequence& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) {
@@ -1147,13 +1148,13 @@ void cHardwareGP8::ReadInst(Instruction in_inst)
 // This function looks at the current position in the info of the organism and sets the next_label to be the sequence of nops
 // which follows.  The instruction pointer is left on the last line of the label found.
 
-void cHardwareGP8::readLabel(Head& head, cCodeLabel& label, int max_size)
+void cHardwareGP8::readLabel(Head& head, NopSequence& label)
 {
   int count = 0;
   
   label.Clear();
   
-  while (m_inst_set->IsNop(head.NextInst()) && (count < max_size)) {
+  while (m_inst_set->IsNop(head.NextInst()) && (count < label.MaxSize())) {
     count++;
     head.Advance();
     label.AddNop(m_inst_set->GetNopMod(head.GetInst()));
@@ -1163,7 +1164,7 @@ void cHardwareGP8::readLabel(Head& head, cCodeLabel& label, int max_size)
   }
 }
 
-void cHardwareGP8::threadCreate(const cCodeLabel& thread_label, const Head& start_pos)
+void cHardwareGP8::threadCreate(const NopSequence& thread_label, const Head& start_pos)
 {
   // Check for existing thread
   if (thread_label.GetSize() > 0) {

@@ -1,9 +1,9 @@
 /*
- *  core/Version.h
+ *  core/Avida.h
  *  avida-core
  *
- *  Created by David on 4/17/11.
- *  Copyright 2011 Michigan State University. All rights reserved.
+ *  Created by David on 7/10/13.
+ *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,24 +22,15 @@
  *
  */
 
-#ifndef AvidaCoreVersion_h
-#define AvidaCoreVersion_h
+#ifndef AvidaCoreAvida_h
+#define AvidaCoreAvida_h
 
-#include "apto/core/String.h"
+#include "avida/core/Types.h"
 
 
 namespace Avida {
-  namespace Version {
-    LIB_EXPORT inline const char* String() { return "3.0 (pre-release)"; }
-    LIB_EXPORT inline int Major() { return 3; }
-    LIB_EXPORT inline int Minor() { return 0; }
-    LIB_EXPORT inline int Patch() { return 0; }
-    LIB_EXPORT inline const char* Tag() { return "pre-release"; }
-    
-    LIB_EXPORT Apto::String Banner();
-    
-    LIB_EXPORT bool CheckCompatibility(const char* version);
-  };
+  void Initialize();
 };
+
 
 #endif

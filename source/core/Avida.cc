@@ -22,7 +22,7 @@
  *
  */
 
-#include "avida/Avida.h"
+#include "avida/core/Avida.h"
 
 #include "apto/platform.h"
 #include "avida/biota/Organism.h"

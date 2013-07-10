@@ -19,8 +19,10 @@
  */
 
 #include "apto/core/FileSystem.h"
-#include "avida/Avida.h"
+
+#include "avida/core/Avida.h"
 #include "avida/core/Universe.h"
+#include "avida/core/Version.h"
 #include "avida/data/Manager.h"
 #include "avida/environment/Manager.h"
 #include "avida/hardware/Manager.h"

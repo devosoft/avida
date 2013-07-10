@@ -23,8 +23,6 @@
 #ifndef cStats_h
 #define cStats_h
 
-#include "avida/Avida.h"
-
 #include "AvidaTools.h"
 
 #include "avida/core/InstructionSequence.h"

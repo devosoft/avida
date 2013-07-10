@@ -377,7 +377,7 @@ void cHardwareTransSMT::PrintStatus(ostream& fp)
   fp.flush();
 }
 
-int cHardwareTransSMT::FindMemorySpaceLabel(const cCodeLabel& label, int mem_space)
+int cHardwareTransSMT::FindMemorySpaceLabel(const NopSequence& label, int mem_space)
 {
 	if (label.GetSize() == 0) return 0;
   
@@ -405,7 +405,7 @@ cHeadCPU cHardwareTransSMT::FindLabel(int direction)
 	
   // Start up a search head at the position of the instruction pointer.
   cHeadCPU search_head(inst_ptr);
-  cCodeLabel& search_label = GetLabel();
+  NopSequence& search_label = GetLabel();
 	
   // Make sure the label is of size  > 0.
 	
@@ -442,7 +442,7 @@ cHeadCPU cHardwareTransSMT::FindLabel(int direction)
 // Search forwards for search_label from _after_ position pos in the
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
-int cHardwareTransSMT::FindLabel_Forward(const cCodeLabel& search_label,
+int cHardwareTransSMT::FindLabel_Forward(const NopSequence& search_label,
                                          const InstructionSequence& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
@@ -523,7 +523,7 @@ int cHardwareTransSMT::FindLabel_Forward(const cCodeLabel& search_label,
 // Search backwards for search_label from _before_ position pos in the
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
-int cHardwareTransSMT::FindLabel_Backward(const cCodeLabel & search_label,
+int cHardwareTransSMT::FindLabel_Backward(const NopSequence & search_label,
                                           const InstructionSequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
@@ -598,7 +598,7 @@ int cHardwareTransSMT::FindLabel_Backward(const cCodeLabel & search_label,
 }
 
 // Search for 'in_label' anywhere in the hardware.
-cHeadCPU cHardwareTransSMT::FindLabel(const cCodeLabel& in_label, int direction)
+cHeadCPU cHardwareTransSMT::FindLabel(const NopSequence& in_label, int direction)
 {
   assert (in_label.GetSize() > 0);
 	
@@ -681,7 +681,7 @@ bool cHardwareTransSMT::ParasiteInfectHost(Systematics::UnitPtr bu)
 {
   assert(bu->UnitGenome().HardwareType() == GetType());
   
-  cCodeLabel label;
+  NopSequence label;
   label.ReadString((const char*)bu->UnitSource().arguments);
   
   // Inject fails if the memory space is already in use
@@ -872,6 +872,8 @@ void cHardwareTransSMT::ReadLabel(int max_size)
 	
   GetLabel().Clear();
 	
+  if (max_size < 0 || max_size > GetLabel().MaxSize()) max_size = GetLabel().MaxSize();
+  
   while (m_inst_set->IsNop(inst_ptr.GetNextInst()) && (count < max_size)) {
     count++;
     inst_ptr.Advance();
@@ -885,7 +887,7 @@ void cHardwareTransSMT::ReadLabel(int max_size)
 }
 
 
-int cHardwareTransSMT::ThreadCreate(const cCodeLabel& label, int mem_space)
+int cHardwareTransSMT::ThreadCreate(const NopSequence& label, int mem_space)
 {
   int thread_id = m_threads.GetSize();
   

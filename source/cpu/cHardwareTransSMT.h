@@ -22,11 +22,10 @@
 #ifndef cHardwareTransSMT_h
 #define cHardwareTransSMT_h
 
-#include "avida/Avida.h"
 #include "avida/hardware/InstLib.h"
+#include "avida/util/NopSequence.h"
 
 #include "cAvidaContext.h"
-#include "cCodeLabel.h"
 #include "cContextPhenotype.h"
 #include "cCPUMemory.h"
 #include "cHeadCPU.h"
@@ -90,8 +89,8 @@ protected:
     
     bool advance_ip;         // Should the IP advance after this instruction?
 	bool skipExecution;
-    cCodeLabel read_label;
-    cCodeLabel next_label;
+    Util::NopSequence read_label;
+    Util::NopSequence next_label;
     bool running;
     cContextPhenotype context_phenotype;
     
@@ -151,27 +150,27 @@ protected:
   
   
   // --------  Label Manipulation  -------
-  const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
-  cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
-  void ReadLabel(int max_size = cCodeLabel::MAX_LENGTH);
+  const Util::NopSequence& GetLabel() const { return m_threads[m_cur_thread].next_label; }
+  Util::NopSequence& GetLabel() { return m_threads[m_cur_thread].next_label; }
+  void ReadLabel(int max_size = -1);
   cHeadCPU FindLabel(int direction);
-  int FindLabel_Forward(const cCodeLabel& search_label, const InstructionSequence& search_genome, int pos);
-  int FindLabel_Backward(const cCodeLabel& search_label, const InstructionSequence& search_genome, int pos);
-  cHeadCPU FindLabel(const cCodeLabel& in_label, int direction);
-  const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
-  cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
+  int FindLabel_Forward(const Util::NopSequence& search_label, const InstructionSequence& search_genome, int pos);
+  int FindLabel_Backward(const Util::NopSequence& search_label, const InstructionSequence& search_genome, int pos);
+  cHeadCPU FindLabel(const Util::NopSequence& in_label, int direction);
+  const Util::NopSequence& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
+  Util::NopSequence& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
 
 
   // ---------- Memory Manipulation -----------
-  int FindMemorySpaceLabel(const cCodeLabel& label, int mem_space);
-  inline bool MemorySpaceExists(const cCodeLabel& label);
+  int FindMemorySpaceLabel(const Util::NopSequence& label, int mem_space);
+  inline bool MemorySpaceExists(const Util::NopSequence& label);
 
   
   // ---------- Thread Manipulation -----------
-  int ThreadCreate(const cCodeLabel& label, int mem_space);
+  int ThreadCreate(const Util::NopSequence& label, int mem_space);
   bool ThreadKill(const int thread_id);
-  inline bool ThreadKill(const cCodeLabel& in_label);
-  inline int FindThreadLabel(const cCodeLabel& label);
+  inline bool ThreadKill(const Util::NopSequence& in_label);
+  inline int FindThreadLabel(const Util::NopSequence& label);
   bool ThreadIsRunning() { return m_threads[m_cur_thread].running; }
   
   	
@@ -325,7 +324,7 @@ private:
 };
 
 
-inline bool cHardwareTransSMT::ThreadKill(const cCodeLabel& in_label)
+inline bool cHardwareTransSMT::ThreadKill(const Util::NopSequence& in_label)
 {
   return ThreadKill(FindThreadLabel(in_label));
 }
@@ -401,14 +400,14 @@ inline int cHardwareTransSMT::NormalizeMemSpace(int mem_space) const
   return mem_space;
 }
 
-inline bool cHardwareTransSMT::MemorySpaceExists(const cCodeLabel& label)
+inline bool cHardwareTransSMT::MemorySpaceExists(const Util::NopSequence& label)
 {
   int null;
   if (label.GetSize() == 0 || m_mem_lbls.Get(label.AsInt(NUM_NOPS), null)) return true;
   return false;
 }
 
-inline int cHardwareTransSMT::FindThreadLabel(const cCodeLabel& label)
+inline int cHardwareTransSMT::FindThreadLabel(const Util::NopSequence& label)
 {
   int thread_id = -1;
   if (label.GetSize() == 0) return 0;

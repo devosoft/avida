@@ -24,10 +24,9 @@
 #ifndef cHardwareGP8_h
 #define cHardwareGP8_h
 
-#include "avida/Avida.h"
 #include "avida/hardware/InstLib.h"
+#include "avida/util/NopSequence.h"
 
-#include "cCodeLabel.h"
 #include "cCPUMemory.h"
 #include "cEnvReqs.h"
 #include "cEnvironment.h"
@@ -43,6 +42,7 @@
 
 class cInstSet;
 class cOrganism;
+
 
 using namespace Avida::Hardware;
 
@@ -201,7 +201,7 @@ private:
   struct Thread
   {
   public:
-    cCodeLabel thread_label;
+    Util::NopSequence thread_label;
 
     DataValue reg[NUM_REGISTERS];
     Head heads[NUM_HEADS];
@@ -221,9 +221,9 @@ private:
     };
     int wait_value;
     
-    cCodeLabel read_label;
-    cCodeLabel read_seq;
-    cCodeLabel next_label;
+    Util::NopSequence read_label;
+    Util::NopSequence read_seq;
+    Util::NopSequence next_label;
     
     cOrgSensor::sLookInit sensor_session;
     
@@ -240,7 +240,7 @@ private:
   struct Gene
   {
     cCPUMemory memory;
-    cCodeLabel label;
+    Util::NopSequence label;
     int thread_id;
   };
   
@@ -400,9 +400,9 @@ private:
 
   
   // --------  Label Manipulation  -------
-  inline const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
-  inline cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
-  void readLabel(Head& head, cCodeLabel& label, int max_size = cCodeLabel::MAX_LENGTH);
+  inline const Util::NopSequence& GetLabel() const { return m_threads[m_cur_thread].next_label; }
+  inline Util::NopSequence& GetLabel() { return m_threads[m_cur_thread].next_label; }
+  void readLabel(Head& head, Util::NopSequence& label);
   
   void FindLabelStart(Head& head, Head& default_pos, bool mark_executed);
   void FindLabelForward(Head& head, Head& default_pos, bool mark_executed);
@@ -410,14 +410,14 @@ private:
   void FindNopSequenceStart(Head& head, Head& default_pos, bool mark_executed);
   void FindNopSequenceForward(Head& head, Head& default_pos, bool mark_executed);
   void FindNopSequenceBackward(Head& head, Head& default_pos, bool mark_executed);
-  inline const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
-  inline const cCodeLabel& GetReadSequence() const { return m_threads[m_cur_thread].read_seq; }
-  inline cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
-  inline cCodeLabel& GetReadSequence() { return m_threads[m_cur_thread].read_seq; }
+  inline const Util::NopSequence& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
+  inline const Util::NopSequence& GetReadSequence() const { return m_threads[m_cur_thread].read_seq; }
+  inline Util::NopSequence& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
+  inline Util::NopSequence& GetReadSequence() { return m_threads[m_cur_thread].read_seq; }
   
   
   // --------  Thread Manipulation  -------
-  void threadCreate(const cCodeLabel& thread_label, const Head& start_pos);
+  void threadCreate(const Util::NopSequence& thread_label, const Head& start_pos);
   
   
   // ---------- Instruction Helpers -----------
@@ -656,19 +656,19 @@ private:
   {
   private:
     cHardwareGP8* m_hw;
-    const cCodeLabel m_label;
+    const Util::NopSequence m_label;
     bool m_is_specific;
     int m_next_idx;
     int m_cur_id;
     
   public:
-    ThreadLabelIterator(cHardwareGP8* hw, const cCodeLabel& label, bool specific = true)
+    ThreadLabelIterator(cHardwareGP8* hw, const Util::NopSequence& label, bool specific = true)
       : m_hw(hw), m_label(label), m_is_specific(specific), m_next_idx(0), m_cur_id(-1) { ; }
     
     inline int Next()
     {
       for (; m_next_idx < m_hw->m_threads.GetSize(); m_next_idx++) {
-        const cCodeLabel& thread_label = m_hw->m_threads[m_next_idx].next_label;
+        const Util::NopSequence& thread_label = m_hw->m_threads[m_next_idx].next_label;
         if ((m_is_specific && m_label == thread_label) || thread_label.Contains(m_label)) {
           m_cur_id = m_next_idx;
           m_next_idx++;

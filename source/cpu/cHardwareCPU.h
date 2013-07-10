@@ -23,9 +23,9 @@
 #ifndef cHardwareCPU_h
 #define cHardwareCPU_h
 
-#include "avida/Avida.h"
+#include "avida/hardware/InstLib.h"
+#include "avida/util/NopSequence.h"
 
-#include "cCodeLabel.h"
 #include "cHeadCPU.h"
 #include "cCPUMemory.h"
 #include "cHardwareBase.h"
@@ -95,8 +95,8 @@ protected:
     unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
     unsigned char cur_head;
 
-    cCodeLabel read_label;
-    cCodeLabel next_label;
+    Util::NopSequence read_label;
+    Util::NopSequence next_label;
 
 
     cLocalThread(cHardwareBase* in_hardware = NULL, int in_id = -1) { Reset(in_hardware, in_id); }
@@ -184,17 +184,17 @@ protected:
 
 
   // --------  Label Manipulation  -------
-  const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
-  cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
-  void ReadLabel(int max_size=cCodeLabel::MAX_LENGTH);
+  const Util::NopSequence& GetLabel() const { return m_threads[m_cur_thread].next_label; }
+  Util::NopSequence& GetLabel() { return m_threads[m_cur_thread].next_label; }
+  void ReadLabel(int max_size = -1);
   cHeadCPU FindLabel(int direction);
-  int FindLabel_Forward(const cCodeLabel & search_label, const InstructionSequence& search_genome, int pos);
-  int FindLabel_Backward(const cCodeLabel & search_label, const InstructionSequence& search_genome, int pos);
-  cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
-  void FindLabelInMemory(const cCodeLabel& label, cHeadCPU& search_head);
+  int FindLabel_Forward(const Util::NopSequence & search_label, const InstructionSequence& search_genome, int pos);
+  int FindLabel_Backward(const Util::NopSequence & search_label, const InstructionSequence& search_genome, int pos);
+  cHeadCPU FindLabel(const Util::NopSequence & in_label, int direction);
+  void FindLabelInMemory(const Util::NopSequence& label, cHeadCPU& search_head);
 
-  const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
-  cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
+  const Util::NopSequence& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
+  Util::NopSequence& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
 
 
   // --------  Thread Manipulation  -------

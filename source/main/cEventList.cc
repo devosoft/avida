@@ -22,8 +22,6 @@
 
 #include "cEventList.h"
 
-#include "avida/Avida.h"
-
 #include "cActionLibrary.h"
 #include "cInitFile.h"
 #include "cStats.h"

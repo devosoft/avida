@@ -21,7 +21,6 @@
 
 #include "LandscapeActions.h"
 
-#include "avida/Avida.h"
 
 #include "avida/core/UniverseDriver.h"
 #include "avida/output/File.h"

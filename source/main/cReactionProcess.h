@@ -23,8 +23,6 @@
 #ifndef cReactionProcess_h
 #define cReactionProcess_h
 
-#include "avida/Avida.h"
-
 #include "cString.h"
 #include "nReaction.h"
 

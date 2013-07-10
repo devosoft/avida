@@ -953,7 +953,7 @@ void cHardwareExperimental::PrintMiniTraceSuccess(ostream& fp, const int exec_su
 cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
-  const cCodeLabel& search_label = GetLabel();
+  const NopSequence& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) return ip;
@@ -999,7 +999,7 @@ cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
 cHeadCPU cHardwareExperimental::FindNopSequenceStart(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
-  const cCodeLabel& search_label = GetLabel();
+  const NopSequence& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) return ip;
@@ -1042,7 +1042,7 @@ cHeadCPU cHardwareExperimental::FindNopSequenceStart(bool mark_executed)
 cHeadCPU cHardwareExperimental::FindLabelForward(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
-  const cCodeLabel& search_label = GetLabel();
+  const NopSequence& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) return ip;
@@ -1092,7 +1092,7 @@ cHeadCPU cHardwareExperimental::FindLabelForward(bool mark_executed)
 cHeadCPU cHardwareExperimental::FindLabelBackward(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
-  const cCodeLabel& search_label = GetLabel();
+  const NopSequence& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) return ip;
@@ -1143,7 +1143,7 @@ cHeadCPU cHardwareExperimental::FindLabelBackward(bool mark_executed)
 cHeadCPU cHardwareExperimental::FindNopSequenceForward(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
-  const cCodeLabel& search_label = GetLabel();
+  const NopSequence& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) return ip;
@@ -1193,7 +1193,7 @@ cHeadCPU cHardwareExperimental::FindNopSequenceForward(bool mark_executed)
 cHeadCPU cHardwareExperimental::FindNopSequenceBackward(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
-  const cCodeLabel& search_label = GetLabel();
+  const NopSequence& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) return ip;
@@ -1278,15 +1278,14 @@ void cHardwareExperimental::AdjustHeads()
 // and sets the next_label to be the sequence of nops which follows.  The
 // instruction pointer is left on the last line of the label found.
 
-void cHardwareExperimental::ReadLabel(int max_size)
+void cHardwareExperimental::ReadLabel()
 {
   int count = 0;
   cHeadCPU * inst_ptr = &( getIP() );
   
   GetLabel().Clear();
   
-  while (m_inst_set->IsNop(inst_ptr->GetNextInst()) &&
-         (count < max_size)) {
+  while (m_inst_set->IsNop(inst_ptr->GetNextInst()) && (count < GetLabel().MaxSize())) {
     count++;
     inst_ptr->Advance();
     GetLabel().AddNop(m_inst_set->GetNopMod(inst_ptr->GetInst()));
@@ -1677,7 +1676,7 @@ bool cHardwareExperimental::Inst_IfGtrX(cAvidaContext&)       // Execute next if
   int valueToCompare = 1;
   
   ReadLabel();
-  const cCodeLabel& shift_label = GetLabel();
+  const NopSequence& shift_label = GetLabel();
   for (int i = 0; i < shift_label.GetSize(); i++) {
     if (shift_label[i] == rAX) {
       valueToCompare *= -1;
@@ -1703,7 +1702,7 @@ bool cHardwareExperimental::Inst_IfEquX(cAvidaContext&)       // Execute next if
   int valueToCompare = 1;
   
   ReadLabel();
-  const cCodeLabel& shift_label = GetLabel();
+  const NopSequence& shift_label = GetLabel();
   for (int i = 0; i < shift_label.GetSize(); i++) {
     if (shift_label[i] == rAX) {
       valueToCompare *= -1;

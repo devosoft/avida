@@ -21,7 +21,6 @@
 		7023EC3F0C0A431B00362B9C /* cAnalyzeJobWorker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */; };
 		7023EC420C0A431B00362B9C /* cAvidaConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7013846009028B3E0087ED2E /* cAvidaConfig.cc */; };
 		7023EC430C0A431B00362B9C /* cBirthChamber.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */; };
-		7023EC460C0A431B00362B9C /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		7023EC480C0A431B00362B9C /* cCPUMemory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF5808C3948C00F50912 /* cCPUMemory.cc */; };
 		7023EC4A0C0A431B00362B9C /* cCPUTestInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */; };
 		7023EC4D0C0A431B00362B9C /* cDataManager_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */; };
@@ -82,6 +81,9 @@
 		7038248C14DC3C92003C6901 /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		7038248D14DC3C95003C6901 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		7038248E14DC3C9A003C6901 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
+		70392027178DE091009BBCC5 /* NopSequence.h in Headers */ = {isa = PBXBuildFile; fileRef = 70392026178DE091009BBCC5 /* NopSequence.h */; };
+		70392029178DE0AA009BBCC5 /* NopSequence.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70392028178DE0AA009BBCC5 /* NopSequence.cc */; };
+		7039202B178DEF5C009BBCC5 /* Avida.h in Headers */ = {isa = PBXBuildFile; fileRef = 7039202A178DEF5B009BBCC5 /* Avida.h */; };
 		7039884D09F00D020052ACE7 /* analyze.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D309EE8501001AEA89 /* analyze.cfg */; };
 		7039884E09F00D030052ACE7 /* avida.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D509EE8501001AEA89 /* avida.cfg */; };
 		7039884F09F00D060052ACE7 /* environment.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D709EE8501001AEA89 /* environment.cfg */; };
@@ -409,6 +411,9 @@
 		7038918D13BBA88800606079 /* Avida3Driver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Avida3Driver.h; sourceTree = "<group>"; };
 		7038918F13BBB2A900606079 /* Context.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Context.h; sourceTree = "<group>"; };
 		7038919013BBB6D000606079 /* Universe.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Universe.h; sourceTree = "<group>"; };
+		70392026178DE091009BBCC5 /* NopSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NopSequence.h; sourceTree = "<group>"; };
+		70392028178DE0AA009BBCC5 /* NopSequence.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NopSequence.cc; sourceTree = "<group>"; };
+		7039202A178DEF5B009BBCC5 /* Avida.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Avida.h; sourceTree = "<group>"; };
 		70422A1C091B141000A5E67F /* cAnalyze.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cAnalyze.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		70422A1D091B141000A5E67F /* cAnalyze.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyze.h; sourceTree = "<group>"; };
 		70422A1E091B141000A5E67F /* cAnalyzeCommand.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeCommand.h; sourceTree = "<group>"; };
@@ -755,11 +760,8 @@
 		70C11F3412B944F40092B40D /* cContextPhenotype.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cContextPhenotype.cc; sourceTree = "<group>"; };
 		70C11F3512B944F40092B40D /* cContextPhenotype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cContextPhenotype.h; sourceTree = "<group>"; };
 		70C11F3612B944F40092B40D /* cContextReactionRequisite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cContextReactionRequisite.h; sourceTree = "<group>"; };
-		70C1EF4608C393BA00F50912 /* cCodeLabel.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCodeLabel.cc; sourceTree = "<group>"; };
-		70C1EF4708C393BA00F50912 /* cCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCodeLabel.h; sourceTree = "<group>"; };
 		70C1EF5808C3948C00F50912 /* cCPUMemory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUMemory.cc; sourceTree = "<group>"; };
 		70C1EF5B08C3949A00F50912 /* cCPUMemory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCPUMemory.h; sourceTree = "<group>"; };
-		70C1EF6708C395D300F50912 /* sCPUStats.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = sCPUStats.h; sourceTree = "<group>"; };
 		70C1EF6E08C3967700F50912 /* cCPUTestInfo.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCPUTestInfo.h; sourceTree = "<group>"; };
 		70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUTestInfo.cc; sourceTree = "<group>"; };
 		70C1EF9E08C39F0E00F50912 /* cHardwareBase.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cHardwareBase.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -1059,6 +1061,7 @@
 			isa = PBXGroup;
 			children = (
 				7012A4F713F1B0BB002176CE /* Archive.h */,
+				7039202A178DEF5B009BBCC5 /* Avida.h */,
 				7038918F13BBB2A900606079 /* Context.h */,
 				70A53BC2135B6E9D00C3E661 /* Definitions.h */,
 				70ADB20A133A7995000B9C40 /* Feedback.h */,
@@ -1557,6 +1560,7 @@
 			children = (
 				705E54AB16B2D9E200392BA7 /* ArgParser.h */,
 				70A53BC6135B732C00C3E661 /* CmdLine.h */,
+				70392026178DE091009BBCC5 /* NopSequence.h */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -1567,6 +1571,7 @@
 				705E54A816B2D9C700392BA7 /* ArgParser.cc */,
 				70A53BC8135B740100C3E661 /* CmdLine.cc */,
 				708D3E3214A429DF00204169 /* GenomeLoader.cc */,
+				70392028178DE0AA009BBCC5 /* NopSequence.cc */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -1777,8 +1782,6 @@
 		DCC30F7C0762539D008F7A48 /* cpu */ = {
 			isa = PBXGroup;
 			children = (
-				70C1EF4708C393BA00F50912 /* cCodeLabel.h */,
-				70C1EF4608C393BA00F50912 /* cCodeLabel.cc */,
 				70C1EF5B08C3949A00F50912 /* cCPUMemory.h */,
 				70C1EF5808C3948C00F50912 /* cCPUMemory.cc */,
 				70C1EF6E08C3967700F50912 /* cCPUTestInfo.h */,
@@ -1806,7 +1809,6 @@
 				70C1F02808C3C71300F50912 /* cTestCPU.cc */,
 				7005A70109BA0FA90007E16E /* cTestCPUInterface.h */,
 				7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */,
-				70C1EF6708C395D300F50912 /* sCPUStats.h */,
 			);
 			path = cpu;
 			sourceTree = "<group>";
@@ -1984,6 +1986,8 @@
 				70556A2516BC317700EAAA9B /* Heads.h in Headers */,
 				70556A2616BC317700EAAA9B /* HeadsV2.h in Headers */,
 				70556A2916BC317700EAAA9B /* TransSMT.h in Headers */,
+				70392027178DE091009BBCC5 /* NopSequence.h in Headers */,
+				7039202B178DEF5C009BBCC5 /* Avida.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2160,7 +2164,6 @@
 				70D5B4F814F4009000D15FFD /* cGenotypeData.cc in Sources */,
 				70D5B4E914F4009000D15FFD /* cModularityAnalysis.cc in Sources */,
 				7023EC780C0A431B00362B9C /* cMutationalNeighborhood.cc in Sources */,
-				7023EC460C0A431B00362B9C /* cCodeLabel.cc in Sources */,
 				7023EC480C0A431B00362B9C /* cCPUMemory.cc in Sources */,
 				7023EC4A0C0A431B00362B9C /* cCPUTestInfo.cc in Sources */,
 				7023EC5E0C0A431B00362B9C /* cHardwareBase.cc in Sources */,
@@ -2248,6 +2251,7 @@
 				70556A3B16BC325D00EAAA9B /* HeadsV2.cc in Sources */,
 				70556A3E16BC325D00EAAA9B /* TransSMT.cc in Sources */,
 				70E57E3B17724A6D0024DF09 /* cHardwareGP8.cc in Sources */,
+				70392029178DE0AA009BBCC5 /* NopSequence.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

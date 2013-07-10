@@ -56,6 +56,7 @@ using namespace std;
 using namespace Avida;
 using namespace AvidaTools;
 using namespace Avida::Hardware::InstructionFlags;
+using namespace Avida::Util;
 
 
 StaticTableInstLib<cHardwareCPU::tMethod>* cHardwareCPU::s_inst_slib = cHardwareCPU::initInstLib();
@@ -967,7 +968,7 @@ cHeadCPU cHardwareCPU::FindLabel(int direction)
   
   // Start up a search head at the position of the instruction pointer.
   cHeadCPU search_head(inst_ptr);
-  cCodeLabel & search_label = GetLabel();
+  NopSequence & search_label = GetLabel();
   
   // Make sure the label is of size > 0.
   
@@ -1003,7 +1004,7 @@ cHeadCPU cHardwareCPU::FindLabel(int direction)
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 
-int cHardwareCPU::FindLabel_Forward(const cCodeLabel & search_label,
+int cHardwareCPU::FindLabel_Forward(const NopSequence & search_label,
                                     const InstructionSequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
@@ -1085,7 +1086,7 @@ int cHardwareCPU::FindLabel_Forward(const cCodeLabel & search_label,
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 
-int cHardwareCPU::FindLabel_Backward(const cCodeLabel & search_label,
+int cHardwareCPU::FindLabel_Backward(const NopSequence & search_label,
                                      const InstructionSequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
@@ -1160,7 +1161,7 @@ int cHardwareCPU::FindLabel_Backward(const cCodeLabel & search_label,
 }
 
 // Search for 'in_label' anywhere in the hardware.
-cHeadCPU cHardwareCPU::FindLabel(const cCodeLabel & in_label, int direction)
+cHeadCPU cHardwareCPU::FindLabel(const NopSequence & in_label, int direction)
 {
   assert (in_label.GetSize() > 0);
   
@@ -1196,7 +1197,7 @@ cHeadCPU cHardwareCPU::FindLabel(const cCodeLabel & in_label, int direction)
   return temp_head;
 }
 
-void cHardwareCPU::FindLabelInMemory(const cCodeLabel& label, cHeadCPU& search_head)
+void cHardwareCPU::FindLabelInMemory(const NopSequence& label, cHeadCPU& search_head)
 {
   assert(label.GetSize() > 0); // Trying to find label of 0 size!
   
@@ -1275,8 +1276,9 @@ void cHardwareCPU::ReadLabel(int max_size)
   
   GetLabel().Clear();
   
-  while (m_inst_set->IsNop(inst_ptr->GetNextInst()) &&
-         (count < max_size)) {
+  if (max_size < 0 || max_size > GetLabel.MaxSize()) max_size = GetLabel().MaxSize();
+  
+  while (m_inst_set->IsNop(inst_ptr->GetNextInst()) && (count < max_size)) {
     count++;
     inst_ptr->Advance();
     GetLabel().AddNop(m_inst_set->GetNopMod(inst_ptr->GetInst()));
@@ -3451,8 +3453,8 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
   
   // Start and end labels to define the start and end indices of  
   // resources that we need to add together
-  cCodeLabel start_label = cCodeLabel(GetLabel());
-  cCodeLabel   end_label = cCodeLabel(GetLabel());
+  NopSequence start_label = NopSequence(GetLabel());
+  NopSequence   end_label = NopSequence(GetLabel());
   
   for (int i = 0; i < max_label_length - real_label_length; i++) {
     start_label.AddNop(0);

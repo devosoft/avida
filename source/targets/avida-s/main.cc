@@ -19,7 +19,6 @@
  *
  */
 
-#include "avida/Avida.h"
 #include "Platform.h"
 
 #include "ASCoreLib.h"

@@ -8,8 +8,6 @@
 #ifndef cScreen_h
 #define cScreen_h
 
-#include "avida/Avida.h"
-
 #include "cInstSet.h"
 #include "cMerit.h"
 #include "cTextWindow.h"

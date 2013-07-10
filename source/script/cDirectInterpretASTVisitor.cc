@@ -24,7 +24,6 @@
 #include <cassert>
 #include <cmath>
 
-#include "avida/Avida.h"
 #include "AvidaScript.h"
 
 #include "cASFunction.h"
