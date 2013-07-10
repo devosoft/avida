@@ -25,7 +25,6 @@
 #ifndef cCPUTestInfo_h
 #define cCPUTestInfo_h
 
-#include "nHardware.h"
 #include "cHardwareTracer.h"
 #include "cMutationRates.h"
 
@@ -69,7 +68,7 @@ private:
   
 
 public:
-  cCPUTestInfo(int max_tests=nHardware::TEST_CPU_GENERATIONS);
+  cCPUTestInfo(int max_tests = 3);
   cCPUTestInfo(const cCPUTestInfo&);
   cCPUTestInfo& operator=(const cCPUTestInfo&);
   ~cCPUTestInfo();

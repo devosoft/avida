@@ -226,20 +226,6 @@ bool cDriver_TextViewer::ProcessKeypress(int keypress)
   case 'M':
     ChangeCurScreen(&m_screen_map);
     break;
-//   case 'n':
-//   case 'N':
-//     if (info.GetPauseLevel() == PAUSE_ON) {
-//       info.SetPauseLevel(PAUSE_ADVANCE_UPDATE);
-//       // parasite_zoom = false; // if executing, show code that is running
-//       info.GetActiveCell()->GetOrganism()->GetPhenotype().SetFault("");
-//       nodelay(stdscr, true); // Don't delay for input; get to processing.
-//     }
-//     if (cur_screen) cur_screen->AdvanceUpdate();
-//     break;
-//   case 'o':
-//   case 'O':
-//     ChangeCurScreen(options_screen);
-//     break;
   case 'p':
   case 'P':
     if (m_info.TogglePause() == true) {

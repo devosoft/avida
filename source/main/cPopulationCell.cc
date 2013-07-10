@@ -23,7 +23,6 @@
 #include "cPopulationCell.h"
 
 #include "avida/core/Feedback.h"
-#include "nHardware.h"
 #include "cOrganism.h"
 #include "cWorld.h"
 #include "cEnvironment.h"

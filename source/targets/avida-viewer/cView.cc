@@ -222,16 +222,6 @@ bool cView::ProcessKeypress(cAvidaContext& ctx, int keypress)
   case 'M':
     ChangeCurScreen(ctx, map_screen);
     break;
-  case 'n':
-  case 'N':
-    if (info.GetPauseLevel() == PAUSE_ON) {
-      info.SetPauseLevel(PAUSE_ADVANCE_UPDATE);
-      // parasite_zoom = false; // if executing, show code that is running
-      info.GetActiveCell()->GetOrganism()->GetPhenotype().SetFault("");
-      nodelay(stdscr, true); // Don't delay for input; get to processing.
-    }
-    if (cur_screen) cur_screen->AdvanceUpdate();
-    break;
   case 'o':
   case 'O':
     ChangeCurScreen(ctx, options_screen);
@@ -307,9 +297,6 @@ void cView::TogglePause(cAvidaContext& ctx)
   if (info.GetPauseLevel() != PAUSE_OFF) {
     info.DisEngageStepMode();
     info.SetPauseLevel(PAUSE_OFF);
-    if (info.GetActiveCell()->IsOccupied()) {
-      info.GetActiveCell()->GetOrganism()->GetPhenotype().SetFault("");
-    }
   }
 
   // Otherwise, turn on the pause.

@@ -64,7 +64,6 @@ void cTextViewerDriver::Run()
                                 m_world->GetConfig().POINT_DEL_PROB.Get();
   
   cAvidaContext ctx(this, m_world->GetRandom());
-  ctx.EnableOrgFaultReporting();
   
   while (!m_done) {
     

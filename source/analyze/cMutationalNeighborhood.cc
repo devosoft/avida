@@ -39,8 +39,8 @@
 using namespace std;
 
 
-cMutationalNeighborhood::cMutationalNeighborhood(cWorld* world, const Genome& genome, int target)
-  : m_world(world), m_initialized(false)
+cMutationalNeighborhood::cMutationalNeighborhood(cWorld* world, const Genome& genome, int target, double neutral_fitness_range)
+  : m_world(world), m_neutral_fitness_range(neutral_fitness_range), m_initialized(false)
   , m_inst_set(m_world->GetHardwareManager().GetInstSet(genome.Properties().Get("instset").StringValue()))
   , m_target(target), m_base_genome(genome)
 {
@@ -173,8 +173,8 @@ void cMutationalNeighborhood::ProcessInitialize(cAvidaContext& ctx)
   m_base_gestation = phenotype.GetGestationTime();
   m_base_tasks = phenotype.GetLastTaskCount();
   
-  m_neut_min = m_base_fitness * nHardware::FITNESS_NEUTRAL_MIN;
-  m_neut_max = m_base_fitness * nHardware::FITNESS_NEUTRAL_MAX;
+  m_neut_min = m_base_fitness * (1.0 - m_neutral_fitness_range);
+  m_neut_max = m_base_fitness * (1.0 + m_neutral_fitness_range);
   
   // If invalid target supplied, set to the last task
   if (m_target >= m_base_tasks.GetSize() || m_target < 0) m_target = m_base_tasks.GetSize() - 1;

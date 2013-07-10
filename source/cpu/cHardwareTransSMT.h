@@ -48,11 +48,13 @@ protected:
   static const int NUM_GLOBAL_STACKS = 1;
   static const int NUM_STACKS = NUM_LOCAL_STACKS + NUM_GLOBAL_STACKS;
   static const int NUM_NOPS = 4;
+  static const int NUM_HEADS = NUM_NOPS;
   static const int MAX_MEMSPACE_LABEL = 3;
   static const int MAX_THREAD_LABEL = 3;
   static const int STACK_SIZE = 10;
 
   enum tStacks { STACK_AX = 0, STACK_BX, STACK_CX, STACK_DX };
+  enum { HEAD_IP = 0, HEAD_READ, HEAD_WRITE, HEAD_FLOW };
   
   // --------  Performance Constants --------
   static const int MEM_LBLS_HASH_FACTOR = 4; // Sets hast table size to (NUM_NOPS^MAX_MEMSPACE_LABEL) / FACTOR
@@ -82,7 +84,7 @@ protected:
   class cLocalThread
   {
   public:
-    cHeadCPU heads[nHardware::NUM_HEADS];
+    cHeadCPU heads[NUM_HEADS];
     unsigned char cur_head;
     LocalStack local_stacks[NUM_LOCAL_STACKS];
     
@@ -228,12 +230,12 @@ public:
   cHeadCPU& GetHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
   const cHeadCPU& GetHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
   cHeadCPU& GetHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
-  int GetNumHeads() const { return nHardware::NUM_HEADS; }
+  int GetNumHeads() const { return NUM_HEADS; }
 	
-  const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[HEAD_IP]; }
+  cHeadCPU& IP() { return m_threads[m_cur_thread].heads[HEAD_IP]; }
+  const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[HEAD_IP]; }
+  cHeadCPU& IP(int thread) { return m_threads[thread].heads[HEAD_IP]; }
 	  
   
   // --------  Memory Manipulation  --------

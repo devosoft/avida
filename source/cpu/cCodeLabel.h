@@ -26,7 +26,6 @@
 #include "avida/Avida.h"
 
 #include "cString.h"
-#include "nHardware.h"
 
 /**
  * The cCodeLabel class is used to identify a label within the genotype of

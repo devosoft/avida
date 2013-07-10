@@ -264,9 +264,10 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
   snapshot->AddBuffer("output", buffer_values);
   
   // Handle Stacks
-  buffer_values.Resize(nHardware::STACK_SIZE);
+  const int STACK_SIZE = 10;
+  buffer_values.Resize(STACK_SIZE);
   for (int stk = 0; stk < hw.GetNumStacks(); stk++) {
-    for (int i = 0; i < nHardware::STACK_SIZE; i++) buffer_values[i] = hw.GetStack(i, stk);
+    for (int i = 0; i < STACK_SIZE; i++) buffer_values[i] = hw.GetStack(i, stk);
     snapshot->AddBuffer(Apto::FormatStr("stack %c", 'A' + stk), buffer_values);
   }
   snapshot->SetSelectedBuffer(Apto::FormatStr("stack %c", 'A' + hw.GetCurStack()));
@@ -387,9 +388,10 @@ void Private::SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, co
     snapshot->AddBuffer("output", buffer_values);
     
     // Handle Stacks
-    buffer_values.Resize(nHardware::STACK_SIZE);
+    const int STACK_SIZE = 10;
+    buffer_values.Resize(STACK_SIZE);
     for (int stk = 0; stk < hw.GetNumStacks(); stk++) {
-      for (int i = 0; i < nHardware::STACK_SIZE; i++) buffer_values[i] = hw.GetStack(i, stk);
+      for (int i = 0; i < STACK_SIZE; i++) buffer_values[i] = hw.GetStack(i, stk);
       snapshot->AddBuffer(Apto::FormatStr("stack %c", 'A' + stk), buffer_values);
     }
     snapshot->SetSelectedBuffer(Apto::FormatStr("stack %c", 'A' + hw.GetCurStack()));

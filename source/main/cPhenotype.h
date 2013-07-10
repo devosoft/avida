@@ -182,7 +182,6 @@ private:
   int time_used;         // Total CPU cycles consumed, including additional time costs of some instructions.
   int num_execs;         // Total number of instructions executions attempted...accounts for parallel executions in multi-threaded orgs & corrects for cpu-cost 'pauses'
   int age;               // Number of updates organism has survived for.
-  cString fault_desc;    // A description of the most recent error.
   double neutral_metric; // Undergoes drift (gausian 0,1) per generation
   double life_fitness; 	 // Organism fitness during its lifetime, 
 		         // calculated based on merit just before the divide
@@ -459,7 +458,6 @@ public:
   int GetNumExecs() const { assert(initialized == true); return num_execs; }
   int GetTrialTimeUsed()   const { assert(initialized == true); return trial_time_used; }
   int GetAge()        const { assert(initialized == true); return age; }
-  const cString& GetFault() const { assert(initialized == true); return fault_desc; }
   double GetNeutralMetric() const { assert(initialized == true); return neutral_metric; }
   double GetLifeFitness() const { assert(initialized == true); return life_fitness; }
   int  GetNumThreshGbDonations() const { assert(initialized == true); return num_thresh_gb_donations; }
@@ -538,7 +536,6 @@ public:
   void SetTimeUsed(int in_time) { time_used = in_time; }
   void SetTrialTimeUsed(int in_time) { trial_time_used = in_time; }
   void SetGeneration(int in_generation) { generation = in_generation; }
-  void SetFault(const cString& in_fault) { fault_desc = in_fault; }
   void SetNeutralMetric(double _in){ neutral_metric = _in; }
   void SetLifeFitness(double _in){ life_fitness = _in; }
   void SetLinesExecuted(int _exe_size) { executed_size = _exe_size; }

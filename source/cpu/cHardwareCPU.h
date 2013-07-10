@@ -32,7 +32,6 @@
 #include "cString.h"
 #include "cStats.h"
 
-#include "nHardware.h"
 
 #include <iomanip>
 #include <vector>
@@ -56,8 +55,9 @@ public:
 protected:
   // --------  Structure Constants  --------
   static const int NUM_REGISTERS = 3;
-  static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
+  static const int NUM_HEADS = 4;
   enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
+  enum { HEAD_IP = 0, HEAD_READ, HEAD_WRITE, HEAD_FLOW };
   static const int NUM_NOPS = 3;
   static const int STACK_SIZE = 10;
 
@@ -214,10 +214,10 @@ protected:
   inline const cHeadCPU& getHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
   inline cHeadCPU& getHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
 
-  inline const cHeadCPU& getIP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  inline cHeadCPU& getIP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-  inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  inline const cHeadCPU& getIP() const { return m_threads[m_cur_thread].heads[HEAD_IP]; }
+  inline cHeadCPU& getIP() { return m_threads[m_cur_thread].heads[HEAD_IP]; }
+  inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].heads[HEAD_IP]; }
+  inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[HEAD_IP]; }
 
 
   bool Allocate_Necro(const int new_size);
@@ -281,10 +281,10 @@ public:
   cHeadCPU& GetHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
   int GetNumHeads() const { return NUM_HEADS; }
 
-  const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[HEAD_IP]; }
+  cHeadCPU& IP() { return m_threads[m_cur_thread].heads[HEAD_IP]; }
+  const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[HEAD_IP]; }
+  cHeadCPU& IP(int thread) { return m_threads[thread].heads[HEAD_IP]; }
 
 
   // --------  Memory Manipulation  --------

@@ -136,8 +136,8 @@ void cLandscape::ProcessBase(cAvidaContext& ctx, cTestCPU* testcpu)
   peak_fitness = base_fitness;
   peak_genome = base_genome;
   
-  neut_min = base_fitness * nHardware::FITNESS_NEUTRAL_MIN;
-  neut_max = base_fitness * nHardware::FITNESS_NEUTRAL_MAX;
+  neut_min = base_fitness;// * (1.0 - m_neutral_fitness_range);  @TODO
+  neut_max = base_fitness;// * (1.0 + m_neutral_fitness_range);  @TODO
   
 }
 

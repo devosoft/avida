@@ -1664,12 +1664,8 @@ bool cHardwareGP8::Inst_Div(cAvidaContext& ctx)
   DataValue r1 = getRegisterData(ctx, op1);
   DataValue r2 = getRegisterData(ctx, op2);
   if (r2.value != 0) {
-    if (0 - INT_MAX > r1.value && r2.value == -1)
-      m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
-    else
-      setRegister(dst, r1.value / r2.value, r1, r2);
+    if (!(0 - INT_MAX > r1.value && r2.value == -1)) setRegister(dst, r1.value / r2.value, r1, r2);
   } else {
-    m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
     return false;
   }
   return true;
@@ -1685,7 +1681,6 @@ bool cHardwareGP8::Inst_Mod(cAvidaContext& ctx)
   if (r2.value != 0) {
     setRegister(dst, r1.value % r2.value, r1, r2);
   } else {
-    m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
     return false;
   }
   return true;

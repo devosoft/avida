@@ -38,7 +38,6 @@
 #include "cTaskContext.h"
 #include "cWorld.h"
 #include "cStats.h"
-#include "nHardware.h"
 
 #include <algorithm>
 #include <iomanip>
@@ -707,8 +706,6 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   
   if (required_task != -1 && m_phenotype.GetCurTaskCount()[required_task] == 0) { 
     if (immunity_task ==-1 || m_phenotype.GetCurTaskCount()[immunity_task] == 0) {
-      Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-            cStringUtil::Stringf("Lacks required task (%d)", required_task));
       return false; //  (divide fails)
     } 
   }
@@ -722,8 +719,6 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   if (single_reaction == 0 && required_reaction != -1 && m_phenotype.GetCurReactionCount()[required_reaction] == 0 && \
       m_phenotype.GetStolenReactionCount()[required_reaction] == 0)   {
     if (immunity_reaction == -1 || m_phenotype.GetCurReactionCount()[immunity_reaction] == 0) {  
-      Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-            cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));
       return false; //  (divide fails)
     }
   }
@@ -746,10 +741,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
       }
     }
     
-    if (toFail) {
-      Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, cStringUtil::Stringf("Lacks any reaction required for divide"));
-      return false; //  (divide fails)
-    }
+    if (toFail) return false; //  (divide fails)
   }
   
   // Test for required resource availability (must be stored in an internal resource bin)
@@ -762,10 +754,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   }
   
   // Make sure the parent is fertile
-  if ( m_phenotype.IsFertile() == false ) {
-    Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, "Infertile organism");
-    return false; //  (divide fails)
-  }
+  if (m_phenotype.IsFertile() == false) return false; //  (divide fails)
   
   return true;  // Organism has no problem with divide...
 }
@@ -785,29 +774,6 @@ bool cOrganism::ActivateDivide(cAvidaContext& ctx, cContextPhenotype* context_ph
   return m_interface->Divide(ctx, this, m_offspring_genome);
 }
 
-
-void cOrganism::Fault(int fault_loc, int fault_type, cString fault_desc)
-{
-  (void) fault_loc;
-  (void) fault_type;
-  (void) fault_desc;
-  
-  // FATAL_ERRORS
-#if 0
-  if (fault_type == FAULT_TYPE_ERROR) {
-    m_phenotype.IsFertile() = false;
-  }
-#endif
-  
-  // FATAL_WARNINGS
-#if 0
-  if (fault_type == FAULT_TYPE_WARNING) {
-    m_phenotype.IsFertile() = false;
-  }
-#endif
-
-  m_phenotype.IncErrors();
-}
 
 void cOrganism::NewTrial()
 {

@@ -132,7 +132,6 @@ public:
   void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp);
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success);
   void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;
-  void Fault(int fault_loc, int fault_type, cString fault_desc="");
 
   void NewTrial();
 

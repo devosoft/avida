@@ -61,6 +61,8 @@ class cHardwareBase;
 
 class cZoomScreen : public cScreen {
 private:
+  enum { HEAD_IP = 0, HEAD_READ, HEAD_WRITE, HEAD_FLOW };
+
   cWorld* m_world;
   cPopulation & population;
   int mini_center_id;

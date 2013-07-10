@@ -45,6 +45,10 @@ class cMutationalNeighborhood
   
 private:
   cWorld* m_world;
+
+  // Config Settings
+  // -----------------------------------------------------------------------------------------------------------------------
+  const double m_neutral_fitness_range;
   
   // Internal state information
   // -----------------------------------------------------------------------------------------------------------------------
@@ -231,7 +235,7 @@ private:
 public:
   // Public Methods - Instantiate and Process Only.   All results must be read with a cMutationalNeighborhood object.
   // -----------------------------------------------------------------------------------------------------------------------
-  cMutationalNeighborhood(cWorld* world, const Genome& genome, int target);
+  cMutationalNeighborhood(cWorld* world, const Genome& genome, int target, double neutral_fitness_range = 0.0);
   ~cMutationalNeighborhood() { ; }
   
   void Process(cAvidaContext& ctx);

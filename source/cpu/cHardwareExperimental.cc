@@ -529,7 +529,7 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardwa
   
   stack.Clear(in_hardware->GetInstSet().GetStackSize());
   cur_stack = 0;
-  cur_head = nHardware::HEAD_IP;
+  cur_head = HEAD_IP;
   
   reading_label = false;
   reading_seq = false;
@@ -591,14 +591,14 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     }
     
     m_advance_ip = true;
-    cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
+    cHeadCPU& ip = m_threads[m_cur_thread].heads[HEAD_IP];
     ip.Adjust();
        
 /*    if (m_organism->GetID() == 0 && m_world->GetStats().GetUpdate() >= 0) cout << " org: " << m_organism->GetID()
     << " thread: " << m_cur_thread << " ip_position: " << ip.GetPosition() << " inst: "
       << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName()
-      << " write head: " << m_threads[m_cur_thread].heads[nHardware::HEAD_WRITE].GetPosition()
-      << " flow head: " << m_threads[m_cur_thread].heads[nHardware::HEAD_WRITE].GetPosition()
+      << " write head: " << m_threads[m_cur_thread].heads[HEAD_WRITE].GetPosition()
+      << " flow head: " << m_threads[m_cur_thread].heads[HEAD_WRITE].GetPosition()
       <<  " cell: " << m_organism->GetOrgInterface().GetAVCellID() << endl; */
 
     // Print the status of this CPU at each step...
@@ -790,9 +790,9 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   }
   fp << endl;
   
-  fp << "  R-Head:" << getHead(nHardware::HEAD_READ).GetPosition() << " "
-  << "W-Head:" << getHead(nHardware::HEAD_WRITE).GetPosition()  << " "
-  << "F-Head:" << getHead(nHardware::HEAD_FLOW).GetPosition()   << "  "
+  fp << "  R-Head:" << getHead(HEAD_READ).GetPosition() << " "
+  << "W-Head:" << getHead(HEAD_WRITE).GetPosition()  << " "
+  << "F-Head:" << getHead(HEAD_FLOW).GetPosition()   << "  "
   << "RL:" << GetReadLabel().AsString() << "   "
   << "Ex:" << m_last_output
   << endl;
@@ -800,7 +800,7 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   int number_of_stacks = GetNumStacks();
   for (int stack_id = 0; stack_id < number_of_stacks; stack_id++) {
     fp << ((m_threads[m_cur_thread].cur_stack == stack_id) ? '*' : ' ') << " Stack " << stack_id << ":" << setbase(16) << setfill('0');
-    for (int i = 0; i < nHardware::STACK_SIZE; i++) fp << " Ox" << setw(8) << GetStack(i, stack_id, 0);
+    for (int i = 0; i < GetInstSet().GetStackSize(); i++) fp << " Ox" << setw(8) << GetStack(i, stack_id, 0);
     fp << setfill(' ') << setbase(10) << endl;
   }
   
@@ -879,9 +879,9 @@ void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp
   // genome loc info
   fp << m_cur_thread << " ";
   fp << getIP().GetPosition() << " ";  
-  fp << getHead(nHardware::HEAD_READ).GetPosition() << " ";
-  fp << getHead(nHardware::HEAD_WRITE).GetPosition()  << " ";
-  fp << getHead(nHardware::HEAD_FLOW).GetPosition()   << " ";
+  fp << getHead(HEAD_READ).GetPosition() << " ";
+  fp << getHead(HEAD_WRITE).GetPosition()  << " ";
+  fp << getHead(HEAD_FLOW).GetPosition()   << " ";
   // last output
   fp << m_last_output << " ";
   // phenotype/org status info
@@ -1335,7 +1335,7 @@ bool cHardwareExperimental::ThreadCreate(const cHeadCPU& start_pos)
   m_thread_id_chart |= (1 << new_id);
 
   m_threads[thread_id].Reset(this, new_id);
-  m_threads[thread_id].heads[nHardware::HEAD_IP] = start_pos;
+  m_threads[thread_id].heads[HEAD_IP] = start_pos;
 
   return true;
 }
@@ -1466,43 +1466,20 @@ bool cHardwareExperimental::Allocate_Default(const int new_size)
 bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
 {
   // must do divide before second allocate & must allocate positive amount...
-  if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && m_mal_active == true) {
-    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR, "Allocate already active");
-    return false;
-  }
-  if (allocated_size < 1) {
-    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
-                      cStringUtil::Stringf("Allocate of %d too small", allocated_size));
-    return false;
-  }
+  if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && m_mal_active == true) return false;
+  if (allocated_size < 1) return false;
   
   const int old_size = m_memory.GetSize();
   const int new_size = old_size + allocated_size;
   
   // Make sure that the new size is in range.
-  if (new_size > MAX_GENOME_LENGTH  ||  new_size < MIN_GENOME_LENGTH) {
-    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
-                      cStringUtil::Stringf("Invalid post-allocate size (%d)",
-                                           new_size));
-    return false;
-  }
+  if (new_size > MAX_GENOME_LENGTH  ||  new_size < MIN_GENOME_LENGTH) return false;
   
   const int max_alloc_size = (int) (old_size * m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get());
-  if (allocated_size > max_alloc_size) {
-    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
-                      cStringUtil::Stringf("Allocate too large (%d > %d)",
-                                           allocated_size, max_alloc_size));
-    return false;
-  }
+  if (allocated_size > max_alloc_size)  return false;
   
-  const int max_old_size =
-  (int) (allocated_size * m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get());
-  if (old_size > max_old_size) {
-    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
-                      cStringUtil::Stringf("Allocate too small (%d > %d)",
-                                           old_size, max_old_size));
-    return false;
-  }
+  const int max_old_size = (int) (allocated_size * m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get());
+  if (old_size > max_old_size) return false;
   
   switch (m_world->GetConfig().ALLOC_METHOD.Get()) {
     case ALLOC_METHOD_NECRO:
@@ -1616,17 +1593,16 @@ void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
 bool cHardwareExperimental::Inst_ForkThread(cAvidaContext&)
 {
   getIP().Advance();
-  if (!ForkThread()) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
+  ForkThread();
   return true;
 }
 
 // Multi-threading.
 bool cHardwareExperimental::Inst_ThreadCreate(cAvidaContext&)
 {
-  int head_used = FindModifiedHead(nHardware::HEAD_FLOW);
+  int head_used = FindModifiedHead(HEAD_FLOW);
   
   bool success = ThreadCreate(m_threads[m_cur_thread].heads[head_used]);
-  if (!success) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
   
   if (success) m_organism->GetPhenotype().SetIsMultiThread();
   
@@ -1636,8 +1612,7 @@ bool cHardwareExperimental::Inst_ThreadCreate(cAvidaContext&)
 
 bool cHardwareExperimental::Inst_ExitThread(cAvidaContext& ctx)
 {
-  if (!ExitThread()) m_organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
-  else m_advance_ip = false;
+  if (ExitThread()) m_advance_ip = false;
   return true;
 }
 
@@ -1981,12 +1956,8 @@ bool cHardwareExperimental::Inst_Div(cAvidaContext&)
   DataValue& r1 = m_threads[m_cur_thread].reg[op1];
   DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
-    if (0 - INT_MAX > r1.value && r2.value == -1)
-      m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
-    else
-      setInternalValue(dst, r1.value / r2.value, r1, r2);
+    if (!(0 - INT_MAX > r1.value && r2.value == -1)) setInternalValue(dst, r1.value / r2.value, r1, r2);
   } else {
-    m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
     return false;
   }
   return true;
@@ -2003,7 +1974,6 @@ bool cHardwareExperimental::Inst_Mod(cAvidaContext&)
   if (r2.value != 0) {
     setInternalValue(dst, r1.value % r2.value, r1, r2);
   } else {
-    m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
     return false;
   }
   return true;
@@ -2129,10 +2099,10 @@ bool cHardwareExperimental::Inst_TaskOutputExpire(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_MoveHead(cAvidaContext&)
 {
-  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  const int target = FindModifiedHead(nHardware::HEAD_FLOW);
+  const int head_used = FindModifiedHead(HEAD_IP);
+  const int target = FindModifiedHead(HEAD_FLOW);
   getHead(head_used).Set(getHead(target));
-  if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
+  if (head_used == HEAD_IP) m_advance_ip = false;
   return true;
 }
 
@@ -2140,11 +2110,11 @@ bool cHardwareExperimental::Inst_MoveHeadIfNEqu(cAvidaContext&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
-  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  const int target = FindModifiedHead(nHardware::HEAD_FLOW);
+  const int head_used = FindModifiedHead(HEAD_IP);
+  const int target = FindModifiedHead(HEAD_FLOW);
   if (m_threads[m_cur_thread].reg[op1].value != m_threads[m_cur_thread].reg[op2].value) {
     getHead(head_used).Set(getHead(target));
-    if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
+    if (head_used == HEAD_IP) m_advance_ip = false;
   }
   return true;
 }
@@ -2153,11 +2123,11 @@ bool cHardwareExperimental::Inst_MoveHeadIfLess(cAvidaContext&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
-  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  const int target = FindModifiedHead(nHardware::HEAD_FLOW);
+  const int head_used = FindModifiedHead(HEAD_IP);
+  const int target = FindModifiedHead(HEAD_FLOW);
   if (m_threads[m_cur_thread].reg[op1].value < m_threads[m_cur_thread].reg[op2].value) {
     getHead(head_used).Set(getHead(target));
-    if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
+    if (head_used == HEAD_IP) m_advance_ip = false;
   }
   return true;
 }
@@ -2221,17 +2191,17 @@ bool cHardwareExperimental::Inst_GotoConsensus24(cAvidaContext&)
 
 bool cHardwareExperimental::Inst_JumpHead(cAvidaContext&)
 {
-  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
+  const int head_used = FindModifiedHead(HEAD_IP);
   const int reg = FindModifiedRegister(rCX);
   m_from_sensor = FromSensor(reg);
   getHead(head_used).Jump(m_threads[m_cur_thread].reg[reg].value);
-  if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
+  if (head_used == HEAD_IP) m_advance_ip = false;
   return true;
 }
 
 bool cHardwareExperimental::Inst_GetHead(cAvidaContext&)
 {
-  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
+  const int head_used = FindModifiedHead(HEAD_IP);
   const int reg = FindModifiedRegister(rCX);
   setInternalValue(reg, getHead(head_used).GetPosition());
   return true;
@@ -2273,8 +2243,8 @@ bool cHardwareExperimental::Inst_HeadDivide(cAvidaContext& ctx)
   m_organism->GetPhenotype().SetCrossNum(0);
   
   AdjustHeads();
-  const int divide_pos = getHead(nHardware::HEAD_READ).GetPosition();
-  int child_end =  getHead(nHardware::HEAD_WRITE).GetPosition();
+  const int divide_pos = getHead(HEAD_READ).GetPosition();
+  int child_end =  getHead(HEAD_WRITE).GetPosition();
   if (child_end == 0) child_end = m_memory.GetSize();
   const int extra_lines = m_memory.GetSize() - child_end;
   bool ret_val = Divide_Main(ctx, divide_pos, extra_lines, 1.0);
@@ -2289,8 +2259,8 @@ bool cHardwareExperimental::Inst_HeadDivideSex(cAvidaContext& ctx)
   m_organism->GetPhenotype().SetCrossNum(1);
   
   AdjustHeads();
-  const int divide_pos = getHead(nHardware::HEAD_READ).GetPosition();
-  int child_end =  getHead(nHardware::HEAD_WRITE).GetPosition();
+  const int divide_pos = getHead(HEAD_READ).GetPosition();
+  int child_end =  getHead(HEAD_WRITE).GetPosition();
   if (child_end == 0) child_end = m_memory.GetSize();
   const int extra_lines = m_memory.GetSize() - child_end;
   bool ret_val = Divide_Main(ctx, divide_pos, extra_lines, 1.0);
@@ -2301,7 +2271,7 @@ bool cHardwareExperimental::Inst_HeadDivideSex(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
 {
-  const int head_id = FindModifiedHead(nHardware::HEAD_READ);
+  const int head_id = FindModifiedHead(HEAD_READ);
   const int dst = FindModifiedRegister(rAX);  
   getHead(head_id).Adjust();
   
@@ -2324,7 +2294,7 @@ bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_HeadWrite(cAvidaContext& ctx)
 {
-  const int head_id = FindModifiedHead(nHardware::HEAD_WRITE);
+  const int head_id = FindModifiedHead(HEAD_WRITE);
   const int src = FindModifiedRegister(rAX);
   cHeadCPU& active_head = getHead(head_id);
   
@@ -2350,8 +2320,8 @@ bool cHardwareExperimental::Inst_HeadWrite(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
 {
   // For the moment, this cannot be nop-modified.
-  cHeadCPU& read_head = getHead(nHardware::HEAD_READ);
-  cHeadCPU& write_head = getHead(nHardware::HEAD_WRITE);
+  cHeadCPU& read_head = getHead(HEAD_READ);
+  cHeadCPU& write_head = getHead(HEAD_WRITE);
   
   read_head.Adjust();
   write_head.Adjust();
@@ -2388,8 +2358,8 @@ bool cHardwareExperimental::Inst_Search_Label_Comp_S(cAvidaContext&)
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   cHeadCPU found_pos = FindLabelStart(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  getHead(HEAD_FLOW).Set(found_pos);
+  getHead(HEAD_FLOW).Advance();
   return true;
 }
 
@@ -2398,8 +2368,8 @@ bool cHardwareExperimental::Inst_Search_Label_Comp_F(cAvidaContext&)
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   cHeadCPU found_pos = FindLabelForward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  getHead(HEAD_FLOW).Set(found_pos);
+  getHead(HEAD_FLOW).Advance();
   return true;
 }
 
@@ -2408,8 +2378,8 @@ bool cHardwareExperimental::Inst_Search_Label_Comp_B(cAvidaContext&)
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   cHeadCPU found_pos = FindLabelBackward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  getHead(HEAD_FLOW).Set(found_pos);
+  getHead(HEAD_FLOW).Advance();
   return true;
 }
 
@@ -2417,8 +2387,8 @@ bool cHardwareExperimental::Inst_Search_Label_Direct_S(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindLabelStart(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  getHead(HEAD_FLOW).Set(found_pos);
+  getHead(HEAD_FLOW).Advance();
   return true;
 }
 
@@ -2426,8 +2396,8 @@ bool cHardwareExperimental::Inst_Search_Label_Direct_F(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindLabelForward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  getHead(HEAD_FLOW).Set(found_pos);
+  getHead(HEAD_FLOW).Advance();
   return true;
 }
 
@@ -2435,8 +2405,8 @@ bool cHardwareExperimental::Inst_Search_Label_Direct_B(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindLabelBackward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  getHead(HEAD_FLOW).Set(found_pos);
+  getHead(HEAD_FLOW).Advance();
   return true;
 }
 
@@ -2445,8 +2415,8 @@ bool cHardwareExperimental::Inst_Search_Seq_Comp_S(cAvidaContext&)
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   cHeadCPU found_pos = FindNopSequenceStart(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  getHead(HEAD_FLOW).Set(found_pos);
+  getHead(HEAD_FLOW).Advance();
   return true;
 }
 
@@ -2455,8 +2425,8 @@ bool cHardwareExperimental::Inst_Search_Seq_Comp_F(cAvidaContext&)
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   cHeadCPU found_pos = FindNopSequenceForward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  getHead(HEAD_FLOW).Set(found_pos);
+  getHead(HEAD_FLOW).Advance();
   return true;
 }
 
@@ -2465,8 +2435,8 @@ bool cHardwareExperimental::Inst_Search_Seq_Comp_B(cAvidaContext&)
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   cHeadCPU found_pos = FindNopSequenceBackward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  getHead(HEAD_FLOW).Set(found_pos);
+  getHead(HEAD_FLOW).Advance();
   return true;
 }
 
@@ -2474,8 +2444,8 @@ bool cHardwareExperimental::Inst_Search_Seq_Direct_S(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceStart(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  getHead(HEAD_FLOW).Set(found_pos);
+  getHead(HEAD_FLOW).Advance();
   return true;
 }
 
@@ -2483,8 +2453,8 @@ bool cHardwareExperimental::Inst_Search_Seq_Direct_F(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceForward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  getHead(HEAD_FLOW).Set(found_pos);
+  getHead(HEAD_FLOW).Advance();
   return true;
 }
 
@@ -2492,8 +2462,8 @@ bool cHardwareExperimental::Inst_Search_Seq_Direct_B(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceBackward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  getHead(HEAD_FLOW).Set(found_pos);
+  getHead(HEAD_FLOW).Advance();
   return true;
 }
 
@@ -2502,7 +2472,7 @@ bool cHardwareExperimental::Inst_SetFlow(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rCX);
   m_from_sensor = FromSensor(reg_used);
-  getHead(nHardware::HEAD_FLOW).Set(GetRegister(reg_used));
+  getHead(HEAD_FLOW).Set(GetRegister(reg_used));
   return true;
 }
 

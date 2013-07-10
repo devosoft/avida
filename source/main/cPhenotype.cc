@@ -215,8 +215,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   time_used                = in_phen.time_used; 
   num_execs                = in_phen.num_execs;
   age                      = in_phen.age;               
-  fault_desc               = in_phen.fault_desc;    
-  neutral_metric           = in_phen.neutral_metric; 
+  neutral_metric           = in_phen.neutral_metric;
   life_fitness             = in_phen.life_fitness; 	
   exec_time_born           = in_phen.exec_time_born;
   birth_update             = in_phen.birth_update;
@@ -426,7 +425,6 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   time_used       = 0;
   num_execs       = 0;
   age             = 0;
-  fault_desc      = "";
   neutral_metric  = parent_phenotype.neutral_metric + m_world->GetRandom().GetRandNormal();
   life_fitness    = fitness; 
   exec_time_born  = parent_phenotype.exec_time_born;  //@MRR treating offspring and parent as siblings; already set in DivideReset
@@ -624,7 +622,6 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   time_used       = 0;
   num_execs       = 0;
   age             = 0;
-  fault_desc      = "";
   neutral_metric  = 0;
   life_fitness    = 0;
   exec_time_born  = 0;
@@ -838,7 +835,6 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   (void) time_used;
   num_execs       = 0;
   age             = 0;
-  fault_desc      = "";
   (void) neutral_metric;
   life_fitness = fitness; 
   exec_time_born += gestation_time;  //@MRR Treating organism as sibling
@@ -1056,7 +1052,6 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   (void) time_used;
   (void) num_execs;
   (void) age;
-  (void) fault_desc;
   (void) neutral_metric;
   life_fitness = fitness; 
   exec_time_born += gestation_time;  //@MRR See DivideReset 
@@ -1246,7 +1241,6 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   time_used       = 0;
   num_execs       = 0;
   age             = 0;
-  fault_desc      = "";
   neutral_metric  = clone_phenotype.neutral_metric + m_world->GetRandom().GetRandNormal();
   life_fitness    = fitness; 
   exec_time_born  = 0;
@@ -1834,7 +1828,6 @@ void cPhenotype::NewTrial()
   (void) time_used;
   num_execs       = 0;
   age             = 0;
-  fault_desc      = "";
   (void) neutral_metric;
   life_fitness = fitness; 
   

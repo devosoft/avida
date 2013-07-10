@@ -16,8 +16,6 @@
 #include "cPopulationCell.h"
 #include "cStringUtil.h"
 
-#include "nHardware.h"
-
 #include "cView.h"
 #include "cMenuWindow.h"
 
@@ -621,15 +619,6 @@ void cZoomScreen::UpdateCPU(cHardwareBase& hardware)
     Print(INPUT_Y+3+i, INPUT_X+2, "%12d", info.GetActiveCell()->GetInput(i));
   }
   
-  const cString& cur_fault = phenotype.GetFault();
-  if (cur_fault.GetSize() > 0) {
-    SetBoldColor(COLOR_RED);
-    Print(FAULT_Y, FAULT_X, "Fault:");
-    SetBoldColor(COLOR_CYAN);
-    Print(FAULT_Y, FAULT_X + 7, static_cast<const char*>(cur_fault));
-  } else {
-    Print(FAULT_Y, FAULT_X, "                                        ");
-  }
   
   SetBoldColor(COLOR_WHITE);
   
@@ -764,13 +753,13 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase& hardware)
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 23, "Exe");
       }
       
-      if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_READ).GetPosition()) {
+      if (adj_inst_ptr == hardware.GetHead(HEAD_READ).GetPosition()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 30, "R");
       }
-      if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_WRITE).GetPosition()) {
+      if (adj_inst_ptr == hardware.GetHead(HEAD_WRITE).GetPosition()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 31, "W");
       }
-      if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_FLOW).GetPosition()) {
+      if (adj_inst_ptr == hardware.GetHead(HEAD_FLOW).GetPosition()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 32, "F");
       }
     }
@@ -899,16 +888,16 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase& hardware)
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 24, "Exe");
       }
       
-      if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_READ, cur_view_thread).GetPosition() &&
-          cur_mem_space == hardware.GetHead(nHardware::HEAD_READ, cur_view_thread).GetMemSpace()) {
+      if (adj_inst_ptr == hardware.GetHead(HEAD_READ, cur_view_thread).GetPosition() &&
+          cur_mem_space == hardware.GetHead(HEAD_READ, cur_view_thread).GetMemSpace()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 31, "R");
       }
-      if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_WRITE, cur_view_thread).GetPosition() &&
-          cur_mem_space == hardware.GetHead(nHardware::HEAD_WRITE, cur_view_thread).GetMemSpace()) {
+      if (adj_inst_ptr == hardware.GetHead(HEAD_WRITE, cur_view_thread).GetPosition() &&
+          cur_mem_space == hardware.GetHead(HEAD_WRITE, cur_view_thread).GetMemSpace()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 32, "W");
       }
-      if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_FLOW, cur_view_thread).GetPosition() &&
-          cur_mem_space == hardware.GetHead(nHardware::HEAD_FLOW, cur_view_thread).GetMemSpace()) {
+      if (adj_inst_ptr == hardware.GetHead(HEAD_FLOW, cur_view_thread).GetPosition() &&
+          cur_mem_space == hardware.GetHead(HEAD_FLOW, cur_view_thread).GetMemSpace()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 33, "F");
       }
     }
@@ -1444,7 +1433,6 @@ void cZoomScreen::DoInput(cAvidaContext& ctx, int in_char)
     case ' ':
       memory_offset = 0;
       parasite_zoom = false;
-      info.GetActiveCell()->GetOrganism()->GetPhenotype().SetFault("");
       info.EngageStepMode();
       nodelay(stdscr, true); // Don't delay for input; get to processing.
       break;

@@ -773,7 +773,6 @@
 		70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareStatusPrinter.cc; sourceTree = "<group>"; };
 		70C1F02608C3C71300F50912 /* cHeadCPU.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHeadCPU.cc; sourceTree = "<group>"; };
 		70C1F02808C3C71300F50912 /* cTestCPU.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cTestCPU.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		70C1F0A808C3FF1800F50912 /* nHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nHardware.h; sourceTree = "<group>"; };
 		70C5BC6209059A970028A785 /* cWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cWorld.h; sourceTree = "<group>"; };
 		70C5BC6309059A970028A785 /* cWorld.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cWorld.cc; sourceTree = "<group>"; };
 		70C5BD690905CE5F0028A785 /* cHardwareManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareManager.cc; sourceTree = "<group>"; };
@@ -1807,7 +1806,6 @@
 				70C1F02808C3C71300F50912 /* cTestCPU.cc */,
 				7005A70109BA0FA90007E16E /* cTestCPUInterface.h */,
 				7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */,
-				70C1F0A808C3FF1800F50912 /* nHardware.h */,
 				70C1EF6708C395D300F50912 /* sCPUStats.h */,
 			);
 			path = cpu;
