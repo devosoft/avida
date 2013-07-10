@@ -53,7 +53,6 @@
 #include "cParasite.h"
 #include "cPhenotype.h"
 #include "cPopulationCell.h"
-#include "cResourceDef.h"
 #include "cStats.h"
 #include "cTestCPU.h"
 #include "cTopology.h"
@@ -426,29 +425,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   const int parent_id = parent_organism->GetOrgInterface().GetCellID();
   assert(parent_id >= 0 && parent_id < cell_array.GetSize());
   cPopulationCell& parent_cell = cell_array[parent_id];
-  
-  // If this is multi-process Avida, test to see if we should send the offspring
-  // to a different world.  We check this here so that 1) we avoid all the extra
-  // work below in the case of a migration event and 2) so that we don't mess up
-  // and mistakenly kill the parent.
-  if (m_world->GetConfig().ENABLE_MP.Get()) {
-    Apto::Array<cOrganism*> non_migrants;
-    Apto::Array<cMerit> non_migrant_merits;
-    for (int i=0; i<offspring_array.GetSize(); ++i) {
-      if (m_world->TestForMigration()) {
-        // this offspring is outta here!
-        m_world->MigrateOrganism(offspring_array[i], parent_cell, merit_array[i], parent_organism->GetLineageLabel());
-        delete offspring_array[i]; // this offspring isn't hanging around.
-      } else {
-        // boring; stay here.
-        non_migrants.Push(offspring_array[i]);
-        non_migrant_merits.Push(merit_array[i]);
-      }
-    }
-    offspring_array = non_migrants;
-    merit_array = non_migrant_merits;
-  }
-  
+    
   Apto::Array<int> target_cells(offspring_array.GetSize());
   
   // Loop through choosing the later placement of each offspring in the population.
@@ -1575,6 +1552,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
       }
     }
   }
+  
   // movement fails if there are any barrier resources in the faced cell (unless the org is already on a barrier,
   // which would happen if we built a new barrier under an org and we need to let it get off)
   bool curr_is_barrier = false;

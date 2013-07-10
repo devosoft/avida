@@ -39,7 +39,6 @@
 #include "cReactionProcess.h"
 #include "cReactionRequisite.h"
 #include "cReactionResult.h"
-#include "cResourceDef.h"
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTaskEntry.h"

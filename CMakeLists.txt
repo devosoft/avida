@@ -249,7 +249,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cReaction.cc
   ${MAIN_DIR}/cReactionLib.cc
   ${MAIN_DIR}/cReactionResult.cc
-  ${MAIN_DIR}/cResourceDef.cc
   ${MAIN_DIR}/cStats.cc
   ${MAIN_DIR}/cTaskLib.cc
   ${MAIN_DIR}/cWorld.cc

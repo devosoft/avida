@@ -123,7 +123,7 @@ StaticTableInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(v
 	
   const int f_size = sizeof(s_f_array)/sizeof(StaticTableInstLib<tMethod>::MethodEntry);
   static tMethod functions[f_size];
-  for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
+  for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].Function();
 	
 	const int def = 0;
   const int null_inst = f_size - 1;
@@ -134,7 +134,7 @@ StaticTableInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(v
 cHardwareTransSMT::cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
 : cHardwareBase(world, in_organism, in_inst_set), m_mem_array(1)
 {
-  m_functions = s_inst_slib->GetFunctions();
+  m_functions = s_inst_slib->Functions();
 	
   const Genome& org = in_organism->GetGenome();
   ConstInstructionSequencePtr org_seq_p;
@@ -346,17 +346,17 @@ void cHardwareTransSMT::PrintStatus(ostream& fp)
   << "THREAD: " << m_cur_thread << ", " << m_threads.GetSize() << "   "
 	<< "IP:(" << IP().GetMemSpace() << ", " << IP().GetPosition() << ")" << " (" << GetInstSet().GetName(IP().GetInst()) << ")" << endl;
 	
-	fp << "AX:" << Stack(STACK_AX).Top() << " "
-	<< setbase(16) << "[0x" << Stack(STACK_AX).Top() << "]  " << setbase(10)
+	fp << "AX:" << Stack(STACK_AX).Peek() << " "
+	<< setbase(16) << "[0x" << Stack(STACK_AX).Peek() << "]  " << setbase(10)
 	
-	<< "BX:" << Stack(STACK_BX).Top() << " "
-	<< setbase(16) << "[0x" << Stack(STACK_BX).Top() << "]  " << setbase(10)
+	<< "BX:" << Stack(STACK_BX).Peek() << " "
+	<< setbase(16) << "[0x" << Stack(STACK_BX).Peek() << "]  " << setbase(10)
 	
-	<< "CX:" << Stack(STACK_CX).Top() << " "
-	<< setbase(16) << "[0x" << Stack(STACK_CX).Top() << "]  " << setbase(10)
+	<< "CX:" << Stack(STACK_CX).Peek() << " "
+	<< setbase(16) << "[0x" << Stack(STACK_CX).Peek() << "]  " << setbase(10)
 	
-	<< "DX:" << Stack(STACK_DX).Top() << " "
-	<< setbase(16) << "[0x" << Stack(STACK_DX).Top() << "]  " << setbase(10)
+	<< "DX:" << Stack(STACK_DX).Peek() << " "
+	<< setbase(16) << "[0x" << Stack(STACK_DX).Peek() << "]  " << setbase(10)
 	
 	<< endl;
 	

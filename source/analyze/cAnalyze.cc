@@ -58,7 +58,6 @@
 #include "cPhenotype.h"
 #include "cReaction.h"
 #include "cReactionProcess.h"
-#include "cResourceDef.h"
 #include "cStringIterator.h"
 #include "cTestCPU.h"
 #include "cUserFeedback.h"

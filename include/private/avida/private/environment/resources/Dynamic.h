@@ -34,6 +34,65 @@ namespace Avida {
       
       class Dynamic : public Resource
       {
+      private:
+        int curr_peakx, curr_peaky;
+        
+        bool m_initial;
+        
+        double m_move_y_scaler;
+        
+        int m_counter;
+        int m_move_counter;
+        int m_topo_counter;
+        int m_movesignx;
+        int m_movesigny;
+        
+        int m_old_peakx;
+        int m_old_peaky;
+        
+        int m_halo_dir;
+        int m_changling;
+        bool m_just_reset;
+        double m_past_height;
+        double m_current_height;
+        double m_ave_plat_cell_loss;
+        double m_common_plat_height;
+        int m_skip_moves;
+        int m_skip_counter;
+        Apto::Array<double> m_plateau_array;
+        Apto::Array<int> m_plateau_cell_IDs;
+        Apto::Array<int> m_wall_cells;
+        
+        double m_mean_plat_inflow;
+        double m_var_plat_inflow;
+        
+        Apto::Array<int> m_prob_res_cells;
+        
+        int m_min_usedx;
+        int m_min_usedy;
+        int m_max_usedx;
+        int m_max_usedy;
+        
+        
+      public:
+        LIB_EXPORT ~Dynamic();
+        
+        LIB_EXPORT static void Initialize();
+        
+        
+        LIB_EXPORT ResourceQuantity AmountAt(const Structure::Coord& location, Update current_update);
+        LIB_EXPORT void SetAmountAt(ResourceQuantity amount, const Structure::Coord& location, Update current_update);
+        LIB_EXPORT ResourceQuantity ModifyAmountAt(ResourceQuantity adjust_amount, const Structure::Coord& location,
+                                                   Update current_update);
+        
+        LIB_EXPORT void PerformUpdate(Avida::Context& ctx, Update current_update);
+        LIB_EXPORT void DefinitionChanged(Update current_update);
+        
+        
+      private:
+        LIB_LOCAL Dynamic(ResourceDefinition& def);
+        
+        LIB_LOCAL static Dynamic* Create(ResourceDefinition& def, Structure::Controller& structure);
         
       };
       

@@ -41,7 +41,6 @@
 #include "cReaction.h"
 #include "cReactionLib.h"
 #include "cReactionProcess.h"
-#include "cResourceDef.h"
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
@@ -567,7 +566,7 @@ StaticTableInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     StaticTableInstLib<tMethod>::MethodEntry("NULL", &cHardwareCPU::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
   };
   
-  const int n_size = sizeof(s_n_array)/sizeof(cNOPEntryCPU);
+  const int n_size = sizeof(s_n_array)/sizeof(NOPEntry);
   
   static int nop_mods[n_size];
   for (int i = 0; i < n_size && i < NUM_REGISTERS; i++) {
@@ -576,19 +575,19 @@ StaticTableInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
   
   const int f_size = sizeof(s_f_array)/sizeof(StaticTableInstLib<tMethod>::MethodEntry);
   static tMethod functions[f_size];
-  for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
+  for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].Function();
   
   const int def = 0;
   const int null_inst = f_size - 1;
   
-  return new StaticTableInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
+  return new StaticTableInstLib<tMethod>(f_size, s_f_array, nop_mods, functions, def, null_inst);
 }
 
 cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
 : cHardwareBase(world, in_organism, in_inst_set)
 , m_last_cell_data(false, 0)
 {
-  m_functions = s_inst_slib->GetFunctions();
+  m_functions = s_inst_slib->Functions();
   
   m_spec_die = false;
   m_epigenetic_state = false;

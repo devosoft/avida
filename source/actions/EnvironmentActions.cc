@@ -31,7 +31,6 @@
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
-#include "cResourceDef.h"
 #include "cStats.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"

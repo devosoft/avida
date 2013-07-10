@@ -23,6 +23,7 @@
 #include "cTaskLib.h"
 
 #include "apto/platform.h"
+#include "avida/core/Feedback.h"
 
 #include "cEnvironment.h"
 #include "cEnvReqs.h"
