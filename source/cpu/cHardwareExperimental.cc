@@ -5310,7 +5310,7 @@ bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
   double odds = m_world->GetConfig().PRED_ODDS.Get();
   results.size = GetPredSameGroupAttackNeighbors().GetSize();
   if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
+  if (results.size > 1) odds += (odds * (results.size - 1)); // 1 friend = 20%, 8 friends = 90%
   
   sAttackReg reg;
   SetAttackReg(reg);
@@ -5339,8 +5339,8 @@ bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
   double odds = m_world->GetConfig().PRED_ODDS.Get();
   results.size = pack.GetSize();
   if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
-  
+  if (results.size > 1) odds += (odds * (results.size - 1)); // 1 friend = 20%, 8 friends = 90%
+
   sAttackReg reg;
   SetAttackReg(reg);
   
@@ -5367,7 +5367,7 @@ bool cHardwareExperimental::Inst_AttackPreyNoShare(cAvidaContext& ctx)
   double odds = m_world->GetConfig().PRED_ODDS.Get();
   results.size = GetPredGroupAttackNeighbors().GetSize();
   if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
+  if (results.size > 1) odds += (odds * (results.size - 1)); // 1 friend = 20%, 8 friends = 90%
   
   sAttackReg reg;
   SetAttackReg(reg);
@@ -5395,7 +5395,7 @@ bool cHardwareExperimental::Inst_AttackPreyFakeShare(cAvidaContext& ctx)
   double odds = m_world->GetConfig().PRED_ODDS.Get();
   results.size = GetPredGroupAttackNeighbors().GetSize();
   if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
+  if (results.size > 1) odds += (odds * (results.size - 1)); // 1 friend = 20%, 8 friends = 90%
   double share = 1.0 / (double) results.size;
   
   sAttackReg reg;
@@ -5426,7 +5426,7 @@ bool cHardwareExperimental::Inst_AttackPreyGroupShare(cAvidaContext& ctx)
   Apto::Array<cOrganism*> pack = GetPredSameGroupAttackNeighbors();
   results.size = pack.GetSize();
   if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
+  if (results.size > 1) odds += (odds * (results.size - 1)); // 1 friend = 20%, 8 friends = 90%
   
   sAttackReg reg;
   SetAttackReg(reg);
@@ -5455,7 +5455,7 @@ bool cHardwareExperimental::Inst_AttackPreyFakeGroupShare(cAvidaContext& ctx)
   double odds = m_world->GetConfig().PRED_ODDS.Get();
   results.size = GetPredSameGroupAttackNeighbors().GetSize();
   if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
+  if (results.size > 1) odds += (odds * (results.size - 1)); // 1 friend = 20%, 8 friends = 90%
   double share = 1.0 / (double) results.size;
   
   sAttackReg reg;
@@ -6787,7 +6787,7 @@ bool cHardwareExperimental::ExecuteShareAttack(cAvidaContext& ctx, cOrganism* ta
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
   if (m_organism->IsTopPredFT()) effic *= effic;
   ApplyKilledPreyReactions(target);           // reactions can't be shared
-  double share = 1 / pack.GetSize();
+  double share = 1.0 / pack.GetSize();
   for (int i = 0; i < pack.GetSize(); i++) {
     ApplySharedKilledPreyMerit(target, effic, pack[i], share);
     ApplySharedKilledPreyBonus(target, reg, effic, pack[i], share);
