@@ -6787,7 +6787,7 @@ bool cHardwareExperimental::ExecuteShareAttack(cAvidaContext& ctx, cOrganism* ta
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
   if (m_organism->IsTopPredFT()) effic *= effic;
   ApplyKilledPreyReactions(target);           // reactions can't be shared
-  double share = 1.0 / pack.GetSize();
+  double share = 1.0 / (double) pack.GetSize();
   for (int i = 0; i < pack.GetSize(); i++) {
     ApplySharedKilledPreyMerit(target, effic, pack[i], share);
     ApplySharedKilledPreyBonus(target, reg, effic, pack[i], share);
