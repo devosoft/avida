@@ -26,6 +26,9 @@
 #define AvidaHardwareBase_h
 
 #include "avida/hardware/Types.h"
+
+#include "avida/biota/Organism.h"
+#include "avida/hardware/Feature.h"
 #include "avida/structure/Element.h"
 
 
@@ -37,8 +40,16 @@ namespace Avida {
     
     class Base : public Structure::Element
     {
+    protected:
+      Biota::OrganismPtr m_owner;
+      Apto::Array<Biota::OrganismPtr> m_organisms;
+      Apto::Array<Feature*> m_features;
+      
     public:
-      LIB_EXPORT ~Base();
+      LIB_EXPORT Base(Context& ctx, ConfigPtr cfg, Biota::OrganismPtr owner);
+      LIB_EXPORT virtual ~Base() = 0;
+      
+      LIB_EXPORT virtual bool ProcessCycleStep(Context& ctx, Update current_update, bool speculative) = 0;
     };
     
   };

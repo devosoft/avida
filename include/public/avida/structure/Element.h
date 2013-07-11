@@ -35,7 +35,21 @@ namespace Avida {
     
     class Element : public virtual Apto::RefCountObject<Apto::ThreadSafe>
     {
+      friend class Controller;
       
+    protected:
+      Controller* m_structure;
+      
+    public:
+      LIB_EXPORT inline Element() : m_structure(NULL) { ; }
+      
+      LIB_EXPORT inline Controller* StructureContoller() { return m_structure; }
+      LIB_EXPORT inline const Controller* StructureController() const { return m_structure; }
+      
+      LIB_EXPORT virtual void ProcessTimeStep(Context& ctx, Update current_update) = 0;
+      
+    private:
+      LIB_EXPORT inline void SetStructureController(Controller* structure) { m_structure = structure; }
     };
     
   };

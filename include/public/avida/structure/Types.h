@@ -37,6 +37,7 @@ namespace Avida {
     class Controller;
     struct Coord;
     class Element;
+    class Interface;
     
     
     // Type Declarations

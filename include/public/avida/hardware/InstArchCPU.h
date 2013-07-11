@@ -1,5 +1,5 @@
 /*
- *  hardware/Config.h
+ *  hardware/InstLib.h
  *  avida-core
  *
  *  Created by David on 2/1/13.
@@ -22,25 +22,29 @@
  *
  */
 
-#ifndef AvidaHardwareConfig_h
-#define AvidaHardwareConfig_h
+#ifndef AvidaHardwareInstArchCPU_h
+#define AvidaHardwareInstArchCPU_h
 
-#include "avida/hardware/Types.h"
+#include "avida/hardware/Base.h"
+#include "avida/hardware/InstSet.h"
 
 
 namespace Avida {
   namespace Hardware {
     
-    // Hardware::Config
+    // Hardware::InstArchCPU
     // --------------------------------------------------------------------------------------------------------------
     
-    class Config
+    class InstArchCPU : public Base
     {
-    private:
-      Util::Args* m_arguments;
+    protected:
+      InstSet* m_instset;
       
     public:
-      LIB_EXPORT virtual ~Config() = 0;
+      LIB_EXPORT InstArchCPU(Context& ctx, ConfigPtr cfg, Biota::OrganismPtr owner);
+      LIB_EXPORT virtual ~InstArchCPU() = 0;
+      
+      
     };
     
   };

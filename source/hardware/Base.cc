@@ -27,6 +27,6 @@
 
 Avida::Hardware::Base::~Base()
 {
-  ;
+  for (int idx = 0; idx < m_features.GetSize(); idx++) delete m_features[idx];
 }
 

@@ -217,6 +217,8 @@
 		70D5B4FF14F4009000D15FFD /* cOrgMessage.cc in Sources */ = {isa = PBXBuildFile; fileRef = D7FB16D50ED62684002E939E /* cOrgMessage.cc */; };
 		70D5B50214F4009000D15FFD /* EnvironmentActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705ABB180A8A6A6000A6A80E /* EnvironmentActions.cc */; };
 		70D5B50314F4009000D15FFD /* cBirthGenomeSizeHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447CA20F83DB2900E1BF72 /* cBirthGenomeSizeHandler.cc */; };
+		70DC2759178F514E00A93DA4 /* InstArchCPU.h in Headers */ = {isa = PBXBuildFile; fileRef = 70DC2758178F514E00A93DA4 /* InstArchCPU.h */; };
+		70DC275B178F526E00A93DA4 /* InstArchCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DC275A178F526E00A93DA4 /* InstArchCPU.cc */; };
 		70DCAC9C097AF7C0002F8733 /* avida3.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* avida3.cc */; };
 		70DF729013BE20130085F85E /* Universe.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DF728F13BE20130085F85E /* Universe.cc */; };
 		70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* Driver.cc */; };
@@ -782,6 +784,8 @@
 		70D3AD091455DFB4000FAB0F /* Package.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Package.cc; sourceTree = "<group>"; };
 		70D46D3615222A6300F6B5DA /* Recorder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Recorder.cc; sourceTree = "<group>"; };
 		70DAE8E314B4B01900FE5A6A /* Freezer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Freezer.cc; sourceTree = "<group>"; };
+		70DC2758178F514E00A93DA4 /* InstArchCPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InstArchCPU.h; sourceTree = "<group>"; };
+		70DC275A178F526E00A93DA4 /* InstArchCPU.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InstArchCPU.cc; sourceTree = "<group>"; };
 		70DCAC57097AF730002F8733 /* main.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		70DCAC59097AF730002F8733 /* cBarScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cBarScreen.cc; sourceTree = "<group>"; };
 		70DCAC5A097AF730002F8733 /* cBarScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cBarScreen.h; sourceTree = "<group>"; };
@@ -1124,6 +1128,7 @@
 				70556A0516BB647100EAAA9B /* Base.h */,
 				70556A1416BC315E00EAAA9B /* Config.h */,
 				70556A0616BB647100EAAA9B /* Feature.h */,
+				70DC2758178F514E00A93DA4 /* InstArchCPU.h */,
 				70556A1516BC315E00EAAA9B /* InstLib.h */,
 				70556A1616BC315F00EAAA9B /* InstSet.h */,
 				70556A1716BC315F00EAAA9B /* Library.h */,
@@ -1139,6 +1144,7 @@
 				70556A0E16BB648900EAAA9B /* Base.cc */,
 				70556A2A16BC325C00EAAA9B /* Config.cc */,
 				70556A0F16BB648900EAAA9B /* Feature.cc */,
+				70DC275A178F526E00A93DA4 /* InstArchCPU.cc */,
 				70556A2B16BC325D00EAAA9B /* InstLib.cc */,
 				70556A2C16BC325D00EAAA9B /* InstSet.cc */,
 				70556A2D16BC325D00EAAA9B /* Library.cc */,
@@ -1976,6 +1982,7 @@
 				70556A0316BB042600EAAA9B /* cLandscape.h in Headers */,
 				70556A0916BB647100EAAA9B /* Base.h in Headers */,
 				70556A0A16BB647100EAAA9B /* Feature.h in Headers */,
+				70DC2759178F514E00A93DA4 /* InstArchCPU.h in Headers */,
 				70556A0B16BB647100EAAA9B /* Manager.h in Headers */,
 				70556A0C16BB647100EAAA9B /* Types.h in Headers */,
 				70556A1816BC315F00EAAA9B /* Config.h in Headers */,
@@ -2189,6 +2196,7 @@
 				7023EC7A0C0A431B00362B9C /* cMutationRates.cc in Sources */,
 				7023EC7C0C0A431B00362B9C /* cOrganism.cc in Sources */,
 				70D5B4FF14F4009000D15FFD /* cOrgMessage.cc in Sources */,
+				70DC275B178F526E00A93DA4 /* InstArchCPU.cc in Sources */,
 				70D5B4EB14F4009000D15FFD /* cParasite.cc in Sources */,
 				7023EC7D0C0A431B00362B9C /* cPhenotype.cc in Sources */,
 				7023EC7E0C0A431B00362B9C /* cPopulation.cc in Sources */,

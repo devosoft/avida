@@ -27,6 +27,7 @@
 
 #include "avida/biota/Types.h"
 #include "avida/environment/Types.h"
+#include "avida/hardware/Types.h"
 #include "avida/structure/Element.h"
 #include "avida/world/Types.h"
 
@@ -44,6 +45,7 @@ namespace Avida {
       Universe* m_universe;
       
       Apto::Array<Biota::OrganismPtr, Apto::Smart> m_organisms;
+      Apto::Array<Hardware::InstancePtr, Apto::Smart> m_hardware;
       Structure::Controller* m_structure;
       Environment::ResourceManager* m_resources;
       

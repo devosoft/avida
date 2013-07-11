@@ -1,8 +1,8 @@
 /*
- *  hardware/Config.h
+ *  hardware/InstLib.cc
  *  avida-core
  *
- *  Created by David on 2/1/13.
+ *  Created by David on 7/11/13.
  *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,28 +22,7 @@
  *
  */
 
-#ifndef AvidaHardwareConfig_h
-#define AvidaHardwareConfig_h
-
-#include "avida/hardware/Types.h"
+#include "avida/hardware/InstArchCPU.h"
 
 
-namespace Avida {
-  namespace Hardware {
-    
-    // Hardware::Config
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class Config
-    {
-    private:
-      Util::Args* m_arguments;
-      
-    public:
-      LIB_EXPORT virtual ~Config() = 0;
-    };
-    
-  };
-};
-
-#endif
+Avida::Hardware::InstArchCPU::~InstArchCPU() { ; }
