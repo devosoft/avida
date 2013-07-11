@@ -53,7 +53,6 @@ private:
                          // (This is not quite redundant with an infinite resource
                          // because it allows the resource level to be sensed @JEB)
   bool internal;
-  ePHENPLAST_BONUS_METHOD m_ppmethod;  //@MRR How does one handle phenotypically plastic tasks?
 
   // Resource detection
   cResourceDef* detect;    // Resource Measured
@@ -79,7 +78,6 @@ public:
     , sterilize(false)
     , depletable(true)
     , internal(false)
-    , m_ppmethod(DEFAULT_BONUS)
     , detect(NULL)
     , detection_threshold(0.0)
     , detection_error(0.0)
@@ -100,7 +98,6 @@ public:
   bool GetDepletable() const { return depletable; }
   double GetLethal() const { return lethal; }
   bool GetSterilize() const { return sterilize; }
-  ePHENPLAST_BONUS_METHOD GetPhenPlastBonusMethod() const { return m_ppmethod; }
   cResourceDef* GetDetect() const { return detect; }
   double GetDetectionThreshold() const { return detection_threshold; }
   double GetDetectionError() const { return detection_error; }
@@ -120,7 +117,6 @@ public:
   void SetDepletable(bool _in) { depletable = _in; }
   void SetLethal(double _in) { lethal = _in; }
   void SetSterile(int _in) { sterilize = _in; }
-  void SetPhenPlastBonusMethod(ePHENPLAST_BONUS_METHOD _in) { m_ppmethod = _in; }
   void SetDetect(cResourceDef* _in) { detect = _in; }
   void SetDetectionThreshold(double _in) { detection_threshold = _in; }
   void SetDetectionError(double _in) { detection_error = _in; }

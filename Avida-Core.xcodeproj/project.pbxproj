@@ -2093,7 +2093,7 @@
 		DCC30C4D0762532C008F7A48 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 			};
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida-Core" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -2361,7 +2361,6 @@
 		702442D80859E0B00059BD9B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2377,7 +2376,7 @@
 					../libs/apto/include/,
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2390,7 +2389,6 @@
 		702442D90859E0B00059BD9B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
@@ -2405,7 +2403,7 @@
 					include/private/,
 					../libs/apto/include/,
 				);
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",

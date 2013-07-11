@@ -24,6 +24,7 @@
 
 #include "apto/platform.h"
 #include "avida/core/GlobalObject.h"
+#include "avida/core/Version.h"
 
 #include "AvidaTools.h"
 

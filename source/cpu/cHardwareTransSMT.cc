@@ -41,6 +41,7 @@
 using namespace std;
 using namespace AvidaTools;
 using namespace Avida::Hardware::InstructionFlags;
+using namespace Avida::Util;
 
 
 StaticTableInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::s_inst_slib = cHardwareTransSMT::initInstLib();
@@ -379,7 +380,7 @@ void cHardwareTransSMT::PrintStatus(ostream& fp)
 
 int cHardwareTransSMT::FindMemorySpaceLabel(const NopSequence& label, int mem_space)
 {
-	if (label.GetSize() == 0) return 0;
+	if (label.Size() == 0) return 0;
   
   int hash_key = label.AsInt(NUM_NOPS);
   if (!m_mem_lbls.Get(hash_key, mem_space)) {
@@ -409,7 +410,7 @@ cHeadCPU cHardwareTransSMT::FindLabel(int direction)
 	
   // Make sure the label is of size  > 0.
 	
-  if (search_label.GetSize() == 0) {
+  if (search_label.Size() == 0) {
     return inst_ptr;
   }
 	
@@ -417,7 +418,7 @@ cHeadCPU cHardwareTransSMT::FindLabel(int direction)
   int found_pos = 0;
   if( direction < 0 ) {
     found_pos = FindLabel_Backward(search_label, inst_ptr.GetMemory(),
-																	 inst_ptr.GetPosition() - search_label.GetSize());
+																	 inst_ptr.GetPosition() - search_label.Size());
   }
 	
   // Jump forward.
@@ -448,7 +449,7 @@ int cHardwareTransSMT::FindLabel_Forward(const NopSequence& search_label,
   assert (pos < search_genome.GetSize() && pos >= 0);
 	
   int search_start = pos;
-  int label_size = search_label.GetSize();
+  int label_size = search_label.Size();
   bool found_label = false;
 	
   // Move off the template we are on.
@@ -529,7 +530,7 @@ int cHardwareTransSMT::FindLabel_Backward(const NopSequence & search_label,
   assert (pos < search_genome.GetSize());
 	
   int search_start = pos;
-  int label_size = search_label.GetSize();
+  int label_size = search_label.Size();
   bool found_label = false;
 	
   // Move off the template we are on.
@@ -600,7 +601,7 @@ int cHardwareTransSMT::FindLabel_Backward(const NopSequence & search_label,
 // Search for 'in_label' anywhere in the hardware.
 cHeadCPU cHardwareTransSMT::FindLabel(const NopSequence& in_label, int direction)
 {
-  assert (in_label.GetSize() > 0);
+  assert (in_label.Size() > 0);
 	
   // IDEALY:
   // Keep making jumps (in the proper direction) equal to the label
@@ -616,13 +617,13 @@ cHeadCPU cHardwareTransSMT::FindLabel(const NopSequence& in_label, int direction
     // for could be a sub-label of it.  Skip past it if not.
 		
     int i;
-    for (i = 0; i < in_label.GetSize(); i++) {
+    for (i = 0; i < in_label.Size(); i++) {
       if (!m_inst_set->IsNop(temp_head.GetInst()) ||
 					in_label[i] != m_inst_set->GetNopMod(temp_head.GetInst())) {
 				break;
       }
     }
-    if (i == GetLabel().GetSize()) {
+    if (i == GetLabel().Size()) {
       temp_head.AbsJump(i - 1);
       return temp_head;
     }
@@ -660,7 +661,7 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
   bool inject_signal = false;
   if (injected_code.GetSize() > 0) {
     Systematics::UnitPtr parent = ThreadGetOwner();
-    inject_signal = m_organism->InjectParasite(parent, GetLabel().AsString(), injected_code);
+    inject_signal = m_organism->InjectParasite(parent, (const char*)GetLabel().AsString(), injected_code);
   }
 	
   // reset the memory space that was injected
@@ -685,7 +686,7 @@ bool cHardwareTransSMT::ParasiteInfectHost(Systematics::UnitPtr bu)
   label.ReadString((const char*)bu->UnitSource().arguments);
   
   // Inject fails if the memory space is already in use
-  if (label.GetSize() == 0 || MemorySpaceExists(label)) return false;
+  if (label.Size() == 0 || MemorySpaceExists(label)) return false;
   
   int thread_id = m_threads.GetSize();
   
@@ -754,7 +755,7 @@ int cHardwareTransSMT::FindModifiedResource(cAvidaContext& ctx, int& spec_id)
   ReadLabel(max_label_length);
   
   //find the length of the label that was actually read
-  int real_label_length = GetLabel().GetSize();
+  int real_label_length = GetLabel().Size();
   
   // save the specification id
   spec_id = GetLabel().AsIntUnique(num_nops);
@@ -880,7 +881,7 @@ void cHardwareTransSMT::ReadLabel(int max_size)
     GetLabel().AddNop(m_inst_set->GetNopMod(inst_ptr.GetInst()));
 		
     // If this is the first line of the template, mark it executed.
-    if (GetLabel().GetSize() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
+    if (GetLabel().Size() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
       inst_ptr.SetFlagExecuted();
     }
   }
@@ -892,7 +893,7 @@ int cHardwareTransSMT::ThreadCreate(const NopSequence& label, int mem_space)
   int thread_id = m_threads.GetSize();
   
   // Check for thread cap, base thread label (i.e. no label)
-  if (thread_id == m_world->GetConfig().MAX_CPU_THREADS.Get() || label.GetSize() == 0) return -1;	
+  if (thread_id == m_world->GetConfig().MAX_CPU_THREADS.Get() || label.Size() == 0) return -1;
   
   // Check for existing thread
   int hash_key = label.AsInt(NUM_NOPS);
@@ -1245,7 +1246,7 @@ bool cHardwareTransSMT::Inst_Val_Nand(cAvidaContext&)
   const int dst = FindModifiedStack(STACK_BX);
   const int op1 = FindModifiedStack(STACK_BX);
   const int op2 = FindModifiedNextStack(op1);
-  Stack(dst).Push(~(Stack(op1).Top() & Stack(op2).Top()));
+  Stack(dst).Push(~(Stack(op1).Peek() & Stack(op2).Peek()));
   return true;
 }
 
@@ -1255,7 +1256,7 @@ bool cHardwareTransSMT::Inst_Val_Add(cAvidaContext&)
   const int dst = FindModifiedStack(STACK_BX);
   const int op1 = FindModifiedStack(STACK_BX);
   const int op2 = FindModifiedNextStack(op1);
-  Stack(dst).Push(Stack(op1).Top() + Stack(op2).Top());
+  Stack(dst).Push(Stack(op1).Peek() + Stack(op2).Peek());
   return true;
 }
 
@@ -1265,7 +1266,7 @@ bool cHardwareTransSMT::Inst_Val_Sub(cAvidaContext&)
   const int dst = FindModifiedStack(STACK_BX);
   const int op1 = FindModifiedStack(STACK_BX);
   const int op2 = FindModifiedNextStack(op1);
-  Stack(dst).Push(Stack(op1).Top() - Stack(op2).Top());
+  Stack(dst).Push(Stack(op1).Peek() - Stack(op2).Peek());
   return true;
 }
 
@@ -1275,7 +1276,7 @@ bool cHardwareTransSMT::Inst_Val_Mult(cAvidaContext&)
   const int dst = FindModifiedStack(STACK_BX);
   const int op1 = FindModifiedStack(STACK_BX);
   const int op2 = FindModifiedNextStack(op1);
-  Stack(dst).Push(Stack(op1).Top() * Stack(op2).Top());
+  Stack(dst).Push(Stack(op1).Peek() * Stack(op2).Peek());
   return true;
 }
 
@@ -1285,8 +1286,8 @@ bool cHardwareTransSMT::Inst_Val_Div(cAvidaContext&)
   const int dst = FindModifiedStack(STACK_BX);
   const int op1 = FindModifiedStack(STACK_BX);
   const int op2 = FindModifiedNextStack(op1);
-  if (Stack(op2).Top() != 0) {
-    if (!(0-INT_MAX > Stack(op1).Top() && Stack(op2).Top() == -1)) Stack(dst).Push(Stack(op1).Top() / Stack(op2).Top());
+  if (Stack(op2).Peek() != 0) {
+    if (!(0-INT_MAX > Stack(op1).Peek() && Stack(op2).Peek() == -1)) Stack(dst).Push(Stack(op1).Peek() / Stack(op2).Peek());
   } else {
     return false;
   }
@@ -1299,11 +1300,11 @@ bool cHardwareTransSMT::Inst_Val_Mod(cAvidaContext&)
   const int dst = FindModifiedStack(STACK_BX);
   const int op1 = FindModifiedStack(STACK_BX);
   const int op2 = FindModifiedNextStack(op1);
-  if (Stack(op2).Top() != 0) {
-    if(Stack(op2).Top() == -1)
+  if (Stack(op2).Peek() != 0) {
+    if(Stack(op2).Peek() == -1)
       Stack(dst).Push(0);
     else
-      Stack(dst).Push(Stack(op1).Top() % Stack(op2).Top());
+      Stack(dst).Push(Stack(op1).Peek() % Stack(op2).Peek());
   } else {
 		return false;
   }
@@ -1347,7 +1348,7 @@ bool cHardwareTransSMT::Inst_SetMemory(cAvidaContext&)
 		}
   }
 	
-  if (GetLabel().GetSize() == 0) {
+  if (GetLabel().Size() == 0) {
     GetHead(HEAD_FLOW).Set(0, 0);
   } else {
     int mem_space_used = FindMemorySpaceLabel(GetLabel(), -1);
@@ -1430,7 +1431,7 @@ bool cHardwareTransSMT::Inst_IfEqual(cAvidaContext&)      // Execute next if bx 
 {
   const int op1 = FindModifiedStack(STACK_AX);
   const int op2 = FindModifiedNextStack(op1);
-  if (Stack(op1).Top() != Stack(op2).Top())  IP().Advance();
+  if (Stack(op1).Peek() != Stack(op2).Peek())  IP().Advance();
   return true;
 }
 
@@ -1439,7 +1440,7 @@ bool cHardwareTransSMT::Inst_IfNotEqual(cAvidaContext&)     // Execute next if b
 {
   const int op1 = FindModifiedStack(STACK_AX);
   const int op2 = FindModifiedNextStack(op1);
-  if (Stack(op1).Top() == Stack(op2).Top())  IP().Advance();
+  if (Stack(op1).Peek() == Stack(op2).Peek())  IP().Advance();
   return true;
 }
 
@@ -1448,7 +1449,7 @@ bool cHardwareTransSMT::Inst_IfLess(cAvidaContext&)       // Execute next if ?bx
 {
   const int op1 = FindModifiedStack(STACK_AX);
   const int op2 = FindModifiedNextStack(op1);
-  if (Stack(op1).Top() >=  Stack(op2).Top())  IP().Advance();
+  if (Stack(op1).Peek() >=  Stack(op2).Peek())  IP().Advance();
   return true;
 }
 
@@ -1457,7 +1458,7 @@ bool cHardwareTransSMT::Inst_IfGreater(cAvidaContext&)       // Execute next if 
 {
   const int op1 = FindModifiedStack(STACK_AX);
   const int op2 = FindModifiedNextStack(op1);
-  if (Stack(op1).Top() <= Stack(op2).Top())  IP().Advance();
+  if (Stack(op1).Peek() <= Stack(op2).Peek())  IP().Advance();
   return true;
 }
 
@@ -1510,9 +1511,9 @@ bool cHardwareTransSMT::Inst_Search(cAvidaContext&)
 	}
   else
 	{
-		int search_size = found_pos.GetPosition() - IP().GetPosition() + GetLabel().GetSize() + 1;
+		int search_size = found_pos.GetPosition() - IP().GetPosition() + GetLabel().Size() + 1;
 		Stack(STACK_BX).Push(search_size);
-		Stack(STACK_AX).Push(GetLabel().GetSize());
+		Stack(STACK_AX).Push(GetLabel().Size());
 		GetHead(HEAD_FLOW).Set(found_pos);
 	}  
   
@@ -1559,7 +1560,7 @@ bool cHardwareTransSMT::Inst_ValCopy(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   const int src = FindModifiedStack(dst);
-  Stack(dst).Push(Stack(src).Top());
+  Stack(dst).Push(Stack(src).Peek());
   return true;
 }
 
@@ -1570,7 +1571,7 @@ bool cHardwareTransSMT::Inst_IO(cAvidaContext& ctx)
   const int src = FindModifiedStack(dst);
 	
   // Do the "put" component
-  const int value_out = Stack(src).Top();
+  const int value_out = Stack(src).Peek();
   
   m_organism->DoOutput(ctx, value_out, ThreadGetOwner()->UnitSource().transmission_type == Systematics::HORIZONTAL, &m_threads[m_cur_thread].context_phenotype);  // Check for tasks compleated.
   // Do the "get" component
@@ -1716,7 +1717,7 @@ bool cHardwareTransSMT::Inst_CallLabel(cAvidaContext&)
   
   ReadLabel(MAX_MEMSPACE_LABEL);
   
-  if (GetLabel().GetSize() != 0) {
+  if (GetLabel().Size() != 0) {
     int mem_space_used = FindMemorySpaceLabel(GetLabel(), -1);
     if (mem_space_used > -1) {
       // Jump to beginning of memory space
@@ -1747,7 +1748,7 @@ bool cHardwareTransSMT::Inst_IfGreaterEqual(cAvidaContext&)      // Execute next
 {
   const int op1 = FindModifiedStack(STACK_AX);
   const int op2 = FindModifiedNextStack(op1);
-  if (Stack(op1).Top() > Stack(op2).Top())  IP().Advance();
+  if (Stack(op1).Peek() > Stack(op2).Peek())  IP().Advance();
   return true;
 }
 

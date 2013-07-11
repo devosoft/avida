@@ -295,7 +295,7 @@ void cRawBitArray::INCREMENT(const int num_bits)
   
   // if highest bit field was incremented, mask out any unused portions of the field so as not to confuse CountBits
   if (i == num_fields - 1) {
-    unsigned int shift_mask = 0xffffffff >> 32 - (num_bits % 32);
+    unsigned int shift_mask = 0xffffffff >> (32 - (num_bits % 32));
     bit_fields[num_fields - 1] &= shift_mask;
   }
 }

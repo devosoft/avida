@@ -88,7 +88,6 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const Genome& genome)
 , parent_muts("")
 , knockout_stats(NULL)
 , m_land(NULL)
-, m_phenplast_stats(NULL)
 {
   
 }
@@ -147,7 +146,6 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
 cAnalyzeGenotype::~cAnalyzeGenotype()
 {
   if (knockout_stats != NULL) delete knockout_stats;
-  if (m_phenplast_stats != NULL) delete m_phenplast_stats;
   Unlink();
 }
 
@@ -241,19 +239,6 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   ADD_GDATA(int(),             "mate_preference", "Mate preference", GetMatePreference, SetMatePreference, 0, 0, 0);
   ADD_GDATA(int(),             "mating_display_a", "Mating display A", GetMatingDisplayA, SetMatingDisplayA, 0, 0, 0);
   ADD_GDATA(int(),             "mating_display_b", "Mating display B", GetMatingDisplayB, SetMatingDisplayB, 0, 0, 0);
-  
-  ADD_GDATA(int (),    "num_phen",           "Number of Plastic Phenotypes",          GetNumPhenotypes,          SetNULL, 0, 0, 0);
-  ADD_GDATA(int (),    "num_trials",         "Number of Recalculation Trials",        GetNumTrials,              SetNULL, 0, 0, 0);
-  ADD_GDATA(double (), "phen_entropy",       "Phenotpyic Entropy",                    GetPhenotypicEntropy,      SetNULL, 0, 0, 0);
-  ADD_GDATA(double (), "phen_max_fitness",   "Phen Plast Maximum Fitness",            GetMaximumFitness,         SetNULL, 0, 0, 0);
-  ADD_GDATA(double (), "phen_max_fit_freq",  "Phen Plast Maximum Fitness Frequency",  GetMaximumFitnessFrequency,SetNULL, 0, 0, 0);
-  ADD_GDATA(double (), "phen_min_fitness",   "Phen Plast Minimum Fitness",            GetMinimumFitness,         SetNULL, 0, 0, 0);
-  ADD_GDATA(double (), "phen_min_freq",      "Phen Plast Minimum Fitness Frequency",  GetMinimumFitnessFrequency,SetNULL, 0, 0, 0);
-  ADD_GDATA(double (), "phen_avg_fitness",   "Phen Plast Wtd Avg Fitness",            GetAverageFitness,         SetNULL, 0, 0, 0);
-  ADD_GDATA(double (), "phen_likely_freq",   "Freq of Most Likely Phenotype",         GetLikelyFrequency,        SetNULL, 0, 0, 0);
-  ADD_GDATA(double (), "phen_likely_fitness","Fitness of Most Likely Phenotype",      GetLikelyFitness,          SetNULL, 0, 0, 0);
-  ADD_GDATA(double (), "prob_viable",        "Probability Viable",                    GetViableProbability,      SetNULL, 0, 0, 0);
-  
   
   // @JEB There is a difference between these two. parent_muts is based on an alignment. mut_steps is based on recorded mutations during run.
   ADD_GDATA(const cString& (), "parent_muts", "Mutations from Parent",   GetParentMuts,   SetParentMuts, 0, "(none)", "");

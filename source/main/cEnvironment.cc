@@ -241,20 +241,6 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedba
         return false;
       new_process->SetDepletable(var_value.AsInt());
     }
-    else if (var_name == "phenplastbonus") {
-      if (var_value == "nobonus")
-        new_process->SetPhenPlastBonusMethod(NO_BONUS);
-      else if (var_value == "fracbonus")
-        new_process->SetPhenPlastBonusMethod(FRAC_BONUS);
-      else if (var_value == "fullbonus")
-        new_process->SetPhenPlastBonusMethod(FULL_BONUS);
-      else if (var_value == "default")
-        new_process->SetPhenPlastBonusMethod(DEFAULT);
-      else {
-        feedback.Error("invalid setting for phenplastbonus in reaction '%s'", (const char*)reaction->GetName());
-        return false;
-      }
-    }
     else if ( var_name == "internal") {
       if (!AssertInputBool(var_value, "internal", var_type, feedback))
         return false;

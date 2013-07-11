@@ -403,14 +403,14 @@ inline int cHardwareTransSMT::NormalizeMemSpace(int mem_space) const
 inline bool cHardwareTransSMT::MemorySpaceExists(const Util::NopSequence& label)
 {
   int null;
-  if (label.GetSize() == 0 || m_mem_lbls.Get(label.AsInt(NUM_NOPS), null)) return true;
+  if (label.Size() == 0 || m_mem_lbls.Get(label.AsInt(NUM_NOPS), null)) return true;
   return false;
 }
 
 inline int cHardwareTransSMT::FindThreadLabel(const Util::NopSequence& label)
 {
   int thread_id = -1;
-  if (label.GetSize() == 0) return 0;
+  if (label.Size() == 0) return 0;
   m_thread_lbls.Get(label.AsInt(NUM_NOPS), thread_id);
   return thread_id;
 }

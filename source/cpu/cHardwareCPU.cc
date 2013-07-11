@@ -972,14 +972,14 @@ cHeadCPU cHardwareCPU::FindLabel(int direction)
   
   // Make sure the label is of size > 0.
   
-  if (search_label.GetSize() == 0) {
+  if (search_label.Size() == 0) {
     return inst_ptr;
   }
   
   // Call special functions depending on if jump is forwards or backwards.
   int found_pos = 0;
   if ( direction < 0 ) {
-    found_pos = FindLabel_Backward(search_label, m_memory, inst_ptr.GetPosition() - search_label.GetSize());
+    found_pos = FindLabel_Backward(search_label, m_memory, inst_ptr.GetPosition() - search_label.Size());
   }
   
   // Jump forward.
@@ -1010,7 +1010,7 @@ int cHardwareCPU::FindLabel_Forward(const NopSequence & search_label,
   assert (pos < search_genome.GetSize() && pos >= 0);
   
   int search_start = pos;
-  int label_size = search_label.GetSize();
+  int label_size = search_label.Size();
   bool found_label = false;
   
   // Move off the template we are on.
@@ -1092,7 +1092,7 @@ int cHardwareCPU::FindLabel_Backward(const NopSequence & search_label,
   assert (pos < search_genome.GetSize());
   
   int search_start = pos;
-  int label_size = search_label.GetSize();
+  int label_size = search_label.Size();
   bool found_label = false;
   
   // Move off the template we are on.
@@ -1163,7 +1163,7 @@ int cHardwareCPU::FindLabel_Backward(const NopSequence & search_label,
 // Search for 'in_label' anywhere in the hardware.
 cHeadCPU cHardwareCPU::FindLabel(const NopSequence & in_label, int direction)
 {
-  assert (in_label.GetSize() > 0);
+  assert (in_label.Size() > 0);
   
   // IDEALY:
   // Keep making jumps (in the proper direction) equal to the label
@@ -1179,13 +1179,13 @@ cHeadCPU cHardwareCPU::FindLabel(const NopSequence & in_label, int direction)
     // for could be a sub-label of it.  Skip past it if not.
     
     int i;
-    for (i = 0; i < in_label.GetSize(); i++) {
+    for (i = 0; i < in_label.Size(); i++) {
       if (!m_inst_set->IsNop(temp_head.GetInst()) ||
           in_label[i] != m_inst_set->GetNopMod(temp_head.GetInst())) {
         break;
       }
     }
-    if (i == GetLabel().GetSize()) {
+    if (i == GetLabel().Size()) {
       temp_head.AbsJump(i - 1);
       return temp_head;
     }
@@ -1199,13 +1199,13 @@ cHeadCPU cHardwareCPU::FindLabel(const NopSequence & in_label, int direction)
 
 void cHardwareCPU::FindLabelInMemory(const NopSequence& label, cHeadCPU& search_head)
 {
-  assert(label.GetSize() > 0); // Trying to find label of 0 size!
+  assert(label.Size() > 0); // Trying to find label of 0 size!
   
   
   while (search_head.InMemory()) {
     // If we are not in a label, jump to the next checkpoint...
     if (!m_inst_set->IsNop(search_head.GetInst())) {
-      search_head.AbsJump(label.GetSize());
+      search_head.AbsJump(label.Size());
       continue;
     }
     
@@ -1221,7 +1221,7 @@ void cHardwareCPU::FindLabelInMemory(const NopSequence& label, cHeadCPU& search_
     bool label_match = true;
     do {
       // Check if the nop matches
-      if (size < label.GetSize() && label[size] != m_inst_set->GetNopMod(search_head.GetInst()))
+      if (size < label.Size() && label[size] != m_inst_set->GetNopMod(search_head.GetInst()))
         label_match = false;
       
       // Increment the current position and length calculation
@@ -1231,7 +1231,7 @@ void cHardwareCPU::FindLabelInMemory(const NopSequence& label, cHeadCPU& search_
       // While still within memory and the instruction is a nop
     } while (search_head.InMemory() && m_inst_set->IsNop(search_head.GetInst()));
     
-    if (size != label.GetSize()) continue;
+    if (size != label.Size()) continue;
     
     // temp_head will point to the first non-nop instruction after the label, or the end of the memory space
     //   if this is a match, return this position
@@ -1276,7 +1276,7 @@ void cHardwareCPU::ReadLabel(int max_size)
   
   GetLabel().Clear();
   
-  if (max_size < 0 || max_size > GetLabel.MaxSize()) max_size = GetLabel().MaxSize();
+  if (max_size < 0 || max_size > GetLabel().MaxSize()) max_size = GetLabel().MaxSize();
   
   while (m_inst_set->IsNop(inst_ptr->GetNextInst()) && (count < max_size)) {
     count++;
@@ -1284,7 +1284,7 @@ void cHardwareCPU::ReadLabel(int max_size)
     GetLabel().AddNop(m_inst_set->GetNopMod(inst_ptr->GetInst()));
     
     // If this is the first line of the template, mark it executed.
-    if (GetLabel().GetSize() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
+    if (GetLabel().Size() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
       inst_ptr->SetFlagExecuted();
     }
   }
@@ -2076,7 +2076,7 @@ bool cHardwareCPU::Inst_JumpF(cAvidaContext&)
   GetLabel().Rotate(1, NUM_NOPS);
   
   // If there is no label, jump BX steps.
-  if (GetLabel().GetSize() == 0) {
+  if (GetLabel().Size() == 0) {
     GetActiveHead().Jump(GetRegister(REG_BX));
     return true;
   }
@@ -2098,7 +2098,7 @@ bool cHardwareCPU::Inst_JumpB(cAvidaContext&)
   GetLabel().Rotate(1, NUM_NOPS);
   
   // If there is no label, jump BX steps.
-  if (GetLabel().GetSize() == 0) {
+  if (GetLabel().Size() == 0) {
     GetActiveHead().Jump(GetRegister(REG_BX));
     return true;
   }
@@ -2123,7 +2123,7 @@ bool cHardwareCPU::Inst_Call(cAvidaContext&)
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   
-  if (GetLabel().GetSize() == 0) {
+  if (GetLabel().Size() == 0) {
     getIP().Jump(GetRegister(REG_BX));
     return true;
   }
@@ -2168,7 +2168,7 @@ bool cHardwareCPU::Inst_Throw(cAvidaContext&)
       
       bool match = true;
       int size_matched = 0;      
-      while ( match && m_inst_set->IsNop(search_head.GetInst()) && (size_matched < GetLabel().GetSize()) ) {
+      while ( match && m_inst_set->IsNop(search_head.GetInst()) && (size_matched < GetLabel().Size()) ) {
         if ( GetLabel()[size_matched] != m_inst_set->GetNopMod( search_head.GetInst()) ) match = false;
         search_head++;
         size_matched++;
@@ -2221,7 +2221,7 @@ bool cHardwareCPU::Inst_Goto(cAvidaContext&)
       int label_pos = search_head.GetPosition();
       search_head++;
       int size_matched = 0;
-      while ( size_matched < GetLabel().GetSize() ) {
+      while ( size_matched < GetLabel().Size() ) {
         if ( !m_inst_set->IsNop(search_head.GetInst()) ) break;
         if ( GetLabel()[size_matched] != m_inst_set->GetNopMod( search_head.GetInst()) ) break;
         if ( !m_inst_set->IsNop(search_head.GetInst()) ) break;
@@ -2232,7 +2232,7 @@ bool cHardwareCPU::Inst_Goto(cAvidaContext&)
       
       // We found a matching 'label' instruction only if the next 
       // instruction (at the search head now) is also not a NOP
-      if ( (size_matched == GetLabel().GetSize()) && !m_inst_set->IsNop(search_head.GetInst()) ) {
+      if ( (size_matched == GetLabel().Size()) && !m_inst_set->IsNop(search_head.GetInst()) ) {
         getIP().Set(label_pos);
         m_advance_ip = false; // Don't automatically move the IP
         // so we mark the catch as executed.
@@ -3449,7 +3449,7 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
   ReadLabel(max_label_length);
   
   // Find the length of the label that we actually obtained (max is max_reg_needed)
-  int real_label_length = GetLabel().GetSize();
+  int real_label_length = GetLabel().Size();
   
   // Start and end labels to define the start and end indices of  
   // resources that we need to add together
@@ -3712,7 +3712,7 @@ int cHardwareCPU::FindModifiedResource(cAvidaContext& ctx, int& spec_id)
   ReadLabel(max_label_length);
   
   //find the length of the label that was actually read
-  int real_label_length = GetLabel().GetSize();
+  int real_label_length = GetLabel().Size();
   
   // save the specification id
   spec_id = GetLabel().AsIntUnique(num_nops);
@@ -4876,7 +4876,7 @@ bool cHardwareCPU::Inst_SearchF(cAvidaContext&)
   GetLabel().Rotate(1, NUM_NOPS);
   const int search_size = FindLabel(1).GetPosition() - getIP().GetPosition();
   GetRegister(REG_BX) = search_size;
-  GetRegister(REG_CX) = GetLabel().GetSize();
+  GetRegister(REG_CX) = GetLabel().Size();
   return true;
 }
 
@@ -4886,7 +4886,7 @@ bool cHardwareCPU::Inst_SearchB(cAvidaContext&)
   GetLabel().Rotate(1, NUM_NOPS);
   const int search_size = getIP().GetPosition() - FindLabel(-1).GetPosition();
   GetRegister(REG_BX) = search_size;
-  GetRegister(REG_CX) = GetLabel().GetSize();
+  GetRegister(REG_CX) = GetLabel().Size();
   return true;
 }
 
@@ -4920,7 +4920,7 @@ bool cHardwareCPU::Inst_RotateL(cAvidaContext& ctx)
   m_organism->Rotate(ctx, -1);
   
   // If there is no label, then the one rotation was all we want.
-  if (!GetLabel().GetSize()) return true;
+  if (!GetLabel().Size()) return true;
   
   // Rotate until a complement label is found (or all have been checked).
   GetLabel().Rotate(1, NUM_NOPS);
@@ -4951,7 +4951,7 @@ bool cHardwareCPU::Inst_RotateR(cAvidaContext& ctx)
   m_organism->Rotate(ctx, 1);
   
   // If there is no label, then the one rotation was all we want.
-  if (!GetLabel().GetSize()) return true;
+  if (!GetLabel().Size()) return true;
   
   // Rotate until a complement label is found (or all have been checked).
   GetLabel().Rotate(1, NUM_NOPS);
@@ -5318,7 +5318,7 @@ bool cHardwareCPU::Inst_ForkThreadLabel(cAvidaContext& ctx)
   GetLabel().Rotate(1, NUM_NOPS);
   
   // If there is no label, then do normal fork behavior
-  if (GetLabel().GetSize() == 0) {
+  if (GetLabel().Size() == 0) {
     return Inst_ForkThread(ctx);
   }
   
@@ -5717,7 +5717,7 @@ bool cHardwareCPU::Inst_HeadSearch(cAvidaContext&)
   cHeadCPU found_pos = FindLabel(0);
   const int search_size = found_pos.GetPosition() - getIP().GetPosition();
   GetRegister(REG_BX) = search_size;
-  GetRegister(REG_CX) = GetLabel().GetSize();
+  GetRegister(REG_CX) = GetLabel().Size();
   getHead(HEAD_FLOW).Set(found_pos);
   getHead(HEAD_FLOW).Advance();
   return true; 
@@ -5729,7 +5729,7 @@ bool cHardwareCPU::Inst_HeadSearchDirect(cAvidaContext&)
   cHeadCPU found_pos = FindLabel(1);
   const int search_size = found_pos.GetPosition() - getIP().GetPosition();
   GetRegister(REG_BX) = search_size;
-  GetRegister(REG_CX) = GetLabel().GetSize();
+  GetRegister(REG_CX) = GetLabel().Size();
   getHead(HEAD_FLOW).Set(found_pos);
   getHead(HEAD_FLOW).Advance();
   return true; 
