@@ -181,9 +181,9 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
       if (all_global) return GlobalVal(ctx, in_defs);       // if all global, but none edible
     }
   }
-  if (m_world->GetConfig().WORLD_GEOMETRY.Get() == 2) return WalkTorus(ctx, in_defs, facing, cell_id);
-  else return WalkCells(ctx, in_defs, facing, cell_id);
-}    
+  
+  return PreWalk(ctx, in_defs, facing, cell_id);
+}
 
 cOrgSensor::sLookOut cOrgSensor::FindOrg(cOrganism* target_org, const int distance_sought, const int facing)
 {
@@ -335,39 +335,76 @@ cOrgSensor::sLookOut cOrgSensor::GlobalVal(cAvidaContext& ctx, sLookInit& in_def
   return stuff_seen;
 }
 
-cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_defs, const int facing, const int cell)
+cOrgSensor::sLookOut cOrgSensor::PreWalk(cAvidaContext& ctx, sLookInit& in_defs, const int facing, const int cell_id)
 {
   // rather than doing doupdates at every cell check inside TestCell, we just do it once now since we're in a stall
   // we need to do this before getfrozenres and getfrozenpeak
   m_organism->GetOrgInterface().TriggerDoUpdates(ctx);
   
-  int& habitat_used = in_defs.habitat;
-  int& distance_sought = in_defs.distance;
-  int& search_type = in_defs.search_type;
-  int& id_sought = in_defs.id_sought;
-
   // START definitions
   sLookOut stuff_seen;
   stuff_seen.report_type = 0;
-  stuff_seen.habitat = habitat_used;
-  stuff_seen.search_type = search_type;
-  stuff_seen.id_sought = id_sought;
-  if ((m_use_avatar && m_use_avatar != 2 && habitat_used == -2) || (habitat_used == 3)) return stuff_seen;
+  stuff_seen.habitat = in_defs.habitat;
+  stuff_seen.search_type = in_defs.search_type;
+  stuff_seen.id_sought = in_defs.id_sought;
+  if ((m_use_avatar && m_use_avatar != 2 && in_defs.habitat == -2) || (in_defs.habitat == 3)) return stuff_seen;
   
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
-  
-  int dist_used = distance_sought;
-  int start_dist = 0;
-  int end_dist = distance_sought;
-  
-  bool diagonal = true;
-  if (facing == 0 || facing == 2 || facing == 4 || facing == 6) diagonal = false;
   
   int faced_cell_int = m_organism->GetOrgInterface().GetFacedCellID();
   if (m_use_avatar) faced_cell_int = m_organism->GetOrgInterface().GetAVFacedCellID();
   
   Apto::Coord<int> faced_cell(faced_cell_int % worldx, faced_cell_int / worldx);
+  Apto::Coord<int> center_cell(cell_id % worldx, cell_id / worldx);
+  Apto::Coord<int> this_cell = center_cell;
+  //  Apto::Coord<int> direction = left;
+  const Apto::Coord<int> ahead_dir(faced_cell.X() - this_cell.X(), faced_cell.Y() - this_cell.Y());
+  
+  Apto::Array<int, Apto::Smart> val_res;                                                     // resource ids of this habitat type
+  
+  val_res.Resize(0);
+  // END definitions
+  
+  bool single_bound = ((in_defs.habitat == 0 || in_defs.habitat >= 4) && in_defs.id_sought != -1 && m_res_lib.GetResource(in_defs.id_sought)->GetGradient());
+  if (in_defs.habitat != -2 && in_defs.habitat != 3) val_res = BuildResArray(in_defs, single_bound);
+  
+  sBounds worldBounds;
+  worldBounds.min_x = 0;
+  worldBounds.min_y = 0;
+  worldBounds.max_x = worldx - 1;
+  worldBounds.max_y = worldy - 1;
+  
+  sBounds tot_bounds;
+  tot_bounds.min_x = worldx - 1;
+  tot_bounds.min_y = worldy - 1;
+  tot_bounds.max_x = -1 * (worldx - 1);
+  tot_bounds.max_y = -1 * (worldy - 1);
+  
+  m_soloBounds.SetAll(worldBounds);
+  
+  sWalkLimits limits;
+  limits.visible = true;
+  
+  SetWalkLimits(ctx, in_defs, limits, worldBounds, tot_bounds, val_res, worldx, this_cell, facing, cell_id, center_cell, ahead_dir);
+
+  if (!limits.visible) {     // nothing in range
+    stuff_seen.report_type = 0;
+  } else {
+    if (m_world->GetConfig().WORLD_GEOMETRY.Get() == 2) WalkTorus(ctx, in_defs, facing, cell_id, limits, stuff_seen, center_cell, tot_bounds, worldBounds, val_res, this_cell, ahead_dir, worldx);
+    else WalkCells(ctx, in_defs, facing, cell_id, limits, stuff_seen, center_cell, tot_bounds, worldBounds, val_res, this_cell, ahead_dir, worldx);
+    }
+  return stuff_seen;
+}
+
+void cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_defs, const int facing, const int cell, sWalkLimits& limits, sLookOut& stuff_seen, Apto::Coord<int>& center_cell, sBounds& tot_bounds, sBounds& worldBounds, const Apto::Array<int, Apto::Smart>& val_res, Apto::Coord<int>& this_cell, const Apto::Coord<int>& ahead_dir, const int& worldx)
+{
+
+  int& habitat_used = in_defs.habitat;
+  int& distance_sought = in_defs.distance;
+  int& search_type = in_defs.search_type;
+  int& id_sought = in_defs.id_sought;
+  int dist_used = distance_sought;
   
   bool do_left = true;
   bool do_right = true;
@@ -380,138 +417,26 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
   Apto::Coord<int> first_success_cell(-1, -1);
   int first_whole_resource = -9;
   
-  bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
+  bool diagonal = true;
+  if (facing == 0 || facing == 2 || facing == 4 || facing == 6) diagonal = false;
   
-  // Key for facings
-  // 7 0 1
-  // 6 * 2
-  // 5 4 3
   Apto::Coord<int> left(0, 0);
   Apto::Coord<int> right(0, 0);
-  switch (facing) {
-    case 0:
-    case 4:
-      // Facing North or South
-      left.Set(-1, 0);
-      right.Set(1, 0);
-      break;
-      
-    case 2:
-    case 6:
-      // Facing East or West
-      left.Set(0, -1);
-      right.Set(0, 1);
-      break;
-      
-    case 1:
-      //Facing NorthEast
-      left.Set(-1, 0);
-      right.Set(0, 1);
-      break;
-    case 3:
-      // Facing SouthEast
-      left.Set(0, -1);
-      right.Set(-1, 0);
-      break;
-    case 5:
-      // Facing SouthWest
-      left.Set(1, 0);
-      right.Set(0, -1);
-      break;
-    case 7:
-      // Facing NorthWest
-      left.Set(0, 1);
-      right.Set(1, 0);
-      break;
-  }  
-
-  Apto::Coord<int> center_cell(cell % worldx, cell / worldx);
-  Apto::Coord<int> this_cell = center_cell;
+  SetCoords(left, right, facing);
   Apto::Coord<int> direction = left;
-  const Apto::Coord<int> ahead_dir(faced_cell.X() - this_cell.X(), faced_cell.Y() - this_cell.Y());
-
+  
   sSearchInfo cellResultInfo;
   int firstVisibleID;
   Apto::Coord<int> firstVisibleCell;
   bool foundFirstVisible = false;
   
-  Apto::Array<int, Apto::Smart> val_res;                                                     // resource ids of this habitat type
-
-  val_res.Resize(0);
-  // END definitions
-  
-  bool single_bound = ((habitat_used == 0 || habitat_used >= 4) && id_sought != -1 && m_res_lib.GetResource(id_sought)->GetGradient());
-  if (habitat_used != -2 && habitat_used != 3) val_res = BuildResArray(in_defs, single_bound);
-  
-  // set geometric bounds, and fast-forward, if possible
-  sBounds worldBounds;
-  worldBounds.min_x = 0;
-  worldBounds.min_y = 0;    
-  worldBounds.max_x = worldx - 1;
-  worldBounds.max_y = worldy - 1;
-  
-  sBounds tot_bounds;
-  tot_bounds.min_x = worldx - 1;
-  tot_bounds.min_y = worldy - 1;
-  tot_bounds.max_x = -1 * (worldx - 1);
-  tot_bounds.max_y = -1 * (worldy - 1);
-  
-  m_soloBounds.SetAll(worldBounds);
-  
-  Apto::Array<int, Apto::Smart> val_res2 = val_res;
-  if (habitat_used != -2 && habitat_used != 3) {
-    bool has_global = false;
-    bool global_only = true;
-    int temp_start_dist = distance_sought;
-    for (int i = 0; i < val_res.GetSize(); i++) {
-      if (m_res_lib.GetResource(val_res[i])->GetGradient()) {
-        int this_start_dist = 0;
-        sBounds res_bounds = GetBounds(ctx, val_res[i]);
-        this_start_dist = GetMinDist(worldx, res_bounds, cell, distance_sought, facing);
-        // drop any out of range...
-        if (this_start_dist == -1) {
-          val_res.Swap(i, val_res.GetSize() - 1);
-          val_res.Pop();
-          i--;
-        } else {
-          global_only = false;
-          if (res_bounds.min_x < tot_bounds.min_x) tot_bounds.min_x = res_bounds.min_x;
-          if (res_bounds.min_y < tot_bounds.min_y) tot_bounds.min_y = res_bounds.min_y;
-          if (res_bounds.max_x > tot_bounds.max_x) tot_bounds.max_x = res_bounds.max_x;
-          if (res_bounds.max_y > tot_bounds.max_y) tot_bounds.max_y = res_bounds.max_y;
-          if (this_start_dist < temp_start_dist) temp_start_dist = this_start_dist;
-        }
-      } else {
-        // if any res is global, we just need to make sure we check at least one cell
-        if (m_res_lib.GetResource(val_res[i])->GetGeometry() == nGeometry::GLOBAL) has_global = true;
-        // if any res is spatial and non-gradient, we can't bound things because those res don't track the variables we use for bounding
-        else {
-          global_only = false;
-          tot_bounds = worldBounds;
-          temp_start_dist = 0;
-          break;
-        }
-      }
-    }
-    start_dist = temp_start_dist;
-    if (val_res.GetSize() == 0) {     // nothing in range
-      stuff_seen.report_type = 0;
-      return stuff_seen;
-    }
-    end_dist = GetMaxDist(worldx, cell, distance_sought, tot_bounds);
-    center_cell += (ahead_dir * start_dist);
-    if (has_global && global_only) {
-      end_dist = 0;
-      start_dist = 0;
-      tot_bounds = worldBounds;
-    }
-  } // END set bounds & fast-forward
-  else if (habitat_used == -2) tot_bounds = worldBounds;
+  bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
   
   // START WALKING
   bool first_step = true;
-  for (int dist = start_dist; dist <= end_dist; dist++) {
-    if (!TestBounds(center_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) count_center = false;        
+  for (int dist = limits.start; dist <= limits.end; dist++) {
+    //  for (int dist = start_dist; dist <= end_dist; dist++) {
+    if (!TestBounds(center_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) count_center = false;
     // if looking l,r,u,d and center_cell is outside of the world -- we're done with both sides and center
     if (!diagonal && !count_center) break;
     
@@ -529,24 +454,24 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
       for (int j = num_cells_either_side; j > 0; j--) {
         bool valid_cell = true;
         this_cell = center_cell + direction * j;
-        if (!TestBounds(this_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) { 
+        if (!TestBounds(this_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) {
           // on diagonals...if any side cell is beyond specific parts of world bounds, we can exclude this side for this and any larger distances
           if (diagonal) {
             const int tcx = this_cell.X();
             const int tcy = this_cell.Y();
             if (direction == left) {
-              if ( (facing == 1 && tcy < worldBounds.min_y) || (facing == 3 && tcx > worldBounds.max_x) || 
-                  (facing == 5 && tcy > worldBounds.max_y) || (facing == 7 && tcx < worldBounds.min_x) || 
-                  (facing == 1 && tcy < tot_bounds.min_y) || (facing == 3 && tcx > tot_bounds.max_x) || 
-                  (facing == 5 && tcy > tot_bounds.max_y) || (facing == 7 && tcx < tot_bounds.min_x) ) { 
+              if ( (facing == 1 && tcy < worldBounds.min_y) || (facing == 3 && tcx > worldBounds.max_x) ||
+                  (facing == 5 && tcy > worldBounds.max_y) || (facing == 7 && tcx < worldBounds.min_x) ||
+                  (facing == 1 && tcy < tot_bounds.min_y) || (facing == 3 && tcx > tot_bounds.max_x) ||
+                  (facing == 5 && tcy > tot_bounds.max_y) || (facing == 7 && tcx < tot_bounds.min_x) ) {
                 do_left = false;                         // this cell is out of bounds, and any cells this side of center at any walk dist greater than this will be too
               }
             }
             else if (direction == right) {
-              if ( (facing == 1 && tcx > worldBounds.max_x) || (facing == 3 && tcy > worldBounds.max_y) || 
-                  (facing == 5 && tcx < worldBounds.min_x) || (facing == 7 && tcy < worldBounds.min_y) || 
-                  (facing == 1 && tcx > tot_bounds.max_x) || (facing == 3 && tcy > tot_bounds.max_y) ||  
-                  (facing == 5 && tcx < tot_bounds.min_x) || (facing == 7 && tcy < tot_bounds.min_y) ) { 
+              if ( (facing == 1 && tcx > worldBounds.max_x) || (facing == 3 && tcy > worldBounds.max_y) ||
+                  (facing == 5 && tcx < worldBounds.min_x) || (facing == 7 && tcy < worldBounds.min_y) ||
+                  (facing == 1 && tcx > tot_bounds.max_x) || (facing == 3 && tcy > tot_bounds.max_y) ||
+                  (facing == 5 && tcx < tot_bounds.min_x) || (facing == 7 && tcy < tot_bounds.min_y) ) {
                 do_right = false;                        // this cell is out of bounds, and any cells this side of center at any walk dist greater than this will be too
               }
             }
@@ -577,7 +502,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
               if (first_whole_resource == -9) first_whole_resource = cellResultInfo.resource_id;
               if (stop_at_first_found) {
                 dist_used = dist;
-                break;                                                          // end search this side 
+                break;                                                          // end search this side
               }
             }
           }
@@ -623,7 +548,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
     center_cell = center_cell + ahead_dir;
   } // END WALKING
   
-  // begin reached end output   
+  // begin reached end output
   stuff_seen.habitat = habitat_used;
   stuff_seen.search_type = search_type;
   stuff_seen.id_sought = id_sought;
@@ -639,7 +564,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
     
     int target_cell = firstVisibleCell.Y() * worldx + firstVisibleCell.X();
     FindThing(target_cell, distance_sought, facing, stuff_seen);
-
+    
   } else if (found) {
     stuff_seen.report_type = 1;
     stuff_seen.distance = dist_used;
@@ -649,14 +574,13 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
     stuff_seen.forage = -9;
     
     // overwrite defaults for more specific search types
-    
     if (habitat_used != -2) {
       // if we were looking for resources, return id of nearest
       stuff_seen.group = first_whole_resource;
       
       int target_cell = first_success_cell.Y() * worldx + first_success_cell.X();
       FindThing(target_cell, distance_sought, facing, stuff_seen);
-    
+      
     } else if (habitat_used == -2 && found_edible) {
       // if searching for orgs, return info on closest one we encountered (==only one if stop_at_first_found)
       const cPopulationCell* first_good_cell = m_organism->GetOrgInterface().GetCell(first_success_cell.Y() * worldx + first_success_cell.X());
@@ -676,563 +600,528 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_def
       } else if (m_return_rel_facing || !first_org->HasOpinion()) {
         stuff_seen.group = ReturnRelativeFacing(first_org);
       }
-      stuff_seen.forage = first_org->GetForageTarget();   
-      if ((first_org->IsDisplaying()  || m_world->GetConfig().USE_DISPLAY.Get()) && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());            
+      stuff_seen.forage = first_org->GetForageTarget();
+      if ((first_org->IsDisplaying()  || m_world->GetConfig().USE_DISPLAY.Get()) && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());
       if (m_world->GetConfig().USE_MIMICS.Get() && stuff_seen.forage == 1) stuff_seen.forage = first_org->GetShowForageTarget();
     }
     
-    if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) SetPotentialDisplayData(stuff_seen);   
+    if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) SetPotentialDisplayData(stuff_seen);
   }
-  return stuff_seen;
+  return;
 }
 
-
-
-
-cOrgSensor::sLookOut cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int facing, const int cell)
+void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int facing, const int cell, sWalkLimits& limits, sLookOut& stuff_seen, Apto::Coord<int>& center_cell, sBounds& tot_bounds, sBounds& worldBounds, const Apto::Array<int, Apto::Smart>& val_res, Apto::Coord<int>& this_cell, const Apto::Coord<int>& ahead_dir, const int& worldx)
 {
-    // rather than doing doupdates at every cell check inside TestCell, we just do it once now since we're in a stall
-    // we need to do this before getfrozenres and getfrozenpeak
-    m_organism->GetOrgInterface().TriggerDoUpdates(ctx);
+  int& habitat_used = in_defs.habitat;
+  int& distance_sought = in_defs.distance;
+  int& search_type = in_defs.search_type;
+  int& id_sought = in_defs.id_sought;
+  int dist_used = distance_sought;
+  
+  bool do_left = true;
+  bool do_right = true;
+  bool count_center = true;
+  bool any_valid_side_cells = false;
+  bool found = false;
+  bool found_edible = false;
+  int count = 0;
+  double totalAmount = 0;
+  Apto::Coord<int> first_success_cell(-1, -1);
+  int first_whole_resource = -9;
+  
+  bool diagonal = true;
+  if (facing == 0 || facing == 2 || facing == 4 || facing == 6) diagonal = false;
+  
+  Apto::Coord<int> left(0, 0);
+  Apto::Coord<int> right(0, 0);
+  SetCoords(left, right, facing);
+  Apto::Coord<int> direction = left;
+  
+  sSearchInfo cellResultInfo;
+  int firstVisibleID;
+  Apto::Coord<int> firstVisibleCell;
+  bool foundFirstVisible = false;
+  
+  bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
+  
+  // START WALKING
+  bool first_step = true;
+  for (int dist = limits.start; dist <= limits.end; dist++) {
+    //        cout << "dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << endl;
+    if (!TestBounds(center_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) count_center = false;
+    // if looking l,r,u,d and center_cell is outside of the world -- we're done with both sides and center
+    //commented out to continue working when center cell is out of range
+    //if (!diagonal && !count_center) break;
     
-    int& habitat_used = in_defs.habitat;
-    int& distance_sought = in_defs.distance;
-    int& search_type = in_defs.search_type;
-    int& id_sought = in_defs.id_sought;
-    
-    // START definitions
-    sLookOut stuff_seen;
-    stuff_seen.report_type = 0;
-    stuff_seen.habitat = habitat_used;
-    stuff_seen.search_type = search_type;
-    stuff_seen.id_sought = id_sought;
-    if ((m_use_avatar && m_use_avatar != 2 && habitat_used == -2) || (habitat_used == 3)) return stuff_seen;
-    
-    const int worldx = m_world->GetConfig().WORLD_X.Get();
-    const int worldy = m_world->GetConfig().WORLD_Y.Get();
-    
-    int dist_used = distance_sought;
-    int start_dist = 0;
-    int end_dist = distance_sought;
-    
-    bool diagonal = true;
-    if (facing == 0 || facing == 2 || facing == 4 || facing == 6) diagonal = false;
-    
-    int faced_cell_int = m_organism->GetOrgInterface().GetFacedCellID();
-    if (m_use_avatar) faced_cell_int = m_organism->GetOrgInterface().GetAVFacedCellID();
-    
-    Apto::Coord<int> faced_cell(faced_cell_int % worldx, faced_cell_int / worldx);
-    
-    bool do_left = true;
-    bool do_right = true;
-    bool count_center = true;
-    bool any_valid_side_cells = false;
-    bool found = false;
-    bool found_edible = false;
-    int count = 0;
-    double totalAmount = 0;
-    Apto::Coord<int> first_success_cell(-1, -1);
-    int first_whole_resource = -9;
-    
-    bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
-    
-    // Key for facings
-    // 7 0 1
-    // 6 * 2
-    // 5 4 3
-    Apto::Coord<int> left(0, 0);
-    Apto::Coord<int> right(0, 0);
-    switch (facing) {
-        case 0:
-        case 4:
-            // Facing North or South
-            left.Set(-1, 0);
-            right.Set(1, 0);
-            break;
-            
-        case 2:
-        case 6:
-            // Facing East or West
-            left.Set(0, -1);
-            right.Set(0, 1);
-            break;
-            
-        case 1:
-            //Facing NorthEast
-            left.Set(-1, 0);
-            right.Set(0, 1);
-            break;
-        case 3:
-            // Facing SouthEast
-            left.Set(0, -1);
-            right.Set(-1, 0);
-            break;
-        case 5:
-            // Facing SouthWest
-            left.Set(1, 0);
-            right.Set(0, -1);
-            break;
-        case 7:
-            // Facing NorthWest
-            left.Set(0, 1);
-            right.Set(1, 0);
-            break;
-    }
-    Apto::Coord<int> center_cell(cell % worldx, cell / worldx);
-    Apto::Coord<int> this_cell = center_cell;
-    Apto::Coord<int> direction = left;
-    const Apto::Coord<int> ahead_dir(faced_cell.X() - this_cell.X(), faced_cell.Y() - this_cell.Y());
-    
-    sSearchInfo cellResultInfo;
-    int firstVisibleID;
-    Apto::Coord<int> firstVisibleCell;
-    bool foundFirstVisible = false;
-    
-    Apto::Array<int, Apto::Smart> val_res;                                                     // resource ids of this habitat type
-    
-    val_res.Resize(0);
-    // END definitions
-    
-    bool single_bound = ((habitat_used == 0 || habitat_used >= 4) && id_sought != -1 && m_res_lib.GetResource(id_sought)->GetGradient());
-    if (habitat_used != -2 && habitat_used != 3) val_res = BuildResArray(in_defs, single_bound);
-    
-    // set geometric bounds, and fast-forward, if possible
-    sBounds worldBounds;
-    worldBounds.min_x = 0;
-    worldBounds.min_y = 0;
-    worldBounds.max_x = worldx - 1;
-    worldBounds.max_y = worldy - 1;
-    
-    sBounds tot_bounds;
-    tot_bounds.min_x = worldx - 1;
-    tot_bounds.min_y = worldy - 1;
-    tot_bounds.max_x = -1 * (worldx - 1);
-    tot_bounds.max_y = -1 * (worldy - 1);
-    
-    m_soloBounds.SetAll(worldBounds);
-    
-    Apto::Array<int, Apto::Smart> val_res2 = val_res;
-    if (habitat_used != -2 && habitat_used != 3) {
-        bool has_global = false;
-        bool in_res = false; //check to see org in resource RKB
-        bool global_only = true;
-        int temp_start_dist = distance_sought;
-        for (int i = 0; i < val_res.GetSize(); i++) {
-            if (m_res_lib.GetResource(val_res[i])->GetGradient()) {
-                int this_start_dist = 0;
-                sBounds res_bounds = GetBounds(ctx, val_res[i]);
-                this_start_dist = GetMinDist(worldx, res_bounds, cell, distance_sought, facing);
-                // drop any out of range...
-                if (this_start_dist == -1) {
-                    val_res.Swap(i, val_res.GetSize() - 1);
-                    val_res.Pop();
-                    i--;
-                } else {
-                    global_only = false;
-                    if (res_bounds.min_x < tot_bounds.min_x) tot_bounds.min_x = res_bounds.min_x;
-                    if (res_bounds.min_y < tot_bounds.min_y) tot_bounds.min_y = res_bounds.min_y;
-                    if (res_bounds.max_x > tot_bounds.max_x) tot_bounds.max_x = res_bounds.max_x;
-                    if (res_bounds.max_y > tot_bounds.max_y) tot_bounds.max_y = res_bounds.max_y;
-                    in_res = ((res_bounds.min_x <= this_cell.X() && res_bounds.max_x >= this_cell.X()) && (res_bounds.min_y <= this_cell.Y() && res_bounds.max_y >= this_cell.Y())); //Assigns bool to that state RKB
-                    if (this_start_dist < temp_start_dist) temp_start_dist = this_start_dist;
-                }
-            } else {
-                // if any res is global, we just need to make sure we check at least one cell
-                if (m_res_lib.GetResource(val_res[i])->GetGeometry() == nGeometry::GLOBAL) has_global = true;
-                // if any res is spatial and non-gradient, we can't bound things because those res don't track the variables we use for bounding
-                else {
-                    global_only = false;
-                    tot_bounds = worldBounds;
-                    temp_start_dist = 0;
-                    break;
-                }
-            }
+    // work on SIDE of center cells for this distance
+    int num_cells_either_side = 0;
+    if (dist > 0) num_cells_either_side = (dist % 2) ? (int) ((dist - 1) * 0.5) : (int) (dist * 0.5);
+    // look left then right
+    direction = left;
+    for (int do_lr = 0; do_lr <= 1; do_lr++) {
+      if (do_lr == 1) direction = right;
+      if (!do_left && direction == left) continue;
+      if (!do_right && direction == right) break;
+      
+      // walk in from the farthest cell on side towards the center
+      for (int j = num_cells_either_side; j > 0; j--) {
+        bool valid_cell = true;
+        //              Accounting for special torus case situations RKB
+        if (center_cell.Y()==worldBounds.min_y || center_cell.X()==worldBounds.min_x || center_cell.X()==worldBounds.max_x || center_cell.Y()==worldBounds.max_y) {
+          bool cont_trig = false;
+          GetTorusDirection(direction, cont_trig, worldBounds, center_cell, facing, left, right);
+          if (cont_trig) continue;
         }
-        start_dist = temp_start_dist;
-        if (val_res.GetSize() == 0) {     // nothing in range
-            stuff_seen.report_type = 0;
-            return stuff_seen;
-        }
-        
-        /* Code to add searching "behind" organism in torroidal world RKB */
-        
-        if (in_res) { //End dist condit RKB
-            if (facing == 0 || facing == 4)
-                end_dist = worldBounds.max_y-1;
-            else if (facing == 2 || facing == 6)
-                end_dist = worldBounds.max_x-1;
-            else if (facing == 1 || facing == 5)
-                end_dist = max(abs(worldBounds.max_x-1), abs(worldBounds.max_y-1));
-            else if (facing == 7 || facing == 3)
-                end_dist = max(abs(worldBounds.max_x-1), abs(worldBounds.max_y-1));
-                
-        }
+        /*If normal, non-torroidal situation.*/
         else
-            end_dist = GetMaxDist(worldx, cell, distance_sought, tot_bounds);
-        center_cell += (ahead_dir * start_dist);
-        
-        if (has_global && global_only) {
-            end_dist = 0;
-            start_dist = 0;
-            tot_bounds = worldBounds;
+          this_cell = center_cell + direction * j; //Change this so it has the same behaviour as the center cell RKB
+        //                cout << "dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " thisX " << this_cell.X() << " thisY " << this_cell.Y() << endl;
+        if (!TestBounds(this_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) {
+          // on diagonals...if any side cell is beyond specific parts of world bounds, we can exclude this side for this and any larger distances
+          if (diagonal) {
+            const int tcx = this_cell.X();
+            const int tcy = this_cell.Y();
+            if (direction == left) {
+              if ( (facing == 1 && tcy < worldBounds.min_y) || (facing == 3 && tcx > worldBounds.max_x) ||
+                  (facing == 5 && tcy > worldBounds.max_y) || (facing == 7 && tcx < worldBounds.min_x) ||
+                  (facing == 1 && tcy < tot_bounds.min_y) || (facing == 3 && tcx > tot_bounds.max_x) ||
+                  (facing == 5 && tcy > tot_bounds.max_y) || (facing == 7 && tcx < tot_bounds.min_x) ) {
+                do_left = true;    // Always do side-RKB
+              }
+            }
+            else if (direction == right) {
+              if ( (facing == 1 && tcx > worldBounds.max_x) || (facing == 3 && tcy > worldBounds.max_y) ||
+                  (facing == 5 && tcx < worldBounds.min_x) || (facing == 7 && tcy < worldBounds.min_y) ||
+                  (facing == 1 && tcx > tot_bounds.max_x) || (facing == 3 && tcy > tot_bounds.max_y) ||
+                  (facing == 5 && tcx < tot_bounds.min_x) || (facing == 7 && tcy < tot_bounds.min_y) ) {
+                do_right = true;    // Always do side-RKB
+              }
+            }
+            break;                                       // if not !do_left or !do_right, any cells on this side closer than this to center will be too at this distance, but not greater dist
+          }
+          else if (!diagonal) valid_cell = false;        // when not on diagonal, center cell and cells close(r) to center can still be valid even if this side cell is not
         }
-    } // END set bounds & fast-forward
-    else if (habitat_used == -2) tot_bounds = worldBounds;
+        else any_valid_side_cells = true;
+        
+        // Now we can look at the current side cell because we know it's in the world.
+        if (valid_cell) {
+          cellResultInfo = TestCell(ctx, in_defs, this_cell, val_res, first_step, stop_at_first_found);
+          first_step = false;
+          
+          if (!foundFirstVisible && cellResultInfo.has_some) {
+            firstVisibleID = cellResultInfo.resource_id;
+            firstVisibleCell = this_cell;
+            foundFirstVisible = true;
+          }
+          
+          if (cellResultInfo.amountFound > 0) {
+            found = true;
+            totalAmount += cellResultInfo.amountFound;
+            if (cellResultInfo.has_edible) {
+              count++;                                                         // count cells with individual edible resources (not sum of res in cell >= threshold)
+              found_edible = true;
+              if (first_success_cell == Apto::Coord<int>(-1, -1)) first_success_cell = this_cell;
+              if (first_whole_resource == -9) first_whole_resource = cellResultInfo.resource_id;
+              if (stop_at_first_found) {
+                dist_used = dist;
+                break;                                                          // end search this side
+              }
+            }
+          }
+        }
+      }
+      if (stop_at_first_found && found_edible) break;                           // end both side searches
+//      cout << "\nS: ("<< this_cell.X() << "," << this_cell.Y()<<")f:" << facing << endl;
+    }
+//    cout << "\nC: ("<< center_cell.X() << "," << center_cell.Y()<<")\n" << endl;
+    if (stop_at_first_found && found_edible) break;                             // end side and center searches (found on side)
     
-    // START WALKING
-    bool first_step = true;
-    for (int dist = start_dist; dist <= end_dist; dist++) {
-//        cout << "dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << endl;
-        if (!TestBounds(center_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) count_center = false;
-        // if looking l,r,u,d and center_cell is outside of the world -- we're done with both sides and center
-        //commented out to continue working when center cell is out of range
-        //if (!diagonal && !count_center) break;
-        
-        // work on SIDE of center cells for this distance
-        int num_cells_either_side = 0;
-        if (dist > 0) num_cells_either_side = (dist % 2) ? (int) ((dist - 1) * 0.5) : (int) (dist * 0.5);
-        // look left then right
-        direction = left;
-        for (int do_lr = 0; do_lr <= 1; do_lr++) {
-            if (do_lr == 1) direction = right;
-            if (!do_left && direction == left) continue;
-            if (!do_right && direction == right) break;
-            
-            // walk in from the farthest cell on side towards the center
-            for (int j = num_cells_either_side; j > 0; j--) {
-                bool valid_cell = true;
-                
-                //              Accounting for special torus case situations RKB
-                /* Min y cases facing 2,6,1,7 */
-                  if (center_cell.Y()==worldBounds.min_y) {
-                    switch (facing) {
-                        case 2:
-                            if (direction == left)
-                                direction.Set(center_cell.X(),worldBounds.max_y - center_cell.Y());
-                        case 6:
-                            if (direction == right)
-                                direction.Set(center_cell.X(),worldBounds.max_y - center_cell.Y());
-                        case 3:
-                            if (direction == left)
-                                direction.Set(center_cell.X(),worldBounds.max_y - center_cell.Y());
-                        case 4:
-                            if (direction == right)
-                                direction.Set(center_cell.X(),worldBounds.max_y - center_cell.Y());
-                        default:
-                            continue;
-                    }
-                }
-                
-                /* Min x cases facing 0,4,7,5 */
-                  else if (center_cell.X()==worldBounds.min_x) {
-                    switch (facing) {
-                        case 0:
-                            if (direction == left)
-                                direction.Set(worldBounds.max_x - center_cell.X(),center_cell.Y());
-                        case 4:
-                            if (direction == right)
-                                direction.Set(worldBounds.max_x - center_cell.X(),center_cell.Y());
-                        case 1:
-                            if (direction == left)
-                                direction.Set(worldBounds.max_x - center_cell.X(),center_cell.Y());
-                        case 3:
-                            if (direction == right)
-                                direction.Set(worldBounds.max_x - center_cell.X(),center_cell.Y());
-                        default:
-                            continue;
-                    }
-                }
-                
-                /* Max x cases facing 0,4,1,3 */
-                else if (center_cell.X()==worldBounds.max_x) {
-                    switch (facing) {
-                        case 0:
-                            if (direction == right)
-                                direction.Set(worldBounds.min_x - center_cell.X(),center_cell.Y());
-                        case 4:
-                            if (direction == left)
-                                direction.Set(worldBounds.min_x - center_cell.X(),center_cell.Y());
-                        case 7:
-                            if (direction == right)
-                                direction.Set(worldBounds.min_x - center_cell.X(),center_cell.Y());
-                        case 5:
-                            if (direction == left)
-                                direction.Set(worldBounds.min_x - center_cell.X(),center_cell.Y());
-                        default:
-                            continue;
-                    }
-                }
-                
-                /* Max y cases facing 2,6,3,5 */
-                else if (center_cell.Y()==worldBounds.max_y) {
-                    switch (facing) {
-                        case 2: 
-                            if (direction == right)
-                                direction.Set(center_cell.X(),worldBounds.max_y - center_cell.Y());
-                        case 6:
-                            if (direction == left)
-                                direction.Set(center_cell.X(),worldBounds.min_y - center_cell.Y());
-                        case 1:
-                            if (direction == right)
-                                direction.Set(center_cell.X(),worldBounds.max_y - center_cell.Y());
-                        case 7:
-                            if (direction == left)
-                                direction.Set(center_cell.X(),worldBounds.min_y - center_cell.Y());
-                        default:
-                            continue;
-                    }
-                }
-
-                /*If normal, non-torroidal situation.*/
-                else
-                    this_cell = center_cell + direction * j; //Change this so it has the same behaviour as the center cell RKB
-//                cout << "dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " thisX " << this_cell.X() << " thisY " << this_cell.Y() << endl;
-                if (!TestBounds(this_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) {
-                    // on diagonals...if any side cell is beyond specific parts of world bounds, we can exclude this side for this and any larger distances
-                    if (diagonal) {
-                        const int tcx = this_cell.X();
-                        const int tcy = this_cell.Y();
-                        if (direction == left) {
-                            if ( (facing == 1 && tcy < worldBounds.min_y) || (facing == 3 && tcx > worldBounds.max_x) ||
-                                (facing == 5 && tcy > worldBounds.max_y) || (facing == 7 && tcx < worldBounds.min_x) ||
-                                (facing == 1 && tcy < tot_bounds.min_y) || (facing == 3 && tcx > tot_bounds.max_x) ||
-                                (facing == 5 && tcy > tot_bounds.max_y) || (facing == 7 && tcx < tot_bounds.min_x) ) {
-                                do_left = true;    // Always do side-RKB
-                            }
-                        }
-                        else if (direction == right) {
-                            if ( (facing == 1 && tcx > worldBounds.max_x) || (facing == 3 && tcy > worldBounds.max_y) ||
-                                (facing == 5 && tcx < worldBounds.min_x) || (facing == 7 && tcy < worldBounds.min_y) ||
-                                (facing == 1 && tcx > tot_bounds.max_x) || (facing == 3 && tcy > tot_bounds.max_y) ||
-                                (facing == 5 && tcx < tot_bounds.min_x) || (facing == 7 && tcy < tot_bounds.min_y) ) {
-                                do_right = true;    // Always do side-RKB
-                            }
-                        }
-                        break;                                       // if not !do_left or !do_right, any cells on this side closer than this to center will be too at this distance, but not greater dist
-                    }
-                    else if (!diagonal) valid_cell = false;        // when not on diagonal, center cell and cells close(r) to center can still be valid even if this side cell is not
-                }
-                else any_valid_side_cells = true;
-                
-                // Now we can look at the current side cell because we know it's in the world.
-                if (valid_cell) {
-                    cellResultInfo = TestCell(ctx, in_defs, this_cell, val_res, first_step, stop_at_first_found);
-                    first_step = false;
-                    
-                    if (!foundFirstVisible && cellResultInfo.has_some) {
-                        firstVisibleID = cellResultInfo.resource_id;
-                        firstVisibleCell = this_cell;
-                        foundFirstVisible = true;
-                    }
-                    
-                    if (cellResultInfo.amountFound > 0) {
-                        found = true;
-                        totalAmount += cellResultInfo.amountFound;
-                        if (cellResultInfo.has_edible) {
-                            count++;                                                         // count cells with individual edible resources (not sum of res in cell >= threshold)
-                            found_edible = true;
-                            if (first_success_cell == Apto::Coord<int>(-1, -1)) first_success_cell = this_cell;
-                            if (first_whole_resource == -9) first_whole_resource = cellResultInfo.resource_id;
-                            if (stop_at_first_found) {
-                                dist_used = dist;
-                                break;                                                          // end search this side
-                            }
-                        }
-                    }
-                }
-            }
-            if (stop_at_first_found && found_edible) break;                           // end both side searches
-            cout << "\nS: ("<< this_cell.X() << "," << this_cell.Y()<<")f:" << facing << endl;
-        }
-        cout << "\nC: ("<< center_cell.X() << "," << center_cell.Y()<<")\n" << endl;
-        if (stop_at_first_found && found_edible) break;                             // end side and center searches (found on side)
-        
-        // work on CENTER cell for this dist
-        if (count_center) {
-            cellResultInfo = TestCell(ctx, in_defs, center_cell, val_res, first_step, stop_at_first_found);
-            
-            if (!foundFirstVisible && cellResultInfo.has_some) {
-                firstVisibleID = cellResultInfo.resource_id;
-                firstVisibleCell = center_cell;
-                foundFirstVisible = true;
-            }
-            
-            first_step = false;
-            if (cellResultInfo.amountFound > 0) {
-                found = true;
-                totalAmount += cellResultInfo.amountFound;
-                if (cellResultInfo.has_edible) {
-                    count ++;                                                             // count cells with individual edible resources (not sum of res in cell >=1)
-                    found_edible = true;
-                    if (first_success_cell == Apto::Coord<int>(-1, -1)) first_success_cell = center_cell;
-                    if (first_whole_resource == -9) first_whole_resource = cellResultInfo.resource_id;
-                    if (stop_at_first_found) {
-                        dist_used = dist;
-                        break;                                                              // end side and center searches (found in center)
-                    }
-                }
-            }
-        }
-        // before we check cells at the next distance...
-        // stop if we never found any valid cells at the current distance; valid dist_used was previous set of cells checked
-        if (!any_valid_side_cells && !count_center) {
-            dist--;
+    // work on CENTER cell for this dist
+    if (count_center) {
+      cellResultInfo = TestCell(ctx, in_defs, center_cell, val_res, first_step, stop_at_first_found);
+      
+      if (!foundFirstVisible && cellResultInfo.has_some) {
+        firstVisibleID = cellResultInfo.resource_id;
+        firstVisibleCell = center_cell;
+        foundFirstVisible = true;
+      }
+      
+      first_step = false;
+      if (cellResultInfo.amountFound > 0) {
+        found = true;
+        totalAmount += cellResultInfo.amountFound;
+        if (cellResultInfo.has_edible) {
+          count ++;                                                             // count cells with individual edible resources (not sum of res in cell >=1)
+          found_edible = true;
+          if (first_success_cell == Apto::Coord<int>(-1, -1)) first_success_cell = center_cell;
+          if (first_whole_resource == -9) first_whole_resource = cellResultInfo.resource_id;
+          if (stop_at_first_found) {
             dist_used = dist;
-            break;
+            break;                                                              // end side and center searches (found in center)
+          }
         }
-//        center_cell = center_cell + ahead_dir;
-        
-        /* Min y normal x */
-        if (center_cell.Y() == worldBounds.min_y && center_cell.X() < worldBounds.max_x && center_cell.X() > worldBounds.min_x && (facing == 7 || facing == 0 || facing == 1)) {
-            Apto::Coord<int> torus_ahead1(0 ,worldBounds.max_y-worldBounds.min_y);
-            center_cell += torus_ahead1;
-        }
-        
-        /* Min x normal y */
-        else if (center_cell.X() == worldBounds.min_x && center_cell.Y() < worldBounds.max_y && center_cell.Y() > worldBounds.min_y && (facing == 7 || facing == 6 || facing == 5)) {
-            Apto::Coord<int> torus_ahead2(worldBounds.max_x-worldBounds.min_x, 0);
-            center_cell += torus_ahead2;
-        }
-        
-        /* Max y normal x */
-        else if (center_cell.Y() == worldBounds.max_y && center_cell.X() < worldBounds.max_x && center_cell.X() > worldBounds.min_x && (facing == 5 || facing == 4 || facing == 3)) {
-            Apto::Coord<int> torus_ahead3(0 ,worldBounds.min_y-worldBounds.max_y);
-            center_cell += torus_ahead3;
-        }
-        
-        /* Max x normal y */
-        else if (center_cell.X() == worldBounds.max_x && center_cell.Y() < worldBounds.max_y && center_cell.Y() > worldBounds.min_y && (facing == 1 || facing == 2 || facing == 3)) {
-            Apto::Coord<int> torus_ahead4(worldBounds.min_x-worldBounds.max_x, 0);
-            center_cell += torus_ahead4;
-        }
-        
-        /* Min x Min y */
-        else if (center_cell.Y() == worldBounds.min_y && center_cell.X() == worldBounds.min_x && (facing == 7 || facing == 0 || facing == 6)) {
-            Apto::Coord<int> torus_ahead5(worldBounds.max_x-center_cell.X(),worldBounds.max_y-center_cell.Y());
-            center_cell += torus_ahead5;
-        }
-        
-        /*Min y Max x */
-        else if (center_cell.Y() == worldBounds.min_y && center_cell.X() == worldBounds.max_x && (facing == 1 || facing == 0 || facing == 2)) {
-            Apto::Coord<int> torus_ahead6(worldBounds.min_x-worldBounds.max_x,worldBounds.max_y-worldBounds.min_y);
-            center_cell += torus_ahead6;
-        }
-        
-        /*Min x Max y*/
-        else if (center_cell.Y() == worldBounds.max_y && center_cell.X() == worldBounds.max_x && (facing == 6 || facing == 5 || facing == 4)) {
-            Apto::Coord<int> torus_ahead6(worldBounds.max_x-worldBounds.min_x,worldBounds.min_y-worldBounds.max_y);
-            center_cell += torus_ahead6;
-        }
-        
-        /*Max x Max y*/
-        else if (center_cell.Y() == worldBounds.max_y && center_cell.X() == worldBounds.max_x && (facing == 2 || facing == 3 || facing == 4)) {
-            Apto::Coord<int> torus_ahead5(worldBounds.min_x-worldBounds.max_x,worldBounds.min_y-worldBounds.max_y);
-            center_cell += torus_ahead5;
-        }
-        
-        else
-            center_cell += ahead_dir;
-        
-//        cout << "\nC: ("<< center_cell.X() << "," << center_cell.Y()<<")\n~~~~" << endl;
-          cout << "~~~~" << endl;
-/*        if (ccx > worldBounds.min_x && ccx < worldBounds.max_x && ccy < worldBounds.max_y && ccy > worldBounds.min_y)
-            center_cell = center_cell + ahead_dir; 
-        else {
-                if center cell exceeds upper limit 
-            if (ccx > worldBounds.max_x && ccy < worldBounds.max_y && ccy > worldBounds.min_y) {
-                Apto::Coord<int> torus_ahead1(-1*(worldBounds.max_x-worldBounds.min_x), ccy);
-                center_cell = center_cell + torus_ahead1.
-            }
-            if (ccy > worldBounds.max_y && ccx < worldBounds.max_x && ccx > worldBounds.min_x) {
-                Apto::Coord<int> torus_ahead2(ccx, -1*(worldBounds.max_y-worldBounds.min_y));
-                center_cell = center_cell + torus_ahead2;
-            } 
-        
-             if center cell is below lower limit 
-            if (ccx < worldBounds.min_x && ccy > worldBounds.min_y && ccy < worldBounds.max_y) {
-                Apto::Coord<int> torus_ahead3(worldBounds.max_x-worldBounds.min_x , ccy);
-                center_cell = center_cell + torus_ahead3;
-            }
-            if (ccy < worldBounds.min_y && ccx > worldBounds.min_x && ccx < worldBounds.max_x) {
-                Apto::Coord<int> torus_ahead4(ccx , worldBounds.max_y-worldBounds.min_y);
-                center_cell = center_cell + torus_ahead4;
-            }
-        }*/
- //       cout << "\n\nCell: (" << this_cell.X()<<","<<this_cell.Y()<<")\nCenter: ("<< center_cell.X() << "," << center_cell.Y() << ")\nfacing:" << facing << ")\ndistance:" << dist << endl; // RKB
-        
-        
-    } // END WALKING
-    
-    // begin reached end output
-    stuff_seen.habitat = habitat_used;
-    stuff_seen.search_type = search_type;
-    stuff_seen.id_sought = id_sought;
-    
-    if (!found && !foundFirstVisible) {
-        stuff_seen.report_type = 0;
-    } else if (!found && foundFirstVisible) {
-        stuff_seen.report_type = 1;
-        stuff_seen.distance = dist_used;
-        stuff_seen.count = 0;
-        stuff_seen.value = 0;
-        stuff_seen.group = firstVisibleID;
-        
-        int target_cell = firstVisibleCell.Y() * worldx + firstVisibleCell.X();
-        FindThing(target_cell, distance_sought, facing, stuff_seen);
-        
-    } else if (found) {
-        stuff_seen.report_type = 1;
-        stuff_seen.distance = dist_used;
-        stuff_seen.count = count;
-        stuff_seen.value = (int) (totalAmount);
-        stuff_seen.group = -9;
-        stuff_seen.forage = -9;
-        
-        // overwrite defaults for more specific search types
-        
-        if (habitat_used != -2) {
-            // if we were looking for resources, return id of nearest
-            stuff_seen.group = first_whole_resource;
-            
-            int target_cell = first_success_cell.Y() * worldx + first_success_cell.X();
-            FindThing(target_cell, distance_sought, facing, stuff_seen);
-            
-        } else if (habitat_used == -2 && found_edible) {
-            // if searching for orgs, return info on closest one we encountered (==only one if stop_at_first_found)
-            const cPopulationCell* first_good_cell = m_organism->GetOrgInterface().GetCell(first_success_cell.Y() * worldx + first_success_cell.X());
-            cOrganism* first_org = first_good_cell->GetOrganism();
-            if (m_use_avatar) {
-                if (search_type == 0) first_org = first_good_cell->GetRandAV(ctx);
-                else if (search_type > 0) first_org = first_good_cell->GetRandPredAV();
-                else if (search_type < 0) first_org = first_good_cell->GetRandPreyAV();
-            }
-            
-            FindThing(first_good_cell->GetID(), distance_sought, facing, stuff_seen, first_org);
-            
-            stuff_seen.id_sought = first_org->GetID();
-            stuff_seen.value = (int) first_org->GetPhenotype().GetCurBonus();
-            if (!m_return_rel_facing && first_org->HasOpinion()) {
-                stuff_seen.group = first_org->GetOpinion().first;
-            } else if (m_return_rel_facing || !first_org->HasOpinion()) {
-                stuff_seen.group = ReturnRelativeFacing(first_org);
-            }
-            stuff_seen.forage = first_org->GetForageTarget();   
-            if ((first_org->IsDisplaying()  || m_world->GetConfig().USE_DISPLAY.Get()) && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());            
-            if (m_world->GetConfig().USE_MIMICS.Get() && stuff_seen.forage == 1) stuff_seen.forage = first_org->GetShowForageTarget();
-        }
-        
-        if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) SetPotentialDisplayData(stuff_seen);   
+      }
     }
-    return stuff_seen;
+    // before we check cells at the next distance...
+    // stop if we never found any valid cells at the current distance; valid dist_used was previous set of cells checked
+    if (!any_valid_side_cells && !count_center) {
+      dist--;
+      dist_used = dist;
+      break;
+    }
+    //        center_cell = center_cell + ahead_dir;
+    
+    /* Min y normal x */
+    if (center_cell.Y() == worldBounds.min_y && center_cell.X() < worldBounds.max_x && center_cell.X() > worldBounds.min_x && (facing == 7 || facing == 0 || facing == 1)) {
+      Apto::Coord<int> torus_ahead1(0 ,worldBounds.max_y-worldBounds.min_y);
+      center_cell += torus_ahead1;
+    }
+    
+    /* Min x normal y */
+    else if (center_cell.X() == worldBounds.min_x && center_cell.Y() < worldBounds.max_y && center_cell.Y() > worldBounds.min_y && (facing == 7 || facing == 6 || facing == 5)) {
+      Apto::Coord<int> torus_ahead2(worldBounds.max_x-worldBounds.min_x, 0);
+      center_cell += torus_ahead2;
+    }
+    
+    /* Max y normal x */
+    else if (center_cell.Y() == worldBounds.max_y && center_cell.X() < worldBounds.max_x && center_cell.X() > worldBounds.min_x && (facing == 5 || facing == 4 || facing == 3)) {
+      Apto::Coord<int> torus_ahead3(0 ,worldBounds.min_y-worldBounds.max_y);
+      center_cell += torus_ahead3;
+    }
+    
+    /* Max x normal y */
+    else if (center_cell.X() == worldBounds.max_x && center_cell.Y() < worldBounds.max_y && center_cell.Y() > worldBounds.min_y && (facing == 1 || facing == 2 || facing == 3)) {
+      Apto::Coord<int> torus_ahead4(worldBounds.min_x-worldBounds.max_x, 0);
+      center_cell += torus_ahead4;
+    }
+    
+    /* Min x Min y */
+    else if (center_cell.Y() == worldBounds.min_y && center_cell.X() == worldBounds.min_x && (facing == 7 || facing == 0 || facing == 6)) {
+      Apto::Coord<int> torus_ahead5(worldBounds.max_x-center_cell.X(),worldBounds.max_y-center_cell.Y());
+      center_cell += torus_ahead5;
+    }
+    
+    /*Min y Max x */
+    else if (center_cell.Y() == worldBounds.min_y && center_cell.X() == worldBounds.max_x && (facing == 1 || facing == 0 || facing == 2)) {
+      Apto::Coord<int> torus_ahead6(worldBounds.min_x-worldBounds.max_x,worldBounds.max_y-worldBounds.min_y);
+      center_cell += torus_ahead6;
+    }
+    
+    /*Min x Max y*/
+    else if (center_cell.Y() == worldBounds.max_y && center_cell.X() == worldBounds.max_x && (facing == 6 || facing == 5 || facing == 4)) {
+      Apto::Coord<int> torus_ahead6(worldBounds.max_x-worldBounds.min_x,worldBounds.min_y-worldBounds.max_y);
+      center_cell += torus_ahead6;
+    }
+    
+    /*Max x Max y*/
+    else if (center_cell.Y() == worldBounds.max_y && center_cell.X() == worldBounds.max_x && (facing == 2 || facing == 3 || facing == 4)) {
+      Apto::Coord<int> torus_ahead5(worldBounds.min_x-worldBounds.max_x,worldBounds.min_y-worldBounds.max_y);
+      center_cell += torus_ahead5;
+    }
+    
+    else
+      center_cell += ahead_dir;
+    
+    //        cout << "\nC: ("<< center_cell.X() << "," << center_cell.Y()<<")\n~~~~" << endl;
+    //          cout << "~~~~" << endl;
+    /*        if (ccx > worldBounds.min_x && ccx < worldBounds.max_x && ccy < worldBounds.max_y && ccy > worldBounds.min_y)
+     center_cell = center_cell + ahead_dir;
+     else {
+     if center cell exceeds upper limit
+     if (ccx > worldBounds.max_x && ccy < worldBounds.max_y && ccy > worldBounds.min_y) {
+     Apto::Coord<int> torus_ahead1(-1*(worldBounds.max_x-worldBounds.min_x), ccy);
+     center_cell = center_cell + torus_ahead1.
+     }
+     if (ccy > worldBounds.max_y && ccx < worldBounds.max_x && ccx > worldBounds.min_x) {
+     Apto::Coord<int> torus_ahead2(ccx, -1*(worldBounds.max_y-worldBounds.min_y));
+     center_cell = center_cell + torus_ahead2;
+     }
+     
+     if center cell is below lower limit
+     if (ccx < worldBounds.min_x && ccy > worldBounds.min_y && ccy < worldBounds.max_y) {
+     Apto::Coord<int> torus_ahead3(worldBounds.max_x-worldBounds.min_x , ccy);
+     center_cell = center_cell + torus_ahead3;
+     }
+     if (ccy < worldBounds.min_y && ccx > worldBounds.min_x && ccx < worldBounds.max_x) {
+     Apto::Coord<int> torus_ahead4(ccx , worldBounds.max_y-worldBounds.min_y);
+     center_cell = center_cell + torus_ahead4;
+     }
+     }*/
+    //       cout << "\n\nCell: (" << this_cell.X()<<","<<this_cell.Y()<<")\nCenter: ("<< center_cell.X() << "," << center_cell.Y() << ")\nfacing:" << facing << ")\ndistance:" << dist << endl; // RKB
+    
+    
+  } // END WALKING
+  
+  // begin reached end output
+  stuff_seen.habitat = habitat_used;
+  stuff_seen.search_type = search_type;
+  stuff_seen.id_sought = id_sought;
+  
+  if (!found && !foundFirstVisible) {
+    stuff_seen.report_type = 0;
+  } else if (!found && foundFirstVisible) {
+    stuff_seen.report_type = 1;
+    stuff_seen.distance = dist_used;
+    stuff_seen.count = 0;
+    stuff_seen.value = 0;
+    stuff_seen.group = firstVisibleID;
+    
+    int target_cell = firstVisibleCell.Y() * worldx + firstVisibleCell.X();
+    FindThing(target_cell, distance_sought, facing, stuff_seen);
+    
+  } else if (found) {
+    stuff_seen.report_type = 1;
+    stuff_seen.distance = dist_used;
+    stuff_seen.count = count;
+    stuff_seen.value = (int) (totalAmount);
+    stuff_seen.group = -9;
+    stuff_seen.forage = -9;
+    
+    // overwrite defaults for more specific search types
+    
+    if (habitat_used != -2) {
+      // if we were looking for resources, return id of nearest
+      stuff_seen.group = first_whole_resource;
+      
+      int target_cell = first_success_cell.Y() * worldx + first_success_cell.X();
+      FindThing(target_cell, distance_sought, facing, stuff_seen);
+      
+    } else if (habitat_used == -2 && found_edible) {
+      // if searching for orgs, return info on closest one we encountered (==only one if stop_at_first_found)
+      const cPopulationCell* first_good_cell = m_organism->GetOrgInterface().GetCell(first_success_cell.Y() * worldx + first_success_cell.X());
+      cOrganism* first_org = first_good_cell->GetOrganism();
+      if (m_use_avatar) {
+        if (search_type == 0) first_org = first_good_cell->GetRandAV(ctx);
+        else if (search_type > 0) first_org = first_good_cell->GetRandPredAV();
+        else if (search_type < 0) first_org = first_good_cell->GetRandPreyAV();
+      }
+      
+      FindThing(first_good_cell->GetID(), distance_sought, facing, stuff_seen, first_org);
+      
+      stuff_seen.id_sought = first_org->GetID();
+      stuff_seen.value = (int) first_org->GetPhenotype().GetCurBonus();
+      if (!m_return_rel_facing && first_org->HasOpinion()) {
+        stuff_seen.group = first_org->GetOpinion().first;
+      } else if (m_return_rel_facing || !first_org->HasOpinion()) {
+        stuff_seen.group = ReturnRelativeFacing(first_org);
+      }
+      stuff_seen.forage = first_org->GetForageTarget();
+      if ((first_org->IsDisplaying()  || m_world->GetConfig().USE_DISPLAY.Get()) && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());
+      if (m_world->GetConfig().USE_MIMICS.Get() && stuff_seen.forage == 1) stuff_seen.forage = first_org->GetShowForageTarget();
+    }
+    
+    if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) SetPotentialDisplayData(stuff_seen);
+  }
+  return;
 }
 
+void cOrgSensor::GetTorusDirection(Apto::Coord<int>& direction, bool& cont_trig, sBounds& worldBounds, Apto::Coord<int>& center_cell, const int facing, Apto::Coord<int>& left, Apto::Coord<int>& right)
+{
+  /* Min y cases facing 2,6,1,7 */
+  if (center_cell.Y()==worldBounds.min_y) {
+    switch (facing) {
+      case 2:
+        if (direction == left)
+          direction.Set(center_cell.X(),worldBounds.max_y - center_cell.Y());
+      case 6:
+        if (direction == right)
+          direction.Set(center_cell.X(),worldBounds.max_y - center_cell.Y());
+      case 3:
+        if (direction == left)
+          direction.Set(center_cell.X(),worldBounds.max_y - center_cell.Y());
+      case 4:
+        if (direction == right)
+          direction.Set(center_cell.X(),worldBounds.max_y - center_cell.Y());
+      default:
+        cont_trig = true;
+    }
+  }
+  
+  /* Min x cases facing 0,4,7,5 */
+  else if (center_cell.X()==worldBounds.min_x) {
+    switch (facing) {
+      case 0:
+        if (direction == left)
+          direction.Set(worldBounds.max_x - center_cell.X(),center_cell.Y());
+      case 4:
+        if (direction == right)
+          direction.Set(worldBounds.max_x - center_cell.X(),center_cell.Y());
+      case 1:
+        if (direction == left)
+          direction.Set(worldBounds.max_x - center_cell.X(),center_cell.Y());
+      case 3:
+        if (direction == right)
+          direction.Set(worldBounds.max_x - center_cell.X(),center_cell.Y());
+      default:
+        cont_trig = true;
+    }
+  }
+  
+  /* Max x cases facing 0,4,1,3 */
+  else if (center_cell.X()==worldBounds.max_x) {
+    switch (facing) {
+      case 0:
+        if (direction == right)
+          direction.Set(worldBounds.min_x - center_cell.X(),center_cell.Y());
+      case 4:
+        if (direction == left)
+          direction.Set(worldBounds.min_x - center_cell.X(),center_cell.Y());
+      case 7:
+        if (direction == right)
+          direction.Set(worldBounds.min_x - center_cell.X(),center_cell.Y());
+      case 5:
+        if (direction == left)
+          direction.Set(worldBounds.min_x - center_cell.X(),center_cell.Y());
+      default:
+        cont_trig = true;
+    }
+  }
+  
+  /* Max y cases facing 2,6,3,5 */
+  else if (center_cell.Y()==worldBounds.max_y) {
+    switch (facing) {
+      case 2:
+        if (direction == right)
+          direction.Set(center_cell.X(),worldBounds.max_y - center_cell.Y());
+      case 6:
+        if (direction == left)
+          direction.Set(center_cell.X(),worldBounds.min_y - center_cell.Y());
+      case 1:
+        if (direction == right)
+          direction.Set(center_cell.X(),worldBounds.max_y - center_cell.Y());
+      case 7:
+        if (direction == left)
+          direction.Set(center_cell.X(),worldBounds.min_y - center_cell.Y());
+      default:
+        cont_trig = true;
+    }
+  }
+  
+}
+
+void cOrgSensor::SetWalkLimits(cAvidaContext& ctx, sLookInit& in_defs, sWalkLimits& limits, sBounds& worldBounds, sBounds& tot_bounds, Apto::Array<int, Apto::Smart>& val_res, int worldx, Apto::Coord<int>& this_cell, int facing, int cell, Apto::Coord<int>& center_cell, const Apto::Coord<int>& ahead_dir)
+{
+  limits.start = 0;
+  limits.end = in_defs.distance;
+  
+  // set geometric bounds, and fast-forward, if possible
+  Apto::Array<int, Apto::Smart> val_res2 = val_res;
+  if (in_defs.habitat != -2 && in_defs.habitat != 3) {
+    bool has_global = false;
+    bool in_res = false; //check to see org in resource RKB
+    bool global_only = true;
+    int temp_start_dist = in_defs.distance;
+    for (int i = 0; i < val_res.GetSize(); i++) {
+      if (m_res_lib.GetResource(val_res[i])->GetGradient()) {
+        int this_start_dist = 0;
+        sBounds res_bounds = GetBounds(ctx, val_res[i]);
+        this_start_dist = GetMinDist(worldx, res_bounds, cell, in_defs.distance, facing);
+        // drop any out of range...
+        if (this_start_dist == -1) {
+          val_res.Swap(i, val_res.GetSize() - 1);
+          val_res.Pop();
+          i--;
+        } else {
+          global_only = false;
+          if (res_bounds.min_x < tot_bounds.min_x) tot_bounds.min_x = res_bounds.min_x;
+          if (res_bounds.min_y < tot_bounds.min_y) tot_bounds.min_y = res_bounds.min_y;
+          if (res_bounds.max_x > tot_bounds.max_x) tot_bounds.max_x = res_bounds.max_x;
+          if (res_bounds.max_y > tot_bounds.max_y) tot_bounds.max_y = res_bounds.max_y;
+          in_res = ((res_bounds.min_x <= this_cell.X() && res_bounds.max_x >= this_cell.X()) && (res_bounds.min_y <= this_cell.Y() && res_bounds.max_y >= this_cell.Y())); //Assigns bool to that state RKB
+          if (this_start_dist < temp_start_dist) temp_start_dist = this_start_dist;
+        }
+      } else {
+        // if any res is global, we just need to make sure we check at least one cell
+        if (m_res_lib.GetResource(val_res[i])->GetGeometry() == nGeometry::GLOBAL) has_global = true;
+        // if any res is spatial and non-gradient, we can't bound things because those res don't track the variables we use for bounding
+        else {
+          global_only = false;
+          tot_bounds = worldBounds;
+          temp_start_dist = 0;
+          break;
+        }
+      }
+    }
+    limits.start = temp_start_dist;
+    if (val_res.GetSize() == 0) {     // nothing in range
+      limits.visible = false;
+      return;
+    }
+    
+    /* Code to add searching "behind" organism in torroidal world RKB */
+    
+    if (in_res && m_world->GetConfig().WORLD_GEOMETRY.Get() == 2) { //End dist condit RKB
+      if (facing == 0 || facing == 4)
+        limits.end = worldBounds.max_y-1;
+      else if (facing == 2 || facing == 6)
+        limits.end = worldBounds.max_x-1;
+      else if (facing == 1 || facing == 5)
+        limits.end = max(abs(worldBounds.max_x-1), abs(worldBounds.max_y-1));
+      else if (facing == 7 || facing == 3)
+        limits.end = max(abs(worldBounds.max_x-1), abs(worldBounds.max_y-1));
+      
+    }
+    else
+      limits.end = GetMaxDist(worldx, cell, in_defs.distance, tot_bounds);
+    center_cell += (ahead_dir * limits.start);
+    
+    if (has_global && global_only) {
+      limits.end = 0;
+      limits.start = 0;
+      tot_bounds = worldBounds;
+    }
+  } // END set bounds & fast-forward
+  else if (in_defs.habitat == -2) tot_bounds = worldBounds;
+  return;
+}
+
+void cOrgSensor::SetCoords(Apto::Coord<int>& left, Apto::Coord<int>& right, const int facing)
+{
+  switch (facing) {
+    case 0:
+    case 4:
+      // Facing North or South
+      left.Set(-1, 0);
+      right.Set(1, 0);
+      break;
+      
+    case 2:
+    case 6:
+      // Facing East or West
+      left.Set(0, -1);
+      right.Set(0, 1);
+      break;
+      
+    case 1:
+      //Facing NorthEast
+      left.Set(-1, 0);
+      right.Set(0, 1);
+      break;
+    case 3:
+      // Facing SouthEast
+      left.Set(0, -1);
+      right.Set(-1, 0);
+      break;
+    case 5:
+      // Facing SouthWest
+      left.Set(1, 0);
+      right.Set(0, -1);
+      break;
+    case 7:
+      // Facing NorthWest
+      left.Set(0, 1);
+      right.Set(1, 0);
+      break;
+  }
+  return;
+}
 
 /* Tests a cell for the Look instructions
- * 
+ *
  * Returns:
  *		If we're looking for the closest resource, return that resource's ID
  *    otherwise, returns the number of objects we're looking for that are in target_cell
- *    
+ *
  */
 cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, sLookInit& in_defs, const Apto::Coord<int>& target_cell_coords,
                                               const Apto::Array <int, Apto::Smart>& val_res, bool first_step,
@@ -1261,22 +1150,22 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, sLookInit& in_d
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];                                          // get FIRST whole resource id
           returnInfo.has_edible = true;
           if (first_step || m_res_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
-            returnInfo.amountFound += floor(cell_res / edible_threshold);                                                         
+            returnInfo.amountFound += floor(cell_res / edible_threshold);
           }
         } else if (search_type == 1 && cell_res < edible_threshold && cell_res > 0) {         // only get sum amounts when < threshold if search = get counts
           if (first_step || m_res_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
-            returnInfo.amountFound += cell_res;                                                         
+            returnInfo.amountFound += cell_res;
           }
         }
       }
       else if ((habitat_used == 1 || habitat_used == 2) && cell_res > 0) {                              // hills and walls work with any vals > 0, not the threshold default of 1
-        if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
+        if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];
         returnInfo.has_edible = true;
         returnInfo.amountFound += cell_res;
       }
       else if (habitat_used == 5 && cell_res > 0) {                                                   // simulated predators work with any vals > 0 and have chance of detection failing
         if (ctx.GetRandom().P(m_res_lib.GetResource(val_res[k])->GetDetectionProb())) {
-          if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
+          if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];
           returnInfo.has_edible = true;
           returnInfo.amountFound += cell_res;
         }
