@@ -236,7 +236,7 @@ cOrgSensor::sLookOut cOrgSensor::FindResCenter(cAvidaContext& ctx, const int res
   return res_search;
 }
 
-void cOrgSensor::FindThing(int target_cell, const int distance_sought, const int facing, cOrgSensor::sLookOut& thing_search, cOrganism* target_org)
+void cOrgSensor::FindThing(int target_cell, const int distance_sought, const int facing, sLookOut& thing_search, cOrganism* target_org)
 {
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int target_x = target_cell % worldx;
