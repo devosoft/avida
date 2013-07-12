@@ -261,6 +261,7 @@ cHardwareGP8::cHardwareGP8(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
 void cHardwareGP8::internalReset()
 {
   m_spec_stall = false;
+  m_hw_reset = true;
 
   m_cycle_count = 0;
   m_last_output = 0;
@@ -408,6 +409,8 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
   if (m_spec_stall) {
     m_spec_stall = false;
   } else {
+    m_hw_reset = false;
+    
     // Update cycle counts
     m_cycle_count++;
     phenotype.IncCPUCyclesUsed();
@@ -425,6 +428,8 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
     m_hw_queue_rotate = false;
     
     m_hw_queued = 0;
+
+    m_hw_queue_eat_threads.Resize(0);
     
     // Reset execution state
     m_cur_uop = 0;
@@ -545,16 +550,19 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
         if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true, exec_success);
         break;
       }
+      
+      if (m_hw_reset) break;
     }
     
-    if (phenotype.GetToDelete()) break;
+    if (phenotype.GetToDelete() || m_hw_reset) break;
   }
   
-  for (int hw_action = 0; hw_action < m_hw_queued && !phenotype.GetToDelete(); hw_action++) {
+  for (int hw_action = 0; hw_action < m_hw_queued && !phenotype.GetToDelete() && !m_hw_reset; hw_action++) {
     switch (m_hw_queue[hw_action]) {
       case aEAT:
         m_action_side_effect_queue = &m_hw_queue_eat_threads;
         m_organism->DoOutput(ctx, 0);
+        m_hw_queue_eat_threads.Resize(0);
         m_action_side_effect_queue = NULL;
         break;
         

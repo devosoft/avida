@@ -290,6 +290,7 @@ private:
     bool m_advance_ip:1;  // Should the IP advance after this instruction?
     bool m_spec_stall:1;
     bool m_spec_die:1;
+    bool m_hw_reset:1;
     
     bool m_no_cpu_cycle_time:1;
     bool m_slip_read_head:1;
