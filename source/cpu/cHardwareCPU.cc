@@ -6111,7 +6111,7 @@ bool cHardwareCPU::Inst_BitConsensus24(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
   const int op1 = FindModifiedNextRegister(reg_used);
-  GetRegister(reg_used) = (BitCount(GetRegister(op1) & MASK24) >= CONSENSUS24) ? 1 : 0;
+  GetRegister(reg_used) = (BitCount(GetRegister(op1) & MASK_LOW24) >= CONSENSUS24) ? 1 : 0;
   return true; 
 }
 
@@ -6125,7 +6125,7 @@ bool cHardwareCPU::Inst_IfConsensus(cAvidaContext&)
 bool cHardwareCPU::Inst_IfConsensus24(cAvidaContext&)
 {
   const int op1 = FindModifiedRegister(REG_BX);
-  if (BitCount(GetRegister(op1) & MASK24) <  CONSENSUS24)  getIP().Advance();
+  if (BitCount(GetRegister(op1) & MASK_LOW24) <  CONSENSUS24)  getIP().Advance();
   return true;
 }
 
@@ -6141,7 +6141,7 @@ bool cHardwareCPU::Inst_IfLessConsensus24(cAvidaContext&)
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindModifiedNextRegister(op1);
-  if (BitCount(GetRegister(op1) & MASK24) >=  BitCount(GetRegister(op2) & MASK24))  getIP().Advance();
+  if (BitCount(GetRegister(op1) & MASK_LOW24) >=  BitCount(GetRegister(op2) & MASK_LOW24))  getIP().Advance();
   return true;
 }
 
@@ -6162,7 +6162,7 @@ bool cHardwareCPU::Inst_MaskSignBit(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower16Bits(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_BX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST16;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER16;
   return true;
 }
 
@@ -6170,7 +6170,7 @@ bool cHardwareCPU::Inst_MaskOffLower16Bits(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower16Bits_defaultAX(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_AX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST16;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER16;
   return true;
 }
 
@@ -6178,7 +6178,7 @@ bool cHardwareCPU::Inst_MaskOffLower16Bits_defaultAX(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower15Bits(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_BX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST15;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER17;
   return true;
 }
 
@@ -6186,7 +6186,7 @@ bool cHardwareCPU::Inst_MaskOffLower15Bits(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower15Bits_defaultAX(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_AX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST15;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER17;
   return true;
 }
 
@@ -6194,7 +6194,7 @@ bool cHardwareCPU::Inst_MaskOffLower15Bits_defaultAX(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower14Bits(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_BX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST14;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER18;
   return true;
 }
 
@@ -6202,7 +6202,7 @@ bool cHardwareCPU::Inst_MaskOffLower14Bits(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower14Bits_defaultAX(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_AX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST14;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER18;
   return true;
 }
 
@@ -6210,7 +6210,7 @@ bool cHardwareCPU::Inst_MaskOffLower14Bits_defaultAX(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower13Bits(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_BX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST13;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER19;
   return true;
 }
 
@@ -6218,7 +6218,7 @@ bool cHardwareCPU::Inst_MaskOffLower13Bits(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower13Bits_defaultAX(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_AX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST13;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER19;
   return true;
 }
 
@@ -6226,7 +6226,7 @@ bool cHardwareCPU::Inst_MaskOffLower13Bits_defaultAX(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower12Bits(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_BX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST12;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER20;
   return true;
 }
 
@@ -6234,7 +6234,7 @@ bool cHardwareCPU::Inst_MaskOffLower12Bits(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower12Bits_defaultAX(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_AX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST12;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER20;
   return true;
 }
 
@@ -6242,7 +6242,7 @@ bool cHardwareCPU::Inst_MaskOffLower12Bits_defaultAX(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower8Bits(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_BX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST8;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER24;
   return true;
 }
 
@@ -6250,7 +6250,7 @@ bool cHardwareCPU::Inst_MaskOffLower8Bits(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower8Bits_defaultAX(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_AX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST8;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER24;
   return true;
 }
 
@@ -6258,7 +6258,7 @@ bool cHardwareCPU::Inst_MaskOffLower8Bits_defaultAX(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower4Bits(cAvidaContext&)
 {
   const int reg = FindModifiedRegister(REG_BX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST4;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER28;
   return true;
 }
 
@@ -6266,7 +6266,7 @@ bool cHardwareCPU::Inst_MaskOffLower4Bits(cAvidaContext&)
 bool cHardwareCPU::Inst_MaskOffLower4Bits_defaultAX(cAvidaContext&) 
 {
   const int reg = FindModifiedRegister(REG_AX);
-  GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST4;
+  GetRegister(reg) = GetRegister(reg) & MASK_UPPER28;
   return true;
 }
 

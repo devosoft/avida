@@ -1728,7 +1728,7 @@ bool cHardwareExperimental::Inst_IfConsensus(cAvidaContext&)
 bool cHardwareExperimental::Inst_IfConsensus24(cAvidaContext&)
 {
   const int op1 = FindModifiedRegister(rBX);
-  if (BitCount(GetRegister(op1) & MASK24) <  CONSENSUS24) getIP().Advance();
+  if (BitCount(GetRegister(op1) & MASK_LOW24) <  CONSENSUS24) getIP().Advance();
   return true;
 }
 
@@ -1744,7 +1744,7 @@ bool cHardwareExperimental::Inst_IfLessConsensus24(cAvidaContext&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
-  if (BitCount(GetRegister(op1) & MASK24) >=  BitCount(GetRegister(op2) & MASK24)) getIP().Advance();
+  if (BitCount(GetRegister(op1) & MASK_LOW24) >=  BitCount(GetRegister(op2) & MASK_LOW24)) getIP().Advance();
   return true;
 }
 
@@ -2178,7 +2178,7 @@ bool cHardwareExperimental::Inst_GotoConsensus(cAvidaContext&)
 
 bool cHardwareExperimental::Inst_GotoConsensus24(cAvidaContext&)
 {
-  if (BitCount(GetRegister(rBX) & MASK24) < CONSENSUS24) return true;
+  if (BitCount(GetRegister(rBX) & MASK_LOW24) < CONSENSUS24) return true;
   
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2601,7 +2601,7 @@ bool cHardwareExperimental::Inst_TerminateConsensus(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_TerminateConsensus24(cAvidaContext& ctx)
 {
   const int op1 = FindModifiedRegister(rDX);
-  if (BitCount(GetRegister(op1) & MASK24) <  CONSENSUS24)  PromoterTerminate(ctx);
+  if (BitCount(GetRegister(op1) & MASK_LOW24) <  CONSENSUS24)  PromoterTerminate(ctx);
   return true;
 }
 
@@ -2848,7 +2848,7 @@ bool cHardwareExperimental::Inst_BitConsensus24(cAvidaContext&)
   const int op1 = FindModifiedNextRegister(reg_used);
   DataValue& val = m_threads[m_cur_thread].reg[op1];
   
-  setInternalValue(reg_used, (BitCount(val.value & MASK24) >= CONSENSUS24) ? 1 : 0, val); 
+  setInternalValue(reg_used, (BitCount(val.value & MASK_LOW24) >= CONSENSUS24) ? 1 : 0, val); 
   return true; 
 }
 
@@ -2864,7 +2864,7 @@ bool cHardwareExperimental::Inst_Execurate(cAvidaContext&)
 bool cHardwareExperimental::Inst_Execurate24(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, (MASK24 & m_threads[m_cur_thread].GetExecurate()));
+  setInternalValue(reg_used, (MASK_LOW24 & m_threads[m_cur_thread].GetExecurate()));
   return true;
 }
 

@@ -71,9 +71,7 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
   m_navtraceloc.Resize(0);
   m_navtracefacing.Resize(0);
   m_navtraceupdate.Resize(0);
-  m_inst_cost = 0;
   ResizeCostArrays(m_world->GetConfig().MAX_CPU_THREADS.Get());
-  m_female_cost = 0;
   
   const int num_inst_cost = m_inst_set->GetSize();
   
@@ -87,11 +85,6 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
     for (int i = 0; i < num_inst_cost; i++) m_inst_res_cost[i] = m_inst_set->GetResCost(Instruction(i));
   }
   
-  if (m_has_fem_res_costs) {
-    m_inst_fem_res_cost.Resize(num_inst_cost);
-    for (int i = 0; i < num_inst_cost; i++) m_inst_fem_res_cost[i] = m_inst_set->GetFemResCost(Instruction(i));
-  }
-
   if (m_has_costs) {
     m_thread_inst_cost.Resize(num_inst_cost);
     for (int i = 0; i < num_inst_cost; i++) m_thread_inst_cost[i] = m_inst_set->GetCost(Instruction(i));

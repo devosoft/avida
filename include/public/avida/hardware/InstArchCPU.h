@@ -25,6 +25,7 @@
 #ifndef AvidaHardwareInstArchCPU_h
 #define AvidaHardwareInstArchCPU_h
 
+#include "avida/core/InstructionSequence.h"
 #include "avida/hardware/Base.h"
 #include "avida/hardware/InstSet.h"
 
@@ -39,14 +40,40 @@ namespace Avida {
     {
     protected:
       InstSet* m_instset;
+     
+      
+    private:
+      struct {
+        bool m_has_pre_hooks:1;
+        bool m_has_post_hooks:1;
+      };
+      
       
     public:
       LIB_EXPORT InstArchCPU(Context& ctx, ConfigPtr cfg, Biota::OrganismPtr owner);
       LIB_EXPORT virtual ~InstArchCPU() = 0;
       
       
+    protected:
+      LIB_EXPORT inline bool PreInstructionHook(Context& ctx, Instruction cur_inst, int hw_context);
+      LIB_EXPORT inline void PostInstructionHook(Context& ctx, Instruction cur_inst, int hw_context);
+      
+    private:
+      LIB_EXPORT bool preInstHook(Context& ctx, Instruction cur_inst, int hw_context);
+      LIB_EXPORT void postInstHook(Context& ctx, Instruction cur_inst, int hw_context);
     };
+
     
+    inline bool InstArchCPU::PreInstructionHook(Context& ctx, Instruction cur_inst, int hw_context)
+    {
+      return (m_has_pre_hooks) ? preInstHook(ctx, cur_inst, hw_context) : true;
+    }
+    
+    inline void InstArchCPU::PostInstructionHook(Context& ctx, Instruction cur_inst, int hw_context)
+    {
+      if (m_has_post_hooks) postInstHook(ctx, cur_inst, hw_context);
+    }
+
   };
 };
 

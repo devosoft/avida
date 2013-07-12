@@ -52,6 +52,31 @@ namespace Avida {
     
     typedef Apto::Functor<InstancePtr, Apto::TL::Create<> > HardwareCreateFunctor;
     
+    
+    // Constant Declarations
+    // --------------------------------------------------------------------------------------------------------------
+
+    static const unsigned int MASK_SIGNBIT = 0x7FFFFFFF;
+
+    static const unsigned int MASK_LOW4    = 0x0000000F;
+    static const unsigned int MASK_LOW8    = 0x000000FF;
+    static const unsigned int MASK_LOW12   = 0x00000FFF;
+    static const unsigned int MASK_LOW16   = 0x0000FFFF;
+    static const unsigned int MASK_LOW20   = 0x000FFFFF;
+    static const unsigned int MASK_LOW24   = 0x00FFFFFF;
+    static const unsigned int MASK_LOW28   = 0x0FFFFFFF;
+    
+    static const unsigned int MASK_UPPER4  = 0xF0000000;
+    static const unsigned int MASK_UPPER8  = 0xFF000000;
+    static const unsigned int MASK_UPPER12 = 0xFFF00000;
+    static const unsigned int MASK_UPPER16 = 0xFFFF0000;
+    static const unsigned int MASK_UPPER17 = 0xFFFF8000;
+    static const unsigned int MASK_UPPER18 = 0xFFFFC000;
+    static const unsigned int MASK_UPPER19 = 0xFFFFE000;
+    static const unsigned int MASK_UPPER20 = 0xFFFFF000;
+    static const unsigned int MASK_UPPER24 = 0xFFFFFF00;
+    static const unsigned int MASK_UPPER28 = 0xFFFFFFF0;
+
   };
 };
 

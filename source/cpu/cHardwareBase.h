@@ -68,11 +68,8 @@ protected:
   };
 
   // --------  Instruction Costs  ---------
-  int m_inst_cost;
-  int m_female_cost;
   Apto::Array<int> m_inst_ft_cost;
   Apto::Array<double> m_inst_res_cost;
-  Apto::Array<double> m_inst_fem_res_cost;
   Apto::Array<double> m_inst_bonus_cost;
   Apto::Array<int> m_thread_inst_cost;
   Apto::Array<int> m_thread_inst_post_cost;
@@ -84,9 +81,6 @@ protected:
     bool m_has_costs:1;
     bool m_has_ft_costs:1;
     bool m_has_res_costs:1;
-    bool m_has_fem_res_costs:1;
-    bool m_has_female_costs:1;
-    bool m_has_choosy_female_costs:1;
     bool m_has_post_costs:1;
     bool m_has_bonus_costs:1;
   };
@@ -97,18 +91,7 @@ protected:
   Apto::Array<int, Apto::Smart> m_ext_mem;
   bool m_implicit_repro_active;
   
-	// --------  Bit masks  ---------
-	static const unsigned int MASK_SIGNBIT = 0x7FFFFFFF;	
-	static const unsigned int MASK24       = 0xFFFFFF;
 
-	static const unsigned int MASKOFF_LOWEST16       = 0xFFFF0000;
-	static const unsigned int MASKOFF_LOWEST15       = 0xFFFF8000;
-	static const unsigned int MASKOFF_LOWEST14       = 0xFFFFC000;
-	static const unsigned int MASKOFF_LOWEST13       = 0xFFFFE000;
-	static const unsigned int MASKOFF_LOWEST12       = 0xFFFFF000;
-	static const unsigned int MASKOFF_LOWEST8        = 0xFFFFFF00;
-	static const unsigned int MASKOFF_LOWEST4        = 0xFFFFFFF0;
-	
   cHardwareBase(); // @not_implemented
   cHardwareBase(const cHardwareBase&); // @not_implemented
   cHardwareBase& operator=(const cHardwareBase&); // @not_implemented
