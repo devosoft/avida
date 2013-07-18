@@ -3679,6 +3679,30 @@ void cStats::PrintKaboom(const cString& filename)
 }
 
 /*
+ Print data regarding quorum sensing thresholds etc
+ */
+
+void cStats::PrintQuorum(const cString& filename)
+{
+  
+  float ave_thresh = (float)ave_threshold/(float)num_quorum;
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteComment("Quorum sensing with threshold.");
+  
+  df->WriteTimeStamp();
+  df->Write(m_update, "Update [update]");
+  
+  df->Write(num_stop_explode, "Number of explosions stopped by quorum sensing");
+  df->Write(ave_thresh, "Average quorum sense threshold per qs instruction");
+  
+  df->Endl();
+  num_stop_explode = 0;
+  num_quorum=0;
+  ave_threshold = 0;
+  
+}
+
+/*
  Print data regarding group formation.
  */
 void cStats::PrintGroupsFormedData(const cString& filename)
