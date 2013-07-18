@@ -201,6 +201,7 @@ STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 
 // kabooms
 STATS_OUT_FILE(PrintKaboom, kabooms.dat);
+STATS_OUT_FILE(PrintQuorum, threshold.dat);
 
 // group formation
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
