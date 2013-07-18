@@ -5184,6 +5184,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
     
   // kabooms output file
   action_lib->Register<cActionPrintKaboom>("PrintKaboom");
+  action_lib->Register<cActionPrintQuorum>("PrintQuorum");
   
   // deme output files
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeAllStats");
