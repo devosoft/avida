@@ -343,10 +343,9 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
   
   // No matching genotype (hinted or otherwise), so create a new one
   if (!found) {
-    if (!m_disable_class) { //It's not enabled, so keep the parents
+    if (!m_disable_class) { // It's not enabled, so keep the parents
       found = GenotypePtr(new Genotype(thisPtr(), m_next_id++, u, m_cur_update, parents));
-    }
-    else {
+    } else {
       found = GenotypePtr(new Genotype(thisPtr(), m_next_id++, u, m_cur_update, ConstGroupMembershipPtr(NULL)));
     }
     m_active_hash[list_num].Push(found);
