@@ -482,6 +482,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("kazi3", &cHardwareCPU::Inst_Kazi3, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("kazi4", &cHardwareCPU::Inst_Kazi4, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("kazi5", &cHardwareCPU::Inst_Kazi5, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-quorum", &cHardwareCPU::Inst_SenseQuorum, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("noisy-quorum", &cHardwareCPU::Inst_NoisyQuorum, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("smart-explode", &cHardwareCPU::Inst_SmartExplode, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("poison", &cHardwareCPU::Inst_Poison),
     tInstLibEntry<tMethod>("suicide", &cHardwareCPU::Inst_Suicide, INST_CLASS_OTHER, nInstFlag::STALL),		
@@ -3454,6 +3457,170 @@ bool cHardwareCPU::Inst_SpawnDeme(cAvidaContext& ctx)
   m_organism->SpawnDeme(ctx);
   return true;
 }
+
+bool cHardwareCPU::Inst_SenseQuorum(cAvidaContext& ctx) {
+  int cellID = m_organism->GetCellID();
+  Apto::String ref_genome = m_organism->GetGenome().Representation()->AsString();
+  int radius = m_world->GetConfig().KABOOM_RADIUS.Get();
+  int distance = m_world->GetConfig().KABOOM_HAMMING.Get();
+
+  int kincounter = 0;
+  int world_x = m_world->GetConfig().WORLD_X.Get();
+  int world_y = m_world->GetConfig().WORLD_Y.Get();
+  int cell_x = cellID % world_x;
+  int cell_y = (cellID - cell_x)/world_x;
+  int x = cell_x;
+  int y = cell_y;
+  // cout << "cell_x " << cell_x << " cell_y " << cell_y << endl;
+  //cout << "cellID " << cellID << endl;
+  for (int i = cell_x - radius; i <= cell_x + radius; i++) {
+    for (int j = cell_y - radius; j <= cell_y + radius; j++) {
+      
+      if (i<0) x = world_x + i;
+      else if (i>= world_x) x = i-world_x;
+      else x = i;
+      
+      if (j<0) y = world_y + j;
+      else if (j >= world_y) y = j-world_y;
+      else y = j;
+      
+      cPopulationCell& neighbor_cell = m_world->GetPopulation().GetCell(y*world_x + x);
+      //cout << " i " << i << " j " << j << endl;
+      //cPopulationCell& neighbor_cell = *neighborcell;
+      
+      //do we actually have someone in neighborhood?
+      if (neighbor_cell.IsOccupied() == false) continue;
+      
+      cOrganism* org_temp = neighbor_cell.GetOrganism();
+      /*
+       if (distance == 0) {
+       int temp_id = org_temp->SystematicsGroup("genotype")->ID();
+       if (temp_id != bgid) kincounter++;
+       } else {
+       
+       int diff = 0;
+       for (int k = 0; k < genome_temp.GetSize(); k++) if (genome_temp[k] != ref_genome[k]) diff++;
+       if (diff > distance) kincounter++;
+       }*/
+      
+      if (org_temp != NULL) {
+        Apto::String genome_temp = org_temp->GetGenome().Representation()->AsString();
+        int diff = 0;
+        for (int i = 0; i < genome_temp.GetSize(); i++) if (genome_temp[i] != ref_genome[i]) diff++;
+        if (diff <= distance) kincounter++;
+      }
+      
+    }
+  }
+  
+  float ratio = ((float)kincounter/(float)((2*radius +1)*(2*radius+1) -1));
+  int org_ratio = GetRegister(FindModifiedRegister(REG_BX))%100;
+  
+  //cout << GetRegister(FindModifiedRegister(REG_BX)) << endl;
+  //cout << org_ratio << endl;
+  
+  m_world->GetStats().IncQuorumThreshold(org_ratio);
+  m_world->GetStats().IncQuorumNum();
+  if ((int)(ratio*100) <=org_ratio){
+    //set internal state to 1
+    m_organism->SetQuorum(true);
+  } else m_organism->SetQuorum(false);
+  
+  return true;
+  
+  
+}
+
+bool cHardwareCPU::Inst_NoisyQuorum(cAvidaContext& ctx) {
+  int cellID = m_organism->GetCellID();
+  Apto::String ref_genome = m_organism->GetGenome().Representation()->AsString();
+  int radius = m_world->GetConfig().KABOOM_RADIUS.Get();
+  int distance = m_world->GetConfig().KABOOM_HAMMING.Get();
+  
+  int kincounter = 0;
+  int world_x = m_world->GetConfig().WORLD_X.Get();
+  int world_y = m_world->GetConfig().WORLD_Y.Get();
+  int cell_x = cellID % world_x;
+  int cell_y = (cellID - cell_x)/world_x;
+  int x = cell_x;
+  int y = cell_y;
+  // cout << "cell_x " << cell_x << " cell_y " << cell_y << endl;
+  //cout << "cellID " << cellID << endl;
+  for (int i = cell_x - radius; i <= cell_x + radius; i++) {
+    for (int j = cell_y - radius; j <= cell_y + radius; j++) {
+      
+      if (i<0) x = world_x + i;
+      else if (i>= world_x) x = i-world_x;
+      else x = i;
+      
+      if (j<0) y = world_y + j;
+      else if (j >= world_y) y = j-world_y;
+      else y = j;
+      
+      cPopulationCell& neighbor_cell = m_world->GetPopulation().GetCell(y*world_x + x);
+      //cout << " i " << i << " j " << j << endl;
+      //cPopulationCell& neighbor_cell = *neighborcell;
+      
+      //do we actually have someone in neighborhood?
+      if (neighbor_cell.IsOccupied() == false) continue;
+      
+      cOrganism* org_temp = neighbor_cell.GetOrganism();
+      /*
+       if (distance == 0) {
+       int temp_id = org_temp->SystematicsGroup("genotype")->ID();
+       if (temp_id != bgid) kincounter++;
+       } else {
+       
+       int diff = 0;
+       for (int k = 0; k < genome_temp.GetSize(); k++) if (genome_temp[k] != ref_genome[k]) diff++;
+       if (diff > distance) kincounter++;
+       }*/
+      
+      if (org_temp != NULL) {
+        Apto::String genome_temp = org_temp->GetGenome().Representation()->AsString();
+        int diff = 0;
+        for (int i = 0; i < genome_temp.GetSize(); i++) if (genome_temp[i] != ref_genome[i]) diff++;
+        if (diff <= distance) kincounter++;
+      }
+      
+    }
+  }
+  
+  float ratio = ((float)kincounter/(float)((2*radius +1)*(2*radius+1) -1));
+  int org_ratio = GetRegister(FindModifiedRegister(REG_BX))%100;
+  float noise = abs(ctx.GetRandom().GetRandNormal(1, .1));
+  
+  //cout << GetRegister(FindModifiedRegister(REG_BX)) << endl;
+  //cout << org_ratio << endl;
+  
+  m_world->GetStats().IncQuorumThreshold(org_ratio);
+  m_world->GetStats().IncQuorumNum();
+  if ((int)(ratio*100*noise) <=org_ratio){
+    //set internal state to 1
+    m_organism->SetQuorum(true);
+  } else m_organism->SetQuorum(false);
+  
+  return true;
+  
+  
+}
+
+bool cHardwareCPU::Inst_SmartExplode(cAvidaContext& ctx)
+{
+  if (m_organism->GetQuorum()){
+    // execute explode chance
+    m_organism->GetPhenotype().SetKaboomExecuted(true);
+    //Case where both Probability and Hamming Distance are static
+    double percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+    int distance = (int) m_world->GetConfig().KABOOM_HAMMING.Get();
+    if ( ctx.GetRandom().P(percent_prob) ) m_organism->Kaboom(distance, ctx);
+  } else {
+    m_world->GetStats().IncDontExplode();
+  }
+  return true;
+}
+
+
 
 bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
 {

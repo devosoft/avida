@@ -201,6 +201,7 @@ STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 
 // kabooms
 STATS_OUT_FILE(PrintKaboom, kabooms.dat);
+STATS_OUT_FILE(PrintQuorum, threshold.dat);
 
 // group formation
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
@@ -5183,6 +5184,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
     
   // kabooms output file
   action_lib->Register<cActionPrintKaboom>("PrintKaboom");
+  action_lib->Register<cActionPrintQuorum>("PrintQuorum");
   
   // deme output files
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeAllStats");

@@ -210,6 +210,10 @@ private:
   int num_kaboom_kills;
   Apto::Array<int> hd_list;
   
+  // Quorum threshold stats
+  int num_stop_explode;
+  int ave_threshold;
+  int num_quorum;
   
   // ------- Division of Labor Stats ---------
   //TODO: Right place for this?
@@ -893,6 +897,12 @@ public:
   void IncKaboomKills() {num_kaboom_kills++;}
   void AddHamDistance(int distance) { hd_list.Push(distance); }
   void PrintKaboom(const cString& filename);
+  
+  //Quorum Sensing stats
+  void IncDontExplode() {num_stop_explode++;}
+  void IncQuorumThreshold(int thresh) {ave_threshold += thresh;}
+  void IncQuorumNum() {num_quorum++;}
+  void PrintQuorum(const cString& filename);
     
  // Division of Labor Stats
   void IncJuvKilled() { juv_killed++; }

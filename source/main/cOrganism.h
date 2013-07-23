@@ -632,6 +632,9 @@ public:
   int GetNumDeposits() { return m_num_deposits; }
   double GetAmountDeposited() { return m_amount_deposited; }
   
+  bool GetQuorum() {return m_quorum;}
+  void SetQuorum(bool quorum) {m_quorum = quorum;}
+  
 protected:
   // The organism's own raw materials
   int m_self_raw_materials; 
@@ -676,6 +679,8 @@ protected:
     int m_num_guard;
     int m_num_deposits;
     double m_amount_deposited;
+  
+  bool m_quorum;
   
   /*! Contains all the different data structures needed to
   track strings, production of strings, and donation/trade
