@@ -620,8 +620,8 @@ void cOrgSensor::WalkCells(cAvidaContext& ctx, sLookInit& in_defs, const int fac
       stuff_seen.forage = first_org->GetForageTarget();
       if ((first_org->IsDisplaying()  || m_world->GetConfig().USE_DISPLAY.Get()) && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());
       if (m_world->GetConfig().USE_MIMICS.Get() && stuff_seen.forage == 1) stuff_seen.forage = first_org->GetShowForageTarget();
+      if (m_world->GetConfig().PRED_CONFUSION.Get() && first_org->IsPreyFT() && !m_organism->IsPreyFT()) TestConfusion(ctx, stuff_seen, first_org);
     }
-    
     if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) SetPotentialDisplayData(stuff_seen);
   }
   return;
@@ -925,6 +925,7 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
       stuff_seen.forage = first_org->GetForageTarget();
       if ((first_org->IsDisplaying()  || m_world->GetConfig().USE_DISPLAY.Get()) && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());
       if (m_world->GetConfig().USE_MIMICS.Get() && stuff_seen.forage == 1) stuff_seen.forage = first_org->GetShowForageTarget();
+      if (m_world->GetConfig().PRED_CONFUSION.Get() && first_org->IsPreyFT() && !m_organism->IsPreyFT()) TestConfusion(ctx, stuff_seen, first_org);
     }
     
     if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) SetPotentialDisplayData(stuff_seen);
@@ -1480,3 +1481,36 @@ int cOrgSensor::FindDistanceFromHome()
   // Otherwise will return distance to here from the 'marked' spot where those instructions were executed.
   return max(abs(m_organism->GetEasterly()), abs(m_organism->GetNortherly()));
 }
+
+void cOrgSensor::TestConfusion(cAvidaContext& ctx, sLookOut& stuff_seen, cOrganism* first_org)
+{
+  int prey_count = 0;
+  Apto::Array<int> neighborhood;
+  if (!m_use_avatar) {
+    if (first_org->IsPreyFT()) prey_count++; 
+    first_org->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
+    for (int j = 0; j < neighborhood.GetSize(); j++) {
+      if (first_org->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
+          !first_org->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsDead()) {
+        if (first_org->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsPreyFT()) prey_count++;
+      }
+    }
+  }
+  else {
+    prey_count += first_org->GetOrgInterface().GetCell(first_org->GetOrgInterface().GetAVCellID())->GetNumPreyAV(); // self cell
+    first_org->GetOrgInterface().GetAVNeighborhoodCellIDs(neighborhood);
+    for (int j = 0; j < neighborhood.GetSize(); j++) {
+      prey_count += first_org->GetOrgInterface().GetCell(neighborhood[j])->GetNumPreyAV();
+    }
+  }
+  
+  double odds = 1.0 / ((double) (prey_count));
+  if (ctx.GetRandom().GetDouble() >= odds) {
+    stuff_seen.distance = ctx.GetRandom().GetInt();
+    stuff_seen.count = ctx.GetRandom().GetInt();
+    stuff_seen.value = ctx.GetRandom().GetInt();
+    stuff_seen.group = ctx.GetRandom().GetInt();
+    stuff_seen.deviance = ctx.GetRandom().GetInt();
+  }
+}
+

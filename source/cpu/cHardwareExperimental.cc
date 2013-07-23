@@ -5271,7 +5271,7 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
   int prey_count = 0;
   Apto::Array<int> neighborhood;
   if (!m_use_avatar) {
-    prey_count++; // self
+    if (m_organism->IsPreyFT()) prey_count++; // self
     m_organism->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
     for (int j = 0; j < neighborhood.GetSize(); j++) {
       if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&

@@ -150,6 +150,9 @@ class cOrgSensor
   
   int FindDirFromHome();
   int FindDistanceFromHome();
+  
+  void TestConfusion(cAvidaContext& ctx, sLookOut& stuff_Seen, cOrganism* first_org);
+  void TestDetection(cAvidaContext& ctx, sLookOut& stuff_Seen, cOrganism* first_org);
 };
 
 inline bool cOrgSensor::TestBounds(const Apto::Coord<int>& cell_id, sBounds& bounds)
