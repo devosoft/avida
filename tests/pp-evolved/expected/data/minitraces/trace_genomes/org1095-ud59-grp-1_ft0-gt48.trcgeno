@@ -1,21 +1,18 @@
-# Sat Jun  1 18:46:57 2013
-# Filename........: archive/ft-2_grp-1_052-aaaac.org
-# Update Output...: 100
+# Thu Jul 25 18:46:50 2013
+# Filename........: minitraces/trace_genomes/org1095-ud59-grp-1_ft0-gt48.trcgeno
+# Update Output...: 59
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
 # 
 # Generation: 0
-# Merit...........: 52.000000
+# Merit...........: 53.000000
 # Gestation Time..: 0
 # Fitness.........: 0.000000
 # Errors..........: 0
-# Genome Size.....: 52
-# Copied Size.....: 52
-# Executed Size...: 52
-# Last Birth Group ID........: -1
-# Last Birth Forager Type....: -2
-# Last Birth Cell............: 23115
+# Genome Size.....: 53
+# Copied Size.....: 53
+# Executed Size...: 53
 # Offspring.......: NONE
 # 
 # Tasks Performed:
@@ -23,38 +20,39 @@
 
 
 move
-nop-F
+get-north-offset
 IO
 nop-H
 move
 fork-thread
 mov-head
-search-seq-direct-s
-zero
+shift-r
 dec
-nop-H
+dec
+swap-stk
+if-less-0
 nop-C
-shift-l
+teach-offspring
 if-gtr-x
 move
 learn-parent
-add
+nop-C
 rotate-away-org-id
 rand
 nop-B
 nop-F
 get-north-offset
 move
+shift-l
 move
-if-gtr-x
 swap
 nop-A
 add
 if-not-0
-attack-prey
+rotate-org-id
 rotate-x
 push
-move
+one
 IO
 nop-B
 move
@@ -71,6 +69,6 @@ nop-A
 nop-C
 set-flow
 nand
-set-flow
+move
 if-less-0
 nop-X

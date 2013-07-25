@@ -1,21 +1,21 @@
 # Thu Jul 25 18:46:54 2013
-# Filename........: archive/ft-1_grp-1_075-aaaag.org
+# Filename........: archive/ft-2_grp-1_073-aaaaf.org
 # Update Output...: 100
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
 # 
 # Generation: 0
-# Merit...........: 75.000000
+# Merit...........: 73.000000
 # Gestation Time..: 0
 # Fitness.........: 0.000000
 # Errors..........: 0
-# Genome Size.....: 75
-# Copied Size.....: 75
-# Executed Size...: 75
+# Genome Size.....: 73
+# Copied Size.....: 73
+# Executed Size...: 73
 # Last Birth Group ID........: -1
-# Last Birth Forager Type....: -1
-# Last Birth Cell............: 0
+# Last Birth Forager Type....: -2
+# Last Birth Cell............: 30062
 # Offspring.......: NONE
 # 
 # Tasks Performed:
@@ -23,29 +23,28 @@
 
 
 learn-parent
+search-seq-comp-s
 rotate-org-id
 nop-D
 one
+swap-stk
 rotate-away-org-id
 nop-A
 if-less
 fork-thread
-IO
-nop-A
-attack-prey
 teach-offspring
-nop-B
-swap
+attack-prey
+look-ahead-intercept
+nop-E
 swap
 attack-prey
-nop-H
+rotate-away-org-id
 get-forage-target
 get-head
 fork-thread
 set-flow
-nop-H
 if-gtr-0
-move
+wait-cond-less
 if-gtr-0
 nop-H
 rotate-away-org-id
@@ -57,10 +56,9 @@ nop-C
 rotate-x
 nop-F
 if-gtr-x
+nop-G
 nop-H
-learn-parent
-nop-H
-shift-r
+if-less-0
 attack-prey
 nop-G
 rotate-org-id
@@ -95,5 +93,5 @@ nop-G
 if-gtr-0
 repro
 attack-prey
-if-equ-x
+search-seq-comp-s
 get-forage-target

@@ -1,5 +1,5 @@
-# Sat Jun  1 18:46:53 2013
-# Filename........: minitraces/trace_genomes/org916-ud40-grp-1_ft0-gt294.trcgeno
+# Thu Jul 25 18:46:49 2013
+# Filename........: minitraces/trace_genomes/org916-ud40-grp-1_ft0-gt445.trcgeno
 # Update Output...: 40
 # Is Viable.......: 0
 # Repro Cycle Size: 0
@@ -49,7 +49,7 @@ if-not-0
 rotate-x
 rotate-x
 push
-shift-l
+if-less
 IO
 nop-B
 move

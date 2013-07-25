@@ -1424,16 +1424,17 @@ Apto::Array<int, Apto::Smart> cOrgSensor::BuildResArray(sLookInit& in_defs, bool
 }
 
 int cOrgSensor::ReturnRelativeFacing(cOrganism* sighted_org) {
-  const int target_facing = sighted_org->GetOrgInterface().GetFacedDir();
-  const int org_facing = m_organism->GetOrgInterface().GetFacedDir();
+  int target_facing = sighted_org->GetOrgInterface().GetFacedDir();
+  int org_facing = m_organism->GetOrgInterface().GetFacedDir();
   if (m_use_avatar != 0) {
-    sighted_org->GetOrgInterface().GetAVFacing();
-    m_organism->GetOrgInterface().GetAVFacing();
+    target_facing = sighted_org->GetOrgInterface().GetAVFacing();
+    org_facing = m_organism->GetOrgInterface().GetAVFacing();
   }
   int match_heading = target_facing - org_facing;             // to match target's heading, rotate this many times in this direction
   if (match_heading > 4) match_heading -= 8;                  // rotate left x times
   else if (match_heading < -4) match_heading += 8;            // rotate right x times
   else if (abs(match_heading) == 4) match_heading = 4;        // rotating 4 and -4 to look same to org
+  m_return_rel_facing = false;
   return match_heading;
 }
 
@@ -1504,7 +1505,9 @@ void cOrgSensor::TestConfusion(cAvidaContext& ctx, sLookOut& stuff_seen, cOrgani
     }
   }
   
-  double odds = 1.0 / ((double) (prey_count));
+  // double odds = 1.0 / ((double) (prey_count));
+  double odds = 1.0 - (0.10 * (double) prey_count); // 0 friend = 10% confusion, 1 friend = 20%, 8 friends = 90%
+
   if (ctx.GetRandom().GetDouble() >= odds) {
     stuff_seen.distance = ctx.GetRandom().GetInt();
     stuff_seen.count = ctx.GetRandom().GetInt();
