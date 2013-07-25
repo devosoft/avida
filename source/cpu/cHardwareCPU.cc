@@ -3588,7 +3588,8 @@ bool cHardwareCPU::Inst_NoisyQuorum(cAvidaContext& ctx) {
   
   float ratio = ((float)kincounter/(float)((2*radius +1)*(2*radius+1) -1));
   int org_ratio = GetRegister(FindModifiedRegister(REG_BX))%100;
-  float noise = abs(ctx.GetRandom().GetRandNormal(1, .1));
+  float sd = m_world->GetConfig().NOISY_QS_SD.Get();
+  float noise = abs(ctx.GetRandom().GetRandNormal(1, sd));
   
   //cout << GetRegister(FindModifiedRegister(REG_BX)) << endl;
   //cout << org_ratio << endl;

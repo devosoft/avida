@@ -580,6 +580,7 @@ public:
   CONFIG_ADD_VAR(KABOOM4_HAMMING, int, 4, "Hamming distance of kaboom4's threshold, set to -1 to have adjustable, default is 4.");
   CONFIG_ADD_VAR(KABOOM5_HAMMING, int, 5, "Hamming distance of kaboom5's threshold, set to -1 to have adjustable, default is 5 for clan altruists.");
   CONFIG_ADD_VAR(NO_MUT_INSTS, cString, "", "A list of the instruction symbols that should not be able to be mutated out, NOT checked for all mutation types.");
+  CONFIG_ADD_VAR(NOISY_QS_SD, double, .05, "The standard deviation for the gaussian distribution (mean = 1) that is multiplied with the kin percent found for NoisyQuorum inst");
 
   // -------- Geneology config options --------
   CONFIG_ADD_GROUP(GENEOLOGY_GROUP, "Geneology");
