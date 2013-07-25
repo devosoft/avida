@@ -1,6 +1,6 @@
-# Sat Jun  1 18:46:53 2013
-# Filename........: minitraces/trace_genomes/org916-ud40-grp-1_ft0-gt294.trcgeno
-# Update Output...: 40
+# Thu Jul 25 18:59:45 2013
+# Filename........: minitraces/trace_genomes/org1104-ud59-grp-1_ft-2-gt503.trcgeno
+# Update Output...: 59
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
@@ -19,7 +19,6 @@
 # eat-target 0 (0.000000)
 
 
-nand
 move
 IO
 nop-H
@@ -28,10 +27,12 @@ fork-thread
 mov-head
 search-seq-direct-s
 zero
-nop-E
+rotate-x
+sub
+inc
 swap-stk
 nop-C
-learn-parent
+rotate-away-org-id
 nop-G
 dec
 rand
@@ -40,27 +41,27 @@ move
 shift-l
 IO
 move
-teach-offspring
 if-gtr-x
 nop-E
-push-all
+nop-A
 add
 if-not-0
-rotate-x
+rotate-org-id
 rotate-x
 push
 shift-l
 IO
 nop-B
 move
-one
+attack-prey
 push
+look-ahead-intercept
 rand
 push
 nand
 look-ahead-intercept
 learn-parent
-swap-stk
+move
 set-forage-target
 shift-l
 push-all
@@ -71,7 +72,6 @@ swap-stk
 id-thread
 push-all
 move
-nop-X
-nop-X
-sub
+get-north-offset
+if-less
 nop-A

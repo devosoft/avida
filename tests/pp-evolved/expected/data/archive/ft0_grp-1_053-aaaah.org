@@ -1,4 +1,4 @@
-# Sat Jun  1 18:46:57 2013
+# Thu Jul 25 18:59:48 2013
 # Filename........: archive/ft0_grp-1_053-aaaah.org
 # Update Output...: 100
 # Is Viable.......: 0
@@ -15,7 +15,7 @@
 # Executed Size...: 53
 # Last Birth Group ID........: -1
 # Last Birth Forager Type....: 0
-# Last Birth Cell............: 23354
+# Last Birth Cell............: 14414
 # Offspring.......: NONE
 # 
 # Tasks Performed:

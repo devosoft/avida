@@ -979,11 +979,11 @@ Apto::Array<int, Apto::Smart> cOrgSensor::BuildResArray(sLookInit& in_defs, bool
 }
 
 int cOrgSensor::ReturnRelativeFacing(cOrganism* sighted_org) {
-  const int target_facing = sighted_org->GetOrgInterface().GetFacedDir();
-  const int org_facing = m_organism->GetOrgInterface().GetFacedDir();
+  int target_facing = sighted_org->GetOrgInterface().GetFacedDir();
+  int org_facing = m_organism->GetOrgInterface().GetFacedDir();
   if (m_use_avatar != 0) {
-    sighted_org->GetOrgInterface().GetAVFacing();
-    m_organism->GetOrgInterface().GetAVFacing();
+    target_facing = sighted_org->GetOrgInterface().GetAVFacing();
+    org_facing = m_organism->GetOrgInterface().GetAVFacing();
   }
   int match_heading = target_facing - org_facing;             // to match target's heading, rotate this many times in this direction
   if (match_heading > 4) match_heading -= 8;                  // rotate left x times
