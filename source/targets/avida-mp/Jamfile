@@ -1,7 +1,0 @@
-exe avida-mp :
-    /avida//avida-core
-    /user-config//boost_mpi
-    /user-config//boost_serialization
-    ../../main/cMultiProcessWorld.cc
-    main.cc
-;

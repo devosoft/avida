@@ -58,28 +58,6 @@
 		7023EC970C0A431B00362B9C /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
 		7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		7029D7BD1491AF7800C3B8AA /* GeneticRepresentation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7029D7BC1491AF7800C3B8AA /* GeneticRepresentation.cc */; };
-		7038247914DC3C7B003C6901 /* cAnalyzeScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF470B2FBC85001269F6 /* cAnalyzeScreen.cc */; };
-		7038247A14DC3C7B003C6901 /* cAnalyzeView.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF490B2FBC85001269F6 /* cAnalyzeView.cc */; };
-		7038247B14DC3C7B003C6901 /* cTextViewerAnalyzeDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF4C0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.cc */; };
-		7038247C14DC3C7B003C6901 /* cTextViewerDriver_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF4E0B2FBC85001269F6 /* cTextViewerDriver_Base.cc */; };
-		7038247D14DC3C7B003C6901 /* cBarScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC59097AF730002F8733 /* cBarScreen.cc */; };
-		7038247E14DC3C7B003C6901 /* cEnvironmentScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC5C097AF730002F8733 /* cEnvironmentScreen.cc */; };
-		7038247F14DC3C7B003C6901 /* cHistScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC5E097AF730002F8733 /* cHistScreen.cc */; };
-		7038248014DC3C7B003C6901 /* cMapScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC61097AF730002F8733 /* cMapScreen.cc */; };
-		7038248114DC3C7B003C6901 /* cMenuWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC63097AF730002F8733 /* cMenuWindow.cc */; };
-		7038248214DC3C7B003C6901 /* cOptionsScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC65097AF730002F8733 /* cOptionsScreen.cc */; };
-		7038248314DC3C7B003C6901 /* cStatsScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC69097AF730002F8733 /* cStatsScreen.cc */; };
-		7038248414DC3C7B003C6901 /* cSymbolUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC6B097AF730002F8733 /* cSymbolUtil.cc */; };
-		7038248514DC3C7B003C6901 /* cTextViewerDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC6D097AF730002F8733 /* cTextViewerDriver.cc */; };
-		7038248614DC3C7B003C6901 /* cTextWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC6F097AF730002F8733 /* cTextWindow.cc */; };
-		7038248714DC3C7B003C6901 /* cView.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC71097AF730002F8733 /* cView.cc */; };
-		7038248814DC3C7B003C6901 /* cViewInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC73097AF730002F8733 /* cViewInfo.cc */; };
-		7038248914DC3C7B003C6901 /* cZoomScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC75097AF730002F8733 /* cZoomScreen.cc */; };
-		7038248A14DC3C7B003C6901 /* viewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC78097AF730002F8733 /* viewer.cc */; };
-		7038248B14DC3C8F003C6901 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
-		7038248C14DC3C92003C6901 /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
-		7038248D14DC3C95003C6901 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		7038248E14DC3C9A003C6901 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		70392027178DE091009BBCC5 /* NopSequence.h in Headers */ = {isa = PBXBuildFile; fileRef = 70392026178DE091009BBCC5 /* NopSequence.h */; };
 		70392029178DE0AA009BBCC5 /* NopSequence.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70392028178DE0AA009BBCC5 /* NopSequence.cc */; };
 		7039202B178DEF5C009BBCC5 /* Avida.h in Headers */ = {isa = PBXBuildFile; fileRef = 7039202A178DEF5B009BBCC5 /* Avida.h */; };
@@ -94,7 +72,6 @@
 		704C629A160CA668004E9B25 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
 		704C629D160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 704C629C160CA6CC004E9B25 /* libtcmalloc-1.4.a */; };
 		704C629E160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 704C629C160CA6CC004E9B25 /* libtcmalloc-1.4.a */; };
-		704C629F160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 704C629C160CA6CC004E9B25 /* libtcmalloc-1.4.a */; };
 		704C62A0160CA6D9004E9B25 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
 		70556A0216BB042600EAAA9B /* cLandscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70556A0016BB042600EAAA9B /* cLandscape.cc */; };
 		70556A0316BB042600EAAA9B /* cLandscape.h in Headers */ = {isa = PBXBuildFile; fileRef = 70556A0116BB042600EAAA9B /* cLandscape.h */; };
@@ -183,7 +160,6 @@
 		70A9478B17A025A4007C639E /* InstMemSpace.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A9478A17A025A4007C639E /* InstMemSpace.cc */; };
 		70A9478E17A03133007C639E /* VisualSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = 70A9478D17A03133007C639E /* VisualSensor.h */; };
 		70B1B1DA13F43016005DDF90 /* Properties.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B1B1D913F43016005DDF90 /* Properties.cc */; };
-		70B6514F0BEA6FCC002472ED /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701EF27E0BEA5D2300DAE168 /* main.cc */; };
 		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
 		70B9DC4913B91F6B00C833BB /* Manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BEC9E13B3C9C2004CB59D /* Manager.cc */; };
 		70D3AD0A1455DFB4000FAB0F /* Package.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70D3AD091455DFB4000FAB0F /* Package.cc */; };
@@ -227,26 +203,7 @@
 		70FA7AC9138C308500DC70D4 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		7038248F14DC49D4003C6901 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7023EC320C0A426900362B9C;
-			remoteInfo = "avida-core (static)";
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
-		7038246D14DC3C38003C6901 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 12;
-			dstPath = work;
-			dstSubfolderSpec = 16;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
 		70486B9508267145009328F0 /* Create work dir */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 8;
@@ -283,13 +240,6 @@
 		4201F39A0BE187F6006279B9 /* cTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTopology.h; sourceTree = "<group>"; };
 		42777E5B0C7F123600AFA4ED /* cOrgMessage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOrgMessage.h; sourceTree = "<group>"; };
 		4ABC70211350AF3000EB56AA /* dynamic_res.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = dynamic_res.html; sourceTree = "<group>"; };
-		5629D80D0C3EE13500C5F152 /* cTextWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextWindow.cc; sourceTree = "<group>"; };
-		5629D80E0C3EE13500C5F152 /* cTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextWindow.h; sourceTree = "<group>"; };
-		5629D80F0C3EE13500C5F152 /* ncurses-defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "ncurses-defs.h"; sourceTree = "<group>"; };
-		56F555DF0C3B402A00E2E929 /* cDriver_TextViewer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDriver_TextViewer.cc; sourceTree = "<group>"; };
-		56F555E00C3B402A00E2E929 /* cDriver_TextViewer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDriver_TextViewer.h; sourceTree = "<group>"; };
-		56F555E30C3B402A00E2E929 /* LAYOUT */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = LAYOUT; sourceTree = "<group>"; };
-		56F555E40C3B402A00E2E929 /* viewer-text.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "viewer-text.cc"; sourceTree = "<group>"; };
 		7000B64915C6E8F900EE3F14 /* Clade.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Clade.h; sourceTree = "<group>"; };
 		7000B64A15C6E8F900EE3F14 /* CladeArbiter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CladeArbiter.h; sourceTree = "<group>"; };
 		7000B64C15C6E90D00EE3F14 /* Clade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Clade.cc; sourceTree = "<group>"; };
@@ -315,7 +265,6 @@
 		7013846009028B3E0087ED2E /* cAvidaConfig.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaConfig.cc; sourceTree = "<group>"; };
 		70166B8D0B519CFE009533A5 /* cTaskState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskState.h; sourceTree = "<group>"; };
 		701D51CB09C645F50009B4F8 /* cAvidaContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaContext.h; sourceTree = "<group>"; };
-		701EF27E0BEA5D2300DAE168 /* main.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		7020828D0FB9F2DF00637AD6 /* cBitArray.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBitArray.cc; sourceTree = "<group>"; };
 		7020828E0FB9F2DF00637AD6 /* cBitArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBitArray.h; sourceTree = "<group>"; };
 		7023EC330C0A426900362B9C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -406,7 +355,6 @@
 		70381F7F0EAD0BD000A97DFD /* ASAnalyzeLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAnalyzeLib.h; sourceTree = "<group>"; };
 		70381F800EAD0BD000A97DFD /* ASAnalyzeLib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASAnalyzeLib.cc; sourceTree = "<group>"; };
 		70381FDB0EAE2A2A00A97DFD /* ASAvidaNativeObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAvidaNativeObjects.h; sourceTree = "<group>"; };
-		7038246F14DC3C38003C6901 /* avida-viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7038918C13BBA88800606079 /* Avida3Driver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Avida3Driver.cc; sourceTree = "<group>"; };
 		7038918D13BBA88800606079 /* Avida3Driver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Avida3Driver.h; sourceTree = "<group>"; };
 		7038918F13BBB2A900606079 /* Context.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Context.h; sourceTree = "<group>"; };
@@ -561,9 +509,6 @@
 		706C6FFD0B83F254003174C1 /* cInstSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstSet.h; sourceTree = "<group>"; };
 		706C6FFE0B83F265003174C1 /* cInstSet.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInstSet.cc; sourceTree = "<group>"; };
 		706C7B64125F64B000EDB4B9 /* libviewer-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libviewer-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		706C7B86125F653800EDB4B9 /* cScreen_Map.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cScreen_Map.cc; sourceTree = "<group>"; };
-		706C7B87125F653800EDB4B9 /* cScreen_Map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cScreen_Map.h; sourceTree = "<group>"; };
-		706C7B88125F653800EDB4B9 /* cTextScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTextScreen.h; sourceTree = "<group>"; };
 		706EA25D149950390021E441 /* Arbiter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Arbiter.h; sourceTree = "<group>"; };
 		706EA25E149950390021E441 /* Group.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Group.h; sourceTree = "<group>"; };
 		706EA25F149950390021E441 /* Manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
@@ -645,16 +590,6 @@
 		70920C680A9CCE2C00757CDB /* print_data.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = print_data.html; sourceTree = "<group>"; };
 		7095867814439E5E00243303 /* Provider.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Provider.cc; sourceTree = "<group>"; };
 		7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cEnvReqs.h; sourceTree = "<group>"; };
-		7099EF470B2FBC85001269F6 /* cAnalyzeScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cAnalyzeScreen.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		7099EF480B2FBC85001269F6 /* cAnalyzeScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeScreen.h; sourceTree = "<group>"; };
-		7099EF490B2FBC85001269F6 /* cAnalyzeView.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeView.cc; sourceTree = "<group>"; };
-		7099EF4A0B2FBC85001269F6 /* cAnalyzeView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeView.h; sourceTree = "<group>"; };
-		7099EF4B0B2FBC85001269F6 /* cTabBox.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTabBox.h; sourceTree = "<group>"; };
-		7099EF4C0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextViewerAnalyzeDriver.cc; sourceTree = "<group>"; };
-		7099EF4D0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextViewerAnalyzeDriver.h; sourceTree = "<group>"; };
-		7099EF4E0B2FBC85001269F6 /* cTextViewerDriver_Base.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextViewerDriver_Base.cc; sourceTree = "<group>"; };
-		7099EF4F0B2FBC85001269F6 /* cTextViewerDriver_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextViewerDriver_Base.h; sourceTree = "<group>"; };
-		7099EF500B2FBC85001269F6 /* cView_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cView_Base.h; sourceTree = "<group>"; };
 		709CDEA2149BF18100995644 /* Listener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Listener.h; sourceTree = "<group>"; };
 		709CDEA5149BF69000995644 /* Arbiter.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Arbiter.cc; sourceTree = "<group>"; };
 		709CDEA6149BF69000995644 /* Group.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Group.cc; sourceTree = "<group>"; };
@@ -787,36 +722,6 @@
 		70DC2758178F514E00A93DA4 /* InstArchCPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InstArchCPU.h; sourceTree = "<group>"; };
 		70DC275A178F526E00A93DA4 /* InstArchCPU.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InstArchCPU.cc; sourceTree = "<group>"; };
 		70DCAC57097AF730002F8733 /* main.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
-		70DCAC59097AF730002F8733 /* cBarScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cBarScreen.cc; sourceTree = "<group>"; };
-		70DCAC5A097AF730002F8733 /* cBarScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cBarScreen.h; sourceTree = "<group>"; };
-		70DCAC5B097AF730002F8733 /* cBaseTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cBaseTextWindow.h; sourceTree = "<group>"; };
-		70DCAC5C097AF730002F8733 /* cEnvironmentScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cEnvironmentScreen.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		70DCAC5D097AF730002F8733 /* cEnvironmentScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEnvironmentScreen.h; sourceTree = "<group>"; };
-		70DCAC5E097AF730002F8733 /* cHistScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHistScreen.cc; sourceTree = "<group>"; };
-		70DCAC5F097AF730002F8733 /* cHistScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHistScreen.h; sourceTree = "<group>"; };
-		70DCAC61097AF730002F8733 /* cMapScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMapScreen.cc; sourceTree = "<group>"; };
-		70DCAC62097AF730002F8733 /* cMapScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMapScreen.h; sourceTree = "<group>"; };
-		70DCAC63097AF730002F8733 /* cMenuWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMenuWindow.cc; sourceTree = "<group>"; };
-		70DCAC64097AF730002F8733 /* cMenuWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMenuWindow.h; sourceTree = "<group>"; };
-		70DCAC65097AF730002F8733 /* cOptionsScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cOptionsScreen.cc; sourceTree = "<group>"; };
-		70DCAC66097AF730002F8733 /* cOptionsScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOptionsScreen.h; sourceTree = "<group>"; };
-		70DCAC68097AF730002F8733 /* cScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cScreen.h; sourceTree = "<group>"; };
-		70DCAC69097AF730002F8733 /* cStatsScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cStatsScreen.cc; sourceTree = "<group>"; };
-		70DCAC6A097AF730002F8733 /* cStatsScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cStatsScreen.h; sourceTree = "<group>"; };
-		70DCAC6B097AF730002F8733 /* cSymbolUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSymbolUtil.cc; sourceTree = "<group>"; };
-		70DCAC6C097AF730002F8733 /* cSymbolUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSymbolUtil.h; sourceTree = "<group>"; };
-		70DCAC6D097AF730002F8733 /* cTextViewerDriver.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextViewerDriver.cc; sourceTree = "<group>"; };
-		70DCAC6E097AF730002F8733 /* cTextViewerDriver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextViewerDriver.h; sourceTree = "<group>"; };
-		70DCAC6F097AF730002F8733 /* cTextWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextWindow.cc; sourceTree = "<group>"; };
-		70DCAC70097AF730002F8733 /* cTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextWindow.h; sourceTree = "<group>"; };
-		70DCAC71097AF730002F8733 /* cView.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cView.cc; sourceTree = "<group>"; };
-		70DCAC72097AF730002F8733 /* cView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cView.h; sourceTree = "<group>"; };
-		70DCAC73097AF730002F8733 /* cViewInfo.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cViewInfo.cc; sourceTree = "<group>"; };
-		70DCAC74097AF730002F8733 /* cViewInfo.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cViewInfo.h; sourceTree = "<group>"; };
-		70DCAC75097AF730002F8733 /* cZoomScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cZoomScreen.cc; sourceTree = "<group>"; };
-		70DCAC76097AF730002F8733 /* cZoomScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cZoomScreen.h; sourceTree = "<group>"; };
-		70DCAC77097AF730002F8733 /* key_chart */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = key_chart; sourceTree = "<group>"; };
-		70DCAC78097AF730002F8733 /* viewer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = viewer.cc; sourceTree = "<group>"; };
 		70DCAC9B097AF7C0002F8733 /* avida3.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = avida3.cc; sourceTree = "<group>"; };
 		70DCAD1F097AF81A002F8733 /* AvidaScript.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AvidaScript.h; sourceTree = "<group>"; };
 		70DCAD20097AF81A002F8733 /* cLexer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLexer.h; sourceTree = "<group>"; };
@@ -853,18 +758,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7038246C14DC3C38003C6901 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				7038248E14DC3C9A003C6901 /* libavida-core.a in Frameworks */,
-				7038248C14DC3C92003C6901 /* libncurses.5.4.dylib in Frameworks */,
-				7038248B14DC3C8F003C6901 /* libapto.a in Frameworks */,
-				7038248D14DC3C95003C6901 /* (null) in Frameworks */,
-				704C629F160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		706C7B62125F64B000EDB4B9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -896,31 +789,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		56F555DE0C3B402A00E2E929 /* viewer-text */ = {
-			isa = PBXGroup;
-			children = (
-				706C7B86125F653800EDB4B9 /* cScreen_Map.cc */,
-				706C7B87125F653800EDB4B9 /* cScreen_Map.h */,
-				706C7B88125F653800EDB4B9 /* cTextScreen.h */,
-				5629D80D0C3EE13500C5F152 /* cTextWindow.cc */,
-				5629D80E0C3EE13500C5F152 /* cTextWindow.h */,
-				5629D80F0C3EE13500C5F152 /* ncurses-defs.h */,
-				56F555DF0C3B402A00E2E929 /* cDriver_TextViewer.cc */,
-				56F555E00C3B402A00E2E929 /* cDriver_TextViewer.h */,
-				56F555E30C3B402A00E2E929 /* LAYOUT */,
-				56F555E40C3B402A00E2E929 /* viewer-text.cc */,
-			);
-			path = "viewer-text";
-			sourceTree = "<group>";
-		};
-		701EF27D0BEA5D2300DAE168 /* unit-tests */ = {
-			isa = PBXGroup;
-			children = (
-				701EF27E0BEA5D2300DAE168 /* main.cc */,
-			);
-			path = "unit-tests";
-			sourceTree = "<group>";
-		};
 		702A66DF121C73EE0014F776 /* glossary */ = {
 			isa = PBXGroup;
 			children = (
@@ -1605,9 +1473,6 @@
 			children = (
 				70DCAC55097AF730002F8733 /* avida */,
 				70DCAC56097AF730002F8733 /* avida-s */,
-				70DCAC58097AF730002F8733 /* avida-viewer */,
-				701EF27D0BEA5D2300DAE168 /* unit-tests */,
-				56F555DE0C3B402A00E2E929 /* viewer-text */,
 			);
 			path = targets;
 			sourceTree = "<group>";
@@ -1628,53 +1493,6 @@
 				70DCAC57097AF730002F8733 /* main.cc */,
 			);
 			path = "avida-s";
-			sourceTree = "<group>";
-		};
-		70DCAC58097AF730002F8733 /* avida-viewer */ = {
-			isa = PBXGroup;
-			children = (
-				7099EF470B2FBC85001269F6 /* cAnalyzeScreen.cc */,
-				7099EF480B2FBC85001269F6 /* cAnalyzeScreen.h */,
-				7099EF490B2FBC85001269F6 /* cAnalyzeView.cc */,
-				7099EF4A0B2FBC85001269F6 /* cAnalyzeView.h */,
-				7099EF4B0B2FBC85001269F6 /* cTabBox.h */,
-				7099EF4C0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.cc */,
-				7099EF4D0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.h */,
-				7099EF4E0B2FBC85001269F6 /* cTextViewerDriver_Base.cc */,
-				7099EF4F0B2FBC85001269F6 /* cTextViewerDriver_Base.h */,
-				7099EF500B2FBC85001269F6 /* cView_Base.h */,
-				70DCAC59097AF730002F8733 /* cBarScreen.cc */,
-				70DCAC5A097AF730002F8733 /* cBarScreen.h */,
-				70DCAC5B097AF730002F8733 /* cBaseTextWindow.h */,
-				70DCAC5C097AF730002F8733 /* cEnvironmentScreen.cc */,
-				70DCAC5D097AF730002F8733 /* cEnvironmentScreen.h */,
-				70DCAC5E097AF730002F8733 /* cHistScreen.cc */,
-				70DCAC5F097AF730002F8733 /* cHistScreen.h */,
-				70DCAC61097AF730002F8733 /* cMapScreen.cc */,
-				70DCAC62097AF730002F8733 /* cMapScreen.h */,
-				70DCAC63097AF730002F8733 /* cMenuWindow.cc */,
-				70DCAC64097AF730002F8733 /* cMenuWindow.h */,
-				70DCAC65097AF730002F8733 /* cOptionsScreen.cc */,
-				70DCAC66097AF730002F8733 /* cOptionsScreen.h */,
-				70DCAC68097AF730002F8733 /* cScreen.h */,
-				70DCAC69097AF730002F8733 /* cStatsScreen.cc */,
-				70DCAC6A097AF730002F8733 /* cStatsScreen.h */,
-				70DCAC6B097AF730002F8733 /* cSymbolUtil.cc */,
-				70DCAC6C097AF730002F8733 /* cSymbolUtil.h */,
-				70DCAC6D097AF730002F8733 /* cTextViewerDriver.cc */,
-				70DCAC6E097AF730002F8733 /* cTextViewerDriver.h */,
-				70DCAC6F097AF730002F8733 /* cTextWindow.cc */,
-				70DCAC70097AF730002F8733 /* cTextWindow.h */,
-				70DCAC71097AF730002F8733 /* cView.cc */,
-				70DCAC72097AF730002F8733 /* cView.h */,
-				70DCAC73097AF730002F8733 /* cViewInfo.cc */,
-				70DCAC74097AF730002F8733 /* cViewInfo.h */,
-				70DCAC75097AF730002F8733 /* cZoomScreen.cc */,
-				70DCAC76097AF730002F8733 /* cZoomScreen.h */,
-				70DCAC77097AF730002F8733 /* key_chart */,
-				70DCAC78097AF730002F8733 /* viewer.cc */,
-			);
-			path = "avida-viewer";
 			sourceTree = "<group>";
 		};
 		70DCAD1E097AF81A002F8733 /* script */ = {
@@ -1959,7 +1777,6 @@
 				70B6514C0BEA6FAD002472ED /* unit-tests */,
 				7023EC330C0A426900362B9C /* libavida-core.a */,
 				706C7B64125F64B000EDB4B9 /* libviewer-core.a */,
-				7038246F14DC3C38003C6901 /* avida-viewer */,
 			);
 			name = products;
 			sourceTree = "<group>";
@@ -2039,24 +1856,6 @@
 			productReference = 7023EC330C0A426900362B9C /* libavida-core.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		7038246E14DC3C38003C6901 /* avida-viewer */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 7038247614DC3C3A003C6901 /* Build configuration list for PBXNativeTarget "avida-viewer" */;
-			buildPhases = (
-				7038246B14DC3C38003C6901 /* Sources */,
-				7038246C14DC3C38003C6901 /* Frameworks */,
-				7038246D14DC3C38003C6901 /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				7038249014DC49D4003C6901 /* PBXTargetDependency */,
-			);
-			name = "avida-viewer";
-			productName = "avida-viewer";
-			productReference = 7038246F14DC3C38003C6901 /* avida-viewer */;
-			productType = "com.apple.product-type.tool";
-		};
 		706C7B63125F64B000EDB4B9 /* avida-viewer (static) */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 706C7B6E125F64F100EDB4B9 /* Build configuration list for PBXNativeTarget "avida-viewer (static)" */;
@@ -2133,7 +1932,6 @@
 			targets = (
 				DCC3164C07626CF3008F7A48 /* avida */,
 				70B6514B0BEA6FAD002472ED /* avida-tests */,
-				7038246E14DC3C38003C6901 /* avida-viewer */,
 				7023EC320C0A426900362B9C /* avida-core (static) */,
 				706C7B63125F64B000EDB4B9 /* avida-viewer (static) */,
 			);
@@ -2275,31 +2073,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7038246B14DC3C38003C6901 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				7038247914DC3C7B003C6901 /* cAnalyzeScreen.cc in Sources */,
-				7038247A14DC3C7B003C6901 /* cAnalyzeView.cc in Sources */,
-				7038247B14DC3C7B003C6901 /* cTextViewerAnalyzeDriver.cc in Sources */,
-				7038247C14DC3C7B003C6901 /* cTextViewerDriver_Base.cc in Sources */,
-				7038247D14DC3C7B003C6901 /* cBarScreen.cc in Sources */,
-				7038247E14DC3C7B003C6901 /* cEnvironmentScreen.cc in Sources */,
-				7038247F14DC3C7B003C6901 /* cHistScreen.cc in Sources */,
-				7038248014DC3C7B003C6901 /* cMapScreen.cc in Sources */,
-				7038248114DC3C7B003C6901 /* cMenuWindow.cc in Sources */,
-				7038248214DC3C7B003C6901 /* cOptionsScreen.cc in Sources */,
-				7038248314DC3C7B003C6901 /* cStatsScreen.cc in Sources */,
-				7038248414DC3C7B003C6901 /* cSymbolUtil.cc in Sources */,
-				7038248514DC3C7B003C6901 /* cTextViewerDriver.cc in Sources */,
-				7038248614DC3C7B003C6901 /* cTextWindow.cc in Sources */,
-				7038248714DC3C7B003C6901 /* cView.cc in Sources */,
-				7038248814DC3C7B003C6901 /* cViewInfo.cc in Sources */,
-				7038248914DC3C7B003C6901 /* cZoomScreen.cc in Sources */,
-				7038248A14DC3C7B003C6901 /* viewer.cc in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		706C7B61125F64B000EDB4B9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2319,7 +2092,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				70B6514F0BEA6FCC002472ED /* main.cc in Sources */,
 				7020699C0FDFEB7900B77E39 /* cBitArray.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2334,14 +2106,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		7038249014DC49D4003C6901 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7023EC320C0A426900362B9C /* avida-core (static) */;
-			targetProxy = 7038248F14DC49D4003C6901 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		7023EC350C0A42BC00362B9C /* Debug */ = {
@@ -2433,28 +2197,6 @@
 			};
 			name = Release;
 		};
-		7038247714DC3C3A003C6901 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		7038247814DC3C3A003C6901 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
-				);
-				PRODUCT_NAME = "prepare-package";
-			};
-			name = Release;
-		};
 		706C7B65125F64B100EDB4B9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2523,15 +2265,6 @@
 			buildConfigurations = (
 				702442D80859E0B00059BD9B /* Debug */,
 				702442D90859E0B00059BD9B /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		7038247614DC3C3A003C6901 /* Build configuration list for PBXNativeTarget "avida-viewer" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				7038247714DC3C3A003C6901 /* Debug */,
-				7038247814DC3C3A003C6901 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
