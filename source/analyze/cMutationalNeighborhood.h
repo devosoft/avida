@@ -30,7 +30,6 @@
 #include "tMatrix.h"
 
 class cAvidaContext;
-class cCPUMemory;
 class cCPUTestInfo;
 class cInstSet;
 class cTestCPU;

@@ -371,7 +371,7 @@ void cHardwareTransSMT::PrintStatus(ostream& fp)
   << endl;
 	
   for (int i = 0; i < m_mem_array.GetSize(); i++) {
-    const cCPUMemory& mem = m_mem_array[i];
+    const InstMemSpace& mem = m_mem_array[i];
     fp << "  Mem " << i << " (" << mem.GetSize() << "): " << mem.AsString() << endl;
   }
   
@@ -654,7 +654,7 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
     m_organism->GetPhenotype().SetLastTaskCount(m_organism->GetPhenotype().GetCurTaskCount());
   
   m_mem_array[mem_space_used].Resize(end_pos);
-  cCPUMemory injected_code = m_mem_array[mem_space_used];
+  InstMemSpace injected_code = m_mem_array[mem_space_used];
 	
   Inject_DoMutations(ctx, mut_multiplier, injected_code);
 	
@@ -1027,14 +1027,14 @@ inline int cHardwareTransSMT::FindComplementStack(int base_stack)
 int cHardwareTransSMT::calcCopiedSize(const int, const int)
 {
   int copied_size = 0;
-  const cCPUMemory& memory = m_mem_array[m_cur_child];
+  const InstMemSpace& memory = m_mem_array[m_cur_child];
   for (int i = 0; i < memory.GetSize(); i++) {
     if (memory.FlagCopied(i)) copied_size++;
 	}
   return copied_size;
 }
 
-void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, cCPUMemory& injected_code)
+void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, InstMemSpace& injected_code)
 {
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
 	
@@ -1084,7 +1084,7 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
 	
   int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
   int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
-  cCPUMemory& memory = GetMemory();
+  InstMemSpace& memory = GetMemory();
   
   // Parent Substitution Mutations (per site)
   if (m_organism->GetParentMutProb() > 0.0) {

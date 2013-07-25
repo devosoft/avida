@@ -23,7 +23,7 @@
 #ifndef cHeadCPU_h
 #define cHeadCPU_h
 
-#include "cCPUMemory.h"
+#include "InstMemSpace.h"
 #include "cHardwareBase.h"
 #include "cInstSet.h"
 
@@ -41,7 +41,7 @@ protected:
   int m_position;
   int m_mem_space;
   int m_cached_ms;
-  cCPUMemory* m_memory;
+  InstMemSpace* m_memory;
   
   void fullAdjust(int mem_size = -1);
 
@@ -50,8 +50,8 @@ public:
   inline cHeadCPU(const cHeadCPU& in_cpu_head);
   ~cHeadCPU() { ; }
   
-  inline const cCPUMemory& GetMemory() const { return *m_memory; }
-  inline cCPUMemory& GetMemory() { return *m_memory; }
+  inline const InstMemSpace& GetMemory() const { return *m_memory; }
+  inline InstMemSpace& GetMemory() { return *m_memory; }
   inline int GetMemSize() const { return m_memory->GetSize(); }
   
   inline void Adjust() { if (m_mem_space != m_cached_ms || m_position < 0 || m_position >= GetMemSize()) fullAdjust(); }

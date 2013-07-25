@@ -40,6 +40,8 @@ namespace Avida {
     
     class Base : public Structure::Element
     {
+      friend class Feature;
+      
     protected:
       Biota::OrganismPtr m_owner;
       Apto::Array<Biota::OrganismPtr> m_organisms;

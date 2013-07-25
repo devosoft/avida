@@ -1,5 +1,5 @@
 /*
- *  hardware/InstLib.cc
+ *  hardware/InstArchCPU.cc
  *  avida-core
  *
  *  Created by David on 7/11/13.

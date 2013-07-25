@@ -31,7 +31,6 @@
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
-#include "cOrgSensor.h"
 #include "cPopulationCell.h"
 #include "cStateGrid.h"
 #include "cStringUtil.h"

@@ -171,7 +171,6 @@ LIST(APPEND AVIDA_CORE_SOURCES ${CORE_SOURCES})
 # The cpu directory
 SET(CPU_DIR ${PROJECT_SOURCE_DIR}/source/cpu)
 SET(CPU_SOURCES
-  ${CPU_DIR}/cCPUMemory.cc
   ${CPU_DIR}/cCPUTestInfo.cc
   ${CPU_DIR}/cHardwareBase.cc
   ${CPU_DIR}/cHardwareCPU.cc
@@ -239,7 +238,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cMutationRates.cc
   ${MAIN_DIR}/cOrganism.cc
   ${MAIN_DIR}/cOrgMessage.cc
-  ${MAIN_DIR}/cOrgSensor.cc
   ${MAIN_DIR}/cParasite.cc
   ${MAIN_DIR}/cPhenotype.cc
   ${MAIN_DIR}/cPopulation.cc

@@ -22,9 +22,9 @@
 
 #include "cLandscape.h"
 
+#include "avida/hardware/InstMemSpace.h"
 #include "avida/output/File.h"
 
-#include "cCPUMemory.h"
 #include "cEnvironment.h"
 #include "cInstSet.h"
 #include "cHardwareManager.h"
@@ -279,7 +279,7 @@ void cLandscape::ProcessDelete(cAvidaContext& ctx)
   GeneticRepresentationPtr mod_rep_p = mg.Representation();
   mod_seq_p.DynamicCastFrom(mod_rep_p);
   InstructionSequence& mod_seq = *mod_seq_p;
-  cCPUMemory mod_genome = mod_seq;
+  InstMemSpace mod_genome = mod_seq;
   
   // Loop through all the lines of genome, testing all deletions.
   for (int line_num = 0; line_num < max_line; line_num++) {
@@ -312,7 +312,7 @@ void cLandscape::ProcessInsert(cAvidaContext& ctx)
   GeneticRepresentationPtr mod_rep_p = mg.Representation();
   mod_seq_p.DynamicCastFrom(mod_rep_p);
   InstructionSequence& mod_seq = *mod_seq_p;
-  cCPUMemory mod_genome = mod_seq;
+  InstMemSpace mod_genome = mod_seq;
   
   // Loop through all the lines of genome, testing all insertions.
   for (int line_num = 0; line_num <= max_line; line_num++) {
@@ -834,7 +834,7 @@ void cLandscape::HillClimb(cAvidaContext& ctx, Avida::Output::File& df)
   GeneticRepresentationPtr mg_rep_p = mg.Representation();
   mg_seq_p.DynamicCastFrom(mg_rep_p);
   InstructionSequence& mg_seq = *mg_seq_p;
-  cCPUMemory mod_genome = mg_seq;
+  InstMemSpace mod_genome = mg_seq;
 
   int gen = 0;
   

@@ -26,13 +26,12 @@
 #include "avida/hardware/InstLib.h"
 #include "avida/util/NopSequence.h"
 
-#include "cCPUMemory.h"
+#include "avida/private/hardware/features/VisualSensor.h"
+
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHeadCPU.h"
-#include "cOrgSensor.h"
 #include "cStats.h"
-#include "cString.h"
 
 
 #include "cEnvironment.h"
@@ -43,8 +42,6 @@
 /**
  * Each organism may have a cHardwareExperimental structure which keeps track of the
  * current status of all the components of the simulated hardware.
- *
- * @see cCPUMemory, cInstSet
  **/
 
 class cInstSet;
@@ -184,7 +181,7 @@ private:
   // --------  Member Variables  --------
   const tMethod* m_functions;
   
-  cCPUMemory m_memory;          // Memory...
+  InstMemSpace m_memory;          // Memory...
   Stack m_global_stack;     // A stack that all threads share.
   
   Apto::Array<cLocalThread, Apto::ManagedPointer> m_threads;
@@ -192,7 +189,6 @@ private:
   int m_cur_thread;
   
   int m_use_avatar;
-  cOrgSensor m_sensor;
   bool m_from_sensor;
   
   struct {
@@ -272,11 +268,11 @@ public:
   
   
   // --------  Memory Manipulation  --------
-  const cCPUMemory& GetMemory() const { return m_memory; }
-  cCPUMemory& GetMemory() { return m_memory; }
+  const InstMemSpace& GetMemory() const { return m_memory; }
+  InstMemSpace& GetMemory() { return m_memory; }
   int GetMemSize() const { return m_memory.GetSize(); }
-  const cCPUMemory& GetMemory(int) const { return m_memory; }
-  cCPUMemory& GetMemory(int) { return m_memory; }
+  const InstMemSpace& GetMemory(int) const { return m_memory; }
+  InstMemSpace& GetMemory(int) { return m_memory; }
   int GetMemSize(int) const { return  m_memory.GetSize(); }
   int GetNumMemSpaces() const { return 1; }
   
@@ -681,8 +677,8 @@ private:
   };
   
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
-  cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
-  void LookResults(cAvidaContext& ctx, sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
+  Features::VisualSensor::LookResults InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
+  void LookResults(cAvidaContext& ctx, sLookRegAssign& lookin_defs, Features::VisualSensor::LookResults& look_results);
   
   void InjureOrg(cOrganism* target);
   void MakePred(cAvidaContext& ctx);

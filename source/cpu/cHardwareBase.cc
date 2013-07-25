@@ -114,7 +114,7 @@ void cHardwareBase::ResizeCostArrays(int new_size)
 int cHardwareBase::calcExecutedSize(const int parent_size)
 {
   int executed_size = 0;
-  const cCPUMemory& memory = GetMemory();
+  const InstMemSpace& memory = GetMemory();
   for (int i = 0; i < parent_size; i++) {
     if (memory.FlagExecuted(i)) executed_size++;
   }  
@@ -454,7 +454,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   }
     
   
-  cCPUMemory& memory = GetMemory();
+  InstMemSpace& memory = GetMemory();
 
   // Parent Substitution Mutations (per site)
   if (m_organism->GetParentMutProb() > 0.0 && totalMutations < maxmut) {
@@ -1039,7 +1039,7 @@ int cHardwareBase::PointMutate(cAvidaContext& ctx, double override_mut_rate)
   const int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
   const int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
   
-  cCPUMemory& memory = GetMemory();
+  InstMemSpace& memory = GetMemory();
   int totalMutations = 0;
   
 //  const int num_muts = ctx.GetRandom().GetRandBinomial(memory.GetSize(), mut_rate);

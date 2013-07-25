@@ -37,7 +37,9 @@ namespace Avida {
     class Base;
     class Config;
     class Feature;
+    class InstArchCPU;
     class InstLib;
+    class InstMemSpace;
     class InstSet;
     class Library;
     class Manager;

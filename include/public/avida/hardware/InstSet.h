@@ -25,7 +25,7 @@
 #ifndef AvidaHardwareInstSet_h
 #define AvidaHardwareInstSet_h
 
-#include "avida/hardware/Types.h"
+#include "avida/hardware/InstLib.h"
 
 
 namespace Avida {
@@ -38,6 +38,9 @@ namespace Avida {
     {
     public:
       LIB_EXPORT virtual ~InstSet() = 0;
+      
+      
+      LIB_EXPORT inline Instruction InstError() const { return Instruction(255); }
     };
     
   };

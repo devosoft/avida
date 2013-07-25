@@ -1,8 +1,8 @@
 /*
- *  hardware/InstLib.h
+ *  hardware/InstArchCPU.h
  *  avida-core
  *
- *  Created by David on 2/1/13.
+ *  Created by David on 7/11/13.
  *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *

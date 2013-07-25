@@ -27,7 +27,6 @@
 #include "avida/util/NopSequence.h"
 
 #include "cHeadCPU.h"
-#include "cCPUMemory.h"
 #include "cHardwareBase.h"
 #include "cString.h"
 #include "cStats.h"
@@ -39,8 +38,6 @@
 /**
 * Each organism may have a cHardwareCPU structure which keeps track of the
 * current status of all the components of the simulated hardware.
-*
-* @see cHardwareCPU_Thread, cCPUMemory, cInstSet
 **/
 
 class cInstSet;
@@ -121,7 +118,7 @@ protected:
   // --------  Member Variables  --------
   const tMethod* m_functions;
 
-  cCPUMemory m_memory;          // Memory...
+  InstMemSpace m_memory;          // Memory...
   Stack m_global_stack;     // A stack that all threads share.
 
   Apto::Array<cLocalThread> m_threads;
@@ -288,11 +285,11 @@ public:
 
 
   // --------  Memory Manipulation  --------
-  const cCPUMemory& GetMemory() const { return m_memory; }
-  cCPUMemory& GetMemory() { return m_memory; }
+  const InstMemSpace& GetMemory() const { return m_memory; }
+  InstMemSpace& GetMemory() { return m_memory; }
   int GetMemSize() const { return m_memory.GetSize(); }
-  const cCPUMemory& GetMemory(int) const { return m_memory; }
-  cCPUMemory& GetMemory(int) { return m_memory; }
+  const InstMemSpace& GetMemory(int) const { return m_memory; }
+  InstMemSpace& GetMemory(int) { return m_memory; }
   int GetMemSize(int) const { return  m_memory.GetSize(); }
   int GetNumMemSpaces() const { return 1; }
 

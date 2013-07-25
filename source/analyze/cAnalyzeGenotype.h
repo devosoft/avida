@@ -26,11 +26,11 @@
 #include "apto/core/RWLock.h"
 #include "avida/core/Genome.h"
 #include "avida/core/Properties.h"
+#include "avida/hardware/InstMemSpace.h"
 #include "avida/systematics/Unit.h"
 
 #include <fstream>
 
-#include "cCPUMemory.h"
 #include "cGenotypeData.h"
 #include "cInstSet.h"
 #include "cLandscape.h"

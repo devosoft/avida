@@ -1,9 +1,10 @@
 /*
- *  cHardwareGP8.cc
- *  Avida
+ *  hardware/types/GP8.cc
+ *  avida-core
  *
- *  Created by David on 6/19/2013 based on cHardwareBCR.cc
- *  Copyright 1999-2013 Michigan State University. All rights reserved.
+ *  Created by David on 7/24/13 based on cHardwareGP8.
+ *  Copyright 2013 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,26 +18,15 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
- *  Authors: David M. Bryson <david@programerror.com>, Aaron P. Wagner <apwagner@msu.edu>
+ *  Authors: David M. Bryson <david@programerror.com>
  *
  */
 
-
-#include "cHardwareGP8.h"
+#include "avida/private/hardware/types/GP8.h"
 
 #include "avida/core/Feedback.h"
 #include "avida/core/UniverseDriver.h"
 #include "avida/output/File.h"
-
-#include "cAvidaContext.h"
-#include "cHardwareManager.h"
-#include "cHardwareTracer.h"
-#include "cInstSet.h"
-#include "cOrganism.h"
-#include "cPhenotype.h"
-#include "cPopulation.h"
-#include "cStateGrid.h"
-#include "cWorld.h"
 
 #include <climits>
 #include <fstream>
@@ -44,30 +34,28 @@
 
 using namespace std;
 using namespace Avida;
-using namespace AvidaTools;
 using namespace Avida::Hardware::InstructionFlags;
 using namespace Avida::Util;
 
 
-cHardwareGP8::GP8InstLib* cHardwareGP8::s_inst_slib = cHardwareGP8::initInstLib();
+Hardware::Types::GP8::GP8InstLib* Hardware::Types::GP8::s_inst_slib = Hardware::Types::GP8::initInstLib();
 
-cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
+Hardware::Types::GP8::GP8InstLib* Hardware::Types::GP8::initInstLib(void)
 {
-  struct cNOPEntry {
-    cString name;
+  struct NOPEntry {
+    Apto::String name;
     int nop_mod;
-    cNOPEntry(const cString &name, int nop_mod)
-    : name(name), nop_mod(nop_mod) {}
+    NOPEntry(const Apto::String &name, int nop_mod) : name(name), nop_mod(nop_mod) {}
   };
-  static const cNOPEntry s_n_array[] = {
-    cNOPEntry("nop-A", rAX),
-    cNOPEntry("nop-B", rBX),
-    cNOPEntry("nop-C", rCX),
-    cNOPEntry("nop-D", rDX),
-    cNOPEntry("nop-E", rEX),
-    cNOPEntry("nop-F", rFX),
-    cNOPEntry("nop-G", rGX),
-    cNOPEntry("nop-H", rHX),
+  static const NOPEntry s_n_array[] = {
+    NOPEntry("nop-A", rAX),
+    NOPEntry("nop-B", rBX),
+    NOPEntry("nop-C", rCX),
+    NOPEntry("nop-D", rDX),
+    NOPEntry("nop-E", rEX),
+    NOPEntry("nop-F", rFX),
+    NOPEntry("nop-G", rGX),
+    NOPEntry("nop-H", rHX),
   };
   
   static const GP8Inst s_f_array[] = {
@@ -75,8 +63,8 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
      Note: all entries of cNOPEntryCPU s_n_array must have corresponding in the same order in
      InstLib Entries s_f_array, and these entries must be the first elements of s_f_array.
      */
-#define INST(NAME, FUNC, CLS, FLAGS, UNITS, DESC) GP8Inst(NAME, &cHardwareGP8::FUNC, INST_CLASS_ ## CLS, FLAGS, DESC, UNITS)
-#define INSTI(NAME, FUNC, VAL, CLS, FLAGS, UNITS, DESC) GP8Inst(NAME, &cHardwareGP8::FUNC, INST_CLASS_ ## CLS, FLAGS, DESC, UNITS, &cHardwareGP8::VAL)
+#define INST(NAME, FUNC, CLS, FLAGS, UNITS, DESC) GP8Inst(NAME, &Hardware::Types::GP8::FUNC, INST_CLASS_ ## CLS, FLAGS, DESC, UNITS)
+#define INSTI(NAME, FUNC, VAL, CLS, FLAGS, UNITS, DESC) GP8Inst(NAME, &Hardware::Types::GP8::FUNC, INST_CLASS_ ## CLS, FLAGS, DESC, UNITS, &Hardware::Types::GP8::VAL)
     INST("nop-A", Inst_Nop, NOP, NOP, 0, "No-operation; modifies other instructions"),
     INST("nop-B", Inst_Nop, NOP, NOP, 0, "No-operation; modifies other instructions"),
     INST("nop-C", Inst_Nop, NOP, NOP, 0, "No-operation; modifies other instructions"),
@@ -101,7 +89,7 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
     INST("wait-cond-less", Inst_WaitCondition_Less, OTHER, 0, 0, ""),
     INST("wait-cond-gtr", Inst_WaitCondition_Greater, OTHER, 0, 0, ""),
     INST("yield", Inst_Yield, OTHER, 0, 0, ""),
-
+    
     // Flow Control Instructions
     INST("set-memory", Inst_SetMemory, FLOW_CONTROL, 0, 0, "Set ?mem_space_label? of the ?Flow? head."),
     INST("mov-head", Inst_MoveHead, FLOW_CONTROL, 0, 0, "Move head ?IP? to the flow head"),
@@ -125,7 +113,7 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
     INST("shift-l", Inst_ShiftL, ARITHMETIC_LOGIC, 0, 0, "Shift bits in ?BX? left by one (multiply by two)"),
     INST("inc", Inst_Inc, ARITHMETIC_LOGIC, 0, 0, "Increment ?BX? by one"),
     INST("dec", Inst_Dec, ARITHMETIC_LOGIC, 0, 0, "Decrement ?BX? by one"),
-
+    
     INST("add", Inst_Add, ARITHMETIC_LOGIC, 0, 0, "Add BX to CX and place the result in ?BX?"),
     INST("sub", Inst_Sub, ARITHMETIC_LOGIC, 0, 0, "Subtract CX from BX and place the result in ?BX?"),
     INST("nand", Inst_Nand, ARITHMETIC_LOGIC, 0, 0, "Nand BX by CX and place the result in ?BX?"),
@@ -160,16 +148,10 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
     
     INST("die", Inst_Die, LIFECYCLE, STALL, 0, "Instantly kills the organism"),
     
-    // State Grid instructions
-    INST("sg-move", Inst_SGMove, ENVIRONMENT, 0, 0, ""),
-    INST("sg-rotate-l", Inst_SGRotateL, ENVIRONMENT, 0, 0, ""),
-    INST("sg-rotate-r", Inst_SGRotateR, ENVIRONMENT, 0, 0, ""),
-    INST("sg-sense", Inst_SGSense, ENVIRONMENT, 0, 0, ""),
-    
     // Movement and Navigation instructions
     INST("move", Inst_Move, ENVIRONMENT, STALL, 0, ""),
     INST("get-north-offset", Inst_GetNorthOffset, ENVIRONMENT, 0, 0, ""),
-
+    
     // Rotation
     INST("rotate-x", Inst_RotateX, ENVIRONMENT, STALL, 0, ""),
     INST("rotate-org-id", Inst_RotateOrgID, ENVIRONMENT, STALL, 0, ""),
@@ -180,27 +162,27 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
     INST("set-ft-once", Inst_SetForageTargetOnce, ENVIRONMENT, STALL, 0, ""),
     INST("set-rand-ft-once", Inst_SetRandForageTargetOnce, ENVIRONMENT, STALL, 0, ""),
     INST("get-forage-target", Inst_GetForageTarget, ENVIRONMENT, 0, 0, ""),
-
+    
     INST("sense-resource-id", Inst_SenseResourceID, ENVIRONMENT, STALL, 0, ""),
     INST("sense-nest", Inst_SenseNest, ENVIRONMENT, STALL, 0, ""),
     INST("sense-faced-habitat", Inst_SenseFacedHabitat, ENVIRONMENT, STALL, 0, ""),
     INST("look-ahead-ex", Inst_LookAheadEX, ENVIRONMENT, STALL, 0, ""),
     INST("look-again-ex", Inst_LookAgainEX, ENVIRONMENT, STALL, 0, ""),
-
+    
     INST("eat", Inst_Eat, ENVIRONMENT, STALL, 0, ""),
-
+    
     
     INST("collect-specific", Inst_CollectSpecific, ENVIRONMENT, STALL, 0, ""),
     INST("get-res-stored", Inst_GetResStored, ENVIRONMENT, STALL, 0, ""),
- 
+    
     // Org Interaction instructions
     INST("get-faced-org-id", Inst_GetFacedOrgID, ENVIRONMENT, STALL, 0, ""),
     
     INST("teach-offspring", Inst_TeachOffspring, ENVIRONMENT, 0, 0, ""),
     INST("learn-parent", Inst_LearnParent, ENVIRONMENT, STALL, 0, ""),
-
+    
     INST("attack-prey", Inst_AttackPrey, ENVIRONMENT, STALL, uATTACK, ""),
-
+    
     // Control-type Instructions
     INST("scramble-registers", Inst_ScrambleReg, DATA, 0, 0, ""),
 #undef INST
@@ -209,7 +191,7 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
   
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
   
-  static cString n_names[n_size];
+  static Apto::String n_names[n_size];
   static int nop_mods[n_size];
   for (int i = 0; i < n_size && i < NUM_REGISTERS; i++) {
     n_names[i] = s_n_array[i].name;
@@ -232,8 +214,8 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
   return new GP8InstLib(f_size, s_f_array, n_names, nop_mods, functions, hw_units, imm_methods, def, null_inst);
 }
 
-cHardwareGP8::cHardwareGP8(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
-: cHardwareBase(world, in_organism, in_inst_set), m_genes(0), m_mem_array(1), m_sensor(world, in_organism), m_sensor_sessions(NUM_NOPS)
+Hardware::Types::GP8::cHardwareGP8(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
+: cHardwareBase(world, in_organism, in_inst_set), m_genes(0), m_mem_array(1), m_sensor_sessions(NUM_NOPS)
 {
   m_functions = s_inst_slib->Functions();
   m_hw_units = s_inst_slib->HWUnits();
@@ -258,11 +240,11 @@ cHardwareGP8::cHardwareGP8(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
 }
 
 
-void cHardwareGP8::internalReset()
+void Hardware::Types::GP8::internalReset()
 {
   m_spec_stall = false;
   m_hw_reset = true;
-
+  
   m_cycle_count = 0;
   m_last_output = 0;
   
@@ -282,7 +264,7 @@ void cHardwareGP8::internalReset()
   m_mem_array.Resize(1);
   for (int i = 1; i < MAX_MEM_SPACES; i++) m_mem_ids[i] = -1;
   m_mem_ids[0] = 0;
-
+  
   // Genes
   m_genes.Resize(0);
   setupGenes();
@@ -291,13 +273,13 @@ void cHardwareGP8::internalReset()
 }
 
 
-void cHardwareGP8::internalResetOnFailedDivide()
+void Hardware::Types::GP8::internalResetOnFailedDivide()
 {
 	internalReset();
 }
 
 
-void cHardwareGP8::setupGenes()
+void Hardware::Types::GP8::setupGenes()
 {
   Head cur_promoter(this, 0, 0, false);
   
@@ -318,9 +300,9 @@ void cHardwareGP8::setupGenes()
       // Copy the specified genome segment
       Head seghead(gene_content_start);
       seghead.Advance();
-
+      
       int gene_idx = 0;
-      cCPUMemory& gene = m_genes[gene_id].memory;
+      InstMemSpace& gene = m_genes[gene_id].memory;
       
       while (!m_inst_set->IsTerminator(seghead.GetInst()) && seghead != gene_content_start) {
         if (gene.GetSize() <= gene_idx) gene.Resize(gene.GetSize() + 1);
@@ -344,7 +326,7 @@ void cHardwareGP8::setupGenes()
     cur_promoter.Advance();
   } while (!cur_promoter.AtEnd());
   
-
+  
   // If no valid genes where identified, create default gene from the whole genome
   if (m_genes.GetSize() == 0) {
     m_genes.Resize(1);
@@ -353,12 +335,12 @@ void cHardwareGP8::setupGenes()
     Head thread_start(this, 0, 0, true);
     threadCreate(m_genes[0].label, thread_start);
   }
-
+  
   ResizeCostArrays(m_threads.GetSize());
 }
 
 
-void cHardwareGP8::Thread::Reset(cHardwareGP8* in_hardware, const Head& start_pos)
+void Hardware::Types::GP8::Thread::Reset(cHardwareGP8* in_hardware, const Head& start_pos)
 {
   // Clear registers
   for (int i = 0; i < NUM_REGISTERS; i++) reg[i].Clear();
@@ -368,7 +350,7 @@ void cHardwareGP8::Thread::Reset(cHardwareGP8* in_hardware, const Head& start_po
   heads[hWRITE].Reset(in_hardware, 0, 0, false);
   heads[hIP] = start_pos;
   for (int i = hFLOW; i < NUM_HEADS; i++) heads[i] = start_pos;
-
+  
   // Clear the stack
   stack.Clear(in_hardware->GetInstSet().GetStackSize());
   cur_stack = 0;
@@ -385,7 +367,7 @@ void cHardwareGP8::Thread::Reset(cHardwareGP8* in_hardware, const Head& start_po
 }
 
 
-bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
+bool Hardware::Types::GP8::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
   // If speculatively stalled, stay that way until a real instruction comes
   if (speculative && m_spec_stall) return false;
@@ -402,7 +384,7 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
     return false;
   }
   
-
+  
   cPhenotype& phenotype = m_organism->GetPhenotype();
   
   
@@ -415,12 +397,12 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
     m_cycle_count++;
     phenotype.IncCPUCyclesUsed();
     if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
-
+    
     // Wake any stalled threads
     for (int i = 0; i < m_threads.GetSize(); i++) {
       if (!m_threads[i].active && m_threads[i].wait_reg == -1) m_threads[i].active = true;
     }
-
+    
     // Reset hardware units
     m_hw_busy = 0;
     m_hw_queue_eat = false;
@@ -428,7 +410,7 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
     m_hw_queue_rotate = false;
     
     m_hw_queued = 0;
-
+    
     m_hw_queue_eat_threads.Resize(0);
     
     // Reset execution state
@@ -451,7 +433,7 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
       
       // Print the status of this CPU at each step...
       if (m_tracer) m_tracer->TraceHardware(ctx, *this);
-    
+      
       // Find the instruction to be executed
       const Instruction cur_inst = ip.GetInst();
       
@@ -462,12 +444,12 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
         return false;
       }
       
-      // Print the short form status of this CPU at each step... 
+      // Print the short form status of this CPU at each step...
       if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true);
-    
+      
       bool exec = true;
       int exec_success = 0;
-
+      
       unsigned int inst_hw_units = m_hw_units[m_inst_set->GetLibFunctionIndex(ip.GetInst())];
       
       // Check if this instruction needs hardware units that are busy
@@ -477,7 +459,7 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
         if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true, exec_success);
         continue;
       }
-
+      
       // Test if costs have been paid and it is okay to execute this now...
       
       // record any failure due to costs being paid
@@ -579,7 +561,7 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
         break;
     }
   }
-
+  
   // Kill creatures who have reached their max num of instructions executed
   const int max_executed = m_organism->GetMaxExecuted();
   if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed) || phenotype.GetToDie() == true) {
@@ -595,7 +577,7 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
 }
 
 
-bool cHardwareGP8::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst)
+bool Hardware::Types::GP8::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst)
 {
   // Copy Instruction locally to handle stochastic effects
   Instruction actual_inst = cur_inst;
@@ -615,12 +597,12 @@ bool cHardwareGP8::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instructi
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
-  }  
+  }
   return exec_success;
 }
 
 
-void cHardwareGP8::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
+void Hardware::Types::GP8::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
 {
   // Mark this organism as running...
   bool prev_run_state = m_organism->IsRunning();
@@ -645,7 +627,7 @@ void cHardwareGP8::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
 }
 
 
-void cHardwareGP8::PrintStatus(ostream& fp)
+void Hardware::Types::GP8::PrintStatus(ostream& fp)
 {
   fp << "CPU CYCLE:" << m_organism->GetPhenotype().GetCPUCyclesUsed() << "."  << m_cur_uop << " ";
   fp << "THREAD:" << m_cur_thread << "  ";
@@ -682,25 +664,25 @@ void cHardwareGP8::PrintStatus(ostream& fp)
   }
   
   for (int i = 0; i < m_mem_array.GetSize(); i++) {
-    const cCPUMemory& mem = m_mem_array[i];
+    const InstMemSpace& mem = m_mem_array[i];
     fp << "  Mem " << i << " (" << mem.GetSize() << "): " << mem.AsString() << endl;
   }
   
   for (int i = 0; i < m_genes.GetSize(); i++) {
-    const cCPUMemory& mem = m_genes[i].memory;
+    const InstMemSpace& mem = m_genes[i].memory;
     fp << "  Gene " << i << " (" << mem.GetSize() << "): " << mem.AsString() << endl;
   }
   
   fp.flush();
 }
 
-void cHardwareGP8::SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype)
+void Hardware::Types::GP8::SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype)
 {
   const Genome& in_genome = m_organism->GetGenome();
   ConstInstructionSequencePtr in_seq_p;
   in_seq_p.DynamicCastFrom(in_genome.Representation());
   const InstructionSequence& in_seq = *in_seq_p;
-
+  
   df.WriteTimeStamp();
   cString org_dat("");
   df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
@@ -736,7 +718,7 @@ void cHardwareGP8::SetupMiniTraceFileHeader(Avida::Output::File& df, const int g
   df.Endl();
 }
 
-void cHardwareGP8::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
+void Hardware::Types::GP8::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
 {
   // basic status info
   fp << m_cycle_count << " ";
@@ -746,7 +728,7 @@ void cHardwareGP8::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
     DataValue& reg = m_threads[m_cur_thread].reg[i];
     fp << getRegister(ctx, i) << " ";
     fp << "(" << reg.originated << ") ";
-  }    
+  }
   // genome loc info
   fp << m_cur_thread << " ";
   fp << getIP().Position() << " ";
@@ -766,7 +748,7 @@ void cHardwareGP8::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
   if (m_use_avatar) fp << m_organism->GetOrgInterface().GetAVCellID() << " ";
   if (!m_use_avatar) fp << m_organism->GetOrgInterface().GetFacedDir() << " ";
   else fp << m_organism->GetOrgInterface().GetAVFacing() << " ";
-  if (!m_use_avatar) fp << m_organism->IsNeighborCellOccupied() << " ";  
+  if (!m_use_avatar) fp << m_organism->IsNeighborCellOccupied() << " ";
   else fp << m_organism->GetOrgInterface().FacedHasAV() << " ";
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   Apto::Array<double> cell_resource_levels;
@@ -785,25 +767,25 @@ void cHardwareGP8::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
   cString next_name(GetInstSet().GetName(getIP().GetInst()));
   fp << next_name << " ";
   // any trailing nops (up to NUM_REGISTERS)
-  cCPUMemory& memory = getIP().MemSpaceIsGene() ? m_genes[getIP().MemSpaceIndex()].memory : m_mem_array[getIP().MemSpaceIndex()];
+  InstMemSpace& memory = getIP().MemSpaceIsGene() ? m_genes[getIP().MemSpaceIndex()].memory : m_mem_array[getIP().MemSpaceIndex()];
   int pos = getIP().Position();
   Apto::Array<int, Apto::Smart> seq;
   seq.Resize(0);
   for (int i = 0; i < NUM_REGISTERS; i++) {
     pos += 1;
     if (pos >= memory.GetSize()) pos = 0;
-    if (m_inst_set->IsNop(memory[pos])) seq.Push(m_inst_set->GetNopMod(memory[pos])); 
+    if (m_inst_set->IsNop(memory[pos])) seq.Push(m_inst_set->GetNopMod(memory[pos]));
     else break;
   }
   cString mod_string;
   for (int j = 0; j < seq.GetSize(); j++) {
-    mod_string += (char) seq[j] + 'A';  
-  }  
+    mod_string += (char) seq[j] + 'A';
+  }
   if (mod_string.GetSize() != 0) fp << mod_string << " ";
   else fp << "NoMods" << " ";
 }
 
-void cHardwareGP8::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
+void Hardware::Types::GP8::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
 {
   fp << exec_sucess;
   fp << endl;
@@ -812,7 +794,7 @@ void cHardwareGP8::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
 
 
 
-void cHardwareGP8::FindLabelStart(Head& head, Head& default_pos, bool mark_executed)
+void Hardware::Types::GP8::FindLabelStart(Head& head, Head& default_pos, bool mark_executed)
 {
   const NopSequence& search_label = GetLabel();
   
@@ -822,7 +804,7 @@ void cHardwareGP8::FindLabelStart(Head& head, Head& default_pos, bool mark_execu
     return;
   }
   
-  cCPUMemory& memory = head.GetMemory();
+  InstMemSpace& memory = head.GetMemory();
   int pos = 0;
   
   while (pos < memory.GetSize()) {
@@ -852,7 +834,7 @@ void cHardwareGP8::FindLabelStart(Head& head, Head& default_pos, bool mark_execu
         return;
       }
       
-      continue; 
+      continue;
     }
     pos++;
   }
@@ -861,7 +843,7 @@ void cHardwareGP8::FindLabelStart(Head& head, Head& default_pos, bool mark_execu
   head.Set(default_pos);
 }
 
-void cHardwareGP8::FindNopSequenceStart(Head& head, Head& default_pos, bool mark_executed)
+void Hardware::Types::GP8::FindNopSequenceStart(Head& head, Head& default_pos, bool mark_executed)
 {
   const NopSequence& search_label = GetLabel();
   
@@ -871,7 +853,7 @@ void cHardwareGP8::FindNopSequenceStart(Head& head, Head& default_pos, bool mark
     return;
   }
   
-  cCPUMemory& memory = head.GetMemory();
+  InstMemSpace& memory = head.GetMemory();
   int pos = 0;
   
   while (pos < memory.GetSize()) {
@@ -907,7 +889,7 @@ void cHardwareGP8::FindNopSequenceStart(Head& head, Head& default_pos, bool mark
 }
 
 
-void cHardwareGP8::FindLabelForward(Head& head, Head& default_pos, bool mark_executed)
+void Hardware::Types::GP8::FindLabelForward(Head& head, Head& default_pos, bool mark_executed)
 {
   const NopSequence& search_label = GetLabel();
   
@@ -953,7 +935,7 @@ void cHardwareGP8::FindLabelForward(Head& head, Head& default_pos, bool mark_exe
         return;
       }
       
-      continue; 
+      continue;
     }
     pos++;
   }
@@ -962,7 +944,7 @@ void cHardwareGP8::FindLabelForward(Head& head, Head& default_pos, bool mark_exe
   head.Set(default_pos);
 }
 
-void cHardwareGP8::FindLabelBackward(Head& head, Head& default_pos, bool mark_executed)
+void Hardware::Types::GP8::FindLabelBackward(Head& head, Head& default_pos, bool mark_executed)
 {
   const NopSequence& search_label = GetLabel();
   
@@ -1018,7 +1000,7 @@ void cHardwareGP8::FindLabelBackward(Head& head, Head& default_pos, bool mark_ex
 
 
 
-void cHardwareGP8::FindNopSequenceForward(Head& head, Head& default_pos, bool mark_executed)
+void Hardware::Types::GP8::FindNopSequenceForward(Head& head, Head& default_pos, bool mark_executed)
 {
   const NopSequence& search_label = GetLabel();
   
@@ -1073,7 +1055,7 @@ void cHardwareGP8::FindNopSequenceForward(Head& head, Head& default_pos, bool ma
 }
 
 
-void cHardwareGP8::FindNopSequenceBackward(Head& head, Head& default_pos, bool mark_executed)
+void Hardware::Types::GP8::FindNopSequenceBackward(Head& head, Head& default_pos, bool mark_executed)
 {
   const NopSequence& search_label = GetLabel();
   
@@ -1118,7 +1100,7 @@ void cHardwareGP8::FindNopSequenceBackward(Head& head, Head& default_pos, bool m
         return;
       }
       
-      continue; 
+      continue;
     }
     lpos--;
   }
@@ -1127,7 +1109,7 @@ void cHardwareGP8::FindNopSequenceBackward(Head& head, Head& default_pos, bool m
   head.Set(default_pos);
 }
 
-void cHardwareGP8::ReadInst(Instruction in_inst)
+void Hardware::Types::GP8::ReadInst(Instruction in_inst)
 {
   bool is_nop = m_inst_set->IsNop(in_inst);
   
@@ -1156,7 +1138,7 @@ void cHardwareGP8::ReadInst(Instruction in_inst)
 // This function looks at the current position in the info of the organism and sets the next_label to be the sequence of nops
 // which follows.  The instruction pointer is left on the last line of the label found.
 
-void cHardwareGP8::readLabel(Head& head, NopSequence& label)
+void Hardware::Types::GP8::readLabel(Head& head, NopSequence& label)
 {
   int count = 0;
   
@@ -1172,7 +1154,7 @@ void cHardwareGP8::readLabel(Head& head, NopSequence& label)
   }
 }
 
-void cHardwareGP8::threadCreate(const NopSequence& thread_label, const Head& start_pos)
+void Hardware::Types::GP8::threadCreate(const NopSequence& thread_label, const Head& start_pos)
 {
   // Check for existing thread
   if (thread_label.GetSize() > 0) {
@@ -1202,7 +1184,7 @@ void cHardwareGP8::threadCreate(const NopSequence& thread_label, const Head& sta
 // Instruction Helpers
 // --------------------------------------------------------------------------------------------------------------
 
-inline int cHardwareGP8::FindModifiedRegister(int default_register, bool accept_immediate)
+inline int Hardware::Types::GP8::FindModifiedRegister(int default_register, bool accept_immediate)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   
@@ -1219,10 +1201,10 @@ inline int cHardwareGP8::FindModifiedRegister(int default_register, bool accept_
   return default_register;
 }
 
-inline int cHardwareGP8::FindModifiedNextRegister(int default_register, bool accept_immediate)
+inline int Hardware::Types::GP8::FindModifiedNextRegister(int default_register, bool accept_immediate)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
-
+  
   Instruction inst = getIP().NextInst();
   if (m_inst_set->IsNop(inst)) {
     getIP().Advance();
@@ -1238,7 +1220,7 @@ inline int cHardwareGP8::FindModifiedNextRegister(int default_register, bool acc
   return default_register;
 }
 
-inline int cHardwareGP8::FindModifiedPreviousRegister(int default_register, bool accept_immediate)
+inline int Hardware::Types::GP8::FindModifiedPreviousRegister(int default_register, bool accept_immediate)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   
@@ -1258,7 +1240,7 @@ inline int cHardwareGP8::FindModifiedPreviousRegister(int default_register, bool
 }
 
 
-inline int cHardwareGP8::FindModifiedHead(int default_head)
+inline int Hardware::Types::GP8::FindModifiedHead(int default_head)
 {
   assert(default_head < NUM_HEADS); // Head ID too high.
   
@@ -1271,12 +1253,12 @@ inline int cHardwareGP8::FindModifiedHead(int default_head)
 }
 
 
-inline int cHardwareGP8::FindNextRegister(int base_reg)
+inline int Hardware::Types::GP8::FindNextRegister(int base_reg)
 {
   return (base_reg + 1) % NUM_REGISTERS;
 }
 
-inline int cHardwareGP8::FindUpstreamModifiedRegister(int offset, int default_register)
+inline int Hardware::Types::GP8::FindUpstreamModifiedRegister(int offset, int default_register)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   assert(offset >= 0);
@@ -1292,10 +1274,10 @@ inline int cHardwareGP8::FindUpstreamModifiedRegister(int offset, int default_re
 }
 
 
-int cHardwareGP8::calcCopiedSize(const int parent_size, const int child_size)
+int Hardware::Types::GP8::calcCopiedSize(const int parent_size, const int child_size)
 {
   int copied_size = 0;
-  const cCPUMemory& memory = m_mem_array[m_cur_offspring];
+  const InstMemSpace& memory = m_mem_array[m_cur_offspring];
   for (int i = 0; i < memory.GetSize(); i++) {
     if (memory.FlagCopied(i)) copied_size++;
 	}
@@ -1303,8 +1285,8 @@ int cHardwareGP8::calcCopiedSize(const int parent_size, const int child_size)
 }
 
 
-bool cHardwareGP8::Divide_Main(cAvidaContext& ctx, int mem_space_used, int write_head_pos, double mut_multiplier)
-{  
+bool Hardware::Types::GP8::Divide_Main(cAvidaContext& ctx, int mem_space_used, int write_head_pos, double mut_multiplier)
+{
   // Make sure the memory space we're using exists
   if (m_mem_array.GetSize() <= mem_space_used) return false;
   
@@ -1369,7 +1351,7 @@ bool cHardwareGP8::Divide_Main(cAvidaContext& ctx, int mem_space_used, int write
 }
 
 
-void cHardwareGP8::checkWaitingThreads(int cur_thread, int reg_num)
+void Hardware::Types::GP8::checkWaitingThreads(int cur_thread, int reg_num)
 {
   for (int i = 0; i < m_threads.GetSize(); i++) {
     if (i != cur_thread && !m_threads[i].active && int(m_threads[i].wait_reg) == reg_num) {
@@ -1403,7 +1385,7 @@ void cHardwareGP8::checkWaitingThreads(int cur_thread, int reg_num)
 // --------------------------------------------------------------------------------------------------------------
 
 // Multi-threading.
-bool cHardwareGP8::Inst_Yield(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Yield(cAvidaContext&)
 {
   m_threads[m_cur_thread].active = false;
   m_threads[m_cur_thread].wait_reg = -1;
@@ -1411,7 +1393,7 @@ bool cHardwareGP8::Inst_Yield(cAvidaContext&)
 }
 
 
-bool cHardwareGP8::Inst_RegulatePause(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_RegulatePause(cAvidaContext&)
 {
   readLabel(getIP(), m_threads[m_cur_thread].next_label);
   if (m_threads[m_cur_thread].next_label.GetSize() == 0) return false;
@@ -1422,7 +1404,7 @@ bool cHardwareGP8::Inst_RegulatePause(cAvidaContext&)
 }
 
 
-bool cHardwareGP8::Inst_RegulateResume(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_RegulateResume(cAvidaContext&)
 {
   readLabel(getIP(), m_threads[m_cur_thread].next_label);
   if (m_threads[m_cur_thread].next_label.GetSize() == 0) return false;
@@ -1433,7 +1415,7 @@ bool cHardwareGP8::Inst_RegulateResume(cAvidaContext&)
 }
 
 
-bool cHardwareGP8::Inst_RegulateReset(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_RegulateReset(cAvidaContext&)
 {
   readLabel(getIP(), m_threads[m_cur_thread].next_label);
   if (m_threads[m_cur_thread].next_label.GetSize() == 0) return false;
@@ -1447,13 +1429,13 @@ bool cHardwareGP8::Inst_RegulateReset(cAvidaContext&)
 
 
 
-bool cHardwareGP8::Inst_Label(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Label(cAvidaContext&)
 {
   readLabel(getIP(), GetLabel());
   return true;
 }
 
-bool cHardwareGP8::Inst_IfNEqu(cAvidaContext& ctx) // Execute next if bx != ?cx?
+bool Hardware::Types::GP8::Inst_IfNEqu(cAvidaContext& ctx) // Execute next if bx != ?cx?
 {
   const int op1 = FindModifiedRegister(rBX, true);
   const int op2 = FindModifiedNextRegister((op1 < NUM_REGISTERS) ? op1 : rBX, true);
@@ -1461,7 +1443,7 @@ bool cHardwareGP8::Inst_IfNEqu(cAvidaContext& ctx) // Execute next if bx != ?cx?
   return true;
 }
 
-bool cHardwareGP8::Inst_IfLess(cAvidaContext& ctx) // Execute next if ?bx? < ?cx?
+bool Hardware::Types::GP8::Inst_IfLess(cAvidaContext& ctx) // Execute next if ?bx? < ?cx?
 {
   const int op1 = FindModifiedRegister(rBX, true);
   const int op2 = FindModifiedNextRegister((op1 < NUM_REGISTERS) ? op1 : rBX, true);
@@ -1469,26 +1451,26 @@ bool cHardwareGP8::Inst_IfLess(cAvidaContext& ctx) // Execute next if ?bx? < ?cx
   return true;
 }
 
-bool cHardwareGP8::Inst_IfNotZero(cAvidaContext& ctx)  // Execute next if ?bx? != 0
+bool Hardware::Types::GP8::Inst_IfNotZero(cAvidaContext& ctx)  // Execute next if ?bx? != 0
 {
   const int op1 = FindModifiedRegister(rBX, true);
   if (getRegister(ctx, op1) == 0)  getIP().Advance();
   return true;
 }
-bool cHardwareGP8::Inst_IfEqualZero(cAvidaContext& ctx)  // Execute next if ?bx? == 0
+bool Hardware::Types::GP8::Inst_IfEqualZero(cAvidaContext& ctx)  // Execute next if ?bx? == 0
 {
   const int op1 = FindModifiedRegister(rBX, true);
   if (getRegister(ctx, op1) != 0)  getIP().Advance();
   return true;
 }
-bool cHardwareGP8::Inst_IfGreaterThanZero(cAvidaContext& ctx)  // Execute next if ?bx? > 0
+bool Hardware::Types::GP8::Inst_IfGreaterThanZero(cAvidaContext& ctx)  // Execute next if ?bx? > 0
 {
   const int op1 = FindModifiedRegister(rBX, true);
   if (getRegister(ctx, op1) <= 0)  getIP().Advance();
   return true;
 }
 
-bool cHardwareGP8::Inst_IfLessThanZero(cAvidaContext& ctx)  // Execute next if ?bx? < 0
+bool Hardware::Types::GP8::Inst_IfLessThanZero(cAvidaContext& ctx)  // Execute next if ?bx? < 0
 {
   const int op1 = FindModifiedRegister(rBX, true);
   if (getRegister(ctx, op1) >= 0)  getIP().Advance();
@@ -1496,7 +1478,7 @@ bool cHardwareGP8::Inst_IfLessThanZero(cAvidaContext& ctx)  // Execute next if ?
 }
 
 
-bool cHardwareGP8::Inst_Pop(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Pop(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX, true);
   DataValue pop = stackPop();
@@ -1504,14 +1486,14 @@ bool cHardwareGP8::Inst_Pop(cAvidaContext&)
   return true;
 }
 
-bool cHardwareGP8::Inst_Push(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Push(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX, true);
   getStack(m_threads[m_cur_thread].cur_stack).Push(getRegisterData(ctx, reg_used));
   return true;
 }
 
-bool cHardwareGP8::Inst_PopAll(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_PopAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
   for (int i = 0; i < NUM_REGISTERS; i++) {
@@ -1523,7 +1505,7 @@ bool cHardwareGP8::Inst_PopAll(cAvidaContext&)
   return true;
 }
 
-bool cHardwareGP8::Inst_PushAll(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_PushAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
   for (int i = 0; i < NUM_REGISTERS; i++) {
@@ -1534,9 +1516,9 @@ bool cHardwareGP8::Inst_PushAll(cAvidaContext&)
   return true;
 }
 
-bool cHardwareGP8::Inst_SwitchStack(cAvidaContext&) { switchStack(); return true; }
+bool Hardware::Types::GP8::Inst_SwitchStack(cAvidaContext&) { switchStack(); return true; }
 
-bool cHardwareGP8::Inst_Swap(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Swap(cAvidaContext&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1546,61 +1528,61 @@ bool cHardwareGP8::Inst_Swap(cAvidaContext&)
   return true;
 }
 
-bool cHardwareGP8::Inst_ShiftR(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_ShiftR(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, m_threads[m_cur_thread].reg[reg_used].value >> 1,
-      m_threads[m_cur_thread].reg[reg_used]);
+              m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
-bool cHardwareGP8::Inst_ShiftL(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_ShiftL(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, m_threads[m_cur_thread].reg[reg_used].value << 1,
-      m_threads[m_cur_thread].reg[reg_used]);
+              m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
 
-bool cHardwareGP8::Inst_Inc(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Inc(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, m_threads[m_cur_thread].reg[reg_used].value + 1,
-      m_threads[m_cur_thread].reg[reg_used]);
+              m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
-bool cHardwareGP8::Inst_Dec(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Dec(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, m_threads[m_cur_thread].reg[reg_used].value - 1,
-      m_threads[m_cur_thread].reg[reg_used]);
+              m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
-bool cHardwareGP8::Inst_Zero(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Zero(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, 0, false);
   return true;
 }
 
-bool cHardwareGP8::Inst_One(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_One(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, 1, false);
   return true;
 }
 
-bool cHardwareGP8::Inst_MaxInt(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_MaxInt(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, std::numeric_limits<int>::max(), false);
   return true;
 }
 
-bool cHardwareGP8::Inst_Rand(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Rand(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
   int randsign = ctx.GetRandom().GetUInt(0,2) ? -1 : 1;
@@ -1610,29 +1592,29 @@ bool cHardwareGP8::Inst_Rand(cAvidaContext& ctx)
 
 
 
-int cHardwareGP8::Val_Zero(cAvidaContext&)
+int Hardware::Types::GP8::Val_Zero(cAvidaContext&)
 {
   return 0;
 }
 
-int cHardwareGP8::Val_One(cAvidaContext&)
+int Hardware::Types::GP8::Val_One(cAvidaContext&)
 {
   return 1;
 }
 
-int cHardwareGP8::Val_MaxInt(cAvidaContext&)
+int Hardware::Types::GP8::Val_MaxInt(cAvidaContext&)
 {
   return std::numeric_limits<int>::max();
 }
 
-int cHardwareGP8::Val_Rand(cAvidaContext& ctx)
+int Hardware::Types::GP8::Val_Rand(cAvidaContext& ctx)
 {
   int randsign = ctx.GetRandom().GetUInt(0,2) ? -1 : 1;
   return ctx.GetRandom().GetInt(std::numeric_limits<int>::max()) * randsign;
 }
 
 
-bool cHardwareGP8::Inst_Add(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Add(cAvidaContext& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst, true);
@@ -1643,7 +1625,7 @@ bool cHardwareGP8::Inst_Add(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_Sub(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Sub(cAvidaContext& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst, true);
@@ -1654,7 +1636,7 @@ bool cHardwareGP8::Inst_Sub(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_Mult(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Mult(cAvidaContext& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst, true);
@@ -1665,7 +1647,7 @@ bool cHardwareGP8::Inst_Mult(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_Div(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Div(cAvidaContext& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst, true);
@@ -1680,7 +1662,7 @@ bool cHardwareGP8::Inst_Div(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_Mod(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Mod(cAvidaContext& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst, true);
@@ -1696,7 +1678,7 @@ bool cHardwareGP8::Inst_Mod(cAvidaContext& ctx)
 }
 
 
-bool cHardwareGP8::Inst_Nand(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Nand(cAvidaContext& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst, true);
@@ -1707,7 +1689,7 @@ bool cHardwareGP8::Inst_Nand(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_SetMemory(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SetMemory(cAvidaContext& ctx)
 {
   int mem_label = FindModifiedRegister(rBX);
   
@@ -1725,7 +1707,7 @@ bool cHardwareGP8::Inst_SetMemory(cAvidaContext& ctx)
 }
 
 
-bool cHardwareGP8::Inst_TaskInput(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_TaskInput(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX, true);
   
@@ -1737,7 +1719,7 @@ bool cHardwareGP8::Inst_TaskInput(cAvidaContext&)
   return true;
 }
 
-bool cHardwareGP8::Inst_TaskOutput(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_TaskOutput(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX, true);
   DataValue reg = getRegisterData(ctx, reg_used);
@@ -1749,90 +1731,9 @@ bool cHardwareGP8::Inst_TaskOutput(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_SGMove(cAvidaContext&)
-{
-  assert(m_ext_mem.GetSize() > 3);
-  
-  const cStateGrid& sg = m_organism->GetStateGrid();
-  
-  int& x = m_ext_mem[0];
-  int& y = m_ext_mem[1];
-  
-  const int facing = m_ext_mem[2];
-  
-  // State grid is treated as a 2-dimensional toroidal grid with size [0, width) and [0, height)
-  switch (facing) {
-    case 0: // N
-      if (++y == sg.GetHeight()) y = 0;
-      break;
-      
-    case 1: // NE
-      if (++x == sg.GetWidth()) x = 0;
-      if (++y == sg.GetHeight()) y = 0;
-      break;
-      
-    case 2: // E
-      if (++x == sg.GetWidth()) x = 0;
-      break;
-      
-    case 3: // SE
-      if (++x == sg.GetWidth()) x = 0;
-      if (--y == -1) y = sg.GetHeight() - 1;
-      break;
-      
-    case 4: // S
-      if (--y == -1) y = sg.GetHeight() - 1;
-      break;
-      
-    case 5: // SW
-      if (--x == -1) x = sg.GetWidth() - 1;
-      if (--y == -1) y = sg.GetHeight() - 1;
-      break;
-      
-    case 6: // W
-      if (--x == -1) x = sg.GetWidth() - 1;
-      break;
-      
-    case 7: // NW
-      if (--x == -1) x = sg.GetWidth() - 1;
-      if (++y == sg.GetHeight()) y = 0;
-      break;
-      
-    default:
-      assert(facing >= 0 && facing <= 7);
-  }
-  
-  // Increment state observed count
-  m_ext_mem[3 + sg.GetStateAt(x, y)]++;
-  
-  // Save this location in the movement history
-  m_ext_mem.Push(sg.GetIDFor(x, y));
-  return true;
-}
 
-bool cHardwareGP8::Inst_SGRotateL(cAvidaContext&)
-{
-  assert(m_ext_mem.GetSize() > 3);
-  if (--m_ext_mem[2] < 0) m_ext_mem[2] = 7;
-  return true;
-}
 
-bool cHardwareGP8::Inst_SGRotateR(cAvidaContext&)
-{
-  assert(m_ext_mem.GetSize() > 3);
-  if (++m_ext_mem[2] > 7) m_ext_mem[2] = 0;
-  return true;
-}
-
-bool cHardwareGP8::Inst_SGSense(cAvidaContext&)
-{
-  const cStateGrid& sg = m_organism->GetStateGrid();
-  const int reg_used = FindModifiedRegister(rBX);
-  setRegister(reg_used, sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]));
-  return true;
-}
-
-bool cHardwareGP8::Inst_MoveHead(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_MoveHead(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(hIP);
   int target = FindModifiedHead(hFLOW);
@@ -1846,7 +1747,7 @@ bool cHardwareGP8::Inst_MoveHead(cAvidaContext&)
   return true;
 }
 
-bool cHardwareGP8::Inst_JumpHead(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_JumpHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(hIP);
   const int reg = FindModifiedRegister(rCX, true);
@@ -1855,7 +1756,7 @@ bool cHardwareGP8::Inst_JumpHead(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_GetHead(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_GetHead(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(hIP);
   const int reg = FindModifiedRegister(rCX);
@@ -1863,29 +1764,29 @@ bool cHardwareGP8::Inst_GetHead(cAvidaContext&)
   return true;
 }
 
-bool cHardwareGP8::Inst_DidCopyLabel(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_DidCopyLabel(cAvidaContext&)
 {
   readLabel(getIP(), GetLabel());
   setRegister(rBX, (GetLabel() == GetReadLabel()), false);
   return true;
 }
 
-bool cHardwareGP8::Inst_DivideMemory(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_DivideMemory(cAvidaContext& ctx)
 {
   int mem_space_used = FindModifiedRegister(rBX);
-
+  
   if (mem_space_used < rBX || m_mem_ids[mem_space_used]  < 0) return false;
   
   mem_space_used = m_mem_ids[mem_space_used];
   int end_of_memory = m_mem_array[mem_space_used].GetSize() - 1;
-
+  
   return Divide_Main(ctx, mem_space_used, end_of_memory, 1.0);
 }
 
-bool cHardwareGP8::Inst_HeadRead(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_HeadRead(cAvidaContext& ctx)
 {
   const int head_id = FindModifiedHead(hREAD);
-  const int dst = FindModifiedRegister(rAX);  
+  const int dst = FindModifiedRegister(rAX);
   getHead(head_id).Adjust();
   
   // Mutations only occur on the read, for the moment.
@@ -1905,13 +1806,13 @@ bool cHardwareGP8::Inst_HeadRead(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_HeadWrite(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_HeadWrite(cAvidaContext& ctx)
 {
   const int head_id = FindModifiedHead(hWRITE);
   const int src = FindModifiedRegister(rAX);
   Head& active_head = getHead(head_id);
   
-  cCPUMemory& memory = active_head.GetMemory();
+  InstMemSpace& memory = active_head.GetMemory();
   
   if (active_head.Position() >= memory.GetSize() - 1) {
 		memory.Resize(memory.GetSize() + 1);
@@ -1928,8 +1829,8 @@ bool cHardwareGP8::Inst_HeadWrite(cAvidaContext& ctx)
   
   if (m_organism->TestCopyIns(ctx)) active_head.InsertInst(m_inst_set->GetRandomInst(ctx));
   if (m_organism->TestCopyDel(ctx)) active_head.RemoveInst();
-//  if (m_organism->TestCopyUniform(ctx)) doUniformCopyMutation(ctx, active_head);
-  if (!m_slip_read_head && m_organism->TestCopySlip(ctx)) 
+  //  if (m_organism->TestCopyUniform(ctx)) doUniformCopyMutation(ctx, active_head);
+  if (!m_slip_read_head && m_organism->TestCopySlip(ctx))
     doSlipMutation(ctx, active_head.GetMemory(), active_head.Position());
   
   // Advance the head after write...
@@ -1937,19 +1838,19 @@ bool cHardwareGP8::Inst_HeadWrite(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_HeadCopy(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_HeadCopy(cAvidaContext& ctx)
 {
   // For the moment, this cannot be nop-modified.
   Head& read_head = getHead(hREAD);
   Head& write_head = getHead(hWRITE);
   
-  cCPUMemory& memory = write_head.GetMemory();
+  InstMemSpace& memory = write_head.GetMemory();
   
   if (write_head.Position() >= memory.GetSize() - 1) {
 		memory.Resize(memory.GetSize() + 1);
 		memory.Copy(memory.GetSize() - 1, memory.GetSize() - 2);
 	}
-
+  
   
   read_head.Adjust();
   write_head.Adjust();
@@ -1968,11 +1869,11 @@ bool cHardwareGP8::Inst_HeadCopy(cAvidaContext& ctx)
   
   if (m_organism->TestCopyIns(ctx)) write_head.InsertInst(m_inst_set->GetRandomInst(ctx));
   if (m_organism->TestCopyDel(ctx)) write_head.RemoveInst();
-//  if (m_organism->TestCopyUniform(ctx)) doUniformCopyMutation(ctx, write_head);
+  //  if (m_organism->TestCopyUniform(ctx)) doUniformCopyMutation(ctx, write_head);
   if (m_organism->TestCopySlip(ctx)) {
     if (m_slip_read_head) {
       read_head.SetPosition(ctx.GetRandom().GetInt(read_head.GetMemory().GetSize()));
-    } else 
+    } else
       doSlipMutation(ctx, write_head.GetMemory(), write_head.Position());
   }
   
@@ -1981,7 +1882,7 @@ bool cHardwareGP8::Inst_HeadCopy(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_Search_Label_S(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Search_Label_S(cAvidaContext&)
 {
   readLabel(getIP(), GetLabel());
   FindLabelStart(getHead(hFLOW), getIP(), true);
@@ -1989,7 +1890,7 @@ bool cHardwareGP8::Inst_Search_Label_S(cAvidaContext&)
   return true;
 }
 
-bool cHardwareGP8::Inst_Search_Label_D(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Search_Label_D(cAvidaContext& ctx)
 {
   readLabel(getIP(), GetLabel());
   int direction = getRegister(ctx, rBX);
@@ -2004,7 +1905,7 @@ bool cHardwareGP8::Inst_Search_Label_D(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_Search_Seq_D(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Search_Seq_D(cAvidaContext& ctx)
 {
   readLabel(getIP(), GetLabel());
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2021,7 +1922,7 @@ bool cHardwareGP8::Inst_Search_Seq_D(cAvidaContext& ctx)
 }
 
 
-bool cHardwareGP8::Inst_WaitCondition_Equal(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_WaitCondition_Equal(cAvidaContext& ctx)
 {
   const int wait_value_reg = FindModifiedRegister(rBX, true);
   const int check_reg = FindModifiedRegister(rHX);
@@ -2053,7 +1954,7 @@ bool cHardwareGP8::Inst_WaitCondition_Equal(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_WaitCondition_Less(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_WaitCondition_Less(cAvidaContext& ctx)
 {
   const int wait_value_reg = FindModifiedRegister(rBX, true);
   const int check_reg = FindModifiedRegister(rHX);
@@ -2085,7 +1986,7 @@ bool cHardwareGP8::Inst_WaitCondition_Less(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_WaitCondition_Greater(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_WaitCondition_Greater(cAvidaContext& ctx)
 {
   const int wait_value_reg = FindModifiedRegister(rBX, true);
   const int check_reg = FindModifiedRegister(rHX);
@@ -2117,12 +2018,12 @@ bool cHardwareGP8::Inst_WaitCondition_Greater(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_Repro(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Repro(cAvidaContext& ctx)
 {
   // these checks should be done, but currently they make some assumptions
   // that crash when evaluating this kind of organism -- JEB
   
-  cCPUMemory& memory = m_mem_array[0];
+  InstMemSpace& memory = m_mem_array[0];
   
   if (m_organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
   
@@ -2132,8 +2033,8 @@ bool cHardwareGP8::Inst_Repro(cAvidaContext& ctx)
   HashPropertyMap props;
   cHardwareManager::SetupPropertyMap(props, (const char*)m_inst_set->GetInstSetName());
   Genome offspring(GetType(), props, offspring_seq);
-
-  m_organism->OffspringGenome() = offspring;  
+  
+  m_organism->OffspringGenome() = offspring;
   m_organism->GetPhenotype().SetLinesCopied(memory.GetSize());
   
   int lines_executed = 0;
@@ -2143,17 +2044,17 @@ bool cHardwareGP8::Inst_Repro(cAvidaContext& ctx)
   const Genome& org = m_organism->GetGenome();
   ConstInstructionSequencePtr org_seq_p;
   org_seq_p.DynamicCastFrom(org.Representation());
-  const InstructionSequence& org_genome = *org_seq_p;  
-
+  const InstructionSequence& org_genome = *org_seq_p;
+  
   Genome& child = m_organism->OffspringGenome();
   InstructionSequencePtr child_seq_p;
   child_seq_p.DynamicCastFrom(child.Representation());
-  InstructionSequence& child_seq = *child_seq_p;  
-
+  InstructionSequence& child_seq = *child_seq_p;
+  
   // Perform Copy Mutations...
   if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
     for (int i = 0; i < child_seq.GetSize(); i++) {
-//    for (int i = 0; i < m_memory.GetSize(); i++) {
+      //    for (int i = 0; i < m_memory.GetSize(); i++) {
       if (m_organism->TestCopyMut(ctx)) child_seq[i] = m_inst_set->GetRandomInst(ctx);
     }
   }
@@ -2189,18 +2090,18 @@ bool cHardwareGP8::Inst_Repro(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_Die(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Die(cAvidaContext& ctx)
 {
   m_organism->Die(ctx);
   
   return true;
 }
 
-bool cHardwareGP8::Inst_Move(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Move(cAvidaContext& ctx)
 {
   // In TestCPU, movement fails...
   if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
-
+  
   if (m_juv_enabled && m_organism->GetPhenotype().GetTimeUsed() < m_world->GetConfig().JUV_PERIOD.Get()) return false;
   
   if (!m_hw_queue_move) {
@@ -2210,7 +2111,7 @@ bool cHardwareGP8::Inst_Move(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_GetNorthOffset(cAvidaContext& ctx) {
+bool Hardware::Types::GP8::Inst_GetNorthOffset(cAvidaContext& ctx) {
   const int out_reg = FindModifiedRegister(rBX);
   int compass_dir = m_organism->GetOrgInterface().GetFacedDir();
   if (m_use_avatar) compass_dir = m_organism->GetOrgInterface().GetAVFacing();
@@ -2219,13 +2120,13 @@ bool cHardwareGP8::Inst_GetNorthOffset(cAvidaContext& ctx) {
 }
 
 
-bool cHardwareGP8::Inst_Eat(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Eat(cAvidaContext& ctx)
 {
   if (!m_hw_queue_eat) {
     m_hw_queue[m_hw_queued++] = aEAT;
     m_hw_queue_eat = true;
   }
-
+  
   // Queue up to find out the result of the eat action, then yield until that executes
   m_hw_queue_eat_threads.Push(m_cur_thread);
   m_threads[m_cur_thread].active = false;
@@ -2234,11 +2135,11 @@ bool cHardwareGP8::Inst_Eat(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_RotateX(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_RotateX(cAvidaContext& ctx)
 {
   int num_neighbors = m_organism->GetNeighborhoodSize();
   if (m_use_avatar) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
-
+  
   // If this organism has no neighbors, ignore rotate.
   if (num_neighbors == 0) return false;
   
@@ -2260,7 +2161,7 @@ bool cHardwareGP8::Inst_RotateX(cAvidaContext& ctx)
 }
 
 // Will rotate organism to face a specified other org
-bool cHardwareGP8::Inst_RotateOrgID(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_RotateOrgID(cAvidaContext& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   // Will rotate organism to face a specificied other org
@@ -2269,7 +2170,7 @@ bool cHardwareGP8::Inst_RotateOrgID(cAvidaContext& ctx)
   const int worldx = m_world->GetPopulation().GetWorldX();
   const int worldy = m_world->GetPopulation().GetWorldY();
   int max_dist = 0;
-  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
+  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);
   m_world->GetConfig().LOOK_DIST.Get() != -1 ? max_dist = m_world->GetConfig().LOOK_DIST.Get() : max_dist = long_axis;
   bool have_org2use = false;
   
@@ -2279,7 +2180,7 @@ bool cHardwareGP8::Inst_RotateOrgID(cAvidaContext& ctx)
   // if valid number, does the value represent a living organism?
   cOrganism* target_org  = NULL;
   const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
-  for (int i = 0; i < live_orgs.GetSize(); i++) {  
+  for (int i = 0; i < live_orgs.GetSize(); i++) {
     cOrganism* org = live_orgs[i];
     if (id_sought == org->GetID()) {
       target_org = org;
@@ -2307,14 +2208,14 @@ bool cHardwareGP8::Inst_RotateOrgID(cAvidaContext& ctx)
     if (travel_dist > max_dist) return false;
     
     int correct_facing = 0;
-    if (y_dist < 0 && x_dist == 0) correct_facing = 0; // rotate N    
+    if (y_dist < 0 && x_dist == 0) correct_facing = 0; // rotate N
     else if (y_dist < 0 && x_dist > 0) correct_facing = 1; // rotate NE
     else if (y_dist == 0 && x_dist > 0) correct_facing = 2; // rotate E
     else if (y_dist > 0 && x_dist > 0) correct_facing = 3; // rotate SE
     else if (y_dist > 0 && x_dist == 0) correct_facing = 4; // rotate S
     else if (y_dist > 0 && x_dist < 0) correct_facing = 5; // rotate SW
     else if (y_dist == 0 && x_dist < 0) correct_facing = 6; // rotate W
-    else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate NW  
+    else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate NW
     
     bool found_org = false;
     if (m_use_avatar == 2) {
@@ -2336,24 +2237,24 @@ bool cHardwareGP8::Inst_RotateOrgID(cAvidaContext& ctx)
       int dist_reg = FindModifiedNextRegister(id_sought_reg);
       int dir_reg = FindModifiedNextRegister(dist_reg);
       int fat_reg = FindModifiedNextRegister(dir_reg);
-      int ft_reg = FindModifiedNextRegister(fat_reg); 
+      int ft_reg = FindModifiedNextRegister(fat_reg);
       int group_reg = FindModifiedNextRegister(ft_reg);
       
       setRegister(dist_reg, -2, true);
-      setRegister(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true);
+      setRegister(dir_reg, Features::VisualSensor::Of(this).ReturnRelativeFacing(target_org), true);
       setRegister(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
       setRegister(ft_reg, target_org->GetForageTarget(), true);
       if (target_org->HasOpinion()) {
         setRegister(group_reg, target_org->GetOpinion().first, true);
       }
-      if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());    
-    }        
+      if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) Features::VisualSensor::Of(this).SetLastSeenDisplay(target_org->GetOrgDisplayData());
+    }
     return true;
   }
 }
 
 // Will rotate organism to face away from a specificied other org
-bool cHardwareGP8::Inst_RotateAwayOrgID(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_RotateAwayOrgID(cAvidaContext& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   // Will rotate organism to face a specificied other org
@@ -2362,7 +2263,7 @@ bool cHardwareGP8::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   const int worldx = m_world->GetPopulation().GetWorldX();
   const int worldy = m_world->GetPopulation().GetWorldY();
   int max_dist = 0;
-  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
+  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);
   m_world->GetConfig().LOOK_DIST.Get() != -1 ? max_dist = m_world->GetConfig().LOOK_DIST.Get() : max_dist = long_axis;
   bool have_org2use = false;
   
@@ -2372,7 +2273,7 @@ bool cHardwareGP8::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   // if valid number, does the value represent a living organism?
   cOrganism* target_org = NULL;
   const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
-  for (int i = 0; i < live_orgs.GetSize(); i++) {  
+  for (int i = 0; i < live_orgs.GetSize(); i++) {
     cOrganism* org = live_orgs[i];
     if (id_sought == org->GetID()) {
       target_org = org;
@@ -2400,14 +2301,14 @@ bool cHardwareGP8::Inst_RotateAwayOrgID(cAvidaContext& ctx)
     if (travel_dist > max_dist) return false;
     
     int correct_facing = 0;
-    if (y_dist < 0 && x_dist == 0) correct_facing = 4; // rotate away from N    
+    if (y_dist < 0 && x_dist == 0) correct_facing = 4; // rotate away from N
     else if (y_dist < 0 && x_dist > 0) correct_facing = 5; // rotate away from NE
     else if (y_dist == 0 && x_dist > 0) correct_facing = 6; // rotate away from E
     else if (y_dist > 0 && x_dist > 0) correct_facing = 7; // rotate away from SE
     else if (y_dist > 0 && x_dist == 0) correct_facing = 0; // rotate away from S
     else if (y_dist > 0 && x_dist < 0) correct_facing = 1; // rotate away from SW
     else if (y_dist == 0 && x_dist < 0) correct_facing = 2; // rotate away from W
-    else if (y_dist < 0 && x_dist < 0) correct_facing = 3; // rotate away from NW  
+    else if (y_dist < 0 && x_dist < 0) correct_facing = 3; // rotate away from NW
     
     bool found_org = false;
     if (m_use_avatar == 2) {
@@ -2429,44 +2330,44 @@ bool cHardwareGP8::Inst_RotateAwayOrgID(cAvidaContext& ctx)
       int dist_reg = FindModifiedNextRegister(id_sought_reg);
       int dir_reg = FindModifiedNextRegister(dist_reg);
       int fat_reg = FindModifiedNextRegister(dir_reg);
-      int ft_reg = FindModifiedNextRegister(fat_reg); 
+      int ft_reg = FindModifiedNextRegister(fat_reg);
       int group_reg = FindModifiedNextRegister(ft_reg);
       
       setRegister(dist_reg, -2, true);
-      setRegister(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true);
+      setRegister(dir_reg, Features::VisualSensor::Of(this).ReturnRelativeFacing(target_org), true);
       setRegister(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
-      setRegister(ft_reg, target_org->GetForageTarget(), true);  
+      setRegister(ft_reg, target_org->GetForageTarget(), true);
       if (target_org->HasOpinion()) {
         setRegister(group_reg, target_org->GetOpinion().first, true);
       }
-      if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());     
-    }       
+      if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) Features::VisualSensor::Of(this).SetLastSeenDisplay(target_org->GetOrgDisplayData());
+    }
     return true;
   }
 }
 
-bool cHardwareGP8::Inst_SenseResourceID(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SenseResourceID(cAvidaContext& ctx)
 {
   Apto::Array<double> cell_res;
   if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  int reg_to_set = FindModifiedRegister(rBX);  
-  double max_resource = 0.0;    
+  else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx);
+  int reg_to_set = FindModifiedRegister(rBX);
+  double max_resource = 0.0;
   // if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
   for (int i = 0; i < cell_res.GetSize(); i++) {
     if (cell_res[i] > max_resource) {
       max_resource = cell_res[i];
       setRegister(reg_to_set, i, true);
     }
-  }    
+  }
   return true;
 }
 
-bool cHardwareGP8::Inst_SenseNest(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SenseNest(cAvidaContext& ctx)
 {
   Apto::Array<double> cell_res;
   if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+  else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx);
   
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int reg_used = FindModifiedRegister(rBX);
@@ -2484,7 +2385,7 @@ bool cHardwareGP8::Inst_SenseNest(cAvidaContext& ctx)
       }
     }
   }
-  else nest_val = (int) cell_res[nest_id];  
+  else nest_val = (int) cell_res[nest_id];
   
   setRegister(reg_used, nest_id, true);
   const int val_reg = FindModifiedNextRegister(reg_used);
@@ -2492,18 +2393,18 @@ bool cHardwareGP8::Inst_SenseNest(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_LookAheadEX(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_LookAheadEX(cAvidaContext& ctx)
 {
   return DoLookAheadEX(ctx);
 }
 
-bool cHardwareGP8::Inst_LookAgainEX(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_LookAgainEX(cAvidaContext& ctx)
 {
   return DoLookAgainEX(ctx);
 }
 
 
-bool cHardwareGP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
+bool Hardware::Types::GP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
 {
   int cell_id = m_organism->GetOrgInterface().GetCellID();
   int facing = m_organism->GetOrgInterface().GetFacedDir();
@@ -2512,7 +2413,7 @@ bool cHardwareGP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
     cell_id = m_organism->GetOrgInterface().GetAVCellID();
     facing = m_organism->GetOrgInterface().GetAVFacing();
   }
-
+  
   // temp check on world geometry until code can handle other geometries
   if (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) {
     // Instruction sense-diff-ahead only written to work in bounded grids
@@ -2537,16 +2438,16 @@ bool cHardwareGP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
   
   const int reg_id_found = FindModifiedRegister(-1, true);                        // ?r?X?
   
-  cOrgSensor::sLookInit look_init;
+  Features::VisualSensor::LookSettings look_init;
   look_init.habitat = m_threads[m_cur_thread].reg[reg_habitat].value;
   look_init.distance = (reg_search_distance == -1) ? std::numeric_limits<int>::max() : getRegister(ctx, reg_search_distance);
   look_init.search_type = (reg_search_type == -1) ? 0 : getRegister(ctx, reg_search_type);
   look_init.id_sought = m_threads[m_cur_thread].reg[reg_id_sought].value;
   
-  cOrgSensor::sLookOut look_results;
+  Features::VisualSensor::LookResults look_results;
   look_results.value = 0;
   
-  look_results = m_sensor.SetLooking(ctx, look_init, facing, cell_id, use_ft);
+  look_results = Features::VisualSensor::Of(this).PeformLook(ctx, look_init, facing, cell_id, use_ft);
   
   if (m_world->GetConfig().TRACK_LOOK_SETTINGS.Get()) {
     cString look_string = "";
@@ -2564,7 +2465,7 @@ bool cHardwareGP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
   m_threads[m_cur_thread].sensor_session.distance = look_init.distance;
   m_threads[m_cur_thread].sensor_session.search_type = look_results.search_type;
   m_threads[m_cur_thread].sensor_session.id_sought = look_results.id_sought;
-
+  
   if (reg_session != -1) {
     const int session_idx = Apto::Abs(m_threads[m_cur_thread].reg[reg_session].value % m_sensor_sessions.GetSize());
     m_sensor_sessions[session_idx].habitat = look_results.habitat;
@@ -2579,7 +2480,7 @@ bool cHardwareGP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
     setRegister(reg_travel_distance, -1, true);
     setRegister(reg_deviance, 0, true);
     setRegister(reg_cv, 0, true);
-
+    
     if (reg_search_type != -1) setRegister(reg_search_type, look_results.search_type, true);
     if (reg_id_found != -1) setRegister(reg_id_found, -9, true);
   } else if (look_results.report_type == 1) {
@@ -2623,12 +2524,12 @@ bool cHardwareGP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
     look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[reg_deviance].value);
     look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[reg_cv].value);
     m_organism->GetOrgInterface().TryWriteLookEXOutput(look_string);
-  }  
+  }
   
   return true;
 }
 
-bool cHardwareGP8::DoLookAgainEX(cAvidaContext& ctx, bool use_ft)
+bool Hardware::Types::GP8::DoLookAgainEX(cAvidaContext& ctx, bool use_ft)
 {
   int cell_id = m_organism->GetOrgInterface().GetCellID();
   int facing = m_organism->GetOrgInterface().GetFacedDir();
@@ -2655,16 +2556,16 @@ bool cHardwareGP8::DoLookAgainEX(cAvidaContext& ctx, bool use_ft)
   const int reg_cv = FindNextRegister(reg_deviance);                        // rDX + 2 = rFX
   const int reg_id_found = FindModifiedRegister(-1);                        // ?r?X?
   
-  cOrgSensor::sLookInit look_init = m_threads[m_cur_thread].sensor_session;
+  Features::VisualSensor::LookSettings look_init = m_threads[m_cur_thread].sensor_session;
   if (reg_session != -1) {
     const int session_idx = Apto::Abs(m_threads[m_cur_thread].reg[reg_session].value % m_sensor_sessions.GetSize());
     look_init = m_sensor_sessions[session_idx];
   }
   
-  cOrgSensor::sLookOut look_results;
+  Features::VisualSensor::LookResults look_results;
   look_results.value = 0;
   
-  look_results = m_sensor.SetLooking(ctx, look_init, facing, cell_id, use_ft);
+  look_results = Features::VisualSensor::Of(this).PerformLook(ctx, look_init, facing, cell_id, use_ft);
   
   if (m_world->GetConfig().TRACK_LOOK_SETTINGS.Get()) {
     cString look_string = "";
@@ -2682,7 +2583,7 @@ bool cHardwareGP8::DoLookAgainEX(cAvidaContext& ctx, bool use_ft)
     setRegister(reg_deviance, 0, true);
     setRegister(reg_cv, 0, true);
     
-    if (reg_id_found != -1) setRegister(reg_id_found, -9, true);    
+    if (reg_id_found != -1) setRegister(reg_id_found, -9, true);
   } else if (look_results.report_type == 1) {
     setRegister(reg_travel_distance, look_results.distance, true);
     setRegister(reg_deviance, look_results.deviance, true);
@@ -2718,7 +2619,7 @@ bool cHardwareGP8::DoLookAgainEX(cAvidaContext& ctx, bool use_ft)
     look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[reg_deviance].value);
     look_string += cStringUtil::Stringf(",%d", m_threads[m_cur_thread].reg[reg_cv].value);
     m_organism->GetOrgInterface().TryWriteLookEXOutput(look_string);
-  }  
+  }
   return true;
 }
 
@@ -2726,7 +2627,7 @@ bool cHardwareGP8::DoLookAgainEX(cAvidaContext& ctx, bool use_ft)
 
 
 
-bool cHardwareGP8::Inst_SenseFacedHabitat(cAvidaContext& ctx) 
+bool Hardware::Types::GP8::Inst_SenseFacedHabitat(cAvidaContext& ctx)
 {
   int reg_to_set = FindModifiedRegister(rBX);
   
@@ -2736,7 +2637,7 @@ bool cHardwareGP8::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   // get the destination cell resource levels
   Apto::Array<double> cell_res;
   if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+  else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx);
   
   // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
   // simulated predator ahead
@@ -2744,16 +2645,16 @@ bool cHardwareGP8::Inst_SenseFacedHabitat(cAvidaContext& ctx)
     if (resource_lib.GetResource(i)->GetHabitat() == 5 && cell_res[i] > 0) {
       setRegister(reg_to_set, 3, true);
       return true;
-    }    
+    }
   }
-  // are there any barrier resources in the faced cell    
+  // are there any barrier resources in the faced cell
   for (int i = 0; i < cell_res.GetSize(); i++) {
     if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_res[i] > 0) {
       setRegister(reg_to_set, 2, true);
       return true;
-    }    
+    }
   }
-  // if no barriers, are there any hills in the faced cell    
+  // if no barriers, are there any hills in the faced cell
   for (int i = 0; i < cell_res.GetSize(); i++) {
     if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_res[i] > 0) {
       setRegister(reg_to_set, 1, true);
@@ -2765,7 +2666,7 @@ bool cHardwareGP8::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_SetForageTarget(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   int prop_target = getRegister(ctx, FindModifiedRegister(rBX, true));
@@ -2773,7 +2674,7 @@ bool cHardwareGP8::Inst_SetForageTarget(cAvidaContext& ctx)
   //return false if org setting target to current one (avoid paying costs for not switching)
   const int old_target = m_organism->GetForageTarget();
   if (old_target == prop_target) return false;
-
+  
   // return false if predator trying to become prey and this has been disallowed
   if (old_target <= -2 && prop_target > -2 && (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2)) return false;
   
@@ -2787,7 +2688,7 @@ bool cHardwareGP8::Inst_SetForageTarget(cAvidaContext& ctx)
   if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2 && prop_target != -3) {
     int num_fts = 0;
     std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
-    set <int>::iterator itr;    
+    set <int>::iterator itr;
     for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2 && *itr != -3) num_fts++;
     if (m_world->GetEnvironment().IsTargetID(-1) && num_fts == 0) prop_target = -1;
     else {
@@ -2798,11 +2699,11 @@ bool cHardwareGP8::Inst_SetForageTarget(cAvidaContext& ctx)
       prop_target = *itr;
     }
   }
-
+  
   // make sure we use a valid (resource) target
   // -2 target means setting to predator
   // if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
-
+  
   // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
   if (m_use_avatar && (((prop_target == -2 || prop_target == -3) && old_target > -2) || (prop_target > -2 && (old_target == -2 || old_target == -3))) &&
       (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
@@ -2810,21 +2711,21 @@ bool cHardwareGP8::Inst_SetForageTarget(cAvidaContext& ctx)
     m_organism->SetForageTarget(ctx, prop_target);
   }
   else m_organism->SetForageTarget(ctx, prop_target);
-    
+  
   // Set the new target and return the value
   m_organism->RecordFTSet();
   setRegister(FindModifiedRegister(rBX, true), prop_target, false);
   return true;
 }
 
-bool cHardwareGP8::Inst_SetForageTargetOnce(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SetForageTargetOnce(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_organism->HasSetFT()) return false;
   else return Inst_SetForageTarget(ctx);
 }
 
-bool cHardwareGP8::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   int cap = 0;
@@ -2856,7 +2757,7 @@ bool cHardwareGP8::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
   else return Inst_SetForageTargetOnce(ctx);
 }
 
-bool cHardwareGP8::Inst_GetForageTarget(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_GetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   const int target_reg = FindModifiedRegister(rBX);
@@ -2864,7 +2765,7 @@ bool cHardwareGP8::Inst_GetForageTarget(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGP8::Inst_CollectSpecific(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_CollectSpecific(cAvidaContext& ctx)
 {
   const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
   double res_before = m_organism->GetRBin(resource);
@@ -2876,7 +2777,7 @@ bool cHardwareGP8::Inst_CollectSpecific(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareGP8::Inst_GetResStored(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_GetResStored(cAvidaContext& ctx)
 {
   int resource_id = abs(getRegister(ctx, FindModifiedRegister(rBX, true)));
   Apto::Array<double> bins = m_organism->GetRBins();
@@ -2887,7 +2788,7 @@ bool cHardwareGP8::Inst_GetResStored(cAvidaContext& ctx)
 }
 
 
-bool cHardwareGP8::Inst_GetFacedOrgID(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_GetFacedOrgID(cAvidaContext& ctx)
 //Get ID of organism faced by this one, if there is an organism in front.
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -2897,7 +2798,7 @@ bool cHardwareGP8::Inst_GetFacedOrgID(cAvidaContext& ctx)
   
   if (!m_use_avatar) neighbor = m_organism->GetOrgInterface().GetNeighbor();
   else if (m_use_avatar == 2) neighbor = m_organism->GetOrgInterface().GetRandFacedAV(ctx);
-  if (neighbor->IsDead())  return false;  
+  if (neighbor->IsDead())  return false;
   
   const int out_reg = FindModifiedRegister(rBX);
   setRegister(out_reg, neighbor->GetID(), true);
@@ -2905,14 +2806,14 @@ bool cHardwareGP8::Inst_GetFacedOrgID(cAvidaContext& ctx)
 }
 
 //Teach offspring learned targeting/foraging behavior
-bool cHardwareGP8::Inst_TeachOffspring(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_TeachOffspring(cAvidaContext&)
 {
   assert(m_organism != 0);
   m_organism->Teach(true);
   return true;
 }
 
-bool cHardwareGP8::Inst_LearnParent(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_LearnParent(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   bool halt = false;
@@ -2920,10 +2821,10 @@ bool cHardwareGP8::Inst_LearnParent(cAvidaContext& ctx)
     int old_target = m_organism->GetForageTarget();
     int prop_target = -1;
     prop_target = m_organism->GetParentFT();
-
+    
     halt = (prop_target <= -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0);
     if (!halt) {
-      if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1 && 
+      if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1 &&
           (((prop_target == -2 || prop_target == -3) && old_target > -2) || (prop_target > -2 && (old_target == -2 || prop_target == -3)))) {
         m_organism->GetOrgInterface().SwitchPredPrey(ctx);
         m_organism->CopyParentFT(ctx);
@@ -2936,7 +2837,7 @@ bool cHardwareGP8::Inst_LearnParent(cAvidaContext& ctx)
 
 
 //Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions.
-bool cHardwareGP8::Inst_AttackPrey(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_AttackPrey(cAvidaContext& ctx)
 {
   if (!testAttack(ctx)) return false;
   cOrganism* target = getPreyTarget(ctx);
@@ -2951,234 +2852,9 @@ bool cHardwareGP8::Inst_AttackPrey(cAvidaContext& ctx)
 }
 
 
-bool cHardwareGP8::Inst_ScrambleReg(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_ScrambleReg(cAvidaContext& ctx)
 {
   for (int i = 0; i < NUM_REGISTERS; i++) setRegister(rAX + i, ctx.GetRandom().GetInt(), true);
   return true;
 }
 
-bool cHardwareGP8::DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit)
-{
-  // Set up res_change and max total
-  Apto::Array<double> res_count;
-  if (!m_use_avatar) res_count = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) res_count = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  Apto::Array<double> res_change(res_count.GetSize());
-  res_change.SetAll(0.0);
-  double total = m_organism->GetRBinsTotal();
-  double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
-  bool has_max = max > 0 ? true : false;
-  double res_consumed = 0.0;
-  
-  // Collect a unit or some ABSORB_RESOURCE_FRACTION
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  if (unit) {
-    double threshold = resource_lib.GetResource(bin_used)->GetThreshold();
-    if (res_count[bin_used] >= threshold) {
-      res_consumed = threshold;
-    }
-    else {
-      return false;
-    }  
-  }
-  else {
-    res_consumed = res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get();
-  }
-  
-  if (has_max && res_consumed + total >= max) {
-    res_consumed = max - total;
-    res_change[bin_used] = -1 * res_consumed;
-  }
-  else res_change[bin_used] = -1 * res_consumed;
-  
-  if (res_consumed > 0) { 
-    m_organism->AddToRBin(bin_used, res_consumed); 
-    if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
-    else if (m_use_avatar) m_organism->GetOrgInterface().UpdateAVResources(ctx, res_change);
-    return true;
-  }
-  return false;
-}
-
-
-// PRED-PREY SUPPORT
-void cHardwareGP8::makePred(cAvidaContext& ctx)
-{
-  if (m_organism->IsPreyFT()) {
-    if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
-    // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
-    if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-      m_organism->GetOrgInterface().SwitchPredPrey(ctx);
-      m_organism->SetPredFT(ctx);
-    }
-    else m_organism->SetPredFT(ctx);
-  }
-}
-
-void cHardwareGP8::makeTopPred(cAvidaContext& ctx)
-{
-  if (m_organism->IsPreyFT()) {
-    if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
-    // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
-    if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-      m_organism->GetOrgInterface().SwitchPredPrey(ctx);
-      m_organism->SetTopPredFT(ctx);
-    }
-    else m_organism->SetTopPredFT(ctx);
-  }
-  else if (m_organism->IsPredFT()) m_organism->SetTopPredFT(ctx);
-}
-
-void cHardwareGP8::setAttackReg(AttackRegisters& reg)
-{
-  reg.success_reg = FindModifiedRegister(rBX);
-  reg.bonus_reg = FindModifiedNextRegister(reg.success_reg);
-  reg.bin_reg = FindModifiedNextRegister(reg.bonus_reg);
-}
-
-bool cHardwareGP8::executeAttack(cAvidaContext& ctx, cOrganism* target, AttackRegisters& reg, double odds)
-{
-  if (!testAttackChance(ctx, target, reg, odds)) return false;
-  double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
-  if (m_organism->IsTopPredFT()) effic *= effic;
-  applyKilledPreyMerit(target, effic);
-  applyKilledPreyReactions(target);
-
-  // keep returns in same order as legacy code (important if reg assignments are shared)
-  applyKilledPreyResBins(target, reg, effic);
-  setRegister(reg.success_reg, 1, true);
-  applyKilledPreyBonus(target, reg, effic);
-
-  target->Die(ctx); // kill first -- could end up being killed by inject clone or MAX_PRED if parent was pred
-  makePred(ctx);
-  tryPreyClone(ctx);
-  return true;
-}
-
-cOrganism* cHardwareGP8::getPreyTarget(cAvidaContext& ctx)
-{
-  cOrganism* target = NULL;
-  if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
-  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();  
-  return target;
-}
-
-bool cHardwareGP8::testPreyTarget(cOrganism* target)
-{
-  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-  bool success = true;
-  if (!target->IsPreyFT() || target->IsDead()) success = false;
-  return success;
-}
-
-bool cHardwareGP8::testAttack(cAvidaContext& ctx)
-{
-  if (m_use_avatar && m_use_avatar != 2) return false;
-  
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
-  
-  if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
-  
-  // prevent killing on refuges
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetRefuge()) {
-      if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedResourceVal(ctx, i) >= resource_lib.GetResource(i)->GetThreshold()) return false;
-      else if (m_use_avatar == 2 && m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, i) >= resource_lib.GetResource(i)->GetThreshold()) return false;
-    }
-  }
-  return true;
-}
-
-bool cHardwareGP8::testAttackChance(cAvidaContext& ctx, cOrganism* target, AttackRegisters& reg, double odds)
-{
-  bool success = true;
-  if (odds == -1) odds = m_world->GetConfig().PRED_ODDS.Get();
-  if (ctx.GetRandom().GetDouble() >= odds ||
-      (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    injureOrg(target);
-    setRegister(reg.success_reg, -1, true);
-    setRegister(reg.bonus_reg, -1, true);
-    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setRegister(reg.bin_reg, -1, true);
-    success = false;
-  }
-  return success;
-}
-
-void cHardwareGP8::applyKilledPreyMerit(cOrganism* target, double effic)
-{
-  // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
-  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
-    const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-    double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
-    attacker_merit += target_merit * effic;
-    m_organism->UpdateMerit(attacker_merit);
-  }
-}
-
-void cHardwareGP8::applyKilledPreyReactions(cOrganism* target)
-{
-  // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
-  Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
-  Apto::Array<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
-  for (int i = 0; i < org_reactions.GetSize(); i++) {
-    m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
-  }
-}
-
-void cHardwareGP8::applyKilledPreyBonus(cOrganism* target, AttackRegisters& reg, double effic)
-{
-  // and add current merit bonus after adjusting for conversion efficiency
-  const double target_bonus = target->GetPhenotype().GetCurBonus();
-  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * effic));
-  setRegister(reg.bonus_reg, (int) (target_bonus), true);
-}
-
-void cHardwareGP8::applyKilledPreyResBins(cOrganism* target, AttackRegisters& reg, double effic)
-{
-  // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
-  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-    Apto::Array<double> target_bins = target->GetRBins();
-    for (int i = 0; i < target_bins.GetSize(); i++) {
-      m_organism->AddToRBin(i, target_bins[i] * effic);
-      if (effic > 0) target->AddToRBin(i, -1 * (target_bins[i] * effic));
-    }
-    const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
-    setRegister(reg.bin_reg, spec_bin, true);
-  }
-}
-
-void cHardwareGP8::tryPreyClone(cAvidaContext& ctx)
-{
-  if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-    // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
-    // but can't dump a lot b/c could end up filling world with just clones (e.g. if attack happens when world is still being populated)
-    int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
-    for (int i = 0; i < min(2, num_clones); i++) m_organism->GetOrgInterface().InjectPreyClone(ctx, m_organism->SystematicsGroup("genotype")->ID());
-  }
-}
-
-void cHardwareGP8::injureOrg(cOrganism* target)
-{
-  double injury = m_world->GetConfig().PRED_INJURY.Get();
-  if (injury == 0) return;
-  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
-    double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-    target_merit -= target_merit * injury;
-    target->UpdateMerit(target_merit);
-  }
-  Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
-  for (int i = 0; i < target_reactions.GetSize(); i++) {
-    target->GetPhenotype().SetReactionCount(i, target_reactions[i] - (int)((target_reactions[i] * injury)));
-  }
-  const double target_bonus = target->GetPhenotype().GetCurBonus();
-  target->GetPhenotype().SetCurBonus(target_bonus - (target_bonus * injury));
-  
-  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-    Apto::Array<double> target_bins = target->GetRBins();
-    for (int i = 0; i < target_bins.GetSize(); i++) {
-      target->AddToRBin(i, -1 * (target_bins[i] * injury));
-    }
-  }
-}

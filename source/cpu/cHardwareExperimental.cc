@@ -925,7 +925,7 @@ void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp
 
   fp << next_name << " ";
   // any trailing nops (up to NUM_REGISTERS)
-  cCPUMemory& memory = m_memory;
+  InstMemSpace& memory = m_memory;
   int pos = getIP().GetPosition();
   Apto::Array<int, Apto::Smart> seq;
   seq.Resize(0);
@@ -958,7 +958,7 @@ cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) return ip;
   
-  cCPUMemory& memory = m_memory;
+  InstMemSpace& memory = m_memory;
   int pos = 0;
   
   while (pos < memory.GetSize()) {
@@ -1004,7 +1004,7 @@ cHeadCPU cHardwareExperimental::FindNopSequenceStart(bool mark_executed)
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) return ip;
   
-  cCPUMemory& memory = m_memory;
+  InstMemSpace& memory = m_memory;
   int pos = 0;
   
   while (pos < memory.GetSize()) {
@@ -3945,7 +3945,7 @@ bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const
   reg_defs.group = FindModifiedNextRegister(reg_defs.value);
   reg_defs.ft = FindModifiedNextRegister(reg_defs.group);
   
-  cOrgSensor::sLookOut look_results;
+  Features::VisualSensor::LookResults look_results;
   look_results.report_type = 0;
   look_results.habitat = 0;
   look_results.distance = -1;
@@ -3961,14 +3961,14 @@ bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const
   return true;
 }
 
-cOrgSensor::sLookOut cHardwareExperimental::InitLooking(cAvidaContext& ctx, sLookRegAssign& in_defs, int facing, int cell_id, bool use_ft)
+Hardware::Features::VisualSensor::LookResults cHardwareExperimental::InitLooking(cAvidaContext& ctx, sLookRegAssign& in_defs, int facing, int cell_id, bool use_ft)
 {
   const int habitat_reg = in_defs.habitat;
   const int distance_reg = in_defs.distance;
   const int search_reg = in_defs.search_type;
   const int id_reg = in_defs.id_sought;
   
-  cOrgSensor::sLookInit reg_init;
+  Features::VisualSensor::LookResults reg_init;
   reg_init.habitat = m_threads[m_cur_thread].reg[habitat_reg].value;
   reg_init.distance = m_threads[m_cur_thread].reg[distance_reg].value;
   reg_init.search_type = m_threads[m_cur_thread].reg[search_reg].value;
@@ -3979,7 +3979,7 @@ cOrgSensor::sLookOut cHardwareExperimental::InitLooking(cAvidaContext& ctx, sLoo
   return m_sensor.SetLooking(ctx, reg_init, facing, cell_id, use_ft);
 }    
 
-void cHardwareExperimental::LookResults(cAvidaContext& ctx, sLookRegAssign& regs, cOrgSensor::sLookOut& results)
+void cHardwareExperimental::LookResults(cAvidaContext& ctx, sLookRegAssign& regs, Features::VisualSensor::LookResults& results)
 {
   // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
   // return defaults for failed to find
@@ -6280,7 +6280,7 @@ bool cHardwareExperimental::Inst_ModifyDisplay(cAvidaContext& ctx)
 {
   sOrgDisplay* this_display = m_organism->GetOrgDisplayData();
   if (this_display == NULL) return false;
-  cCPUMemory& memory = m_memory;
+  InstMemSpace& memory = m_memory;
   int pos = getIP().GetPosition();
   bool message_used = false;
   for (int i = 0; i < 5; i++) {
@@ -6312,7 +6312,7 @@ bool cHardwareExperimental::Inst_ReadLastSeenDisplay(cAvidaContext& ctx)
 {
   if (!m_sensor.HasSeenDisplay()) return false;
   sOrgDisplay& last_seen = m_sensor.GetLastSeenDisplay();
-  cCPUMemory& memory = m_memory;
+  InstMemSpace& memory = m_memory;
   int pos = getIP().GetPosition();
   bool message_read = false;
   for (int i = 0; i < 5; i++) {
@@ -6341,7 +6341,7 @@ bool cHardwareExperimental::Inst_ReadLastSeenDisplay(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_ModifySimpDisplay(cAvidaContext& ctx)
 {
-  cCPUMemory& memory = m_memory;
+  InstMemSpace& memory = m_memory;
   int pos = getIP().GetPosition();
   bool message_used = false;
   for (int i = 0; i < 4; i++) {
@@ -6370,7 +6370,7 @@ bool cHardwareExperimental::Inst_ReadLastSimpDisplay(cAvidaContext& ctx)
 {
   if (!m_sensor.HasSeenDisplay()) return false;
   sOrgDisplay& last_seen = m_sensor.GetLastSeenDisplay();
-  cCPUMemory& memory = m_memory;
+  InstMemSpace& memory = m_memory;
   int pos = getIP().GetPosition();
   bool message_read = false;
   for (int i = 0; i < 4; i++) {

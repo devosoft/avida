@@ -141,7 +141,7 @@ instructions in this array that are currently being used.  The fact that
 these variables are "protected" instead of "private" means that any
 class derived from <span class="class">Genome</span> will also have direct
 access to the variables.  In particular, the class
-<span class="class">cCPUMemory</span> extends Genome, adding methods to
+<span class="class">InstMemSpace</span> extends Genome, adding methods to
 alter the array length and new variables to keep track of information about
 each instruction.
 </p>
@@ -170,7 +170,7 @@ returned.
 The <span class="method">Copy(</span>) method is a shortcut to copy memory
 from one position in the genome to another.  This method will later be
 <strong>overloaded</strong> (that is, replaced with a newer version) by
-cCPUMemory such that the proper flags will be copied, with the instruction
+InstMemSpace such that the proper flags will be copied, with the instruction
 and others will be set to indicate the copied instruction for future tests.
 <span class="method">GetSize</span>() returns the length of the genome, and
 <span class="method">AsString</span>() returns a string who has symbols in

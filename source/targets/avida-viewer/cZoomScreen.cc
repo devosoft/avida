@@ -679,7 +679,7 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase& hardware)
   // creature we are viewing, but can also be a different one (if this is a
   // parasite).
   
-  const cCPUMemory& memory = parasite_zoom ? hardware.GetMemory() : hardware.IP().GetMemory();
+  const InstMemSpace& memory = parasite_zoom ? hardware.GetMemory() : hardware.IP().GetMemory();
   SetColor(COLOR_WHITE);
   Print(MEMORY_Y + 1, MEMORY_X + 9, "%4d", memory.GetSize());
   
@@ -809,7 +809,7 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase& hardware)
   // creature we are viewing, but can also be a different one (if this is a
   // parasite).
   
-  const cCPUMemory& memory = hardware.GetMemory(cur_mem_space);
+  const InstMemSpace& memory = hardware.GetMemory(cur_mem_space);
   SetBoldColor(COLOR_BLUE);
   Print(MEMORY_Y + 1, MEMORY_X + 8, " Space ");	
   SetColor(COLOR_WHITE);

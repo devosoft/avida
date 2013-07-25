@@ -681,7 +681,7 @@ public:
       cPopulationCell& cell = population.GetCell(x);
       if (cell.IsOccupied() && cell.GetOrganism()->GetGenome().Properties().Get("instset").StringValue() == is.GetInstSetName()) {
         // access this CPU's code block
-        cCPUMemory& cpu_mem = cell.GetOrganism()->GetHardware().GetMemory();
+        InstMemSpace& cpu_mem = cell.GetOrganism()->GetHardware().GetMemory();
         const int mem_size = cpu_mem.GetSize();
         for (int y = 0; y < mem_size; y++) inst_counts[cpu_mem[y].GetOp()]++;
       }

@@ -36,7 +36,6 @@
 #include "tBuffer.h"
 
 class cAvidaContext;
-class cCPUMemory;
 class cHeadCPU;
 class cMutation;
 class cOrganism;
@@ -161,11 +160,11 @@ public:
   
   
   // --------  Memory Manipulation  --------
-  virtual const cCPUMemory& GetMemory() const = 0;
-  virtual cCPUMemory& GetMemory() = 0;
+  virtual const InstMemSpace& GetMemory() const = 0;
+  virtual InstMemSpace& GetMemory() = 0;
   virtual int GetMemSize() const = 0;
-  virtual const cCPUMemory& GetMemory(int value) const = 0;
-  virtual cCPUMemory& GetMemory(int value) = 0;
+  virtual const InstMemSpace& GetMemory(int value) const = 0;
+  virtual InstMemSpace& GetMemory(int value) = 0;
   virtual int GetMemSize(int value) const = 0;
   virtual int GetNumMemSpaces() const = 0;
   

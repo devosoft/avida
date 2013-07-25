@@ -47,6 +47,7 @@ namespace Avida {
       LIB_EXPORT ~ResourceManager();
       
       LIB_EXPORT inline Resource& GetResource(ResourceID res_id) { return *m_resources[res_id]; }
+      LIB_EXPORT inline int NumResources() { return m_resources.GetSize(); }
 
       LIB_EXPORT void AttachListener(ResourceListener* listener);
       LIB_EXPORT void DetachListener(ResourceListener* listener);

@@ -27,7 +27,6 @@
 
 #include "cAvidaContext.h"
 #include "cContextPhenotype.h"
-#include "cCPUMemory.h"
 #include "cHeadCPU.h"
 #include "cHardwareBase.h"
 #include "cString.h"
@@ -116,7 +115,7 @@ protected:
   LocalStack m_global_stacks[NUM_GLOBAL_STACKS];
 	
   // Memory
-  Apto::Array<cCPUMemory, Apto::ManagedPointer> m_mem_array;
+  Apto::Array<InstMemSpace, Apto::ManagedPointer> m_mem_array;
   Apto::Map<int, int> m_mem_lbls;
 
   // Threads
@@ -188,7 +187,7 @@ protected:
   int calcCopiedSize(const int parent_size, const int child_size);
   
   bool Divide_Main(cAvidaContext& ctx, double mut_multiplier = 1.0);
-  void Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, cCPUMemory& injected_code);
+  void Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, InstMemSpace& injected_code);
 
   bool InjectParasite(cAvidaContext& ctx, double mut_multiplier);
 
@@ -238,11 +237,11 @@ public:
 	  
   
   // --------  Memory Manipulation  --------
-  cCPUMemory& GetMemory() { return m_mem_array[0]; }
-  const cCPUMemory& GetMemory() const { return m_mem_array[0]; }
+  InstMemSpace& GetMemory() { return m_mem_array[0]; }
+  const InstMemSpace& GetMemory() const { return m_mem_array[0]; }
   int GetMemSize() const { return m_mem_array[0].GetSize(); }
-  cCPUMemory& GetMemory(int mem_space) { return m_mem_array[NormalizeMemSpace(mem_space)]; }
-  const cCPUMemory& GetMemory(int mem_space) const { return m_mem_array[NormalizeMemSpace(mem_space)]; }
+  InstMemSpace& GetMemory(int mem_space) { return m_mem_array[NormalizeMemSpace(mem_space)]; }
+  const InstMemSpace& GetMemory(int mem_space) const { return m_mem_array[NormalizeMemSpace(mem_space)]; }
   int GetMemSize(int mem_space) const { return m_mem_array[NormalizeMemSpace(mem_space)].GetSize(); }
   int GetNumMemSpaces() const { return m_mem_array.GetSize(); }
   

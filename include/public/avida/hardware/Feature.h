@@ -25,7 +25,7 @@
 #ifndef AvidaHardwareFeature_h
 #define AvidaHardwareFeature_h
 
-#include "avida/hardware/Types.h"
+#include "avida/hardware/Base.h"
 
 
 namespace Avida {
@@ -36,8 +36,15 @@ namespace Avida {
     
     class Feature
     {
+    protected:
+      Base* m_hw;
+      
     public:
+      LIB_EXPORT inline Feature(Base* hw) : m_hw(hw) { ; }
       LIB_EXPORT virtual ~Feature() = 0;
+      
+    protected:
+      static Feature* featureOf(int feature, Base* hw) { return hw->m_features[feature]; }
     };
     
   };

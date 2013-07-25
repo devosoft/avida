@@ -204,6 +204,7 @@ namespace Avida {
       const Entry& EntryAt(int i) const { assert(i < m_size); return m_entries[i]; }
       int NopModOf(unsigned int idx) const { return m_nopmods[idx]; }
     };
+    
   };
 };
 
