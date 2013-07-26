@@ -1002,6 +1002,8 @@ void cOrgSensor::SetPotentialDisplayData(sLookOut& stuff_seen)
   if (stuff_seen.habitat == -2) display_data->thing_id = stuff_seen.id_sought;
   else display_data->thing_id = stuff_seen.group;
   display_data->value = stuff_seen.value;
+    
+  SetReturnRelativeFacing(false);
   
   m_organism->SetPotentialDisplay(display_data);         
 }
