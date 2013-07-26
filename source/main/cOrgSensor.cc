@@ -1434,7 +1434,9 @@ int cOrgSensor::ReturnRelativeFacing(cOrganism* sighted_org) {
   if (match_heading > 4) match_heading -= 8;                  // rotate left x times
   else if (match_heading < -4) match_heading += 8;            // rotate right x times
   else if (abs(match_heading) == 4) match_heading = 4;        // rotating 4 and -4 to look same to org
-  m_return_rel_facing = false;
+  
+  SetReturnRelativeFacing(false);
+  
   return match_heading;
 }
 
@@ -1512,8 +1514,7 @@ void cOrgSensor::TestConfusion(cAvidaContext& ctx, sLookOut& stuff_seen, cOrgani
     stuff_seen.distance = ctx.GetRandom().GetInt();
     stuff_seen.count = ctx.GetRandom().GetInt();
     stuff_seen.value = ctx.GetRandom().GetInt();
-    stuff_seen.group = ctx.GetRandom().GetInt();
+    stuff_seen.group = ctx.GetRandom().GetInt();  // this is relative facing for nearest individual
     stuff_seen.deviance = ctx.GetRandom().GetInt();
   }
 }
-
