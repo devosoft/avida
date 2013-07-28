@@ -1507,8 +1507,9 @@ void cOrgSensor::TestConfusion(cAvidaContext& ctx, sLookOut& stuff_seen, cOrgani
     }
   }
   
-  // double odds = 1.0 / ((double) (prey_count));
-  double odds = 1.0 - (0.10 * (double) prey_count); // 0 friend = 10% confusion, 1 friend = 20%, 8 friends = 90%
+  // first org is alone and doesn't count:
+	prey_count--;
+  double odds = 1.0 - (0.10 * (double) prey_count); // 0 friend = 0% confusion, 1 friend = 10%, 10 friends = 100%
 
   if (ctx.GetRandom().GetDouble() >= odds) {
     stuff_seen.distance = ctx.GetRandom().GetInt();
