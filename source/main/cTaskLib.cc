@@ -3973,7 +3973,6 @@ double cTaskLib::Task_MoveFT(cTaskContext& ctx) const
   int cell_id = ctx.GetOrganism()->GetCellID();
   if (m_world->GetConfig().USE_AVATARS.Get()) cell_id = ctx.GetOrganism()->GetAVCellID();
   if (cell_id != ctx.GetOrganism()->GetPrevSeenCellID()) {
-    ctx.GetOrganism()->SetPrevSeenCellID(cell_id);
     moved = true;
   }
 
@@ -3985,6 +3984,7 @@ double cTaskLib::Task_MoveFT(cTaskContext& ctx) const
     // If the organism is on the right resource...
     if (target_res == des_target) {
       reward = 1;
+      ctx.GetOrganism()->SetPrevSeenCellID(cell_id);
     }
   }
   return reward;
