@@ -300,20 +300,8 @@ private:
   double Task_MoveNotUpGradient(cTaskContext& ctx) const;
 
 
-  // State Grid Tasks
-  void Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  double Task_SGPathTraversal(cTaskContext& ctx) const;  
-	
 	// reputation
 	double Task_CreatePerfectStrings(cTaskContext& ctx) const; 
-	
-	// group formation 
-	void Load_FormSpatialGroup(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-	double Task_FormSpatialGroup(cTaskContext& ctx) const; 
-	void Load_FormSpatialGroupWithID(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-	double Task_FormSpatialGroupWithID(cTaskContext& ctx) const; 
-	void Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-	double Task_LiveOnPatchRes(cTaskContext& ctx) const; 
 	
   // Feed Specific Tasks
   void Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
@@ -353,13 +341,6 @@ private:
 	double Task_RoyalRoad(cTaskContext& ctx) const;
 	void Load_RoyalRoadWithDitches(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
 	double Task_RoyalRoadWithDitches(cTaskContext& ctx) const;
-	
-	// division of labor
-	void Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-	double Task_OpinionIs(cTaskContext& ctx) const;
-	
-
-	
 };
 
 #endif

@@ -37,7 +37,6 @@ cCPUTestInfo::cCPUTestInfo(int max_tests)
   , use_random_inputs(false)
   , use_manual_inputs(false)
   , m_tracer(NULL)
-  , m_cur_sg(0)
   , org_array(max_tests)
 {
   org_array.SetAll(NULL);
@@ -59,7 +58,6 @@ cCPUTestInfo& cCPUTestInfo::operator=(const cCPUTestInfo& test_info)
   manual_inputs = test_info.manual_inputs; 
   if (test_info.m_tracer) { m_tracer = test_info.m_tracer; }
   m_mut_rates = test_info.m_mut_rates;
-  m_cur_sg = test_info.m_cur_sg;
   is_viable = test_info.is_viable;
   max_depth = test_info.max_depth;
   depth_found = test_info.depth_found;

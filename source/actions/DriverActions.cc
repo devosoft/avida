@@ -51,47 +51,8 @@ public:
   void Process(cAvidaContext&) { m_world->GetDriver().Pause(); }
 };
 
-class cActionExitAveLineageLabelGreater : public cAction
-{
-private:
-  double m_threshold;
-public:
-  cActionExitAveLineageLabelGreater(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_threshold(0.0)
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
-  }
-  
-  static const cString GetDescription() { return "Arguments: <double threshold>"; }
-  
-  void Process(cAvidaContext&)
-  {
-    if (m_world->GetStats().GetAveLineageLabel() > m_threshold) {
-      m_world->GetDriver().Finish();
-    }
-  }
-};
 
-class cActionExitAveLineageLabelLess : public cAction
-{
-private:
-  double m_threshold;
-public:
-  cActionExitAveLineageLabelLess(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_threshold(0.0)
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
-  }
-  
-  static const cString GetDescription() { return "Arguments: <double threshold>"; }
-  
-  void Process(cAvidaContext&)
-  {
-    if (m_world->GetStats().GetAveLineageLabel() < m_threshold) {
-      m_world->GetDriver().Finish();
-    }
-  }
-};
+
 
 /*! Exit Avida when the average generation is greater than or equal to a
 threshold value.
@@ -168,8 +129,6 @@ protected:
 void RegisterDriverActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionExit>("Exit");
-  action_lib->Register<cActionExitAveLineageLabelGreater>("ExitAveLineageLabelGreater");
-  action_lib->Register<cActionExitAveLineageLabelLess>("ExitAveLineageLabelLess");
   action_lib->Register<cActionExitAveGeneration>("ExitAveGeneration");
   action_lib->Register<cActionExitElapsedTime>("ExitElapsedTime");
   action_lib->Register<cActionPause>("Pause");

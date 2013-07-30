@@ -375,7 +375,6 @@ public:
   CONFIG_ADD_VAR(JUV_PERIOD, int, 0, "Number of CPU cycles before newborn orgs can execute various instructions / behaviors");
   CONFIG_ADD_VAR(ALLOC_METHOD, int, 0, "When allocating blank tape, how should it be initialized?\n0 = Allocated space is set to default instruction.\n1 = Set to section of dead genome (creates potential for recombination)\n2 = Allocated space is set to random instruction.");
   CONFIG_ADD_VAR(DIVIDE_METHOD, int, 1, "0 = Divide leaves state of mother untouched.\n1 = Divide resets state of mother(effectively creating 2 offspring)\n2 = Divide resets state of current thread only (use with parasites)");
-  CONFIG_ADD_VAR(EPIGENETIC_METHOD, int, 0, "Inheritance of state information other than genome\n0 = none\n1 = offspring inherits registers and stacks of first thread\n1 = parent maintains registers and stacks of first thread\n\n1 = offspring and parent keep state information");
   CONFIG_ADD_VAR(GENERATION_INC_METHOD, int, 1, "0 = Only increase generation of offspring on divide.\n1 = Increase generation of both parent and offspring\n   (suggested with DIVIDE_METHOD 1).");
   CONFIG_ADD_VAR(RESET_INPUTS_ON_DIVIDE, int, 0, "Reset environment inputs of parent upon successful divide.");
   CONFIG_ADD_VAR(INHERIT_MERIT, int, 1, "Should merit be inhereted from mother parent? (in asexual)");
@@ -423,16 +422,6 @@ public:
   CONFIG_ADD_VAR(SAME_LENGTH_SEX, int, 0, "0 = Recombine with any genome\n1 = Recombine only w/ same length");
   CONFIG_ADD_VAR(ALLOW_MATE_SELECTION, bool, 0, "Allow organisms to select mates (requires instruction set support)");
 
-  // -------- Mating Types and Mate Choice config options --------
-  CONFIG_ADD_GROUP(MATING_TYPES_GROUP, "Mating Types and Mate Choice");
-  CONFIG_ADD_VAR(MATING_TYPES, bool, 0, "Turn on separate mating types (i.e., males/females; off by default; requires instruction set support)");
-  CONFIG_ADD_VAR(LEKKING, bool, 0, "Offspring from males go directly into birth chamber to await female choice (off by default)");
-  CONFIG_ADD_VAR(MAX_GLOBAL_BIRTH_CHAMBER_SIZE, int, 3600, "Maximum number of waiting that can be stored in the birth chamber in a well-mixed population (3600 by default)");
-  CONFIG_ADD_VAR(DISABLE_GENOTYPE_CLASSIFICATION, bool, 0, "Disable tracking of historical genotypes to conserve memory (off by default)");
-  CONFIG_ADD_VAR(NOISY_MATE_ASSESSMENT, bool, 0, "Is mate assessment perfect (0) or noisy (1) (0 by default)");
-  CONFIG_ADD_VAR(MATE_ASSESSMENT_CV, double, 0.1, "Coefficient of variation for how noisy mate assessment is (0.1 by default)");
-  CONFIG_ADD_VAR(FORCED_MATE_PREFERENCE, int, -1, "Force all females to use a specific mate preference; -1 = off (mate preferences can evolve); 0 = all females mate randomly; 1 = all prefer highest display A; 2 = highest display B; 3 = highest merit");
-  CONFIG_ADD_VAR(MATE_IN_GROUPS, bool, 0, "Require all mating to happen within groups");
 	
   // -------- Parasite options --------
   CONFIG_ADD_GROUP(PARASITE_GROUP, "Parasite config options");
@@ -461,12 +450,6 @@ public:
   CONFIG_ADD_VAR(IO_EXPIRE, bool, 1, "Is the expiration functionality of '-expire' I/O instructions enabled?");
   CONFIG_ADD_VAR(POISON_PENALTY, double, 0.01, "Metabolic rate penalty applied when the 'poison' instruction is executed.");
 
-  
-  // -------- Pprocessing of multiple, distributed populations config options --------
-  CONFIG_ADD_GROUP(MP_GROUP, "Config options for multiple, distributed populations");
-  CONFIG_ADD_VAR(ENABLE_MP, int, 0, "Enable multi-process Avida; 0=disabled (default),\n1=enabled.");
-  CONFIG_ADD_VAR(MP_SCHEDULING_STYLE, int, 0, "Style of scheduling:\n0=non-MP aware (default)\n1=MP aware, integrated across worlds.");
-	
   
   // -------- Reversion config options --------
   CONFIG_ADD_GROUP(REVERSION_GROUP, "Mutation Reversion\nMost of these slow down avida a lot, and should be set to 0.0 normally.");
@@ -513,28 +496,6 @@ public:
   CONFIG_ADD_VAR(GENOTYPE_PHENPLAST_CALC, int, 100, "Number of times to test a genotype's\nplasticity during runtime.");
   
 
-  // -------- Altruism config options --------
-  CONFIG_ADD_GROUP(ALTRUISM_GROUP, "Altrusim");
-  CONFIG_ADD_VAR(MERIT_GIVEN, double, 0.0, "Fraction of merit donated with 'donate' command");
-  CONFIG_ADD_VAR(MERIT_RECEIVED, double, 0.0, "Multiplier of merit given with 'donate' command"); 
-  CONFIG_ADD_VAR(MAX_DONATE_KIN_DIST, int, -1, "Limit on distance of relation for donate; -1=no max");
-  CONFIG_ADD_VAR(MAX_DONATE_EDIT_DIST, int, -1, "Limit on genetic (edit) distance for donate; -1=no max");
-  CONFIG_ADD_VAR(MIN_GB_DONATE_THRESHOLD, int, -1, "threshold green beard donates only to orgs above this\ndonation attempt threshold; -1=no thresh");
-  CONFIG_ADD_VAR(DONATE_THRESH_QUANTA, int, 10, "The size of steps between quanta donate thresholds");
-  CONFIG_ADD_VAR(MAX_DONATES, int, 1000000, "Limit on number of donates organisms are allowed.");
-    
-  // -------- Kaboom config options -----------
-  CONFIG_ADD_GROUP(KABOOM_GROUP, "Kaboom");
-  CONFIG_ADD_VAR(KABOOM_PROB, double, -1, "The probability (in decimal) that an explosion will occur when the instruction is encountered. -1 is default probability and allows the organism to change the probability.");
-  CONFIG_ADD_VAR(KABOOM_RADIUS, int, 2, "Radius of all explosions (kaboom and kaboom5)");
-  CONFIG_ADD_VAR(KABOOM_HAMMING, int, 0, "Hamming distance of kaboom's threshold, set to -1 to have adjustable, default is 0 for clone altruists.");
-  CONFIG_ADD_VAR(KABOOM1_HAMMING, int, 1, "Hamming distance of kaboom1's threshold, set to -1 to have adjustable, default is 1.");
-  CONFIG_ADD_VAR(KABOOM2_HAMMING, int, 2, "Hamming distance of kaboom2's threshold, set to -1 to have adjustable, default is 2.");
-  CONFIG_ADD_VAR(KABOOM3_HAMMING, int, 3, "Hamming distance of kaboom3's threshold, set to -1 to have adjustable, default is 3.");
-  CONFIG_ADD_VAR(KABOOM4_HAMMING, int, 4, "Hamming distance of kaboom4's threshold, set to -1 to have adjustable, default is 4.");
-  CONFIG_ADD_VAR(KABOOM5_HAMMING, int, 5, "Hamming distance of kaboom5's threshold, set to -1 to have adjustable, default is 5 for clan altruists.");
-  CONFIG_ADD_VAR(NO_MUT_INSTS, cString, "", "A list of the instruction symbols that should not be able to be mutated out, NOT checked for all mutation types.");
-
   // -------- Geneology config options --------
   CONFIG_ADD_GROUP(GENEOLOGY_GROUP, "Geneology");
   CONFIG_ADD_VAR(THRESHOLD, int, 3, "Number of organisms in a genotype needed for it\n  to be considered viable.");
@@ -572,22 +533,6 @@ public:
   CONFIG_ADD_VAR(ANALYZE_OPTION_2, cString, "", "String variable accessible from analysis scripts");
   
 
-  
-
-  // -------- Second Pass Metrics config options --------
-  CONFIG_ADD_GROUP(SECOND_PASS_GROUP, "Tracking metrics known after the running experiment previously");
-  CONFIG_ADD_VAR(TRACK_CCLADES, int, 0, "Enable tracking of coalescence clades");
-  CONFIG_ADD_VAR(TRACK_CCLADES_IDS, cString, "coalescence.ids", "File storing coalescence IDs");
-  
-
-  // -------- Gene Expression CPU config options --------
-  CONFIG_ADD_GROUP(GX_GROUP, "Gene Expression CPU Settings");
-  CONFIG_ADD_VAR(MAX_PROGRAMIDS, int, 16, "Maximum number of programids an organism can create.");
-  CONFIG_ADD_VAR(MAX_PROGRAMID_AGE, int, 2000, "Max number of CPU cycles a programid executes before it is removed.");
-  CONFIG_ADD_VAR(IMPLICIT_GENE_EXPRESSION, int, 0, "Create executable programids from the genome without explicit allocation and copying?");
-  CONFIG_ADD_VAR(IMPLICIT_BG_PROMOTER_RATE, double, 0.0, "Relative rate of non-promoter sites creating programids.");
-  CONFIG_ADD_VAR(IMPLICIT_TURNOVER_RATE, double, 0.0, "Number of programids recycled per CPU cycle. 0 = OFF");
-  CONFIG_ADD_VAR(IMPLICIT_MAX_PROGRAMID_LENGTH, int, 0, "Creation of an executable programid terminates after this many instructions. 0 = disabled");
   
 
   // -------- Promoters config options --------
@@ -656,34 +601,8 @@ public:
   CONFIG_ADD_FORMAT_VAR(INST, "Instruction entry in the instruction set");
 	
 	
-  // -------- Reputation config options --------
-  CONFIG_ADD_GROUP(REPUTATION_GROUP, "Reputation Settings");
-  CONFIG_ADD_VAR(RAW_MATERIAL_AMOUNT, int, 100, "Number of raw materials an organism starts with");
-  CONFIG_ADD_VAR(AUTO_REPUTATION, int, 0, "Is an organism's reputation automatically computed based on its donations\n0=no\n1=increment for each donation + standing\n2=+1 for donations given -1 for donations received\n3=1 for donors -1 for recivers who have not donated\n4=+1 for donors\n5=+1 for donors during task check");
-  CONFIG_ADD_VAR(ALT_BENEFIT, int, 1.00, "Number multiplied by the number of raw materials received from another organism to compute reward");
-  CONFIG_ADD_VAR(ALT_COST, int, 1.00, "Number multiplied by the number of your raw materials");
-  CONFIG_ADD_VAR(ROTATE_ON_DONATE, int, 0, "Rotate an organism to face its donor 0/1 (off/on)");
-  CONFIG_ADD_VAR(REPUTATION_REWARD, int, 0, "Reward an organism for having a good reputation");
-  CONFIG_ADD_VAR(DONATION_FAILURE_PERCENT, int, 0, "Percentage of times that a donation fails");
-  CONFIG_ADD_VAR(RANDOMIZE_RAW_MATERIAL_AMOUNT, int, 0, "Should all the organisms receive the same amount 0/1 (off/on)");
-  CONFIG_ADD_VAR(DONATION_RESTRICTIONS, int, 0, "0=none\n1=inter-species only\n2=different tag only");
-  CONFIG_ADD_VAR(INHERIT_REPUTATION, int, 0, "0=reputations are not inherited\n1=reputations are inherited\n2=tags are inherited");
-  CONFIG_ADD_VAR(SPECIALISTS, int, 0, "0=generalists allowed\n1=only specialists");
-  CONFIG_ADD_VAR(STRING_AMOUNT_CAP, int, -1, "-1=no cap on string amounts\n#=CAP");
-  CONFIG_ADD_VAR(MATCH_ALREADY_PRODUCED, int, 0, "0=off\n1=on");
-	
-
   // -------- Grouping config options --------
   CONFIG_ADD_GROUP(GROUP_FORMATION_GROUP, "Group Formation Settings");
-  CONFIG_ADD_VAR(USE_FORM_GROUPS, int, 0, "Enable organisms to form groups. 0=off,\n 1=on no restrict,\n 2=on restrict to defined");
-  CONFIG_ADD_VAR(DEFAULT_GROUP, int, -1, "Default group to assign to organisms not asserting a group membership (-1 indicates disabled)");
-  CONFIG_ADD_VAR(INHERIT_OPINION, int, 1, "Should offspring inherit the parent's opinion? 0: No... reset on divide, etc. 1: Yes");
-  CONFIG_ADD_VAR(OPINION_BUFFER_SIZE, int, 1, "Size of the opinion buffer (stores opinions set over the organism's lifetime); -1=inf, default=1, cannot be 0.");
-  CONFIG_ADD_VAR(JOIN_GROUP_FAILURE, int, 0, "Percent chance for failing to switch groups. If negative, is % chance of death.");
-  CONFIG_ADD_VAR(TOLERANCE_WINDOW, int, 0, "Window of previous updates used to evaluate org's tolerance levels\n(0 indicates tolarance disabled, values <0 indicate % chance random migration for offspring)");
-  CONFIG_ADD_VAR(MAX_TOLERANCE, int, 1, "Maximum tolerance level"); 
-  CONFIG_ADD_VAR(TOLERANCE_VARIATIONS, int, 0, "0=all tolerance active,\n1=only immigration tolerance active,\n2=immigrants + sex");
-  CONFIG_ADD_VAR(TRACK_TOLERANCE, int, 0, "Turn on/off detailed recording of tolerance change circumstances (Warning: can be slow)");
   CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, " -2: no predators, but track prey stats \n -1: no predators in experiment \n 0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n 1: allow predators to switch to being prey \n 2: don't allow a predator to switch to being a prey & don't allow prey to switch via set-forage-target (via attack allowed) )");
   CONFIG_ADD_VAR(PRED_EFFICIENCY, double, 1.0, "Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value\n and add to current predator values (for bonus, merit, and bin consumption instructions).");
   CONFIG_ADD_VAR(PRED_EFFICIENCY_POISON, double, 1.0, "Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value\n and subtract from current predator values if this prey is poisonous (ft == 2).");

@@ -49,7 +49,6 @@
 
 class cWorld;
 class cOrganism;
-class cOrgMessage;
 
 using namespace Avida;
 
@@ -104,7 +103,6 @@ private:
   cDoubleSum sum_generation;
 
   cDoubleSum sum_neutral_metric;
-  cDoubleSum sum_lineage_label;
 
   cRunningStats sum_copy_mut_rate;
   cRunningStats sum_log_copy_mut_rate;
@@ -130,9 +128,6 @@ private:
   // --------  Instruction Counts  ---------
   Apto::Map<cString, Apto::Array<cString> > m_is_inst_names_map;
 
-  Apto::Array<pair<int,int> > m_is_tolerance_exe_counts;
-  Apto::Array<s_inst_circumstances, Apto::Smart> m_is_tolerance_exe_insts;
-
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_prey_exe_inst_map;
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_pred_exe_inst_map;
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_prey_fail_exe_inst_map;
@@ -142,11 +137,6 @@ private:
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_pred_from_sensor_inst_map;
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_tpred_from_sensor_inst_map;
 
-  Apto::Map<cString, Apto::Array<cString> > m_group_attack_names;
-  Apto::Map<cString, Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > > m_group_attack_exe_map; // exec_count_per_num_neighbor = exe_map[inst_set[inst[num_neigbors]]]
-
-  Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_male_exe_inst_map;
-  Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_female_exe_inst_map;
   
   // --------  Calculated Stats  ---------
 
@@ -189,17 +179,6 @@ private:
   Apto::Array<int> tasks_parasite_current;
   Apto::Array<int> tasks_parasite_last;
     
-  // ------- Kaboom Stats --------------------
-  int num_kabooms;
-  int num_kaboom_kills;
-  Apto::Array<int> hd_list;
-  
-  
-  // ------- Division of Labor Stats ---------
-  //TODO: Right place for this?
-  int juv_killed;
-  int num_guard_fail;
-
 
   // --------  Organism Task Stats  ---------
   mutable bool m_collect_env_test_stats;
@@ -276,16 +255,6 @@ private:
   Apto::Stat::Accumulator<int> sum_cells_scanned_at_kill;
 
 
-  // --------  Migration Stats  ---------
-  int num_migrations;
-
-
-
-  // --------  Sexual Selection Stats  ---------
-  Apto::Array<cBirthEntry> m_successful_mates;
-  Apto::Array<cBirthEntry> m_choosers;
-  int m_num_successful_mates;
-  
   // --------  Pred-prey Stats  ---------
   cDoubleSum sum_prey_fitness;
   cDoubleSum sum_prey_gestation;
@@ -312,20 +281,6 @@ private:
   double pred_entropy;
   double tpred_entropy;
 
-  // --------  Mating type (male/female) Stats  ---------
-  cDoubleSum sum_male_fitness;
-  cDoubleSum sum_male_gestation;
-  cDoubleSum sum_male_merit;
-  cDoubleSum sum_male_creature_age;
-  cDoubleSum sum_male_generation;
-  cDoubleSum sum_male_size;
-  
-  cDoubleSum sum_female_fitness;
-  cDoubleSum sum_female_gestation;
-  cDoubleSum sum_female_merit;
-  cDoubleSum sum_female_creature_age;
-  cDoubleSum sum_female_generation;
-  cDoubleSum sum_female_size;
   
   // --------  TopNavTrace Stats  ---------
   Apto::Array<char> toptrace;
@@ -411,7 +366,6 @@ public:
   cDoubleSum& SumGeneration()    { return sum_generation; }
 
   cDoubleSum& SumNeutralMetric() { return sum_neutral_metric; }
-  cDoubleSum& SumLineageLabel()  { return sum_lineage_label; }
   cRunningStats& SumCopyMutRate()   { return sum_copy_mut_rate; }
   cRunningStats& SumLogCopyMutRate()   { return sum_log_copy_mut_rate; }
   cRunningStats& SumDivMutRate()   { return sum_div_mut_rate; }
@@ -450,29 +404,8 @@ public:
   Apto::Array<Apto::Stat::Accumulator<int> >& InstTopPredExeCountsForInstSet(const cString& inst_set) { return m_is_tpred_exe_inst_map[inst_set]; }
   Apto::Array<Apto::Stat::Accumulator<int> >&  InstTopPredFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_tpred_from_sensor_inst_map[inst_set]; }
 
-  Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >& ExecCountsForGroupAttackInstSet(const cString& inst_set) { return m_group_attack_exe_map[inst_set]; }
-  Apto::Array<Apto::Stat::Accumulator<int> >&  ExecCountsForGroupAttackInst(const cString& inst_set, const cString& inst) { return m_group_attack_exe_map[inst_set][inst]; }
-
   void ZeroFTInst();
-  void ZeroGroupAttackInst();
   
-  //mating type/male-female accessors
-  cDoubleSum& SumMaleFitness()       { return sum_male_fitness; }
-  cDoubleSum& SumMaleGestation()     { return sum_male_gestation; }
-  cDoubleSum& SumMaleMerit()         { return sum_male_merit; }
-  cDoubleSum& SumMaleCreatureAge()   { return sum_male_creature_age; }
-  cDoubleSum& SumMaleGeneration()    { return sum_male_generation; }
-  cDoubleSum& SumMaleSize()          { return sum_male_size; }
-  Apto::Array<Apto::Stat::Accumulator<int> >& InstMaleExeCountsForInstSet(const cString& inst_set) { return m_is_male_exe_inst_map[inst_set]; }
-  
-  cDoubleSum& SumFemaleFitness()       { return sum_female_fitness; }
-  cDoubleSum& SumFemaleGestation()     { return sum_female_gestation; }
-  cDoubleSum& SumFemaleMerit()         { return sum_female_merit; }
-  cDoubleSum& SumFemaleCreatureAge()   { return sum_female_creature_age; }
-  cDoubleSum& SumFemaleGeneration()    { return sum_female_generation; }
-  cDoubleSum& SumFemaleSize()          { return sum_female_size; }
-  Apto::Array<Apto::Stat::Accumulator<int> >& InstFemaleExeCountsForInstSet(const cString& inst_set) { return m_is_female_exe_inst_map[inst_set]; }
-  void ZeroMTInst();
   
  
 
@@ -486,7 +419,6 @@ public:
   const cDoubleSum& SumGeneration() const    { return sum_generation; }
 
   const cDoubleSum& SumNeutralMetric() const { return sum_neutral_metric; }
-  const cDoubleSum& SumLineageLabel() const  { return sum_lineage_label; }
   const cRunningStats& SumCopyMutRate() const   { return sum_copy_mut_rate; }
   const cRunningStats& SumLogCopyMutRate() const{ return sum_log_copy_mut_rate; }
   const cRunningStats& SumDivMutRate() const   { return sum_div_mut_rate; }
@@ -604,9 +536,6 @@ public:
   void AddSpeculative(int spec) { m_spec_total += spec; m_spec_num++; }
   void AddSpeculativeWaste(int waste) { m_spec_waste += waste; }
 
-  // Sexual selection recording
-  void RecordSuccessfulMate(cBirthEntry& successful_mate, cBirthEntry& chooser);
-
   // Information retrieval section...
 
   int GetNumBirths() const          { return num_births; }
@@ -659,7 +588,6 @@ public:
   double GetAveMemSize() const    { return sum_mem_size.Average(); }
 
   double GetAveNeutralMetric() const { return sum_neutral_metric.Average(); }
-  double GetAveLineageLabel() const  { return sum_lineage_label.Average(); }
   double GetAveCopyMutRate() const   { return sum_copy_mut_rate.Mean(); }
   double GetAveLogCopyMutRate() const{ return sum_log_copy_mut_rate.Mean();}
   double GetAveDivMutRate() const   { return sum_div_mut_rate.Mean(); }
@@ -698,8 +626,6 @@ public:
   int GetNumPredCreatures() const;
   int GetNumTopPredCreatures() const;
   int GetNumTotalPredCreatures() const;
-  void SetGroupAttackInstNames(const cString& inst_set);
-  Apto::Array<cString>& GetGroupAttackInsts(const cString& inst_set) { return m_group_attack_names[inst_set]; }
   
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,
@@ -731,9 +657,6 @@ public:
   void PrintPreyFromSensorInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
   void PrintTopPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
-  void PrintGroupAttackData(const cString& filename, const cString& inst_set);
-  void PrintGroupAttackBits(unsigned char raw_bits);
-  void PrintGroupAttackString(cString& raw_bits);
   void PrintKilledPreyFTData(const cString& filename);
   void PrintBirthLocData(int org_idx);
   void PrintLookData(cString& string);
@@ -772,23 +695,9 @@ public:
   void PrintCellVisitsData(const cString& filename);
   void PrintExtendedTimeData(const cString& filename);
   void PrintNumOrgsKilledData(const cString& filename);
-  void PrintGroupsFormedData(const cString& filename);
-  void PrintGroupIds(const cString& filename);
   void PrintTargets(const cString& filename);
   void PrintMimicDisplays(const cString& filename);
   void PrintTopPredTargets(const cString& filename);
-  void PrintGroupTolerance(const cString& filename); 
-  void PrintGroupMTTolerance(const cString& filename); 
-  void PrintToleranceInstructionData(const cString& filename); 
-  void PrintToleranceData(const cString& filename); 
-  void PrintMaleAverageData(const cString& filename);
-  void PrintFemaleAverageData(const cString& filename);
-  void PrintMaleErrorData(const cString& filename);
-  void PrintFemaleErrorData(const cString& filename);
-  void PrintMaleVarianceData(const cString& filename);
-  void PrintFemaleVarianceData(const cString& filename);
-  void PrintMaleInstructionData(const cString& filename, const cString& inst_set);
-  void PrintFemaleInstructionData(const cString& filename, const cString& inst_set);
 
   void PrintMiniTraceReactions(cOrganism* org);
   void PrintMicroTraces(Apto::Array<char, Apto::Smart>& exec_trace, int birth_update, int org_id, int ft, int gen_id);
@@ -797,105 +706,7 @@ public:
   void PrintTopNavTrace(bool flush = false);
   void PrintReproData(cOrganism* org);
     
- // Kaboom stats
-  void IncKaboom() { num_kabooms++; }
-  void IncKaboomKills() {num_kaboom_kills++;}
-  void AddHamDistance(int distance) { hd_list.Push(distance); }
-  void PrintKaboom(const cString& filename);
-    
- // Division of Labor Stats
-  void IncJuvKilled() { juv_killed++; }
-  void IncGuardFail() {num_guard_fail++;}
-  
-  // ----------- Sexual selection output -----------
-public:
-  void PrintSuccessfulMates(cString& filename);
-  // ----------- End sexual selection output -----------
 
-  // -------- Tolerance support --------
-public:
-  void PushToleranceInstExe(int tol_inst); 
-  void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
-              double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max); 
-  void ZeroToleranceInst(); 
-
-
-
-	// -------- Cell data support --------
-public:
-	//! Prints the cell data from every cell in the population.
-	void PrintCellData(const cString& filename);
-
-	// -------- Opinion support --------
-public:
-	//! Prints the current opinions of all organisms in the population.
-	void PrintCurrentOpinions(const cString& filename);
-
-  //! Add a task time tracking event
-  void AddTaskSwitchTime(int t1, int t2, int time); 
-  
-  //! Figure out how many juveniles and guards there are in the den
-  void PrintDenData(const cString& filename);
-    
-
-    
-
-protected:
-	std::map<int, cDoubleSum> reaction_age_map;
-  std::map<std::pair<int,int>, cDoubleSum> intrinsic_task_switch_time; 
-
-
-// -------- Reputation support ---------
-public:
-	// Print statistics about reputation
-	void PrintReputationData(const cString& filename);
-	void PrintDirectReciprocityData(const cString& filename);
-	void IncDonateToDonor() { m_donate_to_donor++; }
-	void IncDonateToFacing() { m_donate_to_facing++; }
-	void PrintStringMatchData(const cString& filename);
-	void AddStringBitsMatchedValue(cString name, int value) { m_string_bits_matched[name].Add(value); }
-	void AddTag(int tag, int value) { m_tags[tag] = m_tags[tag] + value; }
-	void IncPerfectMatch(int amount) { m_perfect_match.Add(amount); }
-	void IncPerfectMatchOrg() { m_perfect_match_org.Add(1); }
-	void PrintShadedAltruists(const cString& filename);
-
-protected:
-	int m_donate_to_donor;
-	int m_donate_to_facing;
-	std::map <cString, cDoubleSum> m_string_bits_matched;
-	cDoubleSum m_perfect_match;
-	cDoubleSum m_perfect_match_org;
-	std::map <int, int> m_tags;
-
-
-
-	// -------- Multiprocess support --------
-private:
-	cDoubleSum m_outgoing; //!< Number of outgoing migration events.
-	cDoubleSum m_incoming; //!< Number of incoming migration events.
-
-public:
-	typedef std::map<std::string, double> profiling_stats_t; //!< Structure to hold average profiling statistics.
-	typedef std::map<std::string, cDoubleSum> avg_profiling_stats_t; //!< Structure to hold statistics for one network.
-
-	//! Record information about an organism migrating from this population.
-	void OutgoingMigrant(const cOrganism* org);
-
-	//! Record information about an organism migrating into this population.
-	void IncomingMigrant(const cOrganism* org);
-
-	//! Print multiprocess data.
-	void PrintMultiProcessData(const cString& filename);
-
-	//! Track profiling data.
-	void ProfilingData(const profiling_stats_t& pf);
-
-	//! Print profiling data.
-	void PrintProfilingData(const cString& filename);
-
-protected:
-	avg_profiling_stats_t m_profiling; //!< Profiling statistics.
-	
 	// -------- Support for organism locations --------
 public:
 	//! Print organism locations.

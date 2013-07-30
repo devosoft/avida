@@ -45,7 +45,6 @@ class cReaction;
 class cReactionRequisite;
 class cReactionProcess;
 class cReactionResult;
-class cStateGrid;
 class cTaskContext;
 class cWorld;
 template <class T> class tBuffer;
@@ -71,9 +70,6 @@ private:
   
   unsigned int m_mask;
   
-  Apto::Array<cStateGrid*> m_state_grids;
-
-  std::set<int> possible_group_ids;
   std::set<int> possible_target_ids;
   std::set<int> possible_habitats;
   Apto::Array<int> pp_fts;
@@ -121,9 +117,6 @@ public:
   cReactionLib& GetReactionLib() { return reaction_lib; }
   cMutationRates& GetMutRates() { return mut_rates; }
   
-  int GetNumStateGrids() const { return m_state_grids.GetSize(); }
-  const cStateGrid& GetStateGrid(int sg) const { return *m_state_grids[sg]; }  
-
   int GetInputSize()  const { return m_input_size; };
   int GetOutputSize() const { return m_output_size; };
 
@@ -142,9 +135,6 @@ public:
   bool SetResourceOutflow(const cString& name, double _outflow );
   bool ChangeResource(cReaction* reaction, const cString& res, int process_num = 0);
 	
-  void AddGroupID(int new_id) { possible_group_ids.insert(new_id); }
-  bool IsGroupID(int test_id);
-  std::set<int> GetGroupIDs() { return possible_group_ids; }
 
   void AddTargetID(int new_id) { possible_target_ids.insert(new_id); SetAttackPreyFTList(); }
   bool IsTargetID(int test_id);
@@ -170,7 +160,6 @@ private:
   bool LoadResource(cString desc, Feedback& feedback);
   bool LoadCell(cString desc, Feedback& feedback);
   bool LoadReaction(cString desc, Feedback& feedback);
-  bool LoadStateGrid(cString desc, Feedback& feedback);
   bool LoadSetActive(cString desc, Feedback& feedback);
   
   bool LoadDynamicResource(cString desc, Feedback& feedback);

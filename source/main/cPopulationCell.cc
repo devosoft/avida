@@ -417,35 +417,3 @@ Apto::Array<cOrganism*> cPopulationCell::GetCellAVs()
 
 
 
-
-
-void cPopulationCell::SetCellData(int data, int org_id)
-{
-  m_cell_data.contents = data;
-  m_cell_data.org_id = org_id;
-  m_cell_data.update = m_world->GetStats().GetUpdate();
-  if (m_organism != NULL) { 
-    if (m_organism->HasOpinion()) {
-      m_cell_data.territory = m_organism->GetOpinion().first;
-    }
-    m_cell_data.forager = m_organism->GetForageTarget();
-  }
-}
-
-void cPopulationCell::ClearCellData()
-{
-  m_cell_data.contents = 0;
-  m_cell_data.org_id = -1;
-  m_cell_data.update = -1;
-  m_cell_data.territory = -1;
-  m_cell_data.forager = -99;
-}
-
-void cPopulationCell::UpdateCellDataExpired()
-{
-  const int expiration = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
-  const int update = m_world->GetStats().GetUpdate();
-  const int ud_marked = m_cell_data.update;
-  // update only if marked, can expire, and enough time has passed
-  if (ud_marked != -1 && expiration != -1 && (expiration < (update - ud_marked))) ClearCellData();    
-}

@@ -308,7 +308,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
 }
 
 
-void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString filename, int update, bool for_groups, int last_birth_cell, int last_group_id, int last_forager_type)
+void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString filename, int update, bool for_groups, int last_birth_cell, int last_forager_type)
 {
   ConstInstructionSequencePtr seq;
   seq.DynamicCastFrom(genome.Representation());
@@ -353,8 +353,7 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString fil
     df->WriteComment(c.Set("Executed Size...: %d", phenotype.GetExecutedSize()));
     
     if (for_groups) {
-      df->WriteComment(c.Set("Last Birth Group ID........: %d", last_group_id));
-      df->WriteComment(c.Set("Last Birth Forager Type....: %d", last_forager_type));   
+      df->WriteComment(c.Set("Last Birth Forager Type....: %d", last_forager_type));
       df->WriteComment(c.Set("Last Birth Cell............: %d", last_birth_cell));               
     }
     

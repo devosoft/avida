@@ -127,11 +127,6 @@ bool cTestCPUInterface::UpdateMerit(double new_merit)
   return true;
 }
 
-int cTestCPUInterface::GetStateGridID(cAvidaContext& ctx)
-{
-  return m_test_info.GetStateGridID();
-}
-
 Apto::Array<cOrganism*> cTestCPUInterface::GetFacedAVs(int av_num)
 {
   Apto::Array<cOrganism*> null_array;

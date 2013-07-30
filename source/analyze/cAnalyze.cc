@@ -1700,23 +1700,11 @@ void cAnalyze::CommandTrace(cString cur_string)
 {
   cString msg;
   Apto::Array<int> manual_inputs;
-  int sg = 0;
   
   // Process our arguments; manual inputs must be the last arguments
 
   cString directory      = PopDirectory(cur_string.PopWord(), cString("archive/"));           // #1
   cString first_arg = cur_string.PopWord();
-  
-  if (first_arg.IsSubstring("sg=", 0)) {
-    first_arg.Pop('=');
-    sg = first_arg.AsInt();
-    if (sg < 0 || sg >= m_world->GetEnvironment().GetNumStateGrids()) {
-      msg.Set("invalid state grid selection");
-      cerr << "warning: " << msg << endl;
-      return;
-    }
-    first_arg = cur_string.PopWord();
-  }
   
   int use_resources      = (first_arg.GetSize()) ? first_arg.AsInt() : 0;                     // #2
   int update             = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : -1;        // #3
@@ -1772,7 +1760,6 @@ void cAnalyze::CommandTrace(cString cur_string)
     else
       test_info.UseRandomInputs(use_random_inputs); 
     test_info.SetResourceOptions(use_resources, m_resources, update, m_resource_time_spent_offset);
-    test_info.SetCurrentStateGridID(sg);
 
     if (m_world->GetVerbosity() >= VERBOSE_ON){
       msg = cString("Tracing ") + filename;
@@ -3978,194 +3965,6 @@ void cAnalyze::CommandPairwiseEntropy(cString cur_string)
 }
 
 
-
-
-
-// This command will take the current batch and analyze how well organisms
-// cross-over with each other, both across the population and between mates.
-
-void cAnalyze::AnalyzeMateSelection(cString cur_string)
-{
-  int sample_size = 10000;
-  if (cur_string.GetSize() != 0) sample_size = cur_string.PopWord().AsInt();
-  cString filename("none");
-  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-  double min_swap_frac = 0.0;
-  if (cur_string.GetSize() != 0) min_swap_frac=cur_string.PopWord().AsDouble();
-  double max_swap_frac = 1.0 - min_swap_frac;
-  
-  cout << "Analyzing Mate Selection... " << endl;
-  
-  // Do some quick tests before moving on...
-  if (min_swap_frac < 0.0 || min_swap_frac >= 0.5) {
-    cerr << "ERROR: Minimum swap fraction out of range [0.0, 0.5)." << endl;
-  }
-  
-  // Next, we create an array that contains pointers to all of the organisms
-  // in this batch.  Note that we want to select genotypes based on their
-  // abundance, so they will have one entry in the array per organism.  Note
-  // that we only consider viable genotypes.
-  
-  // Start by counting the total number of organisms (and do other such
-  // data collection...
-  Apto::Map<int, int> mate_id_counts;
-  
-  int org_count = 0;
-  int gen_count = 0;
-  cAnalyzeGenotype * genotype = NULL;
-  tListIterator<cAnalyzeGenotype> list_it(batch[cur_batch].List());
-  while ((genotype = list_it.Next()) != NULL) {
-    if (genotype->GetViable() == false || genotype->GetNumCPUs() == 0) {
-      continue;
-    }
-    gen_count++;
-    org_count += genotype->GetNumCPUs();
-    
-    // Keep track of how many organisms have each mate id...
-    int mate_id = genotype->GetMateID();
-    int count = 0;
-    mate_id_counts.Get(mate_id, count);
-    count += genotype->GetNumCPUs();
-    mate_id_counts.Set(mate_id, count);
-  }
-  
-  // Create an array of the correct size.
-  Apto::Array<cAnalyzeGenotype *> genotype_array(org_count);
-  
-  // And insert all of the organisms into the array.
-  int cur_pos = 0;
-  while ((genotype = list_it.Next()) != NULL) {
-    if (genotype->GetViable() == false) continue;
-    int cur_count = genotype->GetNumCPUs();
-    for (int i = 0; i < cur_count; i++) {
-      genotype_array[cur_pos++] = genotype;
-    }
-  }
-  
-  
-  // Setup some variables to collect statistics.
-  int total_matches_tested = 0;
-  int fail_count = 0;
-  int match_fail_count = 0;
-  
-  // Create a Test CPU
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);
-  
-  // Loop through all of the tests, picking random organisms each time and
-  // performing a random cross test.
-  cAnalyzeGenotype * genotype2 = NULL;
-  for (int test_id = 0; test_id < sample_size; test_id++) {
-    genotype = genotype_array[ m_world->GetRandom().GetUInt(org_count) ];
-    genotype2 = genotype_array[ m_world->GetRandom().GetUInt(org_count) ];
-    
-    // Stop immediately if we're comparing a genotype to itself.
-    if (genotype == genotype2) {
-      total_matches_tested++;
-      continue;
-    }
-    
-    // Setup the random parameters for this test.
-    Genome test_genome0 = genotype->GetGenome(); 
-    InstructionSequencePtr test_genome0_seq_p;
-    GeneticRepresentationPtr test_genome0_rep_p = test_genome0.Representation();
-    test_genome0_seq_p.DynamicCastFrom(test_genome0_rep_p);
-    InstructionSequence& test_genome0_seq = *test_genome0_seq_p;
-
-    Genome test_genome1 = genotype2->GetGenome(); 
-    InstructionSequencePtr test_genome1_seq_p;
-    GeneticRepresentationPtr test_genome1_rep_p = test_genome1.Representation();
-    test_genome1_seq_p.DynamicCastFrom(test_genome1_rep_p);
-    const InstructionSequence& test_genome1_seq = *test_genome1_seq_p;
-    
-    double start_frac = -1.0;
-    double end_frac = -1.0;
-    double swap_frac = -1.0;
-    while (swap_frac < min_swap_frac || swap_frac > max_swap_frac) {
-      start_frac = m_world->GetRandom().GetDouble();
-      end_frac = m_world->GetRandom().GetDouble();
-      if (start_frac > end_frac) Swap(start_frac, end_frac);
-      swap_frac = end_frac - start_frac;
-    }
-    
-    int start0 = (int) (start_frac * (double) test_genome0_seq.GetSize());
-    int end0   = (int) (end_frac * (double) test_genome0_seq.GetSize());
-    int size0 = end0 - start0;
-    
-    int start1 = (int) (start_frac * (double) test_genome1_seq.GetSize());
-    int end1   = (int) (end_frac * (double) test_genome1_seq.GetSize());
-    int size1 = end1 - start1;
-    
-    int new_size0 = test_genome0_seq.GetSize() - size0 + size1;   
-    int new_size1 = test_genome1_seq.GetSize() - size1 + size0;
-    
-    // Setup some statistics for this particular test.
-    bool same_mate_id = ( genotype->GetMateID() == genotype2->GetMateID() );
-    if (same_mate_id == true) total_matches_tested++;
-    
-    // Don't Crossover if offspring will be illegal!!!
-    if (new_size0 < MIN_GENOME_LENGTH || new_size0 > MAX_GENOME_LENGTH || 
-        new_size1 < MIN_GENOME_LENGTH || new_size1 > MAX_GENOME_LENGTH) { 
-      fail_count++; 
-      if (same_mate_id == true) match_fail_count++;
-      continue; 
-    } 
-    
-    // Do the replacement...  We're only going to test genome0, so we only
-    // need to modify that one.
-    InstructionSequence cross1 = test_genome1_seq.Crop(start1, end1);
-    test_genome0_seq.Replace(start0, size0, cross1);
-    
-    // Do the test.
-    cCPUTestInfo test_info;
-    
-    // Run each side, and determine viability...
-    testcpu->TestGenome(m_ctx, test_info, test_genome0);
-    if( test_info.IsViable() == false ) {
-      fail_count++;
-      if (same_mate_id == true) match_fail_count++;
-    }
-  }
-  delete testcpu;
-  
-  // Do some calculations on the sizes of the mate groups...
-  const int num_mate_groups = mate_id_counts.GetSize();
-  
-  // Collect lists on all of the mate groups for the calculations...
-  int max_group_size = 0;
-  double mate_id_entropy = 0.0;
-  for (Apto::Map<int, int>::ValueIterator it = mate_id_counts.Values(); it.Next();) {
-    int cur_count = *(it.Get());
-    double cur_frac = ((double) cur_count) / ((double) org_count);
-    if (cur_count > max_group_size) max_group_size = cur_count;
-    mate_id_entropy -= cur_frac * log(cur_frac);
-  }
-  
-  // Calculate the final answer
-  double fail_frac = (double) fail_count / (double) sample_size;
-  double match_fail_frac =
-    (double) match_fail_count / (double) total_matches_tested;
-  cout << "  ave fraction failed = " << fail_frac << endl
-    << "  ave matches failed = " << match_fail_frac << endl
-    << "  total mate matches = " <<  total_matches_tested
-    << " / " << sample_size<< endl;
-  
-  if (filename == "none") return;
-  
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  df->WriteComment( "Mate selection information" );
-  df->WriteTimeStamp();  
-  
-  df->Write(fail_frac,       "Average fraction failed");
-  df->Write(match_fail_frac, "Average fraction of mate matches failed");
-  df->Write(sample_size, "Total number of crossovers tested");
-  df->Write(total_matches_tested, "Number of crossovers with matching mate IDs");
-  df->Write(gen_count, "Number of genotypes in test batch");
-  df->Write(org_count, "Number of organisms in test batch");
-  df->Write(num_mate_groups, "Number of distinct mate IDs");
-  df->Write(max_group_size, "Size of the largest distinct mate ID group");
-  df->Write(mate_id_entropy, "Diversity of mate IDs (entropy)");
-  df->Endl();
-}
 
 
 void cAnalyze::AnalyzeComplexityDelta(cString cur_string)

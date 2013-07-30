@@ -65,18 +65,6 @@ public:
   int GetCellXPosition() { return -1; }
   int GetCellYPosition() { return -1; }
   
-  int GetCellData() { return -1; }
-  int GetCellDataOrgID() { return -1; }
-  int GetCellDataUpdate() { return -1; }
-  int GetCellDataTerritory() { return -1; }
-  int GetCellDataForagerType() { return -99; }
-  void SetCellData(const int) { ; }
-  void SetAVCellData(const int, const int) { ; }
-  int GetFacedCellData() { return -1; }
-  int GetFacedCellDataOrgID() { return -1; }
-  int GetFacedCellDataUpdate() { return -1; }
-  int GetFacedCellDataTerritory() { return -1; }
-
   int GetPrevSeenCellID() { return 0; }
   int GetPrevTaskCellID() { return 0; }
   void AddReachedTaskCell() { ; }
@@ -133,9 +121,6 @@ public:
   int GetFacing() { return 0; }
   int GetFacedCellID() { return -1; }
   int GetFacedDir() { return 0; }
-  bool SendMessage(cOrgMessage&) { return false; }
-  bool SendMessage(cOrganism*, cOrgMessage&) { return false; }
-	bool BroadcastMessage(cOrgMessage&, int) { return false; }
 	bool BcastAlarm(int, int) { return false; }
 	void SendFlash() { ; }
   
@@ -146,18 +131,12 @@ public:
 	void RotateToGreatestReputationWithDifferentTag(int) { ; }
 	void RotateToGreatestReputationWithDifferentLineage(int) { ; }	
   
-  int GetStateGridID(cAvidaContext& ctx);
-	
 	//! Link this organism's cell to the cell it is currently facing.
 	void CreateLinkByFacing(double) { ; }
 	//! Link this organism's cell to the cell with coordinates (x,y).
 	void CreateLinkByXY(int, int, double) { ; }
 	//! Link this organism's cell to the cell with index idx.
 	void CreateLinkByIndex(int, double) { ; }
-	//! Broadcast a message to all organisms that are connected by this network.
-	bool NetworkBroadcast(cOrgMessage&) { return false; }
-	//! Unicast a message to the current selected organism.
-	bool NetworkUnicast(cOrgMessage&) { return false; }
 	//! Rotate to select a new network link.
 	bool NetworkRotate(int) { return false; }
 	//! Select a new network link.
@@ -169,10 +148,6 @@ public:
   void AddLiveOrg() { ; }  
   void RemoveLiveOrg() { ; }  
   
-  bool HasOpinion(cOrganism*) { return false; }
-  void SetOpinion(int, cOrganism*) { ; }
-  void ClearOpinion(cOrganism*) { ; }
-
   void JoinGroup(int) { ; }
   void MakeGroup() { ; }
   void LeaveGroup(int) { ; }
@@ -235,7 +210,6 @@ public:
   void SetAVFacing(cAvidaContext& ctx, int av_facing, int av_num = 0) { ; }
   bool SetAVCellID(cAvidaContext& ctx, int av_cell_id, int av_num = 0) { return false; }
   void SetAVFacedCellID(cAvidaContext& ctx, int av_num = 0) { ; }
-  void SetAVCellData(const int newData, const int org_id, int av_num = 0) { ; }
   bool MoveAV(cAvidaContext& ctx, int av_num = 0) { return false; }
   bool RotateAV(cAvidaContext& ctx, int increment, int av_num = 0) { return false; }
   cOrganism* GetRandFacedAV(cAvidaContext& ctx, int av_num = 0) { return NULL; }

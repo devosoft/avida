@@ -199,12 +199,7 @@ VisualSensor::LookResults VisualSensor::findOrg(cAvidaContext& ctx, Structure::E
   
   if (org_search.distance > -1) {
     org_search.value = (int) target_org->GetPhenotype().GetCurBonus();
-    if (!m_return_rel_facing && target_org->HasOpinion()) {
-      org_search.group = target_org->GetOpinion().first;
-    }
-    else if (m_return_rel_facing || !target_org->HasOpinion()) {
-      org_search.group = ReturnRelativeFacing(target_org);
-    }
+    if (m_return_rel_facing) org_search.group = ReturnRelativeFacing(target_org);
     org_search.forage = target_org->GetForageTarget();
     if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(target_org->GetOrgDisplayData());
     if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) setPotentialDisplayData(org_search);
@@ -671,11 +666,7 @@ VisualSensor::LookResults VisualSensor::walkCells(cAvidaContext& ctx, const Envi
       
       stuff_seen.id_sought = first_org->GetID();
       stuff_seen.value = (int) first_org->GetPhenotype().GetCurBonus();
-      if (!m_return_rel_facing && first_org->HasOpinion()) {
-        stuff_seen.group = first_org->GetOpinion().first;
-      } else if (m_return_rel_facing || !first_org->HasOpinion()) {
-        stuff_seen.group = ReturnRelativeFacing(first_org);
-      }
+      if (m_return_rel_facing) stuff_seen.group = ReturnRelativeFacing(first_org);
       stuff_seen.forage = first_org->GetForageTarget();
       if ((first_org->IsDisplaying()  || m_world->GetConfig().USE_DISPLAY.Get()) && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());
       if (m_world->GetConfig().USE_MIMICS.Get() && stuff_seen.forage == 1) {

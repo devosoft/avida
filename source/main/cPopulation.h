@@ -65,12 +65,6 @@ private:
   Apto::Array<cPopulationCell> cell_array;  // Local cells composing the population
   Apto::Array<int> empty_cell_id_array;     // Used for PREFER_EMPTY birth methods
   cBirthChamber birth_chamber;         // Global birth chamber.
-  //Keeps track of which organisms are in which group.
-  Apto::Map<int, Apto::Array<cOrganism*, Apto::Smart> > m_group_list;
-  Apto::Map<int, Apto::Array<pair<int,int> > > m_group_intolerances;
-  Apto::Map<int, Apto::Array<pair<int,int> > > m_group_intolerances_females;
-  Apto::Map<int, Apto::Array<pair<int,int> > > m_group_intolerances_males;
-  Apto::Map<int, Apto::Array<pair<int,int> > > m_group_intolerances_juvs;
   
   // Keep list of live organisms
   Apto::Array<cOrganism*, Apto::Smart> live_org_list;
@@ -97,22 +91,14 @@ private:
   int world_x;                         // Structured population width.
   int world_y;                         // Structured population height.
   int num_organisms;                   // Cell count with living organisms
+  
   int num_prey_organisms;
   int num_pred_organisms;
   int num_top_pred_organisms;
   
   // Outside interactions...
   bool sync_events;   // Do we need to sync up the event list with population?
-	
-  // Group formation information
-  std::map<int, int> m_groups; //<! Maps the group id to the number of orgs in the group
-  std::map<int, int> m_group_females; //<! Maps the group id to the number of females in the group
-  std::map<int, int> m_group_males; //<! Maps the group id to the number of males in the group
-
-  cPopulation(); // @not_implemented
-  cPopulation(const cPopulation&); // @not_implemented
-  cPopulation& operator=(const cPopulation&); // @not_implemented
-  
+	 
   
 public:
   cPopulation(cWorld* world);
@@ -138,7 +124,7 @@ public:
   
   void ResizeCellGrid(int x, int y);
     
-  void InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0, bool assign_group = true, Systematics::RoleClassificationHints* hints = NULL);
+  void InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, bool assign_group = true, Systematics::RoleClassificationHints* hints = NULL);
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
@@ -150,8 +136,8 @@ public:
   void UpdateQs(cOrganism* parent, bool reproduced = false);
   
   // Inject an organism from the outside world.
-  void Inject(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, bool inject_with_group = false, int group_id = -1, int forager_type = -1, int trace = 0); 
-  void InjectGroup(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, int group_id = -1, int forager_type = -1, int trace = 0);
+  void Inject(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, double neutral_metric = 0, bool inject_with_group = false, int group_id = -1, int forager_type = -1, int trace = 0);
+  void InjectGroup(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, double neutral_metric = 0, int group_id = -1, int forager_type = -1, int trace = 0);
   void InjectParasite(const cString& label, const InstructionSequence& injected_code, int cell_id);
   
   // Deactivate an organism in the population (required for deactivations)
@@ -164,7 +150,6 @@ public:
   bool MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id, int avatar_cell);
 
   // Specialized functionality
-  void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance=0); 
   void SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx); 
 
   
@@ -253,41 +238,11 @@ public:
   void RemoveLiveOrg(cOrganism* org); 
   const Apto::Array<cOrganism*, Apto::Smart>& GetLiveOrgList() const { return live_org_list; }
 	
-  // Adds an organism to a group  
-  void JoinGroup(cOrganism* org, int group_id);
-  void MakeGroup(cOrganism* org);
-  // Removes an organism from a group 
-  void LeaveGroup(cOrganism* org, int group_id);
-
-  //Kill random member of the group (but not self!!!) 
-  void KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism* org);
+  //Kill random member of the group (but not self!!!)
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   void KillRandPred(cAvidaContext& ctx, cOrganism* org);
   void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
   // Identifies the number of organisms in a group
-  int NumberOfOrganismsInGroup(int group_id);
-  int NumberGroupFemales(int group_id);
-  int NumberGroupMales(int group_id);
-  int NumberGroupJuvs(int group_id);
-  void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type);
-  // Get the group information
-  map<int, int> GetFormedGroups() { return m_groups; }
-
-  // -------- Tolerance support --------
-  int CalcGroupToleranceImmigrants(int group_id, int mating_type = -1);
-  int CalcGroupToleranceOffspring(cOrganism* parent_organism);
-  double CalcGroupOddsImmigrants(int group_id, int mating_type  = -1);
-  bool AttemptImmigrateGroup(cAvidaContext& ctx, int group_id, cOrganism* org);
-  double CalcGroupOddsOffspring(int group_id);
-  double CalcGroupOddsOffspring(cOrganism* parent);
-  bool AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring);
-  double CalcGroupAveImmigrants(int group_id, int mating_type = -1);
-  double CalcGroupSDevImmigrants(int group_id, int mating_type = -1);
-  double CalcGroupAveOwn(int group_id);
-  double CalcGroupSDevOwn(int group_id);
-  double CalcGroupAveOthers(int group_id);
-  double CalcGroupSDevOthers(int group_id);
-  int& GetGroupIntolerances(int group_id, int tol_num, int mating_type);
 
   // -------- Population mixing support --------
   //! Mix all organisms in the population.
@@ -314,7 +269,6 @@ private:
   void InjectClone(int cell_id, cOrganism& orig_org, Systematics::Source src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   
-  void CCladeSetupOrganism(cOrganism* organism);
 	
   // Must be called to activate *any* organism in the population.
   bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true, bool is_inject = false);

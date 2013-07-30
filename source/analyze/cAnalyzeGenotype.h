@@ -144,7 +144,6 @@ private:
   double comp_merit_ratio;
   int parent_dist;
   int ancestor_dist;
-  int lineage_label;
   cString parent_muts;
 
   // Group 4 : Landscape stats (obtained from testing all possible mutations)
@@ -261,12 +260,6 @@ public:
   void SetMateID(int _mate_id) { mate_id = _mate_id; }
   void SetParentDist(int _dist) { parent_dist = _dist; }
   void SetAncestorDist(int _dist) { ancestor_dist = _dist; }
-  void SetLineageLabel(int _label) { lineage_label = _label; }
-
-  void SetMatingType(int _mating_type) { m_mating_type = _mating_type; } //@CHC
-  void SetMatePreference(int _mate_preference) { m_mate_preference = _mate_preference; } //@CHC
-  void SetMatingDisplayA(int _mating_display_a) { m_mating_display_a = _mating_display_a; } //@CHC
-  void SetMatingDisplayB(int _mating_display_b) { m_mating_display_b = _mating_display_b; } //@CHC
 
 
   void SetParentMuts(const cString & in_muts) { parent_muts = in_muts; }
@@ -306,7 +299,6 @@ public:
   int GetParent2ID() const { return parent2_id; }
   int GetParentDist() const { return parent_dist; }
   int GetAncestorDist() const { return ancestor_dist; }
-  int GetLineageLabel() const { return lineage_label; }
   int GetNumCPUs() const { return num_cpus; }
   int GetTotalCPUs() const { return total_cpus; }
   int GetLength() const { return length; }

@@ -37,7 +37,6 @@
 #include "cReactionProcess.h"
 #include "cReactionRequisite.h"
 #include "cReactionResult.h"
-#include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTaskEntry.h"
 #include "cWorld.h"
@@ -50,13 +49,11 @@ m_input_size(INPUT_SIZE_DEFAULT), m_output_size(OUTPUT_SIZE_DEFAULT), m_true_ran
 m_use_specific_inputs(false), m_specific_inputs(), m_mask(0)
 {
   mut_rates.Setup(world);
-  if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) possible_group_ids.insert(m_world->GetConfig().DEFAULT_GROUP.Get());
   pp_fts.Resize(0);
 }
 
 cEnvironment::~cEnvironment()
 {
-  for (int i = 0; i < m_state_grids.GetSize(); i++) delete m_state_grids[i];
 }
 
 
@@ -924,119 +921,6 @@ bool cEnvironment::LoadReaction(cString desc, Feedback& feedback)
   return true;
 }
 
-bool cEnvironment::LoadStateGrid(cString desc, Feedback& feedback)
-{
-  // First component is the name
-  cString name = desc.Pop(':');
-  
-  Util::ArgSchema schema;
-  
-  // Integer Arguments
-  schema.Define("width", 0, INT_MAX);
-  schema.Define("height", 0, INT_MAX);
-  schema.Define("initx", 0, INT_MAX);
-  schema.Define("inity", 0, INT_MAX);
-  schema.Define("initfacing", 0, 7);
-  
-  // String Arguments
-  schema.Define("states", Util::STRING);
-  schema.Define("grid", Util::STRING);
-  
-  // Load the Arguments
-  Apto::SmartPtr<Util::Args> args(Util::Args::Load((const char*)desc, schema, ':', '=', &feedback));
-  
-  // Check for errors loading the arguments
-  if (!args) return false;
-  
-  // Extract and validate the arguments
-  int width = args->Int(0);
-  int height = args->Int(1);
-  int initx = args->Int(2);
-  int inity = args->Int(3);
-  int initfacing = args->Int(4);
-  
-  if (initx >= width || inity >= height) {
-    feedback.Error("initx and inity must not exceed (width - 1) and (height - 1)");
-    return false;
-  }
-  
-  
-  // Load the states
-  cString statename;
-  cString statesensestr;
-  
-  Apto::Array<cString> states;
-  Apto::Array<int> state_sense;
-  cString statestr = (const char*)args->String(0);
-  statestr.Trim();
-  while (statestr.GetSize()) {
-    statesensestr = statestr.Pop(',');
-    statename = statesensestr.Pop('=');
-    statename.Trim();
-    
-    // Check for duplicate state definition
-    for (int i = 0; i < states.GetSize(); i++) {
-      if (statename == states[i]) {
-        feedback.Error("duplicate state identifier for state grid %s", (const char*)name);
-        return false;
-      }
-    }
-    
-    // Add state to the collection
-    states.Push(statename);
-    
-    // Determing the value returned when sense operations are run on this state
-    int state_sense_value = states.GetSize(); // Default value is the order in which the states are loaded
-    if (statesensestr.GetSize()) state_sense_value = statesensestr.AsInt();
-    state_sense.Push(state_sense_value);
-  }
-  if (states.GetSize() == 0) {
-    feedback.Error("no states defined for state grid %s", (const char*)name);
-    return false;
-  }
-  
-  // Load the state grid itself
-  Apto::Array<int> lgrid(width * height);
-  cString gridstr = (const char*)args->String(1);
-  int cell = 0;
-  while (gridstr.GetSize() && cell < lgrid.GetSize()) {
-    statename = gridstr.Pop(',');
-    statename.Trim();
-    bool found = false;
-    for (int i = 0; i < states.GetSize(); i++) {
-      if (statename == states[i]) {
-        lgrid[cell++] = i;
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      feedback.Error("state identifier undefined for cell (%d, %d) in state grid %s",
-                     (cell / width), (cell % width), (const char*)name);
-      return false;
-    }
-  }
-  if (cell != lgrid.GetSize() || gridstr.GetSize() > 0) {
-    feedback.Error("grid definition size mismatch for state grid %s", (const char*)name);
-    return false;
-  }
-  
-  // Invert row ordering so that it is interpreted as the highest indexed row comes first.  i.e. -
-  // | a a |
-  // | b a |
-  // would be a,a,b,a
-  Apto::Array<int> grid(lgrid.GetSize());
-  for (int y = 0; y < height; y++) {
-    int off = y * width;
-    int loff = (height - y - 1) * width;
-    for (int x = 0; x < width; x++) {
-      grid[off + x] = lgrid[loff + x];
-    }
-  }
-  
-  m_state_grids.Push(new cStateGrid(name, width, height, initx, inity, initfacing, states, state_sense, grid));
-  return true;
-}
 
 bool cEnvironment::LoadSetActive(cString desc, Feedback& feedback)
 {
@@ -1081,7 +965,6 @@ bool cEnvironment::LoadLine(cString line, Feedback& feedback)
   else if (type == "REACTION") load_ok = LoadReaction(line, feedback);
   else if (type == "SET_ACTIVE") load_ok = LoadSetActive(line, feedback);
   else if (type == "CELL") load_ok = LoadCell(line, feedback);
-  else if (type == "GRID") load_ok = LoadStateGrid(line, feedback);
   else if (type == "DYNAMIC_RESOURCE" || type == "GRADIENT_RESOURCE") load_ok = LoadDynamicResource(line, feedback);
   else {
     feedback.Error("unknown environment keyword '%s'", (const char*)type);
@@ -1793,19 +1676,6 @@ bool cEnvironment::ChangeResource(cReaction* reaction, const cString& res, int p
   return true;
 }
 
-/*
- helper function that checks if this is a valid group id. The ids are specified
- in the environment file as tasks.
- */
-bool cEnvironment::IsGroupID(int test_id)
-{
-  bool val = false;
-  if (possible_group_ids.find(test_id) != possible_group_ids.end()) {
-    val = true;
-  }
-  return val;
-  
-}
 
 /*
  helper function that checks if this is a valid target id. The ids are specified

@@ -54,8 +54,6 @@ private:
   HardwareTracerPtr m_tracer;
   cMutationRates m_mut_rates;
   
-  int m_cur_sg;
-
   // Outputs...
   bool is_viable;         // Is this organism colony forming?
   int max_depth;          // Deepest tests went...
@@ -82,7 +80,6 @@ public:
   void ResetInputMode() {use_manual_inputs = false; use_random_inputs = false;}
   void SetTraceExecution(HardwareTracerPtr tracer) { m_tracer = tracer; }
   
-  void SetCurrentStateGridID(int sg) { m_cur_sg = sg; }
   cMutationRates& MutationRates() { return m_mut_rates; }
 
   // Input Accessors
@@ -110,7 +107,6 @@ public:
   double GetGenotypeFitness();
   double GetColonyFitness();
   
-  int GetStateGridID() const { return m_cur_sg; }
 };
 
 

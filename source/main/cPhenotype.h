@@ -127,10 +127,6 @@ private:
 
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
-  tList<int> m_tolerance_immigrants;           // record of previous updates tolerance has been decreased towards immigrants 
-  tList<int> m_tolerance_offspring_own;        // record of previous updates tolerance has been decreased towards org's own offspring 
-  tList<int> m_tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group 
-  Apto::Array<pair<int,int> > m_intolerances;        // caches temporary values of the intolerance and the update
 
   int mating_type;                            // Organism's phenotypic sex @CHC
   int mate_preference;                        // Organism's mating preference @CHC
@@ -206,54 +202,8 @@ private:
   bool to_delete;        // Should this organism be deleted when finished?
   bool is_injected;      // Was this organism injected into the population?
   bool is_clone;      // Was this organism created as a clone in the population?
-  bool is_donor_cur;     // Has this organism attempted to donate merit?
-  bool is_donor_last;    // Did this organism's parent attempt to donate merit? 
-  bool is_donor_rand;    // Has this organism attempted a random donation?
-  bool is_donor_rand_last; // Did this org's parent attempt to donate randomly
-  bool is_donor_null;    // Has this organism attempted a null donation?
-  bool is_donor_null_last;// Did this org's parent attempt a null donation?
-  bool is_donor_kin;     // Has this organism kin_donated?
-  bool is_donor_kin_last;// Did this org's parent kin_donate?
-  bool is_donor_edit;    // Has this organism edit_donated?
-  bool is_donor_edit_last; // Did this org's parent edit_donate?
-  bool is_donor_gbg;     //  Has this organism gbg_donated (green beard gene)?
-  bool is_donor_gbg_last;// Did this org's parent gbg_donate?
-  bool is_donor_truegb;  // Has this organism truegb_donated (true green beard)? 
-  bool is_donor_truegb_last;// Did this org's parent truegb_donate? 
-  bool is_donor_threshgb;  // Has this organism threshgb_donated (true green beard)? 
-  bool is_donor_threshgb_last;// Did this org's parent threshgbg_donate? 
-  bool is_donor_quanta_threshgb;  // Has this organism quanta_threshgb_donated (true green beard)? 
-  bool is_donor_quanta_threshgb_last;// Did this org's parent quanta_threshgbg_donate?
-  bool is_donor_shadedgb; // Has this organism shaded_gb_donated (true shaded green beard)? 
-  bool is_donor_shadedgb_last; // Did this org's parent shaded_gb_donate? 
-  Apto::Array<bool> is_donor_locus; // Did this org target a donation at a specific locus.
-  Apto::Array<bool> is_donor_locus_last; // Did this org's parent target a donation at a specific locus.
-  int num_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)?
-  int num_thresh_gb_donations_last; // Num times this org's parent thresh_donated? 
-  int num_quanta_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)? 
-  int num_quanta_thresh_gb_donations_last; // Num times this org's parent thresh_donated? 
-  int num_shaded_gb_donations; // Num times this org shaded_gb_donated? 
-  int num_shaded_gb_donations_last; // Num times this org's parent shaded_gb_donated?
-  int num_donations_locus; // Num times this org targeted a donation to a position.
-  int num_donations_locus_last; // Num times this org's parent targeted a donation to a position.
-  bool is_receiver;      // Has this organism ever received merit donation?
-  bool is_receiver_last;      // Did this organism's parent receive a merit donation?
-  bool is_receiver_rand; // Has this organism ever received random merit donation?
-  bool is_receiver_kin;  // Has this organism ever received kin merit donation?
-  bool is_receiver_kin_last;  // Did this organism's parent receive a kin merit donation?
-  bool is_receiver_edit; // Has this organism ever received edit donation?
-  bool is_receiver_edit_last; // Did this organism's parent receive an edit donation?
-  bool is_receiver_gbg;  // Has this organism ever received gbg donation?
-  bool is_receiver_truegb;// Has this organism ever received truegb donation?
-  bool is_receiver_truegb_last;// Did this organism's parent receive a truegb donation?
-  bool is_receiver_threshgb;// Has this organism ever received a threshgb donation?
-  bool is_receiver_threshgb_last;// Did this organism's parent receive a threshgb donation?
-  bool is_receiver_quanta_threshgb;// Has this organism ever received a quanta_threshgb donation?
-  bool is_receiver_quanta_threshgb_last;// Did this organism's parent receive a quanta_threshgb donation?
-  bool is_receiver_shadedgb; // Has this organism ever received a shaded_gb donation? 
-  bool is_receiver_shadedgb_last; // Did this organism's parent receive a shaded gb donation?
-  bool is_receiver_gb_same_locus; // Has this org ever received a donation for a specific locus.
-  bool is_receiver_gb_same_locus_last; // Did this org's parent ever received a donation for a specific locus.
+  
+  
   bool is_modifier;      // Has this organism modified another?
   bool is_modified;      // Has this organism been modified by another?
   bool is_fertile;       // Do we allow this organisms to produce offspring?
@@ -263,7 +213,6 @@ private:
   bool parent_sex;       // Did the parent divide with sex?
   int  parent_cross_num; // How many corssovers did the parent do?
   bool born_parent_group;// Was offspring born into the parent's group?
-  bool kaboom_executed; // Has organism executed an explode instruction?
 
   // 6. Child information...
   bool copy_true;        // Can this genome produce an exact copy of itself?
@@ -278,7 +227,6 @@ private:
   
 
   inline void SetInstSetSize(int inst_set_size);
-  inline void SetGroupAttackInstSetSize(int num_group_attack_inst);
   
 public:
   cPhenotype(cWorld* world, int parent_generation, int num_nops);
@@ -442,8 +390,6 @@ public:
   const Apto::Array<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
   const Apto::Array<int>& GetLastFromSensorInstCount() const { assert(initialized == true); return last_from_sensor_count; }
   const Apto::Array<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }
-  const Apto::Array< Apto::Array<int> >& GetLastGroupAttackInstCount() const { assert(initialized == true); return last_group_attack_count; }
-  const Apto::Array< Apto::Array<int> >& GetLastTopPredGroupAttackInstCount() const { assert(initialized == true); return last_top_pred_group_attack_count; }
 
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
   const Apto::Array<int>& GetLastCollectSpecCounts() const { assert(initialized == true); return last_collect_spec_counts; }
@@ -460,56 +406,10 @@ public:
   int GetAge()        const { assert(initialized == true); return age; }
   double GetNeutralMetric() const { assert(initialized == true); return neutral_metric; }
   double GetLifeFitness() const { assert(initialized == true); return life_fitness; }
-  int  GetNumThreshGbDonations() const { assert(initialized == true); return num_thresh_gb_donations; }
-  int  GetNumThreshGbDonationsLast() const { assert(initialized == true); return num_thresh_gb_donations_last; }
-  int  GetNumQuantaThreshGbDonations() const { assert(initialized == true); return num_quanta_thresh_gb_donations; }
-  int  GetNumQuantaThreshGbDonationsLast() const { assert(initialized == true); return num_quanta_thresh_gb_donations_last; }
-  int  GetNumShadedGbDonations() const { assert(initialized == true); return num_shaded_gb_donations; }
-  int  GetNumShadedGbDonationsLast() const { assert(initialized == true); return num_shaded_gb_donations_last; }
-  int GetNumDonationsLocus() const { assert(initialized == true); return num_donations_locus; }
-  int GetNumDonationsLocusLast() const { assert(initialized == true); return num_donations_locus_last; }
 
   bool IsInjected() const { assert(initialized == true); return is_injected; }
   bool IsClone() const { assert(initialized == true); return is_clone; }
-  bool IsDonorCur() const { assert(initialized == true); return is_donor_cur; }
-  bool IsDonorLast() const { assert(initialized == true); return is_donor_last; }
-  bool IsDonorRand() const { assert(initialized == true); return is_donor_rand; }
-  bool IsDonorRandLast() const { assert(initialized == true); return is_donor_rand_last; }
-  bool IsDonorKin() const { assert(initialized == true); return is_donor_kin; }
-  bool IsDonorKinLast() const { assert(initialized == true); return is_donor_kin_last; }
-  bool IsDonorEdit() const { assert(initialized == true); return is_donor_edit; }
-  bool IsDonorEditLast() const { assert(initialized == true); return is_donor_edit_last; }
-  bool IsDonorGbg() const { assert(initialized == true); return is_donor_gbg; }
-  bool IsDonorGbgLast() const { assert(initialized == true); return is_donor_gbg_last; }
-  bool IsDonorTrueGb() const { assert(initialized == true); return is_donor_truegb; }
-  bool IsDonorTrueGbLast() const { assert(initialized == true); return is_donor_truegb_last; }
-  bool IsDonorThreshGb() const { assert(initialized == true); return is_donor_threshgb; }
-  bool IsDonorThreshGbLast() const { assert(initialized == true); return is_donor_threshgb_last; }
-  bool IsDonorQuantaThreshGb() const { assert(initialized == true); return is_donor_quanta_threshgb; }
-  bool IsDonorQuantaThreshGbLast() const { assert(initialized == true); return is_donor_quanta_threshgb_last; }
-  bool IsDonorShadedGb() const { assert(initialized == true); return is_donor_shadedgb; }
-  bool IsDonorShadedGbLast() const { assert(initialized == true); return is_donor_shadedgb_last; }	
-  bool IsDonorPosition(int pos) const {assert(initialized == true); return is_donor_locus.GetSize() > pos ? is_donor_locus[pos] : 0; }
-  bool IsDonorPositionLast(int pos) const {assert(initialized == true); return is_donor_locus_last.GetSize() > pos ? is_donor_locus_last[pos] : 0; }
   
-  bool IsReceiver() const { assert(initialized == true); return is_receiver; }
-  bool IsReceiverLast() const { assert(initialized == true); return is_receiver_last; }
-  bool IsReceiverRand() const { assert(initialized == true); return is_receiver_rand; }
-  bool IsReceiverKin() const { assert(initialized == true); return is_receiver_kin; }
-  bool IsReceiverKinLast() const { assert(initialized == true); return is_receiver_kin_last; }
-  bool IsReceiverEdit() const { assert(initialized == true); return is_receiver_edit; }
-  bool IsReceiverEditLast() const { assert(initialized == true); return is_receiver_edit_last; }
-  bool IsReceiverGbg() const { assert(initialized == true); return is_receiver_gbg; }
-  bool IsReceiverTrueGb() const { assert(initialized == true); return is_receiver_truegb; }
-  bool IsReceiverTrueGbLast() const { assert(initialized == true); return is_receiver_truegb_last; }
-  bool IsReceiverThreshGb() const { assert(initialized == true); return is_receiver_threshgb; }
-  bool IsReceiverThreshGbLast() const { assert(initialized == true); return is_receiver_threshgb_last; }
-  bool IsReceiverQuantaThreshGb() const { assert(initialized == true); return is_receiver_quanta_threshgb; }
-  bool IsReceiverQuantaThreshGbLast() const { assert(initialized == true); return is_receiver_quanta_threshgb_last; }
-  bool IsReceiverShadedGb() const { assert(initialized == true); return is_receiver_shadedgb; }
-  bool IsReceiverShadedGbLast() const { assert(initialized == true); return is_receiver_shadedgb_last; }
-  bool IsReceiverGBSameLocus() const { assert(initialized == true); return is_receiver_gb_same_locus; }
-  bool IsReceiverGBSameLocusLast() const { assert(initialized == true); return is_receiver_gb_same_locus_last; }
   bool IsModifier() const { assert(initialized == true); return is_modifier; }
   bool IsModified() const { assert(initialized == true); return is_modified; }
   bool IsFertile() const  { assert(initialized == true); return is_fertile; }
@@ -551,9 +451,6 @@ public:
   void SetReactionCount(int index, int val) { cur_reaction_count[index] = val; }
   void SetStolenReactionCount(int index, int val) { cur_stolen_reaction_count[index] = val; }
   
-  bool GetKaboomExecuted() {return kaboom_executed;} //@AEJ
-  void SetKaboomExecuted(bool value) {kaboom_executed = value;} //@AEJ
-
   void SetCurRBinsAvail(const Apto::Array<double>& in_avail) { cur_rbins_avail = in_avail; }
   void SetCurRbinsTotal(const Apto::Array<double>& in_total) { cur_rbins_total = in_total; }
   void SetCurRBinAvail(int index, double val) { cur_rbins_avail[index] = val; }
@@ -566,27 +463,6 @@ public:
   void SetMatePreference(int _mate_preference) { mate_preference = _mate_preference; } //@CHC
 
   void SetIsMultiThread() { is_multi_thread = true; }
-  void SetIsDonorCur() { is_donor_cur = true; } 
-  void SetIsDonorRand() { SetIsDonorCur(); is_donor_rand = true; }
-  void SetIsDonorKin() { SetIsDonorCur(); is_donor_kin = true; }
-  void SetIsDonorNull() { SetIsDonorCur(); is_donor_null = true; }
-  void SetIsDonorEdit() { SetIsDonorCur(); is_donor_edit = true; }
-  void SetIsDonorGbg() { SetIsDonorCur(); is_donor_gbg = true; }
-  void SetIsDonorTrueGb() { SetIsDonorCur(); is_donor_truegb = true; }
-  void SetIsDonorThreshGb() { SetIsDonorCur(); is_donor_threshgb = true; }
-  void SetIsDonorQuantaThreshGb() { SetIsDonorCur(); is_donor_quanta_threshgb = true; }
-  void SetIsDonorShadedGb() { SetIsDonorCur(); is_donor_shadedgb = true; }
-  void SetIsDonorPosition(int pos) { SetIsDonorCur(); if (is_donor_locus.GetSize() <= pos) is_donor_locus.Resize(pos+1, false); is_donor_locus[pos] = true; }
-  void SetIsReceiver() { is_receiver = true; } 
-  void SetIsReceiverRand() { SetIsReceiver(); is_receiver_rand = true; } 
-  void SetIsReceiverKin() { SetIsReceiver(); is_receiver_kin = true; } 
-  void SetIsReceiverEdit() { SetIsReceiver(); is_receiver_edit = true; } 
-  void SetIsReceiverGbg() { SetIsReceiver(); is_receiver_gbg = true; } 
-  void SetIsReceiverTrueGb() { SetIsReceiver(); is_receiver_truegb = true; } 
-  void SetIsReceiverThreshGb() { SetIsReceiver(); is_receiver_threshgb = true; } 
-  void SetIsReceiverQuantaThreshGb() { SetIsReceiver(); is_receiver_quanta_threshgb = true; } 
-  void SetIsReceiverShadedGb() { SetIsReceiver(); is_receiver_shadedgb = true; }
-  void SetIsReceiverGBSameLocus() { SetIsReceiver(); is_receiver_gb_same_locus = true; }
   bool& SetBornParentGroup() { return born_parent_group; }
   void ClearIsMultiThread() { is_multi_thread = false; }
   
@@ -596,15 +472,9 @@ public:
   void IncCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]++; } 
   void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; }
   void IncCurFromSensorInstCount(int _inst_num)  { assert(initialized == true); cur_from_sensor_count[_inst_num]++; }
-  void IncCurGroupAttackInstCount(int _inst_num, int pack_size_idx)  { assert(initialized == true); cur_group_attack_count[_inst_num][pack_size_idx]++; }
-  void IncCurTopPredGroupAttackInstCount(int _inst_num, int pack_size_idx)  { assert(initialized == true); cur_top_pred_group_attack_count[_inst_num][pack_size_idx]++; }
   void IncAttackedPreyFTData(int target_ft);
   Apto::Array<int> GetKilledPreyFTData() { return cur_killed_targets; }
   
-  void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
-  void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }
-  void IncNumShadedGbDonations() { assert(initialized == true); num_shaded_gb_donations++; }	
-  void IncNumGreenBeardSameLocus() { assert(initialized == true); num_donations_locus++; }	
   void IncAge()      { assert(initialized == true); age++; }
   void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; trial_cpu_cycles_used++; }
   void DecCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used--; trial_cpu_cycles_used--; }
@@ -667,19 +537,6 @@ inline void cPhenotype::SetInstSetSize(int inst_set_size)
   last_from_sensor_count.Resize(inst_set_size, 0);
 }
 
-inline void cPhenotype::SetGroupAttackInstSetSize(int num_group_attack_inst)
-{
-  last_group_attack_count.Resize(num_group_attack_inst);
-  last_top_pred_group_attack_count.Resize(num_group_attack_inst);
-  cur_group_attack_count.Resize(num_group_attack_inst);
-  cur_top_pred_group_attack_count.Resize(num_group_attack_inst);
-  for (int i = 0; i < last_group_attack_count.GetSize(); i++) {
-    last_group_attack_count[i].Resize(20, 0);
-    last_top_pred_group_attack_count[i].Resize(20, 0);
-    cur_group_attack_count[i].Resize(20, 0);
-    cur_top_pred_group_attack_count[i].Resize(20, 0);
-  }
-}
 
 inline void cPhenotype::SetBirthCellID(int birth_cell) { birth_cell_id = birth_cell; }
 inline void cPhenotype::SetAVBirthCellID(int av_birth_cell) { av_birth_cell_id = av_birth_cell; }

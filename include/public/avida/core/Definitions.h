@@ -35,8 +35,6 @@ const int MIN_INJECT_SIZE = 8;
 const int INPUT_SIZE_DEFAULT = 3;
 const int OUTPUT_SIZE_DEFAULT = 1;
 
-const int RECEIVED_MESSAGES_SIZE = 10;
-
 
 enum eFileType
 {
@@ -101,14 +99,6 @@ enum eDIVIDE_METHOD
   DIVIDE_METHOD_BIRTH,
 };
 
-enum eEPIGENETIC_METHOD
-{
-  EPIGENETIC_METHOD_NONE = 0,
-  EPIGENETIC_METHOD_OFFSPRING,
-  EPIGENETIC_METHOD_PARENT,
-  EPIGENETIC_METHOD_BOTH
-};
-
 enum eINJECT_METHOD
 {
   INJECT_METHOD_OFFSPRING = 0,
@@ -141,23 +131,6 @@ enum eINST_CODE_DEFAULT
 };
 
 
-enum ePHENPLAST_BONUS_METHOD {
-  DEFAULT_BONUS = 0,
-  NO_BONUS,
-  FRAC_BONUS,
-  FULL_BONUS
-};
-
-enum eSELECTION_TYPE {
-  SELECTION_TYPE_PROPORTIONAL = 0,
-  SELECTION_TYPE_TOURNAMENT
-};
-
-enum eMP_SCHEDULING {
-	MP_SCHEDULING_NULL = 0,
-	MP_SCHEDULING_INTEGRATED
-};
-
 enum eVerbosity {
   VERBOSE_SILENT = 0,   // 0: No output at all
   VERBOSE_NORMAL,       // 1: Notification at start of commands.
@@ -165,21 +138,5 @@ enum eVerbosity {
   VERBOSE_DETAILS,      // 3: High level of details, as available.
   VERBOSE_DEBUG         // 4: Print Debug Information, as applicable.
 };
-
-
-
-enum eMatingTypes {
-  MATING_TYPE_JUVENILE = -1,
-  MATING_TYPE_FEMALE = 0,
-  MATING_TYPE_MALE = 1
-};
-
-enum eMatePreferences {
-  MATE_PREFERENCE_RANDOM,
-  MATE_PREFERENCE_HIGHEST_DISPLAY_A,
-  MATE_PREFERENCE_HIGHEST_DISPLAY_B,
-  MATE_PREFERENCE_HIGHEST_MERIT
-};
-
 
 #endif

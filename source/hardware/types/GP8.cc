@@ -705,7 +705,6 @@ void Hardware::Types::GP8::SetupMiniTraceFileHeader(Avida::Output::File& df, con
   df.WriteComment("Current Merit");
   df.WriteComment("Current Bonus");
   df.WriteComment("Forager Type");
-  df.WriteComment("Group ID (opinion)");
   df.WriteComment("Current Cell");
   df.WriteComment("Avatar Cell");
   df.WriteComment("Faced Direction");
@@ -741,8 +740,6 @@ void Hardware::Types::GP8::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
   fp << m_organism->GetPhenotype().GetMerit().GetDouble() << " ";
   fp << m_organism->GetPhenotype().GetCurBonus() << " ";
   fp << m_organism->GetForageTarget() << " ";
-  if (m_organism->HasOpinion()) fp << m_organism->GetOpinion().first << " ";
-  else fp << -99 << " ";
   // environment info / things that affect movement
   fp << m_organism->GetOrgInterface().GetCellID() << " ";
   if (m_use_avatar) fp << m_organism->GetOrgInterface().GetAVCellID() << " ";
@@ -2244,9 +2241,6 @@ bool Hardware::Types::GP8::Inst_RotateOrgID(cAvidaContext& ctx)
       setRegister(dir_reg, Features::VisualSensor::Of(this).ReturnRelativeFacing(target_org), true);
       setRegister(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
       setRegister(ft_reg, target_org->GetForageTarget(), true);
-      if (target_org->HasOpinion()) {
-        setRegister(group_reg, target_org->GetOpinion().first, true);
-      }
       if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) Features::VisualSensor::Of(this).SetLastSeenDisplay(target_org->GetOrgDisplayData());
     }
     return true;
@@ -2337,9 +2331,6 @@ bool Hardware::Types::GP8::Inst_RotateAwayOrgID(cAvidaContext& ctx)
       setRegister(dir_reg, Features::VisualSensor::Of(this).ReturnRelativeFacing(target_org), true);
       setRegister(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
       setRegister(ft_reg, target_org->GetForageTarget(), true);
-      if (target_org->HasOpinion()) {
-        setRegister(group_reg, target_org->GetOpinion().first, true);
-      }
       if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) Features::VisualSensor::Of(this).SetLastSeenDisplay(target_org->GetOrgDisplayData());
     }
     return true;

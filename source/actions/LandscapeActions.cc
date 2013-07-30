@@ -932,7 +932,6 @@ public:
         df->Write(seq->GetSize(),"Genome Length");
         df->Write(organism->GetTestFitness(ctx), "Fitness (test-cpu)");
         df->Write(phenotype.GetFitness(), "Fitness (actual)");
-        df->Write(organism->GetLineageLabel(), "Lineage Label");
         df->Write(phenotype.GetNeutralMetric(), "Neutral Metric");
         orgdata->PrintLand(*df, update);
         

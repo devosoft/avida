@@ -123,9 +123,6 @@ STATS_OUT_FILE(PrintMultiProcessData,       multiprocess.dat);
 STATS_OUT_FILE(PrintProfilingData,          profiling.dat);
 STATS_OUT_FILE(PrintOrganismLocation,       location.dat);
 
-STATS_OUT_FILE(PrintCellData,               cell_data.dat       );
-STATS_OUT_FILE(PrintCurrentOpinions,        opinions.dat        );
-
 // @WRE: Added output event for collected visit counts
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
 STATS_OUT_FILE(PrintDynamicMaxMinData,	    maxmin.dat			);
@@ -930,63 +927,6 @@ public:
 };
 
 
-//LHZ - slower version that doesn't need "lineage support"
-class cActionPrintLineageCounts : public cAction
-{
-private:
-  cString m_filename;
-  bool first_run;
-  Apto::Array<int> lineage_labels;
-public:
-  cActionPrintLineageCounts(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_counts.dat";
-    first_run = false;
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname='lineage_counts.dat']\n  WARNING: This will only have the appropriate header if all lineages are present before this action is run for the first time."; }
-  void Process(cAvidaContext&)
-  {
-    const int update = m_world->GetStats().GetUpdate();
-    const double generation = m_world->GetStats().SumGeneration().Average();
-    
-    //only loop through living organisms
-    const Apto::Array<cOrganism*, Apto::Smart>& living_orgs = m_world->GetPopulation().GetLiveOrgList();
-    
-    Apto::Map<int, int> lineage_label_counts;
-    
-    //build hash of lineage_label -> count
-    for(int i = 0; i < living_orgs.GetSize(); i++) {
-      const int cur_lineage_label = living_orgs[i]->GetLineageLabel();
-      if (lineage_label_counts.Has(cur_lineage_label)) lineage_label_counts[cur_lineage_label]++;
-      else lineage_label_counts[cur_lineage_label] = 1;
-    }
-    
-    //setup lineage labels in the first pass
-    if (first_run == false) {
-      for (Apto::Map<int, int>::KeyIterator it = lineage_label_counts.Keys(); it.Next();) lineage_labels.Push(*it.Get());
-      first_run = true;
-    }
-    
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-    df->Write(update, "Update");
-    df->Write(generation, "Generation");
-    
-    //for each lineage label, output the counts
-    //@LZ - handle dead lineages appropriately
-    for (int i = 0; i < lineage_labels.GetSize(); i++) {
-      //default to 0 in case this lineage is dead
-      int count = 0;
-      
-      lineage_label_counts.Get(lineage_labels[i], count);
-      
-      df->Write(count, cStringUtil::Stringf("Lineage Label %d", lineage_labels[i]));
-    }
-    
-    df->Endl();
-  }
-};
 
 
 /*
@@ -1332,97 +1272,7 @@ public:
 };
 
 
-/*
- This function requires that TRACK_CCLADES be enabled and avida is
- not in analyze mode.
- 
- Parameters
- filename (cString)
- Where the clade information should be stored.
- 
- Please note the structure to this file is not a matrix.
- Each line is formatted as follows:
- update number_cclades ccladeID0 ccladeID0_count ccladeID1
- 
- @MRR May 2007
- */
-class cActionPrintCCladeCounts : public cAction
-{
-private:
-  cString filename;
-  bool first_time;
-  
-public:
-  cActionPrintCCladeCounts(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args)
-  {
-    cString largs(args);
-    filename = (!largs.GetSize()) ? "cclade_count.dat" : largs.PopWord();
-    first_time = true;
-  }
-  
-  static const cString GetDescription() { return "Arguments: [filename = \"cclade_count.dat\"]"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    //Handle possible errors
-    if (ctx.GetAnalyzeMode()) {
-      ctx.Driver().Feedback().Error("PrintCCladeCount requires avida to be in run mode.");
-      ctx.Driver().Abort(Avida::INVALID_CONFIG);
-    }
-    
-    if (m_world->GetConfig().TRACK_CCLADES.Get() == 0) {
-      ctx.Driver().Feedback().Error("PrintCCladeCount requires coalescence clade tracking to be enabled.");
-      ctx.Driver().Abort(Avida::INVALID_CONFIG);
-    }
-    
-    
-    Apto::Map<int, int> cclade_count;  //A count for each clade in the population
-    set<int>             clade_ids;
-    
-    cPopulation& pop = m_world->GetPopulation();
-    const int update = m_world->GetStats().GetUpdate();
-    
-    //For each organism in the population, find what coalescence clade it belongs to and count
-    for (int k = 0; k < pop.GetSize(); k++)
-    {
-      if (!pop.GetCell(k).IsOccupied())
-        continue;
-      int cclade_id = pop.GetCell(k).GetOrganism()->GetCCladeLabel();
-      int count = 0;
-      if (!cclade_count.Get(cclade_id, count))
-        clade_ids.insert(cclade_id);
-      cclade_count.Set(cclade_id, ++count);
-    }
-    
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    if (!fp.is_open()) {
-      ctx.Driver().Feedback().Error("PrintCCladeCount: Unable to open output file.");
-      ctx.Driver().Abort(Avida::IO_ERROR);
-    }
-    if (first_time)
-    {
-      fp << "# Each line is formatted as follows:" << endl;
-      fp << "#   update number_cclades ccladeID0 ccladeID0_count ccladeID1" << endl;
-      fp << endl;
-      first_time = false;
-    }
-    fp << update <<  " "
-    << clade_ids.size() << " ";
-    
-    set<int>::iterator sit = clade_ids.begin();
-    while(sit != clade_ids.end())
-    {
-      int count = 0;
-      cclade_count.Get(*sit, count);
-      fp << *sit << " " << count << " ";
-      sit++;
-    }
-    fp << endl;
-    
-  }
-};
+
 
 
 /*
@@ -1785,257 +1635,7 @@ public:
 
 
 
-/*
- @MRR May 2007 [BETA]
- This function requires CCLADE_TRACKING to be enabled and avida
- operating non-analyze mode.
- 
- This function will print histograms of log10 fitness of each of the
- tagged clades.
- 
- Parameters:
- filename  (cString)        Name of the output file
- fit_mode (cString)        Either {Current, Actual, TestCPU}, where
- Current is the current value in the grid. [Default]
- Actual uses the current merit, but the true gestation time.
- TestCPU determined.
- hist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: -3]
- hist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 12]
- hist_fstep (double)      The width of the individual bins in the histogram.    [Default: 0.5]
- 
- The file will be formatted:
- <update> <cclade_count> <cclade_id> [...] <cclade_id> [...] ...
- where [...] will be [ <min, min, min+step, ..., max-step, max, > max], each bin (min,max]
- */
-class cActionPrintCCladeFitnessHistogram : public cAction
-{
-private:
-  double m_hist_fmin;
-  double m_hist_fstep;
-  double m_hist_fmax;
-  cString m_mode;
-  cString m_filename;
-  bool    first_run;
-  
-public:
-  cActionPrintCCladeFitnessHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
-  {
-    cString largs(args);
-    m_filename   = (largs.GetSize()) ? largs.PopWord()           : "cclade_fitness_hist.dat";
-    m_mode       = (largs.GetSize()) ? largs.PopWord().ToUpper() : "CURRENT";
-    m_hist_fmin  = (largs.GetSize()) ? largs.PopWord().AsDouble(): -3.0;
-    m_hist_fstep = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0.5;
-    m_hist_fmax  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 12;
-    first_run = true;
-  }
-  
-  static const cString GetDescription() { return "Arguments: [filename] [fit_mode] [hist_min] [hist_step] [hist_max]"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    //Handle possible errors
-    if (ctx.GetAnalyzeMode()) {
-      ctx.Driver().Feedback().Error("PrintCCladeFitnessHistogram requires avida to be in run mode.");
-      ctx.Driver().Abort(Avida::INVALID_CONFIG);
-    }
-    
-    if (m_world->GetConfig().TRACK_CCLADES.Get() == 0) {
-      ctx.Driver().Feedback().Error("PrintCCladeFitnessHistogram requires coalescence clade tracking to be enabled.");
-      ctx.Driver().Abort(Avida::INVALID_CONFIG);
-    }
-    
-    //Verify input parameters
-    if ( (m_mode != "ACTUAL" && m_mode != "CURRENT" && m_mode != "TESTCPU") || m_hist_fmin > m_hist_fmax) {
-      ctx.Driver().Feedback().Error("PrintCCladeFitnessHistogram: Check parameters.");
-      ctx.Driver().Abort(Avida::INVALID_CONFIG);
-    }
-    
-    //Gather data objects
-    cPopulation& pop        = m_world->GetPopulation();
-    const int    update     = m_world->GetStats().GetUpdate();
-    map< int, Apto::Array<cOrganism*> > org_map;  //Map of ccladeID to array of organism IDs
-    map< int, Apto::Array<Systematics::GroupPtr> > gen_map;  //Map of ccladeID to array of genotype IDs
-    
-    //Collect clade information
-    for (int i = 0; i < pop.GetSize(); i++){
-      if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
-      cOrganism* organism = pop.GetCell(i).GetOrganism();
-      Systematics::GroupPtr genotype = organism->SystematicsGroup("genotype");
-      int cladeID = organism->GetCCladeLabel();
-      
-      map< int, Apto::Array<cOrganism*> >::iterator oit = org_map.find(cladeID);
-      map< int, Apto::Array<Systematics::GroupPtr> >::iterator git = gen_map.find(cladeID);
-      if (oit == org_map.end()) {
-        //The clade is new
-        org_map[cladeID].Resize(1); org_map[cladeID][0] = organism;
-        gen_map[cladeID].Resize(1); gen_map[cladeID][0] = genotype;
-      } else {
-        //The clade is known
-        oit->second.Push(organism);
-        git->second.Push(genotype);
-      }
-    }
-    
-    //Create and print the histograms; this calls a static method in another action
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-    ofstream& fp = df->OFStream();
-    if (!fp.is_open()) {
-      ctx.Driver().Feedback().Error("PrintCCladeFitnessHistogram: Unable to open output file.");
-      ctx.Driver().Abort(Avida::IO_ERROR);
-    }
-    map< int, Apto::Array<cOrganism*> >::iterator oit = org_map.begin();
-    map< int, Apto::Array<Systematics::GroupPtr> >::iterator git = gen_map.begin();
-    for (; oit != org_map.end(); oit++, git++) {
-      Apto::Array<int> hist =
-      cActionPrintLogFitnessHistogram::MakeHistogram((oit->second), (git->second), m_hist_fmin, m_hist_fstep, m_hist_fmax, m_mode, m_world, ctx );
-      if (first_run) {
-        // Print header information if first time through
-        first_run = false;
-        fp << "# PrintCCladeFitnessHistogram" << endl << "# Bins: ";
-        for (int k = 0; k < hist.GetSize(); k++)
-          fp << " " <<  cActionPrintLogFitnessHistogram::GetHistogramBinLabel(k, m_hist_fmin, m_hist_fstep, m_hist_fmax);
-        fp << endl << endl;
-      }
-      
-      if (oit == org_map.begin()) {
-        // Print update and clade count if first clade
-        fp << update << " " << org_map.size() << " ";
-      }
-      
-      fp << oit->first << " [";
-      for (int k = 0; k < hist.GetSize(); k++) fp << " " << hist[k];
-      fp << " ] ";
-    }
-    fp << endl;
-  }
-};
 
-
-
-/*
- @MRR May 2007  [BETA]
- This function requires CCLADE_TRACKING to be enabled and Avida
- operating non-analyze mode.
- 
- This function will print histograms of the relative fitness of
- clade members as compared to the parent.
- 
- Parameters:
- filename  (cString)        Name of the output file
- fit_mode (cString)        Either {Current, Actual, ActualRepro, TestCPU}, where
- Current is the current value in the grid. [Default]
- Actual uses the current merit, but the true gestation time.
- CurrentRepro is the same as current, but counts only those orgs
- that have reproduced.
- TestCPU determined.
- hist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: 0.50]
- hist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 0.02]
- hist_fstep (double)      The width of the individual bins in the histogram.    [Default: 1.50]
- 
- The file will be formatted:
- <update> <cclade_count> <cclade_id> [...] <cclade_id> [...] ...
- where [...] will be [ <min, min, min+step, ..., max-step, max, >max], each bin [min,max}
- */
-class cActionPrintCCladeRelativeFitnessHistogram : public cAction
-{
-private:
-  double m_hist_fmin;
-  double m_hist_fstep;
-  double m_hist_fmax;
-  cString m_mode;
-  cString m_filename;
-  bool first_run;
-  
-public:
-  cActionPrintCCladeRelativeFitnessHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
-  {
-    cString largs(args);
-    m_filename   = (largs.GetSize()) ? largs.PopWord()           : "cclade_rel_fitness_hist.dat";
-    m_mode       = (largs.GetSize()) ? largs.PopWord().ToUpper() : "CURRENT";
-    m_hist_fmin  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0;
-    m_hist_fstep = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0.2;
-    m_hist_fmax  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 2.0;
-    first_run = true;
-  }
-  
-  static const cString GetDescription() { return "Arguments: [filename] [fit_mode] [hist_min] [hist_step] [hist_max]"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    //Handle possible errors
-    if (ctx.GetAnalyzeMode()) {
-      ctx.Driver().Feedback().Error("PrintCCladeRelativeFitnessHistogram requires avida to be in run mode.");
-      ctx.Driver().Abort(Avida::INVALID_CONFIG);
-    }
-    
-    if (m_world->GetConfig().TRACK_CCLADES.Get() == 0) {
-      ctx.Driver().Feedback().Error("PrintCCladeRelativeFitnessHistogram requires coalescence clade tracking to be enabled.");
-      ctx.Driver().Abort(Avida::INVALID_CONFIG);
-    }
-    
-    //Verify input parameters
-    if ( (m_mode != "ACTUAL" && m_mode != "CURRENT" && m_mode != "TESTCPU") || m_hist_fmin > m_hist_fmax) {
-      ctx.Driver().Feedback().Error("PrintCCladeRelativeFitness: check parameters");
-      ctx.Driver().Abort(Avida::INVALID_CONFIG);
-    }
-    
-    ///Gather data objects
-    cPopulation& pop        = m_world->GetPopulation();
-    const int    update     = m_world->GetStats().GetUpdate();
-    map< int, Apto::Array<cOrganism*> > org_map;  //Map of ccladeID to array of organism IDs
-    map< int, Apto::Array<Systematics::GroupPtr> > gen_map;  //Map of ccladeID to array of genotype IDs
-    
-    //Collect clade information
-    for (int i = 0; i < pop.GetSize(); i++) {
-      if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
-      cOrganism* organism = pop.GetCell(i).GetOrganism();
-      Systematics::GroupPtr genotype = organism->SystematicsGroup("genotype");
-      int cladeID = organism->GetCCladeLabel();
-      
-      map< int, Apto::Array<cOrganism*> >::iterator oit = org_map.find(cladeID);
-      map< int, Apto::Array<Systematics::GroupPtr> >::iterator git = gen_map.find(cladeID);
-      if (oit == org_map.end()) {
-        // The clade is new
-        org_map[cladeID].Resize(1); org_map[cladeID][0] = organism;
-        gen_map[cladeID].Resize(1); gen_map[cladeID][0] = genotype;
-      } else {
-        // The clade is known
-        oit->second.Push(organism);
-        git->second.Push(genotype);
-      }
-    }
-    
-    //Create and print the histograms; this calls a static method in another action
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-    ofstream& fp = df->OFStream();
-    if (!fp.is_open()) {
-      ctx.Driver().Feedback().Error("PrintCCladeRelativeFitnessHistogram: Unable to open output file.");
-      ctx.Driver().Abort(Avida::IO_ERROR);      
-    }
-    map< int, Apto::Array<cOrganism*> >::iterator oit = org_map.begin();
-    map< int, Apto::Array<Systematics::GroupPtr> >::iterator git = gen_map.begin();
-    for (; oit != org_map.end(); oit++, git++) {
-      Apto::Array<int> hist = cActionPrintRelativeFitnessHistogram::MakeHistogram( (oit->second), (git->second),
-                                                                             m_hist_fmin, m_hist_fstep, m_hist_fmax,
-                                                                             m_mode, m_world, ctx );
-      if (first_run){  //Print header information if first time through
-        first_run = false;
-        fp << "# PrintCCladeFitnessHistogram" << endl << "# Bins: ";
-        for (int k = 0; k < hist.GetSize(); k++)
-          fp << " " <<  cActionPrintRelativeFitnessHistogram::GetHistogramBinLabel(k, m_hist_fmin, m_hist_fstep, m_hist_fmax);
-        fp << endl << endl;
-      }
-      if (oit == org_map.begin()) //Print update and clade count if first clade
-        fp << update << " " << org_map.size() << " ";
-      fp << oit->first << " [";
-      for (int k = 0; k < hist.GetSize(); k++)
-        fp << " " << hist[k];
-      fp << " ] ";
-    }
-    fp << endl;
-    
-  }
-};
 
 /*
  @MRR March 2007 [UNTESTED]
@@ -2707,37 +2307,6 @@ public:
 };
 
 
-
-
-class cActionDumpCellDataGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpCellDataGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_cell_data.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    for (int i = 0; i < m_world->GetPopulation().GetWorldY(); i++) {
-      for (int j = 0; j < m_world->GetPopulation().GetWorldX(); j++) {
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(i * m_world->GetPopulation().GetWorldX() + j);
-        double cell_data = cell.GetCellData();
-        fp << cell_data << " ";
-      }
-      fp << endl;
-    }
-  }
-};
 
 class cActionDumpFitnessGrid : public cAction
 {
@@ -3685,10 +3254,8 @@ public:
       const int locy = loc / worldx;
       const int ft = org->GetForageTarget();
       const int faced_dir = org->GetFacedDir();
-      int opinion = -1;
-      if (org->HasOpinion()) opinion = org->GetOpinion().first;
       
-      fp << id << "," << locx << "," << locy << "," << ft << "," <<  opinion << "," <<  faced_dir;
+      fp << id << "," << locx << "," << locy << "," << ft << "," <<  -1 << "," <<  faced_dir;
       if (use_av) {
         const int avloc = org->GetOrgInterface().GetAVCellID();
         const int avlocx = avloc % worldx;
@@ -3801,10 +3368,8 @@ public:
       const int locy = loc / worldx;
       const int ft = org->GetForageTarget();
       const int faced_dir = org->GetFacedDir();
-      int opinion = -1;
-      if (org->HasOpinion()) opinion = org->GetOpinion().first;
       
-      fp << id << "," << locx << "," << locy << "," << ft << "," <<  opinion << "," <<  faced_dir;
+      fp << id << "," << locx << "," << locy << "," << ft << "," <<  -1 << "," <<  faced_dir;
       if (use_av) {
         const int avloc = org->GetOrgInterface().GetAVCellID();
         const int avlocx = avloc % worldx;
@@ -4295,8 +3860,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
   
   
-  action_lib->Register<cActionPrintCellData>("PrintCellData");
-  
   action_lib->Register<cActionPrintDonationStats>("PrintDonationStats");
     
   // kabooms output file
@@ -4311,11 +3874,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDenData>("PrintDenData");
 
   
-  //Coalescence Clade Actions
-  action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
-  action_lib->Register<cActionPrintCCladeFitnessHistogram>("PrintCCladeFitnessHistogram");
-  action_lib->Register<cActionPrintCCladeRelativeFitnessHistogram>("PrintCCladeRelativeFitnessHistogram");
-  
   // Processed Data
   action_lib->Register<cActionPrintData>("PrintData");
   action_lib->Register<cActionPrintInstructionAbundanceHistogram>("PrintInstructionAbundanceHistogram");
@@ -4324,7 +3882,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintHostDepthHistogram>("PrintHostDepthHistogram");
   action_lib->Register<cActionEcho>("Echo");
   action_lib->Register<cActionPrintGenotypeAbundanceHistogram>("PrintGenotypeAbundanceHistogram");
-  action_lib->Register<cActionPrintLineageCounts>("PrintLineageCounts");
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
   action_lib->Register<cActionPrintDominantGroupGenotypes>("PrintDominantGroupGenotypes");
   action_lib->Register<cActionPrintDominantForagerGenotypes>("PrintDominantForagerGenotypes");
@@ -4333,10 +3890,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintRelativeFitnessHistogram>("PrintRelativeFitnessHistogram");
   action_lib->Register<cActionPrintGeneticDistanceData>("PrintGeneticDistanceData");
   action_lib->Register<cActionPrintPopulationDistanceData>("PrintPopulationDistanceData");
-  
-  action_lib->Register<cActionPrintPhenotypicPlasticity>("PrintPhenotypicPlasticity");
-  action_lib->Register<cActionPrintTaskProbHistogram>("PrintTaskProbHistogram");
-  action_lib->Register<cActionPrintPlasticGenotypeSummary>("PrintPlasticGenotypeSummary");
   
   action_lib->Register<cActionTestDominant>("TestDominant");
   action_lib->Register<cActionPrintTaskSnapshot>("PrintTaskSnapshot");
@@ -4365,7 +3918,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
-  action_lib->Register<cActionDumpCellDataGrid>("DumpCellDataGrid");
   action_lib->Register<cActionDumpGenomeLengthGrid>("DumpGenomeLengthGrid");
   action_lib->Register<cActionDumpGenotypeGrid>("DumpGenotypeGrid");
   action_lib->Register<cActionDumpParasiteGenotypeGrid>("DumpParasiteGenotypeGrid");

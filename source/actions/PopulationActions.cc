@@ -80,22 +80,20 @@ private:
   cString m_filename;
   int m_cell_id;
   double m_merit;
-  int m_lineage_label;
   double m_neutral_metric;
   cString m_trace_filename;
 public:
-  cActionInject(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInject(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_merit(-1), m_neutral_metric(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_cell_id = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_trace_filename = largs.PopWord();
   }
   
-  static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0] [string trace_filename]"; }
+  static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [double merit=-1] [double neutral_metric=0] [string trace_filename]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -115,7 +113,7 @@ public:
       cerr << feedback.GetMessage(i) << endl;
     }
     if (!genome) return;
-    m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, false);
+    m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_neutral_metric, false);
     
     if (m_trace_filename.GetSize()) {
       HardwareTracerPtr tracer(new cHardwareStatusPrinter(m_world->GetNewWorld(), (const char*)m_trace_filename));
@@ -146,20 +144,18 @@ private:
   int m_length;
   int m_cell_id;
   double m_merit;
-  int m_lineage_label;
   double m_neutral_metric;
 public:
-  cActionInjectRandom(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectRandom(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_merit(-1), m_neutral_metric(0)
   {
     cString largs(args);
     m_length = largs.PopWord().AsInt();
     if (largs.GetSize()) m_cell_id = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
   }
   
-  static const cString GetDescription() { return "Arguments: <int length> [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <int length> [int cell_id=0] [double merit=-1] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -171,7 +167,7 @@ public:
     seq_p.DynamicCastFrom(genome.Representation());
     InstructionSequence& seq = *seq_p;
     for (int i = 0; i < m_length; i++) seq[i] = is.GetRandomInst(ctx);
-    m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "random", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
+    m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "random", true), ctx, m_cell_id, m_merit, m_neutral_metric);
   }
 };
 
@@ -196,21 +192,19 @@ class cActionInjectAllRandomRepro : public cAction
 private:
   int m_length;
   double m_merit;
-  int m_lineage_label;
   double m_neutral_metric;
   int m_sex;
 public:
-  cActionInjectAllRandomRepro(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0), m_sex(0)
+  cActionInjectAllRandomRepro(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_merit(-1), m_neutral_metric(0), m_sex(0)
   {
     cString largs(args);
     m_length = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_sex = largs.PopWord().AsInt();
   }
   
-  static const cString GetDescription() { return "Arguments: <int length> [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <int length> [double merit=-1] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -231,7 +225,7 @@ public:
       if (m_sex) seq[m_length] = is.GetInst("repro-sex");
       else seq[m_length] = is.GetInst("repro");
       
-      m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "random", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+      m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "random", true), ctx, i, m_merit, m_neutral_metric);
     }
   }
 };
@@ -255,10 +249,9 @@ private:
   cString m_filename;
   Apto::String m_instset;
   double m_merit;
-  int m_lineage_label;
   double m_neutral_metric;
 public:
-  cActionInjectAll(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_merit(-1.0), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectAll(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_merit(-1.0), m_neutral_metric(0)
   {
 
     Util::ArgSchema schema;
@@ -270,8 +263,6 @@ public:
     schema.Define("merit", -1.0);
     schema.Define("neutral_metric", 0.0);
     
-    schema.Define("lineage_label", 0);
-    
     Util::Args* argc = Util::Args::Load((const char*)args, schema, ':', '=', &feedback);
     
     if (argc) {
@@ -281,13 +272,12 @@ public:
       m_merit = argc->Double(0);
       m_neutral_metric = argc->Double(1);
       
-      m_lineage_label = argc->Int(0);
     }
     
     delete argc;
   }
   
-  static const cString GetDescription() { return "Arguments: <string filename> [instset=""] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string filename> [instset=""] [double merit=-1] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -308,7 +298,7 @@ public:
     }
     if (!genome) return;
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
-      m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+      m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_neutral_metric);
   }
 };
 
@@ -336,24 +326,22 @@ private:
   int m_cell_start;
   int m_cell_end;
   double m_merit;
-  int m_lineage_label;
   double m_neutral_metric;
 public:
   cActionInjectRange(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_neutral_metric(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
     if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
     
     if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
   }
   
-  static const cString GetDescription() { return "Arguments: <string fname> [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string fname> [int cell_start=0] [int cell_end=-1] [double merit=-1] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -378,7 +366,7 @@ public:
       }
       if (!genome) return;
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+        m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_neutral_metric);
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -410,24 +398,22 @@ private:
   int m_cell_start;
   int m_cell_end;
   double m_merit;
-  int m_lineage_label;
   double m_neutral_metric;
 public:
   cActionInjectSequence(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_neutral_metric(0)
   {
     cString largs(args);
     m_sequence = largs.PopWord();
     if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
     if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
     
     if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
   }
   
-  static const cString GetDescription() { return "Arguments: <string sequence> [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string sequence> [int cell_start=0] [int cell_end=-1] [double merit=-1] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -439,7 +425,7 @@ public:
       cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence)));
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_neutral_metric);
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -471,13 +457,12 @@ private:
   int m_cell_end;
   double m_merit;
   double m_div_mut_rate;
-  int m_lineage_label;
   double m_neutral_metric;
   
   
 public:
   cActionInjectSequenceWithDivMutRate(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_div_mut_rate(0.0), m_lineage_label(0), m_neutral_metric(0)
+  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_div_mut_rate(0.0), m_neutral_metric(0)
   {
     cString largs(args);
     m_sequence = largs.PopWord();
@@ -485,13 +470,12 @@ public:
     if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
     if (largs.GetSize()) m_div_mut_rate = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
     
     if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
   }
   
-  static const cString GetDescription() { return "Arguments: <string sequence> [int cell_start=0] [int cell_end=-1] [double div_mut_rate=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string sequence> [int cell_start=0] [int cell_end=-1] [double div_mut_rate=0] [double merit=-1] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -503,7 +487,7 @@ public:
       cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence)));
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_neutral_metric);
         m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
       }
       m_world->GetPopulation().SetSyncEvents(true);
@@ -522,11 +506,10 @@ private:
   int m_forager_type;
   bool m_trace;
   double m_merit;
-  int m_lineage_label;
   double m_neutral_metric;
   cString m_trace_filename;
 public:
-  cActionInjectGroup(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_group_id(m_world->GetConfig().DEFAULT_GROUP.Get()), m_forager_type(-1), m_trace(false),m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectGroup(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_group_id(m_world->GetConfig().DEFAULT_GROUP.Get()), m_forager_type(-1), m_trace(false),m_merit(-1), m_neutral_metric(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -535,12 +518,11 @@ public:
     if (largs.GetSize()) m_forager_type = largs.PopWord().AsInt();
     if (largs.GetSize()) m_trace = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_trace_filename = largs.PopWord();
   }
   
-  static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [int group_id=-1] [int forager_type=-1] [bool trace=false] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [int group_id=-1] [int forager_type=-1] [bool trace=false] [double merit=-1] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -561,7 +543,7 @@ public:
       cerr << feedback.GetMessage(i) << endl;
     }
     if (!genome) return;
-    m_world->GetPopulation().InjectGroup(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, m_group_id, m_forager_type, m_trace); 
+    m_world->GetPopulation().InjectGroup(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_neutral_metric, m_group_id, m_forager_type, m_trace);
   
     if (m_trace_filename.GetSize()) {
       HardwareTracerPtr tracer(new cHardwareStatusPrinter(m_world->GetNewWorld(), (const char*)m_trace_filename));
@@ -662,11 +644,10 @@ private:
   int m_cell_start;
   int m_cell_end;
   double m_merit;
-  int m_lineage_label;
   double m_neutral_metric;
 public:
   cActionInjectParasitePair(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_neutral_metric(0)
   {
     cString largs(args);
     m_filename_genome = largs.PopWord();
@@ -675,13 +656,12 @@ public:
     if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
     if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
     
     if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
   }
   
-  static const cString GetDescription() { return "Arguments: <string filename_genome> <string filename_parasite> <string label> [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string filename_genome> <string filename_parasite> <string label> [int cell_start=0] [int cell_end=-1] [double merit=-1] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -702,7 +682,7 @@ public:
       }
       if (!genome || !parasite) return;
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+        m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_neutral_metric);
         ConstInstructionSequencePtr seq;
         seq.DynamicCastFrom(parasite->Representation());
         m_world->GetPopulation().InjectParasite(m_label, *seq, i);

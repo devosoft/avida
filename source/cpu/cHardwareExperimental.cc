@@ -245,17 +245,9 @@ StaticTableInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initI
     StaticTableInstLib<tMethod>::MethodEntry("execurate-24", &cHardwareExperimental::Inst_Execurate24, INST_CLASS_DATA),
     
     
-    // State Grid instructions
-    StaticTableInstLib<tMethod>::MethodEntry("sg-move", &cHardwareExperimental::Inst_SGMove, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("sg-rotate-l", &cHardwareExperimental::Inst_SGRotateL, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("sg-rotate-r", &cHardwareExperimental::Inst_SGRotateR, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("sg-sense", &cHardwareExperimental::Inst_SGSense, INST_CLASS_ENVIRONMENT),
-    
     // Movement and Navigation instructions
     StaticTableInstLib<tMethod>::MethodEntry("move", &cHardwareExperimental::Inst_Move, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("juv-move", &cHardwareExperimental::Inst_JuvMove, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("range-move", &cHardwareExperimental::Inst_RangeMove, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("range-pred-move", &cHardwareExperimental::Inst_RangePredMove, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("get-cell-xy", &cHardwareExperimental::Inst_GetCellPosition, INST_CLASS_ENVIRONMENT),
     StaticTableInstLib<tMethod>::MethodEntry("get-cell-x", &cHardwareExperimental::Inst_GetCellPositionX, INST_CLASS_ENVIRONMENT),
     StaticTableInstLib<tMethod>::MethodEntry("get-cell-y", &cHardwareExperimental::Inst_GetCellPositionY, INST_CLASS_ENVIRONMENT),
@@ -323,29 +315,6 @@ StaticTableInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initI
     StaticTableInstLib<tMethod>::MethodEntry("get-res-stored", &cHardwareExperimental::Inst_GetResStored, INST_CLASS_ENVIRONMENT, STALL),    
     StaticTableInstLib<tMethod>::MethodEntry("get-specific-stored", &cHardwareExperimental::Inst_GetSpecificStored, INST_CLASS_ENVIRONMENT, STALL),    
  
-    // Data collection
-    StaticTableInstLib<tMethod>::MethodEntry("collect-cell-data", &cHardwareExperimental::Inst_CollectCellData, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("if-cell-data-changed", &cHardwareExperimental::Inst_IfCellDataChanged, INST_CLASS_CONDITIONAL, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("read-cell-data", &cHardwareExperimental::Inst_ReadCellData, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("read-group-cell", &cHardwareExperimental::Inst_ReadGroupCell, INST_CLASS_ENVIRONMENT, STALL),
-
-    // Opinion instructions.
-    StaticTableInstLib<tMethod>::MethodEntry("set-opinion", &cHardwareExperimental::Inst_SetOpinion, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-opinion", &cHardwareExperimental::Inst_GetOpinion, INST_CLASS_ENVIRONMENT, STALL),
-
-    // Grouping instructions
-    StaticTableInstLib<tMethod>::MethodEntry("join-group", &cHardwareExperimental::Inst_JoinGroup, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("change-pred-group", &cHardwareExperimental::Inst_ChangePredGroup, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("make-pred-group", &cHardwareExperimental::Inst_MakePredGroup, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("leave-pred-group", &cHardwareExperimental::Inst_LeavePredGroup, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("adopt-pred-group", &cHardwareExperimental::Inst_AdoptPredGroup, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-group-id", &cHardwareExperimental::Inst_GetGroupID, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("get-pred-group-id", &cHardwareExperimental::Inst_GetPredGroupID, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("inc-pred-tolerance", &cHardwareExperimental::Inst_IncPredTolerance, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("dec-pred-tolerance", &cHardwareExperimental::Inst_DecPredTolerance, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-pred-tolerance", &cHardwareExperimental::Inst_GetPredTolerance, INST_CLASS_ENVIRONMENT, STALL),   
-    StaticTableInstLib<tMethod>::MethodEntry("get-pred-group-tolerance", &cHardwareExperimental::Inst_GetPredGroupTolerance, INST_CLASS_ENVIRONMENT, STALL),
-    
     // Org Interaction instructions
     StaticTableInstLib<tMethod>::MethodEntry("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("attack-prey", &cHardwareExperimental::Inst_AttackPrey, INST_CLASS_ENVIRONMENT, STALL), 
@@ -354,22 +323,14 @@ StaticTableInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initI
     StaticTableInstLib<tMethod>::MethodEntry("attack-poison-ft-prey", &cHardwareExperimental::Inst_AttackPoisonFTPrey, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("attack-poison-ft-prey-genetic", &cHardwareExperimental::Inst_AttackPoisonFTPreyGenetic, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("attack-poison-ft-mixed-prey", &cHardwareExperimental::Inst_AttackPoisonFTMixedPrey, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-prey-group", &cHardwareExperimental::Inst_AttackPreyGroup, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("attack-prey-share", &cHardwareExperimental::Inst_AttackPreyShare, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("attack-prey-no-share", &cHardwareExperimental::Inst_AttackPreyNoShare, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("attack-prey-fake-share", &cHardwareExperimental::Inst_AttackPreyFakeShare, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-prey-group-share", &cHardwareExperimental::Inst_AttackPreyGroupShare, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-prey-fake-group-share", &cHardwareExperimental::Inst_AttackPreyFakeGroupShare, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("attack-spec-prey", &cHardwareExperimental::Inst_AttackSpecPrey, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("attack-prey-area", &cHardwareExperimental::Inst_AttackPreyArea, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("fight-bonus-org", &cHardwareExperimental::Inst_FightBonusOrg, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("mark-cell", &cHardwareExperimental::Inst_MarkCell, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("mark-group-cell", &cHardwareExperimental::Inst_MarkGroupCell, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("mark-pred-cell", &cHardwareExperimental::Inst_MarkPredCell, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("read-faced-cell", &cHardwareExperimental::Inst_ReadFacedCell, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("read-faced-pred-cell", &cHardwareExperimental::Inst_ReadFacedPredCell, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-merit-fight-odds", &cHardwareExperimental::Inst_GetMeritFightOdds, INST_CLASS_ENVIRONMENT, STALL), 
+    StaticTableInstLib<tMethod>::MethodEntry("get-merit-fight-odds", &cHardwareExperimental::Inst_GetMeritFightOdds, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("fight-org", &cHardwareExperimental::Inst_FightOrg, INST_CLASS_ENVIRONMENT, STALL), 
     StaticTableInstLib<tMethod>::MethodEntry("attack-pred", &cHardwareExperimental::Inst_AttackPred, INST_CLASS_ENVIRONMENT, STALL), 
     StaticTableInstLib<tMethod>::MethodEntry("kill-pred", &cHardwareExperimental::Inst_KillPred, INST_CLASS_ENVIRONMENT, STALL), 
@@ -853,7 +814,6 @@ void cHardwareExperimental::SetupMiniTraceFileHeader(Avida::Output::File& df, co
   df.WriteComment("Current Merit");
   df.WriteComment("Current Bonus");
   df.WriteComment("Forager Type");
-  df.WriteComment("Group ID (opinion)");
   df.WriteComment("Current Cell");
   df.WriteComment("Avatar Cell");
   df.WriteComment("Faced Direction");
@@ -888,8 +848,6 @@ void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp
   fp << m_organism->GetPhenotype().GetMerit().GetDouble() << " ";
   fp << m_organism->GetPhenotype().GetCurBonus() << " ";
   fp << m_organism->GetForageTarget() << " ";
-  if (m_organism->HasOpinion()) fp << m_organism->GetOpinion().first << " ";
-  else fp << -99 << " ";
   // environment info / things that affect movement
   fp << m_organism->GetOrgInterface().GetCellID() << " ";
   if (m_use_avatar) fp << m_organism->GetOrgInterface().GetAVCellID() << " ";
@@ -2948,88 +2906,6 @@ bool cHardwareExperimental::Inst_Die(cAvidaContext& ctx)
 }
 
 
-bool cHardwareExperimental::Inst_SGMove(cAvidaContext&)
-{
-  assert(m_ext_mem.GetSize() > 3);
-  
-  const cStateGrid& sg = m_organism->GetStateGrid();
-  
-  int& x = m_ext_mem[0];
-  int& y = m_ext_mem[1];
-  
-  const int facing = m_ext_mem[2];
-  
-  // State grid is treated as a 2-dimensional toroidal grid with size [0, width) and [0, height)
-  switch (facing) {
-    case 0: // N
-      if (++y == sg.GetHeight()) y = 0;
-      break;
-      
-    case 1: // NE
-      if (++x == sg.GetWidth()) x = 0;
-      if (++y == sg.GetHeight()) y = 0;
-      break;
-      
-    case 2: // E
-      if (++x == sg.GetWidth()) x = 0;
-      break;
-      
-    case 3: // SE
-      if (++x == sg.GetWidth()) x = 0;
-      if (--y == -1) y = sg.GetHeight() - 1;
-      break;
-      
-    case 4: // S
-      if (--y == -1) y = sg.GetHeight() - 1;
-      break;
-      
-    case 5: // SW
-      if (--x == -1) x = sg.GetWidth() - 1;
-      if (--y == -1) y = sg.GetHeight() - 1;
-      break;
-      
-    case 6: // W
-      if (--x == -1) x = sg.GetWidth() - 1;
-      break;
-      
-    case 7: // NW
-      if (--x == -1) x = sg.GetWidth() - 1;
-      if (++y == sg.GetHeight()) y = 0;
-      break;
-      
-    default:
-      assert(facing >= 0 && facing <= 7);
-  }
-  
-  // Increment state observed count
-  m_ext_mem[3 + sg.GetStateAt(x, y)]++;
-  
-  // Save this location in the movement history
-  m_ext_mem.Push(sg.GetIDFor(x, y));
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SGRotateL(cAvidaContext&)
-{
-  assert(m_ext_mem.GetSize() > 3);
-  if (--m_ext_mem[2] < 0) m_ext_mem[2] = 7;
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SGRotateR(cAvidaContext&)
-{
-  assert(m_ext_mem.GetSize() > 3);
-  if (++m_ext_mem[2] > 7) m_ext_mem[2] = 0;
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SGSense(cAvidaContext&)
-{
-  const cStateGrid& sg = m_organism->GetStateGrid();
-  const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]));
-  return true; 
-}
 
 bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
 {
@@ -3061,63 +2937,6 @@ bool cHardwareExperimental::Inst_JuvMove(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RangeMove(cAvidaContext& ctx)
-{
-  if (m_use_avatar && m_use_avatar != 2) return false;
-  // In TestCPU, movement fails...
-  if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
-  assert(m_organism != 0);
-  
-  bool safe_passage = true;
-  bool move_success = false;
-  int faced_range = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
-  if (m_use_avatar == 2) faced_range = m_organism->GetOrgInterface().GetAVFacedDataTerritory();
-  int marked_update = m_organism->GetOrgInterface().GetFacedCellDataUpdate();
-  if (m_use_avatar == 2) marked_update = m_organism->GetOrgInterface().GetAVFacedDataUpdate();
-  if (faced_range != -1 && (faced_range != m_organism->GetOpinion().first) && 
-      ((m_world->GetStats().GetUpdate() - marked_update) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
-        safe_passage = false;
-      }
-  
-  if (safe_passage) {
-    if (!m_use_avatar) move_success = m_organism->Move(ctx);
-    else if (m_use_avatar) move_success = m_organism->MoveAV(ctx);
-  }
-  
-  const int out_reg = FindModifiedRegister(rBX);   
-  setInternalValue(out_reg, move_success, true);  
-  setInternalValue(FindModifiedNextRegister(rBX), safe_passage, true);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_RangePredMove(cAvidaContext& ctx)
-{
-  if (m_use_avatar && m_use_avatar != 2) return false;
-  // In TestCPU, movement fails...
-  if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
-  assert(m_organism != 0);
-  
-  bool safe_passage = true;
-  bool move_success = false;
-  int faced_range = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
-  if (m_use_avatar == 2) faced_range = m_organism->GetOrgInterface().GetAVFacedDataTerritory();
-  int marked_update = m_organism->GetOrgInterface().GetFacedCellDataUpdate();
-  if (m_use_avatar == 2) marked_update = m_organism->GetOrgInterface().GetAVFacedDataUpdate();
-  if (!m_organism->IsPreyFT() && faced_range != -1 && (faced_range != m_organism->GetOpinion().first) &&
-      ((m_world->GetStats().GetUpdate() - marked_update) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
-    safe_passage = false;
-  }
-  
-  if (safe_passage) {
-    if (!m_use_avatar) move_success = m_organism->Move(ctx);
-    else if (m_use_avatar) move_success = m_organism->MoveAV(ctx);
-  }
-  
-  const int out_reg = FindModifiedRegister(rBX);   
-  setInternalValue(out_reg, move_success, true);  
-  setInternalValue(FindModifiedNextRegister(rBX), safe_passage, true);
-  return true;
-}
 
 bool cHardwareExperimental::Inst_GetCellPosition(cAvidaContext& ctx)
 {
@@ -3218,42 +3037,6 @@ bool cHardwareExperimental::Inst_RotateRightOne(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
-{
-  int group = 0;
-  if (m_organism->HasOpinion()) group = m_organism->GetOpinion().first; 
-
-  double current_res = 0.0;
-  if (m_use_avatar) current_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, group);
-  else if (!m_use_avatar) current_res = m_organism->GetOrgInterface().GetResourceVal(ctx, group);
-  
-  int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();  
-  if (m_use_avatar) actualNeighborhoodSize = m_organism->GetOrgInterface().GetAVNumNeighbors();
-  
-  double max_res = 0;
-  for(int i = 0; i < actualNeighborhoodSize; i++) {
-    m_organism->Rotate(ctx, 1);
-    Apto::Array<double> faced_res;
-    if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-    else if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
-    if (faced_res[group] > max_res) max_res = faced_res[group];
-  } 
-  
-  if (max_res > current_res) {
-    for(int i = 0; i < actualNeighborhoodSize; i++) {
-      Apto::Array<double> faced_res;
-      if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-      else if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
-      if (faced_res[group] != max_res) m_organism->Rotate(ctx, 1);
-    }
-  }
-  int res_diff = 0;
-  if (current_res == 0) res_diff = (int) max_res;
-  else res_diff = (int) (((max_res - current_res)/current_res) * 100 + 0.5);
-  int reg_to_set = FindModifiedRegister(rBX);
-  setInternalValue(reg_to_set, res_diff, true);
-  return true;
-}
 
 bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
 {
@@ -3464,10 +3247,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
       setInternalValue(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true, true);
       setInternalValue(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true, true);
       setInternalValue(ft_reg, target_org->GetForageTarget(), true, true);
-      if (target_org->HasOpinion()) {
-        setInternalValue(group_reg, target_org->GetOpinion().first, true, true);
-      }
-      if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());    
+      if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());
     }        
     return true;
   }
@@ -3558,10 +3338,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
       setInternalValue(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true, true);
       setInternalValue(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true, true);
       setInternalValue(ft_reg, target_org->GetForageTarget(), true, true);  
-      if (target_org->HasOpinion()) {
-        setInternalValue(group_reg, target_org->GetOpinion().first, true, true);
-      }
-      if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());     
+      if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());
     }       
     return true;
   }
@@ -4918,248 +4695,9 @@ bool cHardwareExperimental::Inst_GetSpecificStored(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_CollectCellData(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  const int out_reg = FindModifiedRegister(rBX);
-  int value = m_organism->GetCellData();
-  setInternalValue(out_reg, value, true);
-  // Update last collected cell data
-  m_last_cell_data = std::make_pair(true, value);
 
-  return true;
-}
 
-bool cHardwareExperimental::Inst_IfCellDataChanged(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  // If cell data hasn't been collected, or it's the same as the current cell data, advance IP
-  if (!m_last_cell_data.first || (m_last_cell_data.second == m_organism->GetCellData())) {
-    getIP().Advance();
-  }
 
-  return true;
-}
-
-bool cHardwareExperimental::Inst_ReadCellData(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  const int out_reg = FindModifiedRegister(rBX);
-  setInternalValue(out_reg, m_organism->GetCellData(), true);
-
-  return true;
-}
-
-// Sets organism's opinion to the value in ?BX?
-bool cHardwareExperimental::Inst_SetOpinion(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  m_organism->GetOrgInterface().SetOpinion(GetRegister(FindModifiedRegister(rBX)), m_organism);
-  return true;
-}
-
-/* Gets the organism's current opinion, placing the opinion in register ?BX?
-   and the age of the opinion in register !?BX?
- */
-bool cHardwareExperimental::Inst_GetOpinion(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-    const int opinion_reg = FindModifiedRegister(rBX);
-    const int age_reg = FindNextRegister(opinion_reg);
-
-    setInternalValue(opinion_reg, m_organism->GetOpinion().first, true);
-    setInternalValue(age_reg, m_world->GetStats().GetUpdate() - m_organism->GetOpinion().second, true);
-  }
-  return true;
-}
-
-//! An organism joins a group by setting it opinion to the group id. 
-bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
-{
-  int opinion = m_world->GetConfig().DEFAULT_GROUP.Get();
-  // Check if the org is currently part of a group
-  assert(m_organism != 0);
-	
-  int prop_group_id = GetRegister(FindModifiedRegister(rBX));
-  
-  // check if this is a valid group
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 &&
-      !(m_world->GetEnvironment().IsGroupID(prop_group_id))) {
-    return false; 
-  }
-  // injected orgs might not have an opinion
-  if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-    opinion = m_organism->GetOpinion().first;
-    
-    //return false if org setting opinion to current one (avoid paying costs for not switching)
-    if (opinion == prop_group_id) return false;
-    
-    // A random chance for failure to join group based on config, if failed return true for resource cost.
-    if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() > 0) {
-      int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
-      double prob_failure = (double) percent_failure / 100.0;
-      double rand = ctx.GetRandom().GetDouble();
-      if (rand <= prob_failure) return true;
-    }
-    
-    // If tolerances are on the org must pass immigration chance 
-    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
-      m_organism->GetOrgInterface().AttemptImmigrateGroup(ctx,prop_group_id, m_organism);
-      return true;
-    }
-    else {
-      // otherwise, subtract org from current group
-      m_organism->LeaveGroup(opinion);
-    }
-  }
-  
-  // Set the opinion
-  m_organism->GetOrgInterface().SetOpinion(prop_group_id, m_organism);
-  
-  // Add org to group count
-  if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-    opinion = m_organism->GetOpinion().first;	
-    m_organism->JoinGroup(opinion);
-  }
-  
-  return true;
-}
-
-// A predator can establish a new group, attempt to immigrate into the group that marked the cell in front of them, or become a nomad. 
-bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  if (m_organism->IsPreyFT()) return false;
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
-  
-  // If not nop-modified, fails to execute.
-  if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
-  const int nop_reg = FindModifiedRegister(rBX);
-  
-  /*// TEMP CODE FOR PRED JOIN RANDOM GROUP JUST TO START SOME TESTS
-   int group = m_world->GetConfig().DEFAULT_GROUP.Get();
-   const int prop_group_id = ctx.GetRandom().GetUInt(0,1000);
-   if (m_organism->HasOpinion()) {
-   group = m_organism->GetOpinion().first;
-   if (group == prop_group_id) return false;
-   m_organism->LeaveGroup(group);
-   }
-   m_organism->SetOpinion(prop_group_id);
-   group = m_organism->GetOpinion().first;	
-   m_organism->JoinGroup(group);*/
-  
-  // **If ?AX? make a new group.
-  if (nop_reg == rAX) return Inst_MakePredGroup(ctx);
-  // **If ?BX? change to group -1.
-  else if (nop_reg == rBX) return Inst_LeavePredGroup(ctx);
-  // **If ?CX? read m_organism->GetOrgInterface().GetFacedCellDataTerritory() and attempt immigration into that group.
-  else if (nop_reg == rCX) return Inst_AdoptPredGroup(ctx);
-  
-  // **return (new) group ID & change success          
-  return false;
-}
-
-// A predator establishes a new group. 
-bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  if (m_organism->IsPreyFT()) return false;
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
-  
-  // If in a group, leave it.
-  if (m_organism->HasOpinion()) {
-    int group = m_organism->GetOpinion().first;
-    m_organism->LeaveGroup(group);
-  }
-  
-  // Creates new group and joins as well.
-  m_organism->GetOrgInterface().MakeGroup();
-  return true;
-}
-
-// A predator leaves their group to join the nomads in group -3.
-// Joining the nomads is always successful, they can not exclude others so there is no immigration test. 
-bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
-{
-  // Predator nomad group id
-  const int nomad_group = -3;
-  
-  // Confirm the org is a pred and groups are on.
-  assert(m_organism != 0);
-  if (m_organism->IsPreyFT()) return false;
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
-  
-  // If in a group, leave it.
-  if (m_organism->HasOpinion()) {
-    int group = m_organism->GetOpinion().first;
-    // If already in the nomad group, don't move.
-    if (group == nomad_group) return false;
-    m_organism->LeaveGroup(group);
-  }
-  
-  // Join the nomads.
-  m_organism->SetOpinion(nomad_group);
-  m_organism->JoinGroup(nomad_group);
-  return true;
-}
-
-// A predator attempts to join the existing, non-empty predator group associated with the cell marking in front of them. 
-bool cHardwareExperimental::Inst_AdoptPredGroup(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  if (m_organism->IsPreyFT()) return false;
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
-  
-  // Read target group from the faced marked cell.
-  int prop_group_id = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
-  if (m_use_avatar == 2) prop_group_id = m_organism->GetOrgInterface().GetAVFacedDataTerritory();
-  if (prop_group_id == -1) return false;
-  
-  // Check if the cell marking has expired.
-  int current_update = m_world->GetStats().GetUpdate();
-  int update_marked = m_organism->GetOrgInterface().GetFacedCellDataUpdate();
-  if (m_use_avatar == 2) prop_group_id = m_organism->GetOrgInterface().GetAVFacedDataUpdate();
-  int expire_window = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
-  if (current_update > (update_marked + expire_window)) return false;
-  
-  // If the same as current group, don't move.
-  if (m_organism->HasOpinion()) {
-    if (m_organism->GetOpinion().first == prop_group_id) {
-      return false;
-    }
-  }
-  
-  // Check if the target group is now empty, cannot join an empty group must create a new group.
-  if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) == 0) return false;
-  
-  // Attempt to immigrate to the target group
-  m_organism->GetOrgInterface().AttemptImmigrateGroup(ctx, prop_group_id, m_organism);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext&)
-{
-  assert(m_organism != 0);
-  if (m_organism->HasOpinion()) {
-    const int group_reg = FindModifiedRegister(rBX);
-    
-    setInternalValue(group_reg, m_organism->GetOpinion().first, false);
-  }
-  return true;
-}
-
-bool cHardwareExperimental::Inst_GetPredGroupID(cAvidaContext&)
-{
-  assert(m_organism != 0);
-  if (m_organism->IsPreyFT()) return false;
-  if (m_organism->HasOpinion()) {
-    const int group_reg = FindModifiedRegister(rBX);
-    
-    setInternalValue(group_reg, m_organism->GetOpinion().first, false);
-  }
-  return true;
-}
 
 bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
 //Get ID of organism faced by this one, if there is an organism in front.
@@ -5194,10 +4732,6 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   SetAttackReg(reg);
   
   if (!ExecuteAttack(ctx, target, reg)) results.success = 3;
-  else {
-    cString inst = "attack-prey";
-    UpdateGroupAttackStats(inst, results, true);
-  }
   return TestAttackResultsOut(results);
 }
 
@@ -5242,33 +4776,7 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
   return TestAttackResultsOut(results);
 }
 
-bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
-{
-  sAttackResult results;
-  results.inst = 1;
-  results.share = 0;
-  results.success = 0;
-  results.size = 0;
-  if (!m_organism->HasOpinion()) return false;
-  if (!TestAttack(ctx))  { results.success = 1; return TestAttackResultsOut(results); }
-  cOrganism* target = GetPreyTarget(ctx);
-  if (!TestPreyTarget(target))  { results.success = 1; return TestAttackResultsOut(results); }
-  
-  double odds = m_world->GetConfig().PRED_ODDS.Get();
-  results.size = GetPredSameGroupAttackNeighbors().GetSize();
-  if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
-  
-  sAttackReg reg;
-  SetAttackReg(reg);
-  
-  if (!ExecuteAttack(ctx, target, reg, odds)) results.success = 3; 
-  else {
-    cString inst = "attack-prey-group";
-    UpdateGroupAttackStats(inst, results, false);
-  }
-  return TestAttackResultsOut(results);
-}
+
 
 bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
 {
@@ -5356,65 +4864,7 @@ bool cHardwareExperimental::Inst_AttackPreyFakeShare(cAvidaContext& ctx)
   return TestAttackResultsOut(results);
 }
 
-bool cHardwareExperimental::Inst_AttackPreyGroupShare(cAvidaContext& ctx)
-{
-  sAttackResult results;
-  results.inst = 1;
-  results.share = 1;
-  results.success = 0;
-  results.size = 0;
-  if (!m_organism->HasOpinion()) return false;
-  if (!TestAttack(ctx))  { results.success = 1; return TestAttackResultsOut(results); }
 
-  cOrganism* target = GetPreyTarget(ctx);
-  if (!TestPreyTarget(target))  { results.success = 1; return TestAttackResultsOut(results); }
-  
-  double odds = m_world->GetConfig().PRED_ODDS.Get();
-  Apto::Array<cOrganism*> pack = GetPredSameGroupAttackNeighbors();
-  results.size = pack.GetSize();
-  if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
-  
-  sAttackReg reg;
-  SetAttackReg(reg);
-  
-  if (!ExecuteShareAttack(ctx, target, reg, pack, odds)) results.success = 3; 
-  else {
-    cString inst = "attack-prey-group-share";
-    UpdateGroupAttackStats(inst, results, false);
-  }
-  return TestAttackResultsOut(results);
-}
-
-bool cHardwareExperimental::Inst_AttackPreyFakeGroupShare(cAvidaContext& ctx)
-{
-  sAttackResult results;
-  results.inst = 1;
-  results.share = 2;
-  results.success = 0;
-  results.size = 0;
-  if (!m_organism->HasOpinion()) return false;
-  if (!TestAttack(ctx))  { results.success = 1; return TestAttackResultsOut(results); }
-  
-  cOrganism* target = GetPreyTarget(ctx);
-  if (!TestPreyTarget(target))  { results.success = 1; return TestAttackResultsOut(results); }
-  
-  double odds = m_world->GetConfig().PRED_ODDS.Get();
-  results.size = GetPredSameGroupAttackNeighbors().GetSize();
-  if (results.size <= 1) { results.success = 2; return TestAttackResultsOut(results); }
-  if (results.size > 1) odds += (odds * results.size); // 1 friend = 20%, 8 friends = 90%
-  double share = 1.0 / (double) results.size;
-  
-  sAttackReg reg;
-  SetAttackReg(reg);
-  
-  if (!ExecuteFakeShareAttack(ctx, target, reg, share, odds)) results.success = 3; 
-  else {
-    cString inst = "attack-prey-fake-group-share";
-    UpdateGroupAttackStats(inst, results, false);
-  }
-  return TestAttackResultsOut(results);
-}
 
 bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
 {
@@ -6021,128 +5471,6 @@ bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
   return true;
 } 	
 
-bool cHardwareExperimental::Inst_MarkCell(cAvidaContext&)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;  
-  const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
-  if (!m_use_avatar) m_organism->SetCellData(marking);
-  else if (m_use_avatar == 2) m_organism->GetOrgInterface().SetAVCellData(marking, m_organism->GetID());  
-  return true;
-}
-
-bool cHardwareExperimental::Inst_MarkPredCell(cAvidaContext&)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;  
-  if (m_organism->IsPreyFT()) return false;
-  const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
-  if (!m_use_avatar) m_organism->SetCellData(marking);
-  else if (m_use_avatar == 2) m_organism->GetOrgInterface().SetAVCellData(marking, m_organism->GetID());
-  return true;
-}
-
-bool cHardwareExperimental::Inst_MarkGroupCell(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;  
-  const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
-  if (!m_use_avatar) m_organism->SetCellData(marking);
-  else if (m_use_avatar == 2) m_organism->GetOrgInterface().SetAVCellData(marking, m_organism->GetID());
-  return true;
-}
-
-bool cHardwareExperimental::Inst_ReadGroupCell(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  bool success = true;
-  if (m_use_avatar && m_use_avatar != 2) success = false;  
-  if (success && !m_organism->HasOpinion()) success = false;
-  if (success && m_use_avatar == 2) if (m_organism->GetOrgInterface().GetAVDataTerritory() != m_organism->GetOpinion().first) success = false;
-  if (success && !m_use_avatar) if (m_organism->GetOrgInterface().GetCellDataTerritory() != m_organism->GetOpinion().first) success = false;
-  
-  if (success) {
-    const int marking_reg = FindModifiedRegister(rBX);
-    const int update_reg = FindModifiedNextRegister(rBX);
-    const int org_reg = FindModifiedNextRegister(update_reg);
-    if (!m_use_avatar) {
-      setInternalValue(marking_reg, m_organism->GetOrgInterface().GetCellData(), true);
-      setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetCellDataUpdate(), true);
-      setInternalValue(org_reg, m_organism->GetOrgInterface().GetCellDataOrgID(), true);
-      if (NUM_REGISTERS > 3) {
-        const int group_reg = FindModifiedNextRegister(org_reg);
-        setInternalValue(group_reg, m_organism->GetOrgInterface().GetCellDataTerritory(), true);    
-      }
-    }
-    else if (m_use_avatar == 2) {
-      setInternalValue(marking_reg, m_organism->GetOrgInterface().GetAVData(), true);
-      setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetAVDataUpdate(), true);
-      setInternalValue(org_reg, m_organism->GetOrgInterface().GetAVDataOrgID(), true);
-      if (NUM_REGISTERS > 3) {
-        const int group_reg = FindModifiedNextRegister(org_reg);
-        setInternalValue(group_reg, m_organism->GetOrgInterface().GetAVDataTerritory(), true);    
-      }
-    }
-  }
-  return success;
-}
-
-bool cHardwareExperimental::Inst_ReadFacedCell(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;  
-  const int marking_reg = FindModifiedRegister(rBX);
-  const int update_reg = FindModifiedNextRegister(rBX);
-  const int org_reg = FindModifiedNextRegister(update_reg);
-  if (!m_use_avatar) {
-    setInternalValue(marking_reg, m_organism->GetOrgInterface().GetFacedCellData(), true);
-    setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedCellDataUpdate(), true);
-    setInternalValue(org_reg, m_organism->GetOrgInterface().GetFacedCellDataOrgID(), true);
-    if (NUM_REGISTERS > 3) {
-      const int group_reg = FindModifiedNextRegister(org_reg);
-      setInternalValue(group_reg, m_organism->GetOrgInterface().GetFacedCellDataTerritory(), true);    
-    }
-  }
-  else if (m_use_avatar == 2) {
-    setInternalValue(marking_reg, m_organism->GetOrgInterface().GetAVFacedData(), true);
-    setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetAVFacedDataUpdate(), true);
-    setInternalValue(org_reg, m_organism->GetOrgInterface().GetAVFacedDataOrgID(), true);
-    if (NUM_REGISTERS > 3) {
-      const int group_reg = FindModifiedNextRegister(org_reg);
-      setInternalValue(group_reg, m_organism->GetOrgInterface().GetAVFacedDataTerritory(), true);    
-    }
-  }
-  return true;
-}
-
-bool cHardwareExperimental::Inst_ReadFacedPredCell(cAvidaContext&)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;  
-  if (m_organism->IsPreyFT()) return false;
-  const int marking_reg = FindModifiedRegister(rBX);
-  const int update_reg = FindModifiedNextRegister(rBX);
-  const int org_reg = FindModifiedNextRegister(update_reg);
-  if (!m_use_avatar) {
-    setInternalValue(marking_reg, m_organism->GetOrgInterface().GetFacedCellData(), true);
-    setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedCellDataUpdate(), true);
-    setInternalValue(org_reg, m_organism->GetOrgInterface().GetFacedCellDataOrgID(), true);
-    if (NUM_REGISTERS > 3) {
-      const int group_reg = FindModifiedNextRegister(org_reg);
-      setInternalValue(group_reg, m_organism->GetOrgInterface().GetFacedCellDataTerritory(), true);    
-    }
-  }
-  else if (m_use_avatar == 2) {
-    setInternalValue(marking_reg, m_organism->GetOrgInterface().GetAVFacedData(), true);
-    setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetAVFacedDataUpdate(), true);
-    setInternalValue(org_reg, m_organism->GetOrgInterface().GetAVFacedDataOrgID(), true);
-    if (NUM_REGISTERS > 3) {
-      const int group_reg = FindModifiedNextRegister(org_reg);
-      setInternalValue(group_reg, m_organism->GetOrgInterface().GetAVFacedDataTerritory(), true);    
-    }
-  }
-  return true;
-}
 
 //Teach offspring learned targeting/foraging behavior
 bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext&)
@@ -6409,151 +5737,8 @@ bool cHardwareExperimental::Inst_KillDisplay(cAvidaContext& ctx)
   return true;
 }
 
-/* Increases tolerance towards the addition of members to the group:
- nop-A: increases tolerance towards immigrants
- nop-B: increases tolerance towards own offspring
- nop-C: increases tolerance towards other offspring of the group.
- Removes the record of a previous update when dec-tolerance was executed,
- and places the modified tolerance total in the BX register. 
- */
-bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
-{
-   // Exit if the org is not a predator
-   if (m_organism->IsPreyFT()) return false;
-   // Exit if tolerance is not enabled
-   if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
-   // Exit if organism is not in a group
-   if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
-   // Exit if the instruction is not nop-modified
-   if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
-   
-  int toleranceType = 0;
-  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
-    const int tolerance_to_modify = FindModifiedRegister(rBX);
-    
-    toleranceType = -1;
-    if (tolerance_to_modify == rAX) toleranceType = 0;
-    else if (tolerance_to_modify == rBX) toleranceType = 1;
-    else if (tolerance_to_modify == rCX) toleranceType = 2;
-    
-    // Not a recognized register
-    if (toleranceType == -1) return false;
-  }
-   
-   // Update the tolerance and store the result in register B
-   int result = m_organism->GetOrgInterface().IncTolerance(toleranceType, ctx);   
-   if (result == -1) return false;
-  
-   setInternalValue(rBX, result, true);
-   return true;
-}
 
-/* Decreases tolerance towards the addition of members to the group,
- nop-A: decreases tolerance towards immigrants
- nop-B: decreases tolerance towards own offspring
- nop-C: decreases tolerance towards other offspring of the group.
- Adds to records the update during which dec-tolerance was executed,
- and places the modified tolerance total in the BX register. 
- */
-bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
-{
-  // Exit if the org is not a predator
-  if (m_organism->IsPreyFT()) return false;
-  // Exit if tolerance is not enabled
-  if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
-  // Exit if organism is not in a group
-  if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
-  // Exit if the instruction is not nop-modified
-  if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
-  
-  int toleranceType = 0;
-  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
-    const int tolerance_to_modify = FindModifiedRegister(rBX);
-    
-    toleranceType = -1;
-    if (tolerance_to_modify == rAX) toleranceType = 0;
-    else if (tolerance_to_modify == rBX) toleranceType = 1;
-    else if (tolerance_to_modify == rCX) toleranceType = 2;
-    
-    // Not a recognized register
-    if (toleranceType == -1) return false;
-  }
-  
-  // Update the tolerance and store the result in register B
-  setInternalValue(rBX, m_organism->GetOrgInterface().DecTolerance(toleranceType, ctx));
-  return true;
-}
 
-/* Retrieve current tolerance levels, placing each tolerance in a different register.
- Register AX: tolerance towards immigrants
- Register BX: tolerance towards own offspring
- Register CX: tolerance towards other offspring in the group 
- */
-bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
-{
-  bool exec_success = false;
-  if (m_organism->IsPreyFT()) return false;
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
-    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-      if (m_organism->GetOpinion().first == -1) return false;
-      m_organism->GetOrgInterface().PushToleranceInstExe(6, ctx);
-      
-      int tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
-      int tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-      int tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-      setInternalValue(rAX, tolerance_immigrants, true);
-      setInternalValue(rBX, tolerance_own, true);
-      setInternalValue(rCX, tolerance_others, true);  
-      exec_success = true;
-    }
-  }
-  return exec_success;
-}  
-
-/* Retrieve group tolerances placing each in a different register.
- Register AX: group tolerance towards immigrants
- Register BX: group tolerance towards own offspring
- Register CX: group tolerance towards offspring 
- */
-bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
-{
-  bool exec_success = false;
-  // If not a predator in a group, return false
-  if (m_organism->IsPreyFT() || m_organism->GetOpinion().first < 0) return false;
-  // If groups are used and tolerances are on...
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
-    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-      m_organism->GetOrgInterface().PushToleranceInstExe(7, ctx);
-      
-      const int group_id = m_organism->GetOpinion().first;
-      if (group_id == -1) return false;
-      
-      int mating_type = -1;
-      if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
-        if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) mating_type = 0;
-        else if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) mating_type = 1;
-        else mating_type = 2;
-      }
-      double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, mating_type);
-      double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
-      double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
-      
-      // Convert all odds to percent
-      double percent_immigrants = immigrant_odds * 100 + 0.5;
-      double percent_offspring_own = offspring_own_odds * 100 + 0.5;
-      double percent_offspring_others = offspring_others_odds * 100 + 0.5;
-      
-      // Truncate percent to integer and place in registers
-      setInternalValue(rAX, (int) percent_immigrants, true);
-      setInternalValue(rBX, (int) percent_offspring_own, true);
-      setInternalValue(rCX, (int) percent_offspring_others, true);
-      exec_success = true;
-    }
-  }
-  return exec_success;
-}
 
 bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
 {
@@ -6950,83 +6135,8 @@ Apto::Array<cOrganism*> cHardwareExperimental::GetPredGroupAttackNeighbors()
   return pack;
 }
 
-Apto::Array<cOrganism*> cHardwareExperimental::GetPredSameGroupAttackNeighbors()
-{
-  int opinion = m_organism->GetOpinion().first;
-  Apto::Array<int> neighborhood;
-  Apto::Array<cOrganism*> pack;
-  pack.Push(m_organism);
-  if (!m_use_avatar) {
-    m_organism->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
-    for (int j = 0; j < neighborhood.GetSize(); j++) {
-      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
-          !m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsDead()) {
-        if (!m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsPreyFT() &&
-            m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->HasOpinion()) {
-          if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetOpinion().first == opinion) {
-            pack.Push(m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism());
-          }
-        }
-      }
-    }
-  }
-  else {
-    m_organism->GetOrgInterface().GetAVNeighborhoodCellIDs(neighborhood);
-    for (int j = 0; j < neighborhood.GetSize(); j++) {
-      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->HasPredAV()) {
-        Apto::Array<cOrganism*> predators = m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetCellInputAVs();
-        for (int i = 0; i < predators.GetSize(); i++) {
-          if (!predators[i]->IsDead() && !predators[i]->IsPreyFT() && predators[i]->HasOpinion()) {
-            if (predators[i]->GetOpinion().first == opinion) pack.Push(predators[i]);
-          }
-        }
-      }
-    }
-  }
-  return pack;
-}
 
-void cHardwareExperimental::UpdateGroupAttackStats(const cString& inst, sAttackResult& results, bool get_size)
-{
-  bool has_opinion = false;
-  int gr_pack_size = 0;
-  int fr_pack_size = 0;
-  
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_organism->HasOpinion()) has_opinion = true;
-  if (get_size) {
-    if (has_opinion) gr_pack_size = GetPredSameGroupAttackNeighbors().GetSize();
-    fr_pack_size = GetPredGroupAttackNeighbors().GetSize();
-  }
-  else {
-    if (has_opinion) {
-      gr_pack_size = results.size;
-      fr_pack_size = GetPredGroupAttackNeighbors().GetSize();
-    }
-    else fr_pack_size = results.size;
-  }
-  
-  if (gr_pack_size > 8) gr_pack_size = 9;
-  if (fr_pack_size > 8) fr_pack_size = 9;
-  
-  int idx = -1;
-  Apto::Array<cString> attack_inst = m_world->GetStats().GetGroupAttackInsts(m_inst_set->GetInstSetName());
-  for (int i = 0; i < attack_inst.GetSize(); i++) {
-    if (attack_inst[i] == inst) {
-      idx = i;
-      break;
-    }
-  }
-  assert(idx >= 0);
-  
-  if (m_organism->IsPredFT()) {
-    m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, fr_pack_size - 1);
-    if (has_opinion) m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, gr_pack_size + 10 - 1);
-  }
-  else if (m_organism->IsTopPredFT()) {
-    m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, fr_pack_size - 1);
-    if (has_opinion) m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, gr_pack_size + 10 - 1);
-  }
-}
+
 
 bool cHardwareExperimental::TestAttackResultsOut(sAttackResult& results)
 {

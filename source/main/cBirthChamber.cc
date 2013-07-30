@@ -28,7 +28,6 @@
 #include "cBirthGridLocalHandler.h"
 #include "cBirthMateSelectHandler.h"
 #include "cBirthNeighborhoodHandler.h"
-#include "cBirthMatingTypeGlobalHandler.h"
 #include "cOrganism.h"
 #include "cWorld.h"
 #include "cStats.h"
@@ -47,10 +46,7 @@ cBirthSelectionHandler* cBirthChamber::getSelectionHandler(int hw_type)
   if (!m_handler_map.Get(hw_type, handler)) {
     const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
     
-    if (m_world->GetConfig().MATING_TYPES.Get()) {
-      // @CHC: If separate mating types are turned on, that takes priority and will manage the sub handlers
-      handler = new cBirthMatingTypeGlobalHandler(m_world, this);
-    } else if (birth_method < NUM_LOCAL_POSITION_OFFSPRING || birth_method == POSITION_OFFSPRING_PARENT_FACING) { 
+    if (birth_method < NUM_LOCAL_POSITION_OFFSPRING || birth_method == POSITION_OFFSPRING_PARENT_FACING) { 
       // ... else check if the birth method is one of the local ones... 
       if (m_world->GetConfig().LEGACY_GRID_LOCAL_SELECTION.Get()) {
         handler = new cBirthGridLocalHandler(m_world, this);
@@ -141,11 +137,6 @@ void cBirthChamber::StoreAsEntry(const Genome& offspring, cOrganism* parent, cBi
   entry.SetMatingDisplayA(parent->GetPhenotype().GetLastMatingDisplayA());
   entry.SetMatingDisplayB(parent->GetPhenotype().GetLastMatingDisplayB());
   entry.SetMatePreference(parent->GetPhenotype().GetMatePreference());
-  if (parent->HasOpinion()) {
-    entry.SetGroupID(parent->GetOpinion().first);
-  } else {
-    entry.SetGroupID(m_world->GetConfig().DEFAULT_GROUP.Get());
-  }
   
   for (int i = 0; i < entry.groups->GetSize(); i++) {
     (*entry.groups)[i]->AddActiveReference();

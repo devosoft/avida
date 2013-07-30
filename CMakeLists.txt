@@ -227,7 +227,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cBirthMateSelectHandler.cc
   ${MAIN_DIR}/cBirthNeighborhoodHandler.cc
   ${MAIN_DIR}/cBirthSelectionHandler.cc
-  ${MAIN_DIR}/cBirthMatingTypeGlobalHandler.cc
   ${MAIN_DIR}/cContextPhenotype.cc
   ${MAIN_DIR}/cDiffusionRes.cc
   ${MAIN_DIR}/cDynamicRes.cc
@@ -237,7 +236,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cMigrationMatrix.cc
   ${MAIN_DIR}/cMutationRates.cc
   ${MAIN_DIR}/cOrganism.cc
-  ${MAIN_DIR}/cOrgMessage.cc
   ${MAIN_DIR}/cParasite.cc
   ${MAIN_DIR}/cPhenotype.cc
   ${MAIN_DIR}/cPopulation.cc

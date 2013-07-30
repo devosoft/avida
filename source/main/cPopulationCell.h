@@ -122,14 +122,6 @@ public:
   void ResetInputs(cAvidaContext& ctx);
 
   inline int GetID() const { return m_cell_id; }
-  inline int GetCellData() const { return m_cell_data.contents; }
-  inline int GetCellDataOrgID() const { return m_cell_data.org_id; }
-  inline int GetCellDataUpdate() const { return m_cell_data.update; }
-  inline int GetCellDataTerritory() const { return m_cell_data.territory; }
-  inline int GetCellDataForagerType() const { return m_cell_data.forager; }
-  void UpdateCellDataExpired();
-  void SetCellData(int data, int org_id = -1);
-  void ClearCellData();
 
   inline int GetSpeculativeState() const { return m_spec_state; }
   inline void SetSpeculativeState(int count) { m_spec_state = count; }

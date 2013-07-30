@@ -40,7 +40,6 @@ namespace Avida {
 
 class cAvidaContext;
 class cOrganism;
-class cOrgMessage;
 class cOrgSinkMessage;
 class cPopulationCell;
 class cString;
@@ -66,17 +65,6 @@ public:
   virtual int GetCellXPosition() = 0;
   virtual int GetCellYPosition() = 0;
   
-  virtual int GetCellData() = 0;
-  virtual int GetCellDataOrgID() = 0;
-  virtual int GetCellDataUpdate() = 0;
-  virtual int GetCellDataTerritory() = 0;
-  virtual int GetCellDataForagerType() = 0;
-  virtual void SetCellData(const int newData) = 0;
-  virtual int GetFacedCellData() = 0;
-  virtual int GetFacedCellDataOrgID() = 0;
-  virtual int GetFacedCellDataUpdate() = 0;
-  virtual int GetFacedCellDataTerritory() = 0;
-    
   virtual int GetPrevSeenCellID() = 0;
   virtual int GetPrevTaskCellID() = 0;
   virtual int GetNumTaskCellsReached() = 0;
@@ -95,7 +83,6 @@ public:
   virtual int GetFacing() = 0; //!< Returns the facing of this organism.
   virtual int GetFacedCellID() = 0;
   virtual int GetFacedDir() = 0; // Returns the human interpretable facing of this org.
-  virtual int GetNeighborCellContents() = 0;
   virtual void KillOrganism(cAvidaContext& ctx, int cell_id) = 0;
   virtual void Rotate(cAvidaContext& ctx, int direction = 1) = 0;
   
@@ -122,48 +109,16 @@ public:
   virtual void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
   virtual void Die(cAvidaContext& ctx) = 0;
   virtual void KillCellID(int target, cAvidaContext& ctx) = 0; 
-  virtual void Kaboom(int distance, cAvidaContext& ctx) = 0; 
   virtual int ReceiveValue() = 0;
   virtual bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;
   virtual bool TestOnDivide() = 0;
-
-  virtual int GetStateGridID(cAvidaContext& ctx) = 0;
-  virtual void RotateToGreatestReputation() =0;
-  virtual void RotateToGreatestReputationWithDifferentTag(int tag) =0;
-  virtual void RotateToGreatestReputationWithDifferentLineage(int line) =0;	
 
   virtual bool Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;
 
   virtual void AddLiveOrg() = 0;
   virtual void RemoveLiveOrg() = 0;
   
-  virtual bool HasOpinion(cOrganism* in_organism) = 0;
-  virtual void SetOpinion(int opinion, cOrganism* in_organism) = 0;
-  virtual void ClearOpinion(cOrganism* in_organism) = 0;
-
-  virtual void JoinGroup(int group_id) = 0;
-  virtual void MakeGroup() = 0;
-  virtual void LeaveGroup(int group_id) = 0;
-  virtual int NumberOfOrganismsInGroup(int group_id) = 0;
-  virtual int NumberGroupFemales(int group_id) = 0;
-  virtual int NumberGroupMales(int group_id) = 0;
-  virtual int NumberGroupJuvs(int group_id) = 0;
-  virtual void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type) = 0;  
-  
-  virtual int IncTolerance(int toleranceType, cAvidaContext &ctx) = 0;
-  virtual int DecTolerance(int toleranceType, cAvidaContext &ctx) = 0;
-  virtual int CalcGroupToleranceImmigrants(int target_group_id, int mating_type) = 0;
-  virtual int CalcGroupToleranceOffspring(cOrganism* parent_organism) = 0;
-  virtual double CalcGroupOddsImmigrants(int group_id, int mating_type) = 0;
-  virtual double CalcGroupOddsOffspring(cOrganism* parent) = 0;
-  virtual double CalcGroupOddsOffspring(int group_id) = 0;
-  virtual bool AttemptImmigrateGroup(cAvidaContext& ctx, int group_id, cOrganism* org) = 0;
-  virtual void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx) = 0; 
-  virtual int& GetGroupIntolerances(int group_id, int tol_num, int mating_type) = 0;
-  
-  virtual void TryWriteGroupAttackBits(unsigned char raw_bits) = 0;
-  virtual void TryWriteGroupAttackString(cString& string) = 0;
   virtual void DecNumPreyOrganisms() = 0;
   virtual void DecNumPredOrganisms() = 0;
   virtual void DecNumTopPredOrganisms() = 0;
@@ -193,19 +148,10 @@ public:
   virtual int GetAVCellID(int av_num = 0) = 0;
   virtual int GetAVFacedCellID(int av_num = 0) = 0;
   virtual int GetAVNumNeighbors(int av_num = 0) = 0;
-  virtual int GetAVFacedData(int av_num = 0) = 0;
-  virtual int GetAVFacedDataOrgID(int av_num = 0) = 0;
-  virtual int GetAVFacedDataUpdate(int av_num = 0) = 0;
-  virtual int GetAVFacedDataTerritory(int av_num = 0) = 0;
-  virtual int GetAVData(int av_num = 0) = 0;
-  virtual int GetAVDataOrgID(int av_num = 0) = 0;
-  virtual int GetAVDataUpdate(int av_num = 0) = 0;
-  virtual int GetAVDataTerritory(int av_num = 0) = 0;
   virtual int FindAV(bool input, bool output, int av_num = 0) = 0;
   virtual void SetAVFacing(cAvidaContext& ctx, int av_facing, int av_num = 0) = 0;
   virtual bool SetAVCellID(cAvidaContext& ctx, int av_cell_id, int av_num = 0) = 0;
   virtual void SetAVFacedCellID(cAvidaContext& ctx, int av_num = 0) = 0;
-  virtual void SetAVCellData(const int newData, const int org_id, int av_num = 0) = 0;
   virtual bool MoveAV(cAvidaContext& ctx, int av_num = 0) = 0;
   virtual bool RotateAV(cAvidaContext& ctx, int increment, int av_num = 0) = 0;
   virtual cOrganism* GetRandFacedAV(cAvidaContext& ctx, int av_num = 0) = 0;

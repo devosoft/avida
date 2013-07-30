@@ -32,7 +32,6 @@
 #include "cHardwareManager.h"
 #include "cInstSet.h"
 #include "cPopulationCell.h"
-#include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTaskContext.h"
 #include "cWorld.h"
@@ -148,7 +147,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_src(src)
   , m_initial_genome(genome)
   , m_interface(NULL)
-  , m_lineage_label(-1)
   , m_org_list_index(-1)
   , m_org_display(NULL)
   , m_queued_display_data(NULL)
@@ -156,25 +154,9 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_input_pointer(0)
   , m_input_buf(world->GetEnvironment().GetInputSize())
   , m_output_buf(world->GetEnvironment().GetOutputSize())
-  , m_received_messages(RECEIVED_MESSAGES_SIZE)
-  , m_cur_sg(0)
-  , m_sent_value(0)
-  , m_sent_active(false)
-  , m_test_receive_pos(0)
-  , m_pher_drop(false)
   , m_max_executed(-1)
   , m_is_running(false)
   , m_is_dead(false)
-  , m_opinion(0)
-  , m_neighborhood(0)
-  , m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
-  , m_other_raw_materials(0)
-  , m_num_donate(0)
-  , m_num_donate_received(0)
-  , m_amount_donate_received(0)
-  , m_num_reciprocate(0)
-  , m_failed_reputation_increases(0)
-  , m_tag(make_pair(-1, 0))
   , m_northerly(0)
   , m_easterly(0)
   , m_forage_target(-1)
@@ -183,15 +165,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_teach(false)
   , m_parent_teacher(false)
   , m_parent_ft(-1)
-  , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
   , m_p_merit(0)
-  , m_beggar(false)
-  , m_guard(false)
-  , m_num_guard(0)
-  , m_num_deposits(0)
-  , m_amount_deposited(0)
-  , m_string_map(NULL)
-  , m_num_point_mut(0)
   , m_av_in_index(-1)
   , m_av_out_index(-1)
   , m_prop_map(this)
@@ -208,7 +182,6 @@ void cOrganism::initialize(cAvidaContext& ctx)
 {
   m_phenotype.SetInstSetSize(m_hardware->GetInstSet().GetSize());
   const_cast<Genome&>(m_initial_genome).Properties().SetValue(s_ext_prop_name_instset,(const char*)m_hardware->GetInstSet().GetInstSetName());
-  m_phenotype.SetGroupAttackInstSetSize(m_world->GetStats().GetGroupAttackInsts(m_hardware->GetInstSet().GetInstSetName()).GetSize());
   
   if (m_world->GetConfig().DEATH_METHOD.Get() > DEATH_METHOD_OFF) {
     m_max_executed = m_world->GetConfig().AGE_LIMIT.Get();
@@ -225,14 +198,7 @@ void cOrganism::initialize(cAvidaContext& ctx)
     if (m_max_executed < 1) m_max_executed = 1;
   }
   
-  m_repair = (m_world->GetConfig().POINT_MUT_REPAIR_START.Get());
   
-	// randomize the amout of raw materials an organism has at its 
-	// disposal.
-	if (m_world->GetConfig().RANDOMIZE_RAW_MATERIAL_AMOUNT.Get()) {
-		int raw_mat = m_world->GetConfig().RAW_MATERIAL_AMOUNT.Get();
-		m_self_raw_materials = ctx.GetRandom().GetUInt(0, raw_mat+1);
-	}
 }
 
 cOrganism::~cOrganism()
@@ -241,11 +207,8 @@ cOrganism::~cOrganism()
   delete m_hardware;
   delete m_interface;
   
-  if (m_opinion) delete m_opinion;
-  if (m_neighborhood) delete m_neighborhood;
   delete m_org_display;
   delete m_queued_display_data;
-  if (m_string_map) delete m_string_map;
 }
 
 
@@ -258,8 +221,6 @@ void cOrganism::SetOrgInterface(cAvidaContext& ctx, cOrgInterface* org_interface
   
   HardwareReset(ctx);
 }
-
-const cStateGrid& cOrganism::GetStateGrid() const { return m_world->GetEnvironment().GetStateGrid(m_cur_sg); }
 
 double cOrganism::GetVitality() const {
   double mean_age = m_world->GetStats().SumCreatureAge().Ave();
@@ -524,25 +485,6 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
 
 void cOrganism::HardwareReset(cAvidaContext& ctx)
 {
-  if (m_world->GetEnvironment().GetNumStateGrids() > 0 && m_interface) {
-    // Select random state grid in the environment
-    m_cur_sg = m_interface->GetStateGridID(ctx);
-    
-    const cStateGrid& sg = GetStateGrid();
-    
-    Apto::Array<int, Apto::Smart> sg_state(3 + sg.GetNumStates());
-    sg_state.SetAll(0);
-    
-    sg_state[0] = sg.GetInitialX();
-    sg_state[1] = sg.GetInitialY();
-    sg_state[2] = sg.GetInitialFacing(); 
-    
-    m_hardware->SetupExtendedMemory(sg_state);
-  }
-  
-  if (!m_world->GetConfig().INHERIT_OPINION.Get()) {
-    ClearOpinion();
-  }
   delete m_org_display;
   delete m_queued_display_data;
   m_org_display = NULL;
@@ -556,10 +498,7 @@ void cOrganism::NotifyDeath(cAvidaContext& ctx)
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get() && m_world->GetConfig().RETURN_STORED_ON_DEATH.Get()) {
   	if (m_world->GetConfig().USE_AVATARS.Get()) m_interface->UpdateAVResources(ctx, GetRBins());
     else m_interface->UpdateResources(ctx, GetRBins());
-  }
-  
-  // Make sure the group composition is updated.
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && HasOpinion()) m_interface->LeaveGroup(GetOpinion().first);  
+  }  
 }
 
 
@@ -788,16 +727,6 @@ bool cOrganism::Move(cAvidaContext& ctx)
 {
   assert(m_interface);
   if (m_is_dead) return false;  
-  /*********************/
-  // TEMP.  Remove once movement tasks are implemented.
-  if (GetCellData() < GetFacedCellData()) { // move up gradient
-    SetGradientMovement(1.0);
-  } else if(GetCellData() == GetFacedCellData()) {
-    SetGradientMovement(0.0);
-  } else { // move down gradient
-    SetGradientMovement(-1.0);    
-  }
-  /*********************/    
   
   int fromcellID = GetCellID();
   int destcellID = GetFacedCellID();
@@ -855,35 +784,6 @@ bool cOrganism::Move(cAvidaContext& ctx)
 } //End cOrganism::Move()
 
 
-/*! Called to set this organism's opinion, which remains valid until a new opinion
- is expressed.
- */
-void cOrganism::SetOpinion(const Opinion& opinion) {
-  InitOpinions();
-  const int bsize = m_world->GetConfig().OPINION_BUFFER_SIZE.Get();	
-  
-  if(bsize == 0) {
-    m_world->GetDriver().Feedback().Error("OPINION_BUFFER_SIZE is set to an invalid value.");
-    m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
-  }	
-  
-  if((bsize > 0) || (bsize == -1)) {
-    m_opinion->opinion_list.push_back(std::make_pair(opinion, m_world->GetStats().GetUpdate()));
-    // if our buffer is too large, chop off old messages:
-    while((bsize != -1) && (static_cast<int>(m_opinion->opinion_list.size()) > bsize)) {
-      m_opinion->opinion_list.pop_front();
-    }
-  }
-  // if using avatars, make sure you swap avatar lists if the org's catorization changes!
-}
-
-// Checks if the organism has an opinion.
-bool cOrganism::HasOpinion() {
-  InitOpinions();
-  if (m_opinion->opinion_list.empty()) return false;
-  else return true;
-}
-
 void cOrganism::SetForageTarget(cAvidaContext& ctx, int forage_target, bool inject) {
   if (m_parent_ft <= -2 && m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_interface->KillRandPred(ctx, this);
   else if (forage_target > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
@@ -934,251 +834,6 @@ void cOrganism::CopyParentFT(cAvidaContext& ctx) {
   if (copy_ft) SetForageTarget(ctx, m_parent_ft);
 }
 
-cOrganism::Neighborhood cOrganism::GetNeighborhood(cAvidaContext& ctx) {
-	Neighborhood neighbors;
-	for(int i=0; i<GetNeighborhoodSize(); ++i, Rotate(ctx, 1)) {
-		if(IsNeighborCellOccupied()) {
-			neighbors.insert(GetNeighbor()->GetID());
-		}
-	}	
-	return neighbors;
-}
-
-
-void cOrganism::LoadNeighborhood(cAvidaContext& ctx) {
-	InitNeighborhood();
-	m_neighborhood->neighbors = GetNeighborhood(ctx);
-	m_neighborhood->loaded = true;
-}
-
-
-bool cOrganism::HasNeighborhoodChanged(cAvidaContext& ctx) {
-	InitNeighborhood();
-	// Must have loaded the neighborhood first:
-	if(!m_neighborhood->loaded) return false;
-	
-	// Ok, get the symmetric difference between the old neighborhood and the current neighborhood:
-	Neighborhood symdiff;
-	Neighborhood current = GetNeighborhood(ctx);
-	std::set_symmetric_difference(m_neighborhood->neighbors.begin(),
-																m_neighborhood->neighbors.end(),
-																current.begin(),
-																current.end(),
-																std::insert_iterator<Neighborhood>(symdiff, symdiff.begin()));
-	
-	// If the symmetric difference is empty, then nothing has changed -- return 
-	return !symdiff.empty();
-}
-
-
-/* Called when raw materials are donated to others or when the 
- raw materials are consumed. Amount is the number of resources 
- donated. The boolean flag is used to indicate if the donation 
- was successful... It would fail if the organism did not have 
- that many resources. */
-bool cOrganism::SubtractSelfRawMaterials (int amount)
-{
-	bool isSuccessful = false;
-	if (amount <= m_self_raw_materials) { 
-		isSuccessful = true; 
-		m_self_raw_materials -= amount;
-	}
-	return isSuccessful;
-}
-
-
-/* Called when other raw materials are consumed. Amount is the 
- number of resources consumed. The boolean flag is used to 
- indicate if the donation was successful... It would fail if 
- the organism did not have that many resources. */
-bool cOrganism::SubtractOtherRawMaterials (int amount)
-{
-	bool isSuccessful = false;
-	if (amount <= m_other_raw_materials) { 
-		isSuccessful = true; 
-		m_other_raw_materials -= amount;
-	}
-	return isSuccessful;
-}
-
-/* Called when raw materials are received from others. Amount 
- is the number of resources received. The boolean flag is used 
- to indicate if the reception was successful, which should always
- be the case... */
-
-bool cOrganism::AddOtherRawMaterials (int amount, int donor_id) {
-	bool isSuccessful = true;
-	m_other_raw_materials += amount;
-	donor_list.insert(donor_id);
-	m_num_donate_received += amount;	
-	m_amount_donate_received++;	
-	return isSuccessful;
-}
-
-/* Called when raw materials are received from others. Amount 
- is the number of resources received. The boolean flag is used 
- to indicate if the reception was successful, which should always
- be the case... 
- 
- This version is used if there is only one resource that is both
- donated and recieved.
- */
-
-bool cOrganism::AddRawMaterials (int amount, int donor_id) {
-	bool isSuccessful = true;
-	m_self_raw_materials += amount;
-	donor_list.insert(donor_id);	
-	m_num_donate_received += amount;
-	m_amount_donate_received++;
-	return isSuccessful;
-}
-
-
-/* Get an organism's reputation, which is expressed as an 
- opinion. 0 is the default reputation (this should be refactored
- to be cleaner). */
-int cOrganism::GetReputation() {
-	int rep =0;
-	if (HasOpinion()) {
-		rep = GetOpinion().first;
-	}
-	return rep;
-}
-
-/* Set an organism's reputation */
-void cOrganism::SetReputation(int rep) {
-	SetOpinion(rep);
-	return;
-}
-
-/* An organism's reputation is based on a running average*/
-void cOrganism::SetAverageReputation(int rep){
-	int current_total = GetReputation() * m_opinion->opinion_list.size(); 
-	int new_rep = (current_total + rep)/(m_opinion->opinion_list.size()+1);
-	SetReputation(new_rep);
-}
-
-
-/* Check if an organism has previously donated to this organism */
-bool cOrganism::IsDonor(int neighbor_id) 
-{
-	bool found = false;
-	if (donor_list.find(neighbor_id) != donor_list.end()) {
-		found = true;
-	}
-	return found;
-}
-
-
-
-/* Update the tag. If the organism was not already tagged, 
- or the new tag is the same as the old tag, or the number
- of bits is > than the old tag, update.*/
-void cOrganism::UpdateTag(int new_tag, int bits)
-{
-	unsigned int rand_int = m_world->GetRandom().GetUInt(0, 2);
-	if ((m_tag.first == -1) || 
-			(m_tag.first == new_tag) ||
-			(m_tag.second < bits)) {
-		m_tag = make_pair(new_tag, bits);
-	} else if ((m_tag.second == bits) && rand_int){ 		
-		m_tag = make_pair(new_tag, bits);
-	}
-}
-
-
-/* See if the output buffer matches the string */
-int cOrganism::MatchOutputBuffer(cString string_to_match)
-{
-	tBuffer<int> org_str (GetOutputBuf());
-	int num_matched =0; 
-	for (int j = 0; j < string_to_match.GetSize(); j++)
-	{
-		if ((string_to_match[j]=='0' && org_str[j]==0) ||
-				(string_to_match[j]=='1' && org_str[j]==1))
-			num_matched++;
-	}
-	return num_matched;
-}
-
-
-void cOrganism::SetOutputNegative1() 
-{ 
-	for (int i=0; i<GetOutputBuf().GetCapacity(); i++) {
-		AddOutput(-1);
-	}
-	m_output_buf.Clear(); 
-}
-
-/* Initialize the string tracking map */
-void cOrganism::InitStringMap() 
-{
-	if (!m_string_map) {
-    m_string_map = new std::map < int, cStringSupport >;
-		// Get the strings from the task lib. 
-		std::vector < cString > temp_strings = m_world->GetEnvironment().GetMatchStringsFromTask(); 
-		// Create structure for each of them. 
-		for (unsigned int i=0; i < temp_strings.size(); i++){
-			(*m_string_map)[i].m_string = temp_strings[i];
-		}
-	}
-}
-
-
-bool cOrganism::ProduceString(int i)  
-{ 
-	bool val = false; 
-	int cap = m_world->GetConfig().STRING_AMOUNT_CAP.Get(); 
-	if ((cap == -1) || ((*m_string_map)[i].on_hand < cap))
-	{
-		(*m_string_map)[i].prod_string++; 
-		(*m_string_map)[i].on_hand++;
-		val = true;
-	}
-	return val;
-}
-
-/* Donate a string*/
-bool cOrganism::DonateString(int string_tag, int amount)
-{
-	bool val = false; 
-	if ((*m_string_map)[string_tag].on_hand >= amount) {
-		val = true;
-		(*m_string_map)[string_tag].on_hand -= amount;
-	}
-	return val;
-	
-}
-
-/* Receive a string*/
-bool cOrganism::ReceiveString(int string_tag, int amount, int donor_id)
-{
-	bool val = false; 
-	int cap = m_world->GetConfig().STRING_AMOUNT_CAP.Get(); 
-	if ((cap == -1) || ((*m_string_map)[string_tag].on_hand < cap)) 
-	{
-		(*m_string_map)[string_tag].received_string++; 
-		(*m_string_map)[string_tag].on_hand++;
-		donor_list.insert(donor_id);	
-		m_num_donate_received += amount;
-		m_amount_donate_received++;
-		val = true;
-	}
-	return val;
-}
-
-/* Check to see if this amount is below the organism's cap*/
-bool cOrganism::CanReceiveString(int string_tag, int)
-{
-	bool val = false; 
-	int cap = m_world->GetConfig().STRING_AMOUNT_CAP.Get(); 
-	if ((cap == -1) || ((*m_string_map)[string_tag].on_hand < cap))
-	{
-		val = true;
-	}
-	return val;
-	
-}
 
 bool cOrganism::MoveAV(cAvidaContext& ctx)
 {

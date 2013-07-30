@@ -71,17 +71,6 @@ public:
   int GetCellXPosition();
   int GetCellYPosition();
   
-  int GetCellData();
-  int GetCellDataOrgID();
-  int GetCellDataUpdate();
-  int GetCellDataTerritory();
-  int GetCellDataForagerType();
-  void SetCellData(const int newData);
-  int GetFacedCellData();
-  int GetFacedCellDataOrgID();
-  int GetFacedCellDataUpdate();
-  int GetFacedCellDataTerritory();
-
   int GetPrevSeenCellID() { return m_prevseen_cell_id; }
   int GetPrevTaskCellID() { return m_prev_task_cell; }
   int GetNumTaskCellsReached() { return m_num_task_cells; }
@@ -100,7 +89,6 @@ public:
   int GetFacing(); // Returns the facing of this organism.
   int GetFacedCellID();
   int GetFacedDir(); // Returns the human interpretable facing of this org.
-  int GetNeighborCellContents();
   void Rotate(cAvidaContext& ctx, int direction = 1);
   int GetInputAt(int& input_pointer);
   void ResetInputs(cAvidaContext& ctx);
@@ -130,8 +118,6 @@ public:
   bool UpdateMerit(double new_merit);
   bool TestOnDivide();
 
-  int GetStateGridID(cAvidaContext& ctx);
-	
   bool Move(cAvidaContext& ctx, int src_id, int dest_id);
 
   // Reputation
@@ -145,33 +131,6 @@ public:
   void RemoveLiveOrg();
   void KillOrganism(cAvidaContext& ctx, int cell_id);
 
-  bool HasOpinion(cOrganism* in_organism);
-  void SetOpinion(int opinion, cOrganism* in_organism);
-  void ClearOpinion(cOrganism* in_organism);
-  
-  void JoinGroup(int group_id);
-  void MakeGroup();
-  void LeaveGroup(int group_id);
-  int NumberOfOrganismsInGroup(int group_id);
-  int NumberGroupFemales(int group_id);
-  int NumberGroupMales(int group_id);
-  int NumberGroupJuvs(int group_id);
-  void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type); 
-  
-  // ----- Tolerance/Group support ------
-  int IncTolerance(const int tolerance_type, cAvidaContext& ctx);
-  int DecTolerance(const int tolerance_type, cAvidaContext& ctx);
-  int CalcGroupToleranceImmigrants(int prop_group_id, int mating_type = -1);
-  int CalcGroupToleranceOffspring(cOrganism* parent_organism);
-  double CalcGroupOddsImmigrants(int group_id, int mating_type);
-  double CalcGroupOddsOffspring(cOrganism* parent);
-  double CalcGroupOddsOffspring(int group_id);
-  bool AttemptImmigrateGroup(cAvidaContext& ctx, int group_id, cOrganism* org);
-  void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx);
-  int& GetGroupIntolerances(int group_id, int tol_num, int mating_type);
-  
-  void TryWriteGroupAttackBits(unsigned char raw_bits);
-  void TryWriteGroupAttackString(cString& string);
   void DecNumPreyOrganisms();
   void DecNumPredOrganisms();
   void DecNumTopPredOrganisms();
@@ -217,19 +176,10 @@ public:
   int GetAVCellID(int av_num = 0);
   int GetAVFacedCellID(int av_num = 0);
   int GetAVNumNeighbors(int av_num = 0);
-  int GetAVFacedData(int av_num = 0);
-  int GetAVFacedDataOrgID(int av_num = 0);
-  int GetAVFacedDataUpdate(int av_num = 0);
-  int GetAVFacedDataTerritory(int av_num = 0);
-  int GetAVData(int av_num = 0);
-  int GetAVDataOrgID(int av_num = 0);
-  int GetAVDataUpdate(int av_num = 0);
-  int GetAVDataTerritory(int av_num = 0);
   int FindAV(bool input, bool output, int av_num = 0);
   void SetAVFacing(cAvidaContext& ctx, int av_facing, int av_num = 0);
   bool SetAVCellID(cAvidaContext& ctx, int av_cell_id, int av_num = 0);
   void SetAVFacedCellID(cAvidaContext& ctx, int av_num = 0);
-  void SetAVCellData(const int newData, const int org_id, int av_num = 0);
   bool MoveAV(cAvidaContext& ctx, int av_num = 0);
   bool RotateAV(cAvidaContext& ctx, int increment, int av_num = 0);
   cOrganism* GetRandFacedAV(cAvidaContext& ctx, int av_num = 0);

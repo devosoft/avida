@@ -499,17 +499,9 @@ private:
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
   
-  // State Grid Navigation
-  bool Inst_SGMove(cAvidaContext& ctx);
-  bool Inst_SGRotateL(cAvidaContext& ctx);
-  bool Inst_SGRotateR(cAvidaContext& ctx);
-  bool Inst_SGSense(cAvidaContext& ctx);
-
   // Movement and Navigation 
   bool Inst_Move(cAvidaContext& ctx);
   bool Inst_JuvMove(cAvidaContext& ctx);
-  bool Inst_RangeMove(cAvidaContext& ctx);
-  bool Inst_RangePredMove(cAvidaContext& ctx);
   bool Inst_GetCellPosition(cAvidaContext& ctx);
   bool Inst_GetCellPositionX(cAvidaContext& ctx);
   bool Inst_GetCellPositionY(cAvidaContext& ctx);
@@ -579,21 +571,6 @@ private:
   bool Inst_Nop2CollectEdible(cAvidaContext& ctx);
   bool Inst_GetResStored(cAvidaContext& ctx);
   bool Inst_GetSpecificStored(cAvidaContext& ctx);
-
-  // Groups 
-  bool Inst_SetOpinion(cAvidaContext& ctx);
-  bool Inst_GetOpinion(cAvidaContext& ctx);
-  bool Inst_JoinGroup(cAvidaContext& ctx);
-  bool Inst_ChangePredGroup(cAvidaContext& ctx); 
-  bool Inst_MakePredGroup(cAvidaContext& ctx); 
-  bool Inst_LeavePredGroup(cAvidaContext& ctx); 
-  bool Inst_AdoptPredGroup(cAvidaContext& ctx); 
-  bool Inst_GetGroupID(cAvidaContext& ctx);
-  bool Inst_GetPredGroupID(cAvidaContext& ctx);
-  bool Inst_IncPredTolerance(cAvidaContext& ctx);  
-  bool Inst_DecPredTolerance(cAvidaContext& ctx);  
-  bool Inst_GetPredTolerance(cAvidaContext& ctx);     
-  bool Inst_GetPredGroupTolerance(cAvidaContext& ctx); 
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
@@ -710,12 +687,6 @@ private:
   void UpdateGroupAttackStats(const cString& inst, sAttackResult& result, bool get_size = true);
   void TryWriteGroupAttackBits(unsigned char raw_bits);
   void TryWriteGroupAttackString(cString& string);
-
-public:
-  bool Inst_CollectCellData(cAvidaContext& ctx);
-  bool Inst_IfCellDataChanged(cAvidaContext& ctx);
-  bool Inst_ReadCellData(cAvidaContext& ctx);
-  bool Inst_ReadGroupCell(cAvidaContext& ctx);
 };
 
 inline cHardwareExperimental::DataValue& cHardwareExperimental::DataValue::operator=(const DataValue& i)

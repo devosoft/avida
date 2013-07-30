@@ -31,7 +31,6 @@
 #include "cMutationRates.h"
 #include "cPhenotype.h"
 #include "cOrgInterface.h"
-#include "cOrgMessage.h"
 #include "tBuffer.h"
 #include "tList.h"
 
@@ -49,7 +48,6 @@ class cContextPhenotype;
 class cEnvironment;
 class cHardwareBase;
 class cInstSet;
-class cStateGrid;
 
 struct sOrgDisplay;
 
@@ -69,8 +67,6 @@ private:
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   cOrgInterface* m_interface;             // Interface back to the population.
   int m_id;                               // unique id for each org, is just the number it was born
-  int m_lineage_label;                    // a lineages tag; inherited unchanged in offspring
-  int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
 
   int m_org_list_index;
   
@@ -85,16 +81,6 @@ private:
   int m_input_pointer;
   tBuffer<int> m_input_buf;
   tBuffer<int> m_output_buf;
-  tBuffer<int> m_received_messages;
-
-  int m_cur_sg;
-
-  // Communication
-  int m_sent_value;         // What number is this org sending?
-  bool m_sent_active;       // Has this org sent a number?
-  int m_test_receive_pos;   // In a test CPU, what message to receive next?
-
-  double m_gradient_movement;  // TEMP.  Remove once movement tasks are implemented.
 
   int m_max_executed;      // Max number of instruction executed before death.  
   bool m_is_running;       // Does this organism have the CPU?
@@ -147,12 +133,6 @@ public:
   cOrgInterface& GetOrgInterface() { assert(m_interface); return *m_interface; }
   void SetOrgInterface(cAvidaContext& ctx, cOrgInterface* org_interface);
 
-  void SetLineageLabel(int in_label) { m_lineage_label = in_label; }
-  int GetLineageLabel() const { return m_lineage_label; }
-
-  void SetCCladeLabel( int in_label ) { cclade_id = in_label; };  //@MRR
-  int  GetCCladeLabel() const { return cclade_id; }
-
   const Apto::Array<double>& GetRBins() const { return m_phenotype.GetCurRBinsAvail(); }
   double GetRBin(int index) { return m_phenotype.GetCurRBinAvail(index); }
   double GetRBinsTotal();
@@ -170,8 +150,6 @@ public:
   bool IsRunning() { return m_is_running; }
 
   bool IsDead() { return m_is_dead; }
-
-  const cStateGrid& GetStateGrid() const;
 
   double GetVitality() const;
 
@@ -196,17 +174,6 @@ public:
 
   int GetCellID() { return m_interface->GetCellID(); }
   int GetAVCellID() { return m_interface->GetAVCellID(); }
-
-  int GetCellData() { return m_interface->GetCellData(); }
-  int GetCellDataOrgID() { return m_interface->GetCellDataOrgID(); }
-  int GetCellDataUpdate() { return m_interface->GetCellDataUpdate(); }
-  int GetCellDataTerritory() { return m_interface->GetCellDataTerritory(); }
-  int GetCellDataForagerType() { return m_interface->GetCellDataForagerType(); }
-  void SetCellData(const int data) { m_interface->SetCellData(data); }  
-  int GetFacedCellData() { return m_interface->GetFacedCellData(); }
-  int GetFacedCellDataOrgID() { return m_interface->GetFacedCellDataOrgID(); }
-  int GetFacedCellDataUpdate() { return m_interface->GetFacedCellDataUpdate(); }
-  int GetFacedCellDataTerritory() { return m_interface->GetFacedCellDataTerritory(); }
   
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
   bool IsNeighborCellOccupied() { return m_interface->IsNeighborCellOccupied(); }
@@ -224,11 +191,6 @@ public:
   tBuffer<int>& GetOutputBuf() { return m_output_buf; }
   void Die(cAvidaContext& ctx) { m_interface->Die(ctx); m_is_dead = true; } 
   void KillCellID(int target, cAvidaContext& ctx) { m_interface->KillCellID(target, ctx); } 
-  void Kaboom(int dist, cAvidaContext& ctx) { m_interface->Kaboom(dist,ctx);} 
-  bool GetSentActive() { return m_sent_active; }
-  void SendValue(int value) { m_sent_active = true; m_sent_value = value; }
-  int RetrieveSentValue() { m_sent_active = false; return m_sent_value; }
-  int ReceiveValue();
   void UpdateMerit(double new_merit) { m_interface->UpdateMerit(new_merit); }
 
   int GetPrevSeenCellID() const { return m_interface->GetPrevSeenCellID(); }
@@ -241,9 +203,6 @@ public:
   void AddLiveOrg() { m_interface->AddLiveOrg(); } 
   void RemoveLiveOrg() { m_interface->RemoveLiveOrg(); } 
   
-  void JoinGroup(int group_id) { m_interface->JoinGroup(group_id); }
-  void LeaveGroup(int group_id) { m_interface->LeaveGroup(group_id); }
-
   // --------  Input and Output Methods  --------
   void DoInput(const int value);
   void DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value);
@@ -351,158 +310,12 @@ public:
 
 
 
-  // -------- Movement TEMP --------
-public:
-  double GetGradientMovement() const {
-    return m_gradient_movement;
-  }
-
-  void SetGradientMovement(const double value) {
-    m_gradient_movement = value;
-  }
-
-
-  // -------- BDC Movement ---------
+  // -------- Movement ---------
 public:
   bool Move(cAvidaContext& ctx);
 
 
 
-  // -------- Opinion support --------
-  /*  Organisms express an opinion at a given point in time.  We can assume that they
-  hold this opinion until they express a new one.  The semantics of opinions are
-  left to the particular tasks or fitness functions in use; opinions are merely a generic
-  approach that we as developers can use to evaluate when an organism has made a decision.
-
-  If we ever have a need for organisms to express different kinds of opinions, this code
-  can easily be adapted for that purpose (e.g., change the OpinionList typedef to a
-  std::map<int, DatedOpinion>, where the key represents the kind of opinion being expressed).
-
-  As with other such types of "extended" functionality, opinion support is encapsulated in
-  a lazily-initialized struct.
-  */  
-public:
-  typedef int Opinion; //!< Typedef for an opinion.
-  typedef std::pair<Opinion, int> DatedOpinion; //!< Typedef for an opinion held at a given update.
-  typedef std::deque<DatedOpinion> DatedOpinionList; //!< Typedef for a list of dated opinions.
-  //! Called to set this organism's opinion.
-  void SetOpinion(const Opinion& opinion);
-  //! Retrieve this organism's current opinion.
-  const DatedOpinion& GetOpinion() { InitOpinions(); return m_opinion->opinion_list.back(); }
-  //! Retrieve all opinions expressed during this organism's lifetime.
-  const DatedOpinionList& GetOpinions() { InitOpinions(); return m_opinion->opinion_list; }
-  //! Return whether this organism has an opinion.
-  bool HasOpinion();
-  //! remove all opinions
-  void ClearOpinion() { InitOpinions(); m_opinion->opinion_list.clear(); }
-
-private:
-  //! Initialize opinion support.
-  inline void InitOpinions() { if(!m_opinion) { m_opinion = new cOpinionSupport(); } }
-  //! Container for the data used to support opinions.
-  struct cOpinionSupport
-  {
-    DatedOpinionList opinion_list; //!< All opinions expressed by this organism during its lifetime.
-  };
-  cOpinionSupport* m_opinion; //!< Lazily-initialized pointer to the opinion data.
-  // -------- End of opinion support --------
-
-
-
-
-  // -------- Neighborhood support --------
-public:
-  typedef std::set<int> Neighborhood; //!< Typedef for a neighborhood snapshot.
-  //! Get the current neighborhood.
-  Neighborhood GetNeighborhood(cAvidaContext& ctx);
-  //! Loads this organism's current neighborhood into memory.
-  void LoadNeighborhood(cAvidaContext& ctx);
-  //! Has the current neighborhood changed from what is in memory?
-  bool HasNeighborhoodChanged(cAvidaContext& ctx);
-
-protected:
-  //! Initialize neighborhood support.
-  inline void InitNeighborhood() { if(!m_neighborhood) { m_neighborhood = new cNeighborhoodSupport(); } }
-  //! Container for neighborhood support.
-  struct cNeighborhoodSupport {
-    cNeighborhoodSupport() : loaded(false) { }
-    bool loaded;
-    Neighborhood neighbors;
-  };
-  cNeighborhoodSupport* m_neighborhood; //!< Lazily-initialized pointer to the neighborhood data.
-
-
-  // -------- Reputation support --------	
-public: 
-  // Deduct amount number of self raw materials
-  bool SubtractSelfRawMaterials(int amount); 
-  // Deduct amount number of other raw materials
-  bool SubtractOtherRawMaterials(int amount); 
-  // receive raw materials from others
-  bool AddOtherRawMaterials(int amount, int donor_id);
-  // receive raw materials 
-  bool AddRawMaterials(int amount, int donor_id);
-  // receive raw materials 
-  void AddSelfRawMaterials(int amount) { if (m_self_raw_materials < 10) m_self_raw_materials += amount;}
-  // retrieve the organism's own amount of raw materials
-  int GetSelfRawMaterials() { return m_self_raw_materials; }
-  // retrieve the amount of raw materials collected from others
-  int GetOtherRawMaterials() { return m_other_raw_materials; }
-  // get the organism's reputation
-  int GetReputation(); 
-  // set the organism's reputation
-  void SetReputation(int rep);
-  // update the reputation to be an average on the basis of this new info
-  void SetAverageReputation(int rep);
-  // update the reputation by addint this new information 
-  void AddReputation(int rep) { SetReputation(GetReputation() + rep); }
-  // increment reputation
-  void IncReputation() { SetReputation(GetReputation() + 1); }
-  // get number of donors
-  int GetNumberOfDonors() { return donor_list.size(); }
-  // organism donated
-  void Donated(){m_num_donate++;}
-  // get number of donations
-  int GetNumberOfDonations() { return m_num_donate; }
-  // get number of donations received
-  int GetNumberOfDonationsReceived() { return m_num_donate_received; }
-  // get amout of donations received
-  int GetAmountOfDonationsReceived() { return m_amount_donate_received; }
-  // organism reciprocated
-  void Reciprocated() {m_num_reciprocate++;}
-  // get number of reciprocations
-  int GetNumberOfReciprocations() { return m_num_reciprocate; }
-  // was the organism a donor
-  bool IsDonor(int neighbor_id); 
-
-  // Check if buffer contains this string; return # bits correct
-  int MatchOutputBuffer(cString string_to_match);
-
-  // Add a donor
-  void AddDonor(int org_id) { donor_list.insert(org_id); }
-  // Set tag 
-  void SetTag(int new_tag, int bits) { m_tag = make_pair(new_tag, bits); }
-  // Set tag
-  void SetTag(pair < int, int > new_tag)  { m_tag = new_tag; }
-  // Update tag
-  void UpdateTag(int new_tag, int bits); 
-  // Get tag
-  int GetTagLabel() { return m_tag.first; }
-  pair < int, int > GetTag() { return m_tag; }
-  // Get number of failed reputation increases
-  int GetFailedReputationIncreases() { return m_failed_reputation_increases; }
-
-  // Clear the output buffer
-  void SetOutputNegative1();
-  void AddDonatedLineage(int lin) { donating_lineages.insert(lin); }
-  int GetNumberOfDonatedLineages() { return donating_lineages.size(); }
-  void InitStringMap(); 
-  bool ProduceString(int i);  
-  int GetNumberStringsProduced(int i) { return m_string_map ? (*m_string_map)[i].prod_string : 0; }
-  int GetNumberStringsOnHand(int i) { return m_string_map ? (*m_string_map)[i].on_hand : 0; }
-  bool DonateString(int string_tag, int amount); 
-  bool ReceiveString(int string_tag, int amount, int donor_id); 
-  bool CanReceiveString(int string_tag, int amount); 
 
   // get the organism's relative position (from birth place)
   int GetNortherly() { return m_northerly; }
@@ -529,48 +342,13 @@ public:
   void SetParentFT(int parent_ft) { m_parent_ft = parent_ft; }
   int GetParentFT() const { return m_parent_ft; } 
   void CopyParentFT(cAvidaContext& ctx);
-  void SetParentGroup(int parent_group) { m_parent_group = parent_group; }
-  int GetParentGroup() const { return m_parent_group; } 
   void SetParentMerit(double parent_merit) { m_p_merit = parent_merit; }
   double GetParentMerit() { return m_p_merit; }
   void SetParentMultiThreaded(bool parent_is_mt) { m_p_mthread = parent_is_mt; }
   bool IsParentMThreaded() { return m_p_mthread; }
   
-  void ChangeBeg() { m_beggar = !m_beggar; }
-  bool IsBeggar() { return m_beggar; }
-  
-  void SetGuard() { m_guard = !m_guard; }
-  bool IsGuard() { return m_guard; }
-  void IncGuard() { m_num_guard++; }
-  int GetNumGuard() { return m_num_guard; }
-  void IncNumDeposits() { m_num_deposits++; }
-  void IncAmountDeposited(double amount) { m_amount_deposited = m_amount_deposited + amount; } 
-  int GetNumDeposits() { return m_num_deposits; }
-  double GetAmountDeposited() { return m_amount_deposited; }
   
 protected:
-  // The organism's own raw materials
-  int m_self_raw_materials; 
-  // The raw materials an oranism has collected from others
-  int m_other_raw_materials;
-  // Organisms that have donated to this organism
-  set<int> donor_list;
-  // Strings this organism has received. 
-  set<int> donating_lineages;
-  // number of donations
-  int m_num_donate;
-  // number of donations received
-  int m_num_donate_received;
-  // amount of donations received
-  int m_amount_donate_received;
-  // number of reciprocations
-  int m_num_reciprocate;
-  // reputation minimum for donation/rotation 
-  // based on Nowak89
-  int m_k;
-  // int number of reputation increase failures
-  int m_failed_reputation_increases;
-  std::pair < int, int > m_tag;
   //total number of steps taken to north (minus S steps) since birth
   int m_northerly;
   //total number of steps taken to east (minus W steps) since birth  
@@ -582,46 +360,10 @@ protected:
   bool m_teach;
   bool m_parent_teacher;
   int m_parent_ft;
-  int m_parent_group;
   double m_p_merit;
   bool m_p_mthread;
   
-  bool m_beggar;
-  
-  bool m_guard;
-    int m_num_guard;
-    int m_num_deposits;
-    double m_amount_deposited;
-  
-  /*! Contains all the different data structures needed to
-  track strings, production of strings, and donation/trade
-  of strings. It is inspired by the cMessagingSupport*/
-  struct cStringSupport
-  {
-    cStringSupport() 
-    { prod_string = 0; received_string = 0; on_hand = 0; }
-    cString m_string; //!< The string being tracked
-    int prod_string; //!< The number of times this string has been produced. 
-    int received_string; //!< The number of times this string has been received.
-    int on_hand; //!< The number of copies of the string this organism has on hand
-  };
 
-  /* This member variable is a map of tags to strings. It can
-  be used to track production, consumption, and donation of 
-  strings. */
-  std::map < int, cStringSupport >* m_string_map;
-
-
-  // -------- Division of Labor support --------
-public:
-  int GetNumOfPointMutationsApplied() {return m_num_point_mut; } //! number of point mutations applied to org.
-  void IncPointMutations(int n) {m_num_point_mut+=n;} 
-  void RepairPointMutOn() {m_repair = true;}
-  void RepairPointMutOff() {m_repair = false;}
-private: 
-  int m_num_point_mut;
-  bool m_repair;
-	
 	// -------- Avatar support --------
 public:
   bool MoveAV(cAvidaContext& ctx);

@@ -203,7 +203,6 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   ADD_GDATA(int (),            "parent2_id",   "Second Parent ID (sexual orgs)",GetParent2ID,      SetParent2ID,  0, 0, 0);
   ADD_GDATA(int (),            "parent_dist",  "Parent Distance",               GetParentDist,     SetParentDist, 0, 0, 0);
   ADD_GDATA(int (),            "ancestor_dist","Ancestor Distance",             GetAncestorDist,   SetAncestorDist, 0, 0, 0);
-  ADD_GDATA(int (),            "lineage",      "Unique Lineage Label",          GetLineageLabel,   SetLineageLabel, 0, 0, 0);
   ADD_GDATA(int (),            "num_cpus",     "Number of CPUs",                GetNumCPUs,        SetNumCPUs,    0, 0, 0);
   ADD_GDATA(int (),            "total_cpus",   "Total CPUs Ever",               GetTotalCPUs,      SetTotalCPUs,  0, 0, 0);
   ADD_GDATA(int (),            "num_units",    "Number of CPUs",                GetNumCPUs,        SetNumCPUs,    0, 0, 0);
