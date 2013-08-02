@@ -67,6 +67,7 @@
 #include <string>
 #include "sysinfo.h"    // for FillProcSelfMaps
 #include "malloc_extension.h"
+#include <pthread.h>
 
 using std::string;
 
