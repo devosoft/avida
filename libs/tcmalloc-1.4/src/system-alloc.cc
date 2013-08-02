@@ -171,6 +171,10 @@ bool RegisterSystemAllocator(SysAllocator *a, int priority) {
 void* SbrkSysAllocator::Alloc(size_t size, size_t *actual_size,
                               size_t alignment) {
 #ifndef HAVE_SBRK
+#define HAVE_SBRK 0
+#endif
+  
+#if !HAVE_SBRK
   failed_ = true;
   return NULL;
 #else

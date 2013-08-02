@@ -40,7 +40,7 @@
 
 
 #define HAVE_MMAP 1
-#define HAVE_SBRK 1
+#define HAVE_SBRK 0
 
 /* printf format code for printing a size_t and ssize_t */
 #define PRIuS "zu"
