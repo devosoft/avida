@@ -922,11 +922,11 @@ bool cOrgSensor::GetTorusDirection(Apto::Coord<int>& direction, sBounds& worldBo
 
 void cOrgSensor::CorrectTorusEdge(Apto::Coord<int>& cell, sBounds& worldBounds)
 {
-  if (cell.X() > worldBounds.max_x) cell.X() = worldBounds.min_x + (cell.X() - worldBounds.max_x);
-  else if (cell.X() < worldBounds.min_x) cell.X() = worldBounds.max_x - (worldBounds.min_x - cell.X());
+  if (cell.X() > worldBounds.max_x) cell.X() = worldBounds.min_x + (cell.X() - worldBounds.max_x - 1);
+  else if (cell.X() < worldBounds.min_x) cell.X() = worldBounds.max_x - (worldBounds.min_x - cell.X() - 1);
 
-  if (cell.Y() > worldBounds.max_y) cell.Y() = worldBounds.min_y + (cell.Y() - worldBounds.max_y);
-  else if (cell.Y() < worldBounds.min_y) cell.Y() = worldBounds.max_y - (worldBounds.min_y - cell.Y());
+  if (cell.Y() > worldBounds.max_y) cell.Y() = worldBounds.min_y + (cell.Y() - worldBounds.max_y - 1);
+  else if (cell.Y() < worldBounds.min_y) cell.Y() = worldBounds.max_y - (worldBounds.min_y - cell.Y() - 1);
 }
 
 void cOrgSensor::SetWalkLimits(cAvidaContext& ctx, sLookInit& in_defs, sWalkLimits& limits, sBounds& worldBounds, sBounds& tot_bounds, Apto::Array<int, Apto::Smart>& val_res, int worldx, Apto::Coord<int>& this_cell, int facing, int cell, Apto::Coord<int>& center_cell, const Apto::Coord<int>& ahead_dir)
