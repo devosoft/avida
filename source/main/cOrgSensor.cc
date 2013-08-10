@@ -690,12 +690,10 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
           this_cell = center_cell + direction * j;
           CorrectTorusEdge(this_cell, worldBounds);
         }
+        assert(TestBounds(this_cell, worldBounds));
         
-        if (!TestBounds(this_cell, worldBounds)) {
-          cout << "dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " thisX " << this_cell.X() << " thisY " << this_cell.Y() << endl;
-          bool punk;
-          punk = false;
-        }
+        //  cout << "dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " thisX " << this_cell.X() << " thisY " << this_cell.Y() << endl;
+
         if (habitat_used != -2 && habitat_used != 3 && !TestBounds(center_cell, tot_bounds)) {
           // on diagonals...if any side cell is beyond specific parts of res bounds, we can exclude this side for this and any larger distances
           if (diagonal) {
@@ -704,13 +702,13 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
             if (direction == left) {
               if ( (facing == 1 && tcy < tot_bounds.min_y) || (facing == 3 && tcx > tot_bounds.max_x) ||
                   (facing == 5 && tcy > tot_bounds.max_y) || (facing == 7 && tcx < tot_bounds.min_x) ) {
-                do_left = true;    // Always do side-RKB
+                do_left = true;    
               }
             }
             else if (direction == right) {
               if ( (facing == 1 && tcx > tot_bounds.max_x) || (facing == 3 && tcy > tot_bounds.max_y) ||
                   (facing == 5 && tcx < tot_bounds.min_x) || (facing == 7 && tcy < tot_bounds.min_y) ) {
-                do_right = true;    // Always do side-RKB
+                do_right = true;    
               }
             }
             break;                                       // if not !do_left or !do_right, any cells on this side closer than this to center will be too at this distance, but not greater dist
@@ -719,7 +717,7 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
         }
         else any_valid_side_cells = true;
         
-        // Now we can look at the current side cell because we know it's in the world.
+        // Now we can look at the current side cell because we know it's in bounds.
         if (valid_cell) {
           cellResultInfo = TestCell(ctx, in_defs, this_cell, val_res, first_step, stop_at_first_found);
           first_step = false;
@@ -785,12 +783,8 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
     }
     center_cell += ahead_dir;
     CorrectTorusEdge(center_cell, worldBounds);
-
-    if (!TestBounds(center_cell, worldBounds)) {
-      cout << "dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " thisX " << this_cell.X() << " thisY " << this_cell.Y() << endl;
-      bool punk;
-      punk = false;
-    }
+    assert(TestBounds(center_cell, worldBounds));
+    //  cout << "dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " thisX " << this_cell.X() << " thisY " << this_cell.Y() << endl;
   } // END WALKING
   
   // begin reached end output
