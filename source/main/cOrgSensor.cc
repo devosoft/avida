@@ -979,7 +979,7 @@ void cOrgSensor::SetWalkLimits(cAvidaContext& ctx, sLookInit& in_defs, sWalkLimi
       return;
     }
     
-    /* Code to add searching "behind" organism in torroidal world RKB */
+    /* Code to allow searching to continue past world edges in torus */
     if (in_res && m_world->GetConfig().WORLD_GEOMETRY.Get() == 2) {
       if (facing == 0 || facing == 4) limits.end = worldBounds.max_y - 1;
       else if (facing == 2 || facing == 6) limits.end = worldBounds.max_x - 1;
@@ -989,6 +989,8 @@ void cOrgSensor::SetWalkLimits(cAvidaContext& ctx, sLookInit& in_defs, sWalkLimi
     }
     else limits.end = GetMaxDist(worldx, cell, in_defs.distance, tot_bounds);
     center_cell += (ahead_dir * limits.start);
+    if (m_world->GetConfig().WORLD_GEOMETRY.Get() == 2) CorrectTorusEdge(center_cell, worldBounds);
+    assert(TestBounds(center_cell, worldBounds));
     
     if (has_global && global_only) {
       limits.end = 0;
