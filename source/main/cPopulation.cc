@@ -1953,6 +1953,26 @@ void cPopulation::KillRandPrey(cAvidaContext& ctx, cOrganism* org)
   if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
 }
 
+cOrganism* cPopulation::GetRandPrey(cAvidaContext& ctx, cOrganism* org)
+{
+  cOrganism* target_org = org;
+  const Apto::Array<cOrganism*, Apto::Smart>& live_org_list = GetLiveOrgList();
+  Apto::Array<cOrganism*> TriedIdx(live_org_list.GetSize());
+  int list_size = TriedIdx.GetSize();
+  for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
+  
+  int idx = ctx.GetRandom().GetUInt(list_size);
+  while (target_org == org) {
+    cOrganism* org_at = TriedIdx[idx];
+    // exclude predators and juvenilles with predatory parents (include juvs with non-predatory parents)
+    if (org_at->GetForageTarget() > -1 || (org_at->GetForageTarget() == -1 && org_at->GetParentFT() > -2)) target_org = org_at;
+    else TriedIdx.Swap(idx, --list_size);
+    if (list_size == 1) break;
+    idx = ctx.GetRandom().GetUInt(list_size);
+  }
+  return target_org;
+}
+
 void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
 {
   // do we actually have something to kill?

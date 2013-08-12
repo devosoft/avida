@@ -612,12 +612,15 @@ private:
   bool Inst_AttackPreyGroupShare(cAvidaContext& ctx);
   bool Inst_AttackSpecPrey(cAvidaContext& ctx);
   bool Inst_AttackPreyArea(cAvidaContext& ctx);
-  bool Inst_AttackFTPrey(cAvidaContext& ctx); 
+  bool Inst_AttackRandPrey(cAvidaContext& ctx);
+
+  bool Inst_AttackFTPrey(cAvidaContext& ctx);
   bool Inst_AttackPoisonPrey(cAvidaContext& ctx);
   bool Inst_AttackPoisonFTPrey(cAvidaContext& ctx);
   bool Inst_AttackPoisonFTPreyGenetic(cAvidaContext& ctx);
   bool Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx);
-  bool Inst_FightMeritOrg(cAvidaContext& ctx); 
+
+  bool Inst_FightMeritOrg(cAvidaContext& ctx);
   bool Inst_FightBonusOrg(cAvidaContext& ctx); 
   bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 
   bool Inst_FightOrg(cAvidaContext& ctx); 

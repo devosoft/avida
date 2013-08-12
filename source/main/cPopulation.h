@@ -404,6 +404,7 @@ public:
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   void KillRandPred(cAvidaContext& ctx, cOrganism* org);
   void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
+  cOrganism* GetRandPrey(cAvidaContext& ctx, cOrganism* org);
   // Identifies the number of organisms in a group
   int NumberOfOrganismsInGroup(int group_id);
   int NumberGroupFemales(int group_id);

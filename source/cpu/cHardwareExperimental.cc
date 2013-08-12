@@ -364,6 +364,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("attack-prey-fake-group-share", &cHardwareExperimental::Inst_AttackPreyFakeGroupShare, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-spec-prey", &cHardwareExperimental::Inst_AttackSpecPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-area", &cHardwareExperimental::Inst_AttackPreyArea, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("attack-rand-prey", &cHardwareExperimental::Inst_AttackRandPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+
     tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("fight-bonus-org", &cHardwareExperimental::Inst_FightBonusOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("mark-cell", &cHardwareExperimental::Inst_MarkCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -5561,6 +5563,30 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   if (!ExecuteAttack(ctx, target, reg)) results.success = 3; 
   else {
     cString inst = "attack-ft-prey";
+    UpdateGroupAttackStats(inst, results, true);
+  }
+  return TestAttackResultsOut(results);
+}
+
+// to eliminate dilution effect, kill a random prey when trying to attack this one 
+bool cHardwareExperimental::Inst_AttackRandPrey(cAvidaContext& ctx)
+{
+  sAttackResult results;
+  results.inst = 0;
+  results.share = 0;
+  results.success = 0;
+  results.size = 0;
+  if (!TestAttack(ctx)) { results.success = 1; return TestAttackResultsOut(results); }
+  cOrganism* target = m_world->GetPopulation().GetRandPrey(ctx, m_organism);
+  if (target == m_organism) { results.success = 1; return TestAttackResultsOut(results); }
+  else if (!TestPreyTarget(target)) { results.success = 1; return TestAttackResultsOut(results); }
+
+  sAttackReg reg;
+  SetAttackReg(reg);
+  
+  if (!ExecuteAttack(ctx, target, reg)) results.success = 3;
+  else {
+    cString inst = "attack-prey";
     UpdateGroupAttackStats(inst, results, true);
   }
   return TestAttackResultsOut(results);
