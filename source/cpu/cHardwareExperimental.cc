@@ -5584,12 +5584,8 @@ bool cHardwareExperimental::Inst_AttackRandPrey(cAvidaContext& ctx)
   sAttackReg reg;
   SetAttackReg(reg);
   
-  if (!ExecuteAttack(ctx, target, reg)) results.success = 3;
-  else {
-    cString inst = "attack-prey";
-    UpdateGroupAttackStats(inst, results, true);
-  }
-  return TestAttackResultsOut(results);
+  if (!ExecuteAttack(ctx, target, reg)) return false;
+  return true;  
 }
 
 bool cHardwareExperimental::Inst_AttackPoisonPrey(cAvidaContext& ctx)
