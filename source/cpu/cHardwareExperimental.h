@@ -613,6 +613,7 @@ private:
   bool Inst_AttackSpecPrey(cAvidaContext& ctx);
   bool Inst_AttackPreyArea(cAvidaContext& ctx);
   bool Inst_AttackRandPrey(cAvidaContext& ctx);
+  bool Inst_AttackRandPreyArea(cAvidaContext& ctx);
 
   bool Inst_AttackFTPrey(cAvidaContext& ctx);
   bool Inst_AttackPoisonPrey(cAvidaContext& ctx);
