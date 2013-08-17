@@ -1462,9 +1462,6 @@ void cOrgSensor::GetConfusionOddsFacings(cAvidaContext& ctx, double& odds, cOrga
   Apto::Array<int> neighborhood;
   if (!m_use_avatar) {
     if (first_org->IsPreyFT()) {
-      num_used++;
-      facings[first_org->GetOrgInterface().GetFacedDir()]++;
-      
       first_org->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
       for (int j = 0; j < neighborhood.GetSize(); j++) {
         if (first_org->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
@@ -1481,8 +1478,10 @@ void cOrgSensor::GetConfusionOddsFacings(cAvidaContext& ctx, double& odds, cOrga
     // self cell
     Apto::Array<cOrganism*> prey_friends = first_org->GetOrgInterface().GetCell(first_org->GetOrgInterface().GetAVCellID())->GetCellOutputAVs();
     for (int k = 0; k < prey_friends.GetSize(); k++) {
-      if (facings[prey_friends[k]->GetOrgInterface().GetAVFacing()] == 0) num_used++;
-      facings[prey_friends[k]->GetOrgInterface().GetAVFacing()]++;
+      if (prey_friends[k] != first_org) {
+        if (facings[prey_friends[k]->GetOrgInterface().GetAVFacing()] == 0) num_used++;
+        facings[prey_friends[k]->GetOrgInterface().GetAVFacing()]++;
+      }
       if (num_used >= 8) break;
     }
     // neighbors
@@ -1502,7 +1501,5 @@ void cOrgSensor::GetConfusionOddsFacings(cAvidaContext& ctx, double& odds, cOrga
     }
   }
   
-  // first org is alone and doesn't count:
-  num_used--;
   odds = 1 - (double (num_used) / 8.0); // 0 friend = 0% confusion, 1 friend = 1/8%, 8 friends = 100%
 }
