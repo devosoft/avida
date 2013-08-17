@@ -364,8 +364,6 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("attack-prey-fake-group-share", &cHardwareExperimental::Inst_AttackPreyFakeGroupShare, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-spec-prey", &cHardwareExperimental::Inst_AttackSpecPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-area", &cHardwareExperimental::Inst_AttackPreyArea, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("attack-rand-prey", &cHardwareExperimental::Inst_AttackRandPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("attack-rand-prey-area", &cHardwareExperimental::Inst_AttackRandPreyArea, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
 
     tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("fight-bonus-org", &cHardwareExperimental::Inst_FightBonusOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -5568,69 +5566,6 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     UpdateGroupAttackStats(inst, results, true);
   }
   return TestAttackResultsOut(results);
-}
-
-// to eliminate dilution effect, kill a random prey when trying to attack this one 
-bool cHardwareExperimental::Inst_AttackRandPrey(cAvidaContext& ctx)
-{
-  sAttackResult results;
-  results.inst = 0;
-  results.share = 0;
-  results.success = 0;
-  results.size = 0;
-  if (!TestAttack(ctx)) { results.success = 1; return TestAttackResultsOut(results); }
-  cOrganism* target = m_world->GetPopulation().GetRandPrey(ctx, m_organism);
-  if (target == m_organism) { results.success = 1; return TestAttackResultsOut(results); }
-  else if (!TestPreyTarget(target)) { results.success = 1; return TestAttackResultsOut(results); }
-
-  sAttackReg reg;
-  SetAttackReg(reg);
-  
-  if (!ExecuteAttack(ctx, target, reg)) return false;
-  return true;
-}
-
-// to eliminate dilution effect, kill a random prey when trying to attack this one -- using attack_area odds 
-bool cHardwareExperimental::Inst_AttackRandPreyArea(cAvidaContext& ctx)
-{
-  sAttackResult results;
-  results.inst = 0;
-  results.share = 0;
-  results.success = 0;
-  results.size = 0;
-  if (!TestAttack(ctx)) { results.success = 1; return TestAttackResultsOut(results); }
-
-  int prey_count = 0;
-  Apto::Array<int> neighborhood;
-  if (!m_use_avatar) {
-    if (m_organism->IsPreyFT()) prey_count++; // self
-    m_organism->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
-    for (int j = 0; j < neighborhood.GetSize(); j++) {
-      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
-          !m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsDead()) {
-        if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsPreyFT()) prey_count++;
-      }
-    }
-  }
-  else {
-    prey_count += m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVCellID())->GetNumPreyAV(); // self cell
-    m_organism->GetOrgInterface().GetAVNeighborhoodCellIDs(neighborhood);
-    for (int j = 0; j < neighborhood.GetSize(); j++) {
-      prey_count += m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetNumPreyAV();
-    }
-  }
-  
-  double odds = 1.0 / ((double) (prey_count));
-
-  cOrganism* target = m_world->GetPopulation().GetRandPrey(ctx, m_organism);
-  if (target == m_organism) { results.success = 1; return TestAttackResultsOut(results); }
-  else if (!TestPreyTarget(target)) { results.success = 1; return TestAttackResultsOut(results); }
-
-  sAttackReg reg;
-  SetAttackReg(reg);
-  
-  if (!ExecuteAttack(ctx, target, reg, odds)) return false;
-  return true;
 }
 
 bool cHardwareExperimental::Inst_AttackPoisonPrey(cAvidaContext& ctx)
