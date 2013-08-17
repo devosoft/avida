@@ -733,7 +733,7 @@ public:
   CONFIG_ADD_VAR(LOOK_DISABLE, int, 0, "0: none \n 1: input habitat register \n 2: input sight dist sought \n 3: input type of search (e.g. closest vs count vs total) \n 4: input resource/org id sought \n 5: output habitat used \n 6: output distance used\n 7: output search type used\n 8: output resource/org id used \n 9: output count (edible)\n 10: outptu amount/value seen\n 11: output id seen \n 12: output org forage target seen");
   CONFIG_ADD_VAR(LOOK_DISABLE_TYPE, int, 0, "0: predators \n 1: prey \n 2: both predators and prey");
   CONFIG_ADD_VAR(LOOK_DISABLE_COMBO, int, 0, "# 0: none \n # 1: return 'not found' for any food resource query \n # 2: return 'not found' for any looking-for-predator query \n # 3: return 'not found' for any looking-for-prey query");
-  CONFIG_ADD_VAR(PRED_CONFUSION, int, 0, "If 1, pred will get random data returned to registers when seen prey with odds of 1/n, where n = # neighbors that that prey has.");
+  CONFIG_ADD_VAR(PRED_CONFUSION, int, 0, "# If 1, pred will get random data returned to registers when seen prey with odds of 0.1 * n, where n = # neighbors that that prey has. \n If 2, pred will get random data returned to registers with odds of n/8, where n = # facings among neighbors that that prey has.");
   CONFIG_ADD_VAR(TRACK_LOOK_SETTINGS, int, 0, "# track (final) settings for look sensor use");
   CONFIG_ADD_VAR(TRACK_LOOK_OUTPUT, int, 0, "# track (final) output from sensor use");
   CONFIG_ADD_VAR(USE_DISPLAY, int, 0, "If 1, org display data is always 'on' (visible). If 2, org display is on and sensor does not set potential data.");
