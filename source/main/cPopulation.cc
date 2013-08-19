@@ -1044,10 +1044,23 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
   
   
   // Attempt actual parasite injection
+  // LZ - use parasige_genotype_list for the GenRepPtr instead IF Config says to
+  // e.g., use predefined genotypes to hold the frequency constant, or "replay" parasite
+  // from one run into another.
+  GeneticRepresentationPtr tmpParasiteGenome;
   
-  Genome mg(parent->UnitGenome().HardwareType(), parent->UnitGenome().Properties(), GeneticRepresentationPtr(new InstructionSequence(injected_code)));
+  if (m_world->GetConfig().PARASITE_USE_GENOTYPE_FILE.Get())
+  {
+    tmpParasiteGenome = parasite_genotype_list[m_world->GetRandom().GetInt(parasite_genotype_list.GetSize())];
+  }
+  else
+  {
+    tmpParasiteGenome = GeneticRepresentationPtr(new InstructionSequence(injected_code));
+  }
+  
+  Genome mg(parent->UnitGenome().HardwareType(), parent->UnitGenome().Properties(), tmpParasiteGenome);
+
   Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite(new cParasite(m_world, mg, Apto::StrAs(parent->Properties().Get("generation")), Systematics::Source(Systematics::HORIZONTAL, (const char*)label)));
-  
   //Handle potential virulence evolution if this parasite is comming from a parasite 
   //and virulence is inhereted from the parent (source == 1)
   if (parent->UnitSource().transmission_type == Systematics::HORIZONTAL && m_world->GetConfig().VIRULENCE_SOURCE.Get() == 1)
@@ -6319,6 +6332,28 @@ public:
   inline bool operator<=(const sTmpGenotype& rhs) const { return id_num >= rhs.id_num; }
   inline bool operator>=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
 };
+
+bool cPopulation::LoadParasiteGenotypeList(const cString& filename, cAvidaContext& ctx)
+{
+  cInitFile input_file(filename, m_world->GetWorkingDir(), ctx.Driver().Feedback());
+  if (!input_file.WasOpened()) return false;
+
+  parasite_genotype_list.ResizeClear(input_file.GetNumLines());
+  
+  Apto::Array<sTmpGenotype, Apto::ManagedPointer> genotypes(input_file.GetNumLines());
+  
+  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
+    cString m_sequence = input_file.GetLine(line_id);
+    
+    const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+    HashPropertyMap props;
+    cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
+    
+    parasite_genotype_list[line_id] = GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence));
+  }
+
+  return true;
+}
 
 bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, bool load_birth_cells, bool load_avatars, bool load_rebirth, bool load_parent_dat)
 {

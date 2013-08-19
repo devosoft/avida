@@ -717,7 +717,7 @@ bool cHardwareTransSMT::ParasiteInfectHost(Systematics::UnitPtr bu)
   bu_seq_p.DynamicCastFrom(bu_gen.Representation());
   const InstructionSequence& bu_seq = *bu_seq_p;  
   m_mem_array[mem_space] = bu_seq;
-  
+    
   // Setup the thread
   m_threads[thread_id].Reset(this, mem_space);
   m_threads[thread_id].owner = bu;

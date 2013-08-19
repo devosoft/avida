@@ -86,6 +86,26 @@ public:
   }
 };
 
+class cActionLoadParasiteGenotypeList : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionLoadParasiteGenotypeList(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().LoadParasiteGenotypeList(m_filename, ctx);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string filename='flame']"; }
+
+};
+
 class cActionSavePopulation : public cAction
 {
 private:
@@ -241,6 +261,7 @@ public:
 
 void RegisterSaveLoadActions(cActionLibrary* action_lib)
 {
+  action_lib->Register<cActionLoadParasiteGenotypeList>("LoadParasiteGenotypeList");
   action_lib->Register<cActionLoadPopulation>("LoadPopulation");
   action_lib->Register<cActionSavePopulation>("SavePopulation");
   action_lib->Register<cActionLoadStructuredSystematicsGroup>("LoadStructuredSystematicsGroup");

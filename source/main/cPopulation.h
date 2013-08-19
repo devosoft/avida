@@ -85,6 +85,8 @@ private:
   
   Apto::Array<pair<int,int>, Apto::Smart>* sleep_log;
   
+  Apto::Array<GeneticRepresentationPtr> parasite_genotype_list;
+  
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
   Apto::Array<int, Apto::Smart> minitrace_queue;
@@ -266,6 +268,7 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx); 
 
   // Saving and loading...
+  bool LoadParasiteGenotypeList(const cString& filename, cAvidaContext& ctx);
   bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false,
                       bool save_rebirth = false);
   bool SaveStructuredSystematicsGroup(const Systematics::RoleID& role, const cString& filename);

@@ -456,6 +456,7 @@ public:
 
   CONFIG_ADD_VAR(PARASITE_MEM_SPACES, int, 1, "Parasites get their own memory spaces");
   CONFIG_ADD_VAR(PARASITE_NO_COPY_MUT, int, 0, "Parasites do not get copy mutation rates");
+  CONFIG_ADD_VAR(PARASITE_USE_GENOTYPE_FILE, int, 0, "Parasite Genotypes are loaded from a file rather than replicated from parent -- see LoadParasiteGenotypeList");
 
 
   // -------- CPU Archetecture
