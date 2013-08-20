@@ -1331,7 +1331,7 @@ void cPopulation::AppendMiniTraces(Apto::Array<int, Apto::Smart> new_queue, cons
   use_micro_traces = use_micro;
 }
 
-void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes, bool print_reacs)
+void cPopulation::LoadMiniTraceQ(const cString& filename, int orgs_per, bool print_genomes, bool print_reacs)
 {
   cInitFile input_file(filename, m_world->GetWorkingDir());
   if (!input_file.WasOpened()) {
@@ -6340,13 +6340,15 @@ public:
   inline bool operator>=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
 };
 
-bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, bool load_birth_cells, bool load_avatars, bool load_rebirth, bool load_parent_dat)
+bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, bool load_birth_cells, bool load_avatars, bool load_rebirth, bool load_parent_dat, int traceq)
 {
   // @TODO - build in support for verifying population dimensions
   
   cInitFile input_file(filename, m_world->GetWorkingDir(), ctx.Driver().Feedback());
   if (!input_file.WasOpened()) return false;
   
+  if (traceq) LoadMiniTraceQ(filename, 1, traceq == 2, 0);
+
   // Clear out the population, unless an offset is being used
   if (cellid_offset == 0) {
     for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i], ctx); 
