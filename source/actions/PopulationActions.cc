@@ -5476,6 +5476,38 @@ public:
 	}
 };
 
+
+/*
+ Modifies an instruction's prob of failure during a run  */
+class cActionSetProbFail : public cAction
+{
+private:
+	cString m_inst_name;
+	double m_prob;
+public:
+	cActionSetProbFail(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+	{
+		cString largs(args);
+		m_inst_name = largs.PopWord();
+		
+		//Make sure that the instruction the user has specified is in the instruction set
+		assert(world->GetHardwareManager().GetDefaultInstSet().InstInSet(m_inst_name));
+    
+		//Get the new redundancy
+		m_prob = largs.PopWord().AsInt();
+	}
+	
+	static const cString GetDescription() { return "Arguments: <char instruction> <int prob_fail>"; }
+	
+	void Process(cAvidaContext& ctx)
+	{
+		//cInstSet& is = m_world->GetHardwareManager().GetInstSet(m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName());
+		cInstSet& is = m_world->GetHardwareManager().GetInstSet("(default)");
+		Instruction inst = is.GetInst(m_inst_name);
+		is.SetProbFail(inst, m_prob);
+	}
+};
+
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionInject>("Inject");
@@ -5532,6 +5564,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionFlash>("Flash");
   
   action_lib->Register<cActionSetRedundancy>("SetRedundancy");
+  action_lib->Register<cActionSetProbFail>("SetProbFail");
 	
   /****AbstractCompeteDemes sub-classes****/
 	

@@ -1344,7 +1344,7 @@ void cPopulation::AppendMiniTraces(Apto::Array<int, Apto::Smart> new_queue, cons
   use_micro_traces = use_micro;
 }
 
-void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes, bool print_reacs)
+void cPopulation::LoadMiniTraceQ(const cString& filename, int orgs_per, bool print_genomes, bool print_reacs)
 {
   cInitFile input_file(filename, m_world->GetWorkingDir());
   if (!input_file.WasOpened()) {
@@ -1964,6 +1964,26 @@ void cPopulation::KillRandPrey(cAvidaContext& ctx, cOrganism* org)
     idx = ctx.GetRandom().GetUInt(list_size);
   }
   if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
+}
+
+cOrganism* cPopulation::GetRandPrey(cAvidaContext& ctx, cOrganism* org)
+{
+  cOrganism* target_org = org;
+  const Apto::Array<cOrganism*, Apto::Smart>& live_org_list = GetLiveOrgList();
+  Apto::Array<cOrganism*> TriedIdx(live_org_list.GetSize());
+  int list_size = TriedIdx.GetSize();
+  for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
+  
+  int idx = ctx.GetRandom().GetUInt(list_size);
+  while (target_org == org) {
+    cOrganism* org_at = TriedIdx[idx];
+    // exclude predators and juvenilles with predatory parents (include juvs with non-predatory parents)
+    if (org_at->GetForageTarget() > -1 || (org_at->GetForageTarget() == -1 && org_at->GetParentFT() > -2)) target_org = org_at;
+    else TriedIdx.Swap(idx, --list_size);
+    if (list_size == 1) break;
+    idx = ctx.GetRandom().GetUInt(list_size);
+  }
+  return target_org;
 }
 
 void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
@@ -6355,13 +6375,15 @@ bool cPopulation::LoadParasiteGenotypeList(const cString& filename, cAvidaContex
   return true;
 }
 
-bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, bool load_birth_cells, bool load_avatars, bool load_rebirth, bool load_parent_dat)
+bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, bool load_birth_cells, bool load_avatars, bool load_rebirth, bool load_parent_dat, int traceq)
 {
   // @TODO - build in support for verifying population dimensions
   
   cInitFile input_file(filename, m_world->GetWorkingDir(), ctx.Driver().Feedback());
   if (!input_file.WasOpened()) return false;
   
+  if (traceq) LoadMiniTraceQ(filename, 1, traceq == 2, 0);
+
   // Clear out the population, unless an offset is being used
   if (cellid_offset == 0) {
     for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i], ctx); 

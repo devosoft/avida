@@ -364,6 +364,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("attack-prey-fake-group-share", &cHardwareExperimental::Inst_AttackPreyFakeGroupShare, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-spec-prey", &cHardwareExperimental::Inst_AttackSpecPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-area", &cHardwareExperimental::Inst_AttackPreyArea, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+
     tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("fight-bonus-org", &cHardwareExperimental::Inst_FightBonusOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("mark-cell", &cHardwareExperimental::Inst_MarkCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -5266,7 +5267,7 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
   int prey_count = 0;
   Apto::Array<int> neighborhood;
   if (!m_use_avatar) {
-    prey_count++; // self
+    if (m_organism->IsPreyFT()) prey_count++; // self
     m_organism->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
     for (int j = 0; j < neighborhood.GetSize(); j++) {
       if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
@@ -5476,6 +5477,7 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
 
   const int id_sought_reg = FindModifiedRegister(rBX);
   const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
+  m_from_sensor = FromSensor(id_sought_reg);
   bool have_org2use = false;
   
   // return false if invalid number or self
@@ -5495,7 +5497,7 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
   if (!have_org2use) return false;
 
   if (!m_use_avatar) { if (target != m_organism->GetOrgInterface().GetNeighbor())  return false; }
-  else if (m_use_avatar == 2) { if (target->GetCellID() != m_organism->GetOrgInterface().GetAVFacedCellID())  return false; }
+  else if (m_use_avatar == 2) { if (target->GetAVCellID() != m_organism->GetOrgInterface().GetAVFacedCellID())  return false; }
 
   if (!TestPreyTarget(target)) return false;
   

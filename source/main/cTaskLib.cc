@@ -327,6 +327,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "eat-target-nor") Load_ConsumeTargetNor(name, info, envreqs, feedback);
   else if (name == "eat-target-xor") Load_ConsumeTargetXor(name, info, envreqs, feedback);
   else if (name == "eat-target-equ") Load_ConsumeTargetEqu(name, info, envreqs, feedback);
+  else if (name == "move-ft") Load_MoveFT(name, info, envreqs, feedback);
   
   //Explosions
   if (name == "exploded") Load_Exploded(name, info, envreqs, feedback);
@@ -3812,6 +3813,18 @@ void cTaskLib::Load_ConsumeTargetEqu(const cString& name, const cString& argstr,
   m_world->GetEnvironment().AddTargetID(args->GetInt(0));
 }
 
+void cTaskLib::Load_MoveFT(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("target_id", 0, 1);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "MoveFT", &cTaskLib::Task_MoveFT, 0, args);
+
+  // Add this target id to the list in the instructions file. 
+  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
+}
+
 double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
 {
   int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
@@ -3948,6 +3961,31 @@ double cTaskLib::Task_ConsumeTargetEqu(cTaskContext& ctx) const
   // If the organism is on the right resource...
   if (target_res == des_target) {
     reward = Task_Equ(ctx);
+  }
+  return reward;
+}
+
+double cTaskLib::Task_MoveFT(cTaskContext& ctx) const
+{
+  double reward = 0.0;
+  bool moved = false;
+  
+  int cell_id = ctx.GetOrganism()->GetCellID();
+  if (m_world->GetConfig().USE_AVATARS.Get()) cell_id = ctx.GetOrganism()->GetAVCellID();
+  if (cell_id != ctx.GetOrganism()->GetPrevSeenCellID()) {
+    moved = true;
+  }
+
+  if (moved) {
+    int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+    
+    int target_res = ctx.GetOrganism()->GetForageTarget();
+    
+    // If the organism is on the right resource...
+    if (target_res == des_target) {
+      reward = 1;
+      ctx.GetOrganism()->SetPrevSeenCellID(cell_id);
+    }
   }
   return reward;
 }
