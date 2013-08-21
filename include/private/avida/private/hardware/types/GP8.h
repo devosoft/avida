@@ -2,7 +2,7 @@
  *  hardware/types/GP8.h
  *  avida-core
  *
- *  Created by David on 7/24/13 based on cHardwareGP8.
+ *  Created by David on 7/24/13.
  *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *

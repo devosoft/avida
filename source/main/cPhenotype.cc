@@ -56,14 +56,6 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , cur_sense_count(m_world->GetStats().GetSenseSize())
 , sensed_resources(m_world->GetEnvironment().GetResDefLib().GetSize())
 , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
-, m_tolerance_immigrants()
-, m_tolerance_offspring_own()
-, m_tolerance_offspring_others()
-, m_intolerances((m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0) ? 1 : 3)
-, mating_type(MATING_TYPE_JUVENILE)
-, mate_preference(MATE_PREFERENCE_RANDOM)
-, cur_mating_display_a(0)
-, cur_mating_display_b(0)
 , m_reaction_result(NULL)
 , last_task_count(m_world->GetEnvironment().GetNumTasks())
 , last_para_tasks(m_world->GetEnvironment().GetNumTasks())
@@ -78,8 +70,6 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
 , last_sense_count(m_world->GetStats().GetSenseSize())
-, last_mating_display_a(0)
-, last_mating_display_b(0)
 , generation(0)
 , birth_cell_id(0)
 , av_birth_cell_id(0)
@@ -139,8 +129,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   // 2. These are "in progress" variables, updated as the organism operates
   cur_bonus                = in_phen.cur_bonus;                           
   cur_num_errors           = in_phen.cur_num_errors;
-  cur_num_donates          = in_phen.cur_num_donates;                       
-  cur_task_count           = in_phen.cur_task_count;  
+  cur_task_count           = in_phen.cur_task_count;
   cur_para_tasks           = in_phen.cur_para_tasks;
   cur_host_tasks           = in_phen.cur_host_tasks;
   eff_task_count           = in_phen.eff_task_count;
@@ -163,17 +152,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   cur_sense_count          = in_phen.cur_sense_count;
   sensed_resources         = in_phen.sensed_resources;            
   cur_task_time            = in_phen.cur_task_time;
-  m_tolerance_immigrants          = in_phen.m_tolerance_immigrants;
-  m_tolerance_offspring_own       = in_phen.m_tolerance_offspring_own;
-  m_tolerance_offspring_others    = in_phen.m_tolerance_offspring_others;
-  m_intolerances                  = in_phen.m_intolerances;
   cur_stolen_reaction_count       = in_phen.cur_stolen_reaction_count;
-  mating_type = in_phen.mating_type; //@CHC
-  mate_preference = in_phen.mate_preference; //@CHC
-  cur_mating_display_a = in_phen.cur_mating_display_a;
-  cur_mating_display_b = in_phen.cur_mating_display_b;
-  last_mating_display_a = in_phen.last_mating_display_a;
-  last_mating_display_b = in_phen.last_mating_display_b;  
   
   // Dynamically allocated m_task_states requires special handling
   for (Apto::Map<void*, cTaskState*>::ConstIterator it = in_phen.m_task_states.Begin(); it.Next();) {
@@ -185,7 +164,6 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_merit_base          = in_phen.last_merit_base;       
   last_bonus               = in_phen.last_bonus;
   last_num_errors          = in_phen.last_num_errors;
-  last_num_donates         = in_phen.last_num_donates;
   last_task_count          = in_phen.last_task_count;
   last_host_tasks          = in_phen.last_host_tasks;
   last_para_tasks          = in_phen.last_para_tasks;
@@ -200,8 +178,6 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_reaction_add_reward = in_phen.last_reaction_add_reward; 
   last_inst_count          = in_phen.last_inst_count;	  
   last_from_sensor_count   = in_phen.last_from_sensor_count;
-  last_group_attack_count   = in_phen.last_group_attack_count;
-  last_top_pred_group_attack_count   = in_phen.last_top_pred_group_attack_count;
   last_killed_targets      = in_phen.last_killed_targets;
   last_from_sensor_count   = in_phen.last_from_sensor_count;
   last_sense_count         = in_phen.last_sense_count;
@@ -229,55 +205,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   to_delete               = in_phen.to_delete;        
   is_injected             = in_phen.is_injected;      
   is_clone                = in_phen.is_clone;
-  is_donor_cur            = in_phen.is_donor_cur;     
-  is_donor_last           = in_phen.is_donor_last;     
-  is_donor_rand           = in_phen.is_donor_rand;    
-  is_donor_rand_last      = in_phen.is_donor_rand_last;
-  is_donor_null           = in_phen.is_donor_null;    
-  is_donor_null_last      = in_phen.is_donor_null_last;
-  is_donor_kin            = in_phen.is_donor_kin;    
-  is_donor_kin_last       = in_phen.is_donor_kin_last;
-  is_donor_edit           = in_phen.is_donor_edit;   
-  is_donor_edit_last      = in_phen.is_donor_edit_last; 
-  is_donor_gbg            = in_phen.is_donor_gbg;     
-  is_donor_gbg_last       = in_phen.is_donor_gbg_last;
-  is_donor_truegb         = in_phen.is_donor_truegb; 
-  is_donor_truegb_last    = in_phen.is_donor_truegb_last;
-  is_donor_threshgb       = in_phen.is_donor_threshgb;  
-  is_donor_threshgb_last  = in_phen.is_donor_threshgb_last;
-  is_donor_quanta_threshgb        = in_phen.is_donor_quanta_threshgb;  
-  is_donor_quanta_threshgb_last   = in_phen.is_donor_quanta_threshgb_last;
-  is_donor_shadedgb       = in_phen.is_donor_shadedgb;  
-  is_donor_shadedgb_last  = in_phen.is_donor_shadedgb_last;	
-  is_donor_locus          = in_phen.is_donor_locus;
-  is_donor_locus_last     = in_phen.is_donor_locus_last;
-  num_thresh_gb_donations         = in_phen.num_thresh_gb_donations;  
-  num_thresh_gb_donations_last    = in_phen.num_thresh_gb_donations_last;  
-  num_quanta_thresh_gb_donations = in_phen.num_quanta_thresh_gb_donations;
-  num_quanta_thresh_gb_donations_last = in_phen.num_quanta_thresh_gb_donations_last;
-  num_shaded_gb_donations         = in_phen.num_shaded_gb_donations;  
-  num_shaded_gb_donations_last    = in_phen.num_shaded_gb_donations_last; 
-  num_donations_locus     = in_phen.num_donations_locus;
-  num_donations_locus_last = in_phen.num_donations_locus_last;
-  is_receiver             = in_phen.is_receiver;   
-  is_receiver_last        = in_phen.is_receiver_last;      
-  is_receiver_rand        = in_phen.is_receiver_rand;
-  is_receiver_kin         = in_phen.is_receiver_kin; 
-  is_receiver_kin_last    = in_phen.is_receiver_kin_last; 
-  is_receiver_edit        = in_phen.is_receiver_edit; 
-  is_receiver_edit_last   = in_phen.is_receiver_edit_last; 
-  is_receiver_gbg         = in_phen.is_receiver_gbg; 
-  is_receiver_truegb      = in_phen.is_receiver_truegb;
-  is_receiver_truegb_last = in_phen.is_receiver_truegb_last;
-  is_receiver_threshgb    = in_phen.is_receiver_threshgb;
-  is_receiver_threshgb_last    = in_phen.is_receiver_threshgb_last;
-  is_receiver_quanta_threshgb  = in_phen.is_receiver_quanta_threshgb;
-  is_receiver_quanta_threshgb_last = in_phen.is_receiver_quanta_threshgb_last;
-  is_receiver_shadedgb    = in_phen.is_receiver_shadedgb;
-  is_receiver_shadedgb_last    = in_phen.is_receiver_shadedgb_last;	
-  is_receiver_gb_same_locus = in_phen.is_receiver_gb_same_locus;
-  is_receiver_gb_same_locus_last = in_phen.is_receiver_gb_same_locus_last;
-  is_modifier             = in_phen.is_modifier;      
+  is_modifier             = in_phen.is_modifier;
   is_modified             = in_phen.is_modified;      
   is_fertile              = in_phen.is_fertile;      
   is_mutated              = in_phen.is_mutated;       
@@ -334,7 +262,6 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   // Initialize current values, as neeeded.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_num_errors  = 0;
-  cur_num_donates  = 0;
   cur_task_count.SetAll(0);
   cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
@@ -378,24 +305,12 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  m_tolerance_immigrants.Clear();        
-  m_tolerance_offspring_own.Clear();     
-  m_tolerance_offspring_others.Clear();  
-  m_intolerances.SetAll(make_pair(-1, -1));  
-  mating_type = MATING_TYPE_JUVENILE; //@CHC
-  mate_preference = MATE_PREFERENCE_RANDOM; //@CHC
-  
-  cur_mating_display_a = 0;
-  cur_mating_display_b = 0;
-  last_mating_display_a = 0;
-  last_mating_display_b = 0;
   
   // Copy last values from parent
   last_merit_base           = parent_phenotype.last_merit_base;
   last_bonus                = parent_phenotype.last_bonus;
   last_cpu_cycles_used      = parent_phenotype.last_cpu_cycles_used;
   last_num_errors           = parent_phenotype.last_num_errors;
-  last_num_donates          = parent_phenotype.last_num_donates;
   last_task_count           = parent_phenotype.last_task_count;
   last_host_tasks           = parent_phenotype.last_host_tasks;
   last_para_tasks           = parent_phenotype.last_para_tasks;
@@ -410,8 +325,6 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   last_reaction_add_reward  = parent_phenotype.last_reaction_add_reward;
   last_inst_count           = parent_phenotype.last_inst_count;
   last_from_sensor_count    = parent_phenotype.last_from_sensor_count;
-  last_group_attack_count    = parent_phenotype.last_group_attack_count;
-  last_top_pred_group_attack_count    = parent_phenotype.last_top_pred_group_attack_count;
   last_killed_targets      = parent_phenotype.last_killed_targets;
   last_sense_count          = parent_phenotype.last_sense_count;
   last_fitness              = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
@@ -434,66 +347,15 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   res_consumed             = 0;
   last_task_time           = 0;
   
-  num_thresh_gb_donations = 0;
-  num_thresh_gb_donations_last = parent_phenotype.num_thresh_gb_donations_last;
-  num_quanta_thresh_gb_donations = 0;
-  num_quanta_thresh_gb_donations_last = parent_phenotype.num_thresh_gb_donations_last;
-  num_shaded_gb_donations = 0;
-  num_shaded_gb_donations_last = parent_phenotype.num_shaded_gb_donations_last;
-  num_donations_locus = 0;
-  num_donations_locus_last = parent_phenotype.num_donations_locus_last;
-  
 	
   // Setup flags...
   is_injected   = false;
   is_clone   = false;
-  is_donor_cur  = false;
-  is_donor_last = parent_phenotype.is_donor_last;
-  is_donor_rand = false;
-  is_donor_rand_last = parent_phenotype.is_donor_rand_last;
-  is_donor_null = false;
-  is_donor_null_last = parent_phenotype.is_donor_null_last;
-  is_donor_kin  = false;
-  is_donor_kin_last = parent_phenotype.is_donor_kin_last;
-  is_donor_edit  = false;
-  is_donor_edit_last = parent_phenotype.is_donor_edit_last;
-  is_donor_gbg  = false;
-  is_donor_gbg_last = parent_phenotype.is_donor_gbg_last;
-  is_donor_truegb  = false;
-  is_donor_truegb_last = parent_phenotype.is_donor_truegb_last;
-  is_donor_threshgb  = false;
-  is_donor_threshgb_last = parent_phenotype.is_donor_threshgb_last;
-  is_donor_quanta_threshgb  = false;
-  is_donor_quanta_threshgb_last = parent_phenotype.is_donor_quanta_threshgb_last;
-  is_donor_shadedgb  = false;
-  is_donor_shadedgb_last = parent_phenotype.is_donor_shadedgb_last;	
-  is_donor_locus.SetAll(false);
-  is_donor_locus_last = parent_phenotype.is_donor_locus_last;
-  
-  is_receiver   = false;  
-  is_receiver_last = parent_phenotype.is_receiver_last;
-  is_receiver_rand   = false;
-  is_receiver_kin    = false;
-  is_receiver_kin_last    = parent_phenotype.is_receiver_kin_last;
-  is_receiver_edit   = false;
-  is_receiver_edit_last    = parent_phenotype.is_receiver_edit_last;
-  is_receiver_gbg    = false;
-  is_receiver_truegb = false;
-  is_receiver_truegb_last = parent_phenotype.is_receiver_truegb_last;
-  is_receiver_threshgb = false;
-  is_receiver_threshgb_last = parent_phenotype.is_receiver_threshgb_last;
-  is_receiver_quanta_threshgb = false;
-  is_receiver_quanta_threshgb_last = parent_phenotype.is_receiver_quanta_threshgb_last;
-  is_receiver_shadedgb = false;
-  is_receiver_shadedgb_last = parent_phenotype.is_receiver_shadedgb_last;	
-  is_receiver_gb_same_locus = false;
-  is_receiver_gb_same_locus_last = parent_phenotype.is_receiver_gb_same_locus;
   
   is_modifier   = false;
   is_modified   = false;
   is_fertile    = parent_phenotype.last_child_fertile;
   is_mutated    = false;
-  kaboom_executed = false;
   if (m_world->GetConfig().INHERIT_MULTITHREAD.Get()) {
     is_multi_thread = parent_phenotype.is_multi_thread;
   } else {
@@ -544,7 +406,6 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   // Initialize current values, as neeeded.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_num_errors  = 0;
-  cur_num_donates  = 0;
   cur_task_count.SetAll(0);
   cur_para_tasks.SetAll(0);
   cur_host_tasks.SetAll(0);
@@ -580,19 +441,12 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  m_tolerance_immigrants.Clear();        
-  m_tolerance_offspring_own.Clear();     
-  m_tolerance_offspring_others.Clear();  
-  m_intolerances.SetAll(make_pair(-1, -1));  
-  mating_type = MATING_TYPE_JUVENILE; // @CHC
-  mate_preference = MATE_PREFERENCE_RANDOM; //@CHC
   
   // New organism has no parent and so cannot use its last values; initialize as needed
   last_merit_base = genome_length;
   last_bonus      = 1;
   last_cpu_cycles_used = 0;
   last_num_errors = 0;
-  last_num_donates = 0;
   last_task_count.SetAll(0);
   last_host_tasks.SetAll(0);
   last_para_tasks.SetAll(0);
@@ -607,10 +461,6 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   last_reaction_add_reward.SetAll(0);
   last_inst_count.SetAll(0);
   last_from_sensor_count.SetAll(0);
-  for (int r = 0; r < last_group_attack_count.GetSize(); r++) {
-    last_group_attack_count[r].SetAll(0);
-    last_top_pred_group_attack_count[r].SetAll(0);
-  }
   last_killed_targets.SetAll(0);
   last_sense_count.SetAll(0);
   
@@ -627,59 +477,9 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   exec_time_born  = 0;
   birth_update     = m_world->GetStats().GetUpdate();
   
-  num_thresh_gb_donations = 0;
-  num_thresh_gb_donations_last = 0;
-  num_quanta_thresh_gb_donations = 0;
-  num_quanta_thresh_gb_donations_last = 0;
-  num_shaded_gb_donations = 0;
-  num_shaded_gb_donations_last = 0;	
-  num_donations_locus = 0;
-  num_donations_locus_last = 0;
-	
   // Setup flags...
   is_injected   = true;
   is_clone   = false;
-  is_donor_last = false;
-  is_donor_cur  = false;
-  is_donor_rand = false;
-  is_donor_rand_last = false;
-  is_donor_null = false;
-  is_donor_null_last = false;
-  is_donor_kin = false;
-  is_donor_kin_last = false;
-  is_donor_edit = false;
-  is_donor_edit_last = false;
-  is_donor_gbg = false;
-  is_donor_gbg_last = false;
-  is_donor_truegb = false;
-  is_donor_truegb_last = false;
-  is_donor_threshgb = false;
-  is_donor_threshgb_last = false;
-  is_donor_quanta_threshgb = false;
-  is_donor_quanta_threshgb_last = false;
-  is_donor_shadedgb = false;
-  is_donor_shadedgb_last = false;
-  is_donor_locus.SetAll(false);
-  is_donor_locus_last.SetAll(false);
-  
-  is_receiver   = false;
-  is_receiver_last   = false;
-  is_receiver_rand   = false;
-  is_receiver_kin   = false;
-  is_receiver_kin_last   = false;
-  is_receiver_edit   = false;
-  is_receiver_edit_last   = false;
-  is_receiver_gbg   = false;
-  is_receiver_truegb   = false;
-  is_receiver_truegb_last   = false;
-  is_receiver_threshgb   = false;
-  is_receiver_threshgb_last   = false;
-  is_receiver_quanta_threshgb   = false;
-  is_receiver_quanta_threshgb_last   = false;
-  is_receiver_shadedgb   = false;
-  is_receiver_shadedgb_last   = false;	
-  is_receiver_gb_same_locus = false;
-  is_receiver_gb_same_locus_last = false;
   
   is_modifier   = false;
   is_modified   = false;
@@ -691,7 +491,6 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   parent_cross_num    = 0;
   to_die = false;
   to_delete = false;
-  kaboom_executed = false;
   
   // Setup child info...
   copy_true         = false;
@@ -756,7 +555,6 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   last_bonus                = cur_bonus;
   last_cpu_cycles_used      = cpu_cycles_used;
   last_num_errors           = cur_num_errors;
-  last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
   last_host_tasks           = cur_host_tasks;
   last_para_tasks           = cur_para_tasks;
@@ -771,24 +569,17 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
   last_from_sensor_count    = cur_from_sensor_count;
-  last_group_attack_count   = cur_group_attack_count;
   last_killed_targets       = cur_killed_targets;
-  last_top_pred_group_attack_count    = cur_top_pred_group_attack_count;
   last_sense_count          = cur_sense_count;
   
-  last_mating_display_a = cur_mating_display_a; //@CHC
-  last_mating_display_b = cur_mating_display_b;
   
   // Reset cur values.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cpu_cycles_used = 0;
   cur_num_errors  = 0;
-  cur_num_donates  = 0;
   cur_task_count.SetAll(0);
   cur_host_tasks.SetAll(0);
   
-  cur_mating_display_a = 0; //@CHC
-  cur_mating_display_b = 0;
   
   // @LZ: figure out when and where to reset cur_para_tasks, depending on the divide method, and
   //      resonable assumptions
@@ -844,59 +635,9 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   res_consumed             = 0;
   last_task_time           = 0;
   
-  num_thresh_gb_donations_last = num_thresh_gb_donations;
-  num_thresh_gb_donations = 0;
-  num_quanta_thresh_gb_donations_last = num_quanta_thresh_gb_donations;
-  num_quanta_thresh_gb_donations = 0;
-  num_shaded_gb_donations_last = num_shaded_gb_donations;
-  num_shaded_gb_donations = 0;
-  num_donations_locus_last = num_donations_locus;
-  num_donations_locus = 0;
-	
   // Leave flags alone...
   (void) is_injected;
   is_clone = false; // has legitimately reproduced
-  is_donor_last = is_donor_cur;
-  is_donor_cur = false;
-  is_donor_rand_last = is_donor_rand;
-  is_donor_rand = false;
-  is_donor_null_last = is_donor_null;
-  is_donor_null = false;
-  is_donor_kin_last = is_donor_kin;
-  is_donor_kin = false;
-  is_donor_edit_last = is_donor_edit;
-  is_donor_edit = false;
-  is_donor_gbg_last = is_donor_gbg;
-  is_donor_gbg = false;
-  is_donor_truegb_last = is_donor_truegb;
-  is_donor_truegb = false;
-  is_donor_threshgb_last = is_donor_threshgb;
-  is_donor_threshgb = false;
-  is_donor_quanta_threshgb_last = is_donor_quanta_threshgb;
-  is_donor_quanta_threshgb = false;
-  is_donor_shadedgb_last = is_donor_shadedgb;
-  is_donor_shadedgb = false;	
-  is_donor_locus_last = is_donor_locus;
-  is_donor_locus.SetAll(false);
-  
-  is_receiver_last = is_receiver;
-  is_receiver = false;
-  is_receiver_rand = false;
-  is_receiver_kin_last = is_receiver_kin;
-  is_receiver_kin = false;
-  is_receiver_edit_last = is_receiver_edit;
-  is_receiver_edit = false;
-  is_receiver_gbg = false;
-  is_receiver_truegb_last = is_receiver_truegb;
-  is_receiver_truegb = false;
-  is_receiver_threshgb_last = is_receiver_threshgb;
-  is_receiver_threshgb = false;
-  is_receiver_quanta_threshgb_last = is_receiver_quanta_threshgb;
-  is_receiver_quanta_threshgb = false;
-  is_receiver_shadedgb_last = is_receiver_shadedgb;
-  is_receiver_shadedgb = false;	
-  is_receiver_gb_same_locus_last = is_receiver_gb_same_locus;
-  is_receiver_gb_same_locus = false;
   
   (void) is_modifier;
   (void) is_modified;
@@ -906,7 +647,6 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   (void) parent_true;
   (void) parent_sex;
   (void) parent_cross_num;
-  (void) kaboom_executed;
   
   // Reset child info...
   (void) copy_true;
@@ -927,13 +667,6 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
     neutral_metric += m_world->GetRandom().GetRandNormal();
   }
   
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-    m_tolerance_immigrants.Clear();        
-    m_tolerance_offspring_own.Clear();     
-    m_tolerance_offspring_others.Clear();  
-    m_intolerances.SetAll(make_pair(-1, -1));  
-  }
-
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
   
   // Reset Task States
@@ -976,7 +709,6 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   last_bonus                = cur_bonus;
   last_cpu_cycles_used      = cpu_cycles_used;
   last_num_errors           = cur_num_errors;
-  last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
   last_host_tasks           = cur_host_tasks;
   last_para_tasks           = cur_para_tasks;
@@ -991,16 +723,13 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
   last_from_sensor_count    = cur_from_sensor_count;
-  last_group_attack_count   = cur_group_attack_count;
   last_killed_targets       = cur_killed_targets;
-  last_top_pred_group_attack_count    = cur_top_pred_group_attack_count;
   last_sense_count          = cur_sense_count;
   
   // Reset cur values.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cpu_cycles_used = 0;
   cur_num_errors  = 0;
-  cur_num_donates  = 0;
   cur_task_count.SetAll(0);
   cur_host_tasks.SetAll(0);
   // @LZ: figure out when and where to reset cur_para_tasks, depending on the divide method, and
@@ -1041,10 +770,6 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  m_tolerance_immigrants.Clear();
-  m_tolerance_offspring_own.Clear();
-  m_tolerance_offspring_others.Clear();
-  m_intolerances.SetAll(make_pair(-1, -1));  
   
   // Setup other miscellaneous values...
   num_divides++;
@@ -1062,59 +787,9 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   last_task_time           = 0;
 
   
-  num_thresh_gb_donations_last = num_thresh_gb_donations;
-  num_thresh_gb_donations = 0;
-  num_quanta_thresh_gb_donations_last = num_quanta_thresh_gb_donations;
-  num_quanta_thresh_gb_donations = 0;
-  num_shaded_gb_donations_last = num_shaded_gb_donations;
-  num_shaded_gb_donations = 0;
-  num_donations_locus_last = num_donations_locus;
-  num_donations_locus = 0;
-	
   // Leave flags alone...
   (void) is_injected;
   is_clone = false; // has legitimately reproduced
-  is_donor_last = is_donor_cur;
-  is_donor_cur = false;
-  is_donor_rand_last = is_donor_rand;
-  is_donor_rand = false;
-  is_donor_null_last = is_donor_null;
-  is_donor_null = false;
-  is_donor_kin_last = is_donor_kin;
-  is_donor_kin = false;
-  is_donor_edit_last = is_donor_edit;
-  is_donor_edit = false;
-  is_donor_gbg_last = is_donor_gbg;
-  is_donor_gbg = false;
-  is_donor_truegb_last = is_donor_truegb;
-  is_donor_truegb = false;
-  is_donor_threshgb_last = is_donor_threshgb;
-  is_donor_threshgb = false;
-  is_donor_quanta_threshgb_last = is_donor_quanta_threshgb;
-  is_donor_quanta_threshgb = false;
-  is_donor_shadedgb_last = is_donor_shadedgb;
-  is_donor_shadedgb = false;
-  is_donor_locus_last = is_donor_locus;
-  is_donor_locus.SetAll(false);
-  
-  is_receiver_last = is_receiver;
-  is_receiver = false;
-  is_receiver_rand = false;
-  is_receiver_kin_last = is_receiver_kin;
-  is_receiver_kin = false;
-  is_receiver_edit_last = is_receiver_edit;
-  is_receiver_edit = false;
-  is_receiver_gbg = false;
-  is_receiver_truegb_last = is_receiver_truegb;
-  is_receiver_truegb = false;
-  is_receiver_threshgb_last = is_receiver_threshgb;
-  is_receiver_threshgb = false;
-  is_receiver_quanta_threshgb_last = is_receiver_quanta_threshgb;
-  is_receiver_quanta_threshgb = false;
-  is_receiver_shadedgb_last = is_receiver_shadedgb;
-  is_receiver_shadedgb = false;	
-  is_receiver_gb_same_locus_last = is_receiver_gb_same_locus;
-  is_receiver_gb_same_locus = false;
   
   (void) is_modifier;
   (void) is_modified;
@@ -1124,7 +799,6 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   (void) parent_true;
   (void) parent_sex;
   (void) parent_cross_num;
-  (void) kaboom_executed;
   
   // Reset child info...
   (void) copy_true;
@@ -1171,7 +845,6 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cpu_cycles_used = 0;
   cur_num_errors  = 0;
-  cur_num_donates  = 0;
   cur_task_count.SetAll(0);
   cur_host_tasks.SetAll(0);
   cur_para_tasks.SetAll(0);
@@ -1202,19 +875,12 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  m_tolerance_immigrants.Clear();        
-  m_tolerance_offspring_own.Clear();     
-  m_tolerance_offspring_others.Clear();  
-  m_intolerances.SetAll(make_pair(-1, -1));  
-  mating_type = MATING_TYPE_JUVENILE; // @CHC
-  mate_preference = MATE_PREFERENCE_RANDOM; //@CHC
   
   // Copy last values from parent
   last_merit_base          = clone_phenotype.last_merit_base;
   last_bonus               = clone_phenotype.last_bonus;
   last_cpu_cycles_used     = clone_phenotype.last_cpu_cycles_used;
   last_num_errors          = clone_phenotype.last_num_errors;
-  last_num_donates         = clone_phenotype.last_num_donates;
   last_task_count          = clone_phenotype.last_task_count;
   last_host_tasks          = clone_phenotype.last_host_tasks;
   last_para_tasks          = clone_phenotype.last_para_tasks;
@@ -1226,8 +892,6 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   last_reaction_add_reward = clone_phenotype.last_reaction_add_reward;
   last_inst_count          = clone_phenotype.last_inst_count;
   last_from_sensor_count   = clone_phenotype.last_from_sensor_count;
-  last_group_attack_count   = clone_phenotype.last_group_attack_count;
-  last_top_pred_group_attack_count   = clone_phenotype.last_top_pred_group_attack_count;
   last_killed_targets      = clone_phenotype.last_killed_targets;
   last_sense_count         = clone_phenotype.last_sense_count;
   last_fitness             = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
@@ -1251,59 +915,9 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   last_task_time           = clone_phenotype.last_task_time;
 
   
-  num_thresh_gb_donations_last = clone_phenotype.num_thresh_gb_donations_last;
-  num_thresh_gb_donations  = clone_phenotype.num_thresh_gb_donations;
-  num_quanta_thresh_gb_donations_last = clone_phenotype.num_quanta_thresh_gb_donations_last;
-  num_quanta_thresh_gb_donations  = clone_phenotype.num_quanta_thresh_gb_donations;
-  num_shaded_gb_donations_last = clone_phenotype.num_shaded_gb_donations_last;
-  num_shaded_gb_donations  = clone_phenotype.num_shaded_gb_donations;
-  num_donations_locus = clone_phenotype.num_donations_locus;
-  num_donations_locus_last = clone_phenotype.num_donations_locus_last;
-	
   // Setup flags...
   is_injected   = false;
   is_clone   = true;
-  is_donor_last = clone_phenotype.is_donor_last;
-  is_donor_cur  = clone_phenotype.is_donor_cur;
-  is_receiver = false;
-  is_donor_rand_last = clone_phenotype.is_donor_rand_last;
-  is_donor_rand  = clone_phenotype.is_donor_rand;
-  is_donor_null_last = clone_phenotype.is_donor_null_last;
-  is_donor_null  = clone_phenotype.is_donor_null;
-  is_donor_kin_last = clone_phenotype.is_donor_kin_last;
-  is_donor_kin  = clone_phenotype.is_donor_kin;
-  is_donor_edit_last = clone_phenotype.is_donor_edit_last;
-  is_donor_edit  = clone_phenotype.is_donor_edit;
-  is_donor_gbg_last = clone_phenotype.is_donor_gbg_last;
-  is_donor_gbg  = clone_phenotype.is_donor_gbg;
-  is_donor_truegb_last = clone_phenotype.is_donor_truegb_last;
-  is_donor_truegb  = clone_phenotype.is_donor_truegb;
-  is_donor_threshgb_last = clone_phenotype.is_donor_threshgb_last;
-  is_donor_threshgb  = clone_phenotype.is_donor_threshgb;
-  is_donor_quanta_threshgb_last = clone_phenotype.is_donor_quanta_threshgb_last;
-  is_donor_quanta_threshgb  = clone_phenotype.is_donor_quanta_threshgb;
-  is_donor_shadedgb_last = clone_phenotype.is_donor_shadedgb_last;
-  is_donor_shadedgb  = clone_phenotype.is_donor_shadedgb;
-  is_donor_locus_last = clone_phenotype.is_donor_locus_last;
-  is_donor_locus = clone_phenotype.is_donor_locus;
-  
-  is_receiver = clone_phenotype.is_receiver;
-  is_receiver_last = clone_phenotype.is_receiver_last;
-  is_receiver_rand = clone_phenotype.is_receiver_rand;
-  is_receiver_kin = clone_phenotype.is_receiver_kin;
-  is_receiver_kin_last = clone_phenotype.is_receiver_kin_last;
-  is_receiver_edit = clone_phenotype.is_receiver_edit;
-  is_receiver_edit_last = clone_phenotype.is_receiver_edit_last;
-  is_receiver_gbg = clone_phenotype.is_receiver_gbg;
-  is_receiver_truegb = clone_phenotype.is_receiver_truegb;
-  is_receiver_truegb_last = clone_phenotype.is_receiver_truegb_last;
-  is_receiver_threshgb = clone_phenotype.is_receiver_threshgb;
-  is_receiver_threshgb_last = clone_phenotype.is_receiver_threshgb_last;
-  is_receiver_quanta_threshgb = clone_phenotype.is_receiver_quanta_threshgb;
-  is_receiver_quanta_threshgb_last = clone_phenotype.is_receiver_quanta_threshgb_last;
-  is_receiver_shadedgb = clone_phenotype.is_receiver_shadedgb;
-  is_receiver_shadedgb_last = clone_phenotype.is_receiver_shadedgb_last;
-  is_receiver_gb_same_locus = clone_phenotype.is_receiver_gb_same_locus;
   
   is_modifier   = false;
   is_modified   = false;
@@ -1496,7 +1110,6 @@ void cPhenotype::PrintStatus(ostream& fp) const
   << CalcSizeMerit()
   << " Bonus:" << cur_bonus
   << " Errors:" << cur_num_errors
-  << " Donates:" << cur_num_donates
   << '\n';
   
   fp << "  Task Count (Quality):";
@@ -1622,97 +1235,6 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
   return out_fitness;
 }
 
-/* Returns the organism's total tolerance towards immigrants by counting
- the total number of dec-tolerance entries within the update window that have been executed. 
- */
-int cPhenotype::CalcToleranceImmigrants()
-{
-  const int cur_update = m_world->GetStats().GetUpdate();
-  const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-
-  // Check if cached value is up-to-date, return
-  if (m_intolerances[0].first == cur_update) return tolerance_max - m_intolerances[0].second;
-  
-  const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-  // Update the tolerance list by getting rid of outdated records
-  while (m_tolerance_immigrants.GetSize() && *m_tolerance_immigrants.GetLast() < cur_update - update_window)
-    delete m_tolerance_immigrants.PopRear();
-  
-  // And prune the list down to MAX_TOLERANCE entries.
-  while (m_tolerance_immigrants.GetSize() > tolerance_max)
-    delete m_tolerance_immigrants.PopRear();
-
-  const int tolerance = tolerance_max - m_tolerance_immigrants.GetSize();
-
-  // Update cached values
-  m_intolerances[0].first = cur_update;
-  m_intolerances[0].second = m_tolerance_immigrants.GetSize();
-  return tolerance;
-}
-
-/* Returns the organism's total tolerance towards the organism's own offspring by counting
- the total number of dec-tolerance entries within the update window that have been executed. 
- */
-int cPhenotype::CalcToleranceOffspringOwn()
-{
-  const int cur_update = m_world->GetStats().GetUpdate();
-  const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-  
-  // If offspring tolerances off, skip calculations returning max
-  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0) return tolerance_max;
-
-  // Check if cached value is up-to-date, return
-  if (m_intolerances[1].first == cur_update) return tolerance_max - m_intolerances[1].second;
-
-  const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-  
-  // Update the tolerance list by getting rid of outdated records
-  while (m_tolerance_offspring_own.GetSize() && *m_tolerance_offspring_own.GetLast() < cur_update - update_window)
-    delete m_tolerance_offspring_own.PopRear();
-  
-  // And prune the list down to MAX_TOLERANCE entries.
-  while (m_tolerance_offspring_own.GetSize() > tolerance_max)
-    delete m_tolerance_offspring_own.PopRear();
-  
-  const int tolerance = tolerance_max - m_tolerance_offspring_own.GetSize();
-
-  // Update cached values
-  m_intolerances[1].first = cur_update;
-  m_intolerances[1].second = m_tolerance_offspring_own.GetSize();
-  return tolerance;
-}
-
-/* Returns the organism's total tolerance towards the offspring of others in the group by counting
- the total number of dec-tolerance entries within the update window that have been executed. 
- */
-int cPhenotype::CalcToleranceOffspringOthers()
-{
-  const int cur_update = m_world->GetStats().GetUpdate();
-  const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-
-  // If offspring tolerances off, skip calculations returning max
-  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0) return tolerance_max;
-
-  // Check if cached value is up-to-date, return
-  if (m_intolerances[2].first == cur_update) return tolerance_max - m_intolerances[2].second;
-
-  const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();  
-  
-  // Update the tolerance list by getting rid of outdated records
-  while (m_tolerance_offspring_others.GetSize() && *m_tolerance_offspring_others.GetLast() < cur_update - update_window) 
-    delete m_tolerance_offspring_others.PopRear();
-  
-  // And prune the list down to MAX_TOLERANCE entries.
-  while (m_tolerance_offspring_others.GetSize() > tolerance_max)
-    delete m_tolerance_offspring_others.PopRear();
-
-  const int tolerance = tolerance_max - m_tolerance_offspring_others.GetSize();
-
-  // Update cached values
-  m_intolerances[2].first = cur_update;
-  m_intolerances[2].second = m_tolerance_offspring_others.GetSize();
-  return tolerance;
-}
 
 
 void cPhenotype::DivideFailed() {
@@ -1765,7 +1287,6 @@ void cPhenotype::NewTrial()
   last_bonus                = cur_bonus;
   last_cpu_cycles_used      = cpu_cycles_used;
   last_num_errors           = cur_num_errors;
-  last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
   last_host_tasks           = cur_host_tasks;
   last_para_tasks           = cur_para_tasks;
@@ -1780,16 +1301,13 @@ void cPhenotype::NewTrial()
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
   last_from_sensor_count    = cur_from_sensor_count;
-  last_group_attack_count   = cur_group_attack_count;
   last_killed_targets       = cur_killed_targets;
-  last_top_pred_group_attack_count    = cur_top_pred_group_attack_count;
   last_sense_count          = cur_sense_count;
   
   // Reset cur values.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cpu_cycles_used = 0;
   cur_num_errors  = 0;
-  cur_num_donates  = 0;
   cur_task_count.SetAll(0);
   cur_host_tasks.SetAll(0);
   cur_para_tasks.SetAll(0);
@@ -1817,10 +1335,6 @@ void cPhenotype::NewTrial()
   //cur_trial_fitnesses.Resize(0); Don't throw out the trial fitnesses! @JEB
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  m_tolerance_immigrants.Clear();        
-  m_tolerance_offspring_own.Clear();     
-  m_tolerance_offspring_others.Clear();  
-  m_intolerances.SetAll(make_pair(-1, -1));  
   
   // Setup other miscellaneous values...
   num_divides++;
@@ -1832,59 +1346,9 @@ void cPhenotype::NewTrial()
   life_fitness = fitness; 
   
   
-  num_thresh_gb_donations_last = num_thresh_gb_donations;
-  num_thresh_gb_donations = 0;
-  num_quanta_thresh_gb_donations_last = num_quanta_thresh_gb_donations;
-  num_quanta_thresh_gb_donations = 0;
-  num_shaded_gb_donations_last = num_shaded_gb_donations;
-  num_shaded_gb_donations = 0;
-  num_donations_locus_last = num_donations_locus;
-  num_donations_locus = 0;
-	
   // Leave flags alone...
   (void) is_injected;
   (void) is_clone;
-  is_donor_last = is_donor_cur;
-  is_donor_cur = false;
-  is_donor_rand_last = is_donor_rand;
-  is_donor_rand = false;
-  is_donor_null_last = is_donor_null;
-  is_donor_null = false;
-  is_donor_kin_last = is_donor_kin;
-  is_donor_kin = false;
-  is_donor_edit_last = is_donor_edit;
-  is_donor_edit = false;
-  is_donor_gbg_last = is_donor_gbg;
-  is_donor_gbg = false;
-  is_donor_truegb_last = is_donor_truegb;
-  is_donor_truegb = false;
-  is_donor_threshgb_last = is_donor_threshgb;
-  is_donor_threshgb = false;
-  is_donor_quanta_threshgb_last = is_donor_quanta_threshgb;
-  is_donor_quanta_threshgb = false;
-  is_donor_shadedgb_last = is_donor_shadedgb;
-  is_donor_shadedgb = false;
-  is_donor_locus_last = is_donor_locus;
-  is_donor_locus.SetAll(false);
-  
-  is_receiver_last = is_receiver;
-  is_receiver = false;
-  is_receiver_rand = false;
-  is_receiver_kin_last = is_receiver_kin;
-  is_receiver_kin = false;
-  is_receiver_edit_last = is_receiver_edit;
-  is_receiver_edit = false;
-  is_receiver_gbg = false;
-  is_receiver_truegb_last = is_receiver_truegb;
-  is_receiver_truegb = false;
-  is_receiver_threshgb_last = is_receiver_threshgb;
-  is_receiver_threshgb = false;
-  is_receiver_quanta_threshgb_last = is_receiver_quanta_threshgb;
-  is_receiver_quanta_threshgb = false;
-  is_receiver_shadedgb_last = is_receiver_shadedgb;
-  is_receiver_shadedgb = false;
-  is_receiver_gb_same_locus_last = is_receiver_gb_same_locus;
-  is_receiver_gb_same_locus = false;
   
   (void) is_modifier;
   (void) is_modified;
@@ -1894,7 +1358,6 @@ void cPhenotype::NewTrial()
   (void) parent_true;
   (void) parent_sex;
   (void) parent_cross_num;
-  (void) kaboom_executed;
 }
 
 /**
@@ -1938,13 +1401,6 @@ void cPhenotype::TrialDivideReset(const InstructionSequence& _genome)
     neutral_metric += m_world->GetRandom().GetRandNormal();
   }
   
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-    m_tolerance_immigrants.Clear();        
-    m_tolerance_offspring_own.Clear();     
-    m_tolerance_offspring_others.Clear();  
-    m_intolerances.SetAll(make_pair(-1,-1));  
-  }
-
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
 }
 

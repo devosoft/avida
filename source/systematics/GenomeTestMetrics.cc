@@ -25,7 +25,6 @@
 
 #include "avida/core/Genome.h"
 
-#include "cAvidaContext.h"
 #include "cHardwareManager.h"
 #include "cPhenotype.h"
 #include "cTestCPU.h"

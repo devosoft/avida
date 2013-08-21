@@ -22,7 +22,6 @@
 #include "cAnalyzeJobWorker.h"
 
 #include "cAnalyzeJobQueue.h"
-#include "cAvidaContext.h"
 #include "cWorld.h"
 
 

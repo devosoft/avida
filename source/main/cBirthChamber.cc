@@ -22,7 +22,6 @@
 
 #include "cBirthChamber.h"
 
-#include "cAvidaContext.h"
 #include "cBirthGenomeSizeHandler.h"
 #include "cBirthGlobalHandler.h"
 #include "cBirthGridLocalHandler.h"
@@ -31,9 +30,7 @@
 #include "cOrganism.h"
 #include "cWorld.h"
 #include "cStats.h"
-#include "AvidaTools.h"
 
-using namespace AvidaTools;
 
 cBirthChamber::~cBirthChamber()
 {

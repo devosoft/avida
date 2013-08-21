@@ -28,7 +28,6 @@
 #include <iostream>
 
 #include "cAnalyzeJobQueue.h"
-#include "cAvidaContext.h"
 #include "cBitArray.h"
 #include "cGenotypeBatch.h"
 #include "cFlexVar.h"

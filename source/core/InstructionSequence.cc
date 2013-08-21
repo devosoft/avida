@@ -24,10 +24,6 @@
 
 #include "avida/core/InstructionSequence.h"
 
-#include "AvidaTools.h"
-
-using namespace AvidaTools;
-
 
 const int MEMORY_INCREASE_MINIMUM = 5;
 const double MEMORY_INCREASE_FACTOR = 1.5;
@@ -417,7 +413,7 @@ int Avida::InstructionSequence::MinDistBetween(const Instruction& inst) const
 		}			
     
 		if (firstInstance != secondInstance) {
-			minDist = Apto::Min(Apto::Min(Abs(firstInstance - secondInstance), secondInstance + m_active_size - firstInstance), minDist);
+			minDist = Apto::Min(Apto::Min(Apto::Abs(firstInstance - secondInstance), secondInstance + m_active_size - firstInstance), minDist);
 			assert(minDist > 0);
 		} else { // they are equal, so there is only one instance of inst
 			return 0;

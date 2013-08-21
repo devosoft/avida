@@ -24,13 +24,10 @@
 
 #include "tMatrix.h"
 
-#include "AvidaTools.h"
-
 #include <cstdarg>
 #include <cstdio>
 
 using namespace std;
-using namespace AvidaTools;
 
 
 cString cStringUtil::Stringf(const char * fmt, ...) {

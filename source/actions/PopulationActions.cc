@@ -21,8 +21,6 @@
 
 #include "PopulationActions.h"
 
-#include "AvidaTools.h"
-
 #include "avida/core/Feedback.h"
 #include "avida/core/InstructionSequence.h"
 #include "avida/systematics/Arbiter.h"
@@ -56,7 +54,6 @@
 #include "stdlib.h"
 
 using namespace Avida;
-using namespace AvidaTools;
 
 
 /*

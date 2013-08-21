@@ -93,7 +93,6 @@ private:
   // 2. These are "in progress" variables, updated as the organism operates
   double cur_bonus;                           // Current Bonus
   int cur_num_errors;                         // Total instructions executed illeagally.
-  int cur_num_donates;                        // Number of donations so far
 
   Apto::Array<int> cur_task_count;                 // Total times each task was performed
   Apto::Array<int> cur_para_tasks;                 // Total times each task was performed by the parasite @LZ
@@ -128,12 +127,6 @@ private:
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
 
-  int mating_type;                            // Organism's phenotypic sex @CHC
-  int mate_preference;                        // Organism's mating preference @CHC
-  
-  int cur_mating_display_a;                   // value of organism's current mating display A trait
-  int cur_mating_display_b;                   // value of organism's current mating display B trait
-
   cReactionResult* m_reaction_result;
   
 
@@ -142,7 +135,6 @@ private:
   double last_merit_base;         // Either constant or based on genome length.
   double last_bonus;
   int last_num_errors;
-  int last_num_donates;
 
   Apto::Array<int> last_task_count;
   Apto::Array<int> last_para_tasks;
@@ -159,15 +151,10 @@ private:
   Apto::Array<int> last_inst_count;	  // Instruction exection counter
   Apto::Array<int> last_from_sensor_count;
   Apto::Array<int> last_sense_count;   // Total times resource combinations have been sensed; @JEB
-  Apto::Array< Apto::Array<int> > last_group_attack_count;
-  Apto::Array< Apto::Array<int> > last_top_pred_group_attack_count;
   Apto::Array<int> last_killed_targets;
 
   double last_fitness;            // Used to determine sterilization.
   int last_cpu_cycles_used;
-  
-  int last_mating_display_a;                   // value of organism's last mating display A trait
-  int last_mating_display_b;                   // value of organism's last mating display B trait
   
 
   // 4. Records from this organism's life...
@@ -321,7 +308,6 @@ public:
   bool GetToDie() const { assert(initialized == true); return to_die; }
   bool GetToDelete() const { assert(initialized == true); return to_delete; }
   int GetCurNumErrors() const { assert(initialized == true); return cur_num_errors; }
-  int GetCurNumDonates() const { assert(initialized == true); return cur_num_donates; }
   int GetCurCountForTask(int idx) const { assert(initialized == true); return cur_task_count[idx]; }
   const Apto::Array<int>& GetCurTaskCount() const { assert(initialized == true); return cur_task_count; }
   const Apto::Array<int>& GetCurHostTaskCount() const { assert(initialized == true); return cur_host_tasks; }
@@ -358,20 +344,12 @@ public:
   const Apto::Array<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
   const Apto::Array<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB
 
-  tList<int>& GetToleranceImmigrants() { assert(initialized == true); return m_tolerance_immigrants; }
-  tList<int>& GetToleranceOffspringOwn() { assert(initialized == true); return m_tolerance_offspring_own; }
-  tList<int>& GetToleranceOffspringOthers() { assert(initialized == true); return m_tolerance_offspring_others; }
-  Apto::Array<pair<int,int> >& GetIntolerances() { assert(initialized == true); return m_intolerances; }
-  int CalcToleranceImmigrants();
-  int CalcToleranceOffspringOwn();
-  int CalcToleranceOffspringOthers();
 
   double GetLastMeritBase() const { assert(initialized == true); return last_merit_base; }
   double GetLastBonus() const { assert(initialized == true); return last_bonus; }
 
   double GetLastMerit() const { assert(initialized == true); return last_merit_base*last_bonus; }
   int GetLastNumErrors() const { assert(initialized == true); return last_num_errors; }
-  int GetLastNumDonates() const { assert(initialized == true); return last_num_donates; }
 
   int GetLastCountForTask(int idx) const { assert(initialized == true); return last_task_count[idx]; }
   const Apto::Array<int>& GetLastTaskCount() const { assert(initialized == true); return last_task_count; }
@@ -481,8 +459,7 @@ public:
   void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; trial_time_used+=i; }
   void IncNumExecs() { assert(initialized == true); num_execs++; }
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
-  void IncDonates()   { assert(initialized == true); cur_num_donates++; }
-  void IncSenseCount(const int) { /*assert(initialized == true); cur_sense_count[i]++;*/ }  
+  void IncSenseCount(const int) { /*assert(initialized == true); cur_sense_count[i]++;*/ }
   
   void SetCurMatingDisplayA(int _cur_mating_display_a) { cur_mating_display_a = _cur_mating_display_a; } //@CHC
   void SetCurMatingDisplayB(int _cur_mating_display_b) { cur_mating_display_b = _cur_mating_display_b; } //@CHC

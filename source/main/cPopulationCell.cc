@@ -41,9 +41,6 @@ cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
 , m_inputs(in_cell.m_inputs)
 , m_cell_id(in_cell.m_cell_id)
 , m_cell_data(in_cell.m_cell_data)
-, m_spec_state(in_cell.m_spec_state)
-, m_can_input(false)
-, m_can_output(false)
 {
   // Copy the mutation rates into a new structure
   m_mut_rates = new cMutationRates(*in_cell.m_mut_rates);
@@ -64,9 +61,6 @@ void cPopulationCell::operator=(const cPopulationCell& in_cell)
 		m_inputs = in_cell.m_inputs;
 		m_cell_id = in_cell.m_cell_id;
 		m_cell_data = in_cell.m_cell_data;
-		m_spec_state = in_cell.m_spec_state;
-    m_can_input = in_cell.m_can_input;
-    m_can_output = in_cell.m_can_output;
 		
 		// Copy the mutation rates, constructing the structure as necessary
 		if (m_mut_rates == NULL)

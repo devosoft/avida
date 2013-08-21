@@ -35,6 +35,18 @@
 namespace Avida {
   namespace Hardware {
     
+    // Hardware::CycleListener
+    // --------------------------------------------------------------------------------------------------------------
+    
+    class CycleListener
+    {
+    public:
+      virtual ~CycleListener() = 0;
+      
+      virtual void NotifyHardwareCycle(Base& hardware) = 0;
+    };
+    
+
     // Hardware::Base
     // --------------------------------------------------------------------------------------------------------------
     
@@ -47,11 +59,23 @@ namespace Avida {
       Apto::Array<Biota::OrganismPtr> m_organisms;
       Apto::Array<Feature*> m_features;
       
+      Apto::Set<CycleListener*> m_cycle_listeners;
+      
     public:
       LIB_EXPORT Base(Context& ctx, ConfigPtr cfg, Biota::OrganismPtr owner);
       LIB_EXPORT virtual ~Base() = 0;
       
       LIB_EXPORT virtual bool ProcessCycleStep(Context& ctx, Update current_update, bool speculative) = 0;
+      
+      
+      LIB_EXPORT inline void AttachListener(CycleListener* listener) { m_cycle_listeners.Insert(listener); }
+      LIB_EXPORT inline void DetachListener(CycleListener* listener) { m_cycle_listeners.Remove(listener); }
+      
+    protected:
+      LIB_EXPORT inline void notifyCycleListeners() { if (m_cycle_listeners.GetSize()) doCycleListenerNotification(); }
+      
+    private:
+      LIB_EXPORT void doCycleListenerNotification();
     };
     
   };

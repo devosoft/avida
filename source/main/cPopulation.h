@@ -153,9 +153,6 @@ public:
   void SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx); 
 
   
-  // Print donation stats
-  void PrintDonationStats();
-
   // Process a single organism one instruction...
   int ScheduleOrganism();          // Determine next organism to be processed.
   void ProcessStep(cAvidaContext& ctx, double step_size, int cell_id);

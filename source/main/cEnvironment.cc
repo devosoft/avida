@@ -24,7 +24,6 @@
 #include "avida/core/Feedback.h"
 #include "avida/environment/Manager.h"
 
-#include "cAvidaContext.h"
 #include "cContextPhenotype.h"
 #include "cContextReactionRequisite.h"
 #include "cEnvReqs.h"

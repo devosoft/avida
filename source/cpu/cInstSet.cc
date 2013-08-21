@@ -25,7 +25,6 @@
 #include "avida/core/UniverseDriver.h"
 #include "avida/util/ArgParser.h"
 
-#include "cAvidaContext.h"
 #include "cStringUtil.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"

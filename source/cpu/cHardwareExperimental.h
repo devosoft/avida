@@ -620,7 +620,6 @@ private:
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
   
-  bool Inst_DonateSpecific(cAvidaContext& ctx);
   bool Inst_GetFacedEditDistance(cAvidaContext& ctx);  
 
 private:

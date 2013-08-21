@@ -44,7 +44,6 @@
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
-#include "cHistogram.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
@@ -119,41 +118,17 @@ STATS_OUT_FILE(PrintInternalTasksQualData,  in_tasks_quality.dat);
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 
 
-STATS_OUT_FILE(PrintMultiProcessData,       multiprocess.dat);
-STATS_OUT_FILE(PrintProfilingData,          profiling.dat);
 STATS_OUT_FILE(PrintOrganismLocation,       location.dat);
 
 // @WRE: Added output event for collected visit counts
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
 STATS_OUT_FILE(PrintDynamicMaxMinData,	    maxmin.dat			);
 STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
-STATS_OUT_FILE(PrintDenData, den_data.dat);
-
-//mating type/male-female stats data
-STATS_OUT_FILE(PrintMaleAverageData,    male_average.dat   );
-STATS_OUT_FILE(PrintFemaleAverageData,    female_average.dat   );
-STATS_OUT_FILE(PrintMaleErrorData, male_error.dat   );
-STATS_OUT_FILE(PrintFemaleErrorData, female_error.dat   );
-STATS_OUT_FILE(PrintMaleVarianceData, male_variance.dat   );
-STATS_OUT_FILE(PrintFemaleVarianceData, female_variance.dat   );
-
-// reputation
-STATS_OUT_FILE(PrintReputationData,         reputation.dat);
-STATS_OUT_FILE(PrintShadedAltruists,         shadedaltruists.dat);
-STATS_OUT_FILE(PrintDirectReciprocityData,         reciprocity.dat);
-STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
-
-// kabooms
-STATS_OUT_FILE(PrintKaboom, kabooms.dat);
 
 // group formation
-STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
-STATS_OUT_FILE(PrintGroupIds,                 groupids.dat);
 STATS_OUT_FILE(PrintTargets,                  targets.dat);
 STATS_OUT_FILE(PrintMimicDisplays,            mimics.dat);
 STATS_OUT_FILE(PrintTopPredTargets,           top_pred_targets.dat);
-STATS_OUT_FILE(PrintToleranceInstructionData, toleranceinstruction.dat); 
-STATS_OUT_FILE(PrintToleranceData,            tolerance.dat);
 
 
 
@@ -231,41 +206,6 @@ public:
   }
 };
 
-class cActionPrintGroupTolerance : public cAction 
-{
-private:
-  cString m_filename;
-public:
-  cActionPrintGroupTolerance(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
-  {
-    cString largs(args);
-    if (largs == "") m_filename = "grouptolerance.dat"; else m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname=\"grouptolerance.dat\"]"; }
-  void Process(cAvidaContext& ctx)
-  {
-    m_world->GetPopulation().GetResources().UpdateResStats(ctx);
-    m_world->GetStats().PrintGroupTolerance(m_filename);
-  }
-};
-
-class cActionPrintGroupMTTolerance : public cAction 
-{
-private:
-  cString m_filename;
-public:
-  cActionPrintGroupMTTolerance(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
-  {
-    cString largs(args);
-    if (largs == "") m_filename = "groupMTtolerance.dat"; else m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname=\"groupMTtolerance.dat\"]"; }
-  void Process(cAvidaContext& ctx)
-  {
-    m_world->GetPopulation().GetResources().UpdateResStats(ctx);
-    m_world->GetStats().PrintGroupMTTolerance(m_filename);
-  }
-};
 
 class cActionPrintData : public cAction
 {
@@ -526,34 +466,7 @@ public:
   }
 };
 
-class cActionPrintGroupAttackData : public cAction
-{
-private:
-  cString m_filename;
-  cString m_inst_set;
-  
-public:
-  cActionPrintGroupAttackData(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
-  {
-    cString largs(args);
-    largs.Trim();
-    if (largs.GetSize()) m_filename = largs.PopWord();
-    else {
-      if (m_filename == "") m_filename = "group_attacks.dat";
-    }
-    if (largs.GetSize()) m_inst_set = largs.PopWord();
-    
-    if (m_filename == "") m_filename.Set("group_attacks-%s.dat", (const char*)m_inst_set);
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname=\"group_attacks-${inst_set}.dat\"] [string inst_set]"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    m_world->GetStats().PrintGroupAttackData(m_filename, m_inst_set);
-  }
-};
+
 
 class cActionPrintKilledPreyFTData : public cAction
 {
@@ -581,63 +494,6 @@ public:
   }
 };
 
-class cActionPrintMaleInstructionData : public cAction
-{
-private:
-  cString m_filename;
-  cString m_inst_set;
-  
-public:
-  cActionPrintMaleInstructionData(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
-  {
-    cString largs(args);
-    largs.Trim();
-    if (largs.GetSize()) m_filename = largs.PopWord();
-    else {
-      if (m_filename == "") m_filename = "male_instruction.dat";
-    }
-    if (largs.GetSize()) m_inst_set = largs.PopWord();
-    
-    if (m_filename == "") m_filename.Set("male_instruction-%s.dat", (const char*)m_inst_set);
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname=\"male_instruction-${inst_set}.dat\"] [string inst_set]"; }
-  
-  void Process(cAvidaContext&)
-  {
-    m_world->GetStats().PrintMaleInstructionData(m_filename, m_inst_set);
-  }
-};
-
-class cActionPrintFemaleInstructionData : public cAction
-{
-private:
-  cString m_filename;
-  cString m_inst_set;
-  
-public:
-  cActionPrintFemaleInstructionData(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
-  {
-    cString largs(args);
-    largs.Trim();
-    if (largs.GetSize()) m_filename = largs.PopWord();
-    else {
-      if (m_filename == "") m_filename = "female_instruction.dat";
-    }
-    if (largs.GetSize()) m_inst_set = largs.PopWord();
-    
-    if (m_filename == "") m_filename.Set("female_instruction-%s.dat", (const char*)m_inst_set);
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname=\"female_instruction-${inst_set}.dat\"] [string inst_set]"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    m_world->GetStats().PrintFemaleInstructionData(m_filename, m_inst_set);
-  }
-};
 
 
 class cActionPrintInstructionAbundanceHistogram : public cAction
@@ -2139,173 +1995,6 @@ public:
 
 
 
-class cActionCalcConsensus : public cAction
-{
-private:
-  int m_lines_saved;
-  cString m_inst_set;
-  
-public:
-  cActionCalcConsensus(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_lines_saved(0)
-  , m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
-  {
-    cString largs(args);
-    largs.Trim();
-    if (largs.GetSize()) m_lines_saved = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_inst_set = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [int lines_saved=0]"; }
-  void Process(cAvidaContext& ctx)
-  {
-    HashPropertyMap mg_props;
-    cHardwareManager::SetupPropertyMap(mg_props, (const char*)m_inst_set);
-    Genome mg(m_world->GetHardwareManager().GetInstSet((const char*)m_inst_set).GetHardwareType(), mg_props, InstructionSequencePtr(new InstructionSequence));
-    const int num_inst = m_world->GetHardwareManager().GetInstSet((const char*)m_inst_set).GetSize();
-    const int update = m_world->GetStats().GetUpdate();
-    
-    // Setup the histogtams...
-    Apto::Array<cHistogram> inst_hist(MAX_GENOME_LENGTH);
-    for (int i = 0; i < MAX_GENOME_LENGTH; i++) inst_hist[i].Resize(num_inst,-1);
-    
-    // Loop through all of the genotypes adding them to the histograms.
-    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
-    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
-    while ((it->Next())) {
-      Systematics::GroupPtr bg = it->Get();
-      const int num_organisms = bg->NumUnits();
-      const Genome genome(bg->Properties().Get("genome"));
-      ConstInstructionSequencePtr seq;
-      seq.DynamicCastFrom(genome.Representation());
-      const int length = seq->GetSize();
-      if (Apto::StrAs(genome.Properties().Get("instset")) != m_inst_set) continue;
-      
-      // Place this genotype into the histograms.
-      for (int j = 0; j < length; j++) {
-        assert((*seq)[j].GetOp() < num_inst);
-        inst_hist[j].Insert((*seq)[j].GetOp(), num_organisms);
-      }
-      
-      // Mark all instructions beyond the length as -1 in histogram...
-      for (int j = length; j < MAX_GENOME_LENGTH; j++) {
-        inst_hist[j].Insert(-1, num_organisms);
-      }
-    }
-    
-    // Now, lets print something!
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "consensus.dat");
-    Avida::Output::FilePtr df_abundance = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "consensus-abundance.dat");
-    Avida::Output::FilePtr df_var = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "consensus-var.dat");
-    Avida::Output::FilePtr df_entropy = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "consensus-entropy.dat");
-    
-    // Determine the length of the concensus genome
-    int con_length;
-    for (con_length = 0; con_length < MAX_GENOME_LENGTH; con_length++) {
-      if (inst_hist[con_length].GetMode() == -1) break;
-    }
-    
-    // Build the concensus genotype...
-    InstructionSequencePtr con_genome_p;
-    con_genome_p.DynamicCastFrom(mg.Representation());
-    InstructionSequence& con_genome = *con_genome_p;
-    con_genome = InstructionSequence(con_length);
-    double total_entropy = 0.0;
-    for (int i = 0; i < MAX_GENOME_LENGTH; i++) {
-      const int mode = inst_hist[i].GetMode();
-      const int count = inst_hist[i].GetCount(mode);
-      const int total = inst_hist[i].GetCount();
-      const double entropy = inst_hist[i].GetNormEntropy();
-      if (i < con_length) total_entropy += entropy;
-      
-      // Break out if ALL creatures have a -1 in this area, and we've
-      // finished printing all of the files.
-      if (mode == -1 && count == total) break;
-      
-      if ( i < con_length )
-        con_genome[i].SetOp(mode);
-      
-      // Print all needed files.
-      if (i < m_lines_saved) {
-        df_abundance->WriteAnonymous(count);
-        df_var->WriteAnonymous(inst_hist[i].GetCountVariance());
-        df_entropy->WriteAnonymous(entropy);
-      }
-    }
-    
-    // Put end-of-lines on the files.
-    if (m_lines_saved > 0) {
-      df_abundance->Endl();
-      df_var->Endl();
-      df_entropy->Endl();
-    }
-    
-    // --- Study the consensus genome ---
-    
-    // Loop through genotypes again, and determine the average genetic distance.
-    it = classmgr->ArbiterForRole("genotype")->Begin();
-    Apto::Stat::Accumulator<double> distance_sum;
-    while ((it->Next())) {
-      const int num_organisms = it->Get()->NumUnits();
-      Genome cur_gen(it->Get()->Properties().Get("genome"));
-      InstructionSequencePtr cur_seq;
-      cur_seq.DynamicCastFrom(cur_gen.Representation());
-      const int cur_dist = InstructionSequence::FindEditDistance(con_genome, *cur_seq);
-      distance_sum.Add(cur_dist * num_organisms);
-    }
-    
-    // Finally, gather last bits of data and print the results.
-    // @TODO - find consensus bio group
-    //    cGenotype* con_genotype = classmgr.FindGenotype(con_genome, -1);
-    
-    it = classmgr->ArbiterForRole("genotype")->Begin();
-    Genome best_genome(it->Next()->Properties().Get("genome"));
-    InstructionSequencePtr best_seq;
-    best_seq.DynamicCastFrom(best_genome.Representation());
-    const int best_dist = InstructionSequence::FindEditDistance(con_genome, *best_seq);
-    
-    const double ave_dist = distance_sum.Mean();
-    const double var_dist = distance_sum.Variance();
-    const double complexity_base = static_cast<double>(con_genome.GetSize()) - total_entropy;
-    
-    cString con_name;
-    con_name.Set("archive/%03d-consensus-u%i.gen", con_genome.GetSize(),update);
-    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-    testcpu->PrintGenome(ctx, mg, con_name);
-    
-        
-    cCPUTestInfo test_info;
-    testcpu->TestGenome(ctx, test_info, mg);
-    delete testcpu;
-    
-    cPhenotype& colony_phenotype = test_info.GetColonyOrganism()->GetPhenotype();
-    
-    df->Write(update, "Update");
-    df->Write(colony_phenotype.GetMerit().GetDouble(), "Merit");
-    df->Write(colony_phenotype.GetGestationTime(), "Gestation Time");
-    df->Write(colony_phenotype.GetFitness(), "Fitness");
-    df->Write(1.0 / (0.1  + colony_phenotype.GetGestationTime()), "Reproduction Rate");
-    df->Write(con_genome.GetSize(), "Length");
-    df->Write(colony_phenotype.GetCopiedSize(), "Copied Size");
-    df->Write(colony_phenotype.GetExecutedSize(), "Executed Size");
-    df->Write(0, "Get Births");
-    df->Write(0, "Breed True");
-    df->Write(0, "Breed In");
-    df->Write(0, "Abundance");
-    df->Write(-1, "Tree Depth");
-    df->Write(-1, "Genotype ID");
-    df->Write(0, "Age (in updates)");
-    df->Write(best_dist, "Best Distance");
-    df->Write(ave_dist, "Average Distance");
-    df->Write(var_dist, "Var Distance");
-    df->Write(total_entropy, "Total Entropy");
-    df->Write(complexity_base, "Complexity");
-    df->Endl();
-    //    }
-    
-    delete testcpu;
-  }
-};
-
 
 
 class cActionDumpFitnessGrid : public cAction
@@ -3158,66 +2847,7 @@ public:
   }
 };
 
-class cActionDumpDonorGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpDonorGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_donor.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        int donor = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().IsDonorLast() : -1;
-        fp << donor << " ";
-      }
-      fp << endl;
-    }
-  }
-};
 
-
-class cActionDumpReceiverGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpReceiverGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_receiver.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        int recv = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().IsReceiver() : -1;
-        fp << recv << " ";
-      }
-      fp << endl;
-    }
-  }
-};
 
 class cActionPrintOrgLocData : public cAction
 {
@@ -3333,89 +2963,6 @@ public:
   }
 };
 
-class cActionPrintOrgGuardData : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionPrintOrgGuardData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    /*Print organism locations + other org data (for movies). */
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_dumps/org_loc_guard.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    bool use_av = m_world->GetConfig().USE_AVATARS.Get();
-    if (!use_av) fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,is_guard,num_guard_inst,on_den,r_bins_total,time_used,num_deposits,amount_deposited_total" << endl;
-    else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,av_cellx,av_celly,av_facing,is_guard,num_guard_inst,on_den,r_bins_total,time_used,num_deposits,amount_deposited_total" << endl;
-    
-    const int worldx = m_world->GetConfig().WORLD_X.Get();
-    
-    const Apto::Array<cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
-    for (int i = 0; i < live_orgs.GetSize(); i++) {
-      cOrganism* org = live_orgs[i];
-      const int id = org->GetID();
-      const int loc = org->GetCellID();
-      const int locx = loc % worldx;
-      const int locy = loc / worldx;
-      const int ft = org->GetForageTarget();
-      const int faced_dir = org->GetFacedDir();
-      
-      fp << id << "," << locx << "," << locy << "," << ft << "," <<  -1 << "," <<  faced_dir;
-      if (use_av) {
-        const int avloc = org->GetOrgInterface().GetAVCellID();
-        const int avlocx = avloc % worldx;
-        const int avlocy = avloc / worldx;
-        const int avfaced_dir = org->GetOrgInterface().GetAVFacing();
-        
-        fp << "," << avlocx << "," << avlocy << "," << avfaced_dir;
-      }    
-      //Guard data:
-      bool is_guard = org->IsGuard();
-      fp << "," << is_guard;
-      int num_guard_inst = org->GetNumGuard();
-      fp << "," << num_guard_inst;
-      
-      //Find out if the organism is in a den:
-      bool on_den = false;
-      Apto::Array<double> res_count = m_world->GetPopulation().GetResources().GetCellResources(loc, ctx);
-      if (use_av) res_count = m_world->GetPopulation().GetResources().GetCellResources(org->GetOrgInterface().GetAVCellID(), ctx);
-      const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
-      for (int i = 0; i < res_count.GetSize(); i++) {
-        int hab_type = resource_lib.GetResDef(i)->GetHabitat();
-        if ((hab_type == 3 || hab_type == 4) && res_count[i] > 0) on_den = true;
-      }
-      
-      fp << "," << on_den;
-      fp << "," << org->GetRBinsTotal();
-      fp << "," << org->GetPhenotype().GetTimeUsed();
-      //Counter for number of deposits
-      fp << "," << org->GetNumDeposits();
-      fp << "," << org->GetAmountDeposited();
-      fp << endl;
-    }
-  }
-};
-
-class cActionPrintDonationStats : public cAction
-{
-public:
-  cActionPrintDonationStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext&)
-  {
-    m_world->GetPopulation().PrintDonationStats();
-  }
-};
 
 
 class cActionSetVerbose : public cAction
@@ -3473,185 +3020,6 @@ public:
 };
 
 
-//@CHC Mating type-related actions
-//Prints counts of the number of organisms of each mating type alive in the population
-class cActionPrintMatingTypeHistogram : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionPrintMatingTypeHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    largs.Trim();
-    if (largs.GetSize()) m_filename = largs.PopWord();
-    else m_filename = "mating_type_histogram.dat";
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname=\"mating_type_histogram.dat\"]"; }
-  
-  void Process(cAvidaContext&)
-  {
-    int type_counts[3] = {0,0,0};
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-    df->WriteComment("Avida population mating type histogram");
-    df->WriteTimeStamp();
-    df->Write(m_world->GetStats().GetUpdate(), "Update");
-    cPopulation& pop = m_world->GetPopulation();
-    for (int cell_num = 0; cell_num < pop.GetSize(); cell_num++) {
-      //Count totals of each mating type
-      if (pop.GetCell(cell_num).IsOccupied()) {
-        type_counts[pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+1]++;
-      }
-    }
-    df->Write(type_counts[0], "Mating type -1 (juvenile)");
-    df->Write(type_counts[1], "Mating type 0 (female)");
-    df->Write(type_counts[2], "Mating type 1 (male)");
-    df->Endl(); 
-  }
-};
-
-//Prints counts of the number of organisms of each mating type in the birth chamber
-class cActionPrintBirthChamberMatingTypeHistogram : public cAction
-{
-private:
-  cString m_filename;
-  int m_hw_type;
-  
-public:
-  cActionPrintBirthChamberMatingTypeHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_hw_type(0)
-  {
-    cString largs(args);
-    largs.Trim();
-    if (largs.GetSize()) m_filename = largs.PopWord();
-    else m_filename = "birth_chamber_mating_type_histogram.dat";
-    if (largs.GetSize()) m_hw_type = largs.PopWord().AsInt();
-    else m_hw_type = 0;
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname=\"birth_chamber_mating_type_histogram.dat\"] [int hwtype=0]"; }
-  
-  void Process(cAvidaContext&)
-  {
-    int type_counts[3] = {0,0,0};
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-    df->WriteComment("Avida birth chamber mating type histogram");
-    df->WriteTimeStamp();
-    df->Write(m_world->GetStats().GetUpdate(), "Update");
-    
-    type_counts[0] = m_world->GetPopulation().GetBirthChamber(m_hw_type).GetWaitingOffspringNumber(-1, m_hw_type);
-    type_counts[1] = m_world->GetPopulation().GetBirthChamber(m_hw_type).GetWaitingOffspringNumber(0, m_hw_type);
-    type_counts[2] = m_world->GetPopulation().GetBirthChamber(m_hw_type).GetWaitingOffspringNumber(1, m_hw_type);
-    
-    df->Write(type_counts[0], "Mating type -1 (juvenile)");
-    df->Write(type_counts[1], "Mating type 0 (female)");
-    df->Write(type_counts[2], "Mating type 1 (male)");
-    df->Endl(); 
-  }
-};
-
-//Prints data about the current mating display phenotypes of the population
-class cActionPrintMatingDisplayData : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionPrintMatingDisplayData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    largs.Trim();
-    if (largs.GetSize()) m_filename = largs.PopWord();
-    else m_filename = "mating_display_data.dat";
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname=\"mating_display_data.dat\"]"; }
-  
-  void Process(cAvidaContext&)
-  {
-    int display_sums[6] = {0, 0, 0, 0, 0, 0}; //[0-2] = display A values for juvenile/undefined mating type, females, and males
-    //[3-5] = display B values for each sex
-    int mating_type_sums[3] = {0, 0, 0}; //How many organisms of each mating type are present in the population
-    double display_avgs[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    
-    //Loop through the population and tally up the count values
-    cPopulation& pop = m_world->GetPopulation();
-    for (int cell_num = 0; cell_num < pop.GetSize(); cell_num++) {
-      if (pop.GetCell(cell_num).IsOccupied()) {
-        mating_type_sums[pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+1]++;
-        display_sums[ pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+1 ] += pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetCurMatingDisplayA();
-        display_sums[ pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+4 ] += pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetCurMatingDisplayB();
-      }
-    }
-    
-    if (mating_type_sums[0] > 0) display_avgs[0] = ((double) display_sums[0]) / ((double) mating_type_sums[0]);
-    if (mating_type_sums[1] > 0) display_avgs[1] = ((double) display_sums[1]) / ((double) mating_type_sums[1]);
-    if (mating_type_sums[2] > 0) display_avgs[2] = ((double) display_sums[2]) / ((double) mating_type_sums[2]); 
-    if (mating_type_sums[0] > 0) display_avgs[3] = ((double) display_sums[3]) / ((double) mating_type_sums[0]); 
-    if (mating_type_sums[1] > 0) display_avgs[4] = ((double) display_sums[4]) / ((double) mating_type_sums[1]); 
-    if (mating_type_sums[2] > 0) display_avgs[5] = ((double) display_sums[5]) / ((double) mating_type_sums[2]); 
-    
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-    df->WriteComment("Avida population mating display data");
-    df->WriteTimeStamp();
-    df->Write(m_world->GetStats().GetUpdate(), "Update");
-    df->Write(display_avgs[0], "Avg mating display A for mating type -1 (undefined)");
-    df->Write(display_avgs[1], "Avg mating display A for mating type 0 (female)");
-    df->Write(display_avgs[2], "Avg mating display A for mating type 1 (male)");
-    df->Write(display_avgs[3], "Avg mating display B for mating type -1 (undefined)");
-    df->Write(display_avgs[4], "Avg mating display B for mating type 0 (female)");
-    df->Write(display_avgs[5], "Avg mating display B for mating type 1 (male)");
-    df->Endl();
-  }
-};
-
-//Prints data about the current mate preferences of females in the population
-class cActionPrintFemaleMatePreferenceData : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionPrintFemaleMatePreferenceData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    largs.Trim();
-    if (largs.GetSize()) m_filename = largs.PopWord();
-    else m_filename = "female_mate_preference_data.dat";
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname=\"female_mate_preference_data.dat\"]"; }
-  
-  void Process(cAvidaContext&)
-  {
-    //Mating preferences:
-    // 0 = random 
-    // 1 = highest display A
-    // 2 = highest display B
-    // 3 = highest merit
-    //IMPORTANT!: Modify next line according to how many types of mate preferences there are in the population
-    int mate_pref_sums[4] = {0, 0, 0, 0};
-    cPopulation &pop = m_world->GetPopulation();
-    for (int cell_num = 0; cell_num < pop.GetSize(); cell_num++) {
-      if (pop.GetCell(cell_num).IsOccupied()) {
-        if (pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
-          mate_pref_sums[pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatePreference()]++;
-        }
-      }
-    }
-    
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-    df->WriteComment("Avida population female mate preference histogram");
-    df->WriteTimeStamp();
-    df->Write(m_world->GetStats().GetUpdate(), "Update");
-    df->Write(mate_pref_sums[0], "Random");
-    df->Write(mate_pref_sums[1], "Highest display A");
-    df->Write(mate_pref_sums[2], "Highest display B");
-    df->Write(mate_pref_sums[3], "Highest merit");
-    df->Endl();
-  }
-};
 
 class cActionPrintSoloTaskSnapshot : public cAction
 {
@@ -3671,29 +3039,6 @@ public:
 };
 
 
-//Prints data about the 'offspring' from the birth chamber that were chosen as mates during the current update
-class cActionPrintSuccessfulMates : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionPrintSuccessfulMates(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    largs.Trim();
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname=\"mates/mates-XXXX.dat\"]"; }
-  
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set( "mates/mates-%s.dat", (const char*)cStringUtil::Convert(m_world->GetStats().GetUpdate()));
-    m_world->GetStats().PrintSuccessfulMates(filename);
-  }
-};
 
 //Prints data about all the 'offspring' waiting in the birth chamber
 class cActionPrintBirthChamber : public cAction
@@ -3831,11 +3176,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPreyFromSensorInstructionData>("PrintPreyFromSensorInstructionData");
   action_lib->Register<cActionPrintPredatorFromSensorInstructionData>("PrintPredatorFromSensorInstructionData");
   action_lib->Register<cActionPrintTopPredatorFromSensorInstructionData>("PrintTopPredatorFromSensorInstructionData");
-  action_lib->Register<cActionPrintGroupAttackData>("PrintGroupAttackData");
   action_lib->Register<cActionPrintKilledPreyFTData>("PrintKilledPreyFTData");
   
-  action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");
-  action_lib->Register<cActionPrintFemaleInstructionData>("PrintFemaleInstructionData");
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
   action_lib->Register<cActionPrintInstructionData>("PrintInstructionData");
@@ -3843,12 +3185,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintInternalTasksQualData>("PrintInternalTasksQualData");
   action_lib->Register<cActionPrintCompetitionData>("PrintCompetitionData");
   action_lib->Register<cActionPrintDynamicMaxMinData>("PrintDynamicMaxMinData");
-  action_lib->Register<cActionPrintMaleAverageData>("PrintMaleAverageData");
-  action_lib->Register<cActionPrintFemaleAverageData>("PrintFemaleAverageData");
-  action_lib->Register<cActionPrintMaleErrorData>("PrintMaleErrorData");
-  action_lib->Register<cActionPrintFemaleErrorData>("PrintFemaleErrorData");
-  action_lib->Register<cActionPrintMaleVarianceData>("PrintMaleVarianceData");
-  action_lib->Register<cActionPrintFemaleVarianceData>("PrintFemaleVarianceData");
   
   // @WRE: Added printing of visit data
   action_lib->Register<cActionPrintCellVisitsData>("PrintCellVisitsData");
@@ -3860,18 +3196,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
   
   
-  action_lib->Register<cActionPrintDonationStats>("PrintDonationStats");
-    
-  // kabooms output file
-  action_lib->Register<cActionPrintKaboom>("PrintKaboom");
-  
-  action_lib->Register<cActionPrintMultiProcessData>("PrintMultiProcessData");
-  action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
   action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
   action_lib->Register<cActionPrintOrgLocData>("PrintOrgLocData");
   action_lib->Register<cActionPrintPreyFlockingData>("PrintPreyFlockingData");
-  action_lib->Register<cActionPrintOrgGuardData>("PrintOrgGuardData");
-  action_lib->Register<cActionPrintDenData>("PrintDenData");
 
   
   // Processed Data
@@ -3916,25 +3243,12 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpParasiteVirulenceGrid>("DumpParasiteVirulenceGrid");
   
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
-  action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
-  action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
   action_lib->Register<cActionDumpGenomeLengthGrid>("DumpGenomeLengthGrid");
   action_lib->Register<cActionDumpGenotypeGrid>("DumpGenotypeGrid");
   action_lib->Register<cActionDumpParasiteGenotypeGrid>("DumpParasiteGenotypeGrid");
   
   action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");
   
-  action_lib->Register<cActionPrintReputationData>("PrintReputationData");
-  action_lib->Register<cActionPrintDirectReciprocityData>("PrintDirectReciprocityData");
-  action_lib->Register<cActionPrintStringMatchData>("PrintStringMatchData");
-  action_lib->Register<cActionPrintShadedAltruists>("PrintShadedAltruists");
-  
-  action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
-  action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
-  action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); 
-  action_lib->Register<cActionPrintGroupMTTolerance>("PrintGroupMTTolerance"); 
-  action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); 
-  action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); 
   action_lib->Register<cActionPrintTargets>("PrintTargets");
   action_lib->Register<cActionPrintMimicDisplays>("PrintMimicDisplays");
   action_lib->Register<cActionPrintTopPredTargets>("PrintTopPredTargets");
@@ -3942,14 +3256,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetVerbose>("SetVerbose");
   action_lib->Register<cActionSetVerbose>("VERBOSE");
   
-  action_lib->Register<cActionCalcConsensus>("CalcConsensus");
-  
-  //@CHC: Mating type-related actions	
-  action_lib->Register<cActionPrintMatingTypeHistogram>("PrintMatingTypeHistogram");
-  action_lib->Register<cActionPrintMatingDisplayData>("PrintMatingDisplayData");
-  action_lib->Register<cActionPrintFemaleMatePreferenceData>("PrintFemaleMatePreferenceData");
-  action_lib->Register<cActionPrintBirthChamberMatingTypeHistogram>("PrintBirthChamberMatingTypeHistogram");
-  action_lib->Register<cActionPrintSuccessfulMates>("PrintSuccessfulMates");
   action_lib->Register<cActionPrintBirthChamber>("PrintBirthChamber");
   
   

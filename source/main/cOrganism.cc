@@ -25,7 +25,6 @@
 #include "avida/core/Feedback.h"
 #include "avida/core/UniverseDriver.h"
 
-#include "cAvidaContext.h"
 #include "cContextPhenotype.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"

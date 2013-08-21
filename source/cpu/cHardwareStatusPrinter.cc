@@ -22,9 +22,7 @@
 
 #include "cHardwareStatusPrinter.h"
 
-#include "cAvidaContext.h"
 #include "cHardwareBase.h"
-#include "cHeadCPU.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cString.h"

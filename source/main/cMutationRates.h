@@ -23,10 +23,6 @@
 #ifndef cMutationRates_h
 #define cMutationRates_h
 
-#include "cAvidaContext.h"
-
-class cWorld;
-
 class cMutationRates
 {
 private:

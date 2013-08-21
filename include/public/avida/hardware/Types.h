@@ -36,6 +36,7 @@ namespace Avida {
     
     class Base;
     class Config;
+    class CycleListener;
     class Feature;
     class InstArchCPU;
     class InstLib;

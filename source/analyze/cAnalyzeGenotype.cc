@@ -24,7 +24,6 @@
 
 #include "avida/core/UniverseDriver.h"
 
-#include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"

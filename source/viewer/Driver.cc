@@ -35,7 +35,6 @@
 
 #include "apto/rng.h"
 
-#include "cAvidaContext.h"
 #include "cEnvironment.h"
 #include "cFile.h"
 #include "cHardwareBase.h"

@@ -26,10 +26,6 @@
 #include "cPopulation.h"
 #include "cWorld.h"
 
-#include "AvidaTools.h"
-
-
-using namespace AvidaTools;
 
 
 cBirthGridLocalHandler::cBirthGridLocalHandler(cWorld* world, cBirthChamber* bc)

@@ -25,7 +25,6 @@
 #include "avida/hardware/InstLib.h"
 #include "avida/util/NopSequence.h"
 
-#include "cAvidaContext.h"
 #include "cContextPhenotype.h"
 #include "cHeadCPU.h"
 #include "cHardwareBase.h"

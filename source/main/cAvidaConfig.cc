@@ -26,16 +26,12 @@
 #include "avida/core/GlobalObject.h"
 #include "avida/core/Version.h"
 
-#include "AvidaTools.h"
-
 #include "cActionLibrary.h"
 #include "cInitFile.h"
 #include "cStringIterator.h"
 #include "cUserFeedback.h"
 
 #include <fstream>
-
-using namespace AvidaTools;
 
 
 Apto::Mutex cAvidaConfig::global_list_mutex;

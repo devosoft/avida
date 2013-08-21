@@ -30,3 +30,11 @@ Avida::Hardware::Base::~Base()
   for (int idx = 0; idx < m_features.GetSize(); idx++) delete m_features[idx];
 }
 
+
+void Avida::Hardware::Base::doCycleListenerNotification()
+{
+  for (Apto::Set<CycleListener*>::Iterator it = m_cycle_listeners.Begin(); it.Next();) {
+    (*it.Get())->NotifyHardwareCycle(*this);
+  }
+}
+

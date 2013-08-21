@@ -30,7 +30,6 @@
 #include "avida/private/environment/resources/Global.h"
 #include "avida/private/systematics/Genotype.h"
 
-#include "AvidaTools.h"
 #include "cActionLibrary.h"
 #include "cAnalyzeGenotype.h"
 #include "cHardwareManager.h"

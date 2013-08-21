@@ -23,18 +23,14 @@
 #ifndef cStats_h
 #define cStats_h
 
-#include "AvidaTools.h"
-
 #include "avida/core/InstructionSequence.h"
 #include "avida/data/Provider.h"
 
 #include "apto/stat/Accumulator.h"
 
 #include "cBirthEntry.h"
-#include "cDoubleSum.h"
 #include "cOrganism.h"
 #include "cRunningAverage.h"
-#include "cRunningStats.h"
 #include "nGeometry.h"
 #include "tDataManager.h"
 #include "tMatrix.h"
@@ -97,31 +93,28 @@ private:
 
 
   // --------  Organism Sums  ---------  (Cleared and resummed by population each update)
-  cDoubleSum sum_merit;
-  cDoubleSum sum_mem_size;
-  cDoubleSum sum_creature_age;
-  cDoubleSum sum_generation;
+  Apto::Stat::Accumulator<double> sum_merit;
+  Apto::Stat::Accumulator<double> sum_mem_size;
+  Apto::Stat::Accumulator<double> sum_creature_age;
+  Apto::Stat::Accumulator<double> sum_generation;
 
-  cDoubleSum sum_neutral_metric;
+  Apto::Stat::Accumulator<double> sum_neutral_metric;
 
-  cRunningStats sum_copy_mut_rate;
-  cRunningStats sum_log_copy_mut_rate;
+  Apto::Stat::Accumulator<double> sum_copy_mut_rate;
+  Apto::Stat::Accumulator<double> sum_log_copy_mut_rate;
 
-  cRunningStats sum_div_mut_rate;
-  cRunningStats sum_log_div_mut_rate;
+  Apto::Stat::Accumulator<double> sum_div_mut_rate;
+  Apto::Stat::Accumulator<double> sum_log_div_mut_rate;
 
 
   // --------  Genotype Sums  ---------  (Cleared and resummed by population each update)
-  cDoubleSum sum_gestation;
-  cDoubleSum sum_fitness;
-  cDoubleSum sum_repro_rate;
+  Apto::Stat::Accumulator<double> sum_gestation;
+  Apto::Stat::Accumulator<double> sum_fitness;
+  Apto::Stat::Accumulator<double> sum_repro_rate;
 
-  // calculates a running average over the actual replication rate
-  // given by the number of births per update
-  cRunningAverage rave_true_replication_rate;
 
-  cDoubleSum sum_copy_size;
-  cDoubleSum sum_exe_size;
+  Apto::Stat::Accumulator<double> sum_copy_size;
+  Apto::Stat::Accumulator<double> sum_exe_size;
 
 
 
@@ -256,26 +249,26 @@ private:
 
 
   // --------  Pred-prey Stats  ---------
-  cDoubleSum sum_prey_fitness;
-  cDoubleSum sum_prey_gestation;
-  cDoubleSum sum_prey_merit;
-  cDoubleSum sum_prey_creature_age;
-  cDoubleSum sum_prey_generation;  
-  cDoubleSum sum_prey_size;
+  Apto::Stat::Accumulator<double> sum_prey_fitness;
+  Apto::Stat::Accumulator<double> sum_prey_gestation;
+  Apto::Stat::Accumulator<double> sum_prey_merit;
+  Apto::Stat::Accumulator<double> sum_prey_creature_age;
+  Apto::Stat::Accumulator<double> sum_prey_generation;  
+  Apto::Stat::Accumulator<double> sum_prey_size;
   
-  cDoubleSum sum_pred_fitness;
-  cDoubleSum sum_pred_gestation;
-  cDoubleSum sum_pred_merit;
-  cDoubleSum sum_pred_creature_age;
-  cDoubleSum sum_pred_generation;  
-  cDoubleSum sum_pred_size;
+  Apto::Stat::Accumulator<double> sum_pred_fitness;
+  Apto::Stat::Accumulator<double> sum_pred_gestation;
+  Apto::Stat::Accumulator<double> sum_pred_merit;
+  Apto::Stat::Accumulator<double> sum_pred_creature_age;
+  Apto::Stat::Accumulator<double> sum_pred_generation;  
+  Apto::Stat::Accumulator<double> sum_pred_size;
 
-  cDoubleSum sum_tpred_fitness;
-  cDoubleSum sum_tpred_gestation;
-  cDoubleSum sum_tpred_merit;
-  cDoubleSum sum_tpred_creature_age;
-  cDoubleSum sum_tpred_generation;
-  cDoubleSum sum_tpred_size;
+  Apto::Stat::Accumulator<double> sum_tpred_fitness;
+  Apto::Stat::Accumulator<double> sum_tpred_gestation;
+  Apto::Stat::Accumulator<double> sum_tpred_merit;
+  Apto::Stat::Accumulator<double> sum_tpred_creature_age;
+  Apto::Stat::Accumulator<double> sum_tpred_generation;
+  Apto::Stat::Accumulator<double> sum_tpred_size;
 
   double prey_entropy;
   double pred_entropy;
@@ -357,50 +350,50 @@ public:
   void SetPredEntropy(double in_pred_entropy) { pred_entropy = in_pred_entropy; }
   void SetTopPredEntropy(double in_tpred_entropy) { tpred_entropy = in_tpred_entropy; }
   
-  cDoubleSum& SumFitness()       { return sum_fitness; }
-  cDoubleSum& SumGestation()     { return sum_gestation; }
-  cDoubleSum& SumMerit()         { return sum_merit; }
-  cDoubleSum& SumReproRate()     { return sum_repro_rate; }
+  Apto::Stat::Accumulator<double>& SumFitness()       { return sum_fitness; }
+  Apto::Stat::Accumulator<double>& SumGestation()     { return sum_gestation; }
+  Apto::Stat::Accumulator<double>& SumMerit()         { return sum_merit; }
+  Apto::Stat::Accumulator<double>& SumReproRate()     { return sum_repro_rate; }
 
-  cDoubleSum& SumCreatureAge()   { return sum_creature_age; }
-  cDoubleSum& SumGeneration()    { return sum_generation; }
+  Apto::Stat::Accumulator<double>& SumCreatureAge()   { return sum_creature_age; }
+  Apto::Stat::Accumulator<double>& SumGeneration()    { return sum_generation; }
 
-  cDoubleSum& SumNeutralMetric() { return sum_neutral_metric; }
-  cRunningStats& SumCopyMutRate()   { return sum_copy_mut_rate; }
-  cRunningStats& SumLogCopyMutRate()   { return sum_log_copy_mut_rate; }
-  cRunningStats& SumDivMutRate()   { return sum_div_mut_rate; }
-  cRunningStats& SumLogDivMutRate()   { return sum_log_div_mut_rate; }
+  Apto::Stat::Accumulator<double>& SumNeutralMetric() { return sum_neutral_metric; }
+  Apto::Stat::Accumulator<double>& SumCopyMutRate()   { return sum_copy_mut_rate; }
+  Apto::Stat::Accumulator<double>& SumLogCopyMutRate()   { return sum_log_copy_mut_rate; }
+  Apto::Stat::Accumulator<double>& SumDivMutRate()   { return sum_div_mut_rate; }
+  Apto::Stat::Accumulator<double>& SumLogDivMutRate()   { return sum_log_div_mut_rate; }
 
-  cDoubleSum& SumCopySize()      { return sum_copy_size; }
-  cDoubleSum& SumExeSize()       { return sum_exe_size; }
-  cDoubleSum& SumMemSize()       { return sum_mem_size; }
+  Apto::Stat::Accumulator<double>& SumCopySize()      { return sum_copy_size; }
+  Apto::Stat::Accumulator<double>& SumExeSize()       { return sum_exe_size; }
+  Apto::Stat::Accumulator<double>& SumMemSize()       { return sum_mem_size; }
 
 
   //pred-prey
-  cDoubleSum& SumPreyFitness()       { return sum_prey_fitness; }
-  cDoubleSum& SumPreyGestation()     { return sum_prey_gestation; }
-  cDoubleSum& SumPreyMerit()         { return sum_prey_merit; }
-  cDoubleSum& SumPreyCreatureAge()   { return sum_prey_creature_age; }
-  cDoubleSum& SumPreyGeneration()    { return sum_prey_generation; }  
-  cDoubleSum& SumPreySize()          { return sum_prey_size; }
+  Apto::Stat::Accumulator<double>& SumPreyFitness()       { return sum_prey_fitness; }
+  Apto::Stat::Accumulator<double>& SumPreyGestation()     { return sum_prey_gestation; }
+  Apto::Stat::Accumulator<double>& SumPreyMerit()         { return sum_prey_merit; }
+  Apto::Stat::Accumulator<double>& SumPreyCreatureAge()   { return sum_prey_creature_age; }
+  Apto::Stat::Accumulator<double>& SumPreyGeneration()    { return sum_prey_generation; }  
+  Apto::Stat::Accumulator<double>& SumPreySize()          { return sum_prey_size; }
   Apto::Array<Apto::Stat::Accumulator<int> >& InstPreyExeCountsForInstSet(const cString& inst_set) { return m_is_prey_exe_inst_map[inst_set]; }
   Apto::Array<Apto::Stat::Accumulator<int> >& InstPreyFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_prey_from_sensor_inst_map[inst_set]; }
 
-  cDoubleSum& SumPredFitness()       { return sum_pred_fitness; }
-  cDoubleSum& SumPredGestation()     { return sum_pred_gestation; }
-  cDoubleSum& SumPredMerit()         { return sum_pred_merit; }
-  cDoubleSum& SumPredCreatureAge()   { return sum_pred_creature_age; }
-  cDoubleSum& SumPredGeneration()    { return sum_pred_generation; }  
-  cDoubleSum& SumPredSize()          { return sum_pred_size; }
+  Apto::Stat::Accumulator<double>& SumPredFitness()       { return sum_pred_fitness; }
+  Apto::Stat::Accumulator<double>& SumPredGestation()     { return sum_pred_gestation; }
+  Apto::Stat::Accumulator<double>& SumPredMerit()         { return sum_pred_merit; }
+  Apto::Stat::Accumulator<double>& SumPredCreatureAge()   { return sum_pred_creature_age; }
+  Apto::Stat::Accumulator<double>& SumPredGeneration()    { return sum_pred_generation; }  
+  Apto::Stat::Accumulator<double>& SumPredSize()          { return sum_pred_size; }
   Apto::Array<Apto::Stat::Accumulator<int> >& InstPredExeCountsForInstSet(const cString& inst_set) { return m_is_pred_exe_inst_map[inst_set]; }
   Apto::Array<Apto::Stat::Accumulator<int> >& InstPredFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_pred_from_sensor_inst_map[inst_set]; }
 
-  cDoubleSum& SumTopPredFitness()       { return sum_tpred_fitness; }
-  cDoubleSum& SumTopPredGestation()     { return sum_tpred_gestation; }
-  cDoubleSum& SumTopPredMerit()         { return sum_tpred_merit; }
-  cDoubleSum& SumTopPredCreatureAge()   { return sum_tpred_creature_age; }
-  cDoubleSum& SumTopPredGeneration()    { return sum_tpred_generation; }
-  cDoubleSum& SumTopPredSize()          { return sum_tpred_size; }
+  Apto::Stat::Accumulator<double>& SumTopPredFitness()       { return sum_tpred_fitness; }
+  Apto::Stat::Accumulator<double>& SumTopPredGestation()     { return sum_tpred_gestation; }
+  Apto::Stat::Accumulator<double>& SumTopPredMerit()         { return sum_tpred_merit; }
+  Apto::Stat::Accumulator<double>& SumTopPredCreatureAge()   { return sum_tpred_creature_age; }
+  Apto::Stat::Accumulator<double>& SumTopPredGeneration()    { return sum_tpred_generation; }
+  Apto::Stat::Accumulator<double>& SumTopPredSize()          { return sum_tpred_size; }
   Apto::Array<Apto::Stat::Accumulator<int> >& InstTopPredExeCountsForInstSet(const cString& inst_set) { return m_is_tpred_exe_inst_map[inst_set]; }
   Apto::Array<Apto::Stat::Accumulator<int> >&  InstTopPredFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_tpred_from_sensor_inst_map[inst_set]; }
 
@@ -410,46 +403,46 @@ public:
  
 
   // And constant versions of the above...
-  const cDoubleSum& SumFitness() const       { return sum_fitness; }
-  const cDoubleSum& SumGestation() const     { return sum_gestation; }
-  const cDoubleSum& SumMerit() const         { return sum_merit; }
-  const cDoubleSum& SumReproRate() const     { return sum_repro_rate; }
+  const Apto::Stat::Accumulator<double>& SumFitness() const       { return sum_fitness; }
+  const Apto::Stat::Accumulator<double>& SumGestation() const     { return sum_gestation; }
+  const Apto::Stat::Accumulator<double>& SumMerit() const         { return sum_merit; }
+  const Apto::Stat::Accumulator<double>& SumReproRate() const     { return sum_repro_rate; }
 
-  const cDoubleSum& SumCreatureAge() const   { return sum_creature_age; }
-  const cDoubleSum& SumGeneration() const    { return sum_generation; }
+  const Apto::Stat::Accumulator<double>& SumCreatureAge() const   { return sum_creature_age; }
+  const Apto::Stat::Accumulator<double>& SumGeneration() const    { return sum_generation; }
 
-  const cDoubleSum& SumNeutralMetric() const { return sum_neutral_metric; }
-  const cRunningStats& SumCopyMutRate() const   { return sum_copy_mut_rate; }
-  const cRunningStats& SumLogCopyMutRate() const{ return sum_log_copy_mut_rate; }
-  const cRunningStats& SumDivMutRate() const   { return sum_div_mut_rate; }
-  const cRunningStats& SumLogDivMutRate() const{ return sum_log_div_mut_rate; }
+  const Apto::Stat::Accumulator<double>& SumNeutralMetric() const { return sum_neutral_metric; }
+  const Apto::Stat::Accumulator<double>& SumCopyMutRate() const   { return sum_copy_mut_rate; }
+  const Apto::Stat::Accumulator<double>& SumLogCopyMutRate() const{ return sum_log_copy_mut_rate; }
+  const Apto::Stat::Accumulator<double>& SumDivMutRate() const   { return sum_div_mut_rate; }
+  const Apto::Stat::Accumulator<double>& SumLogDivMutRate() const{ return sum_log_div_mut_rate; }
 
-  const cDoubleSum& SumCopySize() const      { return sum_copy_size; }
-  const cDoubleSum& SumExeSize() const       { return sum_exe_size; }
-  const cDoubleSum& SumMemSize() const       { return sum_mem_size; }
+  const Apto::Stat::Accumulator<double>& SumCopySize() const      { return sum_copy_size; }
+  const Apto::Stat::Accumulator<double>& SumExeSize() const       { return sum_exe_size; }
+  const Apto::Stat::Accumulator<double>& SumMemSize() const       { return sum_mem_size; }
 
 
   //pred-prey
-  const cDoubleSum& SumPreyFitness() const       { return sum_prey_fitness; }
-  const cDoubleSum& SumPreyGestation() const     { return sum_prey_gestation; }
-  const cDoubleSum& SumPreyMerit() const         { return sum_prey_merit; }
-  const cDoubleSum& SumPreyCreatureAge() const   { return sum_prey_creature_age; }
-  const cDoubleSum& SumPreyGeneration() const    { return sum_prey_generation; }  
-  const cDoubleSum& SumPreySize() const          { return sum_prey_size; }
+  const Apto::Stat::Accumulator<double>& SumPreyFitness() const       { return sum_prey_fitness; }
+  const Apto::Stat::Accumulator<double>& SumPreyGestation() const     { return sum_prey_gestation; }
+  const Apto::Stat::Accumulator<double>& SumPreyMerit() const         { return sum_prey_merit; }
+  const Apto::Stat::Accumulator<double>& SumPreyCreatureAge() const   { return sum_prey_creature_age; }
+  const Apto::Stat::Accumulator<double>& SumPreyGeneration() const    { return sum_prey_generation; }  
+  const Apto::Stat::Accumulator<double>& SumPreySize() const          { return sum_prey_size; }
   
-  const cDoubleSum& SumPredFitness() const       { return sum_pred_fitness; }
-  const cDoubleSum& SumPredGestation() const     { return sum_pred_gestation; }
-  const cDoubleSum& SumPredMerit() const         { return sum_pred_merit; }
-  const cDoubleSum& SumPredCreatureAge() const   { return sum_pred_creature_age; }
-  const cDoubleSum& SumPredGeneration() const    { return sum_pred_generation; }  
-  const cDoubleSum& SumPredSize() const          { return sum_pred_size; }
+  const Apto::Stat::Accumulator<double>& SumPredFitness() const       { return sum_pred_fitness; }
+  const Apto::Stat::Accumulator<double>& SumPredGestation() const     { return sum_pred_gestation; }
+  const Apto::Stat::Accumulator<double>& SumPredMerit() const         { return sum_pred_merit; }
+  const Apto::Stat::Accumulator<double>& SumPredCreatureAge() const   { return sum_pred_creature_age; }
+  const Apto::Stat::Accumulator<double>& SumPredGeneration() const    { return sum_pred_generation; }  
+  const Apto::Stat::Accumulator<double>& SumPredSize() const          { return sum_pred_size; }
 
-  const cDoubleSum& SumTopPredFitness() const       { return sum_tpred_fitness; }
-  const cDoubleSum& SumTopPredGestation() const     { return sum_tpred_gestation; }
-  const cDoubleSum& SumTopPredMerit() const         { return sum_tpred_merit; }
-  const cDoubleSum& SumTopPredCreatureAge() const   { return sum_tpred_creature_age; }
-  const cDoubleSum& SumTopPredGeneration() const    { return sum_tpred_generation; }
-  const cDoubleSum& SumTopPredSize() const          { return sum_tpred_size; }
+  const Apto::Stat::Accumulator<double>& SumTopPredFitness() const       { return sum_tpred_fitness; }
+  const Apto::Stat::Accumulator<double>& SumTopPredGestation() const     { return sum_tpred_gestation; }
+  const Apto::Stat::Accumulator<double>& SumTopPredMerit() const         { return sum_tpred_merit; }
+  const Apto::Stat::Accumulator<double>& SumTopPredCreatureAge() const   { return sum_tpred_creature_age; }
+  const Apto::Stat::Accumulator<double>& SumTopPredGeneration() const    { return sum_tpred_generation; }
+  const Apto::Stat::Accumulator<double>& SumTopPredSize() const          { return sum_tpred_size; }
 
   
   void IncResamplings() { ++num_resamplings; }

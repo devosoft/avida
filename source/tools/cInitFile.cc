@@ -24,7 +24,6 @@
 
 #include "apto/core/FileSystem.h"
 
-#include "AvidaTools.h"
 #include "cFile.h"
 #include "cStringIterator.h"
 

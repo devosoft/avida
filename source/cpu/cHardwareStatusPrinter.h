@@ -25,10 +25,6 @@
 
 #include "avida/output/File.h"
 
-#include "cHardwareTracer.h"
-
-class cAvidaContext;
-
 
 class cHardwareStatusPrinter : public cHardwareTracer
 {

@@ -66,16 +66,9 @@ private:
     int forager;
   } m_cell_data;         // "data" that is local to the cell and can be retrieaved by the org.
 
-  int m_spec_state;
-
-  bool m_migrant; //@AWC -- does the cell contain a migrant genome?
-
   // location in population
   int m_x; //!< The x-coordinate of the position of this cell in the environment.
   int m_y; //!< The y-coordinate of the position of this cell in the environment.
-
-  // @WRE: Statistic for movement
-  int m_visits; // The number of times Avidians move into the cell
 
   void InsertOrganism(cOrganism* new_org, cAvidaContext& ctx); 
   cOrganism* RemoveOrganism(cAvidaContext& ctx); 
@@ -84,7 +77,7 @@ private:
 public:
   typedef std::set<cPopulationCell*> neighborhood_type; //!< Type for cell neighborhoods.
 
-  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_migrant(false), m_can_input(false), m_can_output(false) { ; }
+  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL) { ; }
   cPopulationCell(const cPopulationCell& in_cell);
   ~cPopulationCell() { delete m_mut_rates; }
 
@@ -93,10 +86,7 @@ public:
   void Setup(cWorld* world, int in_id, const cMutationRates& in_rates, int x, int y);
   void Rotate(cPopulationCell& new_facing);
 
-  void SetMigrant() {m_migrant = true;} //@AWC -- this cell will contain a migrant genome
-  void UnsetMigrant() {m_migrant = false;} //@AWC -- unset the migrant flag
-  bool IsMigrant() {return m_migrant;} //@AWC -- does this contain a migrant genome?
-
+  
   inline cOrganism* GetOrganism() const { return m_organism; }
   inline cHardwareBase* GetHardware() const { return m_hardware; }
   inline tList<cPopulationCell>& ConnectionList() { return m_connections; }
@@ -110,8 +100,6 @@ public:
   int GetFacedDir(); // Returns the human interpretable facing of this org.
   inline void GetPosition(int& x, int& y) const { x = m_x; y = m_y; } // Retrieves the position (x,y) coordinates of this cell.
   inline std::pair<int,int> GetPosition() const { return std::make_pair(m_x,m_y); }
-  inline int GetVisits() { return m_visits; } // @WRE: Retrieves the number of visits for this cell.
-  inline void IncVisits() { m_visits++; } // @WRE: Increments the visit count for a cell
   inline const cMutationRates& MutationRates() const { assert(m_mut_rates); return *m_mut_rates; }
   inline cMutationRates& MutationRates() { assert(m_mut_rates); return *m_mut_rates; }
 
@@ -158,15 +146,6 @@ public:
   Apto::Array<cOrganism*> GetCellOutputAVs();
   Apto::Array<cOrganism*> GetCellAVs();
 
-// -------- Neural support -------- 
-private:
-  bool m_can_input;
-  bool m_can_output;
-public:
-  void SetCanInput(bool input) { m_can_input = input; }
-  void SetCanOutput(bool output) { m_can_output = output; }
-  bool GetCanInput() { return m_can_input; }
-  bool GetCanOutput() { return m_can_output; }
 
 };
 

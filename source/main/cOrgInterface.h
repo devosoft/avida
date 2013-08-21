@@ -59,8 +59,6 @@ public:
 
   virtual const Apto::Array<cOrganism*, Apto::Smart>& GetLiveOrgList() const = 0;
   virtual int GetCellID() = 0;
-  virtual cPopulationCell* GetCell() = 0;
-  virtual cPopulationCell* GetCell(int cell_id) = 0;
   virtual void SetCellID(int in_id) = 0;
   virtual int GetCellXPosition() = 0;
   virtual int GetCellYPosition() = 0;

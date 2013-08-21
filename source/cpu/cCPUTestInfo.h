@@ -25,7 +25,6 @@
 #ifndef cCPUTestInfo_h
 #define cCPUTestInfo_h
 
-#include "cHardwareTracer.h"
 #include "cMutationRates.h"
 
 class cOrganism;

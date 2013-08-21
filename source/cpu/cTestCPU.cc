@@ -24,12 +24,10 @@
 
 #include "avida/output/File.h"
 
-#include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
-#include "cHardwareTracer.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -41,7 +39,6 @@
 #include <iomanip>
 
 using namespace std;
-using namespace AvidaTools;
 
 
 cTestCPU::cTestCPU(cAvidaContext& ctx, cWorld* world)

@@ -28,7 +28,6 @@
 #include "apto/rng.h"
 
 #include "cAvidaConfig.h"
-#include "cAvidaContext.h"
 
 #include <cassert>
 

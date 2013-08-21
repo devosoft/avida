@@ -30,8 +30,6 @@
 
 #include "apto/stat/Accumulator.h"
 
-#include "cCountTracker.h"
-
 
 namespace Avida {
   namespace Systematics {
@@ -57,6 +55,28 @@ namespace Avida {
     {
       friend class GenotypeArbiter;
     private:
+      class CountTracker
+      {
+      private:
+        int m_cur;
+        int m_last;
+        int m_total;
+        
+      public:
+        inline CountTracker() { Clear(); }
+        
+        inline const int& Current() const { return m_cur; }
+        inline const int& Last() const { return m_last; }
+        inline const int& Total() const { return m_total; }
+        
+        inline void Inc() { m_cur++; m_total++; }
+        inline void Dec() { m_cur--; }
+        inline void Next() { m_last = m_cur; m_cur = 0; }
+        inline void Clear() { m_cur = m_last = m_total = 0; }
+      };
+
+      
+    private:
       mutable GenotypeArbiterPtr m_mgr;
       Apto::List<GenotypePtr, Apto::SparseVector>::EntryHandle* m_handle;
       
@@ -79,13 +99,13 @@ namespace Avida {
       Apto::Array<GenotypePtr> m_parents;
       Apto::String m_parent_str;
       
-      cCountTracker m_births;
-      cCountTracker m_deaths;
-      cCountTracker m_breed_in;
-      cCountTracker m_breed_true;
-      cCountTracker m_breed_out;
+      CountTracker m_births;
+      CountTracker m_deaths;
+      CountTracker m_breed_in;
+      CountTracker m_breed_true;
+      CountTracker m_breed_out;
 
-      cCountTracker m_gestation_count;
+      CountTracker m_gestation_count;
             
       Apto::Stat::Accumulator<double> m_copied_size;
       Apto::Stat::Accumulator<double> m_exe_size;

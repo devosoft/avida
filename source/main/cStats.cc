@@ -48,7 +48,6 @@
 #include <sstream>
 
 using namespace Avida;
-using namespace AvidaTools;
 
 
 cStats::cStats(cWorld* world)
@@ -56,7 +55,6 @@ cStats::cStats(cWorld* world)
 , m_data_manager(this, "population_data")
 , m_update(-1)
 , avida_time(0)
-, rave_true_replication_rate( 500 )
 , max_viable_fitness(0)
 , max_fitness(0)
 , max_merit(0)
@@ -450,10 +448,6 @@ void cStats::ProcessUpdate()
   if (sum_merit.Count() > 0 && sum_merit.Average() > 0) {
     double delta = ((double)(m_update-last_update))/sum_merit.Average();
     avida_time += delta;
-    
-    // calculate the true replication rate in this update
-    rave_true_replication_rate.Add( num_births/
-                                   (delta * m_world->GetConfig().AVE_TIME_SLICE.Get() * num_creatures) );
   }
   last_update = m_update;
   
@@ -559,7 +553,7 @@ void cStats::PrintAverageData(const cString& filename)
   df->Write(0,                             "(deprecated) Genotype Depth");
   df->Write(sum_generation.Average(),      "Generation");
   df->Write(sum_neutral_metric.Average(),  "Neutral Metric");
-  df->Write(rave_true_replication_rate.Average(), "True Replication Rate (based on births/update, time-averaged)");
+  df->Write(0, "(deprecated) True Replication Rate (based on births/update, time-averaged)");
   df->Endl();
 }
 
@@ -585,7 +579,7 @@ void cStats::PrintErrorData(const cString& filename)
   df->Write(0,                              "(deprecated) Genotype Depth");
   df->Write(sum_generation.StdError(),      "Generation");
   df->Write(sum_neutral_metric.StdError(),  "Neutral Metric");
-  df->Write(rave_true_replication_rate.StdError(), "True Replication Rate (based on births/update, time-averaged)");
+  df->Write(0, "(deprecated) True Replication Rate (based on births/update, time-averaged)");
   df->Endl();
 }
 
@@ -611,7 +605,7 @@ void cStats::PrintVarianceData(const cString& filename)
   df->Write(0,                              "(deprecated) Genotype Depth");
   df->Write(sum_generation.Variance(),      "Generation");
   df->Write(sum_neutral_metric.Variance(),  "Neutral Metric");
-  df->Write(rave_true_replication_rate.Variance(), "True Replication Rate (based on births/update, time-averaged)");
+  df->Write(0, "(deprecated) True Replication Rate (based on births/update, time-averaged)");
   df->Endl();
 }
 

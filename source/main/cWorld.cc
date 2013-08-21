@@ -21,8 +21,6 @@
 
 #include "cWorld.h"
 
-#include "AvidaTools.h"
-
 #include "avida/data/Manager.h"
 #include "avida/environment/Manager.h"
 #include "avida/output/Manager.h"
@@ -43,8 +41,6 @@
 #include "cUserFeedback.h"
 
 #include <cassert>
-
-using namespace AvidaTools;
 
 
 cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)

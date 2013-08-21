@@ -28,7 +28,6 @@
 #include "avida/hardware/InstLib.h"
 
 #include "cString.h"
-#include "cOrderedWeightedIndex.h"
 
 using namespace std;
 using namespace Avida;

@@ -25,12 +25,10 @@
 #include "avida/core/Feedback.h"
 #include "avida/core/UniverseDriver.h"
 
-#include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"
-#include "cHeadCPU.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -41,20 +39,16 @@
 #include "cWorld.h"
 
 using namespace Avida;
-using namespace AvidaTools;
 
 
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
 : m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
 , m_minitrace(false), m_microtrace(false), m_topnavtrace(false), m_reprotrace(false)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
-, m_has_res_costs(m_inst_set->HasResCosts()), m_has_fem_res_costs(m_inst_set->HasFemResCosts())
-, m_has_female_costs(m_inst_set->HasFemaleCosts()), m_has_choosy_female_costs(m_inst_set->HasChoosyFemaleCosts())
+, m_has_res_costs(m_inst_set->HasResCosts())
 , m_has_post_costs(inst_set->HasPostCosts()), m_has_bonus_costs(inst_set->HasBonusCosts())
 {
-	m_task_switching_cost=0;
-	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_res_costs | m_has_fem_res_costs | m_has_female_costs |
-                     m_has_choosy_female_costs | m_has_post_costs);
+	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_res_costs | m_has_post_costs);
   m_implicit_repro_active = (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() ||
@@ -538,16 +532,9 @@ void cHardwareBase::doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head)
   int mut = ctx.GetRandom().GetUInt((m_inst_set->GetSize() * 2) + 1);
   //Anya added code for Head to Head kazi experiment
   bool in_List = false;
-  Apto::String test_inst = head.GetInst().GetSymbol();
-  cString no_mut_list = m_world->GetConfig().NO_MUT_INSTS.Get();
-  for(int i=0; i<(int)strlen(no_mut_list); i++) {
-    if (test_inst[0] == (char)no_mut_list[i]) in_List = true;
-  }
-  if (!in_List) {
-    if (mut < m_inst_set->GetSize()) head.SetInst(Instruction(mut));
-    else if (mut == m_inst_set->GetSize()) head.RemoveInst();
-    else head.InsertInst(Instruction(mut - m_inst_set->GetSize() - 1));
-  }
+  if (mut < m_inst_set->GetSize()) head.SetInst(Instruction(mut));
+  else if (mut == m_inst_set->GetSize()) head.RemoveInst();
+  else head.InsertInst(Instruction(mut - m_inst_set->GetSize() - 1));
 }
 
 
@@ -1151,11 +1138,6 @@ bool cHardwareBase::Inst_Repro(cAvidaContext&)
 // should proceed.
 bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const Instruction& cur_inst, const int thread_id)
 { 
-  // If task switching costs need to be paid off...
-  if (m_task_switching_cost > 0) { 
-    m_task_switching_cost--;
-    return false;
-  }
   
   // If first time cost hasn't been paid off...
   if (m_has_ft_costs && m_inst_ft_cost[cur_inst.GetOp()] > 0) {

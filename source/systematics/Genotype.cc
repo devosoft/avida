@@ -504,26 +504,26 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
 
   ADD_FUN_PROP(max_fitness, double, GetFunctor(&m_fitness, &Apto::Stat::Accumulator<double>::Max));
   
-  ADD_REF_PROP(recent_births, int, m_births.GetCur());
-  ADD_REF_PROP(recent_deaths, int, m_deaths.GetCur());
-  ADD_REF_PROP(recent_breed_true, int, m_breed_true.GetCur());
-  ADD_REF_PROP(recent_breed_in, int, m_breed_in.GetCur());
-  ADD_REF_PROP(recent_breed_out, int, m_breed_out.GetCur());
-  ADD_REF_PROP(recent_gestation_count, int, m_gestation_count.GetCur());
+  ADD_REF_PROP(recent_births, int, m_births.Current());
+  ADD_REF_PROP(recent_deaths, int, m_deaths.Current());
+  ADD_REF_PROP(recent_breed_true, int, m_breed_true.Current());
+  ADD_REF_PROP(recent_breed_in, int, m_breed_in.Current());
+  ADD_REF_PROP(recent_breed_out, int, m_breed_out.Current());
+  ADD_REF_PROP(recent_gestation_count, int, m_gestation_count.Current());
   
   ADD_REF_PROP(total_organisms, int, m_total_organisms);
-  ADD_REF_PROP(last_births, int, m_births.GetLast());
-  ADD_REF_PROP(last_deaths, int, m_deaths.GetLast());
-  ADD_REF_PROP(last_breed_true, int, m_breed_true.GetLast());
-  ADD_REF_PROP(last_breed_in, int, m_breed_in.GetLast());
-  ADD_REF_PROP(last_breed_out, int, m_breed_out.GetLast());
-  ADD_REF_PROP(last_gestation_count, int, m_gestation_count.GetLast());
+  ADD_REF_PROP(last_births, int, m_births.Last());
+  ADD_REF_PROP(last_deaths, int, m_deaths.Last());
+  ADD_REF_PROP(last_breed_true, int, m_breed_true.Last());
+  ADD_REF_PROP(last_breed_in, int, m_breed_in.Last());
+  ADD_REF_PROP(last_breed_out, int, m_breed_out.Last());
+  ADD_REF_PROP(last_gestation_count, int, m_gestation_count.Last());
   
   ADD_REF_PROP(last_birth_cell, int, m_last_birth_cell);
   ADD_REF_PROP(last_group_id, int, m_last_group_id);
   ADD_REF_PROP(last_forager_type, int, m_last_forager_type);
 
-  ADD_REF_PROP(total_gestation_count, int, m_gestation_count.GetTotal());
+  ADD_REF_PROP(total_gestation_count, int, m_gestation_count.Total());
 
   // Collect all relevant action trigger counts
   for (int i = 0; i < m_mgr->EnvironmentActionTriggerAverageIDs().GetSize(); i++) {

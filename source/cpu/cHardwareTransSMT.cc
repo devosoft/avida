@@ -22,24 +22,20 @@
 #include "cHardwareTransSMT.h"
 #include "avida/systematics/Unit.h"
 
-#include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cInstSet.h"
 #include "cHardwareManager.h"
-#include "cHardwareTracer.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
 #include "cParasite.h"
 
-#include "AvidaTools.h"
 
 #include <iomanip>
 
 using namespace std;
-using namespace AvidaTools;
 using namespace Avida::Hardware::InstructionFlags;
 using namespace Avida::Util;
 

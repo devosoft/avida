@@ -290,10 +290,8 @@ SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cBitArray.cc
   ${TOOLS_DIR}/cDataManager_Base.cc
   ${TOOLS_DIR}/cFile.cc
-  ${TOOLS_DIR}/cHistogram.cc
   ${TOOLS_DIR}/cInitFile.cc
   ${TOOLS_DIR}/cMerit.cc
-  ${TOOLS_DIR}/cOrderedWeightedIndex.cc
   ${TOOLS_DIR}/cRunningAverage.cc
   ${TOOLS_DIR}/cString.cc
   ${TOOLS_DIR}/cStringIterator.cc

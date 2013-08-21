@@ -40,9 +40,6 @@
 #include "apto/scheduler.h"
 #include "apto/stat/Accumulator.h"
 
-#include "AvidaTools.h"
-
-#include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
@@ -55,7 +52,6 @@
 #include "cPopulationCell.h"
 #include "cStats.h"
 #include "cTestCPU.h"
-#include "cTopology.h"
 #include "cWorld.h"
 
 #include "cHardwareCPU.h"
@@ -71,7 +67,7 @@
 #include <limits>
 
 using namespace std;
-using namespace AvidaTools;
+
 
 static const PropertyID s_prop_id_instset("instset");
 
@@ -1640,110 +1636,6 @@ void cPopulation::SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx)
 }
 
 
-
-// Print out statistics about donations
-
-void cPopulation::PrintDonationStats()
-{
-  cDoubleSum donation_makers;
-  cDoubleSum donation_receivers;
-  cDoubleSum donation_cheaters;
-  
-  cDoubleSum edit_donation_makers;
-  cDoubleSum edit_donation_receivers;
-  cDoubleSum edit_donation_cheaters;
-  
-  cDoubleSum kin_donation_makers;
-  cDoubleSum kin_donation_receivers;
-  cDoubleSum kin_donation_cheaters;
-  
-  cDoubleSum threshgb_donation_makers;
-  cDoubleSum threshgb_donation_receivers;
-  cDoubleSum threshgb_donation_cheaters;
-  
-  cDoubleSum quanta_threshgb_donation_makers;
-  cDoubleSum quanta_threshgb_donation_receivers;
-  cDoubleSum quanta_threshgb_donation_cheaters;
-  
-  cStats& stats = m_world->GetStats();
-  
-  Avida::Output::FilePtr dn_donors = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "donations.dat");
-  dn_donors->WriteComment("Info about organisms giving donations in the population");
-  dn_donors->WriteTimeStamp();
-  dn_donors->Write(stats.GetUpdate(), "update");
-  
-  
-  for (int i = 0; i < cell_array.GetSize(); i++)
-  {
-    // Only look at cells with organisms in them.
-    if (cell_array[i].IsOccupied() == false) continue;
-    cOrganism * organism = cell_array[i].GetOrganism();
-    const cPhenotype & phenotype = organism->GetPhenotype();
-    
-    // donors & receivers in general
-    if (phenotype.IsDonorLast()) donation_makers.Add(1);  // Found donor
-    if (phenotype.IsReceiverLast()) {
-      donation_receivers.Add(1);                          // Found receiver
-      if (phenotype.IsDonorLast()==0) {
-        donation_cheaters.Add(1);                         // Found receiver with non-donor parent
-      }
-    }
-    // edit donors & receivers
-    if (phenotype.IsDonorEditLast()) edit_donation_makers.Add(1);  // Found edit donor
-    if (phenotype.IsReceiverEditLast()) {
-      edit_donation_receivers.Add(1);                              // Found edit receiver
-      if (phenotype.IsDonorEditLast()==0) {
-        edit_donation_cheaters.Add(1);                             // Found edit receiver whose parent did not make a edit donation
-      }
-    }
-    
-    // kin donors & receivers
-    if (phenotype.IsDonorKinLast()) kin_donation_makers.Add(1); //found a kin donor
-    if (phenotype.IsReceiverKinLast()){
-      kin_donation_receivers.Add(1);                            //found a kin receiver
-      if (phenotype.IsDonorKinLast()==0){
-        kin_donation_cheaters.Add(1);                           //found a kin receiver whose parent did not make a kin donation
-      }
-    }
-    
-    // threshgb donors & receivers
-    if (phenotype.IsDonorThreshGbLast()) threshgb_donation_makers.Add(1); //found a threshgb donor
-    if (phenotype.IsReceiverThreshGbLast()){
-      threshgb_donation_receivers.Add(1);                              //found a threshgb receiver
-      if (phenotype.IsDonorThreshGbLast()==0){
-        threshgb_donation_cheaters.Add(1);                             //found a threshgb receiver whose parent did...
-      }                                                              //...not make a threshgb donation
-    }
-    
-    // quanta_threshgb donors & receivers
-    if (phenotype.IsDonorQuantaThreshGbLast()) quanta_threshgb_donation_makers.Add(1); //found a quanta threshgb donor
-    if (phenotype.IsReceiverQuantaThreshGbLast()){
-      quanta_threshgb_donation_receivers.Add(1);                              //found a quanta threshgb receiver
-      if (phenotype.IsDonorQuantaThreshGbLast()==0){
-        quanta_threshgb_donation_cheaters.Add(1);                             //found a quanta threshgb receiver whose parent did...
-      }                                                              //...not make a quanta threshgb donation
-    }
-    
-  }
-  
-  dn_donors->Write(donation_makers.Sum(), "parent made at least one donation");
-  dn_donors->Write(donation_receivers.Sum(), "parent received at least one donation");
-  dn_donors->Write(donation_cheaters.Sum(),  "parent received at least one donation but did not make one");
-  dn_donors->Write(edit_donation_makers.Sum(), "parent made at least one edit_donation");
-  dn_donors->Write(edit_donation_receivers.Sum(), "parent received at least one edit_donation");
-  dn_donors->Write(edit_donation_cheaters.Sum(),  "parent received at least one edit_donation but did not make one");
-  dn_donors->Write(kin_donation_makers.Sum(), "parent made at least one kin_donation");
-  dn_donors->Write(kin_donation_receivers.Sum(), "parent received at least one kin_donation");
-  dn_donors->Write(kin_donation_cheaters.Sum(),  "parent received at least one kin_donation but did not make one");
-  dn_donors->Write(threshgb_donation_makers.Sum(), "parent made at least one threshgb_donation");
-  dn_donors->Write(threshgb_donation_receivers.Sum(), "parent received at least one threshgb_donation");
-  dn_donors->Write(threshgb_donation_cheaters.Sum(),  "parent received at least one threshgb_donation but did not make one");
-  dn_donors->Write(quanta_threshgb_donation_makers.Sum(), "parent made at least one quanta_threshgb_donation");
-  dn_donors->Write(quanta_threshgb_donation_receivers.Sum(), "parent received at least one quanta_threshgb_donation");
-  dn_donors->Write(quanta_threshgb_donation_cheaters.Sum(),  "parent received at least one quanta_threshgb_donation but did not make one");
-  
-  dn_donors->Endl();
-}
 
 
 
@@ -3779,9 +3671,6 @@ bool cPopulation::UpdateMerit(int cell_id, double new_merit)
   
   phenotype.SetMerit( cMerit(new_merit) );
   phenotype.SetLifeFitness(new_merit/phenotype.GetGestationTime());
-  if (new_merit <= old_merit) {
-    phenotype.SetIsDonorCur(); }
-  else  { phenotype.SetIsReceiver(); }
   AdjustSchedule(GetCell(cell_id), phenotype.GetMerit());
   
   return true;

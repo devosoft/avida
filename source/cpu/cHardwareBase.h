@@ -31,12 +31,10 @@
 #include <climits>
 #include <iostream>
 
-#include "cHardwareTracer.h"
 #include "cInstSet.h"
 #include "tBuffer.h"
 
 class cAvidaContext;
-class cHeadCPU;
 class cMutation;
 class cOrganism;
 class cString;
@@ -84,18 +82,12 @@ protected:
     bool m_has_bonus_costs:1;
   };
   
-  int m_task_switching_cost;
-
   // --------  Base Hardware Feature Support  ---------
   Apto::Array<int, Apto::Smart> m_ext_mem;
   bool m_implicit_repro_active;
   
 
-  cHardwareBase(); // @not_implemented
-  cHardwareBase(const cHardwareBase&); // @not_implemented
-  cHardwareBase& operator=(const cHardwareBase&); // @not_implemented
-
-private: 
+private:
   cString null_str;
 
 public:
@@ -118,6 +110,8 @@ public:
   // --------  Helper methods  --------
   virtual int GetType() const = 0;
   virtual bool SupportsSpeculative() const = 0;
+  
+  
   virtual void PrintStatus(std::ostream& fp) = 0;
   virtual void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp) = 0;
   virtual void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) = 0;

@@ -49,14 +49,6 @@ Avida3Driver::~Avida3Driver()
 
 void Avida3Driver::Run()
 {
-//  if (m_world->GetConfig().ANALYZE_MODE.Get() > 0) {
-//    cout << "In analyze mode!!" << endl;
-//    cAnalyze& analyze = m_world->GetAnalyze();
-//    analyze.RunFile(m_world->GetConfig().ANALYZE_FILE.Get());
-//    if (m_world->GetConfig().ANALYZE_MODE.Get() == 2) analyze.RunInteractive();
-//    return;
-//  }
-
   const int rand_seed = cfg->RANDOM_SEED.Get();
   std::cout << "Random Seed: " << rand_seed;
   if (rand_seed != world->GetRandom().Seed()) std::cout << " -> " << world->GetRandom().Seed();
@@ -70,14 +62,9 @@ void Avida3Driver::Run()
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
   
-  const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get() +
-                                m_world->GetConfig().POINT_INS_PROB.Get() +
-                                m_world->GetConfig().POINT_DEL_PROB.Get() +
-                                m_world->GetConfig().DIV_LGT_PROB.Get();
-  
   void (cPopulation::*ActiveProcessStep)(cAvidaContext& ctx, double step_size, int cell_id) = &cPopulation::ProcessStep;
   if (m_world->GetConfig().SPECULATIVE.Get() &&
-      m_world->GetConfig().THREAD_SLICING_METHOD.Get() != 1 && !m_world->GetConfig().IMPLICIT_REPRO_END.Get() && point_mut_prob == 0.0) {
+      m_world->GetConfig().THREAD_SLICING_METHOD.Get() != 1 && !m_world->GetConfig().IMPLICIT_REPRO_END.Get()) {
     ActiveProcessStep = &cPopulation::ProcessStepSpeculative;
   }
   
@@ -137,16 +124,6 @@ void Avida3Driver::Run()
       cout << endl;
     }
     
-    
-    // Do Point Mutations
-    if (point_mut_prob > 0 ) {
-      for (int i = 0; i < population.GetSize(); i++) {
-        if (population.GetCell(i).IsOccupied()) {
-          int num_mut = population.GetCell(i).GetOrganism()->GetHardware().PointMutate(ctx);
-          population.GetCell(i).GetOrganism()->IncPointMutations(num_mut);
-        }
-      }
-    }
     
     m_new_world->PerformUpdate(new_ctx, stats.GetUpdate());
     

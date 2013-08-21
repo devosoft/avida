@@ -43,7 +43,6 @@
 #include "cAnalyzeGenotype.h"
 #include "cAnalyzeTreeStats_CumulativeStemminess.h"
 #include "cAnalyzeTreeStats_Gamma.h"
-#include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
@@ -81,7 +80,6 @@ extern "C" {
 
 using namespace std;
 using namespace Avida;
-using namespace AvidaTools;
 
 cAnalyze::cAnalyze(cWorld* world)
 : cur_batch(0)
@@ -5878,7 +5876,7 @@ void cAnalyze::CommandSpecies(cString cur_string)
          
           double start_frac = m_world->GetRandom().GetDouble();
           double end_frac = m_world->GetRandom().GetDouble();
-          if (start_frac > end_frac) Swap(start_frac, end_frac);
+          if (start_frac > end_frac) Apto::Swap(start_frac, end_frac);
           
           int start0 = (int) (start_frac * (double) test_genome0_seq.GetSize());
           int end0   = (int) (end_frac * (double) test_genome0_seq.GetSize());
@@ -5993,7 +5991,7 @@ void cAnalyze::CommandRecombine(cString cur_string)
         
         double start_frac = m_world->GetRandom().GetDouble();
         double end_frac = m_world->GetRandom().GetDouble();
-        if (start_frac > end_frac) Swap(start_frac, end_frac);
+        if (start_frac > end_frac) Apto::Swap(start_frac, end_frac);
         
         int start0 = (int) (start_frac * (double) test_genome0_seq.GetSize());
         int end0   = (int) (end_frac * (double) test_genome0_seq.GetSize());
@@ -6093,7 +6091,7 @@ void cAnalyze::CommandRecombineSample(cString cur_string)
         
     double start_frac = m_world->GetRandom().GetDouble();
     double end_frac = m_world->GetRandom().GetDouble();
-    if (start_frac > end_frac) Swap(start_frac, end_frac);
+    if (start_frac > end_frac) Apto::Swap(start_frac, end_frac);
     
     int start0 = (int) (start_frac * (double) seq0->GetSize());
     int end0   = (int) (end_frac * (double) seq0->GetSize());
