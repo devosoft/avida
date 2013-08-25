@@ -86,6 +86,7 @@ private:
   Apto::Array<pair<int,int>, Apto::Smart>* sleep_log;
   
   Apto::Array<GeneticRepresentationPtr> parasite_genotype_list;
+  Apto::Array<GeneticRepresentationPtr> host_genotype_list;
   
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
@@ -269,6 +270,8 @@ public:
 
   // Saving and loading...
   bool LoadParasiteGenotypeList(const cString& filename, cAvidaContext& ctx);
+  bool LoadHostGenotypeList(const cString& filename, cAvidaContext& ctx);
+
   bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false,
                       bool save_rebirth = false);
   bool SaveStructuredSystematicsGroup(const Systematics::RoleID& role, const cString& filename);
@@ -482,6 +485,8 @@ private:
   int PlaceAvatar(cAvidaContext& ctx, cOrganism* parent);
   
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
+  
+  bool LoadGenotypeList(const cString& filename, cAvidaContext& ctx, Apto::Array<GeneticRepresentationPtr>& list_obj);
 };
 
 #endif

@@ -4193,6 +4193,48 @@ public:
   }
 };
 
+class cActionDumpHostGenotypeList : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpHostGenotypeList(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext&)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("host_genome_list.%d.dat", m_world->GetStats().GetUpdate());
+    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
+    ofstream& fp = df->OFStream();
+    
+    cPopulation* pop = &m_world->GetPopulation();
+    
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        cString genome_seq("");
+        int cell_num = j * pop->GetWorldX() + i;
+        if (pop->GetCell(cell_num).IsOccupied() == true)
+        {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          Genome host_genome(organism->Properties().Get("genome"));
+          ConstInstructionSequencePtr seq;
+          seq.DynamicCastFrom(host_genome.Representation());
+          genome_seq = seq->AsString();
+          fp << genome_seq << endl;
+        }
+      }
+    }
+  }
+};
+
+
+
+
 class cActionDumpParasiteGenotypeGrid : public cAction
 {
 private:
@@ -5315,6 +5357,11 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpGenomeLengthGrid>("DumpGenomeLengthGrid");
   action_lib->Register<cActionDumpGenotypeGrid>("DumpGenotypeGrid");
   action_lib->Register<cActionDumpParasiteGenotypeGrid>("DumpParasiteGenotypeGrid");
+  
+  //Dump Genotype Lists
+  action_lib->Register<cActionDumpHostGenotypeList>("DumpHostGenotypeList");
+  action_lib->Register<cActionDumpHostGenotypeList>("DumpParasiteGenotypeList");
+
   
   action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");
   action_lib->Register<cActionPrintMigrationData>("PrintMigrationData");

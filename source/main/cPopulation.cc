@@ -1115,6 +1115,8 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   
   in_organism->SetOrgInterface(ctx, new cPopulationInterface(m_world));
   
+  
+  
   // Update the contents of the target cell.
   KillOrganism(target_cell, ctx); 
   target_cell.InsertOrganism(in_organism, ctx); 
@@ -6353,12 +6355,12 @@ public:
   inline bool operator>=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
 };
 
-bool cPopulation::LoadParasiteGenotypeList(const cString& filename, cAvidaContext& ctx)
+bool cPopulation::LoadGenotypeList(const cString& filename, cAvidaContext& ctx, Apto::Array<GeneticRepresentationPtr>& list_obj)
 {
   cInitFile input_file(filename, m_world->GetWorkingDir(), ctx.Driver().Feedback());
   if (!input_file.WasOpened()) return false;
 
-  parasite_genotype_list.ResizeClear(input_file.GetNumLines());
+  list_obj.ResizeClear(input_file.GetNumLines());
   
   Apto::Array<sTmpGenotype, Apto::ManagedPointer> genotypes(input_file.GetNumLines());
   
@@ -6369,11 +6371,23 @@ bool cPopulation::LoadParasiteGenotypeList(const cString& filename, cAvidaContex
     HashPropertyMap props;
     cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
     
-    parasite_genotype_list[line_id] = GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence));
+    list_obj[line_id] = GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence));
   }
 
   return true;
 }
+
+bool cPopulation::LoadParasiteGenotypeList(const cString& filename, cAvidaContext& ctx)
+{
+  return LoadGenotypeList(filename, ctx, parasite_genotype_list);
+}
+
+
+bool cPopulation::LoadHostGenotypeList(const cString& filename, cAvidaContext& ctx)
+{
+  return LoadGenotypeList(filename, ctx, host_genotype_list);
+}
+
 
 bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, bool load_birth_cells, bool load_avatars, bool load_rebirth, bool load_parent_dat, int traceq)
 {
