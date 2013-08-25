@@ -565,9 +565,20 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   seq.DynamicCastFrom(parent_organism->GetGenome().Representation());
   parent_phenotype.DivideReset(*seq);
   
+  GeneticRepresentationPtr tmpHostGenome;
   
+  if (m_world->GetConfig().HOST_USE_GENOTYPE_FILE.Get())
+  {
+    tmpHostGenome = host_genotype_list[m_world->GetRandom().GetInt(host_genotype_list.GetSize())];
+  }
+  else
+  {
+    tmpHostGenome = GeneticRepresentationPtr(new InstructionSequence((const InstructionSequence&)offspring_genome.Representation()->AsString()));
+  }
+  
+  Genome temp(parent_organism->GetGenome().HardwareType(), parent_organism->GetGenome().Properties(), tmpHostGenome);
   birth_chamber.SubmitOffspring(ctx, offspring_genome, parent_organism, offspring_array, merit_array);
-  
+    
   // First, setup the genotype of all of the offspring.
   const int parent_id = parent_organism->GetOrgInterface().GetCellID();
   assert(parent_id >= 0 && parent_id < cell_array.GetSize());

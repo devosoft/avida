@@ -284,7 +284,7 @@ public:
 void RegisterSaveLoadActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionLoadParasiteGenotypeList>("LoadParasiteGenotypeList");
-  action_lib->Register<cActionLoadParasiteGenotypeList>("LoadHostGenotypeList");
+  action_lib->Register<cActionLoadHostGenotypeList>("LoadHostGenotypeList");
   action_lib->Register<cActionLoadPopulation>("LoadPopulation");
   action_lib->Register<cActionSavePopulation>("SavePopulation");
   action_lib->Register<cActionLoadStructuredSystematicsGroup>("LoadStructuredSystematicsGroup");
