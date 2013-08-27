@@ -6382,8 +6382,6 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
   cInitFile input_file(filename, m_world->GetWorkingDir(), ctx.Driver().Feedback());
   if (!input_file.WasOpened()) return false;
   
-  if (traceq) LoadMiniTraceQ(filename, 1, traceq == 2, 0);
-
   // Clear out the population, unless an offset is being used
   if (cellid_offset == 0) {
     for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i], ctx); 
@@ -6544,8 +6542,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     genotypes[i].props->Set("parents", (const char*)nparentstr);
     
     genotypes[i].bg = bgm->LegacyLoad(&genotypes[i].props);
-  }
-  
+  }  
   if (some_missing) m_world->GetDriver().Feedback().Warning("Some parents not found in loaded pop file. Defaulting to parent ID of '(none)' for those genomes.");
   
   // Process genotypes, inject into organisms as necessary
@@ -6672,15 +6669,18 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
         }
       }
-      if (org_survived) new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
+      if (org_survived) {
+        new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
+        if (traceq) {
+          print_mini_trace_genomes = (traceq == 2);
+          SetupMiniTrace(new_organism);
+        }
+      }
     }
   }
-  sync_events = true;
-  
+  sync_events = true;  
   return true;
 }
-
-
 
 /**
  * This function loads a genome from a given file, and initializes
