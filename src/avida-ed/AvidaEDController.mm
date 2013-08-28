@@ -1076,12 +1076,12 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [outlineFreezer expandItem:freezerConfigs];
   [outlineFreezer expandItem:freezerGenomes];
   [outlineFreezer expandItem:freezerWorlds];
-  [outlineFreezer registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypePopulation, AvidaPasteboardTypeGenome, nil]];
+  [outlineFreezer registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypePopulation, ACPasteboardTypeGenome, nil]];
 
-  [cvAncestors registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, AvidaPasteboardTypeGenome, nil]];
+  [cvAncestors registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, ACPasteboardTypeGenome, nil]];
 
   [imgAnalyze registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, AvidaPasteboardTypePopulation, nil]];
-  [imgOrg registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, AvidaPasteboardTypeGenome, nil]];
+  [imgOrg registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, ACPasteboardTypeGenome, nil]];
   [imgTrash registerForDraggedTypes:[NSArray arrayWithObject:AvidaPasteboardTypeFreezerID]];
 
   NSString* workspaceName = [[freezerURL lastPathComponent] stringByDeletingPathExtension];
@@ -1934,7 +1934,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
         return YES;
     }
   }
-  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeGenome]] != nil) {
+  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:ACPasteboardTypeGenome]] != nil) {
     [self freezeGenome:[ACGenome genomeFromPasteboard:[info draggingPasteboard]]];
     return YES;
   }
@@ -1948,7 +1948,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [outlineView setDropItem:nil dropChildIndex:NSOutlineViewDropOnItemIndex];
     return [info draggingSourceOperationMask];
   }
-  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeGenome]] != nil) {
+  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:ACPasteboardTypeGenome]] != nil) {
     [outlineView setDropItem:nil dropChildIndex:NSOutlineViewDropOnItemIndex];
     return NSDragOperationCopy;    
   }
@@ -2140,7 +2140,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       if (fid.type == Avida::Viewer::GENOME && (sourceDragMask & NSDragOperationGeneric)) {
         return NSDragOperationCopy;
       }
-    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+    } else if ([[pboard types] containsObject:ACPasteboardTypeGenome]) {
       return NSDragOperationCopy;
     }
   } else if (destination == imgTrash) {
@@ -2184,7 +2184,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       if (fid.type == Avida::Viewer::GENOME && (sourceDragMask & NSDragOperationGeneric)) {
         return NSDragOperationCopy;
       }
-    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+    } else if ([[pboard types] containsObject:ACPasteboardTypeGenome]) {
       return NSDragOperationCopy;
     }
   } else if (destination == imgTrash) {
@@ -2228,7 +2228,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       if (fid.type == Avida::Viewer::GENOME && (sourceDragMask & NSDragOperationGeneric)) {
         return YES;
       }
-    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+    } else if ([[pboard types] containsObject:ACPasteboardTypeGenome]) {
       return YES;
     }
   } else if (destination == imgTrash) {
@@ -2297,7 +2297,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       
       [self changeView:btnOrgView];
       [orgCtlr setGenome:genome withName:[NSString stringWithAptoString:freezer->NameOf(fid)]];
-    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+    } else if ([[pboard types] containsObject:ACPasteboardTypeGenome]) {
       ACGenome* genome = [ACGenome genomeFromPasteboard:pboard];
       
       // Get genome from freezer
@@ -2337,7 +2337,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (BOOL) collectionView:(NSCollectionView*)collectionView acceptDrop:(id<NSDraggingInfo>)info index:(NSInteger)index dropOperation:(NSCollectionViewDropOperation)dropOperation {
   if (runActive) return NO;
   
-  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeGenome]] != nil) {
+  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:ACPasteboardTypeGenome]] != nil) {
     ACGenome* genome = [ACGenome genomeFromPasteboard:[info draggingPasteboard]];
     genome.name = [self uniqueNameForAncestorWithName:genome.name];
     [ancestorArrayCtlr insertObject:genome atArrangedObjectIndex:index];
@@ -2366,7 +2366,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (NSDragOperation) collectionView:(NSCollectionView*)collectionView validateDrop:(id<NSDraggingInfo>)info proposedIndex:(NSInteger*)proposedDropIndex dropOperation:(NSCollectionViewDropOperation*)proposedDropOperation {
   if (runActive) return NSDragOperationNone;
   
-  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeGenome]] != nil) {
+  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:ACPasteboardTypeGenome]] != nil) {
     return NSDragOperationCopy;
   }
   if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeFreezerID]] != nil) {

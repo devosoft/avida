@@ -61,7 +61,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   selected_x = -1;
   selected_y = -1;
   
-  [self registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, AvidaPasteboardTypeGenome, nil]];
+  [self registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, ACPasteboardTypeGenome, nil]];
 }
 
 - (void)adjustZoom {
@@ -395,7 +395,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     }
   }
   
-  if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+  if ([[pboard types] containsObject:ACPasteboardTypeGenome]) {
     if (sourceDragMask & NSDragOperationCopy) {
       return NSDragOperationCopy;
     }
@@ -414,7 +414,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       return NSDragOperationGeneric;
     }
   }
-  if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+  if ([[pboard types] containsObject:ACPasteboardTypeGenome]) {
     if (sourceDragMask & NSDragOperationCopy) {
       return NSDragOperationCopy;
     }
@@ -433,7 +433,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       return YES;
     }
   }
-  if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+  if ([[pboard types] containsObject:ACPasteboardTypeGenome]) {
     if (sourceDragMask & NSDragOperationCopy) {
       return YES;
     }
@@ -464,7 +464,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       default: break;
     }
   }
-  if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+  if ([[pboard types] containsObject:ACPasteboardTypeGenome]) {
     ACGenome* genome = [ACGenome genomeFromPasteboard:pboard];
     if (genome != nil) {
       NSPoint location = [self convertPoint:[sender draggingLocation] fromView:nil];
