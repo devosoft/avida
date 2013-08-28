@@ -573,7 +573,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   }
   else
   {
-    tmpHostGenome = GeneticRepresentationPtr(new InstructionSequence((const InstructionSequence&)offspring_genome.Representation()->AsString()));
+    tmpHostGenome = GeneticRepresentationPtr(new InstructionSequence(offspring_genome.Representation()->AsString()));
   }
   
   Genome temp(parent_organism->GetGenome().HardwareType(), parent_organism->GetGenome().Properties(), tmpHostGenome);
