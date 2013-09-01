@@ -6605,6 +6605,9 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       hints["genotype"]["id"] = Apto::FormatStr("%d", tmp.bg->ID());
       Systematics::UnitPtr unit(new_organism);
       new_organism->AddReference(); // creating new smart pointer to org, explicitly add reference
+      
+      cout << unit->UnitGenome().AsString() << endl;
+      
       classmgr->ClassifyNewUnit(unit, &hints);
       
       // Coalescense Clade Setup
