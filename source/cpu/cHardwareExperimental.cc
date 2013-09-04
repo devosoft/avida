@@ -1990,7 +1990,6 @@ bool cHardwareExperimental::Inst_Sub(cAvidaContext&)
   const int op2 = FindModifiedNextRegister(op1);
   m_from_sensor = (FromSensor(op1) || FromSensor(op2));
   m_from_message = (FromMessage(op1) || FromMessage(op2));
-  if (m_from_message) cout << "frommessage" << endl;
   
   DataValue& r1 = m_threads[m_cur_thread].reg[op1];
   DataValue& r2 = m_threads[m_cur_thread].reg[op2];
