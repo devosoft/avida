@@ -5596,6 +5596,11 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     const int cur_gestation_time = phenotype.GetGestationTime();
     const int cur_genome_length = phenotype.GetGenomeLength();
     
+    Apto::Array<Apto::Stat::Accumulator<int> >& from_message_exec_counts = stats.InstFromMessageExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
+    for (int j = 0; j < phenotype.GetLastFromMessageInstCount().GetSize(); j++) {
+      from_message_exec_counts[j].Add(organism->GetPhenotype().GetLastFromMessageInstCount()[j]);
+    }
+
     stats.SumFitness().Add(cur_fitness);
     stats.SumMerit().Add(cur_merit.GetDouble());
     stats.SumGestation().Add(phenotype.GetGestationTime());
@@ -5606,7 +5611,7 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     stats.SumCopyMutRate().Push(organism->MutationRates().GetCopyMutProb());
     stats.SumLogCopyMutRate().Push(log(organism->MutationRates().GetCopyMutProb()));
     stats.SumDivMutRate().Push(organism->MutationRates().GetDivMutProb() / organism->GetPhenotype().GetDivType());
-    stats.SumLogDivMutRate().Push(log(organism->MutationRates().GetDivMutProb() /organism->GetPhenotype().GetDivType()));
+    stats.SumLogDivMutRate().Push(log(organism->MutationRates().GetDivMutProb() / organism->GetPhenotype().GetDivType()));
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
     
