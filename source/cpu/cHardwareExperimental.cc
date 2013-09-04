@@ -334,6 +334,12 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Opinion instructions.
     tInstLibEntry<tMethod>("set-opinion", &cHardwareExperimental::Inst_SetOpinion, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-opinion", &cHardwareExperimental::Inst_GetOpinion, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    
+    //Group Messaging
+    tInstLibEntry<tMethod>("send-msg", &cHardwareExperimental::Inst_SendMessage, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("retrieve-msg", &cHardwareExperimental::Inst_RetrieveMessage, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("bcast1", &cHardwareExperimental::Inst_Broadcast1, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-res-to-deme", &cHardwareExperimental::Inst_DonateResToDeme, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
 
     // Grouping instructions
     tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -745,12 +751,14 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   
   // And execute it.
   m_from_sensor = false;
+  m_from_message = false;
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
   
 	if (exec_success) {
     int code_len = m_world->GetConfig().INST_CODE_LENGTH.Get();
     m_threads[m_cur_thread].UpdateExecurate(code_len, m_inst_set->GetInstructionCode(actual_inst));
     if (m_from_sensor) m_organism->GetPhenotype().IncCurFromSensorInstCount(actual_inst.GetOp());
+    if (m_from_message) m_organism->GetPhenotype().IncCurFromMessageInstCount(actual_inst.GetOp());
   }
   
   // decremenet if the instruction was not executed successfully
@@ -1652,6 +1660,7 @@ bool cHardwareExperimental::Inst_IfNEqu(cAvidaContext&) // Execute next if bx !=
   const int op2 = FindModifiedNextRegister(op1);
   if (GetRegister(op1) == GetRegister(op2)) getIP().Advance();
   m_from_sensor = (FromSensor(op1) || FromSensor(op2));
+  m_from_message = (FromMessage(op1) || FromMessage(op2));
   return true;
 }
 
@@ -1661,6 +1670,7 @@ bool cHardwareExperimental::Inst_IfLess(cAvidaContext&) // Execute next if ?bx? 
   const int op2 = FindModifiedNextRegister(op1);
   if (GetRegister(op1) >= GetRegister(op2)) getIP().Advance();
   m_from_sensor = (FromSensor(op1) || FromSensor(op2));
+  m_from_message = (FromMessage(op1) || FromMessage(op2));
   return true;
 }
 
@@ -1669,6 +1679,7 @@ bool cHardwareExperimental::Inst_IfNotZero(cAvidaContext&)  // Execute next if ?
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegister(op1) == 0) getIP().Advance();
   m_from_sensor = FromSensor(op1);
+  m_from_message = FromMessage(op1);
   return true;
 }
 bool cHardwareExperimental::Inst_IfEqualZero(cAvidaContext&)  // Execute next if ?bx? == 0
@@ -1676,6 +1687,7 @@ bool cHardwareExperimental::Inst_IfEqualZero(cAvidaContext&)  // Execute next if
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegister(op1) != 0) getIP().Advance();
   m_from_sensor = FromSensor(op1);
+  m_from_message = FromMessage(op1);
   return true;
 }
 bool cHardwareExperimental::Inst_IfGreaterThanZero(cAvidaContext&)  // Execute next if ?bx? > 0
@@ -1683,6 +1695,7 @@ bool cHardwareExperimental::Inst_IfGreaterThanZero(cAvidaContext&)  // Execute n
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegister(op1) <= 0) getIP().Advance();
   m_from_sensor = FromSensor(op1);
+  m_from_message = FromMessage(op1);
   return true;
 }
 
@@ -1691,6 +1704,7 @@ bool cHardwareExperimental::Inst_IfLessThanZero(cAvidaContext&)  // Execute next
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegister(op1) >= 0) getIP().Advance();
   m_from_sensor = FromSensor(op1);
+  m_from_message = FromMessage(op1);
   return true;
 }
 
@@ -1718,6 +1732,7 @@ bool cHardwareExperimental::Inst_IfGtrX(cAvidaContext&)       // Execute next if
   
   if (GetRegister(rBX) <= valueToCompare) getIP().Advance();
   m_from_sensor = FromSensor(rBX);
+  m_from_message = FromMessage(rBX);
   return true;
 }
 
@@ -1744,6 +1759,7 @@ bool cHardwareExperimental::Inst_IfEquX(cAvidaContext&)       // Execute next if
   
   if (GetRegister(rBX) != valueToCompare) getIP().Advance();
   m_from_sensor = FromSensor(rBX);
+  m_from_message = FromMessage(rBX);
   return true;
 }
 
@@ -1815,6 +1831,7 @@ bool cHardwareExperimental::Inst_Pop(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
+  m_from_message = FromMessage(reg_used);
   DataValue pop = stackPop();
   setInternalValue(reg_used, pop.value, pop);
   return true;
@@ -1824,6 +1841,7 @@ bool cHardwareExperimental::Inst_Push(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
+  m_from_message = FromMessage(reg_used);
   getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
@@ -1832,14 +1850,17 @@ bool cHardwareExperimental::Inst_PopAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
   bool any_from_sensor = false;
+  bool any_from_message = false;
   for (int i = 0; i < NUM_REGISTERS; i++) {
     if (FromSensor(reg_used)) any_from_sensor = true;
+    if (FromMessage(reg_used)) any_from_message = true;
     DataValue pop = stackPop();
     setInternalValue(reg_used, pop.value, pop);
     reg_used++;
     if (reg_used == NUM_REGISTERS) reg_used = 0;
   }
   m_from_sensor = any_from_sensor;
+  m_from_message = any_from_message;
   return true;
 }
 
@@ -1847,13 +1868,16 @@ bool cHardwareExperimental::Inst_PushAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
   bool any_from_sensor = false;
+  bool any_from_message = false;
   for (int i = 0; i < NUM_REGISTERS; i++) {
     if (FromSensor(reg_used)) any_from_sensor = true;
+    if (FromMessage(reg_used)) any_from_message = true;
     getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].reg[reg_used]);
     reg_used++;
     if (reg_used == NUM_REGISTERS) reg_used = 0;
   }
   m_from_sensor = any_from_sensor;
+  m_from_message = any_from_message;
   return true;
 }
 
@@ -1882,6 +1906,7 @@ bool cHardwareExperimental::Inst_ShiftR(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
+  m_from_message = FromMessage(reg_used);
   setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value >> 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
@@ -1890,6 +1915,7 @@ bool cHardwareExperimental::Inst_ShiftL(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
+  m_from_message = FromMessage(reg_used);
   setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value << 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
@@ -1899,6 +1925,7 @@ bool cHardwareExperimental::Inst_Inc(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
+  m_from_message = FromMessage(reg_used);
   setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value + 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
@@ -1907,6 +1934,7 @@ bool cHardwareExperimental::Inst_Dec(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
+  m_from_message = FromMessage(reg_used);
   setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value - 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
@@ -1937,6 +1965,7 @@ bool cHardwareExperimental::Inst_Mult100(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
+  m_from_message = FromMessage(reg_used);
   setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value * 100, false);
   return true;
 }
@@ -1947,6 +1976,7 @@ bool cHardwareExperimental::Inst_Add(cAvidaContext&)
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
   m_from_sensor = (FromSensor(op1) || FromSensor(op2));
+  m_from_message = (FromMessage(op1) || FromMessage(op2));
   DataValue& r1 = m_threads[m_cur_thread].reg[op1];
   DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, r1.value + r2.value, r1, r2);
@@ -1959,6 +1989,9 @@ bool cHardwareExperimental::Inst_Sub(cAvidaContext&)
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
   m_from_sensor = (FromSensor(op1) || FromSensor(op2));
+  m_from_message = (FromMessage(op1) || FromMessage(op2));
+  if (m_from_message) cout << "frommessage" << endl;
+  
   DataValue& r1 = m_threads[m_cur_thread].reg[op1];
   DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, r1.value - r2.value, r1, r2);
@@ -1971,6 +2004,7 @@ bool cHardwareExperimental::Inst_Mult(cAvidaContext&)
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
   m_from_sensor = (FromSensor(op1) || FromSensor(op2));
+  m_from_message = (FromMessage(op1) || FromMessage(op2));
   DataValue& r1 = m_threads[m_cur_thread].reg[op1];
   DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, r1.value * r2.value, r1, r2);
@@ -1983,6 +2017,7 @@ bool cHardwareExperimental::Inst_Div(cAvidaContext&)
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
   m_from_sensor = (FromSensor(op1) || FromSensor(op2));
+  m_from_message = (FromMessage(op1) || FromMessage(op2));
   DataValue& r1 = m_threads[m_cur_thread].reg[op1];
   DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
@@ -2003,6 +2038,7 @@ bool cHardwareExperimental::Inst_Mod(cAvidaContext&)
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
   m_from_sensor = (FromSensor(op1) || FromSensor(op2));
+  m_from_message = (FromMessage(op1) || FromMessage(op2));
   DataValue& r1 = m_threads[m_cur_thread].reg[op1];
   DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
@@ -2021,6 +2057,7 @@ bool cHardwareExperimental::Inst_Nand(cAvidaContext&)
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
   m_from_sensor = (FromSensor(op1) || FromSensor(op2));
+  m_from_message = (FromMessage(op1) || FromMessage(op2));
   DataValue& r1 = m_threads[m_cur_thread].reg[op1];
   DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, ~(r1.value & r2.value), r1, r2);
@@ -2094,6 +2131,7 @@ bool cHardwareExperimental::Inst_TaskOutput(cAvidaContext& ctx)
   
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
+  m_from_message = FromMessage(reg_used);
   DataValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
   // Do the "put" component
@@ -2107,6 +2145,7 @@ bool cHardwareExperimental::Inst_TaskOutputZero(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
+  m_from_message = FromMessage(reg_used);
   DataValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
   // Do the "put" component
@@ -2247,6 +2286,7 @@ bool cHardwareExperimental::Inst_JumpHead(cAvidaContext&)
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   const int reg = FindModifiedRegister(rCX);
   m_from_sensor = FromSensor(reg);
+  m_from_message = FromMessage(reg);
   getHead(head_used).Jump(m_threads[m_cur_thread].reg[reg].value);
   if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
   return true;
@@ -2525,6 +2565,7 @@ bool cHardwareExperimental::Inst_SetFlow(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rCX);
   m_from_sensor = FromSensor(reg_used);
+  m_from_message = FromMessage(reg_used);
   getHead(nHardware::HEAD_FLOW).Set(GetRegister(reg_used));
   return true;
 }
@@ -2538,6 +2579,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Equal(cAvidaContext&)
   const int wait_dst = FindModifiedRegister(wait_value);
   
   m_from_sensor = FromSensor(wait_value);
+  m_from_message = FromMessage(wait_value);
 
   // Check if condition has already been met
   for (int i = 0; i < m_threads.GetSize(); i++) {
@@ -2569,6 +2611,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Less(cAvidaContext&)
   const int wait_dst = FindModifiedRegister(wait_value);
   
   m_from_sensor = FromSensor(wait_value);
+  m_from_message = FromMessage(wait_value);
 
   // Check if condition has already been met
   for (int i = 0; i < m_threads.GetSize(); i++) {
@@ -2601,6 +2644,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Greater(cAvidaContext&)
   const int wait_dst = FindModifiedRegister(wait_value);
   
   m_from_sensor = FromSensor(wait_value);
+  m_from_message = FromMessage(wait_value);
 
   // Check if condition has already been met
   for (int i = 0; i < m_threads.GetSize(); i++) {
@@ -3399,6 +3443,7 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(rBX);
   int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
   m_from_sensor = FromSensor(reg_used);
+  m_from_message = FromMessage(reg_used);
   // rotate the nop number of times in the appropriate direction
   rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
   rot_num = abs(rot_num);
@@ -3418,6 +3463,7 @@ bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(rBX);
   int rot_dir = abs(m_threads[m_cur_thread].reg[reg_used].value) % 8;
   m_from_sensor = FromSensor(reg_used);
+  m_from_message = FromMessage(reg_used);
   
   if (m_use_avatar) m_organism->GetOrgInterface().SetAVFacing(ctx, rot_dir);
   // rotate to the appropriate direction
@@ -3441,6 +3487,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
   const int id_sought_reg = FindModifiedRegister(rBX);
   const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
   m_from_sensor = FromSensor(id_sought_reg);
+  m_from_message = FromMessage(id_sought_reg);
   const int worldx = m_world->GetPopulation().GetWorldX();
   const int worldy = m_world->GetPopulation().GetWorldY();
   int max_dist = 0;
@@ -3535,6 +3582,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   const int id_sought_reg = FindModifiedRegister(rBX);
   const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
   m_from_sensor = FromSensor(id_sought_reg);
+  m_from_message = FromMessage(id_sought_reg);
   const int worldx = m_world->GetPopulation().GetWorldX();
   const int worldy = m_world->GetPopulation().GetWorldY();
   int max_dist = 0;
@@ -3891,6 +3939,7 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   
   int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
   m_from_sensor = FromSensor(dir_reg);
+  m_from_message = FromMessage(dir_reg);
 
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
@@ -3948,6 +3997,7 @@ bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
   
   int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
   m_from_sensor = FromSensor(dir_reg);
+  m_from_message = FromMessage(dir_reg);
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
@@ -4029,6 +4079,7 @@ cOrgSensor::sLookOut cHardwareExperimental::InitLooking(cAvidaContext& ctx, sLoo
   reg_init.id_sought = m_threads[m_cur_thread].reg[id_reg].value;
   
   m_from_sensor = (FromSensor(habitat_reg) || FromSensor(distance_reg) || FromSensor(search_reg) || FromSensor(id_reg) || m_from_sensor);
+  m_from_message = (FromMessage(habitat_reg) || FromMessage(distance_reg) || FromMessage(search_reg) || FromMessage(id_reg) || m_from_message);
 
   return m_sensor.SetLooking(ctx, reg_init, facing, cell_id, use_ft);
 }    
@@ -4189,6 +4240,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   const int reg = FindModifiedRegister(rBX);
   int prop_target = GetRegister(reg);
   m_from_sensor = FromSensor(reg);
+  m_from_message = FromMessage(reg);
   
   //return false if org setting target to current one (avoid paying costs for not switching)
   const int old_target = m_organism->GetForageTarget();
@@ -4322,6 +4374,7 @@ bool cHardwareExperimental::Inst_ShowForageTarget(cAvidaContext& ctx)
   const int reg = FindModifiedRegister(rBX);
   int prop_target = GetRegister(reg);
   m_from_sensor = FromSensor(reg);
+  m_from_message = FromMessage(reg);
   
   // return false if not a mimic ft type 
   if (!m_organism->IsMimicFT()) return false;
@@ -5028,6 +5081,79 @@ bool cHardwareExperimental::Inst_GetOpinion(cAvidaContext& ctx)
   return true;
 }
 
+/*! Send a message to the organism that is currently faced by this cell,
+ where the label field of sent message is from register ?BX?, and the data field
+ is from register ~?BX?.
+ */
+bool cHardwareExperimental::Inst_SendMessage(cAvidaContext& ctx)
+{
+  return SendMessage(ctx);
+}
+
+bool cHardwareExperimental::SendMessage(cAvidaContext& ctx, int messageType)
+{
+  const int label_reg = FindModifiedRegister(rBX);
+  const int data_reg = FindNextRegister(label_reg);
+  
+  cOrgMessage msg = cOrgMessage(m_organism, messageType);
+  msg.SetLabel(GetRegister(label_reg));
+  msg.SetData(GetRegister(data_reg));
+  
+  return m_organism->SendMessage(ctx, msg);
+}
+
+/*! This method /attempts/ to retrieve a message -- It may not be possible, as in
+ the case of an empty receive buffer.
+ 
+ If a message is available, ?BX? is set to the message's label, and ~?BX? is set
+ to its data.
+ */
+bool cHardwareExperimental::Inst_RetrieveMessage(cAvidaContext&)
+{
+  std::pair<bool, cOrgMessage> retrieved = m_organism->RetrieveMessage();
+  if (!retrieved.first) {
+    return false;
+  }
+  
+  const int label_reg = FindModifiedRegister(rBX);
+  const int data_reg = FindNextRegister(label_reg);
+  
+  setInternalValue(label_reg, retrieved.second.GetLabel(), false, false, true);
+  setInternalValue(data_reg, retrieved.second.GetData(), false, false, true);
+  
+  if(m_world->GetConfig().NET_LOG_RETMESSAGES.Get()) m_world->GetStats().LogRetMessage(retrieved.second);
+  return true;
+}
+
+/*! A generic broadcast method, to simplify the development of different range
+ broadcasts.
+ */
+bool cHardwareExperimental::BroadcastX(cAvidaContext& ctx, int depth)
+{
+  const int label_reg = FindModifiedRegister(rBX);
+  const int data_reg = FindNextRegister(label_reg);
+  
+  cOrgMessage msg = cOrgMessage(m_organism);
+  msg.SetLabel(GetRegister(label_reg));
+  msg.SetData(GetRegister(data_reg));
+  return m_organism->BroadcastMessage(ctx, msg, depth);
+}
+
+
+/*! A single-hop broadcast instruction - send a message to all 1-hop neighbors
+ of this organism.
+ */
+bool cHardwareExperimental::Inst_Broadcast1(cAvidaContext& ctx) {
+  return BroadcastX(ctx, 1);
+}
+
+bool  cHardwareExperimental::Inst_DonateResToDeme(cAvidaContext&)
+{
+  m_organism->DonateResConsumedToDeme();
+  return true;
+}
+
+
 //! An organism joins a group by setting it opinion to the group id. 
 bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 {
@@ -5478,6 +5604,7 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
   const int id_sought_reg = FindModifiedRegister(rBX);
   const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
   m_from_sensor = FromSensor(id_sought_reg);
+  m_from_message = FromMessage(id_sought_reg);
   bool have_org2use = false;
   
   // return false if invalid number or self

@@ -603,7 +603,15 @@ private:
   bool Inst_IncPredTolerance(cAvidaContext& ctx);  
   bool Inst_DecPredTolerance(cAvidaContext& ctx);  
   bool Inst_GetPredTolerance(cAvidaContext& ctx);     
-  bool Inst_GetPredGroupTolerance(cAvidaContext& ctx); 
+  bool Inst_GetPredGroupTolerance(cAvidaContext& ctx);
+  
+  //Group Messaging
+  bool Inst_SendMessage(cAvidaContext& ctx);
+  bool SendMessage(cAvidaContext& ctx, int messageType = 0);
+  bool BroadcastX(cAvidaContext& ctx, int depth);
+  bool Inst_RetrieveMessage(cAvidaContext& ctx);
+  bool Inst_Broadcast1(cAvidaContext& ctx);
+  bool Inst_DonateResToDeme(cAvidaContext& ctx);
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
