@@ -28,7 +28,6 @@
 #include "avida/output/Types.h"
 
 #include "cCPUTestInfo.h"
-#include "tMatrix.h"
 
 class cAvidaContext;
 class cInstSet;
@@ -85,7 +84,7 @@ private:
 
   double neut_min;         // These two variables are a range around the base
   double neut_max;         //   fitness to be counted as neutral mutations.
-  tMatrix<double> fitness_chart; // Chart of all one-step mutations.
+  Apto::Matrix<double> fitness_chart; // Chart of all one-step mutations.
   
   int m_num_found;
 

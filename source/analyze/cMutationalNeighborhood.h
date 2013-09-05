@@ -27,7 +27,6 @@
 #include "avida/output/Types.h"
 
 #include "tList.h"
-#include "tMatrix.h"
 
 class cAvidaContext;
 class cCPUTestInfo;
@@ -123,11 +122,11 @@ private:
   // simultaneously.
   struct sPendFit
   {
-    tMatrix<double>& fmat;
+    Apto::Matrix<double>& fmat;
     int site;
     int inst;
     
-    sPendFit(tMatrix<double>& in_fmat, int in_site, int in_inst) : fmat(in_fmat), site(in_site), inst(in_inst) { ; }
+    sPendFit(Apto::Matrix<double>& in_fmat, int in_site, int in_inst) : fmat(in_fmat), site(in_site), inst(in_inst) { ; }
     sPendFit(const sPendFit& in_pf) : fmat(in_pf.fmat), site(in_pf.site), inst(in_pf.inst) { ; }
     
     inline double GetFitness() { return fmat[site][inst]; }
@@ -149,9 +148,9 @@ private:
 
   // One Step Fitness Data
   // -----------------------------------------------------------------------------------------------------------------------
-  tMatrix<double> m_fitness_point;
-  tMatrix<double> m_fitness_insert;
-  tMatrix<double> m_fitness_delete;
+  Apto::Matrix<double> m_fitness_point;
+  Apto::Matrix<double> m_fitness_insert;
+  Apto::Matrix<double> m_fitness_delete;
   
 
 

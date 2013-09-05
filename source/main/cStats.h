@@ -33,7 +33,6 @@
 #include "cRunningAverage.h"
 #include "nGeometry.h"
 #include "tDataManager.h"
-#include "tMatrix.h"
 
 #include <cassert>
 #include <fstream>

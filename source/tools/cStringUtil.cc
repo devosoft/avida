@@ -22,7 +22,6 @@
 
 #include "cStringUtil.h"
 
-#include "tMatrix.h"
 
 #include <cstdarg>
 #include <cstdio>
@@ -189,50 +188,50 @@ int cStringUtil::EditDistance(const cString & string1, const cString & string2,
   if (!size1) return size2;
   if (!size2) return size1;
 
-  tMatrix<double> dist_matrix(size2+1, size1+1);
+  Apto::Matrix<double> dist_matrix(size2+1, size1+1);
 
   // Keep track of changes in a mut_matrix.
   //  N=None, M=Mutations, I=Insertion, D=Deletion
-  tMatrix<char> mut_matrix(size2+1, size1+1);
+  Apto::Matrix<char> mut_matrix(size2+1, size1+1);
 
   // Initialize the first row and col to record the differece from nothing.
   for (int i = 0; i < size1+1; i++) {
-    dist_matrix(0,i) = (double) i;
-    mut_matrix(0,i) = 'I';
+    dist_matrix.ElementAt(0,i) = (double) i;
+    mut_matrix.ElementAt(0,i) = 'I';
   }
   for (int i = 0; i < size2+1; i++) {
-    dist_matrix(i,0) = (double) i;
-    mut_matrix(i,0) = 'D';
+    dist_matrix.ElementAt(i,0) = (double) i;
+    mut_matrix.ElementAt(i,0) = 'D';
   }
-  mut_matrix(0,0) = 'N';
+  mut_matrix.ElementAt(0,0) = 'N';
 
   for (int i = 0; i < size2; i++) {
     // Move down the cur_row and fill it out.
     for (int j = 0; j < size1; j++) {
       // If the values are equal, keep the value in the upper left.
       if (string1[j] == string2[i]) {
-        dist_matrix(i+1,j+1) = dist_matrix(i,j);
-        mut_matrix(i+1,j+1) = 'N';
+        dist_matrix.ElementAt(i+1,j+1) = dist_matrix.ElementAt(i,j);
+        mut_matrix.ElementAt(i+1,j+1) = 'N';
         continue; // Move on to next entry...
       }
 
       // Otherwise, set the current position to the minimal of the three
       // numbers above (insertion), to the left (deletion), or upper left
       // (mutation) in the chart, plus one.
-      double mut_dist = dist_matrix(i,j) + 1;
+      double mut_dist = dist_matrix.ElementAt(i,j) + 1;
       if ((string1[j] == gap) || (string2[i] == gap)) mut_dist -= 0.0001;
-      const double ins_dist = dist_matrix(i+1,j) + (string1[j] != gap);
-      const double del_dist = dist_matrix(i,j+1) + (string2[i] != gap);
+      const double ins_dist = dist_matrix.ElementAt(i+1,j) + (string1[j] != gap);
+      const double del_dist = dist_matrix.ElementAt(i,j+1) + (string2[i] != gap);
 
       if (mut_dist < ins_dist && mut_dist < del_dist) {  // Mutation!
-        dist_matrix(i+1,j+1) = mut_dist;
-        mut_matrix(i+1,j+1) = 'M';
+        dist_matrix.ElementAt(i+1,j+1) = mut_dist;
+        mut_matrix.ElementAt(i+1,j+1) = 'M';
       } else if (ins_dist < del_dist) {                  // Insertion!
-        dist_matrix(i+1,j+1) = ins_dist;
-        mut_matrix(i+1,j+1) = 'I';
+        dist_matrix.ElementAt(i+1,j+1) = ins_dist;
+        mut_matrix.ElementAt(i+1,j+1) = 'I';
       } else {                                           // Deletion!
-        dist_matrix(i+1,j+1) = del_dist;
-        mut_matrix(i+1,j+1) = 'D';
+        dist_matrix.ElementAt(i+1,j+1) = del_dist;
+        mut_matrix.ElementAt(i+1,j+1) = 'D';
       }
     }
   }
@@ -244,7 +243,7 @@ int cStringUtil::EditDistance(const cString & string1, const cString & string2,
 
   cString mut_string;
   while (pos1 > 0 || pos2 > 0) {
-    if (mut_matrix(pos2, pos1) == 'N') {     
+    if (mut_matrix.ElementAt(pos2, pos1) == 'N') {
       pos1--; pos2--;
       continue;
     }
@@ -253,15 +252,15 @@ int cStringUtil::EditDistance(const cString & string1, const cString & string2,
     const char old_char = (pos2 > 0) ? string2[pos2-1] : '\0';
     const char new_char = (pos1 > 0) ? string1[pos1-1] : '\0';
 
-    if (mut_matrix(pos2, pos1) == 'M') {
+    if (mut_matrix.ElementAt(pos2, pos1) == 'M') {
       mut_string.Set("M%d%c%c", pos2-1, old_char, new_char);
       pos1--; pos2--;
     }
-    else if (mut_matrix(pos2, pos1) == 'D') {
+    else if (mut_matrix.ElementAt(pos2, pos1) == 'D') {
       mut_string.Set("D%d%c", pos2-1, old_char);
       pos2--;
     }
-    else { // if (mut_matrix(pos2, pos1) == 'I') {
+    else { // if (mut_matrix.ElementAt(pos2, pos1) == 'I') {
       mut_string.Set("I%d%c", pos1-1, new_char);
       pos1--;
     }
@@ -271,7 +270,7 @@ int cStringUtil::EditDistance(const cString & string1, const cString & string2,
   } 
 
   // Now that we are done, return the bottom-right corner of the chart.
-  return (int) dist_matrix(size2, size1);
+  return (int) dist_matrix.ElementAt(size2, size1);
 }
 
 

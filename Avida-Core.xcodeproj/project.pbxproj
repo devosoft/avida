@@ -572,7 +572,6 @@
 		70B08B8808FB2E5500FC65FE /* tDataEntryCommand.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tDataEntryCommand.h; sourceTree = "<group>"; };
 		70B08B8908FB2E5500FC65FE /* tDataManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tDataManager.h; sourceTree = "<group>"; };
 		70B08B8C08FB2E5500FC65FE /* tList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tList.h; sourceTree = "<group>"; };
-		70B08B8D08FB2E5500FC65FE /* tMatrix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tMatrix.h; sourceTree = "<group>"; };
 		70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cHardwareExperimental.cc; sourceTree = "<group>"; wrapsLines = 0; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		70B1A6530B7E238F00067486 /* cHardwareExperimental.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareExperimental.h; sourceTree = "<group>"; };
 		70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-experimental.cfg"; sourceTree = "<group>"; };
@@ -1511,7 +1510,6 @@
 				70B08B8808FB2E5500FC65FE /* tDataEntryCommand.h */,
 				70B08B8908FB2E5500FC65FE /* tDataManager.h */,
 				70B08B8C08FB2E5500FC65FE /* tList.h */,
-				70B08B8D08FB2E5500FC65FE /* tMatrix.h */,
 				700E28CF0859FFD700CF158A /* tObjectFactory.h */,
 			);
 			path = tools;

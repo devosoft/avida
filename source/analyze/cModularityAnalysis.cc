@@ -91,7 +91,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     InstructionSequence& mod_seq = *mod_seq_p;
     
     // Create and initialize the modularity matrix
-    tMatrix<int> mod_matrix(num_tasks, max_line);
+    Apto::Matrix<int> mod_matrix(num_tasks, max_line);
     mod_matrix.SetAll(0);
     
     Apto::Array<int> site_num_tasks(max_line);  // number of tasks instruction is used in
@@ -118,7 +118,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
           if (base_tasks[cur_task] && !test_tasks[cur_task]) {
             // If knocking out an instruction stops the expression of a particular task, mark that in the modularity matrix
             // and add it to two counts
-            mod_matrix(cur_task, line_num) = 1;
+            mod_matrix.ElementAt(cur_task, line_num) = 1;
             sites_per_task[cur_task]++;
             site_num_tasks[line_num]++;
           }
@@ -155,15 +155,15 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     
     // Calculate average task overlap
     // first construct num_task x num_task matrix with number of sites overlapping
-    tMatrix<int> task_overlap(num_tasks, num_tasks);
+    Apto::Matrix<int> task_overlap(num_tasks, num_tasks);
     task_overlap.SetAll(0);
 
     for (int i = 0; i < max_line; i++) {
       for (int j = 0; j < num_tasks; j++) {
         for (int k = j; k < num_tasks; k++) {
-          if (mod_matrix(j, i) > 0 && mod_matrix(k, i) > 0) {
-            task_overlap(j, k)++;
-            if (j != k) task_overlap(k, j)++;
+          if (mod_matrix.ElementAt(j, i) > 0 && mod_matrix.ElementAt(k, i) > 0) {
+            task_overlap.ElementAt(j, k)++;
+            if (j != k) task_overlap.ElementAt(k, j)++;
           }               
         }
       }
@@ -172,10 +172,10 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     // go though the task_overlap matrix, add and average everything up. 
     if (total_task > 1) {
       for (int i = 0; i < num_tasks; i++) {
-        if (task_overlap(i, i)) {
+        if (task_overlap.ElementAt(i, i)) {
           int overlap_per_task = 0;
-          for (int j = 0; j < num_tasks; j++) if (i != j) overlap_per_task += task_overlap(i,j);
-          sum_task_overlap += (double)overlap_per_task / (task_overlap(i, i) * (total_task - 1));
+          for (int j = 0; j < num_tasks; j++) if (i != j) overlap_per_task += task_overlap.ElementAt(i,j);
+          sum_task_overlap += (double)overlap_per_task / (task_overlap.ElementAt(i, i) * (total_task - 1));
         }
       }
     }
@@ -185,7 +185,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     // starting from the top look for the fist command that matters for a task
     for (int i = 0; i < num_tasks; i++) { 
       for (int j = 0; j < max_line; j++) {
-        if (mod_matrix(i, j) > 0 && task_length[i] == 0) {
+        if (mod_matrix.ElementAt(i, j) > 0 && task_length[i] == 0) {
           task_length[i] = j;
           break;
         }
@@ -197,7 +197,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     // add one in order to account for both the beginning and the end instruction
     for (int i = 0; i < num_tasks; i++) {
       for (int j = max_line - 1; j >= 0; j--) {
-        if (mod_matrix(i, j) > 0) {
+        if (mod_matrix.ElementAt(i, j) > 0) {
           task_length[i] = j - task_length[i] + 1;
           break;
         }
@@ -209,7 +209,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     Apto::Array<int> task_position(num_tasks);
     for (int i = 0; i < num_tasks; i++) {
       task_position[i] = 0;
-      for (int j = 0; j < max_line; j++) if (mod_matrix(i,j) > 0) task_position[i] += j;
+      for (int j = 0; j < max_line; j++) if (mod_matrix.ElementAt(i,j) > 0) task_position[i] += j;
     }
     for (int i = 0; i < num_tasks; i++) ave_task_position[i] = (double)task_position[i] / sites_per_task[i];
     

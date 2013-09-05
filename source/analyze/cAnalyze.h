@@ -34,7 +34,6 @@
 #include "cString.h"
 #include "cStringList.h"
 #include "tList.h"
-#include "tMatrix.h"
 
 
 const int MAX_BATCHES = 50000;
@@ -325,7 +324,7 @@ private:
   double IncreasedInfo(cAnalyzeGenotype* genotype1, cAnalyzeGenotype* genotype2, double mut_rate);
   
   //Calculate covarying information between pairs of sites
-  tMatrix<double> AnalyzeEntropyPairs(cAnalyzeGenotype* genotype, double mut_rate);
+  Apto::Matrix<double> AnalyzeEntropyPairs(cAnalyzeGenotype* genotype, double mut_rate);
   
 
   // Flow Control...

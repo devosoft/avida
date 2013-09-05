@@ -64,7 +64,6 @@
 #include "tDataCommandManager.h"
 #include "tDataEntry.h"
 #include "tDataEntryCommand.h"
-#include "tMatrix.h"
 
 #include <iomanip>
 #include <fstream>
@@ -323,7 +322,7 @@ double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype* genotype, double mu)
 }
 
 //@ MRR @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-tMatrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, double mu) 
+Apto::Matrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, double mu)
 {
   
   double entropy = 0.0;
@@ -350,7 +349,7 @@ tMatrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, dou
   double base_fitness = genotype->GetFitness();
   
   cout << num_lines << endl;
-  tMatrix< double > pairwiseEntropy(num_lines, num_lines);
+  Apto::Matrix< double > pairwiseEntropy(num_lines, num_lines);
   for (int i=0; i<num_lines; i++)
     for (int j=-0; j<num_lines; j++)
       pairwiseEntropy[i][j] = 0.0;
@@ -364,8 +363,8 @@ tMatrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, dou
   }
   
   
-  tMatrix< double >  test_fitness(num_insts,num_insts);
-  tMatrix< double >  prob(num_insts,num_insts);
+  Apto::Matrix< double >  test_fitness(num_insts,num_insts);
+  Apto::Matrix< double >  prob(num_insts,num_insts);
   
   //Pairwise mutations; the diagonal of the matrix will be the information
   //stored by that site alone
@@ -2637,7 +2636,7 @@ void cAnalyze::CommandPrintDiversity(cString cur_string)
   const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
   const int num_insts = is.GetSize();
   const int max_length = BatchUtil_GetMaxLength();
-  tMatrix<int> inst_freq(max_length, num_insts+1);
+  Apto::Matrix<int> inst_freq(max_length, num_insts+1);
   
   for (int task_id = 0; task_id < num_tasks; task_id++) {
     inst_freq.SetAll(0);
@@ -3472,7 +3471,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   ////////////////////////////////////////////////////
   // Test point mutation of each genotype in community
   
-  map<int, tMatrix<double> > point_mut; 
+  map<int, Apto::Matrix<double> > point_mut;
   int size_community = community.size();
   int length_genome = 0;
   if (size_community > 1) {
@@ -3503,7 +3502,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).GetSize();
     double base_fitness = genotype->GetFitness();
 
-    tMatrix<double> prob(length_genome, num_insts);
+    Apto::Matrix<double> prob(length_genome, num_insts);
     
     
     for (int line = 0; line < length_genome; ++ line) {
@@ -3546,7 +3545,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   genotype = community[0];
   double oo_initial_entropy = length_genome;
   double oo_conditional_entropy = 0.0;
-  tMatrix<double> this_prob = point_mut.find(genotype->GetID())->second;
+  Apto::Matrix<double> this_prob = point_mut.find(genotype->GetID())->second;
   const Genome& cur_genome = genotype->GetGenome();
   const int num_insts = m_world->GetHardwareManager().GetInstSet(cur_genome.Properties().Get("instset").StringValue()).GetSize();
   for (int line = 0; line < length_genome; ++ line) {
@@ -3598,12 +3597,12 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     double oo_initial_entropy = 0.0;
     double oo_conditional_entropy = 0.0;
     cAnalyzeGenotype* used_genotype = NULL;
-    tMatrix<double> this_prob = point_mut.find(genotype->GetID())->second;
+    Apto::Matrix<double> this_prob = point_mut.find(genotype->GetID())->second;
     
     // For any given genotype, calculate the new information in genotype
     for (unsigned int j = 0; j < given_genotypes.size(); ++ j) {
       
-      tMatrix<double> given_prob = point_mut.find(given_genotypes[j]->GetID())->second;
+      Apto::Matrix<double> given_prob = point_mut.find(given_genotypes[j]->GetID())->second;
       double new_info = 0.0;
       double total_initial_entropy = 0.0;
       double total_conditional_entropy = 0.0;
@@ -3949,7 +3948,7 @@ void cAnalyze::CommandPairwiseEntropy(cString cur_string)
     
     cout << "# Pairwise Entropy Information" << endl;
     
-    tMatrix<double> pairdata = AnalyzeEntropyPairs(genotype, mu);
+    Apto::Matrix<double> pairdata = AnalyzeEntropyPairs(genotype, mu);
     
     cout << pairdata.GetNumRows() << endl;
     
@@ -4868,11 +4867,11 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
       Instruction null_inst = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).ActivateNullInst();
       
       // Create and initialize the modularity matrix
-      tMatrix<int> mod_matrix(num_cols, max_line);
+      Apto::Matrix<int> mod_matrix(num_cols, max_line);
       mod_matrix.SetAll(0);
       
       // Create and initialize the task overalp matrix
-      tMatrix<int> task_overlap(num_cols, num_cols);
+      Apto::Matrix<int> task_overlap(num_cols, num_cols);
       task_overlap.SetAll(0);
       
       // Create an initialize the counters for modularity
@@ -5116,7 +5115,7 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
     
     const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).ActivateNullInst();
     
-    tMatrix<bool> task_matrix(num_traits, base_length);
+    Apto::Matrix<bool> task_matrix(num_traits, base_length);
     Apto::Array<int> num_inst(num_traits);  // Number of instructions for each task
     Apto::Array<int> num_task(base_length); // Number of traits at each locus
     task_matrix.SetAll(false);
@@ -7959,11 +7958,11 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
     
     // Loop through all the lines of code, 
     // testing all TWO SITE mutations...
-    tMatrix<double> test_fitness_2s(num_insts,num_insts);
+    Apto::Matrix<double> test_fitness_2s(num_insts,num_insts);
     Apto::Array<double> prob_1s_i(num_insts);
     Apto::Array<double> prob_1s_j(num_insts);
-    tMatrix<double> prob_2s(num_insts,num_insts);
-    tMatrix<double> prob_next_2s(num_insts,num_insts);
+    Apto::Matrix<double> prob_2s(num_insts,num_insts);
+    Apto::Matrix<double> prob_next_2s(num_insts,num_insts);
     
     // run through lines in genome
     // - only consider lin_num2 > lin_num1 so that we don't consider
@@ -8239,7 +8238,7 @@ void cAnalyze::AnalyzePopComplexity(cString cur_string)
   if (genotype == NULL) return;
   int seq_length = genotype->GetLength();
   const int num_insts = m_world->GetHardwareManager().GetInstSet(genotype->GetGenome().Properties().Get("instset").StringValue()).GetSize();
-  tMatrix<int> inst_stat(seq_length, num_insts);
+  Apto::Matrix<int> inst_stat(seq_length, num_insts);
   
   // Initializing inst_stat ...
   for (int line_num = 0; line_num < seq_length; line_num ++) 
