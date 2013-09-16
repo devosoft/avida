@@ -2209,7 +2209,7 @@
 					../libs/apto/include/,
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2237,7 +2237,7 @@
 					include/private/,
 					../libs/apto/include/,
 				);
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",

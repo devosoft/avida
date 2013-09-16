@@ -1578,6 +1578,9 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
+
+    // Clear instruction flags on successful divide
+    m_memory.ClearFlags();
   }
   
   return true;
@@ -2988,6 +2991,9 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
+
+    // Clear instruction flags on successful divide
+    m_memory.ClearFlags();
   }
   
   return true;

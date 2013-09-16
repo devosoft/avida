@@ -2352,20 +2352,6 @@ void cPopulation::CompeteDemes(cAvidaContext& ctx, int competition_type)
 
 
 
-#if !APTO_PLATFORM(WINDOWS)
-/*! Convenience function to assign increasing values to a range.
- */
-namespace std {
-  template <typename ForwardIterator, typename T>
-  void iota(ForwardIterator first, ForwardIterator last, T value) {
-	  while(first != last) {
-		  *first = value;
-		  ++first;
-		  ++value;
-	  }
-  }
-};
-#endif
 
 /*! Draw a sample (without replacement) from an input range, copying to the output range.
  */

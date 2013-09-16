@@ -1,18 +1,18 @@
-# Thu Apr 19 10:24:49 2012
-# Filename........: archive/103-aaabs.org
+# Mon Sep 16 13:33:13 2013
+# Filename........: archive/105-aaaaf.org
 # Update Output...: 30
 # Is Viable.......: 1
 # Repro Cycle Size: 0
 # Depth to Viable.: 0
 # 
 # Generation: 0
-# Merit...........: 3388997632.000000
+# Merit...........: 3422552064.000000
 # Gestation Time..: 269
-# Fitness.........: 12598504.208178
-# Errors..........: 1
-# Genome Size.....: 103
-# Copied Size.....: 103
-# Executed Size...: 101
+# Fitness.........: 12723241.873606
+# Errors..........: 3
+# Genome Size.....: 105
+# Copied Size.....: 105
+# Executed Size...: 102
 # Offspring.......: SELF
 # 
 # Tasks Performed:
@@ -28,19 +28,19 @@
 
 
 h-alloc
-shift-r
+push
 dec
-if-label
+swap-stk
 push
 nop-B
-inc
-IO
-swap
-IO
-swap
-nand
-nand
 h-divide
+IO
+swap
+IO
+swap
+nand
+nand
+if-label
 nand
 nop-C
 IO
@@ -49,21 +49,21 @@ push
 push
 swap
 nop-C
-if-n-equ
+h-divide
 set-flow
 push
-jmp-head
+nand
 nop-C
+sub
+nop-C
+if-label
 nop-A
-if-n-equ
-swap
-nop-C
-nop-A
-nop-C
+h-divide
+h-alloc
 pop
 nop-C
 nop-B
-nop-B
+h-alloc
 IO
 nop-C
 nand
@@ -72,17 +72,19 @@ if-less
 sub
 nand
 nop-C
+nop-A
 if-label
-if-less
-nop-B
+mov-head
 nop-C
+h-copy
 nop-A
 nand
 nop-C
+h-copy
 nop-C
 IO
 nop-C
-nop-B
+nop-C
 set-flow
 add
 nop-C
@@ -97,16 +99,16 @@ h-copy
 nand
 inc
 h-copy
-h-copy
 add
 sub
-h-divide
+if-label
 add
 swap
 nand
 IO
 nop-C
 IO
+h-copy
 h-search
 h-copy
 nand

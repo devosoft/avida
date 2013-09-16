@@ -1,5 +1,5 @@
 # Avida deme reaction diversity replication data
-# Thu Jun 14 15:31:17 2012
+# Mon Sep 16 13:33:23 2013
 #  1: Update [update]
 #  2: Mean number of different reactions by deme [demereact]
 #  3: Mean number of deme switch penalties per org  [orgpen]
@@ -73,4 +73,5 @@
 62 0 0 0 0 0 0 
 63 0 0 0 0 0 0 
 64 0 0 0 0 0 0 
-65 7 24.3667 1.42091 0.453168 23 50 
+65 0 0 0 0 0 0 
+66 7 29.3871 0.946126 0.301747 23 48.3871 

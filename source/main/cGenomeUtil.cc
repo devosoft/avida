@@ -210,21 +210,6 @@ void cGenomeUtil::RandomSplit(cAvidaContext& ctx, double mean, double variance, 
 
 
 
-#if !APTO_PLATFORM(WINDOWS)
-/*! Convenience function to assign increasing values to a range.
- */
-namespace std {
-  template <typename ForwardIterator, typename T>
-  void iota(ForwardIterator first, ForwardIterator last, T value) {
-	  while(first != last) {
-		  *first = value;
-		  ++first;
-		  ++value;
-	  }
-  }
-};
-#endif
-
 
 /*! Randomly shuffle the instructions within genome in-place.
  */
