@@ -342,7 +342,8 @@ private:
   void Load_ConsumeTargetNor(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
   void Load_ConsumeTargetXor(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
   void Load_ConsumeTargetEqu(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  double Task_ConsumeTarget(cTaskContext& ctx) const; 
+  void Load_MoveFT(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  double Task_ConsumeTarget(cTaskContext& ctx) const;
   double Task_ConsumeTargetEcho(cTaskContext& ctx) const;
   double Task_ConsumeTargetNand(cTaskContext& ctx) const;
   double Task_ConsumeTargetAnd(cTaskContext& ctx) const;
@@ -352,6 +353,7 @@ private:
   double Task_ConsumeTargetNor(cTaskContext& ctx) const;
   double Task_ConsumeTargetXor(cTaskContext& ctx) const;
   double Task_ConsumeTargetEqu(cTaskContext& ctx) const;
+  double Task_MoveFT(cTaskContext& ctx) const;
   
   // Explosion Task
   void Load_Exploded(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);

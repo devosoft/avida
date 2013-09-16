@@ -56,9 +56,10 @@ private:
   bool m_load_avatars;
   bool m_load_rebirth;
   bool m_load_parent_dat;
+  int m_load_traceq;
   
 public:
-  cActionLoadPopulation(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0), m_load_groups(0), m_load_birth_cells(0), m_load_avatars(0), m_load_rebirth(0), m_load_parent_dat(0)
+  cActionLoadPopulation(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0), m_load_groups(0), m_load_birth_cells(0), m_load_avatars(0), m_load_rebirth(0), m_load_parent_dat(0), m_load_traceq(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -70,20 +71,61 @@ public:
     if (largs.GetSize()) m_load_avatars = largs.PopWord().AsInt();
     if (largs.GetSize()) m_load_rebirth = largs.PopWord().AsInt();
     if (largs.GetSize()) m_load_parent_dat = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_load_traceq = largs.PopWord().AsInt();
   }
   
-  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0] [bool load_birth_cells=0] [bool load_avatars] [bool load_rebirth] [bool load_parent_dat]"; }
+  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0] [bool load_birth_cells=0] [bool load_avatars] [bool load_rebirth] [bool load_parent_dat] [int load_traceq]"; }
   
   void Process(cAvidaContext& ctx)
   {
     // set the update if requested
     if (m_update >= 0) m_world->GetStats().SetCurrentUpdate(m_update);
     
-    if (!m_world->GetPopulation().LoadPopulation(m_filename, ctx, m_cellid_offset, m_lineage_offset, m_load_groups, m_load_birth_cells, m_load_avatars, m_load_rebirth, m_load_parent_dat)) {
+    if (!m_world->GetPopulation().LoadPopulation(m_filename, ctx, m_cellid_offset, m_lineage_offset, m_load_groups, m_load_birth_cells, m_load_avatars, m_load_rebirth, m_load_parent_dat, m_load_traceq)) {
       m_world->GetDriver().Feedback().Error("failed to load population");
       m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
     }
   }
+};
+
+class cActionLoadParasiteGenotypeList : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionLoadParasiteGenotypeList(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().LoadParasiteGenotypeList(m_filename, ctx);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string filename='flame']"; }
+
+};
+
+class cActionLoadHostGenotypeList : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionLoadHostGenotypeList(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().LoadHostGenotypeList(m_filename, ctx);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string filename='flame']"; }
+  
 };
 
 class cActionSavePopulation : public cAction
@@ -241,6 +283,8 @@ public:
 
 void RegisterSaveLoadActions(cActionLibrary* action_lib)
 {
+  action_lib->Register<cActionLoadParasiteGenotypeList>("LoadParasiteGenotypeList");
+  action_lib->Register<cActionLoadHostGenotypeList>("LoadHostGenotypeList");
   action_lib->Register<cActionLoadPopulation>("LoadPopulation");
   action_lib->Register<cActionSavePopulation>("SavePopulation");
   action_lib->Register<cActionLoadStructuredSystematicsGroup>("LoadStructuredSystematicsGroup");

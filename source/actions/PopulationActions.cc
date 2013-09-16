@@ -635,6 +635,48 @@ public:
   }
 };
 
+class cActionInjectParasiteSequence : public cAction
+{
+private:
+  cString m_sequence;
+  cString m_label;
+  int m_cell_start;
+  int m_cell_end;
+public:
+  cActionInjectParasiteSequence(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_start(0), m_cell_end(-1)
+  {
+    cString largs(args);
+    m_sequence = largs.PopWord();
+    m_label = largs.PopWord();
+    if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
+    
+    if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string sequence> [int cell_start=0] [int cell_end=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
+      ctx.Driver().Feedback().Warning("InjectParasite has invalid range!");
+    } else {
+      cUserFeedback feedback;
+      const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+      HashPropertyMap props;
+      cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
+      Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence)));
+      ConstInstructionSequencePtr seq;
+      seq.DynamicCastFrom(genome.Representation());
+      for (int i = m_cell_start; i < m_cell_end; i++) {
+        m_world->GetPopulation().InjectParasite(m_label, *seq, i);
+      }
+      m_world->GetPopulation().SetSyncEvents(true);
+    }
+  }
+};
+
+
 
 /*
  Injects identical parasites into a range of cells of the population.
@@ -5476,6 +5518,38 @@ public:
 	}
 };
 
+
+/*
+ Modifies an instruction's prob of failure during a run  */
+class cActionSetProbFail : public cAction
+{
+private:
+	cString m_inst_name;
+	double m_prob;
+public:
+	cActionSetProbFail(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+	{
+		cString largs(args);
+		m_inst_name = largs.PopWord();
+		
+		//Make sure that the instruction the user has specified is in the instruction set
+		assert(world->GetHardwareManager().GetDefaultInstSet().InstInSet(m_inst_name));
+    
+		//Get the new redundancy
+		m_prob = largs.PopWord().AsInt();
+	}
+	
+	static const cString GetDescription() { return "Arguments: <char instruction> <int prob_fail>"; }
+	
+	void Process(cAvidaContext& ctx)
+	{
+		//cInstSet& is = m_world->GetHardwareManager().GetInstSet(m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName());
+		cInstSet& is = m_world->GetHardwareManager().GetInstSet("(default)");
+		Instruction inst = is.GetInst(m_inst_name);
+		is.SetProbFail(inst, m_prob);
+	}
+};
+
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionInject>("Inject");
@@ -5492,6 +5566,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	
   action_lib->Register<cActionInjectGroup>("InjectGroup");
   action_lib->Register<cActionInjectParasite>("InjectParasite");
+  action_lib->Register<cActionInjectParasiteSequence>("InjectParasiteSequence");
   action_lib->Register<cActionInjectParasitePair>("InjectParasitePair");
   
   action_lib->Register<cActionKillInstLimit>("KillInstLimit");
@@ -5532,6 +5607,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionFlash>("Flash");
   
   action_lib->Register<cActionSetRedundancy>("SetRedundancy");
+  action_lib->Register<cActionSetProbFail>("SetProbFail");
 	
   /****AbstractCompeteDemes sub-classes****/
 	

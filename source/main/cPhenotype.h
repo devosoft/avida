@@ -138,6 +138,7 @@ private:
   Apto::Array<double> cur_trial_fitnesses;         // Fitnesses of various trials.; @JEB
   Apto::Array<double> cur_trial_bonuses;           // Bonuses of various trials.; @JEB
   Apto::Array<int> cur_trial_times_used;           // Time used in of various trials.; @JEB
+  Apto::Array<int> cur_from_message_count;           // Use of inputs that originated from messages were used in execution of this instruction.
 
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
@@ -182,6 +183,8 @@ private:
   Apto::Array< Apto::Array<int> > last_group_attack_count;
   Apto::Array< Apto::Array<int> > last_top_pred_group_attack_count;
   Apto::Array<int> last_killed_targets;
+
+  Apto::Array<int> last_from_message_count;
 
   double last_fitness;            // Used to determine sterilization.
   int last_cpu_cycles_used;
@@ -480,6 +483,8 @@ public:
   const Apto::Array< Apto::Array<int> >& GetLastGroupAttackInstCount() const { assert(initialized == true); return last_group_attack_count; }
   const Apto::Array< Apto::Array<int> >& GetLastTopPredGroupAttackInstCount() const { assert(initialized == true); return last_top_pred_group_attack_count; }
 
+  const Apto::Array<int>& GetLastFromMessageInstCount() const { assert(initialized == true); return last_from_message_count; }
+
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
   double GetPermanentGermlinePropensity() const { assert(initialized == true); return permanent_germline_propensity; }
   const Apto::Array<int>& GetLastCollectSpecCounts() const { assert(initialized == true); return last_collect_spec_counts; }
@@ -710,7 +715,8 @@ public:
   void  ResetNumNewUniqueReactions()  {num_new_unique_reactions =0; }
   double GetResourcesConsumed(); 
   Apto::Array<int> GetCumulativeReactionCount();
-  
+  void IncCurFromMessageInstCount(int _inst_num)  { assert(initialized == true); cur_from_message_count[_inst_num]++; }
+ 
 
   // @LZ - Parasite Etc. Helpers
   void DivideFailed();
@@ -738,8 +744,10 @@ inline void cPhenotype::SetInstSetSize(int inst_set_size)
 {
   cur_inst_count.Resize(inst_set_size, 0);
   cur_from_sensor_count.Resize(inst_set_size, 0);
+  cur_from_message_count.Resize(inst_set_size, 0);
   last_inst_count.Resize(inst_set_size, 0);
   last_from_sensor_count.Resize(inst_set_size, 0);
+  last_from_message_count.Resize(inst_set_size, 0);
 }
 
 inline void cPhenotype::SetGroupAttackInstSetSize(int num_group_attack_inst)

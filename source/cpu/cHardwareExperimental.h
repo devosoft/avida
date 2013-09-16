@@ -80,17 +80,19 @@ private:
     int value;
     
     // Actual age of this value
-    unsigned int originated:14;
+    unsigned int originated:13; // warning: this is now only good up to 8,100 updates
     unsigned int from_env:1;
     unsigned int from_sensor:1;
+    unsigned int from_message:1;
     
     // Age of the oldest component used to create this value
-    unsigned int oldest_component:14;
+    unsigned int oldest_component:13;
     unsigned int env_component:1;
     unsigned int sensor_component:1;
+    unsigned int message_component:1;
     
     inline DataValue() { Clear(); }
-    inline void Clear() { value = 0; originated = 0; from_env = 0, from_sensor = 0, oldest_component = 0; env_component = 0, sensor_component = 0; }
+    inline void Clear() { value = 0; originated = 0; from_env = 0, from_sensor = 0, from_message = 0, oldest_component = 0; env_component = 0, sensor_component = 0, message_component = 0; }
     inline DataValue& operator=(const DataValue& i);
   };
   
@@ -195,6 +197,7 @@ private:
   int m_use_avatar;
   cOrgSensor m_sensor;
   bool m_from_sensor;
+  bool m_from_message;
   
   struct {
     unsigned int m_cycle_count:16;
@@ -286,6 +289,7 @@ public:
   int GetRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].value; }
   int GetNumRegisters() const { return NUM_REGISTERS; }
   bool FromSensor(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].from_sensor; }
+  bool FromMessage(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].from_message; }
   
   
   // --------  Thread Manipulation  --------
@@ -370,7 +374,7 @@ private:
 
   // ---------- Utility Functions -----------
   inline unsigned int BitCount(unsigned int value) const;
-  inline void setInternalValue(int reg_num, int value, bool from_env = false, bool from_sensor = false);
+  inline void setInternalValue(int reg_num, int value, bool from_env = false, bool from_sensor = false, bool from_message = false);
   inline void setInternalValue(int reg_num, int value, const DataValue& src);
   inline void setInternalValue(int reg_num, int value, const DataValue& op1, const DataValue& op2);
   void checkWaitingThreads(int cur_thread, int reg_num);
@@ -599,7 +603,15 @@ private:
   bool Inst_IncPredTolerance(cAvidaContext& ctx);  
   bool Inst_DecPredTolerance(cAvidaContext& ctx);  
   bool Inst_GetPredTolerance(cAvidaContext& ctx);     
-  bool Inst_GetPredGroupTolerance(cAvidaContext& ctx); 
+  bool Inst_GetPredGroupTolerance(cAvidaContext& ctx);
+  
+  //Group Messaging
+  bool Inst_SendMessage(cAvidaContext& ctx);
+  bool SendMessage(cAvidaContext& ctx, int messageType = 0);
+  bool BroadcastX(cAvidaContext& ctx, int depth);
+  bool Inst_RetrieveMessage(cAvidaContext& ctx);
+  bool Inst_Broadcast1(cAvidaContext& ctx);
+  bool Inst_DonateResToDeme(cAvidaContext& ctx);
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
@@ -612,12 +624,14 @@ private:
   bool Inst_AttackPreyGroupShare(cAvidaContext& ctx);
   bool Inst_AttackSpecPrey(cAvidaContext& ctx);
   bool Inst_AttackPreyArea(cAvidaContext& ctx);
-  bool Inst_AttackFTPrey(cAvidaContext& ctx); 
+
+  bool Inst_AttackFTPrey(cAvidaContext& ctx);
   bool Inst_AttackPoisonPrey(cAvidaContext& ctx);
   bool Inst_AttackPoisonFTPrey(cAvidaContext& ctx);
   bool Inst_AttackPoisonFTPreyGenetic(cAvidaContext& ctx);
   bool Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx);
-  bool Inst_FightMeritOrg(cAvidaContext& ctx); 
+
+  bool Inst_FightMeritOrg(cAvidaContext& ctx);
   bool Inst_FightBonusOrg(cAvidaContext& ctx); 
   bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 
   bool Inst_FightOrg(cAvidaContext& ctx); 
@@ -781,7 +795,7 @@ inline int cHardwareExperimental::GetStack(int depth, int stack_id, int in_threa
   return value.value;
 }
 
-inline void cHardwareExperimental::setInternalValue(int reg_num, int value, bool from_env, bool from_sensor)
+inline void cHardwareExperimental::setInternalValue(int reg_num, int value, bool from_env, bool from_sensor, bool from_message)
 {
   DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
@@ -790,7 +804,9 @@ inline void cHardwareExperimental::setInternalValue(int reg_num, int value, bool
   dest.oldest_component = m_cycle_count;
   dest.env_component = from_env;
   dest.from_sensor = from_sensor;
+  dest.from_message = from_message;
   dest.sensor_component = from_sensor;
+  dest.message_component = from_message;
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
@@ -801,10 +817,12 @@ inline void cHardwareExperimental::setInternalValue(int reg_num, int value, cons
   dest.value = value;
   dest.from_env = false;
   dest.from_sensor = false;
+  dest.from_message = false;
   dest.originated = m_cycle_count;
   dest.oldest_component = src.oldest_component;
   dest.env_component = src.env_component;
   dest.sensor_component = src.sensor_component;
+  dest.message_component = src.message_component;
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
@@ -815,10 +833,12 @@ inline void cHardwareExperimental::setInternalValue(int reg_num, int value, cons
   dest.value = value;
   dest.from_env = false;
   dest.from_sensor = false;
+  dest.from_message = false;
   dest.originated = m_cycle_count;
   dest.oldest_component = (op1.oldest_component < op2.oldest_component) ? op1.oldest_component : op2.oldest_component;
   dest.env_component = (op1.env_component || op2.env_component);
   dest.sensor_component = (op1.sensor_component || op2.sensor_component);
+  dest.message_component = (op1.message_component || op2.message_component);
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 

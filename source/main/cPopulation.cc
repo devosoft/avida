@@ -172,7 +172,93 @@ public:
   }
 };
 
-
+class FromMessageInstructionExecCountsProvider : public cPopulationOrgStatProvider
+{
+private:
+  cWorld* m_world;
+  Apto::Map<Apto::String, Apto::Array<Apto::Stat::Accumulator<int> >, Apto::DefaultHashBTree, Apto::ImplicitDefault> m_is_exe_inst_map;
+  Data::DataSetPtr m_provides;
+  
+public:
+  FromMessageInstructionExecCountsProvider(cWorld* world) : m_world(world), m_provides(new Data::DataSet)
+  {
+    m_provides->Insert(Apto::String("core.population.from_message_inst_exec_counts[]"));
+    
+    cHardwareManager& hwm = m_world->GetHardwareManager();
+    for (int i = 0; i < hwm.GetNumInstSets(); i++) {
+      m_is_exe_inst_map[Apto::String((const char*)hwm.GetInstSet(i).GetInstSetName())].Resize(hwm.GetInstSet(i).GetSize());
+    }
+  }
+  
+  Data::ConstDataSetPtr Provides() const { return m_provides; }
+  void UpdateProvidedValues(Update current_update) { (void)current_update; }
+  
+  Apto::String DescribeProvidedValue(const Apto::String& data_id) const
+  {
+    Apto::String rtn;
+    if (data_id == "core.population.from_message_inst_exec_counts[]") {
+      rtn = "Instruction execution counts from message data for the specified instruction set.";
+    }
+    return rtn;
+  }
+  
+  void SetActiveArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args) { (void)data_id; (void)args; }
+  
+  Data::ConstArgumentSetPtr GetValidArguments(const Data::DataID& data_id) const
+  {
+    Data::ArgumentSetPtr args(new Data::ArgumentSet);
+    
+    for (int i = 0; i < m_world->GetHardwareManager().GetNumInstSets(); i++) {
+      args->Insert(Apto::String((const char*)m_world->GetHardwareManager().GetInstSet(i).GetInstSetName()));
+    }
+    
+    return args;
+  }
+  
+  bool IsValidArgument(const Data::DataID& data_id, Data::Argument arg) const
+  {
+    return GetValidArguments(data_id)->Has(arg);
+  }
+  
+  
+  Data::PackagePtr GetProvidedValueForArgument(const Data::DataID& data_id, const Data::Argument& arg) const
+  {
+    Apto::SmartPtr<Data::ArrayPackage, Apto::InternalRCObject> pkg(new Data::ArrayPackage);
+    
+    const Apto::Array<Apto::Stat::Accumulator<int> >& inst_exe_counts = m_is_exe_inst_map[arg];
+    for (int i = 0; i < inst_exe_counts.GetSize(); i++) {
+      pkg->AddComponent(Data::PackagePtr(new Data::Wrap<int>(inst_exe_counts[i].Sum())));
+    }
+    
+    return pkg;
+  }
+  
+  
+  void UpdateReset()
+  {
+    for (Apto::Map<Apto::String, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_exe_inst_map.Values(); it.Next();) {
+      Apto::Array<Apto::Stat::Accumulator<int> >& inst_counts = (*it.Get());
+      for (int i = 0; i < inst_counts.GetSize(); i++) inst_counts[i].Clear();
+    }
+  }
+  
+  void HandleOrganism(cOrganism* organism)
+  {
+    Apto::String inst_set = organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue();
+    Apto::Array<Apto::Stat::Accumulator<int> >& inst_exe_counts = m_is_exe_inst_map[inst_set];
+    for (int j = 0; j < organism->GetPhenotype().GetLastFromMessageInstCount().GetSize(); j++) {
+      inst_exe_counts[j].Add(organism->GetPhenotype().GetLastFromMessageInstCount()[j]);
+    }
+  }
+  
+  static Data::ArgumentedProviderPtr Activate(cWorld* world, World* new_world)
+  {
+    (void)new_world;
+    cPopulationOrgStatProviderPtr osp(new FromMessageInstructionExecCountsProvider(world));
+    world->GetPopulation().AttachOrgStatProvider(osp);
+    return osp;
+  }
+};
 
 
 
@@ -218,6 +304,11 @@ cPopulation::cPopulation(cWorld* world)
   Apto::Functor<Data::ArgumentedProviderPtr, Apto::TL::Create<cWorld*, World*> > is_activate(&InstructionExecCountsProvider::Activate);
   Data::ArgumentedProviderActivateFunctor isp_activate(Apto::BindFirst(is_activate, m_world));
   m_world->GetDataManager()->Register("core.population.inst_exec_counts[]", isp_activate);
+  
+  Apto::Functor<Data::ArgumentedProviderPtr, Apto::TL::Create<cWorld*, World*> > fmis_activate(&FromMessageInstructionExecCountsProvider::Activate);
+  Data::ArgumentedProviderActivateFunctor fmisp_activate(Apto::BindFirst(fmis_activate, m_world));
+  m_world->GetDataManager()->Register("core.population.from_message_inst_exec_counts[]", fmisp_activate);
+  
 }
 
 
@@ -565,9 +656,20 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   seq.DynamicCastFrom(parent_organism->GetGenome().Representation());
   parent_phenotype.DivideReset(*seq);
   
+  GeneticRepresentationPtr tmpHostGenome;
   
+  if (m_world->GetConfig().HOST_USE_GENOTYPE_FILE.Get())
+  {
+    tmpHostGenome = host_genotype_list[m_world->GetRandom().GetInt(host_genotype_list.GetSize())];
+  }
+  else
+  {
+    tmpHostGenome = GeneticRepresentationPtr(new InstructionSequence(offspring_genome.Representation()->AsString()));
+  }
+  
+  Genome temp(parent_organism->GetGenome().HardwareType(), parent_organism->GetGenome().Properties(), tmpHostGenome);
   birth_chamber.SubmitOffspring(ctx, offspring_genome, parent_organism, offspring_array, merit_array);
-  
+    
   // First, setup the genotype of all of the offspring.
   const int parent_id = parent_organism->GetOrgInterface().GetCellID();
   assert(parent_id >= 0 && parent_id < cell_array.GetSize());
@@ -1044,10 +1146,23 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
   
   
   // Attempt actual parasite injection
+  // LZ - use parasige_genotype_list for the GenRepPtr instead IF Config says to
+  // e.g., use predefined genotypes to hold the frequency constant, or "replay" parasite
+  // from one run into another.
+  GeneticRepresentationPtr tmpParasiteGenome;
   
-  Genome mg(parent->UnitGenome().HardwareType(), parent->UnitGenome().Properties(), GeneticRepresentationPtr(new InstructionSequence(injected_code)));
+  if (m_world->GetConfig().PARASITE_USE_GENOTYPE_FILE.Get())
+  {
+    tmpParasiteGenome = parasite_genotype_list[m_world->GetRandom().GetInt(parasite_genotype_list.GetSize())];
+  }
+  else
+  {
+    tmpParasiteGenome = GeneticRepresentationPtr(new InstructionSequence(injected_code));
+  }
+  
+  Genome mg(parent->UnitGenome().HardwareType(), parent->UnitGenome().Properties(), tmpParasiteGenome);
+
   Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite(new cParasite(m_world, mg, Apto::StrAs(parent->Properties().Get("generation")), Systematics::Source(Systematics::HORIZONTAL, (const char*)label)));
-  
   //Handle potential virulence evolution if this parasite is comming from a parasite 
   //and virulence is inhereted from the parent (source == 1)
   if (parent->UnitSource().transmission_type == Systematics::HORIZONTAL && m_world->GetConfig().VIRULENCE_SOURCE.Get() == 1)
@@ -1101,6 +1216,8 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   assert(in_organism != NULL);
   
   in_organism->SetOrgInterface(ctx, new cPopulationInterface(m_world));
+  
+  
   
   // Update the contents of the target cell.
   KillOrganism(target_cell, ctx); 
@@ -1331,7 +1448,7 @@ void cPopulation::AppendMiniTraces(Apto::Array<int, Apto::Smart> new_queue, cons
   use_micro_traces = use_micro;
 }
 
-void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes, bool print_reacs)
+void cPopulation::LoadMiniTraceQ(const cString& filename, int orgs_per, bool print_genomes, bool print_reacs)
 {
   cInitFile input_file(filename, m_world->GetWorkingDir());
   if (!input_file.WasOpened()) {
@@ -1951,6 +2068,26 @@ void cPopulation::KillRandPrey(cAvidaContext& ctx, cOrganism* org)
     idx = ctx.GetRandom().GetUInt(list_size);
   }
   if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
+}
+
+cOrganism* cPopulation::GetRandPrey(cAvidaContext& ctx, cOrganism* org)
+{
+  cOrganism* target_org = org;
+  const Apto::Array<cOrganism*, Apto::Smart>& live_org_list = GetLiveOrgList();
+  Apto::Array<cOrganism*> TriedIdx(live_org_list.GetSize());
+  int list_size = TriedIdx.GetSize();
+  for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
+  
+  int idx = ctx.GetRandom().GetUInt(list_size);
+  while (target_org == org) {
+    cOrganism* org_at = TriedIdx[idx];
+    // exclude predators and juvenilles with predatory parents (include juvs with non-predatory parents)
+    if (org_at->GetForageTarget() > -1 || (org_at->GetForageTarget() == -1 && org_at->GetParentFT() > -2)) target_org = org_at;
+    else TriedIdx.Swap(idx, --list_size);
+    if (list_size == 1) break;
+    idx = ctx.GetRandom().GetUInt(list_size);
+  }
+  return target_org;
 }
 
 void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
@@ -5536,6 +5673,11 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     const int cur_gestation_time = phenotype.GetGestationTime();
     const int cur_genome_length = phenotype.GetGenomeLength();
     
+    Apto::Array<Apto::Stat::Accumulator<int> >& from_message_exec_counts = stats.InstFromMessageExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
+    for (int j = 0; j < phenotype.GetLastFromMessageInstCount().GetSize(); j++) {
+      from_message_exec_counts[j].Add(organism->GetPhenotype().GetLastFromMessageInstCount()[j]);
+    }
+
     stats.SumFitness().Add(cur_fitness);
     stats.SumMerit().Add(cur_merit.GetDouble());
     stats.SumGestation().Add(phenotype.GetGestationTime());
@@ -5546,7 +5688,7 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     stats.SumCopyMutRate().Push(organism->MutationRates().GetCopyMutProb());
     stats.SumLogCopyMutRate().Push(log(organism->MutationRates().GetCopyMutProb()));
     stats.SumDivMutRate().Push(organism->MutationRates().GetDivMutProb() / organism->GetPhenotype().GetDivType());
-    stats.SumLogDivMutRate().Push(log(organism->MutationRates().GetDivMutProb() /organism->GetPhenotype().GetDivType()));
+    stats.SumLogDivMutRate().Push(log(organism->MutationRates().GetDivMutProb() / organism->GetPhenotype().GetDivType()));
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
     
@@ -6306,7 +6448,41 @@ public:
   inline bool operator>=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
 };
 
-bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, bool load_birth_cells, bool load_avatars, bool load_rebirth, bool load_parent_dat)
+bool cPopulation::LoadGenotypeList(const cString& filename, cAvidaContext& ctx, Apto::Array<GeneticRepresentationPtr>& list_obj)
+{
+  cInitFile input_file(filename, m_world->GetWorkingDir(), ctx.Driver().Feedback());
+  if (!input_file.WasOpened()) return false;
+
+  list_obj.ResizeClear(input_file.GetNumLines());
+  
+  Apto::Array<sTmpGenotype, Apto::ManagedPointer> genotypes(input_file.GetNumLines());
+  
+  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
+    cString m_sequence = input_file.GetLine(line_id);
+    
+    const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+    HashPropertyMap props;
+    cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
+    
+    list_obj[line_id] = GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence));
+  }
+
+  return true;
+}
+
+bool cPopulation::LoadParasiteGenotypeList(const cString& filename, cAvidaContext& ctx)
+{
+  return LoadGenotypeList(filename, ctx, parasite_genotype_list);
+}
+
+
+bool cPopulation::LoadHostGenotypeList(const cString& filename, cAvidaContext& ctx)
+{
+  return LoadGenotypeList(filename, ctx, host_genotype_list);
+}
+
+
+bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, bool load_birth_cells, bool load_avatars, bool load_rebirth, bool load_parent_dat, int traceq)
 {
   // @TODO - build in support for verifying population dimensions
   
@@ -6473,8 +6649,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     genotypes[i].props->Set("parents", (const char*)nparentstr);
     
     genotypes[i].bg = bgm->LegacyLoad(&genotypes[i].props);
-  }
-  
+  }  
   if (some_missing) m_world->GetDriver().Feedback().Warning("Some parents not found in loaded pop file. Defaulting to parent ID of '(none)' for those genomes.");
   
   // Process genotypes, inject into organisms as necessary
@@ -6508,7 +6683,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       Systematics::RoleClassificationHints hints;
       hints["genotype"]["id"] = Apto::FormatStr("%d", tmp.bg->ID());
       Systematics::UnitPtr unit(new_organism);
-      new_organism->AddReference(); // creating new smart pointer to org, explicitly add reference
+      new_organism->AddReference(); // creating new smart pointer to org, explicitly add reference      
       classmgr->ClassifyNewUnit(unit, &hints);
       
       // Coalescense Clade Setup
@@ -6601,15 +6776,18 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
         }
       }
-      if (org_survived) new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
+      if (org_survived) {
+        new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
+        if (traceq) {
+          print_mini_trace_genomes = (traceq == 2);
+          SetupMiniTrace(new_organism);
+        }
+      }
     }
   }
-  sync_events = true;
-  
+  sync_events = true;  
   return true;
 }
-
-
 
 /**
  * This function loads a genome from a given file, and initializes

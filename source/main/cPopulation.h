@@ -85,6 +85,9 @@ private:
   
   Apto::Array<pair<int,int>, Apto::Smart>* sleep_log;
   
+  Apto::Array<GeneticRepresentationPtr> parasite_genotype_list;
+  Apto::Array<GeneticRepresentationPtr> host_genotype_list;
+  
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
   Apto::Array<int, Apto::Smart> minitrace_queue;
@@ -266,17 +269,20 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx); 
 
   // Saving and loading...
+  bool LoadParasiteGenotypeList(const cString& filename, cAvidaContext& ctx);
+  bool LoadHostGenotypeList(const cString& filename, cAvidaContext& ctx);
+
   bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false,
                       bool save_rebirth = false);
   bool SaveStructuredSystematicsGroup(const Systematics::RoleID& role, const cString& filename);
   bool LoadStructuredSystematicsGroup(cAvidaContext& ctx, const Systematics::RoleID& role, const cString& filename);
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0,
-                      bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false, bool load_rebirth = false, bool load_parent_dat = false);
+                      bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false, bool load_rebirth = false, bool load_parent_dat = false, int traceq = 0);
   bool SaveFlameData(const cString& filename);
   
   void SetMiniTraceQueue(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool print_reacs, const bool use_micro = false);
   void AppendMiniTraces(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool print_reacs, const bool use_micro = false);
-  void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes, bool print_reacs);
+  void LoadMiniTraceQ(const cString& filename, int orgs_per, bool print_genomes, bool print_reacs);
   Apto::Array<int, Apto::Smart> SetRandomTraceQ(int max_samples);
   Apto::Array<int, Apto::Smart> SetRandomPreyTraceQ(int max_samples);
   Apto::Array<int, Apto::Smart> SetRandomPredTraceQ(int max_samples);
@@ -404,6 +410,7 @@ public:
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   void KillRandPred(cAvidaContext& ctx, cOrganism* org);
   void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
+  cOrganism* GetRandPrey(cAvidaContext& ctx, cOrganism* org);
   // Identifies the number of organisms in a group
   int NumberOfOrganismsInGroup(int group_id);
   int NumberGroupFemales(int group_id);
@@ -478,6 +485,8 @@ private:
   int PlaceAvatar(cAvidaContext& ctx, cOrganism* parent);
   
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
+  
+  bool LoadGenotypeList(const cString& filename, cAvidaContext& ctx, Apto::Array<GeneticRepresentationPtr>& list_obj);
 };
 
 #endif
