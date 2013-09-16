@@ -2504,7 +2504,14 @@ void sample_without_replacement(ForwardIterator first, ForwardIterator last, Out
 	}
 	
 	std::vector<std::size_t> rmap(range);
-	std::iota(rmap.begin(), rmap.end(), 0);
+  
+  std::vector<std::size_t>::iterator rmap_it = rmap.begin();
+  std::size_t value = 0;
+  while (rmap_it != rmap.end()) {
+    *rmap_it++ = value;
+    ++value;
+  }
+  
 	std::random_shuffle(rmap.begin(), rmap.end(), rng);
 	
 	while(ofirst != olast) {

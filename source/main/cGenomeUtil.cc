@@ -215,8 +215,15 @@ void cGenomeUtil::RandomSplit(cAvidaContext& ctx, double mean, double variance, 
  */
 void cGenomeUtil::RandomShuffle(cAvidaContext& ctx, InstructionSequence& genome) {
 	std::vector<int> idx(static_cast<std::size_t>(genome.GetSize()));
-	std::iota(idx.begin(), idx.end(), 0);
-	std::random_shuffle(idx.begin(), idx.end(), ctx.GetRandom());
+  
+  std::vector<int>::iterator idx_it = idx.begin();
+  int value = 0;
+  while (idx_it != idx.end()) {
+    *idx_it++ = value;
+    ++value;
+  }
+	
+  std::random_shuffle(idx.begin(), idx.end(), ctx.GetRandom());
 	InstructionSequence shuffled(genome.GetSize());
 	for(int i=0; i<genome.GetSize(); ++i) {
 		shuffled[i] = genome[idx[i]];
