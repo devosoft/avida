@@ -741,6 +741,8 @@ void cHardwareGP8::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
   // basic status info
   fp << m_cycle_count << " ";
   fp << m_cur_uop << " ";
+  fp << m_hw_queue_eat << " " << m_hw_queue_move << " ";
+  fp << m_hw_queue_rotate << (m_hw_queue_rotate_reverse ? "(-" : "(") << m_hw_queue_rotate_num << ") ";
   fp << m_world->GetStats().GetUpdate() << " ";
   for (int i = 0; i < NUM_REGISTERS; i++) {
     DataValue& reg = m_threads[m_cur_thread].reg[i];
