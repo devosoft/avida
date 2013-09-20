@@ -1353,9 +1353,6 @@ bool cHardwareBCR::Divide_Main(cAvidaContext& ctx, int mem_space_used, int write
         break;
 		}
 		m_advance_ip = false;
-
-    // Clear instruction flags on successful divide
-    m_mem_array[0].ClearFlags();
 	}
 	
   return true;
@@ -2447,9 +2444,6 @@ bool cHardwareBCR::Inst_Repro(cAvidaContext& ctx)
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
-
-    // Clear instruction flags on successful divide
-    m_mem_array[0].ClearFlags();
   }
   
   return true;
