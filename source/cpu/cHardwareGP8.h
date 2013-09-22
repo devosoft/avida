@@ -571,6 +571,7 @@ private:
   bool Inst_SenseNest(cAvidaContext& ctx);
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_LookAheadEX(cAvidaContext& ctx);
+  bool Inst_LookAroundEX(cAvidaContext& ctx);
   bool Inst_LookAgainEX(cAvidaContext& ctx);
 
   bool Inst_Eat(cAvidaContext& ctx);
@@ -597,7 +598,7 @@ private:
   // ---------- Some Instruction Helpers -----------
   bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit);
 
-  bool DoLookAheadEX(cAvidaContext& ctx, bool use_ft = false);
+  bool DoLookAheadEX(cAvidaContext& ctx, bool use_ft = false, bool use_dir = false);
   bool DoLookAgainEX(cAvidaContext& ctx, bool use_ft = false);
   
 private:

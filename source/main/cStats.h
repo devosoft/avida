@@ -145,6 +145,7 @@ private:
 
   // --------  Instruction Counts  ---------
   Apto::Map<cString, Apto::Array<cString> > m_is_inst_names_map;
+  Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_from_message_inst_map;
 
   Apto::Array<pair<int,int> > m_is_tolerance_exe_counts;
   Apto::Array<s_inst_circumstances, Apto::Smart> m_is_tolerance_exe_insts;
@@ -157,6 +158,7 @@ private:
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_prey_from_sensor_inst_map;
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_pred_from_sensor_inst_map;
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_tpred_from_sensor_inst_map;
+
 
   Apto::Map<cString, Apto::Array<cString> > m_group_attack_names;
   Apto::Map<cString, Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > > m_group_attack_exe_map; // exec_count_per_num_neighbor = exe_map[inst_set[inst[num_neigbors]]]
@@ -467,6 +469,8 @@ public:
   cDoubleSum& SumExeSize()       { return sum_exe_size; }
   cDoubleSum& SumMemSize()       { return sum_mem_size; }
 
+  Apto::Array<Apto::Stat::Accumulator<int> >& InstFromMessageExeCountsForInstSet(const cString& inst_set) { return m_is_from_message_inst_map[inst_set]; }
+
   //deme
   Apto::Stat::Accumulator<int>& SumDemeAge()          { return sum_deme_age; }
   Apto::Stat::Accumulator<int>& SumDemeBirthCount()   { return sum_deme_birth_count; }
@@ -519,6 +523,7 @@ public:
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >& ExecCountsForGroupAttackInstSet(const cString& inst_set) { return m_group_attack_exe_map[inst_set]; }
   Apto::Array<Apto::Stat::Accumulator<int> >&  ExecCountsForGroupAttackInst(const cString& inst_set, const cString& inst) { return m_group_attack_exe_map[inst_set][inst]; }
 
+  void ZeroMessageInst();
   void ZeroFTInst();
   void ZeroGroupAttackInst();
   

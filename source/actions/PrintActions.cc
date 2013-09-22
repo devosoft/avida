@@ -413,6 +413,71 @@ public:
   }
 };
 
+class cActionPrintFromMessageInstructionData : public cAction, public Data::Recorder
+{
+private:
+  cString m_filename;
+  Apto::String m_inst_set;
+  Data::DataID m_data_id;
+  Data::PackagePtr m_data;
+  
+public:
+  cActionPrintFromMessageInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "from_msg_instruction.dat";
+    }
+    if (largs.GetSize()) m_inst_set = (const char*)largs.PopWord();
+    
+    if (m_filename == "") m_filename.Set("from_msg_instruction-%s.dat", (const char*)m_inst_set);
+    
+    m_data_id = Apto::FormatStr("core.population.from_message_inst_exec_counts[%s]", (const char*)m_inst_set);
+    
+    Data::RecorderPtr thisPtr(this);
+    this->AddReference();
+    m_world->GetDataManager()->AttachRecorder(thisPtr);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"from_msg_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  Data::ConstDataSetPtr RequestedData() const
+  {
+    Data::DataSetPtr ds(new Data::DataSet);
+    ds->Insert(m_data_id);
+    return ds;
+  }
+  
+  
+  void NotifyData(Update, Data::DataRetrievalFunctor retrieve_data)
+  {
+    m_data = retrieve_data(m_data_id);
+  }
+  
+  void Process(cAvidaContext&)
+  {
+    const cInstSet& is = m_world->GetHardwareManager().GetInstSet(m_inst_set);
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
+    
+    df->WriteComment("Avida from message instruction execution data");
+    df->WriteTimeStamp();
+    
+    df->Write(m_world->GetStats().GetUpdate(), "Update");
+    
+    if (m_data) {
+      for (int i = 0; i < m_data->NumComponents(); i++) {
+        df->Write(m_data->GetComponent(i)->IntValue(), is.GetName(i));
+      }
+    }
+    
+    df->Endl();
+  }
+};
+
+
 class cActionPrintPreyInstructionData : public cAction
 {
 private:
@@ -5214,6 +5279,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTopPredatorFromSensorInstructionData>("PrintTopPredatorFromSensorInstructionData");
   action_lib->Register<cActionPrintGroupAttackData>("PrintGroupAttackData");
   action_lib->Register<cActionPrintKilledPreyFTData>("PrintKilledPreyFTData");
+  
+  action_lib->Register<cActionPrintFromMessageInstructionData>("PrintFromMessageInstructionData");
   
   action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");
   action_lib->Register<cActionPrintFemaleInstructionData>("PrintFemaleInstructionData");

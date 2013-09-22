@@ -171,6 +171,7 @@ cStats::cStats(cWorld* world)
   
   ZeroFTInst();
   ZeroGroupAttackInst();
+  ZeroMessageInst();
   
   const int num_reactions = env.GetNumReactions();
   m_reaction_cur_count.Resize(num_reactions);
@@ -474,6 +475,14 @@ void cStats::ZeroReactions()
   m_reaction_last_count.SetAll(0);
   m_reaction_cur_add_reward.SetAll(0);
   m_reaction_last_add_reward.SetAll(0);
+}
+
+void cStats::ZeroMessageInst()
+{
+
+  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_from_message_inst_map.Values(); it.Next();) {
+    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
+  }
 }
 
 void cStats::ZeroFTInst()

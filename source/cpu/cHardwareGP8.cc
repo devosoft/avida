@@ -185,6 +185,7 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
     INST("sense-nest", Inst_SenseNest, ENVIRONMENT, nInstFlag::STALL, 0, ""),
     INST("sense-faced-habitat", Inst_SenseFacedHabitat, ENVIRONMENT, nInstFlag::STALL, 0, ""),
     INST("look-ahead-ex", Inst_LookAheadEX, ENVIRONMENT, nInstFlag::STALL, 0, ""),
+    INST("look-around-ex", Inst_LookAroundEX, ENVIRONMENT, nInstFlag::STALL, 0, ""),
     INST("look-again-ex", Inst_LookAgainEX, ENVIRONMENT, nInstFlag::STALL, 0, ""),
 
     INST("eat", Inst_Eat, ENVIRONMENT, nInstFlag::STALL, 0, ""),
@@ -741,6 +742,8 @@ void cHardwareGP8::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
   // basic status info
   fp << m_cycle_count << " ";
   fp << m_cur_uop << " ";
+  fp << m_hw_queue_eat << " " << m_hw_queue_move << " ";
+  fp << m_hw_queue_rotate << (m_hw_queue_rotate_reverse ? "(-" : "(") << m_hw_queue_rotate_num << ") ";
   fp << m_world->GetStats().GetUpdate() << " ";
   for (int i = 0; i < NUM_REGISTERS; i++) {
     DataValue& reg = m_threads[m_cur_thread].reg[i];
@@ -1335,7 +1338,6 @@ bool cHardwareGP8::Divide_Main(cAvidaContext& ctx, int mem_space_used, int write
     m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
   }
 	
-  //bool parent_alive = m_organism->ActivateDivide(ctx);
   bool parent_alive = m_organism->ActivateDivide(ctx);
   //reset the memory of the memory space that has been divided off
   m_mem_array[mem_space_used] = InstructionSequence("a");
@@ -2502,13 +2504,18 @@ bool cHardwareGP8::Inst_LookAheadEX(cAvidaContext& ctx)
   return DoLookAheadEX(ctx);
 }
 
+bool cHardwareGP8::Inst_LookAroundEX(cAvidaContext& ctx)
+{
+  return DoLookAheadEX(ctx, false, true);
+}
+
 bool cHardwareGP8::Inst_LookAgainEX(cAvidaContext& ctx)
 {
   return DoLookAgainEX(ctx);
 }
 
 
-bool cHardwareGP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
+bool cHardwareGP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft, bool use_dir)
 {
   int cell_id = m_organism->GetOrgInterface().GetCellID();
   int facing = m_organism->GetOrgInterface().GetFacedDir();
@@ -2536,6 +2543,19 @@ bool cHardwareGP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
   const int reg_travel_distance = FindModifiedNextRegister(reg_id_sought);  // ?rDX?
   const int reg_deviance = FindNextRegister(reg_travel_distance);           // rDX + 1 = rEX
   const int reg_cv = FindNextRegister(reg_deviance);                        // rDX + 2 = rFX
+  
+  if (use_dir) {
+    const int reg_dir = FindModifiedRegister(rGX);
+    int search_dir = abs(m_threads[m_cur_thread].reg[reg_dir].value) % 3;
+    
+    if (search_dir == 1) search_dir = -1;
+    else if (search_dir == 2) search_dir = 1;
+    
+    facing += search_dir;
+    if (facing == -1) facing = 7;
+    else if (facing == 9) facing = 1;
+    else if (facing == 8) facing = 0;
+  }
   
   const int reg_search_distance = FindModifiedRegister(-1, true);                 // ?r?X?
   const int reg_search_type = FindModifiedRegister(-1, true);                     // ?r?X?

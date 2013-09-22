@@ -1,5 +1,5 @@
 # Avida tasks data
-# Tue Sep 18 16:55:13 2012
+# Mon Sep 16 13:33:19 2013
 # First column gives the current update, next columns give the number
 # of Parasites that have the particular task
 #  1: Update
@@ -22,4 +22,4 @@
 600 0 0 0 0 0 0 0 0 0 
 700 56 0 0 0 0 0 0 0 0 
 800 145 0 0 0 0 0 0 0 0 
-900 192 1 0 0 0 0 0 0 0 
+900 206 4 0 0 0 0 0 0 0 

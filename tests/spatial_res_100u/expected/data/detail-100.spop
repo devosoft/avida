@@ -1,7 +1,7 @@
 #filetype genotype_data
 #format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
 # Structured Population Save
-# Thu Jun 14 15:22:41 2012
+# Mon Sep 16 13:33:23 2013
 #  1: ID
 #  2: Source
 #  3: Source Args
@@ -23,71 +23,85 @@
 # 19: Gestation (CPU) Cycle Offsets
 # 20: Lineage Label
 
-345 div:int (none) 140 1 2 50 311.833 177.5 1.75583 14 89 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzsipcccpqcxaqndcxxbcgdutycasvab 11 22 0 
-138 div:int (none) 90 4 27 50 430.607 173.69 2.47952 8 37 -1 3 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqnccxebctdutycasvab 38,47,50,58 120,87,121,121 0,0,0,0 
-140 div:int (none) 2 7 24 50 261.729 177.677 1.47312 6 38 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzsipcccpqcxaqnccxxbcgdutycasvab 0,1,9,71,81,90,99 153,121,88,121,120,120,121 0,0,0,0,0,0,0 
-2 div:ext (none) (none) 4 423 50 337.454 177.721 1.89879 0 -1 -1 0 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgdutycasvab 17,27,74,79 6,154,88,20 0,0,0,0 
-370 div:int (none) 215 1 1 50 0 0 0 16 98 -1 4 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcfaqncbxgbcgrutycasnab 24 88 0 
-347 div:int (none) 134 1 1 49 176 173 1.01734 24 90 -1 2 0 instset-heads.cfg rucavcqgfcqpqeccthzscpcccpqcxaqnccxxbcedutycasvab 34 87 0 
-301 div:int (none) 134 2 7 50 426.911 176.667 2.41684 21 80 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxgcedutycasvab 45,54 175,176 0,0 
-209 div:int (none) 138 1 12 50 358.566 173.8 2.06351 13 54 -1 4 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqnccxubctdutycasvab 56 88 0 
-278 div:int (none) 2 2 6 50 426.007 178 2.3933 14 75 -1 1 0 instset-heads.cfg rucavcqgfcqapqevcthzscpcccpqcxaqnccxxbcgdutycasvab 57,67 88,88 0,0 
-117 div:int (none) 2 2 8 50 184 178 1.03371 5 31 -1 1 0 instset-heads.cfg rucavcqgfcqhpqeccthzscpcccpqcxaqnccxxbcgdutycasvab 83,84 177,177 0,0 
-210 div:int (none) 2 2 11 50 255.799 177.727 1.43946 9 55 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqczaqnccxxbcgdutycasvab 7,87 55,153 0,0 
-164 div:int (none) 2 2 6 50 262.631 177.667 1.47824 7 43 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzrcpcccpqcxaqnccxxbcgdutycasvab 25,26 88,55 0,0 
-348 div:int (none) 140 1 1 50 0 0 0 14 90 -1 2 0 instset-heads.cfg rucdvcqgfcqapqeccthzsipcccpqcxaqnccxxbcgdutycasvab 39 320 0 
-371 div:int (none) 267 1 1 50 0 0 0 20 98 -1 6 0 instset-heads.cfg rucancqgfcoapqeccthzscpccbpqcxaqnccxubctdutycasvab 85 87 0 
-303 div:int (none) 2 1 1 50 0 0 0 12 80 -1 1 0 instset-heads.cfg ruyavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgdutycasvab 18 629 0 
-372 div:int (none) 138 1 1 50 0 0 0 24 98 -1 4 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqnfcxebctdutycasvab 69 121 0 
-373 div:int (none) 138 1 1 50 0 0 0 24 98 -1 4 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqnccxebctdutycasvac 36 121 0 
-374 div:int (none) 138 1 1 51 0 0 0 24 98 -1 4 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqnccxebrctdutycasvab 49 121 0 
-259 div:int (none) 189 2 9 49 367.633 173 2.12505 16 67 -1 3 0 instset-heads.cfg rucavcqgfcqapqeccthzcpcccpqcqaqnccxxbcjdutycasvab 60,70 53,53 0,0 
-282 div:int (none) 134 2 4 50 264.193 176.75 1.49449 20 75 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcezutycasvab 72,82 87,88 0,0 
-375 div:int (none) 269 1 1 50 0 0 0 20 99 -1 3 0 instset-heads.cfg rucavcqpfcqapqeccthzscpcccpqwxaqnccdxbcedutycasvab 19 86 0 
-283 div:int (none) 259 1 4 49 285.168 173 1.64837 18 76 -1 4 0 instset-heads.cfg rucavcqgfcqapqeccthzcpcccpqcqaqnccpxbcjdutycasvab 40 152 0 
-329 div:int (none) 259 1 2 49 46 173 0.265896 21 86 -1 4 0 instset-heads.cfg rucavcqgicqapqeccthzcpcccpqcqaqnccxxbcjdutycasvab 51 53 0 
-215 div:int (none) 179 4 7 50 259.615 177.667 1.46133 10 56 -1 3 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcfaqncbxgbcgrutycasvab 3,4,13,14 20,154,88,20 0,0,0,0 
-169 div:int (none) 100 2 6 49 252.357 173.6 1.45348 7 43 -1 3 0 instset-heads.cfg rucavcqgfcqapqectczscpcccpqcxaqnccxxbcgautycasvab 5,94 153,174 0,0 
-353 div:int (none) 324 1 1 49 0 0 0 14 91 -1 3 0 instset-heads.cfg rucjvcqgfcqapqeccthzrcoccpqcxaqnccxhbcgdutycasvab 16 88 0 
-376 div:int (none) 278 1 1 50 0 0 0 20 99 -1 2 0 instset-heads.cfg rucavcqgfcqapqevcthzscpcccpqcxaqnmcxxbcgdutyyasvab 55 99 0 
-284 div:int (none) 266 1 1 49 66.0399 173 0.381733 12 76 -1 5 0 instset-heads.cfg rucavcqgfcqapqdctczscpcccpqcxahnccxxbcgautycasvab 96 151 0 
-377 div:int (none) 2 1 1 50 0 0 0 20 99 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgdutycasvcb 76 55 0 
-332 div:int (none) 134 1 1 50 46 180 0.255556 23 87 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccqhzsgpcccpqcxaqnccxxbcedutycasvab 21 55 0 
-378 div:int (none) 278 1 1 50 0 0 0 20 99 -1 2 0 instset-heads.cfg rucavcqgfcqapqevcthzscpcccpxcxaqnccxxbcgdutycasvab 66 88 0 
-355 div:int (none) 2 1 1 50 0 0 0 14 92 -1 1 0 instset-heads.cfg runavcqgfcqapqeccthzscpcccpqcxaqnccxqbcgdutycasvab 95 291 0 
-379 div:int (none) 345 1 1 51 0 0 0 16 100 -1 3 0 instset-heads.cfg rucavcqgfcqapqeccthuzsipcccpqcxaqndcxxbcgdutycasvab 2 56 0 
-333 div:int (none) 301 1 2 50 184 177.5 1.03663 23 87 -1 3 0 instset-heads.cfg rucavcqgfiqapqeccthzscpcccpqcxaqnccxxgcedutycasvab 64 21 0 
-356 div:int (none) 267 2 2 50 46 175 0.262857 19 92 -1 6 0 instset-heads.cfg rucavcqgfxoapqeccthzscqccbpqcxaqnccxubctdutycasvab 65,75 15,9 0,0 
-380 div:int (none) 333 1 1 50 0 0 0 25 100 -1 4 0 instset-heads.cfg rucavcqpfiqapqeccthzncpcccpqcxaqnccxxgcedutycasvab 73 20 0 
-381 div:int (none) 267 1 1 50 0 0 0 20 100 -1 6 0 instset-heads.cfg rucavcqgfcoapqeccthzscpccbpqcxaqnccxhbctdutycasvab 78 54 0 
-267 div:int (none) 209 2 4 50 240.248 173 1.38872 16 70 -1 5 0 instset-heads.cfg rucavcqgfcoapqeccthzscpccbpqcxaqnccxubctdutycasvab 77,86 19,87 0,0 
-382 div:int (none) 90 1 1 50 0 0 0 16 100 -1 3 0 instset-heads.cfg rucavcqgfcuapqeccthzscpccbpqcxaqnccxxbctdutycasdab 88 55 0 
-383 div:int (none) 2 1 1 50 0 0 0 15 100 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthhscpcccpqcxaqnccxxbcgdutycasvab 68 20 0 
-291 div:int (none) 2 1 1 50 0 0 0 12 78 -1 1 0 instset-heads.cfg rscavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgdutycasvab 80 663 0 
-337 div:int (none) 140 1 2 50 222.022 177 1.25436 14 88 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzsipcccpqcxaqnccxxbcedutycasvab 91 154 0 
-269 div:int (none) 134 3 4 50 261.579 176.6 1.48124 16 70 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccdxbcedutycasvab 10,20,29 55,87,88 0,0,0 
-384 div:int (none) 278 1 1 50 0 0 0 20 100 -1 2 0 instset-heads.cfg rucavcqgfcqapqevcthzscpcccpqcxaqnccxxzcgdutycasvab 48 22 0 
-361 div:int (none) 138 1 1 50 0 0 0 23 95 -1 4 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqnccxebctdutycatvab 59 319 0 
-385 div:int (none) 2 1 1 50 0 0 0 16 100 -1 1 0 instset-heads.cfg rucavcqgfcqapqeckthzscpcccpqcxaqnccxxbcgdutycasvab 28 8 0 
-247 div:int (none) 179 1 2 50 70.8063 178 0.397788 11 63 -1 3 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcfaanccxgbcgrutycasvab 35 53 0 
-362 div:int (none) 140 1 1 50 0 0 0 15 95 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccbhzsipcccpqcxaqnccxxbcgdutycasvab 92 180 0 
-317 div:int (none) 284 1 1 49 0 0 0 13 83 -1 6 0 instset-heads.cfg rucavcqgfcqaprdctczscpcccpqcxaynccxxbcgautycasvab 6 151 0 
-318 div:int (none) 140 1 4 50 292.387 176.667 1.65463 13 83 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzsipcccpqcxaqnccxxbwgdutycasvab 8 176 0 
-134 div:int (none) 2 14 51 50 369.56 176.729 2.09119 9 36 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcedutycasvab 12,22,23,30,31,32,33,41,43,44,52,53,61,62 153,121,121,121,120,88,54,87,121,55,87,88,55,55 0,0,0,0,0,0,0,0,0,0,0,0,0,0 
-364 div:int (none) 134 1 1 50 0 0 0 20 95 -1 2 0 instset-heads.cfg rucavcqyfcqapqeccthzscpcccpqcxaqnfcxxbcedutycasvab 15 154 0 
-365 div:int (none) 278 2 2 50 197.206 178 1.1079 19 96 -1 2 0 instset-heads.cfg rucavcqgfcqapqevcthzscpcccpqcxaqncuxxbcgdutycasvab 37,46 8,3 0,0 
-366 div:int (none) 209 1 1 50 0 0 0 20 96 -1 5 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqnccxubcadutycasvab 63 154 0 
-90 div:int (none) 63 2 16 50 348.449 174.682 1.99485 4 25 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqnccxxbctdutycasvab 89,98 54,154 0,0 
-320 div:int (none) 2 1 2 50 53.6159 178 0.301213 13 84 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscecccpqcxaqnccxxbcgdutycasvab 97 86 0 
-367 div:int (none) 350 1 1 51 0 0 0 26 97 -1 4 0 instset-heads.cfg rucavcqgfqqapqeccthzscpcccpqcxaqnpcxvgkcedutycasvab 42 183 0 
-321 div:int (none) 169 1 1 49 0 0 0 13 85 -1 4 0 instset-heads.cfg rucavcqgfcqapqectczscpcccpqcxaqnccxxbcgautycasvad 93 450 0 
-350 div:int (none) 301 0 1 50 455.552 176.5 2.58087 24 91 98 3 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnpcxxgcedutycasvab 
-324 div:int (none) 164 0 1 49 58.3824 175 0.333614 13 85 96 2 0 instset-heads.cfg rucavcqgfcqapqeccthzrcoccpqcxaqnccxhbcgdutycasvab 
-179 div:int (none) 104 0 5 50 254.914 177.857 1.43328 8 45 88 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcfaqnccxgbcgrutycasvab 
-189 div:int (none) 36 0 6 49 367.075 172.667 2.12613 13 49 82 2 0 instset-heads.cfg rucavcqgfcqapqeccthzcpcccpqcxaqnccxxbcjdutycasvab 
-36 div:int (none) 2 0 16 50 399.623 177.724 2.24864 2 12 79 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcjdutycasvab 
-266 div:int (none) 169 0 1 49 254.606 173 1.47171 11 69 76 4 0 instset-heads.cfg rucavcqgfcqapqdctczscpcccpqcxaqnccxxbcgautycasvab 
-43 div:int (none) 2 0 7 50 247.04 177.636 1.39086 2 12 69 1 0 instset-heads.cfg rucavcqgfcqapqecctczscpcccpqcxaqnccxxbcgdutycasvab 
-104 div:int (none) 2 0 2 50 266.648 177.667 1.50078 5 27 47 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgrutycasvab 
-100 div:int (none) 43 0 2 49 257.79 174.667 1.47601 4 26 45 2 0 instset-heads.cfg rucavcqgfcqapqectczscpcccpqcxaqnccxxbcgdutycasvab 
-63 div:int (none) 2 0 1 50 428.927 178 2.4097 3 18 26 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqnccxxbcgdutycasvab 
+414 div:int (none) 134 1 1 49 0 0 0 32 98 -1 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpccnpqcxaqlccxxbcgdutycasvab 12 120 0 
+391 div:int (none) 367 1 1 48 0 0 0 31 95 -1 5 0 instset-heads.cfg rucancqgcqapqccthzscpcccpqcxaqlccxxncgdvtycasvab 13 12 0 
+184 div:int (none) 27 3 26 50 1504 178 8.44944 19 47 -1 2 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxarqnccxxbcgdutycasvab 66,76,77 88,88,88 0,0,0 
+368 div:int (none) 263 1 1 50 0 0 0 26 91 -1 4 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccqcxawrqnccxxbcgdutycasvab 85 84 0 
+415 div:int (none) 390 1 1 50 0 0 0 31 98 -1 5 0 instset-heads.cfg pqcaxaqgccxxbcgdutycvsvabrucavcqgfcfapqccthzscpccc 89 46 0 
+416 div:int (none) 385 1 1 48 0 0 0 31 98 -1 6 0 instset-heads.cfg rucavcqgfcqapqcctgzcpctcpqcxxqnfdxxbcgdutycasvab 39 86 0 
+347 div:int (none) 27 1 2 49 46 175 0.262857 28 84 -1 2 0 instset-heads.cfg rucavcqgfcqppqccthzscpcccpqcxaqnccxxbrgdutycasvab 67 20 0 
+324 div:int (none) 295 1 1 50 0 0 0 27 79 -1 5 0 instset-heads.cfg aarucavcqgwcqapqccthzcpctcpqcxxqnccxxbcgdutycasvab 81 55 0 
+393 div:int (none) 373 1 1 47 0 0 0 31 96 -1 6 0 instset-heads.cfg rucavcqgfcqapqccthzcpctcpqqxqncdxxbcgdutycasvab 99 152 0 
+348 div:int (none) 134 5 6 49 1472 174 8.45977 28 84 -1 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqlccxxbcgqutycasvab 5,7,17,87,96 8,19,21,19,13 0,0,0,0,0 
+371 div:int (none) 192 1 1 50 93.87 178 0.52736 30 92 -1 4 0 instset-heads.cfg rucavcqgffcqapqccthzscpcccpqcxaqlccxxncgdutycasvab 15 9 0 
+417 div:int (none) 247 1 1 49 0 0 0 31 99 -1 4 0 instset-heads.cfg rucavcqgfcqapqccthzscpcgcpqcxaqnzcgxbcgdutycasvab 51 86 0 
+395 div:int (none) 275 1 1 50 0 0 0 31 96 -1 7 0 instset-heads.cfg rucavcqgfcrapqcxhzscpcccpqcxaqlccxxbcadcutyecasvab 11 136 0 
+418 div:int (none) 248 1 1 50 0 0 0 31 100 -1 4 0 instset-heads.cfg rucavcqgfcfapqccthzscpcccpqcvxaqgccxxbcgdutycasvab 19 52 0 
+27 div:int (none) 2 1 78 49 1472 174 8.45977 2 10 -1 1 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqnccxxbcgdutycasvab 75 87 0 
+372 div:int (none) 134 1 1 49 254.606 174 1.46325 30 92 -1 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccsqcxaqlccxxbcgdutycasvab 94 54 0 
+396 div:int (none) 275 1 1 49 0 0 0 31 96 -1 7 0 instset-heads.cfg rucavcqgfcraptcthzscpcccpqcxaqlccxxbcadcutycasvab 30 154 0 
+373 div:int (none) 273 1 1 47 1408 163 8.63804 30 92 -1 5 0 instset-heads.cfg rucavcqgfcqapqccthzcpctcpqcxqncdxxbcgdutycasvab 80 162 0 
+419 div:int (none) 348 1 1 49 0 0 0 31 100 -1 4 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqlccxxgcgqutycasvab 97 19 0 
+420 div:int (none) 399 1 1 48 0 0 0 31 100 -1 6 0 instset-heads.cfg cedutyasvabrucavcqgfcqapqccrhzscpcccpqcxaqlccxkb 8 33 0 
+374 div:int (none) 273 1 1 48 0 0 0 30 92 -1 5 0 instset-heads.cfg rucivcqgfcqapqccthzcpctcpqcxxqncdxxbcgdutycasvab 69 285 0 
+190 div:int (none) 153 3 17 49 1444.17 176.13 8.19937 19 48 -1 4 0 instset-heads.cfg rucavcqgfcqapqccrhzscpcccpqcxaqlccxkbcedutycasvab 78,79,88 120,120,120 0,0,0 
+330 div:int (none) 318 1 1 47 0 0 0 28 82 -1 4 0 instset-heads.cfg cpqcxaqnccxxbcgutycesvabrucavcqgfcqapqcthzscpcc 43 338 0 
+399 div:int (none) 190 1 1 48 1152 140 8.22857 30 97 -1 5 0 instset-heads.cfg rucavcqgfcqapqccrhzscpcccpqcxaqlccxkbcedutyasvab 98 3 0 
+400 div:int (none) 375 1 1 49 0 0 0 31 97 -1 6 0 instset-heads.cfg rucavcqgfcqapqcthzscpcccpqcxaqlrcxxbcadrutyhasvab 9 119 0 
+262 div:int (none) 174 1 2 50 47 178 0.264045 24 65 -1 5 0 instset-heads.cfg rucavcqgfcqapqcthozscpcccpqcxaqlccxxbcadrutycasvab 32 54 0 
+378 div:int (none) 333 1 1 49 0 0 0 30 92 -1 6 0 instset-heads.cfg rqczvcqgfcqapqcthzscpcccpqcxaqlccxxbctdrutycasvab 36 318 0 
+401 div:int (none) 333 1 1 49 0 0 0 31 97 -1 6 0 instset-heads.cfg rucavcqgfcqapqcthzhcpcccpqcxaqlccxxbctdrutycasvab 56 152 0 
+402 div:int (none) 360 1 1 48 0 0 0 31 97 -1 4 0 instset-heads.cfg rucavcqgfcqpqcathzscpcccpqcxaqlccxxbcgdutycpsvab 14 112 0 
+356 div:int (none) 290 2 2 50 1408 176 8 29 88 -1 7 0 instset-heads.cfg rucavcqgfcrapqcthzscpcccpqcxaqlccxrybcadrutycasvab 21,31 87,87 0,0 
+333 div:int (none) 174 1 2 49 1472 171 8.60819 28 83 -1 5 0 instset-heads.cfg rucavcqgfcqapqcthzscpcccpqcxaqlccxxbctdrutycasvab 47 152 0 
+379 div:int (none) 297 1 1 49 0 0 0 30 92 -1 4 0 instset-heads.cfg rucavcqgfcqapqccthzscpcgcpqcxaqnccxubcgdutycafvab 63 284 0 
+310 div:int (none) 182 1 1 49 0 0 0 27 78 -1 3 0 instset-heads.cfg rucavfcqgfcqapqccthzscpcccpqcxaqnccxxbcgutycasvab 65 792 0 
+403 div:int (none) 372 1 1 50 0 0 0 31 97 -1 4 0 instset-heads.cfg rucalvcqgfcqapqccthzscpcccsqcxaqlccxxbcgdutycasvab 3 19 0 
+311 div:int (none) 182 2 6 48 1440 171 8.42105 27 78 -1 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqnrcxxbcgutycasvab 54,64 153,153 0,0 
+174 div:int (none) 127 3 28 49 1472 174 8.45977 18 44 -1 4 0 instset-heads.cfg rucavcqgfcqapqcthzscpcccpqcxaqlccxxbcadrutycasvab 40,49,50 119,152,119 0,0,0 
+289 div:int (none) 104 1 1 50 0 0 0 7 73 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccihzscpcccpqqxaqnccxxbcgdutycasvab 46 181 0 
+381 div:int (none) 27 1 1 49 46 174 0.264368 30 93 -1 2 0 instset-heads.cfg rucavcqgfcqapqcfthzscpcccpqcxaqnccxxbcgdutycasvab 83 6 0 
+405 div:int (none) 273 1 1 48 0 0 0 31 97 -1 5 0 instset-heads.cfg rucavcugfcqapqccthzcpctcpqcxxqncdxxbcgdutycasvab 68 152 0 
+360 div:int (none) 134 1 1 49 1472 174 8.45977 29 88 -1 3 0 instset-heads.cfg rucavcqgfcqapqcathzscpcccpqcxaqlccxxbcgdutycasvab 4 120 0 
+406 div:int (none) 182 1 1 48 0 0 0 31 97 -1 3 0 instset-heads.cfg rucavcqgacqapqccthzscpcccpqcxaqnccxxbcgutycasvab 42 120 0 
+315 div:int (none) 174 1 1 49 0 0 0 27 78 -1 5 0 instset-heads.cfg rucavaqgfcqapqcthzscpcccpqcxaqlccxxbcadrutycasvab 16 825 0 
+361 div:int (none) 317 1 2 49 46 175 0.262857 29 88 -1 6 0 instset-heads.cfg rucavcqgfcqapsctazscpcccpqcxaqlccxxbcadrutycasvab 28 13 0 
+384 div:int (none) 134 1 1 50 0 0 0 31 93 -1 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqlccxxbvcgdutycasvab 34 258 0 
+407 div:int (none) 182 1 1 48 0 0 0 31 97 -1 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqnccxxbcgutycayvab 35 153 0 
+338 div:int (none) 290 1 2 50 94 179 0.52514 28 83 -1 7 0 instset-heads.cfg rucavcqgfcrapqcthzscpmccpqcxaqlccxrxbcadrutycasvab 41 54 0 
+408 div:int (none) 134 1 1 49 0 0 0 31 97 -1 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxoaqlccxxbxgdutycasab 6 121 0 
+385 div:int (none) 273 1 1 48 1440 167 8.62275 30 94 -1 5 0 instset-heads.cfg rucavcqgfcqapqcctgzcpctcpqcxxqncdxxbcgdutycasvab 38 86 0 
+247 div:int (none) 109 1 8 49 1472 173 8.50867 23 62 -1 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcgcpqcxaqnccgxbcgdutycasvab 60 86 0 
+248 div:int (none) 188 2 12 50 1504 178 8.44944 23 62 -1 3 0 instset-heads.cfg rucavcqgfcfapqccthzscpcccpqcaxaqgccxxbcgdutycasvab 0,91 55,13 0,0 
+317 div:int (none) 174 1 4 49 1472 174 8.45977 27 78 -1 5 0 instset-heads.cfg rucavcqgfcqapqctazscpcccpqcxaqlccxxbcadrutycasvab 37 119 0 
+409 div:int (none) 273 1 1 48 0 0 0 31 98 -1 5 0 instset-heads.cfg rucavcqgfcqapqccthzcpctcpqcxxqlcdxxbcgdutycasvab 55 119 0 
+341 div:int (none) 134 1 3 49 1472 174 8.45977 28 83 -1 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqlccxxbdgdutycasvab 22 153 0 
+134 div:int (none) 27 4 55 49 1472 174 8.45977 14 34 -1 2 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqlccxxbcgdutycasvab 23,25,26,95 87,54,54,153 0,0,0,0 
+387 div:int (none) 27 1 1 49 0 0 0 30 94 -1 2 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqnccxxbcgdutycasvqb 86 252 0 
+273 div:int (none) 226 6 11 48 1440 167 8.62275 25 69 -1 4 0 instset-heads.cfg rucavcqgfcqapqccthzcpctcpqcxxqncdxxbcgdutycasvab 48,57,58,59,70,71 86,152,152,152,152,152 0,0,0,0,0,0 
+389 div:int (none) 366 1 1 49 0 0 0 31 95 -1 4 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxamnccxxbczutycazsvab 1 31 0 
+182 div:int (none) 27 10 29 48 1440 170 8.47059 19 46 -1 2 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqnccxxbcgutycasvab 2,33,44,45,52,53,61,74,82,93 169,87,87,120,169,120,153,153,3,8 0,0,0,0,0,0,0,0,0,0 
+297 div:int (none) 109 3 6 49 1440 172 8.37209 26 74 -1 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcgcpqcxaqnccxubcgdutycasvab 62,72,73 119,119,86 0,0,0 
+412 div:int (none) 381 1 1 49 0 0 0 31 98 -1 3 0 instset-heads.cfg rucavcqgycqapqcfthzscpcccpqcxaqnccxxbcgdutycasvab 84 3 0 
+366 div:int (none) 182 1 1 48 180 170 1.05882 30 91 -1 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxamnccxxbcgutycasvab 92 52 0 
+275 div:int (none) 234 4 7 49 1472 174 8.45977 25 69 -1 6 0 instset-heads.cfg rucavcqgfcrapqcthzscpcccpqcxaqlccxxbcadcutycasvab 10,18,20,29 153,153,173,153 0,0,0,0 
+367 div:int (none) 192 1 1 48 78.0303 170 0.459002 30 91 -1 4 0 instset-heads.cfg rucavcqgcqapqccthzscpcccpqcxaqlccxxncgdutycasvab 24 18 0 
+413 div:int (none) 317 1 1 49 0 0 0 31 98 -1 6 0 instset-heads.cfg rucavcqgfcqapqctazscpcccpqcxaqlccxxbcadrumycasvab 27 119 0 
+390 div:int (none) 248 1 1 50 768 125 6.144 30 95 -1 4 0 instset-heads.cfg rucavcqgfcfapqccthzscpcccpqcaxaqgccxxbcgdutycvsvab 90 46 0 
+192 div:int (none) 134 0 11 49 1472 174 8.45977 20 49 97 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqlccxxncgdutycasvab 
+375 div:int (none) 174 0 1 49 1472 175 8.41143 30 92 97 5 0 instset-heads.cfg rucavcqgfcqapqcthzscpcccpqcxaqlrcxxbcadrutycasvab 
+226 div:int (none) 149 0 8 48 1440 167 8.62275 22 57 95 3 0 instset-heads.cfg rucavcqgfcqapqccthzcpctcpqcxxqnccxxbcgdutycasvab 
+263 div:int (none) 184 0 2 49 315.199 174 1.81149 24 65 93 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccqcxarqnccxxbcgdutycasvab 
+2 div:ext (none) (none) 0 286 50 370.772 177.747 2.08575 0 -1 93 0 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgdutycasvab 
+318 div:int (none) 182 0 1 47 704 115 6.12174 27 79 88 3 0 instset-heads.cfg rucavcqgfcqapqcthzscpcccpqcxaqnccxxbcgutycesvab 
+290 div:int (none) 234 0 2 50 1504 179 8.40223 26 73 88 6 0 instset-heads.cfg rucavcqgfcrapqcthzscpcccpqcxaqlccxrxbcadrutycasvab 
+295 div:int (none) 226 0 1 48 89.8104 167 0.537787 26 74 83 4 0 instset-heads.cfg rucavcqgwcqapqccthzcpctcpqcxxqnccxxbcgdutycasvab 
+188 div:int (none) 27 0 10 49 1472 174 8.45977 19 48 81 2 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqgccxxbcgdutycasvab 
+234 div:int (none) 174 0 3 49 1472 175 8.41143 23 60 78 5 0 instset-heads.cfg rucavcqgfcrapqcthzscpcccpqcxaqlccxxbcadrutycasvab 
+104 div:int (none) 2 0 3 50 262.066 181 1.44788 4 28 78 1 0 instset-heads.cfg rucavcqgfcqapqeccihzscpcccpqcxaqnccxxbcgdutycasvab 
+89 div:int (none) 27 0 24 49 1445.49 173.171 8.34703 8 24 77 2 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqnccxkbcedutycasvab 
+109 div:int (none) 27 0 23 49 1472 173 8.50867 11 28 76 2 0 instset-heads.cfg rucavcqgfcqapqccthzscpcgcpqcxaqnccxxbcgdutycasvab 
+127 div:int (none) 86 0 8 50 1504 178 8.44944 13 32 61 3 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqnccxxbcadrutycasvab 
+149 div:int (none) 27 0 4 49 1472 175 8.41143 16 38 58 2 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxxqnccxxbcgdutycasvab 
+153 div:int (none) 89 0 1 49 1448 176.25 8.21546 16 39 53 3 0 instset-heads.cfg rucavcqgfcqapqccrhzscpcccpqcxaqnccxkbcedutycasvab 
+86 div:int (none) 27 0 3 50 1504 178 8.44944 8 23 34 2 0 instset-heads.cfg rucavcqgfcqapqccthzscpcccpqcxaqnccxxbcgdrutycasvab 

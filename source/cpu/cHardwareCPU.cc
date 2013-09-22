@@ -1818,6 +1818,9 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
     }
     
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
+    
+    // Clear instruction flags on successful divide
+    m_memory.ClearFlags();
   }
   
   return true;
@@ -1913,6 +1916,9 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
   bool parent_alive = m_organism->ActivateDivide(ctx);
   if (parent_alive) {
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
+
+    // Clear instruction flags on successful divide
+    m_memory.ClearFlags();
   }
   
   return true;
@@ -2004,6 +2010,9 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
   bool parent_alive = m_organism->ActivateDivide(ctx);
   if (parent_alive) {
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
+  
+    // Clear instruction flags on successful divide
+    m_memory.ClearFlags();
   }
   
   return true;
@@ -2097,6 +2106,9 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
   bool parent_alive = m_organism->ActivateDivide(ctx);
   if (parent_alive) {
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
+
+    // Clear instruction flags on successful divide
+    m_memory.ClearFlags();
   }
   
   return true;
@@ -3396,6 +3408,9 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   //Reset the parent
   if (parent_alive) {
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
+
+    // Clear instruction flags on successful divide
+    m_memory.ClearFlags();
   }
   return true;
 }

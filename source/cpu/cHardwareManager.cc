@@ -164,6 +164,7 @@ bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, int st
   m_world->GetStats().InstPreyFromSensorExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstPredFromSensorExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstTopPredFromSensorExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
+  m_world->GetStats().InstFromMessageExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
 
   m_world->GetStats().ExecCountsForGroupAttackInstSet(inst_set->GetInstSetName()).Clear();
   Apto::Array<cString> att_inst = m_world->GetStats().GetGroupAttackInsts(inst_set->GetInstSetName());

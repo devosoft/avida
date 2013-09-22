@@ -1326,7 +1326,6 @@ bool cHardwareBCR::Divide_Main(cAvidaContext& ctx, int mem_space_used, int write
     m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
   }
 	
-  //bool parent_alive = m_organism->ActivateDivide(ctx);
   bool parent_alive = m_organism->ActivateDivide(ctx);
   //reset the memory of the memory space that has been divided off
   m_mem_array[mem_space_used] = InstructionSequence("a");
