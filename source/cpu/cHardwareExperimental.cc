@@ -5415,8 +5415,9 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
     }
   }
   
-  double odds = 1.0 / ((double) (prey_count));
-  
+//  double odds = 1.0 / ((double) (prey_count));
+  double odds = 1.0 - (0.10 * (double) prey_count); // 0 friend = 0% confusion, 1 friend = 10%, 10 friends = 100%
+ 
   cOrganism* target = GetPreyTarget(ctx);
   if (!TestPreyTarget(target)) { results.success = 1; return TestAttackResultsOut(results); }
   

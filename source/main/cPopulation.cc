@@ -915,7 +915,7 @@ void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
     for (int i = 0; i < repro_q.GetSize(); i++) {
       if (repro_q[i] == org) {
         if (reproduced) m_world->GetStats().PrintReproData(org);
-        if (!reproduced || (reproduced && split)) {
+        if ((!reproduced || (reproduced && split)) && repro_q.GetSize()) {
           int last = repro_q.GetSize() - 1;
           repro_q.Swap(i, last);
           repro_q.Pop();
@@ -929,7 +929,7 @@ void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
     for (int i = 0; i < topnav_q.GetSize(); i++) {
       if (topnav_q[i] == org) {
         if (reproduced) m_world->GetStats().UpdateTopNavTrace(org);
-        if (!reproduced || (reproduced && split)) {
+        if ((!reproduced || (reproduced && split)) && topnav_q.GetSize()) { //nav_q can be wiped in update process
           int last = topnav_q.GetSize() - 1;
           topnav_q.Swap(i, last);
           topnav_q.Pop();
