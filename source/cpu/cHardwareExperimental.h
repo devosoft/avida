@@ -623,6 +623,7 @@ private:
   bool Inst_AttackPreyFakeGroupShare(cAvidaContext& ctx);
   bool Inst_AttackPreyGroupShare(cAvidaContext& ctx);
   bool Inst_AttackSpecPrey(cAvidaContext& ctx);
+  bool Inst_AttackSpecPreyChance(cAvidaContext& ctx);
   bool Inst_AttackPreyArea(cAvidaContext& ctx);
 
   bool Inst_AttackFTPrey(cAvidaContext& ctx);

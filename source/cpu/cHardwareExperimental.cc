@@ -369,6 +369,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("attack-prey-group-share", &cHardwareExperimental::Inst_AttackPreyGroupShare, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-fake-group-share", &cHardwareExperimental::Inst_AttackPreyFakeGroupShare, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-spec-prey", &cHardwareExperimental::Inst_AttackSpecPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("attack-spec-prey-chance", &cHardwareExperimental::Inst_AttackSpecPreyChance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-area", &cHardwareExperimental::Inst_AttackPreyArea, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
 
     tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -5617,7 +5618,7 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
   if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
   
   // if valid number, does the value represent a living organism?
-  cOrganism* target  = NULL;
+  cOrganism* target = NULL;
   const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {
     cOrganism* org = live_orgs[i];
@@ -5638,6 +5639,57 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
   SetAttackReg(reg);
   
   if (!ExecuteAttack(ctx, target, reg, 1)) return false;
+  return true;  
+}
+
+bool cHardwareExperimental::Inst_AttackSpecPreyChance(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_use_avatar && m_use_avatar != 2) return false;
+
+  if (!TestAttack(ctx)) return false;
+
+  bool generate_rand = false;
+
+  const int id_sought_reg = FindModifiedRegister(rBX);
+  const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
+  m_from_sensor = FromSensor(id_sought_reg);
+  m_from_message = FromMessage(id_sought_reg);
+  bool have_org2use = false;
+  
+  // return false if invalid number or self
+  if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
+  
+  // if valid number, does the value represent a living organism?
+  cOrganism* target  = NULL;
+  const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {
+    cOrganism* org = live_orgs[i];
+    if (id_sought == org->GetID()) {
+      target = org;
+      have_org2use = true;
+      break;
+    }
+  }
+  
+  if (!have_org2use) generate_rand = true;
+  else {
+    if (!m_use_avatar) { if (target != m_organism->GetOrgInterface().GetNeighbor()) generate_rand = true; }
+    else if (m_use_avatar == 2) { if (target->GetAVCellID() != m_organism->GetOrgInterface().GetAVFacedCellID()) generate_rand = true; }
+  }
+  
+  double odds = 1.0;
+  if (generate_rand) {
+    odds = ctx.GetRandom().GetDouble();
+    target = GetPreyTarget(ctx);
+  }
+  
+  if (!TestPreyTarget(target)) return false;
+  
+  sAttackReg reg;
+  SetAttackReg(reg);
+
+  if (!ExecuteAttack(ctx, target, reg, odds)) return false;
   return true;  
 }
 
