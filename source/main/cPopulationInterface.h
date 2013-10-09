@@ -264,6 +264,7 @@ public:
   void TryWriteLookData(cString& string);
   void TryWriteLookOutput(cString& string);
   void TryWriteLookEXOutput(cString& string);
+  Apto::Array<int> GetFormedGroupArray();
   
 // -------- Avatar support -------- @JJB
 private:

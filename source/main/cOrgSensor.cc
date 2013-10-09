@@ -1421,11 +1421,13 @@ void cOrgSensor::TestConfusion(cAvidaContext& ctx, sLookOut& stuff_seen, cOrgani
   double odds = 0.0;
   if (m_world->GetConfig().PRED_CONFUSION.Get() == 1) GetConfusionOddsDensity(ctx, odds, first_org);
   else if (m_world->GetConfig().PRED_CONFUSION.Get() == 2) GetConfusionOddsFacings(ctx, odds, first_org);
+  else if (m_world->GetConfig().PRED_CONFUSION.Get() == 3) GetConfusionOddsOpinions(ctx, odds, first_org);
 
   if (ctx.GetRandom().GetDouble() >= odds) {
     stuff_seen.distance = ctx.GetRandom().GetInt();
     stuff_seen.count = ctx.GetRandom().GetInt();
     stuff_seen.value = ctx.GetRandom().GetInt();
+//    stuff_seen.id_sought = ctx.GetRandom().GetInt();
     stuff_seen.group = ctx.GetRandom().GetInt();  // this is relative facing for nearest individual
     stuff_seen.deviance = ctx.GetRandom().GetInt();
   }
@@ -1510,3 +1512,72 @@ void cOrgSensor::GetConfusionOddsFacings(cAvidaContext& ctx, double& odds, cOrga
   
   odds = 1 - (double (num_used) / 8.0); // 0 friend = 0% confusion, 1 friend = 1/8%, 8 friends = 100%
 }
+
+void cOrgSensor::GetConfusionOddsOpinions(cAvidaContext& ctx, double& odds, cOrganism* first_org)
+{
+  int num_used = 0;
+  Apto::Array<int> group_ids = first_org->GetOrgInterface().GetFormedGroupArray();
+  int num_groups = group_ids.GetSize();
+  Apto::Array<int> groups_used;
+  groups_used.Resize(num_groups);
+  groups_used.SetAll(0);
+  
+  Apto::Array<int> neighborhood;
+  if (!m_use_avatar) {
+    if (first_org->IsPreyFT()) {
+      first_org->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
+      for (int j = 0; j < neighborhood.GetSize(); j++) {
+        if (first_org->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
+            !first_org->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsDead()) {
+          if (first_org->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsPreyFT()) {
+            if (first_org->HasOpinion()) {
+            if (groups_used[GetGroupIdx(group_ids, first_org->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetOpinion().first)] == 0) num_used++;
+            groups_used[GetGroupIdx(group_ids, first_org->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetOpinion().first)]++;
+            }
+          }
+        }
+      }
+    }
+  }
+  else {
+    // self cell
+    Apto::Array<cOrganism*> prey_friends = first_org->GetOrgInterface().GetCell(first_org->GetOrgInterface().GetAVCellID())->GetCellOutputAVs();
+    for (int k = 0; k < prey_friends.GetSize(); k++) {
+      if (prey_friends[k] != first_org) {
+        if (prey_friends[k]->HasOpinion()) {
+          if (groups_used[GetGroupIdx(group_ids, prey_friends[k]->GetOpinion().first)] == 0) num_used++;
+          groups_used[GetGroupIdx(group_ids, prey_friends[k]->GetOpinion().first)]++;
+        }
+      }
+      if (num_used >= num_groups) break;
+    }
+    // neighbors
+    if (num_used < num_groups) {
+      first_org->GetOrgInterface().GetAVNeighborhoodCellIDs(neighborhood);
+      for (int j = 0; j < neighborhood.GetSize(); j++) {
+        if (first_org->GetOrgInterface().GetCell(neighborhood[j])->HasPreyAV()) {
+          prey_friends = first_org->GetOrgInterface().GetCell(neighborhood[j])->GetCellOutputAVs();
+          for (int k = 0; k < prey_friends.GetSize(); k++) {
+            if (prey_friends[k]->HasOpinion()) {
+              if (groups_used[GetGroupIdx(group_ids, prey_friends[k]->GetOpinion().first)] == 0) num_used++;
+              groups_used[GetGroupIdx(group_ids, prey_friends[k]->GetOpinion().first)]++;
+              if (num_used >= num_groups) break;
+            }
+          }
+        }
+        if (num_used >= num_groups) break;
+      }
+    }
+  }
+  
+  odds = 1 - (double (num_used) / (double) num_groups); // if 10 opinions, 0 friend = 0% confusion, 1 friend = 10%, 10 friends = 100%
+}
+
+int cOrgSensor::GetGroupIdx(Apto::Array<int>& group_ids, int test_id)
+{
+  for (int i = 0; i < group_ids.GetSize(); i++) {
+    if (group_ids[i] == test_id) return i;
+  }
+  return -1;
+}
+

@@ -419,6 +419,7 @@ public:
   void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type);
   // Get the group information
   map<int, int> GetFormedGroups() { return m_groups; }
+  Apto::Array<int> GetFormedGroupArray();
 
   // -------- Tolerance support --------
   int CalcGroupToleranceImmigrants(int group_id, int mating_type = -1);

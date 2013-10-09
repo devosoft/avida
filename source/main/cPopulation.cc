@@ -1815,6 +1815,19 @@ Apto::Array<int, Apto::Smart> cPopulation::SetTraceQ(int save_dominants, int sav
   return bg_id_list;
 }
 
+Apto::Array<int> cPopulation::GetFormedGroupArray()
+{
+  Apto::Array<int> group_ids;
+  group_ids.Resize(0);
+  map<int,int> groups_formed = m_world->GetPopulation().GetFormedGroups();
+  map <int,int>::iterator itr;    
+  for(itr = groups_formed.begin();itr!=groups_formed.end();itr++) {
+    double cur_size = itr->second;
+    if (cur_size > 0) group_ids.Push(itr->first);
+  }
+  return group_ids;
+}
+
 void cPopulation::SetTopNavQ()
 {
   topnav_q.Resize(live_org_list.GetSize());
@@ -9030,7 +9043,7 @@ int cPopulation::PlaceAvatar(cAvidaContext& ctx, cOrganism* parent)
       
     // World Center
     case 4:
-      avatar_target_cell = (world_x * world_y) * 0.5;
+      avatar_target_cell = (int) (world_x * world_y) * 0.5;
       break;
       
     // Parent Facing

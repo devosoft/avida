@@ -133,6 +133,8 @@ class cOrgSensor
   void GetTorusTravelDist(int& travel_dist, int& x_dist, int& y_dist, const int facing, const int worldx, const int worldy);
   void GetConfusionOddsDensity(cAvidaContext& ctx, double& odds, cOrganism* first_org);
   void GetConfusionOddsFacings(cAvidaContext& ctx, double& odds, cOrganism* first_org);
+  void GetConfusionOddsOpinions(cAvidaContext& ctx, double& odds, cOrganism* first_org);
+  int GetGroupIdx(Apto::Array<int>& group_ids, int test_id);
   
   sLookOut FindOrg(cAvidaContext& ctx, cOrganism* target_org, const int distance, const int facing);
   sLookOut FindResCenter(cAvidaContext& ctx, const int res_id, const int distance_sought, const int facing);

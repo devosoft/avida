@@ -209,7 +209,8 @@ public:
   virtual void TryWriteLookData(cString& string) = 0;
   virtual void TryWriteLookOutput(cString& string) = 0;
   virtual void TryWriteLookEXOutput(cString& string) = 0;
-  
+  virtual Apto::Array<int> GetFormedGroupArray() = 0;
+ 
   virtual bool HasOutputAV(int av_num = 0) = 0;
   virtual bool FacedHasOutputAV(int av_num = 0) = 0;
   virtual bool FacedHasAV(int av_num = 0) = 0;

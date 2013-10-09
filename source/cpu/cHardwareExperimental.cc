@@ -3864,8 +3864,8 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
     }
   }
   else {
-    if (m_use_avatar) nest_val = m_organism->GetOrgInterface().GetAVResourceVal(ctx, nest_id);
-    else if (!m_use_avatar) nest_val = m_organism->GetOrgInterface().GetResourceVal(ctx, nest_id);
+    if (m_use_avatar) nest_val = (int) m_organism->GetOrgInterface().GetAVResourceVal(ctx, nest_id);
+    else if (!m_use_avatar) nest_val = (int) m_organism->GetOrgInterface().GetResourceVal(ctx, nest_id);
   }
   setInternalValue(reg_used, nest_id, true, true);
   const int val_reg = FindModifiedNextRegister(reg_used);
@@ -5680,6 +5680,7 @@ bool cHardwareExperimental::Inst_AttackSpecPreyChance(cAvidaContext& ctx)
   
   double odds = 1.0;
   if (generate_rand) {
+//    odds = -1.0;
     odds = ctx.GetRandom().GetDouble();
     target = GetPreyTarget(ctx);
   }
@@ -5688,7 +5689,7 @@ bool cHardwareExperimental::Inst_AttackSpecPreyChance(cAvidaContext& ctx)
   
   sAttackReg reg;
   SetAttackReg(reg);
-
+  
   if (!ExecuteAttack(ctx, target, reg, odds)) return false;
   return true;  
 }

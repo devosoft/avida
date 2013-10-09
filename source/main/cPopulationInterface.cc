@@ -1641,6 +1641,11 @@ void cPopulationInterface::TryWriteLookEXOutput(cString& string)
   if (m_world->GetConfig().TRACK_LOOK_OUTPUT.Get()) m_world->GetStats().PrintLookEXDataOutput(string);
 }
 
+Apto::Array<int> cPopulationInterface::GetFormedGroupArray()
+{
+  return m_world->GetPopulation().GetFormedGroupArray();
+}
+
 // -------- Avatar support --------
 /* Each organism carries an array of avatars linking the organism to any cells it is occupying.
  * Each cell contains an array of the organisms with avatars in that cell, linking the cells back to
