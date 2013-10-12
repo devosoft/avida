@@ -668,7 +668,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   }
   
   Genome temp(parent_organism->GetGenome().HardwareType(), parent_organism->GetGenome().Properties(), tmpHostGenome);
-  birth_chamber.SubmitOffspring(ctx, offspring_genome, parent_organism, offspring_array, merit_array);
+  birth_chamber.SubmitOffspring(ctx, temp, parent_organism, offspring_array, merit_array);
     
   // First, setup the genotype of all of the offspring.
   const int parent_id = parent_organism->GetOrgInterface().GetCellID();
