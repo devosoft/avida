@@ -5854,6 +5854,9 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
   stats.SumTopPredMerit().Clear();
   stats.SumTopPredCreatureAge().Clear();
   stats.SumTopPredGeneration().Clear();
+  
+  stats.SumAttacks().Clear();
+  stats.SumKills().Clear();
 
   //  stats.ZeroFTReactions();   ****
   
@@ -5888,7 +5891,9 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
       stats.SumPredMerit().Add(cur_merit.GetDouble());
       stats.SumPredCreatureAge().Add(phenotype.GetAge());
       stats.SumPredGeneration().Add(phenotype.GetGeneration());
-      
+      stats.SumAttacks().Add(phenotype.GetLastAttacks());
+      stats.SumKills().Add(phenotype.GetLastKills());
+
       Apto::Array<Apto::Stat::Accumulator<int> >& pred_inst_exe_counts = stats.InstPredExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         pred_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
@@ -5913,7 +5918,9 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
       stats.SumTopPredMerit().Add(cur_merit.GetDouble());
       stats.SumTopPredCreatureAge().Add(phenotype.GetAge());
       stats.SumTopPredGeneration().Add(phenotype.GetGeneration());
-      
+      stats.SumAttacks().Add(phenotype.GetLastAttacks());
+      stats.SumKills().Add(phenotype.GetLastKills());
+     
       Apto::Array<Apto::Stat::Accumulator<int> >& tpred_inst_exe_counts = stats.InstTopPredExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         tpred_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);

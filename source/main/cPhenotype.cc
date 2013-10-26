@@ -168,6 +168,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   cur_group_attack_count    = in_phen.cur_group_attack_count;
   cur_top_pred_group_attack_count    = in_phen.cur_top_pred_group_attack_count;
   cur_killed_targets       = in_phen.cur_killed_targets;
+  cur_attacks              = in_phen.cur_attacks;
+  cur_kills                 = in_phen.cur_kills;
   cur_sense_count          = in_phen.cur_sense_count;
   sensed_resources         = in_phen.sensed_resources;            
   cur_task_time            = in_phen.cur_task_time;
@@ -215,6 +217,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_group_attack_count   = in_phen.last_group_attack_count;
   last_top_pred_group_attack_count   = in_phen.last_top_pred_group_attack_count;
   last_killed_targets      = in_phen.last_killed_targets;
+  last_attacks             = in_phen.last_attacks;
+  last_kills                = in_phen.last_kills;
   last_sense_count         = in_phen.last_sense_count;
   last_fitness             = in_phen.last_fitness;            
   last_child_germline_propensity = in_phen.last_child_germline_propensity;
@@ -407,6 +411,8 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
     cur_top_pred_group_attack_count[r].SetAll(0);
   }
   cur_killed_targets.SetAll(0);
+  cur_attacks = 0;
+  cur_kills = 0;
   cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);  // Added for time tracking; WRE 03-18-07
   for (int j = 0; j < sensed_resources.GetSize(); j++) {
@@ -452,7 +458,9 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   last_from_sensor_count    = parent_phenotype.last_from_sensor_count;
   last_group_attack_count    = parent_phenotype.last_group_attack_count;
   last_top_pred_group_attack_count    = parent_phenotype.last_top_pred_group_attack_count;
-  last_killed_targets      = parent_phenotype.last_killed_targets;
+  last_killed_targets       = parent_phenotype.last_killed_targets;
+  last_attacks              = parent_phenotype.last_attacks;
+  last_kills                = parent_phenotype.last_kills;
   last_sense_count          = parent_phenotype.last_sense_count;
   last_fitness              = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
   last_child_germline_propensity = parent_phenotype.last_child_germline_propensity;   // chance of child being a germline cell; @JEB
@@ -634,6 +642,8 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
     cur_top_pred_group_attack_count[r].SetAll(0);
   }
   cur_killed_targets.SetAll(0);
+  cur_attacks = 0;
+  cur_kills = 0;
   sensed_resources.SetAll(0);
   cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
@@ -676,6 +686,8 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
     last_top_pred_group_attack_count[r].SetAll(0);
   }
   last_killed_targets.SetAll(0);
+  last_attacks = 0;
+  last_kills = 0;
   last_sense_count.SetAll(0);
   last_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   
@@ -856,6 +868,8 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   last_from_message_count    = cur_from_message_count;
   last_group_attack_count   = cur_group_attack_count;
   last_killed_targets       = cur_killed_targets;
+  last_attacks              = cur_attacks;
+  last_kills                = cur_kills;
   last_top_pred_group_attack_count    = cur_top_pred_group_attack_count;
   last_sense_count          = cur_sense_count;
   last_child_germline_propensity = cur_child_germline_propensity;
@@ -912,6 +926,8 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
     cur_top_pred_group_attack_count[r].SetAll(0);
   }
   cur_killed_targets.SetAll(0);
+  cur_attacks = 0;
+  cur_kills = 0;
   cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
@@ -1082,6 +1098,8 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   last_from_message_count    = cur_from_message_count;
   last_group_attack_count   = cur_group_attack_count;
   last_killed_targets       = cur_killed_targets;
+  last_attacks              = cur_attacks;
+  last_kills                = cur_kills;
   last_top_pred_group_attack_count    = cur_top_pred_group_attack_count;
   last_sense_count          = cur_sense_count;
   last_child_germline_propensity = cur_child_germline_propensity;
@@ -1124,6 +1142,8 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
     cur_top_pred_group_attack_count[r].SetAll(0);
   }
   cur_killed_targets.SetAll(0);
+  cur_attacks = 0;
+  cur_kills = 0;
   cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
   sensed_resources.SetAll(-1.0);
@@ -1292,6 +1312,8 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
     cur_top_pred_group_attack_count[r].SetAll(0);
   }
   cur_killed_targets.SetAll(0);
+  cur_attacks = 0;
+  cur_kills = 0;
   cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
   for (int j = 0; j < sensed_resources.GetSize(); j++) {
@@ -1331,6 +1353,8 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   last_group_attack_count   = clone_phenotype.last_group_attack_count;
   last_top_pred_group_attack_count   = clone_phenotype.last_top_pred_group_attack_count;
   last_killed_targets      = clone_phenotype.last_killed_targets;
+  last_attacks             = clone_phenotype.last_attacks;
+  last_kills                = clone_phenotype.last_kills;
   last_sense_count         = clone_phenotype.last_sense_count;
   last_fitness             = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
   last_child_germline_propensity = clone_phenotype.last_child_germline_propensity;
@@ -2109,6 +2133,8 @@ void cPhenotype::NewTrial()
   last_from_message_count    = cur_from_message_count;
   last_group_attack_count   = cur_group_attack_count;
   last_killed_targets       = cur_killed_targets;
+  last_attacks              = cur_attacks;
+  last_kills                = cur_kills;
   last_top_pred_group_attack_count    = cur_top_pred_group_attack_count;
   last_sense_count          = cur_sense_count;
   
@@ -2142,6 +2168,8 @@ void cPhenotype::NewTrial()
     cur_top_pred_group_attack_count[r].SetAll(0);
   }
   cur_killed_targets.SetAll(0);
+  cur_attacks = 0;
+  cur_kills = 0;
   cur_sense_count.SetAll(0);
   //cur_trial_fitnesses.Resize(0); Don't throw out the trial fitnesses! @JEB
   trial_time_used = 0;

@@ -355,6 +355,9 @@ private:
   cDoubleSum sum_tpred_creature_age;
   cDoubleSum sum_tpred_generation;
   cDoubleSum sum_tpred_size;
+  
+  cDoubleSum sum_attacks;
+  cDoubleSum sum_kills;
 
   double prey_entropy;
   double pred_entropy;
@@ -520,6 +523,9 @@ public:
   Apto::Array<Apto::Stat::Accumulator<int> >& InstTopPredExeCountsForInstSet(const cString& inst_set) { return m_is_tpred_exe_inst_map[inst_set]; }
   Apto::Array<Apto::Stat::Accumulator<int> >&  InstTopPredFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_tpred_from_sensor_inst_map[inst_set]; }
 
+  cDoubleSum& SumAttacks()       { return sum_attacks; }
+  cDoubleSum& SumKills()       { return sum_kills; }
+  
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >& ExecCountsForGroupAttackInstSet(const cString& inst_set) { return m_group_attack_exe_map[inst_set]; }
   Apto::Array<Apto::Stat::Accumulator<int> >&  ExecCountsForGroupAttackInst(const cString& inst_set, const cString& inst) { return m_group_attack_exe_map[inst_set][inst]; }
 
@@ -610,6 +616,9 @@ public:
   const cDoubleSum& SumTopPredCreatureAge() const   { return sum_tpred_creature_age; }
   const cDoubleSum& SumTopPredGeneration() const    { return sum_tpred_generation; }
   const cDoubleSum& SumTopPredSize() const          { return sum_tpred_size; }
+
+  const cDoubleSum& SumAttacks() const       { return sum_attacks; }
+  const cDoubleSum& SumKills() const       { return sum_kills; }
 
   const std::map<int, flow_rate_tuple >&  FlowRateTuples() const { return flow_rate_tuples; }
 
@@ -830,6 +839,7 @@ public:
   void PrintGroupAttackBits(unsigned char raw_bits);
   void PrintGroupAttackString(cString& raw_bits);
   void PrintKilledPreyFTData(const cString& filename);
+  void PrintAttacks(const cString& filename);
   void PrintBirthLocData(int org_idx);
   void PrintLookData(cString& string);
   void PrintLookDataOutput(cString& string);

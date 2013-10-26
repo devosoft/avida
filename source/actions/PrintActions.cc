@@ -212,6 +212,8 @@ STATS_OUT_FILE(PrintTopPredTargets,           top_pred_targets.dat);
 STATS_OUT_FILE(PrintToleranceInstructionData, toleranceinstruction.dat); 
 STATS_OUT_FILE(PrintToleranceData,            tolerance.dat);
 
+STATS_OUT_FILE(PrintAttacks,            attacks.dat);
+
 // hgt information
 STATS_OUT_FILE(PrintHGTData, hgt.dat);
 
@@ -5279,6 +5281,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTopPredatorFromSensorInstructionData>("PrintTopPredatorFromSensorInstructionData");
   action_lib->Register<cActionPrintGroupAttackData>("PrintGroupAttackData");
   action_lib->Register<cActionPrintKilledPreyFTData>("PrintKilledPreyFTData");
+  action_lib->Register<cActionPrintAttacks>("PrintAttacks");
   
   action_lib->Register<cActionPrintFromMessageInstructionData>("PrintFromMessageInstructionData");
   

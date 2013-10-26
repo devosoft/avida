@@ -130,6 +130,8 @@ private:
   Apto::Array< Apto::Array<int> > cur_group_attack_count;
   Apto::Array< Apto::Array<int> > cur_top_pred_group_attack_count;
   Apto::Array<int> cur_killed_targets;
+  int cur_attacks;
+  int cur_kills;
   
   Apto::Array<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB
   Apto::Array<double> sensed_resources;            // Resources which the organism has sensed; @JEB
@@ -183,6 +185,8 @@ private:
   Apto::Array< Apto::Array<int> > last_group_attack_count;
   Apto::Array< Apto::Array<int> > last_top_pred_group_attack_count;
   Apto::Array<int> last_killed_targets;
+  int last_attacks;
+  int last_kills;
 
   Apto::Array<int> last_from_message_count;
 
@@ -670,6 +674,10 @@ public:
   void IncCurTopPredGroupAttackInstCount(int _inst_num, int pack_size_idx)  { assert(initialized == true); cur_top_pred_group_attack_count[_inst_num][pack_size_idx]++; }
   void IncAttackedPreyFTData(int target_ft);
   Apto::Array<int> GetKilledPreyFTData() { return cur_killed_targets; }
+  void IncAttacks() { cur_attacks++; }
+  void IncKills() { cur_kills++; }
+  int GetLastAttacks() const { return last_attacks; }
+  int GetLastKills() const { return last_kills; }
   
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }

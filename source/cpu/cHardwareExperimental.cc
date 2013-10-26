@@ -7283,6 +7283,11 @@ bool cHardwareExperimental::TestAttackResultsOut(sAttackResult& results)
     unsigned char raw_bits = (((((results.inst << 2) | results.share) << 2) | results.success) << 3) | results.size;
     m_organism->GetOrgInterface().TryWriteGroupAttackBits(raw_bits);
   }
-  if (results.success == 0) return true;
+
+  m_organism->GetPhenotype().IncAttacks();
+  if (results.success == 0) {
+    m_organism->GetPhenotype().IncKills();
+    return true;
+  }
   return false;
 }

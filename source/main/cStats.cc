@@ -2411,6 +2411,28 @@ void cStats::PrintKilledPreyFTData(const cString& filename)
   df->Endl();
 }
 
+void cStats::PrintAttacks(const cString& filename)
+{
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  
+  df->WriteComment("Predator Average Attack and Kills Data");
+  df->WriteTimeStamp();
+  
+  df->Write(m_update,                     "Update");
+  
+  df->Write(sum_attacks.Count(),          "Num Predators");
+  
+  df->Write(sum_attacks.Sum(),            "Total Attacks");
+  df->Write(sum_attacks.Max(),            "Max Attacks");
+  df->Write(sum_attacks.Average(),        "Average Attacks");
+  
+  df->Write(sum_kills.Sum(),            "Total Kills");
+  df->Write(sum_kills.Max(),            "Max Kills");
+  df->Write(sum_kills.Average(),        "Average Kills");
+  
+  df->Endl();
+}
+
 void cStats::PrintBirthLocData(int org_idx)
 {
   cString file = "birthlocs";
