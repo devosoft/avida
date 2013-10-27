@@ -91,6 +91,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   int max_dist = 0;
   const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);
   m_world->GetConfig().LOOK_DIST.Get() != -1 ? max_dist = m_world->GetConfig().LOOK_DIST.Get() : max_dist = long_axis;
+  if (max_dist > max(worldx,worldy)) max_dist = max(worldx,worldy); // this still wont wrapping errors catch if x > 2y
   if (distance_sought < 0) distance_sought = 1;
   else if (distance_sought > max_dist) distance_sought = max_dist;
   
