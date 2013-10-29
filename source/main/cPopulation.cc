@@ -2217,17 +2217,23 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
       //do we actually have something to kill?
       if (death_cell.IsOccupied() == false) continue;
       
-        m_world->GetStats().IncKaboomKills();
       cOrganism* org_temp = death_cell.GetOrganism();
       
       if (distance == 0) {
         int temp_id = org_temp->SystematicsGroup("genotype")->ID();
-        if (temp_id != bgid) KillOrganism(death_cell, ctx); 
+        if (temp_id != bgid){
+          KillOrganism(death_cell, ctx);
+          m_world->GetStats().IncKaboomKills();
+        }
+
       } else {
         Apto::String genome_temp = org_temp->GetGenome().Representation()->AsString();
         int diff = 0;
         for (int i = 0; i < genome_temp.GetSize(); i++) if (genome_temp[i] != ref_genome[i]) diff++;
-        if (diff > distance) KillOrganism(death_cell, ctx); 
+        if (diff > distance){
+          m_world->GetStats().IncKaboomKills();
+          KillOrganism(death_cell, ctx);
+        }
       }
     }
   }
