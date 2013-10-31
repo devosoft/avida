@@ -55,7 +55,6 @@
 #include "cPhenotype.h"
 #include "cReaction.h"
 #include "cReactionProcess.h"
-#include "cStringIterator.h"
 #include "cTestCPU.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
@@ -6484,117 +6483,6 @@ void cAnalyze::WriteInjectInitial(cString cur_string)
 }
 
 
-void cAnalyze::WriteCompetition(cString cur_string)
-{
-  cout << "Writing Competition events..." << endl;
-  
-  // Load in the variables...
-  int join_UD = 0;
-  double start_merit = 50000;
-  cString filename("events_comp.cfg");
-  int batch_A = cur_batch - 1;
-  int batch_B = cur_batch;
-  int grid_side = -1;
-  int lineage = 0;
-  
-  // Make sure we have reasonable default batches.
-  if (cur_batch == 0) { batch_A = 0; batch_B = 1; }
-  
-  if (cur_string.GetSize() != 0) join_UD = cur_string.PopWord().AsInt();
-  if (cur_string.GetSize() != 0) start_merit = cur_string.PopWord().AsDouble();
-  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-  if (cur_string.GetSize() != 0) batch_A = cur_string.PopWord().AsInt();
-  if (cur_string.GetSize() != 0) batch_B = cur_string.PopWord().AsInt();
-  if (cur_string.GetSize() != 0) grid_side = cur_string.PopWord().AsInt();
-  if (cur_string.GetSize() != 0) lineage = cur_string.PopWord().AsInt();
-  
-  // Check inputs...
-  if (join_UD < 0) join_UD = 0;
-  if (batch_A < 0 || batch_B < 0) {
-    cerr << "Error: Batch IDs must be positive!" << endl;
-    return;
-  }
-  
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
-  
-  // Count the number of organisms in each batch...
-  cAnalyzeGenotype * genotype = NULL;
-  
-  int org_count_A = 0;
-  tListIterator<cAnalyzeGenotype> batchA_it(batch[batch_A].List());
-  while ((genotype = batchA_it.Next()) != NULL) {
-    org_count_A += genotype->GetNumCPUs();
-  }
-  
-  int org_count_B = 0;
-  tListIterator<cAnalyzeGenotype> batchB_it(batch[batch_B].List());
-  while ((genotype = batchB_it.Next()) != NULL) {
-    org_count_B += genotype->GetNumCPUs();
-  }
-  
-  int max_count = Apto::Max(org_count_A, org_count_B);
-  if (max_count > 10000) {
-    cout << "Warning: more than 10,000 organisms in sub-population!" << endl;
-  }
-  
-  if (grid_side <= 0) {
-    for (grid_side = 5; grid_side < 100; grid_side += 5) {
-      if (grid_side * grid_side >= max_count) break;
-    }
-    if (m_world->GetVerbosity() >= VERBOSE_ON) {
-      cout << "...assuming population size "
-      << grid_side << "x" << grid_side << "." << endl;
-    }
-  }
-  
-  
-  int pop_size = grid_side * grid_side;
-  
-  int inject_pos = 0;
-  while ((genotype = batchA_it.Next()) != NULL) {
-    const int cur_count = genotype->GetNumCPUs();
-    const Genome& base_genome = genotype->GetGenome();
-    ConstInstructionSequencePtr base_seq_p;
-    ConstGeneticRepresentationPtr rep_p = base_genome.Representation();
-    base_seq_p.DynamicCastFrom(rep_p);
-    const InstructionSequence& genome = *base_seq_p;
-    double cur_merit = start_merit;
-    if (cur_merit < 0) cur_merit = genotype->GetMerit();
-    fp << "u 0 InjectSequence "
-      << genome.AsString() << " "
-      << inject_pos << " "
-      << inject_pos + cur_count << " "
-      << cur_merit << " "
-      << lineage << " "
-      << endl;
-    inject_pos += cur_count;
-  }
-  
-  inject_pos = pop_size;
-  while ((genotype = batchB_it.Next()) != NULL) {
-    const int cur_count = genotype->GetNumCPUs();
-    const Genome& base_genome = genotype->GetGenome();
-    ConstInstructionSequencePtr base_seq_p;
-    ConstGeneticRepresentationPtr rep_p = base_genome.Representation();
-    base_seq_p.DynamicCastFrom(rep_p);
-    const InstructionSequence& genome = *base_seq_p;
-    double cur_merit = start_merit;
-    if (cur_merit < 0) cur_merit = genotype->GetMerit();
-    fp << "u 0 InjectSequence "
-      << genome.AsString() << " "
-      << inject_pos << " "
-      << inject_pos + cur_count << " "
-      << cur_merit << " "
-      << lineage+1 << " "
-      << endl;
-    inject_pos += cur_count;
-  }
-  
-  fp << "u 0 SeverGridRow" << grid_side << endl;
-  fp << "u " << join_UD << " JoinGridRow " << grid_side << endl;
-}
-
 
 // Analyze the mutations along an aligned lineage.
 
@@ -9623,7 +9511,6 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("WRITE_CLONE", &cAnalyze::WriteClone);
   AddLibraryDef("WRITE_INJECT_EVENTS", &cAnalyze::WriteInjectEvents);
   AddLibraryDef("WRITE_INJECT_INITIAL", &cAnalyze::WriteInjectInitial);
-  AddLibraryDef("WRITE_COMPETITION", &cAnalyze::WriteCompetition);
   
   // Automated analysis
   AddLibraryDef("ANALYZE_MUTS", &cAnalyze::AnalyzeMuts);

@@ -121,9 +121,8 @@ public:
   // cPopulation
   
   void AttachOrgStatProvider(cPopulationOrgStatProviderPtr provider) { m_org_stat_providers.Push(provider); }
+
   
-  void ResizeCellGrid(int x, int y);
-    
   void InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, bool assign_group = true, Systematics::RoleClassificationHints* hints = NULL);
 
   // Activate the offspring of an organism in the population
@@ -225,10 +224,6 @@ public:
 
   bool UpdateMerit(int cell_id, double new_merit);
 
-  // Trials and genetic algorithm @JEB
-  void NewTrial(cAvidaContext& ctx);
-  void CompeteOrganisms(cAvidaContext& ctx, int competition_type, int parents_survive);
-  
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  
   // Remove an org from live org list
@@ -241,13 +236,8 @@ public:
   void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
   // Identifies the number of organisms in a group
 
-  // -------- Population mixing support --------
-  //! Mix all organisms in the population.
-  void MixPopulation(cAvidaContext& ctx);
-
 private:
   void SetupCellGrid();
-  void ClearCellGrid();
   void BuildTimeSlicer(); // Build the schedule object
   
   // Methods to place offspring in the population.

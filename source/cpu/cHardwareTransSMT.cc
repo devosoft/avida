@@ -1176,7 +1176,7 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   }
 	
   //bool parent_alive = m_organism->ActivateDivide(ctx);
-  bool parent_alive = m_organism->ActivateDivide(ctx, &m_threads[m_cur_thread].context_phenotype);
+  bool parent_alive = m_organism->ActivateDivide(ctx);
   //reset the memory of the memory space that has been divided off
   m_mem_array[mem_space_used] = InstructionSequence("a"); 
 	
@@ -1569,7 +1569,7 @@ bool cHardwareTransSMT::Inst_IO(cAvidaContext& ctx)
   // Do the "put" component
   const int value_out = Stack(src).Peek();
   
-  m_organism->DoOutput(ctx, value_out, ThreadGetOwner()->UnitSource().transmission_type == Systematics::HORIZONTAL, &m_threads[m_cur_thread].context_phenotype);  // Check for tasks compleated.
+  m_organism->DoOutput(ctx, value_out, ThreadGetOwner()->UnitSource().transmission_type == Systematics::HORIZONTAL);  // Check for tasks compleated.
   // Do the "get" component
   const int value_in = m_organism->GetNextInput();
   Stack(dst).Push(value_in);

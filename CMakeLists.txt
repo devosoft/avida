@@ -180,7 +180,6 @@ SET(CPU_SOURCES
   ${CPU_DIR}/cHardwareStatusPrinter.cc
   ${CPU_DIR}/cHardwareTransSMT.cc
   ${CPU_DIR}/cHeadCPU.cc
-  ${CPU_DIR}/cInstSet.cc
   ${CPU_DIR}/cTestCPU.cc
   ${CPU_DIR}/cTestCPUInterface.cc
 )
@@ -227,7 +226,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cBirthMateSelectHandler.cc
   ${MAIN_DIR}/cBirthNeighborhoodHandler.cc
   ${MAIN_DIR}/cBirthSelectionHandler.cc
-  ${MAIN_DIR}/cContextPhenotype.cc
   ${MAIN_DIR}/cDiffusionRes.cc
   ${MAIN_DIR}/cDynamicRes.cc
   ${MAIN_DIR}/cEnvironment.cc

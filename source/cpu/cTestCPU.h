@@ -32,7 +32,6 @@
 
 class cAvidaContext;
 class cBioGroup;
-class cInstSet;
 
 using namespace Avida;
 
@@ -44,9 +43,7 @@ public:
 private:
   cWorld* m_world;
   Apto::Array<int> input_array;
-  Apto::Array<int> receive_array;
   int cur_input;
-  int cur_receive;  
   bool m_use_random_inputs;
   bool m_use_manual_inputs;
   int m_test_solo_res;
@@ -77,7 +74,6 @@ public:
   inline const Apto::Array<int>& GetInputs() const { return input_array; }
   void ResetInputs(cAvidaContext& ctx);
 
-  inline int GetReceiveValue();
   inline const Apto::Array<double>& GetResources(cAvidaContext& ctx);
   inline double GetResourceVal(cAvidaContext& ctx, int res_id);
   inline const Apto::Array<double>& GetAVResources(cAvidaContext& ctx);
@@ -114,12 +110,6 @@ inline int cTestCPU::GetInputAt(int & input_pointer)
 {
   if (input_pointer >= input_array.GetSize()) input_pointer = 0;
   return input_array[input_pointer++];
-}
-
-inline int cTestCPU::GetReceiveValue()
-{
-  if (cur_receive >= receive_array.GetSize()) cur_receive = 0;
-  return receive_array[cur_receive++];
 }
 
 inline const Apto::Array<double>& cTestCPU::GetResources(cAvidaContext& ctx)

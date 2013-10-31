@@ -115,13 +115,11 @@ STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
 STATS_OUT_FILE(PrintInternalTasksData,      in_tasks.dat        );
 STATS_OUT_FILE(PrintInternalTasksQualData,  in_tasks_quality.dat);
-STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 
 
 STATS_OUT_FILE(PrintOrganismLocation,       location.dat);
 
 // @WRE: Added output event for collected visit counts
-STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
 STATS_OUT_FILE(PrintDynamicMaxMinData,	    maxmin.dat			);
 STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
 
@@ -2211,35 +2209,6 @@ public:
   }
 };
 
-class cActionDumpVitalityGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpVitalityGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();  
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_dumps/vitality_grid.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
-      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        double id = (cell.IsOccupied()) ? cell.GetOrganism()->GetVitality() : -1;
-        fp << id << " ";
-      }
-      fp << endl;
-    }
-  }
-};
 
 class cActionDumpTargetGrid : public cAction
 {
@@ -3183,11 +3152,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintInstructionData>("PrintInstructionData");
   action_lib->Register<cActionPrintInternalTasksData>("PrintInternalTasksData");
   action_lib->Register<cActionPrintInternalTasksQualData>("PrintInternalTasksQualData");
-  action_lib->Register<cActionPrintCompetitionData>("PrintCompetitionData");
   action_lib->Register<cActionPrintDynamicMaxMinData>("PrintDynamicMaxMinData");
-  
-  // @WRE: Added printing of visit data
-  action_lib->Register<cActionPrintCellVisitsData>("PrintCellVisitsData");
   
   // Population Out Files
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
@@ -3231,7 +3196,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpGenotypeColorGrid>("DumpGenotypeColorGrid");
   action_lib->Register<cActionDumpPhenotypeIDGrid>("DumpPhenotypeIDGrid");
   action_lib->Register<cActionDumpIDGrid>("DumpIDGrid");
-  action_lib->Register<cActionDumpVitalityGrid>("DumpVitalityGrid");
   action_lib->Register<cActionDumpTargetGrid>("DumpTargetGrid");
   action_lib->Register<cActionDumpMaxResGrid>("DumpMaxResGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");

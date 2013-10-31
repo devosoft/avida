@@ -34,7 +34,6 @@
 #include "cEnvironment.h"
 #include "cEventList.h"
 #include "cHardwareManager.h"
-#include "cInstSet.h"
 #include "cPopulation.h"
 #include "cStats.h"
 #include "cTestCPU.h"
@@ -44,7 +43,7 @@
 
 
 cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)
-  : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(NULL)
+  : m_working_dir(wd), m_analyze(NULL), m_conf(cfg)
   , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_data_mgr(NULL)
 {
 }
@@ -75,8 +74,6 @@ cWorld::~cWorld()
 
   // Delete Last
   delete m_conf; m_conf = NULL;
-
-  delete m_ctx;
 }
 
 
@@ -86,7 +83,6 @@ bool cWorld::setup(Universe* new_world, cUserFeedback* feedback, const Apto::Map
   
   // Setup Random Number Generator
   m_rng.ResetSeed(m_conf->RANDOM_SEED.Get());
-  m_ctx = new cAvidaContext(NULL, m_rng);
   
   // Initialize new API-based data structures here for now
   {
@@ -140,21 +136,6 @@ bool cWorld::setup(Universe* new_world, cUserFeedback* feedback, const Apto::Map
   if (!success) return success;
   
   
-  const bool revert_fatal = m_conf->REVERT_FATAL.Get() > 0.0;
-  const bool revert_neg = m_conf->REVERT_DETRIMENTAL.Get() > 0.0;
-  const bool revert_neut = m_conf->REVERT_NEUTRAL.Get() > 0.0;
-  const bool revert_pos = m_conf->REVERT_BENEFICIAL.Get() > 0.0;
-  const bool revert_taskloss = m_conf->REVERT_TASKLOSS.Get() > 0.0;
-  const bool revert_equals = m_conf->REVERT_EQUALS.Get() > 0.0;
-  const bool sterilize_unstable = m_conf->STERILIZE_UNSTABLE.Get() > 0;
-  m_test_on_div = (revert_fatal || revert_neg || revert_neut || revert_pos || revert_taskloss || revert_equals || sterilize_unstable);
-  
-  const bool sterilize_fatal = m_conf->STERILIZE_FATAL.Get() > 0.0;
-  const bool sterilize_neg = m_conf->STERILIZE_DETRIMENTAL.Get() > 0.0;
-  const bool sterilize_neut = m_conf->STERILIZE_NEUTRAL.Get() > 0.0;
-  const bool sterilize_pos = m_conf->STERILIZE_BENEFICIAL.Get() > 0.0;
-  const bool sterilize_taskloss = m_conf->STERILIZE_TASKLOSS.Get() > 0.0;
-  m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos || sterilize_taskloss);
 
   m_pop = Apto::SmartPtr<cPopulation, Apto::InternalRCObject>(new cPopulation(this));
   

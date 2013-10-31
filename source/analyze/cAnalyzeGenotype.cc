@@ -27,7 +27,6 @@
 #include "cCPUTestInfo.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
-#include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cTestCPU.h"

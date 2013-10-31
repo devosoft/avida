@@ -27,7 +27,6 @@
 #include "cAnalyzeJobQueue.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
-#include "cInstSet.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"

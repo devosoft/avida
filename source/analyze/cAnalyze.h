@@ -48,7 +48,6 @@ class cAnalyzeScreen;
 class cCPUTestInfo;
 class cEnvironment;
 class cInitFile;
-class cInstSet;
 class cTestCPU;
 class cWorld;
 template <class T> class tDataEntry;
@@ -260,7 +259,6 @@ private:
   void WriteClone(cString cur_string);
   void WriteInjectEvents(cString cur_string);
   void WriteInjectInitial(cString cur_string);
-  void WriteCompetition(cString cur_string);
   
   // Automated analysis...
   void AnalyzeMuts(cString cur_string);

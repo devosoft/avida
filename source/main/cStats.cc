@@ -32,7 +32,6 @@
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
-#include "cInstSet.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStringUtil.h"
@@ -84,13 +83,6 @@ cStats::cStats(cWorld* world)
 , num_failedResamplings(0)
 , last_update(0)
 , sense_size(0)
-, avg_competition_fitness(0)
-, min_competition_fitness(0)
-, max_competition_fitness(0)
-, avg_competition_copied_fitness(0)
-, min_competition_copied_fitness(0)
-, max_competition_copied_fitness(0)
-, num_orgs_replicated(0)
 , m_spec_total(0)
 , m_spec_num(0)
 , m_spec_waste(0)
@@ -170,7 +162,6 @@ cStats::cStats(cWorld* world)
   resource_count.SetAll(0);
   
   resource_geometry.Resize( m_world->GetNumResources() );
-  resource_geometry.SetAll(nGeometry::GLOBAL);
   
   task_names.Resize(num_tasks);
   for (int i = 0; i < num_tasks; i++) task_names[i] = env.GetTask(i).GetDesc();
@@ -1342,27 +1333,6 @@ void cStats::PrintResWallLocData(const cString& filename, cAvidaContext& ctx)
 }
 
 
-// @WRE: Added method for printing out visit data
-void cStats::PrintCellVisitsData(const cString&)
-{
-  // Write cell visits data to a file that can easily be read into Matlab
-  
-  cString tmpfilename = "visits.m";
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)tmpfilename);
-  cString UpdateStr = cStringUtil::Stringf( "visits%07i", GetUpdate() ) + " = [ ...";
-  
-  df->WriteRaw(UpdateStr);
-  
-  int xsize = m_world->GetPopulation().GetWorldX();
-  
-  for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
-    df->WriteBlockElement(m_world->GetPopulation().GetCell(i).GetVisits(), i, xsize);
-  }
-  
-  df->WriteRaw("];");
-  df->Flush();
-}
-
 
 void cStats::PrintTimeData(const cString& filename)
 {
@@ -1512,34 +1482,6 @@ void cStats::PrintInternalTasksQualData(const cString& filename)
   }
   df->Endl();
 }
-
-void cStats::PrintCompetitionData(const cString& filename){
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment( "Competition results\n" );
-  df->WriteComment( "results of the current competitions" );
-  
-  df->Write( GetUpdate(), "update" );
-  df->Write( avg_competition_fitness, "average competition fitness" );
-  df->Write( min_competition_fitness, "min competition fitness" );
-  df->Write( max_competition_fitness, "max competition fitness" );
-  df->Write( avg_competition_copied_fitness, "average copied fitness" );
-  df->Write( min_competition_copied_fitness, "min copied fitness" );
-  df->Write( max_competition_copied_fitness, "max copied fitness" );
-  df->Write( num_orgs_replicated, "number of organisms copied" );
-  
-  // Only print trial info if there were multiple trials.
-  if (avg_trial_fitnesses.GetSize() > 1)
-  {
-    for( int i=0; i < avg_trial_fitnesses.GetSize(); i++ ){
-      df->Write(avg_trial_fitnesses[i], cStringUtil::Stringf("trial.%d fitness", i));
-    }
-  }
-  df->Endl();
-}
-
-
-
 
 
 

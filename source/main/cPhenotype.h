@@ -59,7 +59,6 @@
  *************************************************************************/
 
 class cAvidaContext;
-class cContextPhenotype;
 class cEnvironment;
 template <class T> class tBuffer;
 template <class T> class tList;
@@ -120,12 +119,6 @@ private:
   Apto::Array<double> sensed_resources;            // Resources which the organism has sensed; @JEB
   Apto::Array<double> cur_task_time;               // Time at which each task was last performed; WRE 03-18-07
   Apto::Map<void*, cTaskState*> m_task_states;
-  Apto::Array<double> cur_trial_fitnesses;         // Fitnesses of various trials.; @JEB
-  Apto::Array<double> cur_trial_bonuses;           // Bonuses of various trials.; @JEB
-  Apto::Array<int> cur_trial_times_used;           // Time used in of various trials.; @JEB
-
-  int trial_time_used;                        // like time_used, but reset every trial; @JEB
-  int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
 
   cReactionResult* m_reaction_result;
   
@@ -245,7 +238,7 @@ public:
   bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
   bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                   const Apto::Array<double>& res_in, const Apto::Array<double>& rbins_in, Apto::Array<double>& res_change,
-                  Apto::Array<cString>& insts_triggered, bool is_parasite=false, cContextPhenotype* context_phenotype = 0);
+                  Apto::Array<cString>& insts_triggered, bool is_parasite=false);
 
   // State saving and loading, and printing...
   void PrintStatus(std::ostream& fp) const;
@@ -297,14 +290,6 @@ public:
   inline void SetBirthGroupID(int group_id);
   inline void SetBirthForagerType(int forager_type);
 
-  int GetMatingType() const { return mating_type; } //@CHC
-  int GetMatePreference() const { return mate_preference; } //@CHC
-
-  int GetCurMatingDisplayA() const { return cur_mating_display_a; } //@CHC
-  int GetCurMatingDisplayB() const { return cur_mating_display_b; } //@CHC
-  int GetLastMatingDisplayA() const { return last_mating_display_a; } //@CHC
-  int GetLastMatingDisplayB() const { return last_mating_display_b; } //@CHC
-
   bool GetToDie() const { assert(initialized == true); return to_die; }
   bool GetToDelete() const { assert(initialized == true); return to_delete; }
   int GetCurNumErrors() const { assert(initialized == true); return cur_num_errors; }
@@ -337,12 +322,6 @@ public:
   const Apto::Array<int>& GetCurCollectSpecCounts() const { assert(initialized == true); return cur_collect_spec_counts; }
   int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
   const Apto::Array<int>& GetTestCPUInstCount() const { assert(initialized == true); return testCPU_inst_count; }
-
-  void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
-  void  TrialDivideReset(const InstructionSequence & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
-  const Apto::Array<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
-  const Apto::Array<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
-  const Apto::Array<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB
 
 
   double GetLastMeritBase() const { assert(initialized == true); return last_merit_base; }
@@ -380,7 +359,6 @@ public:
   int GetCPUCyclesUsed() const { assert(initialized == true); return cpu_cycles_used; }
   int GetTimeUsed()   const { assert(initialized == true); return time_used; }
   int GetNumExecs() const { assert(initialized == true); return num_execs; }
-  int GetTrialTimeUsed()   const { assert(initialized == true); return trial_time_used; }
   int GetAge()        const { assert(initialized == true); return age; }
   double GetNeutralMetric() const { assert(initialized == true); return neutral_metric; }
   double GetLifeFitness() const { assert(initialized == true); return life_fitness; }
@@ -412,7 +390,6 @@ public:
   void SetFitness(const double in_fit) { fitness = in_fit; }
   void SetGestationTime(int in_time) { gestation_time = in_time; }
   void SetTimeUsed(int in_time) { time_used = in_time; }
-  void SetTrialTimeUsed(int in_time) { trial_time_used = in_time; }
   void SetGeneration(int in_generation) { generation = in_generation; }
   void SetNeutralMetric(double _in){ neutral_metric = _in; }
   void SetLifeFitness(double _in){ life_fitness = _in; }
@@ -437,9 +414,6 @@ public:
   void AddToCurRBinTotal(int index, double val) { cur_rbins_total[index] += val; }
   void SetCurCollectSpecCount(int spec_id, int val) { cur_collect_spec_counts[spec_id] = val; }
 
-  void SetMatingType(int _mating_type) { mating_type = _mating_type; } //@CHC
-  void SetMatePreference(int _mate_preference) { mate_preference = _mate_preference; } //@CHC
-
   void SetIsMultiThread() { is_multi_thread = true; }
   bool& SetBornParentGroup() { return born_parent_group; }
   void ClearIsMultiThread() { is_multi_thread = false; }
@@ -454,17 +428,12 @@ public:
   Apto::Array<int> GetKilledPreyFTData() { return cur_killed_targets; }
   
   void IncAge()      { assert(initialized == true); age++; }
-  void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; trial_cpu_cycles_used++; }
-  void DecCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used--; trial_cpu_cycles_used--; }
-  void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; trial_time_used+=i; }
+  void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; }
+  void DecCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used--; }
+  void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; }
   void IncNumExecs() { assert(initialized == true); num_execs++; }
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncSenseCount(const int) { /*assert(initialized == true); cur_sense_count[i]++;*/ }
-  
-  void SetCurMatingDisplayA(int _cur_mating_display_a) { cur_mating_display_a = _cur_mating_display_a; } //@CHC
-  void SetCurMatingDisplayB(int _cur_mating_display_b) { cur_mating_display_b = _cur_mating_display_b; } //@CHC
-  void SetLastMatingDisplayA(int _last_mating_display_a) { last_mating_display_a = _last_mating_display_a; } //@CHC
-  void SetLastMatingDisplayB(int _last_mating_display_b) { last_mating_display_b = _last_mating_display_b; } //@CHC
   
   bool& IsInjected() { assert(initialized == true); return is_injected; }
   bool& IsClone() { assert(initialized == true); return is_clone; }

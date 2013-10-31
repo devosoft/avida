@@ -22,8 +22,6 @@
 
 #include "cStringList.h"
 
-#include "cStringIterator.h"
-
 using namespace std;
 
 

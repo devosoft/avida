@@ -24,6 +24,8 @@
 
 #include "avida/hardware/Base.h"
 
+#include "avida/hardware/Feature.h"
+
 
 Avida::Hardware::Base::~Base()
 {

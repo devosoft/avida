@@ -30,7 +30,6 @@
 #include "cCPUTestInfo.h"
 
 class cAvidaContext;
-class cInstSet;
 class cTestCPU;
 class cWorld;
 

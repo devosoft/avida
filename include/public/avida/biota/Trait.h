@@ -1,8 +1,8 @@
 /*
- *  structure/types/ConnectedCells.cc
+ *  hardware/Feature.h
  *  avida-core
  *
- *  Created by David on 1/24/13.
+ *  Created by David on 1/31/13.
  *  Copyright 2013 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,4 +22,32 @@
  *
  */
 
-#include "avida/private/structure/types/ConnectedCells.h"
+#ifndef AvidaBiotaTrait_h
+#define AvidaBiotaTrait_h
+
+#include "avida/Biota/Organism.h"
+
+
+namespace Avida {
+  namespace Biota {
+    
+    // Biota::Trait
+    // --------------------------------------------------------------------------------------------------------------
+    
+    class Trait
+    {
+    protected:
+      Organism* m_organism;
+      
+    public:
+      LIB_EXPORT inline Trait(Organism* organism) : m_organism(organism) { ; }
+      LIB_EXPORT virtual ~Trait() = 0;
+      
+    protected:
+      static Trait* traitOf(int trait, Organism* organism) { return organism->m_traits[trait]; }
+    };
+    
+  };
+};
+
+#endif

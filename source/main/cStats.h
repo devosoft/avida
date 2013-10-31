@@ -31,7 +31,6 @@
 #include "cBirthEntry.h"
 #include "cOrganism.h"
 #include "cRunningAverage.h"
-#include "nGeometry.h"
 #include "tDataManager.h"
 
 #include <cassert>
@@ -222,17 +221,6 @@ private:
   Apto::Array<int> sense_last_count;
   Apto::Array<int> sense_last_exe_count;
   Apto::Array<cString> sense_names;
-
-
-  // --------  Competition Stats  ---------
-  Apto::Array<double> avg_trial_fitnesses;
-  double avg_competition_fitness;
-  double min_competition_fitness;
-  double max_competition_fitness;
-  double avg_competition_copied_fitness;
-  double min_competition_copied_fitness;
-  double max_competition_copied_fitness;
-  int num_orgs_replicated;
 
 
   // --------  Speculative Execution Stats  ---------
@@ -519,11 +507,6 @@ public:
   void SetReactionName(int id, const cString & name) { reaction_names[id] = name; }
   void SetResourceName(int id, const cString & name) { resource_names[id] = name; }
 
-  void SetCompetitionTrialFitnesses(Apto::Array<double> _in) { avg_trial_fitnesses = _in; }
-  void SetCompetitionFitnesses(double _in_avg, double _in_min, double _in_max, double _in_cp_avg, double _in_cp_min, double _in_cp_max)
-    { avg_competition_fitness = _in_avg; min_competition_fitness = _in_min; max_competition_fitness = _in_max;
-      avg_competition_copied_fitness = _in_cp_avg; min_competition_copied_fitness = _in_cp_min; max_competition_copied_fitness = _in_cp_max; }
-  void SetCompetitionOrgsReplicated(int _in) { num_orgs_replicated = _in; }
 
   void AddSpeculative(int spec) { m_spec_total += spec; m_spec_num++; }
   void AddSpeculativeWaste(int waste) { m_spec_waste += waste; }
@@ -683,8 +666,6 @@ public:
   void PrintSenseExeData(const cString& filename);
   void PrintInternalTasksData(const cString& filename);
   void PrintInternalTasksQualData(const cString& filename);
-  void PrintCompetitionData(const cString& filename);
-  void PrintCellVisitsData(const cString& filename);
   void PrintExtendedTimeData(const cString& filename);
   void PrintNumOrgsKilledData(const cString& filename);
   void PrintTargets(const cString& filename);

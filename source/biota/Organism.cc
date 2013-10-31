@@ -24,6 +24,7 @@
 
 #include "avida/biota/Organism.h"
 
+#include "avida/biota/Trait.h"
 #include "avida/systematics/Group.h"
 
 
@@ -219,7 +220,7 @@ Avida::Biota::Organism::Organism(Universe* universe, const Genome& genome, Syste
 
 Avida::Biota::Organism::~Organism()
 {
-  
+  for (int idx = 0; idx < m_traits.GetSize(); idx++) delete m_traits[idx];
 }
 
 

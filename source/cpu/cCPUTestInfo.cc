@@ -24,7 +24,6 @@
 
 #include "cCPUTestInfo.h"
 
-#include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 

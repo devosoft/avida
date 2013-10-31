@@ -25,11 +25,9 @@
 #include "avida/core/Feedback.h"
 #include "avida/core/UniverseDriver.h"
 
-#include "cContextPhenotype.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
-#include "cInstSet.h"
 #include "cPopulationCell.h"
 #include "cStringUtil.h"
 #include "cTaskContext.h"
@@ -44,98 +42,6 @@
 using namespace std;
 using namespace Avida;
 
-// Referenced external properties
-// --------------------------------------------------------------------------------------------------------------
-static const Apto::BasicString<Apto::ThreadSafe> s_ext_prop_name_instset("instset");
-
-
-// Internal cOrganism Properties
-// --------------------------------------------------------------------------------------------------------------
-
-static PropertyDescriptionMap s_prop_desc_map;
-
-static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_genome("genome");
-static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_src_transmission_type("src_transmission_type");
-static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_age("age");
-static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_generation("generation");
-static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_copied_size("last_copied_size");
-static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_executed_size("last_exectuted_size");
-static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_gestation_time("last_gestation_time");
-static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_metabolic_rate("last_metabolic_rate");
-static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_fitness("last_fitness");
-
-
-// OrgPropRetrievalContainer - base container class for the global property map
-// --------------------------------------------------------------------------------------------------------------
-
-class OrgPropRetrievalContainer
-{
-public:
-  virtual ~OrgPropRetrievalContainer() { ; }
-  
-  virtual const Property& Get(cOrganism*, const cOrganism::OrgPropertyMap*) const = 0;
-};
-
-
-// OrgPropOfType - concrete implementations of OrgPropRetrievalContainer for each necessary type
-// --------------------------------------------------------------------------------------------------------------
-
-template <class T> class OrgPropOfType : public OrgPropRetrievalContainer
-{
-private:
-  typedef T (cOrganism::*RetrieveFunction)();
-  
-  PropertyID m_prop_id;
-  RetrieveFunction m_fun;
-  
-public:
-  OrgPropOfType(const PropertyID& prop_id, RetrieveFunction fun) : m_prop_id(prop_id), m_fun(fun) { ; }
-  
-  const Property& Get(cOrganism* org, const cOrganism::OrgPropertyMap* prop_map) const
-  {
-    return prop_map->SetTempProp(m_prop_id, (org->*m_fun)());
-  }
-};
-
-
-// OrgGlobalPropMap and OrgGlobalPropMapSingletone - global singleton structure holding the global org prop map
-// --------------------------------------------------------------------------------------------------------------
-
-struct OrgGlobalPropMap
-{
-  Apto::Map<Apto::String, OrgPropRetrievalContainer*> prop_map;
-  
-  ~OrgGlobalPropMap()
-  {
-    for (Apto::Map<Apto::String, OrgPropRetrievalContainer*>::ValueIterator it = prop_map.Values(); it.Next();) {
-      delete *it.Get();
-    }
-  }
-};
-
-typedef Apto::SingletonHolder<OrgGlobalPropMap, Apto::CreateWithNew, Apto::DestroyAtExit, Apto::ThreadSafe> OrgGlobalPropMapSingleton;
-
-
-// cOrganism::Intialize() - static method that sets up global data structures
-// --------------------------------------------------------------------------------------------------------------
-
-void cOrganism::Initialize()
-{
-#define DEFINE_PROP(NAME, TYPE, FUNCTION, DESC) s_prop_desc_map.Set(s_prop_name_ ## NAME, DESC); \
-  OrgGlobalPropMapSingleton::Instance().prop_map.Set(s_prop_name_ ## NAME, new OrgPropOfType<TYPE>(s_prop_name_ ## NAME, &cOrganism::FUNCTION));
-  DEFINE_PROP(genome, Apto::String, getGenomeString, "Genome");
-  DEFINE_PROP(src_transmission_type, int, getSrcTransmissionType, "Source Transmission Type");
-  DEFINE_PROP(age, int, getAge, "Age");
-  DEFINE_PROP(generation, int, getGeneration, "Generation");
-  DEFINE_PROP(last_copied_size, int, getLastCopied, "Last Copied Size");
-  DEFINE_PROP(last_executed_size, int, getLastExecuted, "Last Exectuted Size");
-  DEFINE_PROP(last_gestation_time, int, getLastGestation, "Last Gestation Time");
-  DEFINE_PROP(last_metabolic_rate, double, getLastMetabolicRate, "Last Metabolic Rage");
-  DEFINE_PROP(last_fitness, double, getLastFitness, "Last Fitness");
-#undef DEFINE_PROP
-}
-
-
 
 // Creation Policies
 // --------------------------------------------------------------------------------------------------------------
@@ -144,12 +50,8 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   : m_world(world)
   , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.Properties().Get(s_ext_prop_name_instset).StringValue()).GetNumNops())
   , m_src(src)
-  , m_initial_genome(genome)
   , m_interface(NULL)
   , m_org_list_index(-1)
-  , m_org_display(NULL)
-  , m_queued_display_data(NULL)
-  , m_display(false)
   , m_input_pointer(0)
   , m_input_buf(world->GetEnvironment().GetInputSize())
   , m_output_buf(world->GetEnvironment().GetOutputSize())
@@ -165,9 +67,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_parent_teacher(false)
   , m_parent_ft(-1)
   , m_p_merit(0)
-  , m_av_in_index(-1)
-  , m_av_out_index(-1)
-  , m_prop_map(this)
 {
 	// initializing this here because it may be needed during hardware creation:
 	m_id = m_world->GetStats().GetTotCreatures();
@@ -204,74 +103,11 @@ cOrganism::~cOrganism()
 {  
   assert(m_is_running == false);
   delete m_hardware;
-  delete m_interface;
-  
-  delete m_org_display;
-  delete m_queued_display_data;
 }
 
 
-const PropertyMap& cOrganism::Properties() const { return m_prop_map; }
 
-void cOrganism::SetOrgInterface(cAvidaContext& ctx, cOrgInterface* org_interface)
-{
-  delete m_interface;
-  m_interface = org_interface;
-  
-  HardwareReset(ctx);
-}
 
-double cOrganism::GetVitality() const {
-  double mean_age = m_world->GetStats().SumCreatureAge().Ave();
-  double age_stddev = m_world->GetStats().SumCreatureAge().StdDeviation();
-  int org_age = m_phenotype.GetAge();
-  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-  double res_level = 0.0;
-  if (resource >= 0) 
-    res_level = m_phenotype.GetCurRBinAvail(resource);
-  double vitality = 0.0;
-  
-  if (org_age < (mean_age - age_stddev) || org_age > (mean_age + age_stddev)) {
-    vitality = m_world->GetConfig().VITALITY_BIN_EXTREMES.Get() * res_level;
-  } else {
-    vitality = m_world->GetConfig().VITALITY_BIN_CENTER.Get() * res_level;    
-  }
-  
-  return vitality;
-}
-
-bool cOrganism::UpdateOrgDisplay() { 
-  if (m_queued_display_data != NULL) {
-    delete m_org_display;
-    m_org_display = m_queued_display_data; 
-    m_queued_display_data = NULL; 
-    return true;
-  }
-  else return false;
-}
-
-void cOrganism::SetSimpDisplay(int display_part, int value)
-{
-  if (m_org_display == NULL) {
-    m_org_display = new sOrgDisplay;
-    m_display = true;
-    m_org_display->distance = -99;
-    m_org_display->direction = -99;
-    m_org_display->value = -99;
-    m_org_display->message = -99;
-
-  }
-  switch (display_part) {
-    case 0:
-      m_org_display->distance = value;
-    case 1:
-      m_org_display->direction = value;
-    case 3:
-      m_org_display->value = value;
-    default:
-      m_org_display->message = value;
-  }
-}
 
 double cOrganism::GetRBinsTotal()
 {
@@ -307,13 +143,6 @@ void cOrganism::IncCollectSpecCount(const int spec_id)
   m_phenotype.SetCurCollectSpecCount(spec_id, current_count + 1);
 }
 
-int cOrganism::ReceiveValue()
-{
-  assert(m_interface);
-  const int out_value = m_interface->ReceiveValue();
-  return out_value;
-}
-
 void cOrganism::DoInput(const int value)
 {
   DoInput(m_input_buf, m_output_buf, value);
@@ -325,10 +154,10 @@ void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer,
   m_phenotype.TestInput(input_buffer, output_buffer);
 }
 
-void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide, cContextPhenotype* context_phenotype)
+void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide)
 {
-  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
-  else doOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, on_divide, false);
+  else doOutput(ctx, m_input_buf, m_output_buf, on_divide, false);
 }
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
@@ -338,11 +167,11 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
   else doOutput(ctx, m_input_buf, m_output_buf, false, false);
 }
 
-void cOrganism::DoOutput(cAvidaContext& ctx, const int value, bool is_parasite, cContextPhenotype* context_phenotype) 
+void cOrganism::DoOutput(cAvidaContext& ctx, const int value, bool is_parasite)
 {
   m_output_buf.Add(value);
-  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite, context_phenotype); 
-  else doOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite, context_phenotype); 
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite);
+  else doOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite);
 }
 
 void cOrganism::DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
@@ -357,8 +186,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
                          tBuffer<int>& input_buffer, 
                          tBuffer<int>& output_buffer,
                          const bool on_divide,
-                         bool is_parasite, 
-                         cContextPhenotype* context_phenotype)
+                         bool is_parasite)
 {  
   const Apto::Array<double> & global_resource_count = m_interface->GetResources(ctx);
   
@@ -402,7 +230,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   
   
   m_phenotype.TestOutput(ctx, taskctx, global_resource_count, m_phenotype.GetCurRBinsAvail(), global_res_change,
-                         insts_triggered, is_parasite, context_phenotype);
+                         insts_triggered, is_parasite);
   
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -420,8 +248,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
                          tBuffer<int>& input_buffer, 
                          tBuffer<int>& output_buffer,
                          const bool on_divide,
-                         bool is_parasite, 
-                         cContextPhenotype* context_phenotype)
+                         bool is_parasite)
 {  
   //Avatar output has to be seperate from doOutput to ensure avatars, not the true orgs, are triggering reactions
   
@@ -467,7 +294,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   
   
   m_phenotype.TestOutput(ctx, taskctx, av_res_count, m_phenotype.GetCurRBinsAvail(), avatar_res_change, insts_triggered,
-                         is_parasite, context_phenotype);
+                         is_parasite);
   
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -480,15 +307,6 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   
   for (int i = 0; i < insts_triggered.GetSize(); i++) 
     m_hardware->ProcessBonusInst(ctx, m_hardware->GetInstSet().GetInst(insts_triggered[i]));
-}
-
-void cOrganism::HardwareReset(cAvidaContext& ctx)
-{
-  delete m_org_display;
-  delete m_queued_display_data;
-  m_org_display = NULL;
-  m_queued_display_data = NULL;
-  m_display = false;
 }
 
 void cOrganism::NotifyDeath(cAvidaContext& ctx)
@@ -530,23 +348,6 @@ double cOrganism::CalcMeritRatio()
 }
 
 
-bool cOrganism::GetTestOnDivide() const { return m_interface->TestOnDivide(); }
-int cOrganism::GetSterilizeUnstable() const { return m_world->GetConfig().STERILIZE_UNSTABLE.Get(); }
-
-bool cOrganism::GetRevertFatal() const { return m_world->GetConfig().REVERT_FATAL.Get(); }
-bool cOrganism::GetRevertNeg() const { return m_world->GetConfig().REVERT_DETRIMENTAL.Get(); }
-bool cOrganism::GetRevertNeut() const { return m_world->GetConfig().REVERT_NEUTRAL.Get(); }
-bool cOrganism::GetRevertPos() const { return m_world->GetConfig().REVERT_BENEFICIAL.Get(); }
-bool cOrganism::GetRevertTaskLoss() const { return m_world->GetConfig().REVERT_TASKLOSS.Get(); }
-bool cOrganism::GetRevertEquals() const { return m_world->GetConfig().REVERT_EQUALS.Get(); }
-
-bool cOrganism::GetSterilizeFatal() const { return m_world->GetConfig().STERILIZE_FATAL.Get(); }
-bool cOrganism::GetSterilizeNeg() const { return m_world->GetConfig().STERILIZE_DETRIMENTAL.Get(); }
-bool cOrganism::GetSterilizeNeut() const { return m_world->GetConfig().STERILIZE_NEUTRAL.Get(); }
-bool cOrganism::GetSterilizePos() const { return m_world->GetConfig().STERILIZE_BENEFICIAL.Get(); }
-bool cOrganism::GetSterilizeTaskLoss() const { return m_world->GetConfig().STERILIZE_TASKLOSS.Get(); }
-double cOrganism::GetNeutralMin() const { return m_world->GetConfig().NEUTRAL_MIN.Get(); }
-double cOrganism::GetNeutralMax() const { return m_world->GetConfig().NEUTRAL_MAX.Get(); }
 
 
 void cOrganism::PrintStatus(ostream& fp)
@@ -700,25 +501,15 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
 // This gets called after a successful divide to deal with the child. 
 // Returns true if parent lives through this process.
 
-bool cOrganism::ActivateDivide(cAvidaContext& ctx, cContextPhenotype* context_phenotype)
+bool cOrganism::ActivateDivide(cAvidaContext& ctx)
 {
   assert(m_interface);
   // Test tasks one last time before actually dividing, pass true so 
   // know that should only test "divide" tasks here
-  DoOutput(ctx, true, context_phenotype);
+  DoOutput(ctx, true);
   
   // Activate the child!  (Keep Last: may kill this organism!)
   return m_interface->Divide(ctx, this, m_offspring_genome);
-}
-
-
-void cOrganism::NewTrial()
-{
-  //More should be reset here... @JEB
-  GetPhenotype().NewTrial();
-  m_input_pointer = 0;
-  m_input_buf.Clear();
-  m_output_buf.Clear();
 }
 
 
@@ -877,106 +668,6 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
   // Check to make sure the organism is alive after the move
   if (m_phenotype.GetToDelete()) return false;
   
-  // updates movement predicates
-  //  m_world->GetStats().Move(*this);
-  
-  return true;    
-}
-
-
-
-// cOrganism::OrgPropertyMap implementation
-// --------------------------------------------------------------------------------------------------------------
-
-cOrganism::OrgPropertyMap::OrgPropertyMap(cOrganism* organism)
-  : m_organism(organism), m_prop_int(s_prop_desc_map), m_prop_double(s_prop_desc_map), m_prop_string(s_prop_desc_map) { ; }
-cOrganism::OrgPropertyMap::~OrgPropertyMap() { ; }
-
-int cOrganism::OrgPropertyMap::GetSize() const
-{
-  return OrgGlobalPropMapSingleton::Instance().prop_map.GetSize();
-}
-
-bool cOrganism::OrgPropertyMap::Has(const PropertyID& p_id) const
-{
-  return OrgGlobalPropMapSingleton::Instance().prop_map.Has(p_id);
-}
-
-const Avida::Property& cOrganism::OrgPropertyMap::Get(const PropertyID& p_id) const
-{
-  OrgPropRetrievalContainer* container = NULL;
-  if (OrgGlobalPropMapSingleton::Instance().prop_map.Get(p_id, container)) {
-    return container->Get(m_organism, this);
-  }
-
-  return *s_default_prop;
-}
-
-
-bool cOrganism::OrgPropertyMap::SetValue(const PropertyID& p_id, const Apto::String& prop_value) { return false; }
-bool cOrganism::OrgPropertyMap::SetValue(const PropertyID& p_id, const int prop_value) { return false; }
-bool cOrganism::OrgPropertyMap::SetValue(const PropertyID& p_id, const double prop_value) { return false; }
-
-
-bool cOrganism::OrgPropertyMap::operator==(const PropertyMap& p) const
-{
-  // Build distinct key sets
-  Apto::Set<PropertyID> pm1pids, pm2pids;
-  Apto::Map<PropertyID, OrgPropRetrievalContainer*>::KeyIterator it = OrgGlobalPropMapSingleton::Instance().prop_map.Keys();
-  while (it.Next()) pm1pids.Insert(*it.Get());
-  
-  PropertyIDSet::ConstIterator pidit = p.PropertyIDs()->Begin();
-  while (pidit.Next()) pm2pids.Insert(*pidit.Get());
-  
-  // Compare key sets
-  if (pm1pids != pm2pids) return false;
-  
-  // Compare values
-  it = OrgGlobalPropMapSingleton::Instance().prop_map.Keys();
-  while (it.Next()) {
-    OrgPropRetrievalContainer* container = NULL;
-    if (OrgGlobalPropMapSingleton::Instance().prop_map.Get(*it.Get(), container)) {
-      if (container->Get(m_organism, this) != p.Get(*it.Get())) return false;
-    } else {
-      return false;
-    }
-  }
-  
   return true;
 }
 
-void cOrganism::OrgPropertyMap::Define(PropertyPtr p) { ; }
-bool cOrganism::OrgPropertyMap::Remove(const PropertyID& p_id) { return false; }
-
-Avida::ConstPropertyIDSetPtr cOrganism::OrgPropertyMap::PropertyIDs() const
-{
-  PropertyIDSetPtr pidset(new PropertyIDSet);
-  
-  Apto::Map<PropertyID, OrgPropRetrievalContainer*>::KeyIterator it = OrgGlobalPropMapSingleton::Instance().prop_map.Keys();
-  while (it.Next()) pidset->Insert(*it.Get());
-  
-  return pidset;
-}
-
-
-bool cOrganism::OrgPropertyMap::Serialize(ArchivePtr) const
-{
-  // @TODO
-  assert(false);
-  return false;
-}
-
-
-
-// Property Map Retrieival Functions
-// --------------------------------------------------------------------------------------------------------------
-
-Apto::String cOrganism::getGenomeString() { return m_initial_genome.AsString(); }
-int cOrganism::getSrcTransmissionType() { return m_src.transmission_type; }
-int cOrganism::getAge() { return m_phenotype.GetAge(); }
-int cOrganism::getGeneration() { return m_phenotype.GetGeneration(); }
-int cOrganism::getLastCopied() { return m_phenotype.GetCopiedSize(); }
-int cOrganism::getLastExecuted() { return m_phenotype.GetExecutedSize(); }
-int cOrganism::getLastGestation() { return m_phenotype.GetGestationTime(); }
-double cOrganism::getLastMetabolicRate() { return m_phenotype.GetLastMerit(); }
-double cOrganism::getLastFitness() { return m_phenotype.GetFitness(); }

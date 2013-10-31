@@ -124,8 +124,6 @@ private:
   Apto::Array<cOrganism*, Apto::Smart>  m_av_pred;
 
 public:
-  inline int GetNumAVInputs() const { return GetNumPredAV(); }
-  inline int GetNumAVOutputs() const { return GetNumPreyAV(); }
   inline int GetNumAV() const { return GetNumPreyAV() + GetNumPredAV(); }
   inline int GetNumPredAV() const { return m_av_pred.GetSize(); }
   inline int GetNumPreyAV() const { return m_av_prey.GetSize(); }
@@ -133,9 +131,7 @@ public:
   void AddPreyAV(cAvidaContext& ctx, cOrganism* org);
   void RemovePredAV(cOrganism* org);
   void RemovePreyAV(cOrganism* org);
-  inline bool HasInputAV() const { return GetNumAVInputs() > 0; }
-  inline bool HasOutputAV() const { return GetNumAVOutputs() > 0; }
-  inline bool HasAV() const { return (GetNumAVOutputs() > 0 || GetNumAVInputs() > 0); }
+  inline bool HasAV() const { return (GetNumPredAV() > 0 || GetNumPreyAV() > 0); }
   inline bool HasPredAV() const { return GetNumPredAV() > 0; }
   inline bool HasPreyAV() const { return GetNumPreyAV() > 0; }
   bool HasOutputAV(cOrganism* org);

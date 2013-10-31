@@ -1091,16 +1091,6 @@ int cHardwareBase::PointMutate(cAvidaContext& ctx, double override_mut_rate)
 
 
 
-tBuffer<int>& cHardwareBase::GetInputBuf() 
-{ 
-  return m_organism->GetInputBuf();
-}
-
-tBuffer<int>& cHardwareBase::GetOutputBuf() 
-{ 
-  return m_organism->GetOutputBuf(); 
-}
-
 
 bool cHardwareBase::Inst_Nop(cAvidaContext&)          // Do Nothing.
 {

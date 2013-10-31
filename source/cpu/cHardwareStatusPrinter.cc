@@ -23,7 +23,6 @@
 #include "cHardwareStatusPrinter.h"
 
 #include "cHardwareBase.h"
-#include "cInstSet.h"
 #include "cOrganism.h"
 #include "cString.h"
 #include "cStringUtil.h"

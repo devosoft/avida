@@ -25,7 +25,6 @@
 
 #include "InstMemSpace.h"
 #include "cHardwareBase.h"
-#include "cInstSet.h"
 
 /**
  * The cHeadCPU class contains a pointer to locations in memory for a CPU.

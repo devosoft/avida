@@ -24,7 +24,6 @@
 #include "avida/systematics/Group.h"
 
 #include "cHardwareManager.h"
-#include "cInstSet.h"
 
 
 cParasite::cParasite(cWorld* world, const Avida::Genome& genome, int parent_generation, Systematics::Source src)

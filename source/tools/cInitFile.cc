@@ -25,7 +25,6 @@
 #include "apto/core/FileSystem.h"
 
 #include "cFile.h"
-#include "cStringIterator.h"
 
 
 using namespace std;

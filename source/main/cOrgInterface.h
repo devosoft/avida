@@ -63,13 +63,6 @@ public:
   virtual int GetCellXPosition() = 0;
   virtual int GetCellYPosition() = 0;
   
-  virtual int GetPrevSeenCellID() = 0;
-  virtual int GetPrevTaskCellID() = 0;
-  virtual int GetNumTaskCellsReached() = 0;
-  virtual void AddReachedTaskCell() = 0;
-  virtual void SetPrevSeenCellID(int in_id) = 0;
-  virtual void SetPrevTaskCellID(int in_id) = 0;
-
   virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome) = 0;
   
   virtual cOrganism* GetNeighbor() = 0;
@@ -106,11 +99,8 @@ public:
   virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
   virtual void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
   virtual void Die(cAvidaContext& ctx) = 0;
-  virtual void KillCellID(int target, cAvidaContext& ctx) = 0; 
-  virtual int ReceiveValue() = 0;
   virtual bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;
-  virtual bool TestOnDivide() = 0;
 
   virtual bool Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;
 

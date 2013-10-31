@@ -32,7 +32,6 @@
 #include <fstream>
 
 #include "cGenotypeData.h"
-#include "cInstSet.h"
 #include "cLandscape.h"
 #include "cString.h"
 #include "cStringList.h"
@@ -41,7 +40,6 @@
 // cAnalyzeGenotype    : Collection of information about loaded genotypes
 
 class cAvidaContext;
-class cInstSet;
 class cTestCPU;
 class cWorld;
 template<class T> class tDataCommandManager;

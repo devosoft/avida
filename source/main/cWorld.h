@@ -56,7 +56,6 @@ protected:
   
   cAnalyze* m_analyze;
   cAvidaConfig* m_conf;
-  cAvidaContext* m_ctx;
   
   cEnvironment* m_env;
   cEventList* m_event_list;
@@ -95,10 +94,6 @@ public:
   Data::ProviderPtr GetStatsProvider(Universe*);
   Data::ArgumentedProviderPtr GetPopulationProvider(Universe*);
   
-  
-  // Convenience Accessors
-  inline int GetVerbosity() { return m_conf->VERBOSITY.Get(); }
-  inline void SetVerbosity(int v) { m_conf->VERBOSITY.Set(v); }
 
   void GetEvents(cAvidaContext& ctx);
 	

@@ -29,7 +29,6 @@
 #include "avida/core/InstructionSequence.h"
 #include "avida/output/File.h"
 
-#include "cInstSet.h"
 #include "cHardwareManager.h"
 
 #include "cInitFile.h"

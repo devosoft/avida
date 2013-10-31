@@ -45,7 +45,6 @@
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInitFile.h"
-#include "cInstSet.h"
 #include "cOrganism.h"
 #include "cParasite.h"
 #include "cPhenotype.h"
@@ -193,16 +192,9 @@ cPopulation::cPopulation(cWorld* world)
   m_world->GetDataManager()->Register("core.population.inst_exec_counts[]", isp_activate);
 }
 
-void cPopulation::ClearCellGrid()
-{
-  reaper_queue.Clear();
-  delete m_scheduler; m_scheduler = NULL;
-}
-
 void cPopulation::SetupCellGrid()
 {
   const int num_cells = world_x * world_y;
-  const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
   
   // Allocate the cells, resources, and market.
   cell_array.ResizeClear(num_cells);
@@ -218,45 +210,9 @@ void cPopulation::SetupCellGrid()
     if (fill_reaper_queue) reaper_queue.Push(&(cell_array[i]));
   }
   
-  // Setup the topology.
-  switch(geometry) {
-    case nGeometry::GRID:
-      build_grid(cell_array.Range(0, num_cells - 1), world_x, world_y);
-      break;
-    case nGeometry::TORUS:
-      build_torus(cell_array.Range(0, num_cells - 1), world_x, world_y);
-      break;
-    case nGeometry::CLIQUE:
-      build_clique(cell_array.Range(0, num_cells - 1), world_x, world_y);
-      break;
-    case nGeometry::HEX:
-      build_hex(cell_array.Range(0, num_cells - 1), world_x, world_y);
-      break;
-    case nGeometry::LATTICE:
-      build_lattice(cell_array.Range(0, num_cells - 1), world_x, world_y, 1);
-      break;
-    case nGeometry::RANDOM_CONNECTED:
-      build_random_connected_network(cell_array.Range(0, num_cells - 1), world_x, world_y, m_world->GetRandom());
-      break;
-    case nGeometry::SCALE_FREE:
-      build_scale_free(cell_array.Range(0, num_cells - 1), m_world->GetConfig().SCALE_FREE_M.Get(),
-                       m_world->GetConfig().SCALE_FREE_ALPHA.Get(), m_world->GetConfig().SCALE_FREE_ZERO_APPEAL.Get(),
-                       m_world->GetRandom());
-      break;
-    default:
-      assert(false);
-  }
-  
   BuildTimeSlicer();
 }
 
-void cPopulation::ResizeCellGrid(int x, int y)
-{
-  ClearCellGrid();
-  world_x = x;
-  world_y = y;
-  SetupCellGrid();
-}
 
 Data::ConstDataSetPtr cPopulation::Provides() const
 {
@@ -1413,13 +1369,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
         default:
           kill_source = ctx.GetRandom().P(0.5);
           break;
-          
-        case 1: // binned vitality based on age
-          double src_vitality = src_cell.GetOrganism()->GetVitality();
-          double dest_vitality = dest_cell.GetOrganism()->GetVitality();
-          kill_source = (src_vitality < ctx.GetRandom().GetDouble(src_vitality + dest_vitality));
-          break;
-      }      
+      }
       if (kill_source) {
         KillOrganism(src_cell, ctx); 
         // Killing the moving organism means that we shouldn't actually do the swap, so return
@@ -3677,353 +3627,6 @@ bool cPopulation::UpdateMerit(int cell_id, double new_merit)
 }
 
 
-// Starts a new trial for each organism in the population
-void cPopulation::NewTrial(cAvidaContext& ctx)
-{
-  for (int i=0; i< GetSize(); i++) {
-    cPopulationCell& cell = GetCell(i);
-    if (cell.IsOccupied()) {
-      cPhenotype & p =  cell.GetOrganism()->GetPhenotype();
-      
-      // Don't continue if the time used was zero
-      if (p.GetTrialTimeUsed() != 0) {
-        // Correct gestation time for speculative execution
-        p.SetTrialTimeUsed(p.GetTrialTimeUsed() - cell.GetSpeculativeState());
-        p.SetTimeUsed(p.GetTimeUsed() - cell.GetSpeculativeState());
-        
-        cell.GetOrganism()->NewTrial();
-        cell.GetOrganism()->GetHardware().Reset(ctx);
-        
-        cell.SetSpeculativeState(0);
-      }
-    }
-  }
-  
-  //Recalculate the stats immediately, so that if they are printed before a new update
-  //is processed, they accurately reflect this trial only...
-  cStats& stats = m_world->GetStats();
-  stats.ProcessUpdate();
-  ProcessPostUpdate(ctx);
-}
-
-/*
- CompeteOrganisms
- 
- parents_survive => for any organism represented by >=1 child, the first created is the parent (has no mutations)
- dynamic_scaling => rescale the time interval such that the geometric mean of the highest fitness versus lower fitnesses
- equals a time of 1 unit
- */
-
-void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int parents_survive)
-{
-  NewTrial(ctx);
-  
-  double total_fitness = 0;
-  int num_cells = GetSize();
-  Apto::Array<double> org_fitness(num_cells);
-  
-  double lowest_fitness = -1.0;
-  double average_fitness = 0;
-  double highest_fitness = -1.0;
-  double lowest_fitness_copied = -1.0;
-  double average_fitness_copied = 0;
-  double highest_fitness_copied = -1.0;
-  int different_orgs_copied = 0;
-  int num_competed_orgs = 0;
-  
-  int num_trials = -1;
-  
-  int dynamic_scaling = 0;
-  
-  if (competition_type==3) dynamic_scaling = 1;
-  else if  (competition_type==4) dynamic_scaling = 2;
-  
-  // How many trials were there? -- same for every organism
-  // we just need to find one...
-  for (int i = 0; i < num_cells; i++) {
-    if (GetCell(i).IsOccupied()) {
-      cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
-      // We trigger a lot of asserts if the copied size is zero...
-      p.SetLinesCopied(p.GetGenomeLength());
-      
-      if ( (num_trials != -1) && (num_trials != p.GetTrialFitnesses().GetSize()) ) {
-        cout << "The number of trials is not the same for every organism in the population.\n";
-        cout << "You need to remove all normal ways of replicating for CompeteOrganisms to work correctly.\n";
-        exit(1);
-      }
-      
-      num_trials = p.GetTrialFitnesses().GetSize();
-    }
-  }
-  
-  // If there weren't any trials then end here (but call new trial so things are set up for the next iteration)
-  if (num_trials == 0) return;
-  
-  if (m_world->GetVerbosity() > VERBOSE_SILENT) cout << "==Compete Organisms==" << endl;
-  
-  Apto::Array<double> min_trial_fitnesses(num_trials);
-  Apto::Array<double> max_trial_fitnesses(num_trials);
-  Apto::Array<double> avg_trial_fitnesses(num_trials);
-  avg_trial_fitnesses.SetAll(0);
-  
-  bool init = false;
-  // What is the min and max fitness in each trial
-  for (int i = 0; i < num_cells; i++) {
-    if (GetCell(i).IsOccupied()) {
-      num_competed_orgs++;
-      cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
-      Apto::Array<double> trial_fitnesses = p.GetTrialFitnesses();
-      for (int t=0; t < num_trials; t++) {
-        if ((!init) || (min_trial_fitnesses[t] > trial_fitnesses[t])) {
-          min_trial_fitnesses[t] = trial_fitnesses[t];
-        }
-        if ((!init) || (max_trial_fitnesses[t] < trial_fitnesses[t])) {
-          max_trial_fitnesses[t] = trial_fitnesses[t];
-        }
-        avg_trial_fitnesses[t] += trial_fitnesses[t];
-      }
-      init = true;
-    }
-  }
-  
-  //divide averages for each trial
-  for (int t=0; t < num_trials; t++) {
-    avg_trial_fitnesses[t] /= num_competed_orgs;
-  }
-  
-  if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-    if (min_trial_fitnesses.GetSize() > 1) {
-      for (int t=0; t < min_trial_fitnesses.GetSize(); t++) {
-        cout << "Trial #" << t << " Min Fitness = " << min_trial_fitnesses[t] << ", Avg fitness = " << avg_trial_fitnesses[t] << " Max Fitness = " << max_trial_fitnesses[t] << endl;
-      }
-    }
-  }
-  
-  bool using_trials = true;
-  for (int i = 0; i < num_cells; i++) {
-    if (GetCell(i).IsOccupied()) {
-      double fitness = 0.0;
-      cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
-      //Don't need to reset trial_fitnesses because we will call cPhenotype::OffspringReset on the entire pop
-      Apto::Array<double> trial_fitnesses = p.GetTrialFitnesses();
-      
-      //If there are no trial fitnesses...use the actual fitness.
-      if (trial_fitnesses.GetSize() == 0) {
-        using_trials = false;
-        trial_fitnesses.Push(p.GetFitness());
-      }
-      switch (competition_type) {
-          //Geometric Mean
-        case 0:
-        case 3:
-        case 4:
-          //Treat as logs to avoid overflow when multiplying very large fitnesses
-          fitness = 0;
-          for (int t=0; t < trial_fitnesses.GetSize(); t++) {
-            fitness += log(trial_fitnesses[t]);
-          }
-          fitness /= (double)trial_fitnesses.GetSize();
-          fitness = exp( fitness );
-          break;
-          
-          //Product
-        case 5:
-          //Treat as logs to avoid overflow when multiplying very large fitnesses
-          fitness = 0;
-          for (int t=0; t < trial_fitnesses.GetSize(); t++) {
-            fitness += log(trial_fitnesses[t]);
-          }
-          fitness = exp( fitness );
-          break;
-          
-          //Geometric Mean of normalized values
-        case 1:
-          fitness = 1.0;
-          for (int t=0; t < trial_fitnesses.GetSize(); t++) {
-            fitness*=trial_fitnesses[t] / max_trial_fitnesses[t];
-          }
-          fitness = exp( (1.0/((double)trial_fitnesses.GetSize())) * log(fitness) );
-          break;
-          
-          //Arithmetic Mean
-        case 2:
-          fitness = 0;
-          for (int t=0; t < trial_fitnesses.GetSize(); t++) {
-            fitness+=trial_fitnesses[t];
-          }
-          fitness /= (double)trial_fitnesses.GetSize();
-          break;
-          
-        default:
-          ctx.Driver().Feedback().Error("Unknown CompeteOrganisms method");
-          ctx.Driver().Abort(Avida::INVALID_CONFIG);
-      }
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS) {
-        cout << "Trial fitness in cell " << i << " = " << fitness << endl;
-      }
-      org_fitness[i] = fitness;
-      total_fitness += fitness;
-      
-      if ((highest_fitness == -1.0) || (fitness > highest_fitness)) highest_fitness = fitness;
-      if ((lowest_fitness == -1.0) || (fitness < lowest_fitness)) lowest_fitness = fitness;
-    } // end if occupied
-  }
-  average_fitness = total_fitness / num_competed_orgs;
-  
-  //Rescale by the geometric mean of the difference from the top score and the average
-  if ( dynamic_scaling == 1 ) {
-    double dynamic_factor = 1.0;
-    if (highest_fitness > 0) {
-      dynamic_factor = 2 / highest_fitness;
-    }
-    
-    total_fitness = 0;
-    for (int i = 0; i < num_cells; i++) {
-      if ( GetCell(i).IsOccupied() ) {
-        org_fitness[i] *= dynamic_factor;
-        total_fitness += org_fitness[i];
-      }
-    }
-  }
-  
-  // Rescale geometric mean to 1
-  else if ( dynamic_scaling == 2 ) {
-    int num_org = 0;
-    double dynamic_factor = 1.0;
-    for (int i = 0; i < num_cells; i++) {
-      if ( GetCell(i).IsOccupied() && (org_fitness[i] > 0.0)) {
-        num_org++;
-        dynamic_factor += log(org_fitness[i]);
-      }
-    }
-    
-    cout << "Scaling factor = " << dynamic_factor << endl;
-    if (num_org > 0) dynamic_factor = exp(dynamic_factor / (double)num_org);
-    cout << "Scaling factor = " << dynamic_factor << endl;
-    
-    total_fitness = 0;
-    
-    for (int i = 0; i < num_cells; i++) {
-      if ( GetCell(i).IsOccupied() ) {
-        org_fitness[i] /= dynamic_factor;
-        total_fitness += org_fitness[i];
-      }
-    }
-  }
-  
-  // Pick which orgs should be in the next generation. (Filling all cells)
-  Apto::Array<int> new_orgs(num_cells);
-  for (int i = 0; i < num_cells; i++) {
-    double birth_choice = (double) ctx.GetRandom().GetDouble(total_fitness);
-    double test_total = 0;
-    for (int test_org = 0; test_org < num_cells; test_org++) {
-      test_total += org_fitness[test_org];
-      if (birth_choice < test_total) {
-        new_orgs[i] = test_org;
-        if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Propagating from cell " << test_org << " to " << i << endl;
-        if ((highest_fitness_copied == -1.0) || (org_fitness[test_org] > highest_fitness_copied)) highest_fitness_copied = org_fitness[test_org];
-        if ((lowest_fitness_copied == -1.0) || (org_fitness[test_org] < lowest_fitness_copied)) lowest_fitness_copied = org_fitness[test_org];
-        average_fitness_copied += org_fitness[test_org];
-        break;
-      }
-    }
-  }
-  // average assumes we fill all cells.
-  average_fitness_copied /= num_cells;
-  
-  // Track how many of each org we should have.
-  Apto::Array<int> org_count(num_cells);
-  org_count.SetAll(0);
-  for (int i = 0; i < num_cells; i++) {
-    org_count[new_orgs[i]]++;
-  }
-  
-  // Reset organism phenotypes that have successfully divided! Must do before injecting children.
-  // -- but not the full reset if we are using trials, the trial reset should already cover things like task counts, etc.
-  // calling that twice would erase this information before it could potentially be output between NewTrial and CompeteOrganisms events.
-  for (int i = 0; i < num_cells; i++) {
-    if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Cell " << i << " has " << org_count[i] << " copies in the next generation" << endl;
-    
-    if (org_count[i] > 0) {
-      different_orgs_copied++;
-      cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
-      ConstInstructionSequencePtr seq;
-      seq.DynamicCastFrom(GetCell(i).GetOrganism()->GetGenome().Representation());
-      if (using_trials)
-      {
-        p.TrialDivideReset(*seq);
-      }
-      else //trials not used
-      {
-        //TrialReset has never been called so we need the entire routine to make "last" of "cur" stats.
-        p.DivideReset(*seq);
-      }
-    }
-  }
-  
-  Apto::Array<bool> is_init(num_cells);
-  is_init.SetAll(false);
-  
-  // Copy orgs until all org counts are 1.
-  int last_from_cell_id = 0;
-  int last_to_cell_id = 0;
-  while (true) {
-    // Find the next org to copy...
-    int from_cell_id, to_cell_id;
-    for (from_cell_id = last_from_cell_id; from_cell_id < num_cells; from_cell_id++) {
-      if (org_count[from_cell_id] > 1) break;
-    }
-    last_from_cell_id = from_cell_id;
-    
-    // Stop if we didn't find another org to copy
-    if (from_cell_id == num_cells) break;
-    
-    for (to_cell_id = last_to_cell_id; to_cell_id < num_cells; to_cell_id++) {
-      if (org_count[to_cell_id] == 0) break;
-    }
-    last_to_cell_id = to_cell_id;
-    
-    // We now have both a "from" and a "to" org....
-    org_count[from_cell_id]--;
-    org_count[to_cell_id]++;
-    
-    cOrganism* organism = GetCell(from_cell_id).GetOrganism();
-    organism->OffspringGenome() = organism->GetGenome();
-    if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Injecting Offspring " << from_cell_id << " to " << to_cell_id << endl;
-    CompeteOrganisms_ConstructOffspring(to_cell_id, *organism);
-    
-    is_init[to_cell_id] = true;
-  }
-  
-  if (!parents_survive)
-  {
-    // Now create children from remaining cells into themselves
-    for (int cell_id = 0; cell_id < num_cells; cell_id++) {
-      if (!is_init[cell_id])
-      {
-        cOrganism* organism = GetCell(cell_id).GetOrganism();
-        organism->OffspringGenome() = organism->GetGenome();
-        if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Re-injecting Self " << cell_id << " to " << cell_id << endl;
-        CompeteOrganisms_ConstructOffspring(cell_id, *organism);
-      }
-    }
-  }
-  
-  
-  if (m_world->GetVerbosity() > VERBOSE_SILENT)
-  {
-    cout << "Competed: Min fitness = " << lowest_fitness << ", Avg fitness = " << average_fitness << " Max fitness = " << highest_fitness << endl;
-    cout << "Copied  : Min fitness = " << lowest_fitness_copied << ", Avg fitness = " << average_fitness_copied << ", Max fitness = " << highest_fitness_copied << endl;
-    cout << "Copied  : Different organisms = " << different_orgs_copied << endl;
-  }
-  
-  // copy stats to cStats, so that these can be remembered and printed
-  m_world->GetStats().SetCompetitionTrialFitnesses(avg_trial_fitnesses);
-  m_world->GetStats().SetCompetitionFitnesses(average_fitness, lowest_fitness, highest_fitness, average_fitness_copied, lowest_fitness_copied, highest_fitness_copied);
-  m_world->GetStats().SetCompetitionOrgsReplicated(different_orgs_copied);
-  
-  NewTrial(ctx);
-}
 
 // Adds an organism to live org list
 void  cPopulation::AddLiveOrg(cOrganism* org)
@@ -4046,40 +3649,6 @@ void  cPopulation::RemoveLiveOrg(cOrganism* org)
 
 
 
-/*! Mix all organisms in the population.
- 
- This method rearranges the relationship between organisms and cells.  Specifically,
- we take all organisms in the population, and assign them to different randomly-selected
- cells.
- 
- This isn't really useful in a single population run.  However, a mixing stage is a
- key component of biologically-inspired approaches to group selection (ie, Wilson's
- and Traulsen's models).
- 
- \warning THIS METHOD CHANGES THE ORGANISM POINTERS OF CELLS.
- */
-void cPopulation::MixPopulation(cAvidaContext& ctx)
-{
-  // Get the list of all organism pointers, including nulls:
-  std::vector<cOrganism*> population(cell_array.GetSize());
-  for(int i=0; i<cell_array.GetSize(); ++i) {
-    population[i] = cell_array[i].GetOrganism();
-  }
-  
-  // Shuffle them:
-  std::random_shuffle(population.begin(), population.end(), ctx.GetRandom());
-  
-  // Reset the organism pointers of all cells:
-  for(int i=0; i<cell_array.GetSize(); ++i) {
-    cell_array[i].RemoveOrganism(ctx);
-    if (population[i] == 0) {
-      AdjustSchedule(cell_array[i], cMerit(0));
-    } else {
-      cell_array[i].InsertOrganism(population[i], ctx); 
-      AdjustSchedule(cell_array[i], cell_array[i].GetOrganism()->GetPhenotype().GetMerit());
-    }
-  }
-}
 
 int cPopulation::PlaceAvatar(cAvidaContext& ctx, cOrganism* parent)
 {

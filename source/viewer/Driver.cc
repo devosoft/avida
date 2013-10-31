@@ -327,7 +327,7 @@ void Avida::Viewer::Driver::Run()
     cPopulation& population = m_world->GetPopulation();
     cStats& stats = m_world->GetStats();
     
-    Data::ManagerPtr dm = m_world->GetDataManager();
+    Data::ManagerPtr dm(Data::Manager::Of(m_universe));
     
     const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
     const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();

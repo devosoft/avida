@@ -32,7 +32,6 @@
 #include <iostream>
 
 #include "cInstSet.h"
-#include "tBuffer.h"
 
 class cAvidaContext;
 class cMutation;
@@ -183,11 +182,6 @@ public:
   // --------  Mutation  --------
   virtual int PointMutate(cAvidaContext& ctx, double override_mut_rate = 0.0);
 
-  
-  // --------  Input/Output Buffers  --------
-  virtual tBuffer<int>& GetInputBuf();
-  virtual tBuffer<int>& GetOutputBuf();
-  
   
   // --------  State Transfer  --------
   virtual void InheritState(cHardwareBase&) { ; }

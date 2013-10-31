@@ -38,7 +38,6 @@
 namespace Avida {
   class Feedback;
 };
-class cContextPhenotype;
 class cContextReactionRequisite;
 class cAvidaContext;
 class cReaction;
@@ -98,16 +97,13 @@ public:
   bool TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
                   const Apto::Array<int>& task_count, Apto::Array<int>& reaction_count,
                   const Apto::Array<double>& resource_count, const Apto::Array<double>& rbins_count,
-                  bool is_parasite=false, cContextPhenotype* context_phenotype = 0) const;
+                  bool is_parasite=false) const;
 
   // Accessors
   int GetNumTasks() const { return m_tasklib.GetSize(); }
   const cTaskEntry& GetTask(int id) const { return m_tasklib.GetTask(id); }
   bool UseNeighborInput() const { return m_tasklib.UseNeighborInput(); }
   bool UseNeighborOutput() const { return m_tasklib.UseNeighborOutput(); }
-  vector<cString> GetMatchStringsFromTask() { return m_tasklib.GetMatchStrings(); }
-  cString GetMatchString(int x) { return m_tasklib.GetMatchString(x); }
-  int GetNumberOfMatchStrings() { return m_tasklib.GetNumberOfMatchStrings(); }	
 
   
   int GetNumReactions() const { return reaction_lib.GetSize(); }

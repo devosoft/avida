@@ -28,7 +28,6 @@
 
 #include "cActionLibrary.h"
 #include "cInitFile.h"
-#include "cStringIterator.h"
 #include "cUserFeedback.h"
 
 #include <fstream>

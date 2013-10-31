@@ -28,7 +28,6 @@
 #include "avida/hardware/Types.h"
 
 #include "avida/biota/Organism.h"
-#include "avida/hardware/Feature.h"
 #include "avida/structure/Element.h"
 
 

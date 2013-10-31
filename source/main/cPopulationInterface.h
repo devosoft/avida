@@ -44,10 +44,6 @@ private:
   cWorld* m_world;
   int m_cell_id;
   
-  int m_prevseen_cell_id;	// Previously-seen cell's ID
-  int m_prev_task_cell;		// Cell ID of previous task
-  int m_num_task_cells;		// Number of task cells seen
-
   cPopulationInterface(); // @not_implemented
   cPopulationInterface(const cPopulationInterface&); // @not_implemented
   cPopulationInterface& operator=(const cPopulationInterface&); // @not_implemented
@@ -71,12 +67,6 @@ public:
   int GetCellXPosition();
   int GetCellYPosition();
   
-  int GetPrevSeenCellID() { return m_prevseen_cell_id; }
-  int GetPrevTaskCellID() { return m_prev_task_cell; }
-  int GetNumTaskCellsReached() { return m_num_task_cells; }
-  void AddReachedTaskCell() { m_num_task_cells++; }
-  void SetPrevSeenCellID(int in_id) { m_prevseen_cell_id = in_id; }
-  void SetPrevTaskCellID(int in_id) { m_prev_task_cell = in_id; }
 
   bool GetLGTFragment(cAvidaContext& ctx, int region, const Genome& dest_genome, InstructionSequence& seq);
 
@@ -109,14 +99,11 @@ public:
   void TriggerDoUpdates(cAvidaContext& ctx);
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void Die(cAvidaContext& ctx);
-  void KillCellID(int target, cAvidaContext& ctx); 
   void Kaboom(int distance, cAvidaContext& ctx); 
-  int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
   bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code);
   bool UpdateMerit(double new_merit);
-  bool TestOnDivide();
 
   bool Move(cAvidaContext& ctx, int src_id, int dest_id);
 

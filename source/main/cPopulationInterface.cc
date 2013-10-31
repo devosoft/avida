@@ -32,7 +32,6 @@
 #include "cPopulation.h"
 #include "cStats.h"
 #include "cTestCPU.h"
-#include "cInstSet.h"
 
 #include <cassert>
 #include <algorithm>
@@ -370,37 +369,12 @@ void cPopulationInterface::KillOrganism(cAvidaContext& ctx, int cell_id)
 }
 
 
-void cPopulationInterface::KillCellID(int target, cAvidaContext& ctx)
-{
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(target);
-  m_world->GetPopulation().KillOrganism(cell, ctx); 
-}
-
 void cPopulationInterface::Kaboom(int distance, cAvidaContext& ctx) 
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   m_world->GetPopulation().Kaboom(cell, ctx, distance); 
 }
 
-int cPopulationInterface::ReceiveValue()
-{
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(cell.IsOccupied());
-  
-  const int num_neighbors = cell.ConnectionList().GetSize();
-  for (int i = 0; i < num_neighbors; i++) {
-    cell.ConnectionList().CircNext();
-    
-    cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
-    if (cur_neighbor == NULL || cur_neighbor->GetSentActive() == false) {
-      continue;
-    }
-    
-    return cur_neighbor->RetrieveSentValue();
-  }
-  
-  return 0;
-}
 
 bool cPopulationInterface::InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code)
 {
@@ -414,12 +388,6 @@ bool cPopulationInterface::UpdateMerit(double new_merit)
 {
   return m_world->GetPopulation().UpdateMerit(m_cell_id, new_merit);
 }
-
-bool cPopulationInterface::TestOnDivide()
-{
-  return m_world->GetTestOnDivide();
-}
-
 
 
 

@@ -70,7 +70,6 @@ public:
 
   T operator[](int i) const
   {
-//    assert(i < total);
     int index = offset - i - 1;
     if (index < 0)  index += data.GetSize();
     assert(index >= 0 && index < data.GetSize());

@@ -22,7 +22,6 @@
 
 #include "cPhenotype.h"
 #include "avida/systematics/Types.h"
-#include "cContextPhenotype.h"
 #include "cEnvironment.h"
 #include "cOrganism.h"
 #include "cReactionResult.h"
@@ -300,11 +299,6 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   for (int j = 0; j < sensed_resources.GetSize(); j++) {
     sensed_resources[j] =  parent_phenotype.sensed_resources[j];
   }
-  cur_trial_fitnesses.Resize(0); 
-  cur_trial_bonuses.Resize(0); 
-  cur_trial_times_used.Resize(0); 
-  trial_time_used = 0;
-  trial_cpu_cycles_used = 0;
   
   // Copy last values from parent
   last_merit_base           = parent_phenotype.last_merit_base;
@@ -436,11 +430,6 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   sensed_resources.SetAll(0);
   cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
-  cur_trial_fitnesses.Resize(0);
-  cur_trial_bonuses.Resize(0); 
-  cur_trial_times_used.Resize(0); 
-  trial_time_used = 0;
-  trial_cpu_cycles_used = 0;
   
   // New organism has no parent and so cannot use its last values; initialize as needed
   last_merit_base = genome_length;
@@ -765,11 +754,6 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
   sensed_resources.SetAll(-1.0);
-  cur_trial_fitnesses.Resize(0); 
-  cur_trial_bonuses.Resize(0); 
-  cur_trial_times_used.Resize(0); 
-  trial_time_used = 0;
-  trial_cpu_cycles_used = 0;
   
   // Setup other miscellaneous values...
   num_divides++;
@@ -870,11 +854,6 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   for (int j = 0; j < sensed_resources.GetSize(); j++) {
     sensed_resources[j] = clone_phenotype.sensed_resources[j];
   }
-  cur_trial_fitnesses.Resize(0); 
-  cur_trial_bonuses.Resize(0); 
-  cur_trial_times_used.Resize(0); 
-  trial_time_used = 0;
-  trial_cpu_cycles_used = 0;
   
   // Copy last values from parent
   last_merit_base          = clone_phenotype.last_merit_base;
@@ -955,7 +934,7 @@ bool cPhenotype::TestInput(tBuffer<int>&, tBuffer<int>&)
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                             const Apto::Array<double>& res_in, const Apto::Array<double>& rbins_in,
                             Apto::Array<double>& res_change, Apto::Array<cString>& insts_triggered,
-                            bool is_parasite, cContextPhenotype* context_phenotype)
+                            bool is_parasite)
 {
   assert(initialized == true);
   taskctx.SetTaskStates(&m_task_states);
@@ -975,7 +954,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   
   // Run everything through the environment.
   bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in, 
-                              is_parasite, context_phenotype);
+                              is_parasite);
   
   // If nothing was found, stop here.
   if (found == false) {
@@ -1010,9 +989,6 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
         cur_host_tasks[i]++;
       }
       
-      if (context_phenotype != 0) {
-        context_phenotype->GetTaskCounts()[i]++;
-      }
       if (result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
       
     }
@@ -1046,11 +1022,6 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     if (result.ReactionTriggered(i) && last_reaction_count[i]==0) {
       m_world->GetStats().AddNewReactionCount(i);
     }
-    if (result.ReactionTriggered(i) == true) {
-      if (context_phenotype != 0) {
-        context_phenotype->GetReactionCounts()[i]++;
-      }
-    }		
   }
   
   // Update the merit bonus
@@ -1243,166 +1214,6 @@ void cPhenotype::DivideFailed() {
 
 
 
-// Save the current fitness and reset relevant parts of the phenotype
-void cPhenotype::NewTrial()
-{ 
-  //Return if a complete trial has not occurred.
-  //(This will happen if CompeteOrganisms was called before in the same update
-  if (trial_cpu_cycles_used == 0) return;
-  
-  //Record the merit of this trial
-  fitness = CalcFitness( GetCurMeritBase(), GetCurBonus() , trial_time_used, trial_cpu_cycles_used); // This is a per-trial fitness @JEB
-  cur_trial_fitnesses.Push(fitness);
-  cur_trial_bonuses.Push(GetCurBonus());
-  cur_trial_times_used.Push(trial_time_used);
-  
-  //The rest of the function, resets the phenotype like DivideReset(), but without
-  //incrementing the generation or child statistics.
-  
-  //Most importantly, this does (below):
-  // trial_time_used = 0;
-  // trial_cpu_cycles_used = 0;
-  // SetCurBonus(m_world->GetConfig().DEFAULT_BONUS.Get());
-  
-  // Update these values as needed...
-  int cur_merit_base = CalcSizeMerit();
-  
-  // If we are resetting the current merit, do it here
-  // and it will also be propagated to the child
-  int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
-  if (merit_default_bonus) {
-    cur_bonus = merit_default_bonus;
-  }
-  merit = cur_merit_base * cur_bonus;
-  
-  // genome_length   = _genome.GetSize();  //No child! @JEB
-  (void) copied_size;          // Unchanged
-  (void) executed_size;        // Unchanged
-  gestation_time  = time_used - gestation_start;  //Keep gestation referring to actual replication time! @JEB
-  gestation_start = time_used;                    //Keep gestation referring to actual replication time! @JEB
-  // fitness         = merit.GetDouble() / gestation_time; //Use fitness measure that is per-trial @JEB
-  
-  // Lock in cur values as last values.
-  last_merit_base           = cur_merit_base;
-  last_bonus                = cur_bonus;
-  last_cpu_cycles_used      = cpu_cycles_used;
-  last_num_errors           = cur_num_errors;
-  last_task_count           = cur_task_count;
-  last_host_tasks           = cur_host_tasks;
-  last_para_tasks           = cur_para_tasks;
-  last_internal_task_count  = cur_internal_task_count;
-  last_task_quality         = cur_task_quality;
-  last_internal_task_quality= cur_internal_task_quality;
-  last_task_value			      = cur_task_value;
-  last_rbins_total          = cur_rbins_total;
-  last_rbins_avail          = cur_rbins_avail;
-  last_collect_spec_counts  = cur_collect_spec_counts;
-  last_reaction_count       = cur_reaction_count;
-  last_reaction_add_reward  = cur_reaction_add_reward;
-  last_inst_count           = cur_inst_count;
-  last_from_sensor_count    = cur_from_sensor_count;
-  last_killed_targets       = cur_killed_targets;
-  last_sense_count          = cur_sense_count;
-  
-  // Reset cur values.
-  cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
-  cpu_cycles_used = 0;
-  cur_num_errors  = 0;
-  cur_task_count.SetAll(0);
-  cur_host_tasks.SetAll(0);
-  cur_para_tasks.SetAll(0);
-  cur_internal_task_count.SetAll(0);
-  eff_task_count.SetAll(0);
-  cur_task_quality.SetAll(0);
-  cur_internal_task_quality.SetAll(0);
-  cur_task_value.SetAll(0);
-  cur_rbins_total.SetAll(0);
-  cur_rbins_avail.SetAll(0);
-  cur_collect_spec_counts.SetAll(0);
-  cur_reaction_count.SetAll(0);
-  first_reaction_cycles.SetAll(-1);
-  first_reaction_execs.SetAll(-1);
-  cur_stolen_reaction_count.SetAll(0);
-  cur_reaction_add_reward.SetAll(0);
-  cur_inst_count.SetAll(0);
-  cur_from_sensor_count.SetAll(0);
-  for (int r = 0; r < cur_group_attack_count.GetSize(); r++) {
-    cur_group_attack_count[r].SetAll(0);
-    cur_top_pred_group_attack_count[r].SetAll(0);
-  }
-  cur_killed_targets.SetAll(0);
-  cur_sense_count.SetAll(0);
-  //cur_trial_fitnesses.Resize(0); Don't throw out the trial fitnesses! @JEB
-  trial_time_used = 0;
-  trial_cpu_cycles_used = 0;
-  
-  // Setup other miscellaneous values...
-  num_divides++;
-  (void) generation;
-  (void) time_used;
-  num_execs       = 0;
-  age             = 0;
-  (void) neutral_metric;
-  life_fitness = fitness; 
-  
-  
-  // Leave flags alone...
-  (void) is_injected;
-  (void) is_clone;
-  
-  (void) is_modifier;
-  (void) is_modified;
-  (void) is_fertile;
-  (void) is_mutated;
-  (void) is_multi_thread;
-  (void) parent_true;
-  (void) parent_sex;
-  (void) parent_cross_num;
-}
-
-/**
- * This function is run to reset an organism whose task counts (etc) have already been moved from cur to last
- * by another call (like NewTrial). It is a subset of DivideReset @JEB
- **/
-void cPhenotype::TrialDivideReset(const InstructionSequence& _genome)
-{
-  int cur_merit_base = CalcSizeMerit();
-  
-  // If we are resetting the current merit, do it here
-  // and it will also be propagated to the child
-  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
-  if (merit_default_bonus) {
-    cur_bonus = merit_default_bonus;
-  }
-  merit = cur_merit_base * cur_bonus;
-  
-  genome_length   = _genome.GetSize();
-  gestation_start = time_used;
-  cur_trial_fitnesses.Resize(0); 
-  cur_trial_bonuses.Resize(0); 
-  cur_trial_times_used.Resize(0); 
-  
-  // Reset child info...
-  (void) copy_true;
-  (void) divide_sex;
-  (void) mate_select_id;
-  (void) cross_num;
-  last_child_fertile = child_fertile;
-  child_fertile     = true;
-  (void) child_copied_size;
-  
-  // A few final changes if the parent was supposed to be be considered
-  // a second child on the divide.
-  if ((m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) || (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_BIRTH)) {    
-    gestation_start = 0;
-    cpu_cycles_used = 0;
-    time_used = 0;
-    num_execs = 0;
-    neutral_metric += m_world->GetRandom().GetRandNormal();
-  }
-  
-  if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
-}
 
 // Arbitrary (but consistant) ordering.
 // Return -1 if lhs is "less", +1 is it is "greater", and 0 otherwise.

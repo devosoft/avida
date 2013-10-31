@@ -72,16 +72,6 @@ public:
   bool UseNeighborInput() const { return use_neighbor_input; }
   bool UseNeighborOutput() const { return use_neighbor_output; }
 	
-	// Get the strings that parameterize the MatchString tasks
-	vector<cString> GetMatchStrings(); 
-	cString GetMatchString(int x);
-	int GetNumberOfMatchStrings() { return m_strings.size(); } 
-
-private: 
-	// Store the strings used by the MatchString tasks
-	vector<cString> m_strings; 
-  
-  
 private:
   
   void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0, Avida::Util::Args* args = NULL);

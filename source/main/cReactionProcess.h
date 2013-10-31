@@ -23,18 +23,20 @@
 #ifndef cReactionProcess_h
 #define cReactionProcess_h
 
-#include "cString.h"
-#include "nReaction.h"
-
-#include <iostream>
-
-using namespace std;
-
 class cResourceDef;
 
-
-
-class cReactionProcess {
+class cReactionProcess
+{
+public:
+  enum Type {
+    PROCTYPE_ADD = 0,
+    PROCTYPE_MULT,
+    PROCTYPE_POW,
+    PROCTYPE_LIN,
+    PROCTYPE_ENZYME,
+    PROCTYPE_EXP
+  };
+  
 private:
   cResourceDef* resource;  // Resource consumed.
   double value;          // Efficiency.
@@ -47,7 +49,6 @@ private:
   double conversion;     // Conversion factor.
   double lethal;		 // Lethality of reaction
   bool sterilize; //!< Whether performance of this reaction sterilizes the organism.
-  cString match_string;	 // Bit string to match if this is a match string reaction
   cString inst;           // Instruction to be triggered if reaction successful.
   bool depletable;       // Does completing consume resource?
                          // (This is not quite redundant with an infinite resource
@@ -67,7 +68,7 @@ public:
   cReactionProcess()
     : resource(NULL)
     , value(1.0)
-    , type(nReaction::PROCTYPE_ADD)
+    , type(PROCTYPE_ADD)
     , max_number(1.0)
     , min_number(0.0)
     , max_fraction(1.0)
@@ -101,7 +102,6 @@ public:
   cResourceDef* GetDetect() const { return detect; }
   double GetDetectionThreshold() const { return detection_threshold; }
   double GetDetectionError() const { return detection_error; }
-  cString GetMatchString() const { return match_string; }
   double GetInternal() const { return internal; }
 
   void SetResourceDef(cResourceDef* _in) { resource = _in; }
@@ -120,7 +120,6 @@ public:
   void SetDetect(cResourceDef* _in) { detect = _in; }
   void SetDetectionThreshold(double _in) { detection_threshold = _in; }
   void SetDetectionError(double _in) { detection_error = _in; }
-  void SetMatchString(cString _in) { match_string = _in; }
   void SetInternal(bool _in) { internal = _in; }
 };
 

@@ -25,7 +25,6 @@
 #include "avida/hardware/InstLib.h"
 #include "avida/util/NopSequence.h"
 
-#include "cContextPhenotype.h"
 #include "cHeadCPU.h"
 #include "cHardwareBase.h"
 #include "cString.h"
@@ -90,7 +89,6 @@ protected:
     Util::NopSequence read_label;
     Util::NopSequence next_label;
     bool running;
-    cContextPhenotype context_phenotype;
     
     // If this thread was spawned by Inject, this will point to the biounit of the parasite running the thread.
     // Otherwise, it will be NULL.

@@ -48,12 +48,15 @@ namespace Avida {
     
     class Organism : public Systematics::Unit
     {
+      friend class Trait;
       friend class OrgPropRetrievalContainer;
       template <class T> friend class OrgPropOfType;
       
     private:
       Universe* universe;
       
+      Apto::Array<Trait*> m_traits;
+
       Systematics::Source m_src;
       const Genome m_initial_genome;
       Genome m_offspring_genome;

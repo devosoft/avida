@@ -24,7 +24,6 @@
 #include "avida/core/Feedback.h"
 #include "avida/environment/Manager.h"
 
-#include "cContextPhenotype.h"
 #include "cContextReactionRequisite.h"
 #include "cEnvReqs.h"
 #include "cInitFile.h"
@@ -157,12 +156,12 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedba
       new_process->SetValue(var_value.AsDouble());
     }
     else if (var_name == "type") {
-      if (var_value=="add") new_process->SetType(nReaction::PROCTYPE_ADD);
-      else if (var_value=="mult") new_process->SetType(nReaction::PROCTYPE_MULT);
-      else if (var_value=="pow") new_process->SetType(nReaction::PROCTYPE_POW);
-      else if (var_value=="lin") new_process->SetType(nReaction::PROCTYPE_LIN);
-      else if (var_value=="enzyme") new_process->SetType(nReaction::PROCTYPE_ENZYME);
-      else if (var_value=="exp") new_process->SetType(nReaction::PROCTYPE_EXP);
+      if (var_value=="add") new_process->SetType(cReactionProcess::PROCTYPE_ADD);
+      else if (var_value=="mult") new_process->SetType(cReactionProcess::PROCTYPE_MULT);
+      else if (var_value=="pow") new_process->SetType(cReactionProcess::PROCTYPE_POW);
+      else if (var_value=="lin") new_process->SetType(cReactionProcess::PROCTYPE_LIN);
+      else if (var_value=="enzyme") new_process->SetType(cReactionProcess::PROCTYPE_ENZYME);
+      else if (var_value=="exp") new_process->SetType(cReactionProcess::PROCTYPE_EXP);
       else {
         feedback.Error("unknown reaction process type '%s' found in '%s'",
                        (const char*)var_value, (const char*)reaction->GetName());
@@ -228,9 +227,6 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedba
       if (!AssertInputDouble(var_value, "detectionerror", var_type, feedback))
         return false;
       new_process->SetDetectionError(var_value.AsDouble());
-    }
-    else if (var_name == "string") {
-      new_process->SetMatchString(var_value);
     }
     else if (var_name == "depletable") {
       if (!AssertInputBool(var_value, "depletable", var_type, feedback))
@@ -1084,7 +1080,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
                               Apto::Array<int>& reaction_count,
                               const Apto::Array<double>& resource_count,
                               const Apto::Array<double>& rbins_count,
-                              bool is_parasite, cContextPhenotype* context_phenotype) const
+                              bool is_parasite) const
 {
   //flag to skip processing of parasite tasks
   bool skipProcessing = false;
@@ -1120,26 +1116,6 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
       }
     }
     
-    if (context_phenotype != 0) {
-      Apto::Array<int> blank_tasks;
-      Apto::Array<int> blank_reactions;
-      blank_tasks.ResizeClear(task_count.GetSize());
-      for(int count=0;count<task_count.GetSize();count++) {
-        blank_tasks[count] = 0;
-      }
-      blank_reactions.ResizeClear(this->GetReactionLib().GetSize());
-      for(int count=0;count<reaction_count.GetSize();count++) {
-        blank_reactions[count] = 0;
-      }
-      context_phenotype->AddTaskCounts(blank_tasks.GetSize(), blank_tasks);
-      context_phenotype->AddReactionCounts(blank_reactions.GetSize(), blank_reactions);
-      int context_task_count = context_phenotype->GetTaskCounts()[task_id];
-      if (TestContextRequisites(cur_reaction, context_task_count, context_phenotype->GetReactionCounts(), on_divide) == false) {
-        if (!skipProcessing) {  // for those parasites again
-          continue;
-        }
-      }
-    }
     
     const double task_quality = m_tasklib.TestOutput(taskctx);
     assert(task_quality >= 0.0);
@@ -1449,29 +1425,28 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     
     // Take care of the organism's bonus:
     switch (cur_process->GetType()) {
-      case nReaction::PROCTYPE_ADD:
+      case cReactionProcess::PROCTYPE_ADD:
         result.AddBonus(bonus, reaction_id);
         break;
-      case nReaction::PROCTYPE_MULT:
+      case cReactionProcess::PROCTYPE_MULT:
         result.MultBonus(bonus);
         break;
-      case nReaction::PROCTYPE_POW:
+      case cReactionProcess::PROCTYPE_POW:
         result.MultBonus(pow(2.0, bonus));
         break;
-      case nReaction::PROCTYPE_LIN:
+      case cReactionProcess::PROCTYPE_LIN:
         result.AddBonus(bonus * task_count, reaction_id);
         break;
-      case nReaction::PROCTYPE_ENZYME: //@JEB -- experimental
+      case cReactionProcess::PROCTYPE_ENZYME: //@JEB -- experimental
       {
         const int res_id = in_resource->GetID();
         assert(cur_process->GetMaxFraction() != 0);
         assert(resource_count[res_id] != 0);
-        // double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetMaxFraction());
         double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetKsubM());
         result.AddBonus( reward , reaction_id);
         break;
       }
-      case nReaction::PROCTYPE_EXP: //@JEB -- experimental
+      case cReactionProcess::PROCTYPE_EXP: //@JEB -- experimental
       {
         // Cumulative rewards are Value * integral (exp (-MaxFraction * TaskCount))
         // Evaluate to get stepwise amount to add per task executed.
