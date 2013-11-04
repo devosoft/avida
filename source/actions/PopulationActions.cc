@@ -549,145 +549,8 @@ public:
   }
 };
 
-/*
- Injects identical parasites into a range of cells of the population.
- 
- Parameters:
- filename (string) [required]
- The filename of the genotype to load.
- label (string) [required]
- The parasite's inject target label.
- cell_start (int)
- First cell to inject into.
- cell_end (int)
- First cell *not* to inject into.
- */
-class cActionInjectParasite : public cAction
-{
-private:
-  cString m_filename;
-  cString m_label;
-  int m_cell_start;
-  int m_cell_end;
-public:
-  cActionInjectParasite(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_start(0), m_cell_end(-1)
-  {
-    cString largs(args);
-    m_filename = largs.PopWord();
-    m_label = largs.PopWord();
-    if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
-    
-    if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
-  }
-  
-  static const cString GetDescription() { return "Arguments: <string filename> <string label> [int cell_start=0] [int cell_end=-1]"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-      ctx.Driver().Feedback().Warning("InjectParasite has invalid range!");
-    } else {
-      GenomePtr genome;
-      cUserFeedback feedback;
-      genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
-      for (int i = 0; i < feedback.GetNumMessages(); i++) {
-        switch (feedback.GetMessageType(i)) {
-          case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-          case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
-          default: break;
-        };
-        cerr << feedback.GetMessage(i) << endl;
-      }
-      if (!genome) return;
-      ConstInstructionSequencePtr seq;
-      seq.DynamicCastFrom(genome->Representation());
-      for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().InjectParasite(m_label, *seq, i);
-      }
-      m_world->GetPopulation().SetSyncEvents(true);
-    }
-  }
-};
 
 
-/*
- Injects identical parasites into a range of cells of the population.
- 
- Parameters:
- filename_genome (string) [required]
- The filename of the genotype to load.
- filename_parasite (string) [required]
- The filename of the parasite to load.
- label (string) [required]
- The parasite's inject target label.
- cell_start (int)
- First cell to inject into.
- cell_end (int)
- First cell *not* to inject into.
- merit (double) default: -1
- The initial merit of the organism. If set to -1, this is ignored.
- lineage label (integer) default: 0
- An integer that marks all descendants of this organism.
- neutral metric (double) default: 0
- A double value that randomly drifts over time.
- */
-class cActionInjectParasitePair : public cAction
-{
-private:
-  cString m_filename_genome;
-  cString m_filename_parasite;
-  cString m_label;
-  int m_cell_start;
-  int m_cell_end;
-  double m_merit;
-  double m_neutral_metric;
-public:
-  cActionInjectParasitePair(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_neutral_metric(0)
-  {
-    cString largs(args);
-    m_filename_genome = largs.PopWord();
-    m_filename_parasite = largs.PopWord();
-    m_label = largs.PopWord();
-    if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-    
-    if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
-  }
-  
-  static const cString GetDescription() { return "Arguments: <string filename_genome> <string filename_parasite> <string label> [int cell_start=0] [int cell_end=-1] [double merit=-1] [double neutral_metric=0]"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-      ctx.Driver().Feedback().Warning("InjectParasitePair has invalid range!");
-    } else {
-      GenomePtr genome, parasite;
-      cUserFeedback feedback;
-      genome = Util::LoadGenomeDetailFile(m_filename_genome, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
-      parasite = Util::LoadGenomeDetailFile(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
-      for (int i = 0; i < feedback.GetNumMessages(); i++) {
-        switch (feedback.GetMessageType(i)) {
-          case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-          case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
-          default: break;
-        };
-        cerr << feedback.GetMessage(i) << endl;
-      }
-      if (!genome || !parasite) return;
-      for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_neutral_metric);
-        ConstInstructionSequencePtr seq;
-        seq.DynamicCastFrom(parasite->Representation());
-        m_world->GetPopulation().InjectParasite(m_label, *seq, i);
-      }
-      m_world->GetPopulation().SetSyncEvents(true);
-    }
-  }
-};
 
 
 
@@ -2057,8 +1920,6 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectSequenceWithDivMutRate>("InjectSequenceWDivMutRate");
 	
   action_lib->Register<cActionInjectGroup>("InjectGroup");
-  action_lib->Register<cActionInjectParasite>("InjectParasite");
-  action_lib->Register<cActionInjectParasitePair>("InjectParasitePair");
   
   action_lib->Register<cActionKillInstLimit>("KillInstLimit");
   action_lib->Register<cActionKillInstPair>("KillInstPair");

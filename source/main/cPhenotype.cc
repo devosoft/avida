@@ -38,13 +38,9 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 : m_world(world)
 , initialized(false)
 , cur_task_count(m_world->GetEnvironment().GetNumTasks())
-, cur_para_tasks(m_world->GetEnvironment().GetNumTasks())
-, cur_host_tasks(m_world->GetEnvironment().GetNumTasks())
-, cur_internal_task_count(m_world->GetEnvironment().GetNumTasks())
 , eff_task_count(m_world->GetEnvironment().GetNumTasks())
 , cur_task_quality(m_world->GetEnvironment().GetNumTasks())  
 , cur_task_value(m_world->GetEnvironment().GetNumTasks())  
-, cur_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
 , cur_rbins_total(m_world->GetEnvironment().GetResDefLib().GetSize())
 , cur_rbins_avail(m_world->GetEnvironment().GetResDefLib().GetSize())
 , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
@@ -57,18 +53,13 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
 , m_reaction_result(NULL)
 , last_task_count(m_world->GetEnvironment().GetNumTasks())
-, last_para_tasks(m_world->GetEnvironment().GetNumTasks())
-, last_host_tasks(m_world->GetEnvironment().GetNumTasks())
-, last_internal_task_count(m_world->GetEnvironment().GetNumTasks())
 , last_task_quality(m_world->GetEnvironment().GetNumTasks())
 , last_task_value(m_world->GetEnvironment().GetNumTasks())
-, last_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
 , last_rbins_total(m_world->GetEnvironment().GetResDefLib().GetSize())
 , last_rbins_avail(m_world->GetEnvironment().GetResDefLib().GetSize())
 , last_collect_spec_counts()
 , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
-, last_sense_count(m_world->GetStats().GetSenseSize())
 , generation(0)
 , birth_cell_id(0)
 , av_birth_cell_id(0)
@@ -129,13 +120,9 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   cur_bonus                = in_phen.cur_bonus;                           
   cur_num_errors           = in_phen.cur_num_errors;
   cur_task_count           = in_phen.cur_task_count;
-  cur_para_tasks           = in_phen.cur_para_tasks;
-  cur_host_tasks           = in_phen.cur_host_tasks;
   eff_task_count           = in_phen.eff_task_count;
-  cur_internal_task_count  = in_phen.cur_internal_task_count;
-  cur_task_quality         = in_phen.cur_task_quality;    
-  cur_internal_task_quality= in_phen.cur_internal_task_quality;       
-  cur_task_value           = in_phen.cur_task_value;			
+  cur_task_quality         = in_phen.cur_task_quality;
+  cur_task_value           = in_phen.cur_task_value;
   cur_rbins_total          = in_phen.cur_rbins_total;
   cur_rbins_avail          = in_phen.cur_rbins_avail;
   cur_collect_spec_counts  = in_phen.cur_collect_spec_counts;
@@ -164,11 +151,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_bonus               = in_phen.last_bonus;
   last_num_errors          = in_phen.last_num_errors;
   last_task_count          = in_phen.last_task_count;
-  last_host_tasks          = in_phen.last_host_tasks;
-  last_para_tasks          = in_phen.last_para_tasks;
-  last_internal_task_count = in_phen.last_internal_task_count;
   last_task_quality        = in_phen.last_task_quality;
-  last_internal_task_quality=in_phen.last_internal_task_quality;
   last_task_value          = in_phen.last_task_value;
   last_rbins_total         = in_phen.last_rbins_total;
   last_rbins_avail         = in_phen.last_rbins_avail;
@@ -179,8 +162,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_from_sensor_count   = in_phen.last_from_sensor_count;
   last_killed_targets      = in_phen.last_killed_targets;
   last_from_sensor_count   = in_phen.last_from_sensor_count;
-  last_sense_count         = in_phen.last_sense_count;
-  last_fitness             = in_phen.last_fitness;            
+  last_fitness             = in_phen.last_fitness;
   
   // 4. Records from this organisms life...
   num_divides              = in_phen.num_divides;   
@@ -262,13 +244,9 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_num_errors  = 0;
   cur_task_count.SetAll(0);
-  cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
-  cur_host_tasks.SetAll(0);
-  cur_para_tasks.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
-  cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);  // total resources collected in lifetime
   // parent's resources have already been halved or reset in DivideReset;
   // offspring gets that value (half or 0) too.
@@ -306,12 +284,8 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   last_cpu_cycles_used      = parent_phenotype.last_cpu_cycles_used;
   last_num_errors           = parent_phenotype.last_num_errors;
   last_task_count           = parent_phenotype.last_task_count;
-  last_host_tasks           = parent_phenotype.last_host_tasks;
-  last_para_tasks           = parent_phenotype.last_para_tasks;
-  last_internal_task_count  = parent_phenotype.last_internal_task_count;
   last_task_quality         = parent_phenotype.last_task_quality;
   last_task_value           = parent_phenotype.last_task_value;
-  last_internal_task_quality= parent_phenotype.last_internal_task_quality;
   last_rbins_total          = parent_phenotype.last_rbins_total;
   last_rbins_avail          = parent_phenotype.last_rbins_avail;
   last_collect_spec_counts  = parent_phenotype.last_collect_spec_counts;
@@ -320,7 +294,6 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   last_inst_count           = parent_phenotype.last_inst_count;
   last_from_sensor_count    = parent_phenotype.last_from_sensor_count;
   last_killed_targets      = parent_phenotype.last_killed_targets;
-  last_sense_count          = parent_phenotype.last_sense_count;
   last_fitness              = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
   
   // Setup other miscellaneous values...
@@ -401,13 +374,9 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_num_errors  = 0;
   cur_task_count.SetAll(0);
-  cur_para_tasks.SetAll(0);
-  cur_host_tasks.SetAll(0);
-  cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
-  cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);
   if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   
     const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
@@ -437,12 +406,8 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   last_cpu_cycles_used = 0;
   last_num_errors = 0;
   last_task_count.SetAll(0);
-  last_host_tasks.SetAll(0);
-  last_para_tasks.SetAll(0);
-  last_internal_task_count.SetAll(0);
   last_task_quality.SetAll(0);
   last_task_value.SetAll(0);
-  last_internal_task_quality.SetAll(0);
   last_rbins_total.SetAll(0);
   last_rbins_avail.SetAll(0);
   last_collect_spec_counts.SetAll(0);
@@ -451,7 +416,6 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   last_inst_count.SetAll(0);
   last_from_sensor_count.SetAll(0);
   last_killed_targets.SetAll(0);
-  last_sense_count.SetAll(0);
   
   // Setup other miscellaneous values...
   num_divides     = 0;
@@ -545,12 +509,8 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   last_cpu_cycles_used      = cpu_cycles_used;
   last_num_errors           = cur_num_errors;
   last_task_count           = cur_task_count;
-  last_host_tasks           = cur_host_tasks;
-  last_para_tasks           = cur_para_tasks;
-  last_internal_task_count  = cur_internal_task_count;
   last_task_quality         = cur_task_quality;
   last_task_value           = cur_task_value;
-  last_internal_task_quality= cur_internal_task_quality;
   last_rbins_total          = cur_rbins_total;
   last_rbins_avail          = cur_rbins_avail;
   last_collect_spec_counts  = cur_collect_spec_counts;
@@ -559,7 +519,6 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   last_inst_count           = cur_inst_count;
   last_from_sensor_count    = cur_from_sensor_count;
   last_killed_targets       = cur_killed_targets;
-  last_sense_count          = cur_sense_count;
   
   
   // Reset cur values.
@@ -567,20 +526,11 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   cpu_cycles_used = 0;
   cur_num_errors  = 0;
   cur_task_count.SetAll(0);
-  cur_host_tasks.SetAll(0);
   
   
-  // @LZ: figure out when and where to reset cur_para_tasks, depending on the divide method, and
-  //      resonable assumptions
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {     
-    last_para_tasks = cur_para_tasks;
-    cur_para_tasks.SetAll(0);
-  }
-  cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
-  cur_internal_task_quality.SetAll(0);
   if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {
     // resources available are split in half -- the offspring gets the other half
     for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
@@ -699,12 +649,8 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   last_cpu_cycles_used      = cpu_cycles_used;
   last_num_errors           = cur_num_errors;
   last_task_count           = cur_task_count;
-  last_host_tasks           = cur_host_tasks;
-  last_para_tasks           = cur_para_tasks;
-  last_internal_task_count  = cur_internal_task_count;
   last_task_quality         = cur_task_quality;
   last_task_value			= cur_task_value;
-  last_internal_task_quality= cur_internal_task_quality;
   last_rbins_total          = cur_rbins_total;
   last_rbins_avail          = cur_rbins_avail;
   last_collect_spec_counts  = cur_collect_spec_counts;
@@ -713,25 +659,15 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   last_inst_count           = cur_inst_count;
   last_from_sensor_count    = cur_from_sensor_count;
   last_killed_targets       = cur_killed_targets;
-  last_sense_count          = cur_sense_count;
   
   // Reset cur values.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cpu_cycles_used = 0;
   cur_num_errors  = 0;
   cur_task_count.SetAll(0);
-  cur_host_tasks.SetAll(0);
-  // @LZ: figure out when and where to reset cur_para_tasks, depending on the divide method, and
-  //      resonable assumptions
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-    last_para_tasks = cur_para_tasks;
-    cur_para_tasks.SetAll(0);
-  }
-  cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
-  cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);  // total resources collected in lifetime
   if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   
     const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
@@ -830,9 +766,6 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   cpu_cycles_used = 0;
   cur_num_errors  = 0;
   cur_task_count.SetAll(0);
-  cur_host_tasks.SetAll(0);
-  cur_para_tasks.SetAll(0);
-  cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_rbins_total.SetAll(0);
   cur_rbins_avail.SetAll(0);
@@ -861,10 +794,7 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   last_cpu_cycles_used     = clone_phenotype.last_cpu_cycles_used;
   last_num_errors          = clone_phenotype.last_num_errors;
   last_task_count          = clone_phenotype.last_task_count;
-  last_host_tasks          = clone_phenotype.last_host_tasks;
-  last_para_tasks          = clone_phenotype.last_para_tasks;
-  last_internal_task_count = clone_phenotype.last_internal_task_count;
-  last_rbins_total         = clone_phenotype.last_rbins_total;
+g  last_rbins_total         = clone_phenotype.last_rbins_total;
   last_rbins_avail         = clone_phenotype.last_rbins_avail;
   last_collect_spec_counts = clone_phenotype.last_collect_spec_counts;
   last_reaction_count      = clone_phenotype.last_reaction_count;
@@ -872,7 +802,6 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   last_inst_count          = clone_phenotype.last_inst_count;
   last_from_sensor_count   = clone_phenotype.last_from_sensor_count;
   last_killed_targets      = clone_phenotype.last_killed_targets;
-  last_sense_count         = clone_phenotype.last_sense_count;
   last_fitness             = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
   
   // Setup other miscellaneous values...
@@ -933,8 +862,7 @@ bool cPhenotype::TestInput(tBuffer<int>&, tBuffer<int>&)
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                             const Apto::Array<double>& res_in, const Apto::Array<double>& rbins_in,
-                            Apto::Array<double>& res_change, Apto::Array<cString>& insts_triggered,
-                            bool is_parasite)
+                            Apto::Array<double>& res_change, Apto::Array<cString>& insts_triggered)
 {
   assert(initialized == true);
   taskctx.SetTaskStates(&m_task_states);
@@ -953,8 +881,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   cReactionResult& result = *m_reaction_result;
   
   // Run everything through the environment.
-  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in, 
-                              is_parasite);
+  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in);
   
   // If nothing was found, stop here.
   if (found == false) {
@@ -981,23 +908,11 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       cur_task_count[i]++;
       eff_task_count[i]++;
       
-      // Update parasite/host task tracking appropriately
-      if (is_parasite) {
-        cur_para_tasks[i]++;
-      }
-      else {
-        cur_host_tasks[i]++;
-      }
-      
-      if (result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
       
     }
     
     if (result.TaskQuality(i) > 0) {
       cur_task_quality[i] += result.TaskQuality(i) * refract_factor;
-      if (result.UsedEnvResource() == false) {
-        cur_internal_task_quality[i] += result.TaskQuality(i) * refract_factor;
-      }
     }
 
     cur_task_value[i] = result.TaskValue(i);
@@ -1089,20 +1004,6 @@ void cPhenotype::PrintStatus(ostream& fp) const
   }
   fp << '\n';
   
-  // if using resoruce bins, print the relevant stats
-  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-    fp << "  Used-Internal-Resources Task Count (Quality):";
-    for (int i = 0; i < cur_internal_task_count.GetSize(); i++) {
-      fp << " " << cur_internal_task_count[i] << " (" << cur_internal_task_quality[i] << ")";
-    }
-    fp << endl;
- 		
-    fp << "  Available Internal Resource Bin Contents (Total Ever Collected):";
-    for(int i = 0; i < cur_rbins_avail.GetSize(); i++) {
-      fp << " " << cur_rbins_avail[i] << " (" << cur_rbins_total[i] << ")";
-    }
-    fp << endl;
-  }
 }
 
 int cPhenotype::CalcSizeMerit() const
@@ -1208,11 +1109,6 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
 
 
 
-void cPhenotype::DivideFailed() {
-  num_divides_failed++;
-}
-
-
 
 
 // Arbitrary (but consistant) ordering.
@@ -1254,16 +1150,6 @@ double cPhenotype::GetResourcesConsumed()
 	return r; 
 }
 
-//Deep copy parasite task count
-void cPhenotype::SetLastParasiteTaskCount(Apto::Array<int> oldParaPhenotype)
-{
-  assert(initialized == true);
-  
-  for(int i=0;i<oldParaPhenotype.GetSize();i++)
-  {
-    last_para_tasks[i] = oldParaPhenotype[i];
-  }
-}
 
 /* Return the cumulative reaction count if we aren't resetting on divide. */
 Apto::Array<int> cPhenotype::GetCumulativeReactionCount()

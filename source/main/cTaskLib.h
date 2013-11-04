@@ -315,9 +315,6 @@ private:
   double Task_ConsumeTargetXor(cTaskContext& ctx) const;
   double Task_ConsumeTargetEqu(cTaskContext& ctx) const;
   
-  // Explosion Task
-  void Load_Exploded(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  double Task_Exploded(cTaskContext& ctx) const;
 
   double Task_XorMax(cTaskContext& ctx) const;
 

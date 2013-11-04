@@ -369,21 +369,6 @@ void cPopulationInterface::KillOrganism(cAvidaContext& ctx, int cell_id)
 }
 
 
-void cPopulationInterface::Kaboom(int distance, cAvidaContext& ctx) 
-{
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
-  m_world->GetPopulation().Kaboom(cell, ctx, distance); 
-}
-
-
-bool cPopulationInterface::InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code)
-{
-  assert(parent != NULL);
-  assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == host);
-  
-  return m_world->GetPopulation().ActivateParasite(host, parent, label, injected_code);
-}
-
 bool cPopulationInterface::UpdateMerit(double new_merit)
 {
   return m_world->GetPopulation().UpdateMerit(m_cell_id, new_merit);

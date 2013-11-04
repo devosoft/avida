@@ -49,17 +49,11 @@ using namespace Avida;
 cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, Systematics::Source src)
   : m_world(world)
   , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.Properties().Get(s_ext_prop_name_instset).StringValue()).GetNumNops())
-  , m_src(src)
-  , m_interface(NULL)
   , m_org_list_index(-1)
   , m_input_pointer(0)
   , m_input_buf(world->GetEnvironment().GetInputSize())
   , m_output_buf(world->GetEnvironment().GetOutputSize())
   , m_max_executed(-1)
-  , m_is_running(false)
-  , m_is_dead(false)
-  , m_northerly(0)
-  , m_easterly(0)
   , m_forage_target(-1)
   , m_show_ft(-1)
   , m_has_set_ft(false)
@@ -70,9 +64,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 {
 	// initializing this here because it may be needed during hardware creation:
 	m_id = m_world->GetStats().GetTotCreatures();
-  
-  m_hardware = m_world->GetHardwareManager().Create(ctx, this, genome);
-  
   initialize(ctx);
 }
 
@@ -101,8 +92,6 @@ void cOrganism::initialize(cAvidaContext& ctx)
 
 cOrganism::~cOrganism()
 {  
-  assert(m_is_running == false);
-  delete m_hardware;
 }
 
 
@@ -156,37 +145,30 @@ void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer,
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide)
 {
-  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, on_divide, false);
-  else doOutput(ctx, m_input_buf, m_output_buf, on_divide, false);
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, on_divide);
+  else doOutput(ctx, m_input_buf, m_output_buf, on_divide);
 }
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
 {
   m_output_buf.Add(value);
-  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, false);
-  else doOutput(ctx, m_input_buf, m_output_buf, false, false);
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false);
+  else doOutput(ctx, m_input_buf, m_output_buf, false);
 }
 
-void cOrganism::DoOutput(cAvidaContext& ctx, const int value, bool is_parasite)
-{
-  m_output_buf.Add(value);
-  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite);
-  else doOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite);
-}
 
 void cOrganism::DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
 {
   output_buffer.Add(value);
-  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, input_buffer, output_buffer, false, false);
-  else doOutput(ctx, input_buffer, output_buffer, false, false);
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, input_buffer, output_buffer, false);
+  else doOutput(ctx, input_buffer, output_buffer, false);
 }
 
 
 void cOrganism::doOutput(cAvidaContext& ctx, 
                          tBuffer<int>& input_buffer, 
                          tBuffer<int>& output_buffer,
-                         const bool on_divide,
-                         bool is_parasite)
+                         const bool on_divide)
 {  
   const Apto::Array<double> & global_resource_count = m_interface->GetResources(ctx);
   
@@ -230,7 +212,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   
   
   m_phenotype.TestOutput(ctx, taskctx, global_resource_count, m_phenotype.GetCurRBinsAvail(), global_res_change,
-                         insts_triggered, is_parasite);
+                         insts_triggered);
   
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -247,8 +229,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
 void cOrganism::doAVOutput(cAvidaContext& ctx, 
                          tBuffer<int>& input_buffer, 
                          tBuffer<int>& output_buffer,
-                         const bool on_divide,
-                         bool is_parasite)
+                         const bool on_divide)
 {  
   //Avatar output has to be seperate from doOutput to ensure avatars, not the true orgs, are triggering reactions
   
@@ -293,8 +274,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   const Apto::Array<double>& av_res_count = m_interface->GetAVResources(ctx);
   
   
-  m_phenotype.TestOutput(ctx, taskctx, av_res_count, m_phenotype.GetCurRBinsAvail(), avatar_res_change, insts_triggered,
-                         is_parasite);
+  m_phenotype.TestOutput(ctx, taskctx, av_res_count, m_phenotype.GetCurRBinsAvail(), avatar_res_change, insts_triggered);
   
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -319,25 +299,6 @@ void cOrganism::NotifyDeath(cAvidaContext& ctx)
 }
 
 
-
-bool cOrganism::InjectParasite(Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code)
-{
-  assert(m_interface);
-  return m_interface->InjectParasite(this, parent, label, injected_code);
-}
-
-bool cOrganism::ParasiteInfectHost(Systematics::UnitPtr parasite)
-{
-  if (!m_hardware->ParasiteInfectHost(parasite)) return false;
-  
-  m_parasites.Push(parasite);
-  return true;
-}
-
-void cOrganism::ClearParasites()
-{
-  m_parasites.Resize(0);
-}
 
 
 double cOrganism::CalcMeritRatio()

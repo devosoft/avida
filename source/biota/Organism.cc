@@ -149,7 +149,7 @@ namespace Avida {
       template <class T> class OrgPropOfType : public OrgPropRetrievalContainer
       {
       private:
-        typedef T (Organism::*RetrieveFunction)();
+        typedef T (Organism::*RetrieveFunction)() const;
         
         PropertyID m_prop_id;
         RetrieveFunction m_fun;
@@ -196,8 +196,8 @@ void Avida::Biota::Organism::Initialize()
   
   DEFINE_PROP(genome, Apto::String, getGenomeString, "Genome");
   DEFINE_PROP(src_transmission_type, int, getSrcTransmissionType, "Source Transmission Type");
-  DEFINE_PROP(age, int, getAge, "Age");
-  DEFINE_PROP(generation, int, getGeneration, "Generation");
+  DEFINE_PROP(age, double, getAge, "Age");
+  DEFINE_PROP(generation, int, Generation, "Generation");
   DEFINE_PROP(last_copied_size, int, getLastCopied, "Last Copied Size");
   DEFINE_PROP(last_executed_size, int, getLastExecuted, "Last Exectuted Size");
   DEFINE_PROP(last_gestation_time, int, getLastGestation, "Last Gestation Time");
@@ -318,10 +318,10 @@ bool Avida::Biota::Internal::OrgPropertyMap::Serialize(ArchivePtr) const
 // Property Map Retrieival Functions
 // --------------------------------------------------------------------------------------------------------------
 
-Apto::String Avida::Biota::Organism::getGenomeString() { return m_initial_genome.AsString(); }
-int Avida::Biota::Organism::getSrcTransmissionType() { return m_src.transmission_type; }
-int Avida::Biota::Organism::getAge() { assert(false); return 0; /*return m_phenotype.GetAge();*/ }
-int Avida::Biota::Organism::getGeneration() { assert(false); return 0; /*return m_phenotype.GetGeneration();*/ }
+Apto::String Avida::Biota::Organism::getGenomeString() const { return m_initial_genome.AsString(); }
+int Avida::Biota::Organism::getSrcTransmissionType() const { return m_src.transmission_type; }
+double Avida::Biota::Organism::getAge() const { return Age();  }
+
 int Avida::Biota::Organism::getLastCopied() { assert(false); return 0; /*return m_phenotype.GetCopiedSize();*/ }
 int Avida::Biota::Organism::getLastExecuted() { assert(false); return 0; /*return m_phenotype.GetExecutedSize();*/ }
 int Avida::Biota::Organism::getLastGestation() { assert(false); return 0; /*return m_phenotype.GetGestationTime();*/ }

@@ -51,7 +51,6 @@
 #include "cStats.h"
 #include "cWorld.h"
 #include "cUserFeedback.h"
-#include "cParasite.h"
 #include "cBirthEntry.h"
 
 #include <cmath>
@@ -85,8 +84,6 @@ STATS_OUT_FILE(PrintCountData,              count.dat           );
 STATS_OUT_FILE(PrintTotalsData,             totals.dat          );
 STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
 STATS_OUT_FILE(PrintThreadsData,            threads.dat         );
-STATS_OUT_FILE(PrintHostTasksData,          host_tasks.dat      );
-STATS_OUT_FILE(PrintParasiteTasksData,      parasite_tasks.dat  );
 STATS_OUT_FILE(PrintTasksExeData,           tasks_exe.dat       );
 STATS_OUT_FILE(PrintNewTasksData,           newtasks.dat	);
 STATS_OUT_FILE(PrintNewReactionData,	    newreactions.dat	);
@@ -101,7 +98,6 @@ STATS_OUT_FILE(PrintTimeData,               time.dat            );
 STATS_OUT_FILE(PrintExtendedTimeData,       xtime.dat           );
 STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
 STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
-STATS_OUT_FILE(PrintParasiteData,           parasite.dat        );
 STATS_OUT_FILE(PrintPreyAverageData,        prey_average.dat   );
 STATS_OUT_FILE(PrintPredatorAverageData,    predator_average.dat   );
 STATS_OUT_FILE(PrintTopPredatorAverageData,    top_pred_average.dat   );
@@ -113,8 +109,6 @@ STATS_OUT_FILE(PrintPredatorVarianceData,   predator_variance.dat   );
 STATS_OUT_FILE(PrintTopPredatorVarianceData,   top_pred_variance.dat   );
 STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
-STATS_OUT_FILE(PrintInternalTasksData,      in_tasks.dat        );
-STATS_OUT_FILE(PrintInternalTasksQualData,  in_tasks_quality.dat);
 
 
 STATS_OUT_FILE(PrintOrganismLocation,       location.dat);
@@ -145,8 +139,6 @@ void Process(cAvidaContext&) { m_world->GetPopulation().METHOD(m_filename); }   
 }                                                                                         /* 13 */ \
 
 POP_OUT_FILE(PrintPhenotypeData,       phenotype_count.dat );
-POP_OUT_FILE(PrintHostPhenotypeData,      host_phenotype_count.dat );
-POP_OUT_FILE(PrintParasitePhenotypeData,  parasite_phenotype_count.dat );
 POP_OUT_FILE(PrintPhenotypeStatus,     phenotype_status.dat);
 
 
@@ -597,132 +589,7 @@ public:
   }
 };
 
-//Depth Histogram for Parasites Only
-class cActionPrintParasiteDepthHistogram : public cAction
-{
-private:
-  cString m_filename;
-public:
-  cActionPrintParasiteDepthHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
-  {
-    cString largs(args);
-    if (largs == "") m_filename = "depth_parasite_histogram.dat"; else m_filename = largs.PopWord();
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname=\"depth_parasite_histogram.dat\"]"; }
-  
-  void Process(cAvidaContext&)
-  {
-    // Output format:    update  min  max  histogram_values...
-    int min = INT_MAX;
-    int max = 0;
-    
-    // Two pass method
-    
-    // Loop through all genotypes getting min and max values
-    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
-    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
-    
-    while (it->Next()) {
-      Systematics::GroupPtr bg = it->Get();
-      int transmission_type = Apto::StrAs(bg->Properties().Get("src_transmission_type"));
-      if(transmission_type == Systematics::HORIZONTAL || transmission_type == Systematics::VERTICAL)
-      {
-        if (bg->Depth() < min) min = bg->Depth();
-        if (bg->Depth() > max) max = bg->Depth();
-      }
-    }
-    
-    //crappy hack, but sometimes we wont have parasite genotypes
-    if(min == INT_MAX) min=0;
-    
-    assert(max >= min);
-    
-    // Allocate the array for the bins (& zero)
-    Apto::Array<int> n(max - min + 1);
-    n.SetAll(0);
-    
-    // Loop through all genotypes binning the values
-    it = classmgr->ArbiterForRole("genotype")->Begin();
-    while (it->Next()) {
-      Systematics::GroupPtr bg = it->Get();
-      int transmission_type = Apto::StrAs(bg->Properties().Get("src_transmission_type"));
-      if(transmission_type == Systematics::HORIZONTAL || transmission_type == Systematics::VERTICAL)
-      {
-        n[bg->Depth() - min] += bg->NumUnits();
-      }
-    }
-    
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-    df->Write(m_world->GetStats().GetUpdate(), "Update");
-    df->Write(min, "Minimum");
-    df->Write(max, "Maximum");
-    for (int i = 0; i < n.GetSize(); i++)  df->WriteAnonymous(n[i]);
-    df->Endl();
-  }
-};
 
-//Depth Histogram for Parasites Only
-class cActionPrintHostDepthHistogram : public cAction
-{
-private:
-  cString m_filename;
-public:
-  cActionPrintHostDepthHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
-  {
-    cString largs(args);
-    if (largs == "") m_filename = "depth_host_histogram.dat"; else m_filename = largs.PopWord();
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname=\"depth_host_histogram.dat\"]"; }
-  
-  void Process(cAvidaContext&)
-  {
-    // Output format:    update  min  max  histogram_values...
-    int min = INT_MAX;
-    int max = 0;
-    
-    // Two pass method
-    
-    // Loop through all genotypes getting min and max values
-    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
-    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
-    
-    while (it->Next()) {
-      Systematics::GroupPtr bg = it->Get();
-      int transmission_type = Apto::StrAs(bg->Properties().Get("src_transmission_type"));
-      if(transmission_type == Systematics::HORIZONTAL || transmission_type == Systematics::VERTICAL)
-      {
-        if (bg->Depth() < min) min = bg->Depth();
-        if (bg->Depth() > max) max = bg->Depth();
-      }
-    }
-    
-    assert(max >= min);
-    
-    // Allocate the array for the bins (& zero)
-    Apto::Array<int> n(max - min + 1);
-    n.SetAll(0);
-    
-    // Loop through all genotypes binning the values
-    it = classmgr->ArbiterForRole("genotype")->Begin();
-    while (it->Next()) {
-      Systematics::GroupPtr bg = it->Get();
-      int transmission_type = Apto::StrAs(bg->Properties().Get("src_transmission_type"));
-      if(transmission_type == Systematics::HORIZONTAL || transmission_type == Systematics::VERTICAL)
-      {
-        n[bg->Depth() - min] += bg->NumUnits();
-      }
-    }
-    
-    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-    df->Write(m_world->GetStats().GetUpdate(), "Update");
-    df->Write(min, "Minimum");
-    df->Write(max, "Maximum");
-    for (int i = 0; i < n.GetSize(); i++)  df->WriteAnonymous(n[i]);
-    df->Endl();
-  }
-};
 
 
 class cActionEcho : public cAction
@@ -2442,246 +2309,6 @@ public:
 };
 
 
-//Dump the reaction grid from the last gestation cycle, so skip the 
-//test cpu, and just use what the phenotype has. 
-//LZ - dump task grid for only the hosts, skip the test cpu and just output the last
-//gestation cycle tasks.
-class cActionDumpHostTaskGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpHostTaskGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_task_hosts.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    cPopulation* pop = &m_world->GetPopulation();
-    
-    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-    
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
-        int task_sum = 0;
-        int cell_num = j * pop->GetWorldX() + i;
-        if (pop->GetCell(cell_num).IsOccupied() == true) {
-          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
-          cPhenotype& test_phenotype = organism->GetPhenotype();
-          
-          for (int k = 0; k < num_tasks; k++) {
-            if (test_phenotype.GetLastHostTaskCount()[k] > 0) task_sum += static_cast<int>(pow(2.0, k));
-          }
-        }
-        else { task_sum = -1; }
-        fp << task_sum << " ";
-      }
-      fp << endl;
-    }
-  }
-};
-
-
-//LZ - dump the parasite tasks, ignoring the test cpu and just output what was in the phenotype for the
-//last gestation of the parasite.
-class cActionDumpParasiteTaskGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpParasiteTaskGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_task_parasite.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    cPopulation* pop = &m_world->GetPopulation();
-    
-    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-    
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
-        int task_sum = 0;
-        int cell_num = j * pop->GetWorldX() + i;
-        if (pop->GetCell(cell_num).IsOccupied() == true) {
-          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
-          if(organism->GetNumParasites() > 0)
-          {
-            cPhenotype& test_phenotype = organism->GetPhenotype();
-            
-            for (int k = 0; k < num_tasks; k++) {
-              if (test_phenotype.GetLastParasiteTaskCount()[k] > 0) task_sum += static_cast<int>(pow(2.0, k));
-            }
-            
-          }
-          else { task_sum = -1; }
-        }
-        else { task_sum = -1; }
-        fp << task_sum << " ";
-      }
-      fp << endl;
-    }
-  }
-};
-
-class cActionDumpHostTaskGridComma : public cAction
-{
-private:
-  cString m_filename;
-
-public:
-  cActionDumpHostTaskGridComma(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_task_hosts_comma.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    cPopulation* pop = &m_world->GetPopulation();
-  
-    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
-        cString task_list = "";
-        int cell_num = i * pop->GetWorldX() + j;
-        if (pop->GetCell(cell_num).IsOccupied() == true) {
-          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
-          cPhenotype& test_phenotype = organism->GetPhenotype();
-          
-          for (int k = 0; k < num_tasks; k++) {
-            cString task_count_string = cStringUtil::Stringf("%d", test_phenotype.GetLastHostTaskCount()[k]);
-            task_list += task_count_string;
-            if (k != num_tasks -1)
-              task_list += ",";            
-          }
-        }
-        else { task_list = "-1"; }
-        fp << task_list << " ";
-      }
-      fp << endl;
-    }
-  }
-};
-
-
-class cActionDumpParasiteTaskGridComma : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpParasiteTaskGridComma(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_task_parasites_comma.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    cPopulation* pop = &m_world->GetPopulation();
-    
-    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
-        cString task_list = "";
-        int cell_num = i * pop->GetWorldX() + j;
-        if (pop->GetCell(cell_num).IsOccupied() == true) {
-          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
-          if(organism->GetNumParasites() > 0)
-          {
-            cPhenotype& test_phenotype = organism->GetPhenotype();
-          
-            for (int k = 0; k < num_tasks; k++) {
-              cString task_count_string = cStringUtil::Stringf("%d", test_phenotype.GetLastParasiteTaskCount()[k]);
-              task_list += task_count_string;
-              if (k != num_tasks -1)
-                task_list += ",";
-            }
-          }
-          else { task_list = "-1"; }
-        }
-        else { task_list = "-1"; }
-        fp << task_list << " ";
-      }
-      fp << endl;
-    }
-  }
-};
-
-
-//LZ - dump the parasite virulence grid
-class cActionDumpParasiteVirulenceGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpParasiteVirulenceGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_virulence.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    cPopulation* pop = &m_world->GetPopulation();
-    
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
-        double virulence = 0;
-        int cell_num = j * pop->GetWorldX() + i;
-        if (pop->GetCell(cell_num).IsOccupied() == true) {
-          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
-          if(organism->GetNumParasites() > 0)
-          {
-            Apto::Array<Systematics::UnitPtr> parasites = organism->GetParasites();
-            Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite;
-            parasite.DynamicCastFrom(parasites[0]);
-            virulence = parasite->GetVirulence();
-          }
-          else { virulence = -1; }
-        }
-        else { virulence = -1; }
-        fp << virulence << " ";
-      }
-      fp << endl;
-    }
-  }
-};
 
 
 
@@ -2761,52 +2388,6 @@ public:
           ConstInstructionSequencePtr seq;
           seq.DynamicCastFrom(organism->GetGenome().Representation());
           genome_seq = seq->AsString();
-        }
-        else { genome_seq = "-1"; }
-        fp << genome_seq << " ";
-      }
-      fp << endl;
-    }
-  }
-};
-
-class cActionDumpParasiteGenotypeGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpParasiteGenotypeGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext&)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_genome_parasite.%d.dat", m_world->GetStats().GetUpdate());
-    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
-    
-    cPopulation* pop = &m_world->GetPopulation();
-    
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
-        cString genome_seq("");
-        int cell_num = j * pop->GetWorldX() + i;
-        if (pop->GetCell(cell_num).IsOccupied() == true)
-        {
-          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
-          if(organism->GetNumParasites() > 0)
-          {
-            Apto::Array<Systematics::UnitPtr> parasites = organism->GetParasites();
-            Genome para_genome(parasites[0]->Properties().Get("genome"));
-            ConstInstructionSequencePtr seq;
-            seq.DynamicCastFrom(para_genome.Representation());
-            genome_seq = seq->AsString();
-          }
-          else { genome_seq = "0"; }
         }
         else { genome_seq = "-1"; }
         fp << genome_seq << " ";
@@ -3109,8 +2690,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintThreadsData>("PrintThreadsData");
   action_lib->Register<cActionPrintTasksData>("PrintTasksData");
   action_lib->Register<cActionPrintSoloTaskSnapshot>("PrintSoloTaskSnapshot");
-  action_lib->Register<cActionPrintHostTasksData>("PrintHostTasksData");
-  action_lib->Register<cActionPrintParasiteTasksData>("PrintParasiteTasksData");
   action_lib->Register<cActionPrintTasksExeData>("PrintTasksExeData");
   action_lib->Register<cActionPrintNewTasksData>("PrintNewTasksData");
   action_lib->Register<cActionPrintNewReactionData>("PrintNewReactionData");
@@ -3128,7 +2707,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintExtendedTimeData>("PrintExtendedTimeData");
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
-  action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
   
   action_lib->Register<cActionPrintPreyAverageData>("PrintPreyAverageData");
   action_lib->Register<cActionPrintPredatorAverageData>("PrintPredatorAverageData");
@@ -3150,14 +2728,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
   action_lib->Register<cActionPrintInstructionData>("PrintInstructionData");
-  action_lib->Register<cActionPrintInternalTasksData>("PrintInternalTasksData");
-  action_lib->Register<cActionPrintInternalTasksQualData>("PrintInternalTasksQualData");
   action_lib->Register<cActionPrintDynamicMaxMinData>("PrintDynamicMaxMinData");
   
   // Population Out Files
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
-  action_lib->Register<cActionPrintParasitePhenotypeData>("PrintParasitePhenotypeData");
-  action_lib->Register<cActionPrintHostPhenotypeData>("PrintHostPhenotypeData");
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
   
   
@@ -3170,8 +2744,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintData>("PrintData");
   action_lib->Register<cActionPrintInstructionAbundanceHistogram>("PrintInstructionAbundanceHistogram");
   action_lib->Register<cActionPrintDepthHistogram>("PrintDepthHistogram");
-  action_lib->Register<cActionPrintParasiteDepthHistogram>("PrintParasiteDepthHistogram");
-  action_lib->Register<cActionPrintHostDepthHistogram>("PrintHostDepthHistogram");
   action_lib->Register<cActionEcho>("Echo");
   action_lib->Register<cActionPrintGenotypeAbundanceHistogram>("PrintGenotypeAbundanceHistogram");
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
@@ -3200,16 +2772,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpMaxResGrid>("DumpMaxResGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpLastTaskGrid>("DumpLastTaskGrid");
-  action_lib->Register<cActionDumpHostTaskGrid>("DumpHostTaskGrid");
-  action_lib->Register<cActionDumpParasiteTaskGrid>("DumpParasiteTaskGrid");
-  action_lib->Register<cActionDumpHostTaskGridComma>("DumpHostTaskGridComma");
-  action_lib->Register<cActionDumpParasiteTaskGridComma>("DumpParasiteTaskGridComma");
-  action_lib->Register<cActionDumpParasiteVirulenceGrid>("DumpParasiteVirulenceGrid");
   
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
   action_lib->Register<cActionDumpGenomeLengthGrid>("DumpGenomeLengthGrid");
   action_lib->Register<cActionDumpGenotypeGrid>("DumpGenotypeGrid");
-  action_lib->Register<cActionDumpParasiteGenotypeGrid>("DumpParasiteGenotypeGrid");
   
   action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");
   

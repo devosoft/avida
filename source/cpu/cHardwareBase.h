@@ -175,10 +175,6 @@ public:
   virtual int GetNumThreads() const = 0;
   virtual int GetCurThread() const = 0;
   
-  // --------  Parasite Stuff  --------
-  virtual bool ParasiteInfectHost(Systematics::UnitPtr bu) = 0;
-  
-    
   // --------  Mutation  --------
   virtual int PointMutate(cAvidaContext& ctx, double override_mut_rate = 0.0);
 

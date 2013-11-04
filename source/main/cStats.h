@@ -154,7 +154,6 @@ private:
   int num_breed_true_creatures;
   int num_creatures;
   int num_executed;
-  int num_parasites;
   int num_no_birth_creatures;
   int num_single_thread_creatures;
   int num_multi_thread_creatures;
@@ -164,12 +163,6 @@ private:
   int tot_organisms;
   int tot_executed;
 
-  // --------  Parasite Task Stats  ---------
-  Apto::Array<int> tasks_host_current;
-  Apto::Array<int> tasks_host_last;
-  Apto::Array<int> tasks_parasite_current;
-  Apto::Array<int> tasks_parasite_last;
-    
 
   // --------  Organism Task Stats  ---------
   mutable bool m_collect_env_test_stats;
@@ -185,13 +178,6 @@ private:
   Apto::Array<int> prev_task_count;
   Apto::Array<int> cur_task_count;
   Apto::Array<int> new_reaction_count;
-
-  Apto::Array<int> task_internal_cur_count;
-  Apto::Array<int> task_internal_last_count;
-  Apto::Array<double> task_internal_cur_quality;
-  Apto::Array<double> task_internal_last_quality;
-  Apto::Array<double> task_internal_cur_max_quality;
-  Apto::Array<double> task_internal_last_max_quality;
 
   Apto::Array<int> m_reaction_cur_count;
   Apto::Array<int> m_reaction_last_count;
@@ -316,7 +302,6 @@ public:
   inline void SetNumGenotypes(int new_genotypes, int num_historic);
   inline void SetNumCreatures(int new_creatures) { num_creatures = new_creatures; }
   inline void SetBreedTrueCreatures(int in_num_breed_true_creatures);
-  inline void SetNumParasites(int in_num_parasites);
   inline void SetNumNoBirthCreatures(int in_num_no_birth_creatures);
   inline void SetNumSingleThreadCreatures(int in_num_single_thread_creatures);
   inline void SetNumMultiThreadCreatures(int in_num_multi_thread_creatures);
@@ -446,8 +431,6 @@ public:
   void IncNumMigrations() { num_migrations++; }
 
   void AddCurTask(int task_num) { task_cur_count[task_num]++; }
-  void AddCurHostTask(int task_num) { tasks_host_current[task_num]++; }
-  void AddCurParasiteTask(int task_num) { tasks_parasite_current[task_num]++; }
 
   void AddCurTaskQuality(int task_num, double quality)
   {
@@ -456,8 +439,6 @@ public:
   }
   void AddLastTask(int task_num) { task_last_count[task_num]++; }
   void AddTestTask(int task_num) { task_test_count[task_num]++; }
-  void AddLastHostTask(int task_num) { tasks_host_last[task_num]++; }
-  void AddLastParasiteTask(int task_num) { tasks_parasite_last[task_num]++; }
   
   bool ShouldCollectEnvTestStats() const { return m_collect_env_test_stats; }
 
@@ -475,22 +456,6 @@ public:
   void IncTaskExeCount(int task_num, int task_count) { task_exe_count[task_num] += task_count; }
   void ZeroTasks();
 
-  void AddLastSense(int) { /*sense_last_count[res_comb_index]++;*/ }
-  void IncLastSenseExeCount(int, int) { /*sense_last_exe_count[res_comb_index]+= count;*/ }
-
-  // internal resource bins and use of internal resources
-  void AddCurInternalTask(int task_num) { task_internal_cur_count[task_num]++; }
-  void AddCurInternalTaskQuality(int task_num, double quality)
-  {
-  	task_internal_cur_quality[task_num] += quality;
-  	if(quality > task_internal_cur_max_quality[task_num])	task_internal_cur_max_quality[task_num] = quality;
-  }
-  void AddLastInternalTask(int task_num) { task_internal_last_count[task_num]++; }
-  void AddLastInternalTaskQuality(int task_num, double quality)
-  {
-  	task_internal_last_quality[task_num] += quality;
-  	if(quality > task_internal_last_max_quality[task_num]) task_internal_last_max_quality[task_num] = quality;
-  }
 
   void AddCurReaction(int reaction) { m_reaction_cur_count[reaction]++; }
   void AddLastReaction(int reaction) { m_reaction_last_count[reaction]++; }
@@ -520,7 +485,6 @@ public:
   int GetBreedTrue() const          { return num_breed_true; }
   int GetBreedTrueCreatures() const { return num_breed_true_creatures; }
   int GetNumCreatures() const       { return num_creatures; }
-  int GetNumParasites() const       { return num_parasites; }
   int GetNumNoBirthCreatures() const{ return num_no_birth_creatures; }
   int GetNumSingleThreadCreatures() const { return num_single_thread_creatures; }
   int GetNumMultiThreadCreatures() const { return num_multi_thread_creatures; }
@@ -530,28 +494,16 @@ public:
   int GetTotCreatures() const       { return tot_organisms; }
 
   int GetTaskCurCount(int task_num) const { return task_cur_count[task_num]; }
-  int GetTaskHostCurCount(int task_num) const { return tasks_host_current[task_num]; }
-  int GetTaskParasiteCurCount(int task_num) const { return tasks_parasite_current[task_num]; }
   double GetTaskCurQuality(int task_num) const { return task_cur_quality[task_num]/(double)task_cur_count[task_num]; }
 
   int GetTaskTestCount(int task_num) const {return task_test_count[task_num];}
   
   int GetTaskLastCount(int task_num) const {return task_last_count[task_num];}
-  int GetTaskLastHostCount(int task_num) const {return tasks_host_last[task_num];}
-  int GetTaskLastParasiteCount(int task_num) const {return tasks_parasite_last[task_num];}
   double GetTaskLastQuality(int task_num) const {return task_last_quality[task_num]/(double)task_last_count[task_num];}
 
   double GetTaskMaxCurQuality(int task_num) const { return task_cur_max_quality[task_num];}
   double GetTaskMaxLastQuality(int task_num) const { return task_last_max_quality[task_num];}
   int GetTaskExeCount(int task_num) const { return task_exe_count[task_num]; }
-
-  // internal resource bins and use of internal resources
-  int GetInternalTaskCurCount(int task_num) const { return task_internal_cur_count[task_num]; }
-  double GetInternalTaskCurQuality(int task_num) const { return task_internal_cur_quality[task_num]/(double)task_internal_cur_count[task_num]; }
-  double GetInternalTaskMaxCurQuality(int task_num) const { return task_internal_cur_max_quality[task_num]; }
-  int GetInternalTaskLastCount(int task_num) const { return task_internal_last_count[task_num]; }
-  double GetInternalTaskLastQuality(int task_num) const { return task_internal_last_quality[task_num]/(double)task_internal_last_count[task_num]; }
-  double GetInternalTaskMaxLastQuality(int task_num) const { return task_internal_last_max_quality[task_num]; }
 
   const Apto::Array<int>& GetReactions() const { return m_reaction_last_count; }
   const Apto::Array<double> & GetResources() const { return resource_count; }
@@ -615,7 +567,6 @@ public:
   void PrintAverageData(const cString& filename);
   void PrintErrorData(const cString& filename);
   void PrintVarianceData(const cString& filename);
-  void PrintParasiteData(const cString& filename);
   
   void PrintPreyAverageData(const cString& filename);
   void PrintPredatorAverageData(const cString& filename);
@@ -644,7 +595,6 @@ public:
   void PrintTasksData(const cString& filename);
   void PrintSoloTaskSnapshot(const cString& filename, cAvidaContext& ctx);
   void PrintHostTasksData(const cString& filename);
-  void PrintParasiteTasksData(const cString& filename);
   void PrintTasksExeData(const cString& filename);
   void PrintTasksQualData(const cString& filename);
   void PrintDynamicMaxMinData(const cString& filename);
@@ -664,8 +614,6 @@ public:
   void PrintMutationRateData(const cString& filename);
   void PrintSenseData(const cString& filename);
   void PrintSenseExeData(const cString& filename);
-  void PrintInternalTasksData(const cString& filename);
-  void PrintInternalTasksQualData(const cString& filename);
   void PrintExtendedTimeData(const cString& filename);
   void PrintNumOrgsKilledData(const cString& filename);
   void PrintTargets(const cString& filename);
@@ -700,10 +648,6 @@ inline void cStats::SetBreedTrueCreatures(int in_num_breed_true_creatures)
   num_breed_true_creatures = in_num_breed_true_creatures;
 }
 
-inline void cStats::SetNumParasites(int in_num_parasites)
-{
-  num_parasites = in_num_parasites;
-}
 
 inline void cStats::SetNumNoBirthCreatures(int in_num_no_birth_creatures)
 {

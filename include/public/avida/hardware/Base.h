@@ -66,6 +66,7 @@ namespace Avida {
       
       LIB_EXPORT virtual bool ProcessCycleStep(Context& ctx, Update current_update, bool speculative) = 0;
       
+      LIB_EXPORT virtual bool AcceptSymbiont(Context& ctx, Biota::OrganismPtr symbiont) = 0;
       
       LIB_EXPORT inline void AttachListener(CycleListener* listener) { m_cycle_listeners.Insert(listener); }
       LIB_EXPORT inline void DetachListener(CycleListener* listener) { m_cycle_listeners.Remove(listener); }

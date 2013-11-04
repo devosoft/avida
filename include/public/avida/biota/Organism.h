@@ -62,6 +62,15 @@ namespace Avida {
       Genome m_offspring_genome;
       Internal::OrgPropertyMap* m_prop_map;
       
+      Update m_update_born;     // When was the organism created
+      Update m_update_reset;    // When was the organism most recently reset
+      Update m_update_current;  // The time when the organism was last executed
+      int m_generation;
+      
+      struct {
+        bool m_is_alive:1;
+      };
+      
     public:
       LIB_EXPORT Organism(Universe* universe, const Genome& genome, Systematics::Source src, int parent_generation);
       LIB_EXPORT ~Organism();
@@ -72,12 +81,27 @@ namespace Avida {
       LIB_EXPORT Systematics::Source UnitSource() const;
       LIB_EXPORT const Genome& UnitGenome() const;
       LIB_EXPORT const PropertyMap& Properties() const;
+      
+      
+      // Reproduction
+      LIB_EXPORT Genome& OffspringGenome() { return m_offspring_genome; }
+      LIB_EXPORT const Genome& OffspringGenome() const { return m_offspring_genome; }
+      
+      
+      // Organism Status
+      LIB_EXPORT inline const Update& UpdateBorn() const { return m_update_born; }
+      LIB_EXPORT inline const Update& UpdateReset() const { return m_update_reset; }
+      LIB_EXPORT inline const Update& UpdateCurrent() const { return m_update_current; }
+      
+      LIB_EXPORT inline Update Age() const { return m_update_current - m_update_reset; }
+      LIB_EXPORT inline int Generation() const { return m_generation; }
+      LIB_EXPORT inline bool IsAlive() const { return m_is_alive; }
 
     private:
-      LIB_LOCAL Apto::String getGenomeString();
-      LIB_LOCAL int getSrcTransmissionType();
-      LIB_LOCAL int getAge();
-      LIB_LOCAL int getGeneration();
+      LIB_LOCAL Apto::String getGenomeString() const;
+      LIB_LOCAL int getSrcTransmissionType() const;
+      LIB_LOCAL double getAge() const;
+      
       LIB_LOCAL int getLastCopied();
       LIB_LOCAL int getLastExecuted();
       LIB_LOCAL int getLastGestation();

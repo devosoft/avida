@@ -30,17 +30,8 @@
 
 #include "cMutationRates.h"
 #include "cPhenotype.h"
-#include "cOrgInterface.h"
 #include "tBuffer.h"
-#include "tList.h"
 
-#include <deque>
-#include <iostream>
-#include <set>
-#include <string>
-#include <vector>
-#include <utility>
-#include <map>
 
 class cAvidaContext;
 class cEnvironment;
@@ -55,11 +46,8 @@ class cOrganism : public Systematics::Unit
 {
 private:
   cWorld* m_world;
-  cHardwareBase* m_hardware;              // The actual machinery running this organism.
   cPhenotype m_phenotype;                 // Descriptive attributes of organism.
-  Systematics::Source m_src;
   
-  Apto::Array<Systematics::UnitPtr> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   int m_id;                               // unique id for each org, is just the number it was born
 
@@ -71,17 +59,10 @@ private:
   tBuffer<int> m_output_buf;
 
   int m_max_executed;      // Max number of instruction executed before death.  
-  bool m_is_running;       // Does this organism have the CPU?
-  bool m_is_dead;          // Is this organism dead?
 
 public:
   cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, Systematics::Source src);
   ~cOrganism();
-  
-  // --------  Systematics::Unit Methods  --------
-  Systematics::Source UnitSource() const { return m_src; }
-  const Genome& UnitGenome() const { return m_initial_genome; }
-  
   
 
   // --------  Support Methods  --------
@@ -117,13 +98,6 @@ public:
 
   int GetMaxExecuted() const { return m_max_executed; }
 
-  Genome& OffspringGenome() { return m_offspring_genome; }
-  const Genome& OffspringGenome() const { return m_offspring_genome; }
-
-  void SetRunning(bool in_running) { m_is_running = in_running; }
-  bool IsRunning() { return m_is_running; }
-
-  bool IsDead() { return m_is_dead; }
 
   inline void SetOrgIndex(int index) { m_org_list_index = index; }
   inline int GetOrgIndex() { return m_org_list_index; }
@@ -155,8 +129,6 @@ public:
   void DoOutput(cAvidaContext& ctx, const bool on_divide=false);
   //! Add the passed-in value to this organism's output buffer, and check tasks (on_divide=false).
   void DoOutput(cAvidaContext& ctx, const int value);
-  //! Check if we're calling this from a parasite.
-  void DoOutput(cAvidaContext& ctx, const int value, bool is_parasite);
   //! Check tasks based on the passed-in IO buffers and value (on_divide=false).
   void DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value);    
 
@@ -167,13 +139,6 @@ public:
   // --------  Divide Methods  --------
   bool Divide_CheckViable(cAvidaContext& ctx);
   bool ActivateDivide(cAvidaContext& ctx);
-
-  // --------  Parasite Interactions  --------
-  bool InjectParasite(Systematics::UnitPtr parent, const cString& label, const InstructionSequence& genome);
-  bool ParasiteInfectHost(Systematics::UnitPtr parasite);
-  int GetNumParasites() const { return m_parasites.GetSize(); }
-  const Apto::Array<Systematics::UnitPtr>& GetParasites() const { return m_parasites; }
-  void ClearParasites();
 
 
   // -------- Movement ---------
@@ -231,9 +196,9 @@ private:
 private:
 
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
-  void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide, bool is_parasite=false);
+  void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide);
   // Need seperate doOutput function for avatars to avoid triggering reactions by true orgs
-  void doAVOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide, bool is_parasite=false);
+  void doAVOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide);
 };
 
 

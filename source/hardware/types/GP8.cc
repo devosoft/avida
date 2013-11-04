@@ -1327,7 +1327,7 @@ bool Hardware::Types::GP8::Divide_Main(cAvidaContext& ctx, int mem_space_used, i
   if (parent_alive) { // If the parent is no longer alive, all of this is moot
     switch (m_world->GetConfig().DIVIDE_METHOD.Get()) {
       case DIVIDE_METHOD_SPLIT:
-        Reset(ctx);  // This will wipe out all parasites on a divide.
+        Reset(ctx);
         break;
         
       case DIVIDE_METHOD_BIRTH:

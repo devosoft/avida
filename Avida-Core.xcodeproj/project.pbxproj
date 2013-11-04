@@ -30,7 +30,6 @@
 		7023EC600C0A431B00362B9C /* cHardwareExperimental.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */; };
 		7023EC620C0A431B00362B9C /* cHardwareManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BD690905CE5F0028A785 /* cHardwareManager.cc */; };
 		7023EC640C0A431B00362B9C /* cHardwareStatusPrinter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */; };
-		7023EC650C0A431B00362B9C /* cHardwareTransSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7049F2D70A66859300640512 /* cHardwareTransSMT.cc */; };
 		7023EC660C0A431B00362B9C /* cHeadCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02608C3C71300F50912 /* cHeadCPU.cc */; };
 		7023EC6B0C0A431B00362B9C /* cInitFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891A08F7630100FC65FE /* cInitFile.cc */; };
 		7023EC700C0A431B00362B9C /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C6FFE0B83F265003174C1 /* cInstSet.cc */; };
@@ -63,8 +62,6 @@
 		7039885009F00D080052ACE7 /* events.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D809EE8501001AEA89 /* events.cfg */; };
 		7042DF15128C90240062501F /* Listener.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7042DF13128C90240062501F /* Listener.cc */; };
 		704349DE16B9ACCC00759960 /* Library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704349DD16B9ACCC00759960 /* Library.cc */; };
-		7049F3590A66A8F500640512 /* instset-transsmt.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 7049F3550A66A8F500640512 /* instset-transsmt.cfg */; };
-		7049F3730A66AD7E00640512 /* default-transsmt.org in Create work dir */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
 		704C629A160CA668004E9B25 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
 		704C629D160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 704C629C160CA6CC004E9B25 /* libtcmalloc-1.4.a */; };
 		704C629E160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 704C629C160CA6CC004E9B25 /* libtcmalloc-1.4.a */; };
@@ -85,7 +82,6 @@
 		70556A2416BC317700EAAA9B /* GP8.h in Headers */ = {isa = PBXBuildFile; fileRef = 70556A1E16BC317700EAAA9B /* GP8.h */; };
 		70556A2516BC317700EAAA9B /* Heads.h in Headers */ = {isa = PBXBuildFile; fileRef = 70556A1F16BC317700EAAA9B /* Heads.h */; };
 		70556A2616BC317700EAAA9B /* HeadsEx.h in Headers */ = {isa = PBXBuildFile; fileRef = 70556A2016BC317700EAAA9B /* HeadsEx.h */; };
-		70556A2916BC317700EAAA9B /* SMT.h in Headers */ = {isa = PBXBuildFile; fileRef = 70556A2316BC317700EAAA9B /* SMT.h */; };
 		70556A3516BC325D00EAAA9B /* Config.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70556A2A16BC325C00EAAA9B /* Config.cc */; };
 		70556A3616BC325D00EAAA9B /* InstLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70556A2B16BC325D00EAAA9B /* InstLib.cc */; };
 		70556A3716BC325D00EAAA9B /* InstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70556A2C16BC325D00EAAA9B /* InstSet.cc */; };
@@ -93,7 +89,6 @@
 		70556A3916BC325D00EAAA9B /* GP8.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70556A2F16BC325D00EAAA9B /* GP8.cc */; };
 		70556A3A16BC325D00EAAA9B /* Heads.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70556A3016BC325D00EAAA9B /* Heads.cc */; };
 		70556A3B16BC325D00EAAA9B /* HeadsEx.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70556A3116BC325D00EAAA9B /* HeadsEx.cc */; };
-		70556A3E16BC325D00EAAA9B /* SMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70556A3416BC325D00EAAA9B /* SMT.cc */; };
 		705B103D1073AEF1002242E6 /* default-heads-sex.org in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10321073AC1F002242E6 /* default-heads-sex.org */; };
 		705B103E1073AEF1002242E6 /* default-heads.org in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10331073AC1F002242E6 /* default-heads.org */; };
 		705B10401073AF05002242E6 /* instset-heads-sex.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10351073AC1F002242E6 /* instset-heads-sex.cfg */; };
@@ -170,7 +165,6 @@
 		70D5B4E814F4009000D15FFD /* cAnalyzeTreeStats_Gamma.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */; };
 		70D5B4E914F4009000D15FFD /* cModularityAnalysis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 700D9C450F1A8F34002CC711 /* cModularityAnalysis.cc */; };
 		70D5B4EA14F4009000D15FFD /* cAnalyzeTreeStats_CumulativeStemminess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */; };
-		70D5B4EB14F4009000D15FFD /* cParasite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7090F57410D956A400ECFBA1 /* cParasite.cc */; };
 		70D5B4EC14F4009000D15FFD /* cBirthSelectionHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447BFD0F83B47900E1BF72 /* cBirthSelectionHandler.cc */; };
 		70D5B4ED14F4009000D15FFD /* cBitArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7020828D0FB9F2DF00637AD6 /* cBitArray.cc */; };
 		70D5B4EE14F4009000D15FFD /* cWorld.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BC6309059A970028A785 /* cWorld.cc */; };
@@ -208,8 +202,6 @@
 				7039884E09F00D030052ACE7 /* avida.cfg in Create work dir */,
 				7039884F09F00D060052ACE7 /* environment.cfg in Create work dir */,
 				7039885009F00D080052ACE7 /* events.cfg in Create work dir */,
-				7049F3590A66A8F500640512 /* instset-transsmt.cfg in Create work dir */,
-				7049F3730A66AD7E00640512 /* default-transsmt.org in Create work dir */,
 			);
 			name = "Create work dir";
 			runOnlyForDeploymentPostprocessing = 1;
@@ -302,12 +294,6 @@
 		70447CA20F83DB2900E1BF72 /* cBirthGenomeSizeHandler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBirthGenomeSizeHandler.cc; sourceTree = "<group>"; };
 		70447CA50F83DB5600E1BF72 /* cBirthMateSelectHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBirthMateSelectHandler.h; sourceTree = "<group>"; };
 		70447CA60F83DB5600E1BF72 /* cBirthMateSelectHandler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBirthMateSelectHandler.cc; sourceTree = "<group>"; };
-		7049F2D70A66859300640512 /* cHardwareTransSMT.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cHardwareTransSMT.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		7049F2D80A66859300640512 /* cHardwareTransSMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cHardwareTransSMT.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		7049F3540A66A8F500640512 /* instset-smt.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-smt.cfg"; sourceTree = "<group>"; };
-		7049F3550A66A8F500640512 /* instset-transsmt.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-transsmt.cfg"; sourceTree = "<group>"; };
-		7049F36E0A66AD7E00640512 /* default-smt.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-smt.org"; sourceTree = "<group>"; };
-		7049F36F0A66AD7E00640512 /* default-transsmt.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-transsmt.org"; sourceTree = "<group>"; };
 		704ADBC30A6EEFC300666970 /* DriverActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DriverActions.h; sourceTree = "<group>"; };
 		704ADBC40A6EEFC300666970 /* DriverActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DriverActions.cc; sourceTree = "<group>"; };
 		704C629C160CA6CC004E9B25 /* libtcmalloc-1.4.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libtcmalloc-1.4.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -333,7 +319,6 @@
 		70556A1E16BC317700EAAA9B /* GP8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GP8.h; sourceTree = "<group>"; };
 		70556A1F16BC317700EAAA9B /* Heads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heads.h; sourceTree = "<group>"; };
 		70556A2016BC317700EAAA9B /* HeadsEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeadsEx.h; sourceTree = "<group>"; };
-		70556A2316BC317700EAAA9B /* SMT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMT.h; sourceTree = "<group>"; };
 		70556A2A16BC325C00EAAA9B /* Config.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Config.cc; sourceTree = "<group>"; };
 		70556A2B16BC325D00EAAA9B /* InstLib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InstLib.cc; sourceTree = "<group>"; };
 		70556A2C16BC325D00EAAA9B /* InstSet.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InstSet.cc; sourceTree = "<group>"; };
@@ -341,7 +326,6 @@
 		70556A2F16BC325D00EAAA9B /* GP8.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GP8.cc; sourceTree = "<group>"; };
 		70556A3016BC325D00EAAA9B /* Heads.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heads.cc; sourceTree = "<group>"; };
 		70556A3116BC325D00EAAA9B /* HeadsEx.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeadsEx.cc; sourceTree = "<group>"; };
-		70556A3416BC325D00EAAA9B /* SMT.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SMT.cc; sourceTree = "<group>"; };
 		705ABB170A8A6A6000A6A80E /* EnvironmentActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnvironmentActions.h; sourceTree = "<group>"; };
 		705ABB180A8A6A6000A6A80E /* EnvironmentActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = EnvironmentActions.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		705ACD4C0A13FED4002D5BA0 /* PrintActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrintActions.h; sourceTree = "<group>"; };
@@ -350,12 +334,10 @@
 		705B100F1073AB58002242E6 /* environment-9resource.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "environment-9resource.cfg"; sourceTree = "<group>"; };
 		705B10101073AB58002242E6 /* environment-all-logic.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "environment-all-logic.cfg"; sourceTree = "<group>"; };
 		705B10111073AB58002242E6 /* environment-cascade.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "environment-cascade.cfg"; sourceTree = "<group>"; };
-		705B10121073AB58002242E6 /* instset-heads-30-parasite.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads-30-parasite.cfg"; sourceTree = "<group>"; };
 		705B10131073AB58002242E6 /* instset-heads-32-oldsearch.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads-32-oldsearch.cfg"; sourceTree = "<group>"; };
 		705B10141073AB58002242E6 /* instset-no-heads-19-short.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-19-short.cfg"; sourceTree = "<group>"; };
 		705B10151073AB58002242E6 /* instset-no-heads-24.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-24.cfg"; sourceTree = "<group>"; };
 		705B10161073AB58002242E6 /* instset-no-heads-27-no-nops.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-27-no-nops.cfg"; sourceTree = "<group>"; };
-		705B10171073AB58002242E6 /* instset-no-heads-27-parasite-no-inject.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-27-parasite-no-inject.cfg"; sourceTree = "<group>"; };
 		705B10181073AB58002242E6 /* instset-no-heads-28-base.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-28-base.cfg"; sourceTree = "<group>"; };
 		705B10191073AB58002242E6 /* instset-no-heads-28-const.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-28-const.cfg"; sourceTree = "<group>"; };
 		705B101A1073AB58002242E6 /* instset-no-heads-29-memsize.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-29-memsize.cfg"; sourceTree = "<group>"; };
@@ -365,15 +347,9 @@
 		705B101E1073AB58002242E6 /* organism-heads-50.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-50.org"; sourceTree = "<group>"; };
 		705B101F1073AB58002242E6 /* organism-heads-100.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-100.org"; sourceTree = "<group>"; };
 		705B10201073AB58002242E6 /* organism-heads-multi-birth.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-multi-birth.org"; sourceTree = "<group>"; };
-		705B10211073AB58002242E6 /* organism-heads-parasite-host.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-parasite-host.org"; sourceTree = "<group>"; };
-		705B10221073AB58002242E6 /* organism-heads-parasite-host2.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-parasite-host2.org"; sourceTree = "<group>"; };
-		705B10231073AB58002242E6 /* organism-heads-parasite-infected.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-parasite-infected.org"; sourceTree = "<group>"; };
-		705B10241073AB58002242E6 /* organism-heads-parasite-infected2.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-parasite-infected2.org"; sourceTree = "<group>"; };
 		705B10251073AB58002242E6 /* organism-no-heads.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-no-heads.org"; sourceTree = "<group>"; };
-		705B10311073AC1F002242E6 /* default-gx.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "default-gx.org"; sourceTree = "<group>"; };
 		705B10321073AC1F002242E6 /* default-heads-sex.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "default-heads-sex.org"; sourceTree = "<group>"; };
 		705B10331073AC1F002242E6 /* default-heads.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "default-heads.org"; sourceTree = "<group>"; };
-		705B10341073AC1F002242E6 /* instset-gx.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-gx.cfg"; sourceTree = "<group>"; };
 		705B10351073AC1F002242E6 /* instset-heads-sex.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads-sex.cfg"; sourceTree = "<group>"; };
 		705B10361073AC1F002242E6 /* instset-heads.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads.cfg"; sourceTree = "<group>"; };
 		705E53CE16A7102100392BA7 /* File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
@@ -457,8 +433,6 @@
 		708D3135134231E500AE5CEF /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
 		708D3E3214A429DF00204169 /* GenomeLoader.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GenomeLoader.cc; sourceTree = "<group>"; };
 		708D3E3514A42AA500204169 /* GenomeLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenomeLoader.h; sourceTree = "<group>"; };
-		7090F57310D956A400ECFBA1 /* cParasite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParasite.h; sourceTree = "<group>"; };
-		7090F57410D956A400ECFBA1 /* cParasite.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cParasite.cc; sourceTree = "<group>"; };
 		7095867814439E5E00243303 /* Provider.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Provider.cc; sourceTree = "<group>"; };
 		7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cEnvReqs.h; sourceTree = "<group>"; };
 		709CDEA2149BF18100995644 /* Listener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Listener.h; sourceTree = "<group>"; };
@@ -636,22 +610,16 @@
 		702A670F121C746A0014F776 /* config */ = {
 			isa = PBXGroup;
 			children = (
-				705B10311073AC1F002242E6 /* default-gx.org */,
 				705B10321073AC1F002242E6 /* default-heads-sex.org */,
 				705B10331073AC1F002242E6 /* default-heads.org */,
-				705B10341073AC1F002242E6 /* instset-gx.cfg */,
 				705B10351073AC1F002242E6 /* instset-heads-sex.cfg */,
 				705B10361073AC1F002242E6 /* instset-heads.cfg */,
 				70B1A7590B7E431F00067486 /* experimental.org */,
 				70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */,
-				7049F36E0A66AD7E00640512 /* default-smt.org */,
-				7049F36F0A66AD7E00640512 /* default-transsmt.org */,
 				707AF2D309EE8501001AEA89 /* analyze.cfg */,
 				707AF2D509EE8501001AEA89 /* avida.cfg */,
 				707AF2D709EE8501001AEA89 /* environment.cfg */,
 				707AF2D809EE8501001AEA89 /* events.cfg */,
-				7049F3540A66A8F500640512 /* instset-smt.cfg */,
-				7049F3550A66A8F500640512 /* instset-transsmt.cfg */,
 				707AF2DD09EE8501001AEA89 /* misc */,
 			);
 			name = config;
@@ -828,7 +796,6 @@
 				70556A1E16BC317700EAAA9B /* GP8.h */,
 				70556A1F16BC317700EAAA9B /* Heads.h */,
 				70556A2016BC317700EAAA9B /* HeadsEx.h */,
-				70556A2316BC317700EAAA9B /* SMT.h */,
 			);
 			path = types;
 			sourceTree = "<group>";
@@ -839,7 +806,6 @@
 				70556A2F16BC325D00EAAA9B /* GP8.cc */,
 				70556A3016BC325D00EAAA9B /* Heads.cc */,
 				70556A3116BC325D00EAAA9B /* HeadsEx.cc */,
-				70556A3416BC325D00EAAA9B /* SMT.cc */,
 			);
 			path = types;
 			sourceTree = "<group>";
@@ -1014,12 +980,10 @@
 				705B100F1073AB58002242E6 /* environment-9resource.cfg */,
 				705B10101073AB58002242E6 /* environment-all-logic.cfg */,
 				705B10111073AB58002242E6 /* environment-cascade.cfg */,
-				705B10121073AB58002242E6 /* instset-heads-30-parasite.cfg */,
 				705B10131073AB58002242E6 /* instset-heads-32-oldsearch.cfg */,
 				705B10141073AB58002242E6 /* instset-no-heads-19-short.cfg */,
 				705B10151073AB58002242E6 /* instset-no-heads-24.cfg */,
 				705B10161073AB58002242E6 /* instset-no-heads-27-no-nops.cfg */,
-				705B10171073AB58002242E6 /* instset-no-heads-27-parasite-no-inject.cfg */,
 				705B10181073AB58002242E6 /* instset-no-heads-28-base.cfg */,
 				705B10191073AB58002242E6 /* instset-no-heads-28-const.cfg */,
 				705B101A1073AB58002242E6 /* instset-no-heads-29-memsize.cfg */,
@@ -1029,10 +993,6 @@
 				705B101E1073AB58002242E6 /* organism-heads-50.org */,
 				705B101F1073AB58002242E6 /* organism-heads-100.org */,
 				705B10201073AB58002242E6 /* organism-heads-multi-birth.org */,
-				705B10211073AB58002242E6 /* organism-heads-parasite-host.org */,
-				705B10221073AB58002242E6 /* organism-heads-parasite-host2.org */,
-				705B10231073AB58002242E6 /* organism-heads-parasite-infected.org */,
-				705B10241073AB58002242E6 /* organism-heads-parasite-infected2.org */,
 				705B10251073AB58002242E6 /* organism-no-heads.org */,
 			);
 			path = misc;
@@ -1319,8 +1279,6 @@
 				70C5BD690905CE5F0028A785 /* cHardwareManager.cc */,
 				70C1F01508C3C6FC00F50912 /* cHardwareStatusPrinter.h */,
 				70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */,
-				7049F2D80A66859300640512 /* cHardwareTransSMT.h */,
-				7049F2D70A66859300640512 /* cHardwareTransSMT.cc */,
 				706C6FFE0B83F265003174C1 /* cInstSet.cc */,
 				706C6FFD0B83F254003174C1 /* cInstSet.h */,
 				70C1F02608C3C71300F50912 /* cHeadCPU.cc */,
@@ -1363,8 +1321,6 @@
 				70B0868308F49E9700FC65FE /* cOrganism.h */,
 				70B0868708F49EA800FC65FE /* cOrganism.cc */,
 				7005A70909BA0FBE0007E16E /* cOrgInterface.h */,
-				7090F57310D956A400ECFBA1 /* cParasite.h */,
-				7090F57410D956A400ECFBA1 /* cParasite.cc */,
 				70B0869B08F49F3900FC65FE /* cPhenotype.h */,
 				70B0869C08F49F4800FC65FE /* cPhenotype.cc */,
 				70B0868508F49E9700FC65FE /* cPopulation.h */,
@@ -1480,7 +1436,6 @@
 				70556A2416BC317700EAAA9B /* GP8.h in Headers */,
 				70556A2516BC317700EAAA9B /* Heads.h in Headers */,
 				70556A2616BC317700EAAA9B /* HeadsEx.h in Headers */,
-				70556A2916BC317700EAAA9B /* SMT.h in Headers */,
 				70392027178DE091009BBCC5 /* NopSequence.h in Headers */,
 				7039202B178DEF5C009BBCC5 /* Avida.h in Headers */,
 			);
@@ -1644,7 +1599,6 @@
 				7023EC600C0A431B00362B9C /* cHardwareExperimental.cc in Sources */,
 				7023EC620C0A431B00362B9C /* cHardwareManager.cc in Sources */,
 				7023EC640C0A431B00362B9C /* cHardwareStatusPrinter.cc in Sources */,
-				7023EC650C0A431B00362B9C /* cHardwareTransSMT.cc in Sources */,
 				7023EC660C0A431B00362B9C /* cHeadCPU.cc in Sources */,
 				7023EC960C0A431B00362B9C /* cTestCPU.cc in Sources */,
 				7023EC420C0A431B00362B9C /* cAvidaConfig.cc in Sources */,
@@ -1661,7 +1615,6 @@
 				7023EC7A0C0A431B00362B9C /* cMutationRates.cc in Sources */,
 				7023EC7C0C0A431B00362B9C /* cOrganism.cc in Sources */,
 				70DC275B178F526E00A93DA4 /* InstArchCPU.cc in Sources */,
-				70D5B4EB14F4009000D15FFD /* cParasite.cc in Sources */,
 				7023EC7D0C0A431B00362B9C /* cPhenotype.cc in Sources */,
 				7023EC7E0C0A431B00362B9C /* cPopulation.cc in Sources */,
 				7023EC7F0C0A431B00362B9C /* cPopulationCell.cc in Sources */,
@@ -1716,7 +1669,6 @@
 				70556A3916BC325D00EAAA9B /* GP8.cc in Sources */,
 				70556A3A16BC325D00EAAA9B /* Heads.cc in Sources */,
 				70556A3B16BC325D00EAAA9B /* HeadsEx.cc in Sources */,
-				70556A3E16BC325D00EAAA9B /* SMT.cc in Sources */,
 				70392029178DE0AA009BBCC5 /* NopSequence.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

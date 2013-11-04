@@ -1079,15 +1079,8 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
                               cTaskContext& taskctx, const Apto::Array<int>& task_count,
                               Apto::Array<int>& reaction_count,
                               const Apto::Array<double>& resource_count,
-                              const Apto::Array<double>& rbins_count,
-                              bool is_parasite) const
+                              const Apto::Array<double>& rbins_count) const
 {
-  //flag to skip processing of parasite tasks
-  bool skipProcessing = false;
-  
-  if (is_parasite && m_world->GetConfig().PARASITE_SKIP_REACTIONS.Get())
-    skipProcessing = true;
-  
   // Do setup for reaction tests...
   m_tasklib.SetupTests(taskctx);
   
@@ -1111,9 +1104,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     
     // Examine requisites on this reaction
     if (TestRequisites(taskctx, cur_reaction, task_cnt, reaction_count, on_divide) == false) {
-      if (!skipProcessing){
-        continue;
-      }
+      continue;
     }
     
     
@@ -1132,18 +1123,16 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     // Mark this task as performed...
     result.MarkTask(task_id, task_quality, taskctx.GetTaskValue());
     
-    if (!skipProcessing) {
-      // And let's process it!
-      DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count,
-                  task_quality, task_probability, task_cnt, i, result, taskctx);
-      
-      if (result.ReactionTriggered(i) == true) {
-        reaction_count[i]++;
-        taskctx.GetOrganism()->GetPhenotype().SetFirstReactionCycle(i);
-        taskctx.GetOrganism()->GetPhenotype().SetFirstReactionExec(i);
-      }
-      // Note: the reaction is actually marked as being performed inside DoProcesses.
+    // And let's process it!
+    DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count,
+                task_quality, task_probability, task_cnt, i, result, taskctx);
+    
+    if (result.ReactionTriggered(i) == true) {
+      reaction_count[i]++;
+      taskctx.GetOrganism()->GetPhenotype().SetFirstReactionCycle(i);
+      taskctx.GetOrganism()->GetPhenotype().SetFirstReactionExec(i);
     }
+    // Note: the reaction is actually marked as being performed inside DoProcesses.
   }
   
   return result.GetActive();

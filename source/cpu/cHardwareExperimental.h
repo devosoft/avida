@@ -291,9 +291,6 @@ public:
   int GetCurThread() const      { return m_cur_thread; }
   
 
-  // --------  Parasite Stuff  --------
-  bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
-
   
 private:
   

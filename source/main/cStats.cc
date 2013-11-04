@@ -71,7 +71,6 @@ cStats::cStats(cWorld* world)
 , num_breed_true_creatures(0)
 , num_creatures(0)
 , num_executed(0)
-, num_parasites(0)
 , num_no_birth_creatures(0)
 , num_single_thread_creatures(0)
 , num_multi_thread_creatures(0)
@@ -100,11 +99,6 @@ cStats::cStats(cWorld* world)
   task_test_count.Resize(num_tasks);
   m_collect_env_test_stats = false;
   
-  tasks_host_current.Resize(num_tasks);
-  tasks_host_last.Resize(num_tasks);
-  tasks_parasite_current.Resize(num_tasks);
-  tasks_parasite_last.Resize(num_tasks);
-  
   task_cur_quality.Resize(num_tasks);
   task_last_quality.Resize(num_tasks);
   task_cur_max_quality.Resize(num_tasks);
@@ -129,19 +123,6 @@ cStats::cStats(cWorld* world)
   cur_task_count.SetAll(0);
   new_reaction_count.SetAll(0);
   
-  // Stats for internal resource use
-  task_internal_cur_count.Resize(num_tasks);
-  task_internal_last_count.Resize(num_tasks);
-  task_internal_cur_quality.Resize(num_tasks);
-  task_internal_last_quality.Resize(num_tasks);
-  task_internal_cur_max_quality.Resize(num_tasks);
-  task_internal_last_max_quality.Resize(num_tasks);
-  task_internal_cur_count.SetAll(0);
-  task_internal_last_count.SetAll(0);
-  task_internal_cur_quality.SetAll(0.0);
-  task_internal_last_quality.SetAll(0.0);
-  task_internal_cur_max_quality.SetAll(0.0);
-  task_internal_last_max_quality.SetAll(0.0);
   
   ZeroFTInst();
   
@@ -301,7 +282,6 @@ mgr->Register(name, activate); \
   m_data_manager.Add("breed_true",     "Count of Breed-True Births",             &cStats::GetBreedTrue);
   m_data_manager.Add("bred_true",      "Count of Organisms that have Bred True", &cStats::GetBreedTrueCreatures);
   m_data_manager.Add("num_cpus",       "Count of Organisms in Population",       &cStats::GetNumCreatures);
-  m_data_manager.Add("num_parasites",  "Count of Parasites in Population",       &cStats::GetNumParasites);
   m_data_manager.Add("threads",        "Count of Threads in Population",         &cStats::GetNumThreads);
   m_data_manager.Add("num_no_birth",   "Count of Childless Organisms",           &cStats::GetNumNoBirthCreatures);
   
@@ -369,21 +349,10 @@ void cStats::ZeroTasks()
   task_last_count.SetAll(0);
   task_test_count.SetAll(0);
   
-  tasks_host_current.SetAll(0);
-  tasks_host_last.SetAll(0);
-  tasks_parasite_current.SetAll(0);
-  tasks_parasite_last.SetAll(0);
-  
   task_cur_quality.SetAll(0);
   task_last_quality.SetAll(0);
   task_last_max_quality.SetAll(0);
   task_cur_max_quality.SetAll(0);
-  task_internal_cur_count.SetAll(0);
-  task_internal_cur_quality.SetAll(0);
-  task_internal_cur_max_quality.SetAll(0);
-  task_internal_last_count.SetAll(0);
-  task_internal_last_quality.SetAll(0);
-  task_internal_last_max_quality.SetAll(0);
 }
 
 void cStats::ZeroReactions()
@@ -459,13 +428,6 @@ void cStats::ProcessUpdate()
   task_cur_max_quality.SetAll(0);
   task_last_max_quality.SetAll(0);
   task_exe_count.SetAll(0);
-  
-  task_internal_cur_count.SetAll(0);
-  task_internal_last_count.SetAll(0);
-  task_internal_cur_quality.SetAll(0);
-  task_internal_last_quality.SetAll(0);
-  task_internal_cur_max_quality.SetAll(0);
-  task_internal_last_max_quality.SetAll(0);
   
   sense_last_count.SetAll(0);
   sense_last_exe_count.SetAll(0);
@@ -600,17 +562,6 @@ void cStats::PrintVarianceData(const cString& filename)
   df->Endl();
 }
 
-
-void cStats::PrintParasiteData(const cString& filename)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment("Avida Dominant Parasite Data");
-  df->WriteTimeStamp();
-  df->Write(m_update, "Update");
-  df->Write(num_parasites, "Number of Extant Parasites");
-  df->Endl();
-}
 
 void cStats::PrintPreyAverageData(const cString& filename)
 {
@@ -1044,31 +995,6 @@ void cStats::PrintHostTasksData(const cString& filename)
 	df->Endl();
 }
 
-void cStats::PrintParasiteTasksData(const cString& filename)
-{
-	cString file = filename;
-  
-	// flag to print both tasks.dat and taskquality.dat
-	if (filename == "tasksq.dat")
-	{
-		file = "parasite_tasks.dat";
-	}
-  
-	// print tasks.dat
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
-	df->WriteComment("Avida tasks data");
-	df->WriteTimeStamp();
-	df->WriteComment("First column gives the current update, next columns give the number");
-	df->WriteComment("of Parasites that have the particular task");
-  
-	df->Write(m_update,   "Update");
-	for(int i = 0; i < tasks_parasite_last.GetSize(); i++) {
-		df->Write(tasks_parasite_last[i], task_names[i] );
-	}
-	df->Endl();
-}
-
-
 void cStats::PrintTasksExeData(const cString& filename)
 {
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
@@ -1434,51 +1360,6 @@ void cStats::PrintSenseExeData(const cString& filename)
   
   for( int i=0; i < sense_last_exe_count.GetSize(); i++ ){
     df->Write(sense_last_exe_count[i], sense_names[i]);
-  }
-  df->Endl();
-}
-
-void cStats::PrintInternalTasksData(const cString& filename)
-{
-	cString file = filename;
-  
-	// flag to print both in_tasks.dat and in_taskquality.dat
-	if (filename == "in_tasksq.dat")
-	{
-		file = "in_tasks.dat";
-		PrintInternalTasksQualData("in_taskquality.dat");
-	}
-  
-	// print in_tasks.dat
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)file);
-	df->WriteComment("Avida tasks data: tasks performed with internal resources");
-	df->WriteTimeStamp();
-	df->WriteComment("First column gives the current update, next columns give the number");
-	df->WriteComment("of organisms that have the particular task, performed with internal resources, ");
-	df->WriteComment("as a component of their merit");
-  
-	df->Write(m_update,   "Update");
-	for(int i = 0; i < task_internal_last_count.GetSize(); i++) {
-		df->Write(task_internal_last_count[i], task_names[i] );
-	}
-	df->Endl();
-}
-
-void cStats::PrintInternalTasksQualData(const cString& filename)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment("Avida tasks quality data: tasks performed using internal resources");
-  df->WriteTimeStamp();
-  df->WriteComment("First column gives the current update, rest give average and max task quality ");
-  df->WriteComment("for those tasks performed using internal resources");
-  df->Write(m_update, "Update");
-  for(int i = 0; i < task_internal_last_count.GetSize(); i++) {
-    double qual = 0.0;
-    if (task_internal_last_count[i] > 0)
-      qual = task_internal_last_quality[i] / static_cast<double>(task_internal_last_count[i]);
-    df->Write(qual, task_names[i] + " Average");
-    df->Write(task_internal_last_max_quality[i], task_names[i] + " Max");
   }
   df->Endl();
 }

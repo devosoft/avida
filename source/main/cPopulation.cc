@@ -46,7 +46,6 @@
 #include "cHardwareManager.h"
 #include "cInitFile.h"
 #include "cOrganism.h"
-#include "cParasite.h"
 #include "cPhenotype.h"
 #include "cPopulationCell.h"
 #include "cStats.h"
@@ -556,239 +555,9 @@ void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
   }
 }
 
-bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host)
-{
-  //default to failing the interaction
-  bool interaction_fails = true;
-  int infection_mechanism = m_world->GetConfig().INFECTION_MECHANISM.Get();
-  
-  cPhenotype& parent_phenotype = infected_host->GetPhenotype();
-  
-  Apto::Array<int> host_task_counts = target_host->GetPhenotype().GetLastHostTaskCount();
-  Apto::Array<int> parasite_task_counts = parent_phenotype.GetLastParasiteTaskCount();
-  
-  
-  if (infection_mechanism == 0) {
-    interaction_fails = false;
-  }
-  
-  // 1: Parasite must match at least 1 task the host does (Overlap)
-  if (infection_mechanism == 1) {
-    //handle skipping of first task
-    int start = 0;
-    if (m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get()) {
-      start += 1;
-    }
-    
-    //find if there is a matching task
-    for (int i = start; i < host_task_counts.GetSize(); i++) {
-      if (host_task_counts[i] > 0 && parasite_task_counts[i] > 0) {
-        //inject should succeed if there is a matching task
-        interaction_fails = false;
-      }
-    }
-  }
-  
-  // 2: Parasite must perform at least one task the host does not (Inverse Overlap)
-  if (infection_mechanism == 2) {
-    //handle skipping of first task
-    int start = 0;
-    if (m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get()) {
-      start += 1;
-    }
-    
-    //find if there is a parasite task that the host isn't doing
-    for (int i = start; i < host_task_counts.GetSize(); i++) {
-      if (host_task_counts[i] == 0 && parasite_task_counts[i] > 0) {
-        //inject should succeed if there is a matching task
-        interaction_fails = false;
-      }
-    }
-  }
-  
-  // 3: Parasite tasks must match host tasks exactly. (Matching Alleles) 
-  if (infection_mechanism == 3) {
-    //handle skipping of first task
-    int start = 0;
-    if (m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get()) {
-      start += 1;
-    }
-    
-    //This time if we trigger the if statments we DO fail. 
-    interaction_fails = false;
-    for (int i = start; i < host_task_counts.GetSize(); i++) {
-      if ((host_task_counts[i] == 0 && parasite_task_counts[i] > 0) || 
-          (host_task_counts[i] > 0 && parasite_task_counts[i] == 0)) {
-        //inject should fail if either the host or parasite is doing a task the other isn't.
-        interaction_fails = true;
-      }
-    }
-  }
-  
-  // 4: Parasite tasks must overcome hosts. (GFG) 
-  if (infection_mechanism == 4) {
-    //handle skipping of first task
-    int start = 0;
-    if (m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get()) {
-      start += 1;
-    }
-    
-    //This time if we trigger the if statments we DO fail. 
-    interaction_fails = false;
-    bool parasite_overcomes = false;
-    for (int i = start; i < host_task_counts.GetSize(); i++) {
-      if (host_task_counts[i] > 0 && parasite_task_counts[i] == 0 ) {
-        //inject should fail if the host overcomes the parasite.
-        interaction_fails = true;
-      }
-      
-      //check if parasite overcomes at least one task
-      if (parasite_task_counts[i] > 0 && host_task_counts[i] == 0) {
-        parasite_overcomes = true;
-      }
-    }
-    
-    //if host doesn't overcome, infection may still fail if the parasite doesn't overcome the host
-    if (interaction_fails == false && parasite_overcomes == false) {
-      interaction_fails = true;
-    }
-  }
-  
-  // 5: Quantitative Matching Allele -- probability of infection based on phenotype overlap
-  if (infection_mechanism == 5) {
-    //handle skipping of first task
-    int start = 0;
-    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get()) {
-      start += 1;
-    }
-    
-    //calculate how many tasks have the same binary phenotype (i.e. how much overlap)
-    int num_overlap = 0;
-    for (int i = start; i < host_task_counts.GetSize(); i++) {
-      if ((host_task_counts[i] > 0 && parasite_task_counts[i] > 0) ||
-          (host_task_counts[i] == 0 && parasite_task_counts[i] == 0)) {
-        num_overlap += 1;
-      }
-    }
-    
-    //turn number into proportion of available tasks that match
-    double prop_overlap = double(num_overlap) / (host_task_counts.GetSize() - start);
-    
-    //use config exponent and calculate probability of infection
-    double infection_exponent = m_world->GetConfig().INJECT_QMA_EXPONENT.Get();
-    double prob_success = pow(prop_overlap, infection_exponent);
-    
-    //check if infection should fail based on probability
-    double rand = m_world->GetRandom().GetDouble();
-    interaction_fails = rand > prob_success;
-  }
-  
-  // TODO: Add other infection mechanisms -LZ
-  // : Probabilistic infection based on overlap. (GFG)
-  // : Multiplicative GFG (special case of above?)
-  // : Randomization of tasks that match between hosts and parasites?
-  // : ??
-  if (interaction_fails) {
-    double prob_success = m_world->GetConfig().INJECT_DEFAULT_SUCCESS.Get();
-    double rand = m_world->GetRandom().GetDouble();
-    
-    if (rand > prob_success) {
-      return false;
-    }
-  }
 
-  return true;
-}
 
-bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code)
-{
-  assert(parent != NULL);
-  
-  // Quick check for empty parasites
-  if (injected_code.GetSize() == 0) return false;
-  
-  
-  // Pull the host cell
-  const int host_id = host->GetOrgInterface().GetCellID();
-  assert(host_id >= 0 && host_id < cell_array.GetSize());
-  cPopulationCell& host_cell = cell_array[host_id];
-  
-  
-  // Select a target organism
-  // @TODO - activate parasite target selection should account for hardware type
-  cOrganism* target_organism = NULL;
-  if (m_world->GetConfig().BIRTH_METHOD.Get() ==  POSITION_OFFSPRING_FULL_SOUP_RANDOM) {
-    target_organism = GetCell(m_world->GetRandom().GetUInt(cell_array.GetSize())).GetOrganism();
-  } else {
-    target_organism = host_cell.ConnectionList().GetPos(m_world->GetRandom().GetUInt(host->GetNeighborhoodSize()))->GetOrganism();
-  }     
-  
-  if (target_organism == NULL) return false;
-  
-  
-  // Pre-check target hardware
-  const cHardwareBase& hw = target_organism->GetHardware();
-  if (hw.GetType() != parent->UnitGenome().HardwareType() ||
-      hw.GetInstSet().GetInstSetName() != (const char*)parent->UnitGenome().Properties().Get(s_prop_id_instset).StringValue() ||
-      hw.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
-  
-  //Handle host specific injection
-  if(TestForParasiteInteraction(host, target_organism) == false)
-    return false;
-  
-  
-  // Attempt actual parasite injection
-  
-  Genome mg(parent->UnitGenome().HardwareType(), parent->UnitGenome().Properties(), GeneticRepresentationPtr(new InstructionSequence(injected_code)));
-  Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite(new cParasite(m_world, mg, Apto::StrAs(parent->Properties().Get("generation")), Systematics::Source(Systematics::HORIZONTAL, (const char*)label)));
-  
-  //Handle potential virulence evolution if this parasite is comming from a parasite 
-  //and virulence is inhereted from the parent (source == 1)
-  if (parent->UnitSource().transmission_type == Systematics::HORIZONTAL && m_world->GetConfig().VIRULENCE_SOURCE.Get() == 1)
-  {
-    //mutate virulence
-    // m_world->GetConfig().PARASITE_VIRULENCE.Get()
-    Apto::SmartPtr<cParasite, Apto::InternalRCObject> parent_parasite;
-    parent_parasite.DynamicCastFrom(parent);
-    double oldVir = parent_parasite->GetVirulence();
-    
-    //default to not mutating
-    double newVir = oldVir;
-    
-    //but if we do mutate...
-    if (m_world->GetRandom().GetDouble() < m_world->GetConfig().VIRULENCE_MUT_RATE.Get())
-    {
-      //get this in a temp variable so we don't have to make the next line huge
-      double vir_sd = m_world->GetConfig().VIRULENCE_SD.Get();
-      
-      //sd^2 = varience
-      newVir = m_world->GetRandom().GetRandNormal(oldVir, vir_sd * vir_sd);
-      
-    }
-    parasite->SetVirulence(Apto::Max(Apto::Min(newVir, 1.0), 0.0));
-  }
-  else
-  {
-    //get default virulence
-    parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
-  }
-  if (!target_organism->ParasiteInfectHost(parasite)) {
-    return false;
-  }
-  
-  //If parasite was successfully injected, update the phenotype for the parasite in new organism
-  target_organism->GetPhenotype().SetLastParasiteTaskCount(host->GetPhenotype().GetLastParasiteTaskCount());
-  
-  // Classify the parasite
-  Systematics::ConstParentGroupsPtr pgrps(new Systematics::ConstParentGroups(1));
-  (*pgrps)[0] = parent->SystematicsGroupMembership();
-  parasite->SelfClassify(pgrps);
-  
-  // Handle post injection actions
-  if (m_world->GetConfig().INJECT_STERILIZES_HOST.Get()) target_organism->GetPhenotype().Sterilize();
-  
-  return true;
-}
+
 
 bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group, bool is_inject)
 {
@@ -1932,7 +1701,6 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
 
   // Counts...
   int num_breed_true = 0;
-  int num_parasites = 0;
   int num_no_birth = 0;
   int num_multi_thread = 0;
   int num_single_thread = 0;
@@ -1999,32 +1767,6 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
         stats.AddLastTaskQuality(j, phenotype.GetLastTaskQuality()[j]);
         stats.IncTaskExeCount(j, phenotype.GetLastTaskCount()[j]);
       }
-      
-      if (phenotype.GetCurHostTaskCount()[j] > 0) {
-        stats.AddCurHostTask(j);
-      }
-      
-      if (phenotype.GetLastHostTaskCount()[j] > 0) {
-        stats.AddLastHostTask(j);
-      }
-      
-      if (phenotype.GetCurParasiteTaskCount()[j] > 0) {
-        stats.AddCurParasiteTask(j);
-      }
-      
-      if (phenotype.GetLastParasiteTaskCount()[j] > 0) {
-        stats.AddLastParasiteTask(j);
-      }
-      
-      if (phenotype.GetCurInternalTaskCount()[j] > 0) {
-        stats.AddCurInternalTask(j);
-        stats.AddCurInternalTaskQuality(j, phenotype.GetCurInternalTaskQuality()[j]);
-      }
-      
-      if (phenotype.GetLastInternalTaskCount()[j] > 0) {
-        stats.AddLastInternalTask(j);
-        stats.AddLastInternalTaskQuality(j, phenotype.GetLastInternalTaskQuality()[j]);
-      }
     }
 
     if (stats.ShouldCollectEnvTestStats()) {
@@ -2050,16 +1792,7 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
       }
     }
     
-    // Test what resource combinations this creature has sensed
-    for (int j = 0; j < stats.GetSenseSize(); j++) {
-      if (phenotype.GetLastSenseCount()[j] > 0) {
-        stats.AddLastSense(j);
-        stats.IncLastSenseExeCount(j, phenotype.GetLastSenseCount()[j]);
-      }
-    }
-    
     // Increment the counts for all qualities the organism has...
-    num_parasites += organism->GetNumParasites();
     if (phenotype.ParentTrue()) num_breed_true++;
     if (phenotype.GetNumDivides() == 0) num_no_birth++;
     if (phenotype.IsMultiThread()) num_multi_thread++;
@@ -2077,7 +1810,6 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   
   stats.SetBreedTrueCreatures(num_breed_true);
   stats.SetNumNoBirthCreatures(num_no_birth);
-  stats.SetNumParasites(num_parasites);
   stats.SetNumSingleThreadCreatures(num_single_thread);
   stats.SetNumMultiThreadCreatures(num_multi_thread);
   stats.SetNumThreads(num_threads);
@@ -3057,25 +2789,6 @@ void cPopulation::InjectGroup(const Genome& genome, Systematics::Source src, cAv
   Inject(genome, src, ctx, cell_id, merit, neutral, true, group_id, forager_type, trace);
 }
 
-void cPopulation::InjectParasite(const cString& label, const InstructionSequence& injected_code, int cell_id)
-{
-  cOrganism* target_organism = cell_array[cell_id].GetOrganism();
-  // target_organism-> target_organism->GetHardware().GetCurThread()
-  if (target_organism == NULL) return;
-  
-  GeneticRepresentationPtr rep(new InstructionSequence(injected_code));
-  HashPropertyMap props;
-  cHardwareManager::SetupPropertyMap(props, (const char*)target_organism->GetHardware().GetInstSet().GetInstSetName());
-  Genome mg(target_organism->GetHardware().GetType(), props, rep);
-  Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite(new cParasite(m_world, mg, 0, Systematics::Source(Systematics::HORIZONTAL, (const char*)label)));
-  
-  //default to configured parasite virulence
-  parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
-  
-  if (target_organism->ParasiteInfectHost(parasite)) {
-    Systematics::Manager::Of(m_world->GetNewWorld())->ClassifyNewUnit(parasite);
-  }
-}
 
 void cPopulation::ResetInputs(cAvidaContext& ctx)
 {
@@ -3455,161 +3168,6 @@ void cPopulation::PrintPhenotypeStatus(const cString& filename)
   
 }
 
-void cPopulation::PrintHostPhenotypeData(const cString& filename)
-{
-  set<int> ids;
-  set<cString> complete;
-  double average_shannon_diversity = 0.0;
-  int num_orgs = 0; //could get from elsewhere, but more self-contained this way
-  double average_num_tasks = 0.0;
-  
-  //implementing a very poor man's hash...
-  Apto::Array<int> phenotypes;
-  Apto::Array<int> phenotype_counts;
-  
-  for (int i = 0; i < cell_array.GetSize(); i++) {
-    // Only look at cells with organisms in them.
-    if (cell_array[i].IsOccupied() == false) continue;
-    
-    num_orgs++;
-    const cPhenotype& phenotype = cell_array[i].GetOrganism()->GetPhenotype();
-    
-    int total_tasks = 0;
-    int id = 0;
-    cString key;
-    for (int j = 0; j < phenotype.GetLastHostTaskCount().GetSize(); j++) {
-      if (phenotype.GetLastHostTaskCount()[j] > 0) id += (1 << j);
-      if (phenotype.GetLastHostTaskCount()[j] > 0) average_num_tasks += 1.0;
-      key += cStringUtil::Stringf("%i-", phenotype.GetLastHostTaskCount()[j]);
-      total_tasks += phenotype.GetLastHostTaskCount()[j];
-    }
-    ids.insert(id);
-    complete.insert(key);
-    
-    // add one to our count for this key
-    int k;
-    for(k=0; k<phenotypes.GetSize(); k++)
-    {
-      if (phenotypes[k] == id) {
-        phenotype_counts[k] = phenotype_counts[k] + 1;
-        break;
-      }
-    }
-    // this is a new key
-    if (k == phenotypes.GetSize()) {
-      phenotypes.Push(id);
-      phenotype_counts.Push(1);
-    }
-    
-    // go through again to calculate Shannon Diversity of task counts
-    // now that we know the total number of tasks done
-    double shannon_diversity = 0;
-    for (int j = 0; j < phenotype.GetLastHostTaskCount().GetSize(); j++) {
-      if (phenotype.GetLastHostTaskCount()[j] == 0) continue;
-      double fraction = static_cast<double>(phenotype.GetLastHostTaskCount()[j]) / static_cast<double>(total_tasks);
-      shannon_diversity -= fraction * log(fraction) / log(2.0);
-    }
-    
-    average_shannon_diversity += static_cast<double>(shannon_diversity);
-  }
-  
-  double shannon_diversity_of_phenotypes = 0.0;
-  for (int j = 0; j < phenotype_counts.GetSize(); j++) {
-    double fraction = static_cast<double>(phenotype_counts[j]) / static_cast<double>(num_orgs);
-    shannon_diversity_of_phenotypes -= fraction * log(fraction) / log(2.0);
-  }
-  
-  average_shannon_diversity /= static_cast<double>(num_orgs);
-  average_num_tasks /= num_orgs;
-  
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  df->WriteTimeStamp();
-  df->Write(m_world->GetStats().GetUpdate(), "Update");
-  df->Write(static_cast<int>(ids.size()), "Unique Phenotypes (by task done)");
-  df->Write(shannon_diversity_of_phenotypes, "Shannon Diversity of Phenotypes (by task done)");
-  df->Write(static_cast<int>(complete.size()), "Unique Phenotypes (by task count)");
-  df->Write(average_shannon_diversity, "Average Phenotype Shannon Diversity (by task count)");
-  df->Write(average_num_tasks, "Average Task Diversity (number of different tasks)");
-  df->Endl();
-}
-
-void cPopulation::PrintParasitePhenotypeData(const cString& filename)
-{
-  set<int> ids;
-  set<cString> complete;
-  double average_shannon_diversity = 0.0;
-  int num_orgs = 0; //could get from elsewhere, but more self-contained this way
-  double average_num_tasks = 0.0;
-  
-  //implementing a very poor man's hash...
-  Apto::Array<int> phenotypes;
-  Apto::Array<int> phenotype_counts;
-  
-  for (int i = 0; i < cell_array.GetSize(); i++) {
-    // Only look at cells with organisms in them.
-    if (cell_array[i].IsOccupied() == false) continue;
-    
-    num_orgs++;
-    const cPhenotype& phenotype = cell_array[i].GetOrganism()->GetPhenotype();
-    
-    int total_tasks = 0;
-    int id = 0;
-    cString key;
-    for (int j = 0; j < phenotype.GetLastParasiteTaskCount().GetSize(); j++) {
-      if (phenotype.GetLastParasiteTaskCount()[j] > 0) id += (1 << j);
-      if (phenotype.GetLastParasiteTaskCount()[j] > 0) average_num_tasks += 1.0;
-      key += cStringUtil::Stringf("%i-", phenotype.GetLastParasiteTaskCount()[j]);
-      total_tasks += phenotype.GetLastParasiteTaskCount()[j];
-    }
-    ids.insert(id);
-    complete.insert(key);
-    
-    // add one to our count for this key
-    int k;
-    for(k=0; k<phenotypes.GetSize(); k++)
-    {
-      if (phenotypes[k] == id) {
-        phenotype_counts[k] = phenotype_counts[k] + 1;
-        break;
-      }
-    }
-    // this is a new key
-    if (k == phenotypes.GetSize()) {
-      phenotypes.Push(id);
-      phenotype_counts.Push(1);
-    }
-    
-    // go through again to calculate Shannon Diversity of task counts
-    // now that we know the total number of tasks done
-    double shannon_diversity = 0;
-    for (int j = 0; j < phenotype.GetLastParasiteTaskCount().GetSize(); j++) {
-      if (phenotype.GetLastParasiteTaskCount()[j] == 0) continue;
-      double fraction = static_cast<double>(phenotype.GetLastParasiteTaskCount()[j]) / static_cast<double>(total_tasks);
-      shannon_diversity -= fraction * log(fraction) / log(2.0);
-    }
-    
-    average_shannon_diversity += static_cast<double>(shannon_diversity);
-  }
-  
-  double shannon_diversity_of_phenotypes = 0.0;
-  for (int j = 0; j < phenotype_counts.GetSize(); j++) {
-    double fraction = static_cast<double>(phenotype_counts[j]) / static_cast<double>(num_orgs);
-    shannon_diversity_of_phenotypes -= fraction * log(fraction) / log(2.0);
-  }
-  
-  average_shannon_diversity /= static_cast<double>(num_orgs);
-  average_num_tasks /= num_orgs;
-  
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  df->WriteTimeStamp();
-  df->Write(m_world->GetStats().GetUpdate(), "Update");
-  df->Write(static_cast<int>(ids.size()), "Unique Phenotypes (by task done)");
-  df->Write(shannon_diversity_of_phenotypes, "Shannon Diversity of Phenotypes (by task done)");
-  df->Write(static_cast<int>(complete.size()), "Unique Phenotypes (by task count)");
-  df->Write(average_shannon_diversity, "Average Phenotype Shannon Diversity (by task count)");
-  df->Write(average_num_tasks, "Average Task Diversity (number of different tasks)");
-  df->Endl();
-}
 
 bool cPopulation::UpdateMerit(int cell_id, double new_merit)
 {

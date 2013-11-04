@@ -156,8 +156,8 @@ namespace Avida {
 
     
     // Discrete (integer) operations -- clears the fraction component, regardless of value
-    LIB_EXPORT inline Update operator+(int v) { return Update(discrete + v, 0.0f); }
-    LIB_EXPORT inline Update operator-(int v) { return Update(discrete - v, 0.0f); }
+    LIB_EXPORT inline Update operator+(int v) const { return Update(discrete + v, 0.0f); }
+    LIB_EXPORT inline Update operator-(int v) const { return Update(discrete - v, 0.0f); }
     
     LIB_EXPORT inline Update& operator+=(int v) { discrete += v; fraction = 0.0f; return *this; }
     LIB_EXPORT inline Update& operator-=(int v) { discrete -= v; fraction = 0.0f; return *this; }
@@ -169,16 +169,16 @@ namespace Avida {
 
     
     // Fractional operations
-    LIB_EXPORT inline Update operator+(float v) { return Update(discrete, fraction + v); }
-    LIB_EXPORT inline Update operator-(float v) { return Update(discrete, fraction - v); }
+    LIB_EXPORT inline Update operator+(float v) const { return Update(discrete, fraction + v); }
+    LIB_EXPORT inline Update operator-(float v) const { return Update(discrete, fraction - v); }
     
     LIB_EXPORT inline Update& operator+=(float v) { fraction += v; fixup(); return *this; }
     LIB_EXPORT inline Update& operator-=(float v) { fraction -= v; fixup(); return *this; }
     
     
     // Full value operations
-    LIB_EXPORT inline Update operator+(Update v) { return Update(discrete + v.discrete, fraction + v.fraction); }
-    LIB_EXPORT inline Update operator-(Update v) { return Update(discrete + v.discrete, fraction - v.fraction); }
+    LIB_EXPORT inline Update operator+(Update v) const { return Update(discrete + v.discrete, fraction + v.fraction); }
+    LIB_EXPORT inline Update operator-(Update v) const { return Update(discrete + v.discrete, fraction - v.fraction); }
     
     LIB_EXPORT inline Update& operator+=(Update v) { discrete += v.discrete; fraction += v.fraction; fixup(); return *this; }
     LIB_EXPORT inline Update& operator-=(Update v) { discrete -= v.discrete; fraction -= v.fraction; fixup(); return *this; }

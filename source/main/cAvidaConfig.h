@@ -374,7 +374,7 @@ public:
   CONFIG_ADD_VAR(AGE_DEVIATION, int, 0, "Creates a normal distribution around AGE_LIMIT for time of death");
   CONFIG_ADD_VAR(JUV_PERIOD, int, 0, "Number of CPU cycles before newborn orgs can execute various instructions / behaviors");
   CONFIG_ADD_VAR(ALLOC_METHOD, int, 0, "When allocating blank tape, how should it be initialized?\n0 = Allocated space is set to default instruction.\n1 = Set to section of dead genome (creates potential for recombination)\n2 = Allocated space is set to random instruction.");
-  CONFIG_ADD_VAR(DIVIDE_METHOD, int, 1, "0 = Divide leaves state of mother untouched.\n1 = Divide resets state of mother(effectively creating 2 offspring)\n2 = Divide resets state of current thread only (use with parasites)");
+  CONFIG_ADD_VAR(DIVIDE_METHOD, int, 1, "0 = Divide leaves state of mother untouched.\n1 = Divide resets state of mother(effectively creating 2 offspring)\n2 = Divide resets state of current thread only");
   CONFIG_ADD_VAR(GENERATION_INC_METHOD, int, 1, "0 = Only increase generation of offspring on divide.\n1 = Increase generation of both parent and offspring\n   (suggested with DIVIDE_METHOD 1).");
   CONFIG_ADD_VAR(RESET_INPUTS_ON_DIVIDE, int, 0, "Reset environment inputs of parent upon successful divide.");
   CONFIG_ADD_VAR(INHERIT_MERIT, int, 1, "Should merit be inhereted from mother parent? (in asexual)");
@@ -423,28 +423,6 @@ public:
   CONFIG_ADD_VAR(ALLOW_MATE_SELECTION, bool, 0, "Allow organisms to select mates (requires instruction set support)");
 
 	
-  // -------- Parasite options --------
-  CONFIG_ADD_GROUP(PARASITE_GROUP, "Parasite config options");
-  CONFIG_ADD_VAR(INJECT_METHOD, int, 0, "What should happen to a parasite when it gives birth?\n0 = Leave the parasite thread state untouched.\n1 = Resets the state of the calling thread (for SMT parasites, this must be 1)");
-  CONFIG_ADD_VAR(INFECTION_MECHANISM, int, 1, "0: Infection always succeeds. \n1: Infection succeeds if parasite matches at least one host task.\n2: Infection succeeds if parasite does NOT match at least one task.\n3: Parasite tasks must match host tasks exactly (Matching Alleles).");
-  CONFIG_ADD_ALIAS(INJECT_IS_TASK_SPECIFIC);
-  CONFIG_ADD_VAR(INJECT_QMA_EXPONENT, double, 0.2, "The exponent of the equation proportion_overlap^x that determines the probability of infection succeding given the amount a host and parasite phenotype match.");
-  
-  CONFIG_ADD_VAR(INJECT_STERILIZES_HOST, int, 0, "Infection causes host steralization");
-  CONFIG_ADD_VAR(INJECT_IS_VIRULENT, int, 0, "Infection causes host steralization and takes all cpu cycles (setting this to 1 will override inject_virulence)");
-  CONFIG_ADD_VAR(PARASITE_SKIP_REACTIONS, int, 1, "Parasite tasks do not get processed in the environment (1) or they do trigger reactions (0)");
-  CONFIG_ADD_VAR(INJECT_SKIP_FIRST_TASK, int, 0, "They cannot match the first task the host is doing to infect");
-  CONFIG_ADD_VAR(INJECT_DEFAULT_SUCCESS, double, 0.0, "If injection is task specific, with what probability should non-matching parasites infect the host ");
-  CONFIG_ADD_VAR(PARASITE_VIRULENCE, double, -1, "The probabalistic percentage of cpu cycles allocated to the parasite instead of the host. Ensure INJECT_IS_VIRULENT is set to 0. This only works for single infection at the moment");
-  CONFIG_ADD_VAR(VIRULENCE_SOURCE, int, 0, "Virulence is set by config (0) or inhereted from parent (1)");
-  CONFIG_ADD_VAR(VIRULENCE_MUT_RATE, double, 0.1, "The probability that virulence will mutate if it is inhereted from the parent (VIRULENCE_SOURCE = 1)");
-  CONFIG_ADD_VAR(VIRULENCE_SD, double, 0.1, "New Virulence will be drawn from a normal distribution centered on the parental virulence, with this standard deviation");
-
-
-  CONFIG_ADD_VAR(PARASITE_MEM_SPACES, int, 1, "Parasites get their own memory spaces");
-  CONFIG_ADD_VAR(PARASITE_NO_COPY_MUT, int, 0, "Parasites do not get copy mutation rates");
-
-
   // -------- CPU Archetecture
   CONFIG_ADD_GROUP(ARCHETECTURE_GROUP, "Details on how CPU should work");
   CONFIG_ADD_VAR(IO_EXPIRE, bool, 1, "Is the expiration functionality of '-expire' I/O instructions enabled?");

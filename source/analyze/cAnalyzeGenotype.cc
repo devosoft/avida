@@ -554,8 +554,6 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
   mate_id               = likely_phenotype->MateSelectID();
   task_counts           = likely_phenotype->GetLastTaskCount();
   task_qualities        = likely_phenotype->GetLastTaskQuality();
-  internal_task_counts  = likely_phenotype->GetLastInternalTaskCount();
-  internal_task_qualities = likely_phenotype->GetLastInternalTaskQuality();
   rbins_total           = likely_phenotype->GetLastRBinsTotal();
   rbins_avail           = likely_phenotype->GetLastRBinsAvail();
   collect_spec_counts   = likely_phenotype->GetLastCollectSpecCounts();
@@ -606,24 +604,6 @@ void cAnalyzeGenotype::PrintTasksQuality(ofstream& fp, int min_task, int max_tas
   
   for (int i = min_task; i < max_task; i++) {
     fp << task_qualities[i] << " ";
-  }
-}
-
-void cAnalyzeGenotype::PrintInternalTasks(ofstream& fp, int min_task, int max_task)
-{
-  if (max_task == -1) max_task = internal_task_counts.GetSize();
-  
-  for (int i = min_task; i < max_task; i++) {
-    fp << internal_task_counts[i] << " ";
-  }
-}
-
-void cAnalyzeGenotype::PrintInternalTasksQuality(ofstream& fp, int min_task, int max_task)
-{
-  if (max_task == -1) max_task = internal_task_counts.GetSize();
-  
-  for (int i = min_task; i < max_task; i++) {
-    fp << internal_task_qualities[i] << " ";
   }
 }
 

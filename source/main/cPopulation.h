@@ -127,17 +127,12 @@ public:
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
-  bool ActivateParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code);
-  
-  // Helper function for ActivateParasite - returns if the parasite from the infected host should infect the target host
-  bool TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host);
   
   void UpdateQs(cOrganism* parent, bool reproduced = false);
   
   // Inject an organism from the outside world.
   void Inject(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, double neutral_metric = 0, bool inject_with_group = false, int group_id = -1, int forager_type = -1, int trace = 0);
   void InjectGroup(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, double neutral_metric = 0, int group_id = -1, int forager_type = -1, int trace = 0);
-  void InjectParasite(const cString& label, const InstructionSequence& injected_code, int cell_id);
   
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
@@ -218,8 +213,6 @@ public:
   bool GetSyncEvents() { return sync_events; }
   void SetSyncEvents(bool _in) { sync_events = _in; }
   void PrintPhenotypeData(const cString& filename);
-  void PrintHostPhenotypeData(const cString& filename);
-  void PrintParasitePhenotypeData(const cString& filename);
   void PrintPhenotypeStatus(const cString& filename);
 
   bool UpdateMerit(int cell_id, double new_merit);

@@ -114,7 +114,6 @@ void Avida3Driver::Run()
       if (m_world->GetVerbosity() == VERBOSE_ON || m_world->GetVerbosity() == VERBOSE_DETAILS) {
         cout << "Merit: " << setw(9) << setprecision(7) << stats.GetAveMerit() << "  ";
         cout << "Thrd: " << setw(6) << stats.GetNumThreads() << "  ";
-        cout << "Para: " << stats.GetNumParasites() << "  ";
       }
       if (m_world->GetVerbosity() >= VERBOSE_DEBUG) {
         cout << "Spec: " << setw(6) << setprecision(4) << stats.GetAveSpeculative() << "  ";

@@ -96,8 +96,7 @@ public:
 
   bool TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
                   const Apto::Array<int>& task_count, Apto::Array<int>& reaction_count,
-                  const Apto::Array<double>& resource_count, const Apto::Array<double>& rbins_count,
-                  bool is_parasite=false) const;
+                  const Apto::Array<double>& resource_count, const Apto::Array<double>& rbins_count) const;
 
   // Accessors
   int GetNumTasks() const { return m_tasklib.GetSize(); }

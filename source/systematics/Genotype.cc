@@ -423,7 +423,7 @@ bool Avida::Systematics::Genotype::Matches(UnitPtr u)
           
         case VERTICAL:
         case HORIZONTAL:
-          // Verify that the parasite inject label matches
+          // Verify that the arguments match
           if (m_src.arguments != u->UnitSource().arguments) return false;
           break;
           

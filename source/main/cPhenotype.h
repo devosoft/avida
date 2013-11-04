@@ -94,13 +94,9 @@ private:
   int cur_num_errors;                         // Total instructions executed illeagally.
 
   Apto::Array<int> cur_task_count;                 // Total times each task was performed
-  Apto::Array<int> cur_para_tasks;                 // Total times each task was performed by the parasite @LZ
-  Apto::Array<int> cur_host_tasks;                 // Total times each task was done by JUST the host @LZ
-  Apto::Array<int> cur_internal_task_count;        // Total times each task was performed using internal resources
   Apto::Array<int> eff_task_count;                 // Total times each task was performed (resetable during the life of the organism)
   Apto::Array<double> cur_task_quality;            // Average (total?) quality with which each task was performed
   Apto::Array<double> cur_task_value;              // Value with which this phenotype performs task
-  Apto::Array<double> cur_internal_task_quality;   // Average (total?) quaility with which each task using internal resources was performed
   Apto::Array<double> cur_rbins_total;             // Total amount of resources collected over the organism's life
   Apto::Array<double> cur_rbins_avail;             // Amount of internal resources available
   Apto::Array<int> cur_collect_spec_counts;        // How many times each nop-specification was used in a collect-type instruction
@@ -130,12 +126,8 @@ private:
   int last_num_errors;
 
   Apto::Array<int> last_task_count;
-  Apto::Array<int> last_para_tasks;
-  Apto::Array<int> last_host_tasks;                // Last task counts from hosts only, before last divide @LZ
-  Apto::Array<int> last_internal_task_count;
   Apto::Array<double> last_task_quality;
   Apto::Array<double> last_task_value;
-  Apto::Array<double> last_internal_task_quality;
   Apto::Array<double> last_rbins_total;
   Apto::Array<double> last_rbins_avail;
   Apto::Array<int> last_collect_spec_counts;
@@ -143,7 +135,6 @@ private:
   Apto::Array<double> last_reaction_add_reward;
   Apto::Array<int> last_inst_count;	  // Instruction exection counter
   Apto::Array<int> last_from_sensor_count;
-  Apto::Array<int> last_sense_count;   // Total times resource combinations have been sensed; @JEB
   Apto::Array<int> last_killed_targets;
 
   double last_fitness;            // Used to determine sterilization.
@@ -238,7 +229,7 @@ public:
   bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
   bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                   const Apto::Array<double>& res_in, const Apto::Array<double>& rbins_in, Apto::Array<double>& res_change,
-                  Apto::Array<cString>& insts_triggered, bool is_parasite=false);
+                  Apto::Array<cString>& insts_triggered);
 
   // State saving and loading, and printing...
   void PrintStatus(std::ostream& fp) const;
@@ -267,7 +258,6 @@ public:
   int GetCopiedSize() const { assert(initialized == true); return copied_size; }
   int GetExecutedSize() const { assert(initialized == true); return executed_size; }
   int GetGestationTime() const { assert(initialized == true); return gestation_time; }
-  int GetGestationStart() const { assert(initialized == true); return gestation_start; }
   double GetFitness() const { assert(initialized == true); return fitness; }
   double GetDivType() const { assert(initialized == true); return div_type; }
 
@@ -295,13 +285,9 @@ public:
   int GetCurNumErrors() const { assert(initialized == true); return cur_num_errors; }
   int GetCurCountForTask(int idx) const { assert(initialized == true); return cur_task_count[idx]; }
   const Apto::Array<int>& GetCurTaskCount() const { assert(initialized == true); return cur_task_count; }
-  const Apto::Array<int>& GetCurHostTaskCount() const { assert(initialized == true); return cur_host_tasks; }
-  const Apto::Array<int>& GetCurParasiteTaskCount() const { assert(initialized == true); return cur_para_tasks; }
-  const Apto::Array<int>& GetCurInternalTaskCount() const { assert(initialized == true); return cur_internal_task_count; }
   void ClearEffTaskCount() { assert(initialized == true); eff_task_count.SetAll(0); }
   const Apto::Array<double> & GetCurTaskQuality() const { assert(initialized == true); return cur_task_quality; }
   const Apto::Array<double> & GetCurTaskValue() const { assert(initialized == true); return cur_task_value; }
-  const Apto::Array<double> & GetCurInternalTaskQuality() const { assert(initialized == true); return cur_internal_task_quality; }
   const Apto::Array<double>& GetCurRBinsTotal() const { assert(initialized == true); return cur_rbins_total; }
   double GetCurRBinTotal(int index) const { assert(initialized == true); return cur_rbins_total[index]; }
   const Apto::Array<double>& GetCurRBinsAvail() const { assert(initialized == true); return cur_rbins_avail; }
@@ -333,27 +319,20 @@ public:
   int GetLastCountForTask(int idx) const { assert(initialized == true); return last_task_count[idx]; }
   const Apto::Array<int>& GetLastTaskCount() const { assert(initialized == true); return last_task_count; }
   void SetLastTaskCount(Apto::Array<int> tasks) { assert(initialized == true); last_task_count = tasks; }
-  const Apto::Array<int>& GetLastHostTaskCount() const { assert(initialized == true); return last_host_tasks; }
-  const Apto::Array<int>& GetLastParasiteTaskCount() const { assert(initialized == true); return last_para_tasks; }
-  void  SetLastParasiteTaskCount(Apto::Array<int>  oldParaPhenotype);
-  const Apto::Array<int>& GetLastInternalTaskCount() const { assert(initialized == true); return last_internal_task_count; }
   const Apto::Array<double>& GetLastTaskQuality() const { assert(initialized == true); return last_task_quality; }
   const Apto::Array<double>& GetLastTaskValue() const { assert(initialized == true); return last_task_value; }
-  const Apto::Array<double>& GetLastInternalTaskQuality() const { assert(initialized == true); return last_internal_task_quality; }
   const Apto::Array<double>& GetLastRBinsTotal() const { assert(initialized == true); return last_rbins_total; }
   const Apto::Array<double>& GetLastRBinsAvail() const { assert(initialized == true); return last_rbins_avail; }
   const Apto::Array<int>& GetLastReactionCount() const { assert(initialized == true); return last_reaction_count; }
   const Apto::Array<double>& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
   const Apto::Array<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
   const Apto::Array<int>& GetLastFromSensorInstCount() const { assert(initialized == true); return last_from_sensor_count; }
-  const Apto::Array<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }
 
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
   const Apto::Array<int>& GetLastCollectSpecCounts() const { assert(initialized == true); return last_collect_spec_counts; }
   int GetLastCollectSpecCount(int spec_id) const { assert(initialized == true); return last_collect_spec_counts[spec_id]; }
 
   int GetNumDivides() const { assert(initialized == true); return num_divides;}
-  int GetNumDivideFailed() const { assert(initialized == true); return num_divides_failed;}
 
   int GetGeneration() const { return generation; }
   int GetCPUCyclesUsed() const { assert(initialized == true); return cpu_cycles_used; }
@@ -459,12 +438,6 @@ public:
   Apto::Array<int> GetCumulativeReactionCount();
   
 
-  // @LZ - Parasite Etc. Helpers
-  void DivideFailed();
-  void UpdateParasiteTasks() { last_para_tasks = cur_para_tasks; cur_para_tasks.SetAll(0); return; }
-  
-
-  
   // Compare two phenotypes and determine an ordering (arbitrary, but consistant among phenotypes).
   static int Compare(const cPhenotype* lhs, const cPhenotype* rhs);
 

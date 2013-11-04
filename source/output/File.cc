@@ -154,7 +154,6 @@ void Avida::Output::File::Write(const char* data_str, const char* descr, const c
 
 void Avida::Output::File::Write(Apto::Array<int> list, const char* descr, const char* format)
 {
-  //Anya is trying to make a commant to write vectors for Kaboom data
   if (!m_descr_written) {
     for (int i=0; i< (int)list.GetSize();i++) {
       m_data << list[i] << " ";

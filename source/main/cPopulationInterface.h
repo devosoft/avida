@@ -99,10 +99,8 @@ public:
   void TriggerDoUpdates(cAvidaContext& ctx);
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void Die(cAvidaContext& ctx);
-  void Kaboom(int distance, cAvidaContext& ctx); 
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
-  bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code);
   bool UpdateMerit(double new_merit);
 
   bool Move(cAvidaContext& ctx, int src_id, int dest_id);
