@@ -41,8 +41,6 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , eff_task_count(m_world->GetEnvironment().GetNumTasks())
 , cur_task_quality(m_world->GetEnvironment().GetNumTasks())  
 , cur_task_value(m_world->GetEnvironment().GetNumTasks())  
-, cur_rbins_total(m_world->GetEnvironment().GetResDefLib().GetSize())
-, cur_rbins_avail(m_world->GetEnvironment().GetResDefLib().GetSize())
 , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , first_reaction_cycles(m_world->GetEnvironment().GetReactionLib().GetSize())
 , first_reaction_execs(m_world->GetEnvironment().GetReactionLib().GetSize())
@@ -55,9 +53,6 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , last_task_count(m_world->GetEnvironment().GetNumTasks())
 , last_task_quality(m_world->GetEnvironment().GetNumTasks())
 , last_task_value(m_world->GetEnvironment().GetNumTasks())
-, last_rbins_total(m_world->GetEnvironment().GetResDefLib().GetSize())
-, last_rbins_avail(m_world->GetEnvironment().GetResDefLib().GetSize())
-, last_collect_spec_counts()
 , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
 , generation(0)
@@ -75,11 +70,6 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
     generation = parent_generation;
     if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   }
-  
-  double num_resources = m_world->GetEnvironment().GetResDefLib().GetSize();
-  if (num_resources <= 0 || num_nops <= 0) return;
-  double most_nops_needed = ceil(log(num_resources) / log((double)num_nops));
-  cur_collect_spec_counts.Resize(int((pow((double)num_nops, most_nops_needed + 1.0) - 1.0) / ((double)num_nops - 1.0)));
 }
 
 cPhenotype::~cPhenotype()
@@ -123,10 +113,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   eff_task_count           = in_phen.eff_task_count;
   cur_task_quality         = in_phen.cur_task_quality;
   cur_task_value           = in_phen.cur_task_value;
-  cur_rbins_total          = in_phen.cur_rbins_total;
-  cur_rbins_avail          = in_phen.cur_rbins_avail;
-  cur_collect_spec_counts  = in_phen.cur_collect_spec_counts;
-  cur_reaction_count       = in_phen.cur_reaction_count;            
+  cur_reaction_count       = in_phen.cur_reaction_count;
   first_reaction_cycles    = in_phen.first_reaction_cycles;            
   first_reaction_execs     = first_reaction_execs;            
   cur_reaction_add_reward  = in_phen.cur_reaction_add_reward;     
@@ -153,9 +140,6 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_task_count          = in_phen.last_task_count;
   last_task_quality        = in_phen.last_task_quality;
   last_task_value          = in_phen.last_task_value;
-  last_rbins_total         = in_phen.last_rbins_total;
-  last_rbins_avail         = in_phen.last_rbins_avail;
-  last_collect_spec_counts = in_phen.last_collect_spec_counts;
   last_reaction_count      = in_phen.last_reaction_count;
   last_reaction_add_reward = in_phen.last_reaction_add_reward; 
   last_inst_count          = in_phen.last_inst_count;	  
@@ -247,19 +231,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
-  cur_rbins_total.SetAll(0);  // total resources collected in lifetime
-  // parent's resources have already been halved or reset in DivideReset;
-  // offspring gets that value (half or 0) too.
-  cur_rbins_avail.SetAll(0);
-  if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {
-    for (int i = 0; i < cur_rbins_avail.GetSize(); i++) cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
-  }
-  if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {
-    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-    cur_rbins_avail[resource] += m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
-  }
   
-  cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   first_reaction_cycles.SetAll(-1);
   first_reaction_execs.SetAll(-1);
@@ -286,9 +258,6 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   last_task_count           = parent_phenotype.last_task_count;
   last_task_quality         = parent_phenotype.last_task_quality;
   last_task_value           = parent_phenotype.last_task_value;
-  last_rbins_total          = parent_phenotype.last_rbins_total;
-  last_rbins_avail          = parent_phenotype.last_rbins_avail;
-  last_collect_spec_counts  = parent_phenotype.last_collect_spec_counts;
   last_reaction_count       = parent_phenotype.last_reaction_count;
   last_reaction_add_reward  = parent_phenotype.last_reaction_add_reward;
   last_inst_count           = parent_phenotype.last_inst_count;
@@ -377,13 +346,6 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
-  cur_rbins_total.SetAll(0);
-  if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   
-    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get();
-  }
-  else cur_rbins_avail.SetAll(0);
-  cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   first_reaction_cycles.SetAll(-1);
   first_reaction_execs.SetAll(-1);
@@ -408,9 +370,6 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   last_task_count.SetAll(0);
   last_task_quality.SetAll(0);
   last_task_value.SetAll(0);
-  last_rbins_total.SetAll(0);
-  last_rbins_avail.SetAll(0);
-  last_collect_spec_counts.SetAll(0);
   last_reaction_count.SetAll(0);
   last_reaction_add_reward.SetAll(0);
   last_inst_count.SetAll(0);
@@ -511,9 +470,6 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   last_task_count           = cur_task_count;
   last_task_quality         = cur_task_quality;
   last_task_value           = cur_task_value;
-  last_rbins_total          = cur_rbins_total;
-  last_rbins_avail          = cur_rbins_avail;
-  last_collect_spec_counts  = cur_collect_spec_counts;
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
@@ -531,19 +487,6 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
-  if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {
-    // resources available are split in half -- the offspring gets the other half
-    for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
-  } else if (m_world->GetConfig().DIVIDE_METHOD.Get() != 0) {
-    cur_rbins_avail.SetAll(0);
-    cur_rbins_total.SetAll(0);  // total resources collected in lifetime
-    
-    if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {
-      const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-      cur_rbins_avail[resource] += m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
-    }
-  }
-  cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   first_reaction_cycles.SetAll(-1);
   first_reaction_execs.SetAll(-1);
@@ -651,9 +594,6 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   last_task_count           = cur_task_count;
   last_task_quality         = cur_task_quality;
   last_task_value			= cur_task_value;
-  last_rbins_total          = cur_rbins_total;
-  last_rbins_avail          = cur_rbins_avail;
-  last_collect_spec_counts  = cur_collect_spec_counts;
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
@@ -668,13 +608,6 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
-  cur_rbins_total.SetAll(0);  // total resources collected in lifetime
-  if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   
-    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get();
-  }
-  else cur_rbins_avail.SetAll(0);
-  cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   first_reaction_cycles.SetAll(-1);
   first_reaction_execs.SetAll(-1);
@@ -767,9 +700,6 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   cur_num_errors  = 0;
   cur_task_count.SetAll(0);
   eff_task_count.SetAll(0);
-  cur_rbins_total.SetAll(0);
-  cur_rbins_avail.SetAll(0);
-  cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   first_reaction_cycles.SetAll(-1);
   first_reaction_execs.SetAll(-1);
@@ -794,9 +724,6 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   last_cpu_cycles_used     = clone_phenotype.last_cpu_cycles_used;
   last_num_errors          = clone_phenotype.last_num_errors;
   last_task_count          = clone_phenotype.last_task_count;
-g  last_rbins_total         = clone_phenotype.last_rbins_total;
-  last_rbins_avail         = clone_phenotype.last_rbins_avail;
-  last_collect_spec_counts = clone_phenotype.last_collect_spec_counts;
   last_reaction_count      = clone_phenotype.last_reaction_count;
   last_reaction_add_reward = clone_phenotype.last_reaction_add_reward;
   last_inst_count          = clone_phenotype.last_inst_count;
@@ -951,15 +878,6 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     res_consumed += result.GetConsumed(i);
   }
   
-  // Update rbins as necessary
-  if (result.UsedEnvResource() == false) {
-    double rbin_diff;
-    for (int i = 0; i < num_resources; i++) {
-      rbin_diff = result.GetInternalConsumed(i) - result.GetInternalProduced(i); ;
-      cur_rbins_avail[i] -= rbin_diff;
-      if(rbin_diff != 0) { cur_rbins_total[i] += rbin_diff; }
-    }
-  }
   
   // Save the instructions that should be triggered...
   insts_triggered = result.GetInstArray();

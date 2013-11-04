@@ -34,11 +34,6 @@
 #include "cWorld.h"
 #include "cStats.h"
 
-#include <algorithm>
-#include <iomanip>
-#include <iterator>
-#include <utility>
-
 using namespace std;
 using namespace Avida;
 
@@ -96,41 +91,6 @@ cOrganism::~cOrganism()
 
 
 
-
-
-double cOrganism::GetRBinsTotal()
-{
-	double total = 0;
-	for(int i = 0; i < m_phenotype.GetCurRBinsAvail().GetSize(); i++) {
-    total += m_phenotype.GetCurRBinsAvail()[i];
-  }
-	
-	return total;
-}
-
-void cOrganism::SetRBins(const Apto::Array<double>& rbins_in)
-{ 
-	m_phenotype.SetCurRBinsAvail(rbins_in);
-}
-
-void cOrganism::SetRBin(const int index, const double value) 
-{ 
-	m_phenotype.SetCurRBinAvail(index, value);
-}
-
-void cOrganism::AddToRBin(const int index, const double value) 
-{ 
-	m_phenotype.AddToCurRBinAvail(index, value);
-	if (value > 0) { 
-    m_phenotype.AddToCurRBinTotal(index, value); 
-  }
-}  
-
-void cOrganism::IncCollectSpecCount(const int spec_id)
-{
-  int current_count = m_phenotype.GetCurCollectSpecCount(spec_id);
-  m_phenotype.SetCurCollectSpecCount(spec_id, current_count + 1);
-}
 
 void cOrganism::DoInput(const int value)
 {

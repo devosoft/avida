@@ -267,14 +267,8 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
            ("env_input", &cAnalyzeGenotype::DescEnvInput, &cAnalyzeGenotype::GetEnvInput));
   dcm->Add("inst", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
            ("inst", &cAnalyzeGenotype::DescInstExe, &cAnalyzeGenotype::GetInstExecutedCount));
-  dcm->Add("r_tot", new tDataEntryOfType<cAnalyzeGenotype, double (int)>
-           ("r_tot", &cAnalyzeGenotype::DescRTot, &cAnalyzeGenotype::GetRBinTotal));
-  dcm->Add("r_avail", new tDataEntryOfType<cAnalyzeGenotype, double (int)>
-           ("r_avail", &cAnalyzeGenotype::DescRAvail, &cAnalyzeGenotype::GetRBinAvail));
   dcm->Add("prob_task", new tDataEntryOfType<cAnalyzeGenotype, double (int)>
            ("prob_task", &cAnalyzeGenotype::DescTaskProb, &cAnalyzeGenotype::GetTaskProbability, 5));
-  dcm->Add("r_spec", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
-           ("r_spec", &cAnalyzeGenotype::DescRSpec, &cAnalyzeGenotype::GetRSpec));
   
   
   // The remaining values should actually go in a separate list called
@@ -554,8 +548,6 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
   mate_id               = likely_phenotype->MateSelectID();
   task_counts           = likely_phenotype->GetLastTaskCount();
   task_qualities        = likely_phenotype->GetLastTaskQuality();
-  rbins_total           = likely_phenotype->GetLastRBinsTotal();
-  rbins_avail           = likely_phenotype->GetLastRBinsAvail();
   collect_spec_counts   = likely_phenotype->GetLastCollectSpecCounts();
   m_mating_type         = likely_phenotype->GetMatingType(); //@CHC
   m_mate_preference     = likely_phenotype->GetMatePreference(); //@CHC

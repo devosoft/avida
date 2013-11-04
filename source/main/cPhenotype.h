@@ -97,9 +97,6 @@ private:
   Apto::Array<int> eff_task_count;                 // Total times each task was performed (resetable during the life of the organism)
   Apto::Array<double> cur_task_quality;            // Average (total?) quality with which each task was performed
   Apto::Array<double> cur_task_value;              // Value with which this phenotype performs task
-  Apto::Array<double> cur_rbins_total;             // Total amount of resources collected over the organism's life
-  Apto::Array<double> cur_rbins_avail;             // Amount of internal resources available
-  Apto::Array<int> cur_collect_spec_counts;        // How many times each nop-specification was used in a collect-type instruction
   Apto::Array<int> cur_reaction_count;             // Total times each reaction was triggered.
   Apto::Array<int> first_reaction_cycles;          // CPU cycles of first time reaction was triggered.
   Apto::Array<int> first_reaction_execs;            // Execution count at first time reaction was triggered (will be > cycles in parallel exec multithreaded orgs).
@@ -128,9 +125,6 @@ private:
   Apto::Array<int> last_task_count;
   Apto::Array<double> last_task_quality;
   Apto::Array<double> last_task_value;
-  Apto::Array<double> last_rbins_total;
-  Apto::Array<double> last_rbins_avail;
-  Apto::Array<int> last_collect_spec_counts;
   Apto::Array<int> last_reaction_count;
   Apto::Array<double> last_reaction_add_reward;
   Apto::Array<int> last_inst_count;	  // Instruction exection counter
@@ -288,10 +282,6 @@ public:
   void ClearEffTaskCount() { assert(initialized == true); eff_task_count.SetAll(0); }
   const Apto::Array<double> & GetCurTaskQuality() const { assert(initialized == true); return cur_task_quality; }
   const Apto::Array<double> & GetCurTaskValue() const { assert(initialized == true); return cur_task_value; }
-  const Apto::Array<double>& GetCurRBinsTotal() const { assert(initialized == true); return cur_rbins_total; }
-  double GetCurRBinTotal(int index) const { assert(initialized == true); return cur_rbins_total[index]; }
-  const Apto::Array<double>& GetCurRBinsAvail() const { assert(initialized == true); return cur_rbins_avail; }
-  double GetCurRBinAvail(int index) const { assert(initialized == true); return cur_rbins_avail[index]; }
 
   const Apto::Array<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
   const Apto::Array<int>& GetFirstReactionCycles() const { assert(initialized == true); return first_reaction_cycles;}
@@ -305,8 +295,6 @@ public:
   const Apto::Array<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
 
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
-  const Apto::Array<int>& GetCurCollectSpecCounts() const { assert(initialized == true); return cur_collect_spec_counts; }
-  int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
   const Apto::Array<int>& GetTestCPUInstCount() const { assert(initialized == true); return testCPU_inst_count; }
 
 
@@ -321,16 +309,12 @@ public:
   void SetLastTaskCount(Apto::Array<int> tasks) { assert(initialized == true); last_task_count = tasks; }
   const Apto::Array<double>& GetLastTaskQuality() const { assert(initialized == true); return last_task_quality; }
   const Apto::Array<double>& GetLastTaskValue() const { assert(initialized == true); return last_task_value; }
-  const Apto::Array<double>& GetLastRBinsTotal() const { assert(initialized == true); return last_rbins_total; }
-  const Apto::Array<double>& GetLastRBinsAvail() const { assert(initialized == true); return last_rbins_avail; }
   const Apto::Array<int>& GetLastReactionCount() const { assert(initialized == true); return last_reaction_count; }
   const Apto::Array<double>& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
   const Apto::Array<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
   const Apto::Array<int>& GetLastFromSensorInstCount() const { assert(initialized == true); return last_from_sensor_count; }
 
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
-  const Apto::Array<int>& GetLastCollectSpecCounts() const { assert(initialized == true); return last_collect_spec_counts; }
-  int GetLastCollectSpecCount(int spec_id) const { assert(initialized == true); return last_collect_spec_counts[spec_id]; }
 
   int GetNumDivides() const { assert(initialized == true); return num_divides;}
 
@@ -385,13 +369,6 @@ public:
   void SetReactionCount(int index, int val) { cur_reaction_count[index] = val; }
   void SetStolenReactionCount(int index, int val) { cur_stolen_reaction_count[index] = val; }
   
-  void SetCurRBinsAvail(const Apto::Array<double>& in_avail) { cur_rbins_avail = in_avail; }
-  void SetCurRbinsTotal(const Apto::Array<double>& in_total) { cur_rbins_total = in_total; }
-  void SetCurRBinAvail(int index, double val) { cur_rbins_avail[index] = val; }
-  void SetCurRBinTotal(int index, double val) { cur_rbins_total[index] = val; }
-  void AddToCurRBinAvail(int index, double val) { cur_rbins_avail[index] += val; }
-  void AddToCurRBinTotal(int index, double val) { cur_rbins_total[index] += val; }
-  void SetCurCollectSpecCount(int spec_id, int val) { cur_collect_spec_counts[spec_id] = val; }
 
   void SetIsMultiThread() { is_multi_thread = true; }
   bool& SetBornParentGroup() { return born_parent_group; }

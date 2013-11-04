@@ -60,6 +60,7 @@ namespace Avida {
       LIB_EXPORT ConstActionTriggerPtr GetActionTrigger(const ActionTriggerID& trigger_id) const;
       
       LIB_EXPORT ResourceManager* CreateResourceManagerForStructure(Structure::Controller* structure);
+      LIB_EXPORT ResourceManager* CreateLocalResourceManager();
       
       
       LIB_EXPORT bool AttachTo(Universe* universe);

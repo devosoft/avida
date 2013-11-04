@@ -404,24 +404,6 @@ public:
   }
   cString DescEnvInput(int input_id) const { return cStringUtil::Stringf("task.%d", input_id); }
   
-  double GetRBinTotal(int resource_id) const {
-    if (resource_id >= rbins_total.GetSize()) return -1;
-    return rbins_total[resource_id];
-  }
-  cString DescRTot(int resource_id) const { return cStringUtil::Stringf("Resource %d Total", resource_id);}
-  
-  double GetRBinAvail(int resource_id) const {
-    if (resource_id >= rbins_avail.GetSize()) return -1;
-    return rbins_avail[resource_id];
-  }
-  cString DescRAvail(int resource_id) const { return cStringUtil::Stringf("Resource %d Available", resource_id);}
-  
-  int GetRSpec(int spec_id) const {
-    if (spec_id >= collect_spec_counts.GetSize() || spec_id < 0) return -1;
-    return collect_spec_counts[spec_id];
-  }
-  cString DescRSpec(int spec_id) const { return cStringUtil::Stringf("# times specification %d used", spec_id);}
-
   // Comparisons...  Compares a genotype to the "previous" one, which is
   // passed in, in one specified phenotype.
   // Return values are:
