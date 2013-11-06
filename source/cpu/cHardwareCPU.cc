@@ -3538,9 +3538,11 @@ bool cHardwareCPU::Inst_SenseQuorum(cAvidaContext& ctx) {
   m_world->GetStats().IncQuorumNum();
   if ((int)(ratio*100) <=org_ratio){
     //set internal state to 1
-    m_organism->SetQuorum(true);
-  } else m_organism->SetQuorum(false);
-  
+    //m_organism->SetQuorum(true);
+    //trying out with a register instead
+    GetRegister(FindModifiedRegister(REG_AX)) = true;
+    //} else m_organism->SetQuorum(false);
+  }else GetRegister(FindModifiedRegister(REG_AX)) = false;
   return true;
   
   
@@ -3623,8 +3625,9 @@ bool cHardwareCPU::Inst_NoisyQuorum(cAvidaContext& ctx) {
 
 bool cHardwareCPU::Inst_SmartExplode(cAvidaContext& ctx)
 {
-  if (m_organism->GetQuorum()){
-    // execute explode chance
+  //if (m_organism->GetQuorum()){
+  if (GetRegister(FindModifiedRegister(REG_AX))){ 
+  // execute explode chance
     m_organism->GetPhenotype().SetKaboomExecuted(true);
     //Case where both Probability and Hamming Distance are static
     double percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
