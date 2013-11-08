@@ -4449,6 +4449,41 @@ public:
   }
 };
 
+class cActionPrintNumDivides : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintNumDivides(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    /*Print num of successful divides for each or alive now. */
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("divides.dat", m_world->GetStats().GetUpdate());
+    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
+    ofstream& fp = df->OFStream();
+    
+    fp << "# org_id,age,num_divides" << endl;
+    
+    const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    for (int i = 0; i < live_orgs.GetSize(); i++) {  
+      cOrganism* org = live_orgs[i];
+      const int id = org->GetID();
+      const int age = org->GetPhenotype().GetAge();
+      const int num_divs = org->GetPhenotype().GetNumDivides();
+      
+      fp << id << "," << age << "," << num_divs;
+      fp << endl;
+    }
+  }
+};
+
 class cActionPrintOrgLocData : public cAction
 {
 private:
@@ -5263,6 +5298,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
+  action_lib->Register<cActionPrintNumDivides>("PrintNumDivides");
   
   action_lib->Register<cActionPrintPreyAverageData>("PrintPreyAverageData");
   action_lib->Register<cActionPrintPredatorAverageData>("PrintPredatorAverageData");
