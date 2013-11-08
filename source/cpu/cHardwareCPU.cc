@@ -3615,8 +3615,10 @@ bool cHardwareCPU::Inst_NoisyQuorum(cAvidaContext& ctx) {
   m_world->GetStats().IncQuorumNum();
   if ((int)(ratio*100*noise) <=org_ratio){
     //set internal state to 1
-    m_organism->SetQuorum(true);
-  } else m_organism->SetQuorum(false);
+    //m_organism->SetQuorum(true);
+    GetRegister(FindModifiedRegister(REG_AX)) = true;
+    //} else m_organism->SetQuorum(false);                                                                                      
+  } else GetRegister(FindModifiedRegister(REG_AX)) = false;
   
   return true;
   
