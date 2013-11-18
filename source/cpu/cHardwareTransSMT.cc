@@ -231,7 +231,8 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
       parasiteVirulence = m_world->GetConfig().PARASITE_VIRULENCE.Get();
     }
     
-		if (parasiteVirulence != -1) {
+    //Parasites steal CPU cycles only if threads execute one at a time.
+		if (parasiteVirulence != -1 && m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 0) {
       
 			double probThread = ctx.GetRandom().GetDouble();
       
