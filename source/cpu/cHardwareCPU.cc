@@ -87,6 +87,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("nop-C", &cHardwareCPU::Inst_Nop, INST_CLASS_NOP, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
     
     tInstLibEntry<tMethod>("nop-X", &cHardwareCPU::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
+    tInstLibEntry<tMethod>("nop-Y", &cHardwareCPU::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("if-equ-0", &cHardwareCPU::Inst_If0, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX?==0, else skip it"),
     tInstLibEntry<tMethod>("if-not-0", &cHardwareCPU::Inst_IfNot0, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX?!=0, else skip it"),
     tInstLibEntry<tMethod>("if-equ-0-defaultAX", &cHardwareCPU::Inst_If0_defaultAX, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?AX?==0, else skip it"),
