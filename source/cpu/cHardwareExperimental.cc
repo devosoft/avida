@@ -4043,6 +4043,7 @@ bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const
 
   if (!m_use_avatar && m_organism->GetNeighborhoodSize() == 0) return false;
   else if (m_use_avatar && m_organism->GetOrgInterface().GetAVNumNeighbors() == 0) return false;
+  else if (m_organism->IsPredFT() && m_world->GetConfig().PRED_CONFUSION.Get() == 4) return false;
   
   // define our input (4) and output registers (8)
   sLookRegAssign reg_defs;

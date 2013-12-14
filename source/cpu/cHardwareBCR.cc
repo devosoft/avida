@@ -3193,6 +3193,7 @@ bool cHardwareBCR::GoLook(cAvidaContext& ctx, const int look_dir, const int cell
   if (NUM_REGISTERS < 8) m_world->GetDriver().Feedback().Error("Instruction look-ahead requires at least 8 registers");
   if (!m_use_avatar && m_organism->GetNeighborhoodSize() == 0) return false;
   else if (m_use_avatar && m_organism->GetOrgInterface().GetAVNumNeighbors() == 0) return false;
+  else if (m_organism->IsPredFT() && m_world->GetConfig().PRED_CONFUSION.Get() == 4) return false;
   
   // define our input (4) and output registers (8)
   sLookRegAssign reg_defs;

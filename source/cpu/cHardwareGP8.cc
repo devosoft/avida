@@ -2534,6 +2534,7 @@ bool cHardwareGP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft, bool use_dir)
   
   if (!m_use_avatar && m_organism->GetNeighborhoodSize() == 0) return false;
   else if (m_use_avatar && m_organism->GetOrgInterface().GetAVNumNeighbors() == 0) return false;
+  else if (m_organism->IsPredFT() && m_world->GetConfig().PRED_CONFUSION.Get() == 4) return false;
   
   const int reg_session = FindUpstreamModifiedRegister(0, -1);
   
