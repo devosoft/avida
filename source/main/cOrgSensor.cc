@@ -866,20 +866,31 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
 
 bool cOrgSensor::GetTorusDirection(Apto::Coord<int>& direction, sBounds& worldBounds, Apto::Coord<int>& center_cell, const int facing, Apto::Coord<int>& left, Apto::Coord<int>& right)
 {
-  bool cont_trig = true;
+  bool cont_trig = false;
+  cout << "PRE     centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " dir " << direction.Y() << endl;
   /* Min y cases facing 2,6,1,7 */
   if (center_cell.Y() == worldBounds.min_y) {
     switch (facing) {
       case 2:
-        if (direction == left) direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
+        if (direction == left) {
+          direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
+          cont_trig = true;
+        }
       case 6:
-        if (direction == right) direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
+        if (direction == right) {
+          direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
+          cont_trig = true;
+        }
       case 3:
-        if (direction == left) direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
+        if (direction == left) {
+          direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
+          cont_trig = true;
+        }
       case 4:
-        if (direction == right) direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
-      default:
-        cont_trig = false;
+        if (direction == right) {
+          direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
+          cont_trig = true;
+        }
     }
   }
   
@@ -887,15 +898,25 @@ bool cOrgSensor::GetTorusDirection(Apto::Coord<int>& direction, sBounds& worldBo
   else if (center_cell.X() == worldBounds.min_x) {
     switch (facing) {
       case 0:
-        if (direction == left) direction.Set(worldBounds.max_x - center_cell.X(), center_cell.Y());
+        if (direction == left) {
+          direction.Set(worldBounds.max_x - center_cell.X(), center_cell.Y());
+          cont_trig = true;
+        }
       case 4:
-        if (direction == right) direction.Set(worldBounds.max_x - center_cell.X(), center_cell.Y());
+        if (direction == right) {
+          direction.Set(worldBounds.max_x - center_cell.X(), center_cell.Y());
+          cont_trig = true;
+        }
       case 1:
-        if (direction == left) direction.Set(worldBounds.max_x - center_cell.X(), center_cell.Y());
+        if (direction == left) {
+          direction.Set(worldBounds.max_x - center_cell.X(), center_cell.Y());
+          cont_trig = true;
+        }
       case 3:
-        if (direction == right) direction.Set(worldBounds.max_x - center_cell.X(), center_cell.Y());
-      default:
-        cont_trig = false;
+        if (direction == right) {
+          direction.Set(worldBounds.max_x - center_cell.X(), center_cell.Y());
+          cont_trig = true;
+        }
     }
   }
   
@@ -903,15 +924,25 @@ bool cOrgSensor::GetTorusDirection(Apto::Coord<int>& direction, sBounds& worldBo
   else if (center_cell.X() == worldBounds.max_x) {
     switch (facing) {
       case 0:
-        if (direction == right) direction.Set(worldBounds.min_x - center_cell.X(), center_cell.Y());
+        if (direction == right) {
+          direction.Set(worldBounds.min_x - center_cell.X(), center_cell.Y());
+          cont_trig = true;
+        }
       case 4:
-        if (direction == left) direction.Set(worldBounds.min_x - center_cell.X(), center_cell.Y());
+        if (direction == left) {
+          direction.Set(worldBounds.min_x - center_cell.X(), center_cell.Y());
+          cont_trig = true;
+        }
       case 7:
-        if (direction == right) direction.Set(worldBounds.min_x - center_cell.X(), center_cell.Y());
+        if (direction == right) {
+          direction.Set(worldBounds.min_x - center_cell.X(), center_cell.Y());
+          cont_trig = true;
+        }
       case 5:
-        if (direction == left) direction.Set(worldBounds.min_x - center_cell.X(), center_cell.Y());
-      default:
-        cont_trig = false;
+        if (direction == left) {
+          direction.Set(worldBounds.min_x - center_cell.X(), center_cell.Y());
+          cont_trig = true;
+        }
     }
   }
   
@@ -919,17 +950,28 @@ bool cOrgSensor::GetTorusDirection(Apto::Coord<int>& direction, sBounds& worldBo
   else if (center_cell.Y() == worldBounds.max_y) {
     switch (facing) {
       case 2:
-        if (direction == right) direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
+        if (direction == right) {
+          direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
+          cont_trig = true;
+        }
       case 6:
-        if (direction == left) direction.Set(center_cell.X(), worldBounds.min_y - center_cell.Y());
+        if (direction == left) {
+          direction.Set(center_cell.X(), worldBounds.min_y - center_cell.Y());
+          cont_trig = true;
+        }
       case 1:
-        if (direction == right) direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
+        if (direction == right) {
+          direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
+          cont_trig = true;
+        }
       case 7:
-        if (direction == left) direction.Set(center_cell.X(), worldBounds.min_y - center_cell.Y());
-      default:
-        cont_trig = false;
+        if (direction == left) {
+          direction.Set(center_cell.X(), worldBounds.min_y - center_cell.Y());
+          cont_trig = true;
+        }
     }
   }
+  if (cont_trig) cout << "TRIG    centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " dir " << direction.Y() << endl;
   return cont_trig;
 }
 
