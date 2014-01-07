@@ -653,8 +653,6 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
   int& id_sought = in_defs.id_sought;
   int dist_used = distance_sought;
   
-  bool do_left = true;
-  bool do_right = true;
   bool count_center = true;
   bool any_valid_side_cells = false;
   bool found = false;
@@ -694,8 +692,6 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
     direction = left;
     for (int do_lr = 0; do_lr <= 1; do_lr++) {
       if (do_lr == 1) direction = right;
-      if (!do_left && direction == left) continue;
-      if (!do_right && direction == right) break;
       
       // walk in from the farthest cell on side towards the center
       for (int j = num_cells_either_side; j > 0; j--) {
@@ -704,13 +700,11 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
         if (center_cell.Y() == worldBounds.min_y || center_cell.X() == worldBounds.min_x || center_cell.X() == worldBounds.max_x || center_cell.Y() == worldBounds.max_y) {
           if (GetTorusDirection(direction, worldBounds, center_cell, facing, left, right)) continue;
         }
-        else {
-          this_cell = center_cell + direction * j;
-          CorrectTorusEdge(this_cell, worldBounds);
-        }
+        this_cell = center_cell + direction * j;
+        CorrectTorusEdge(this_cell, worldBounds);
         assert(TestBounds(this_cell, worldBounds));
-        
-        //  cout << "dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " thisX " << this_cell.X() << " thisY " << this_cell.Y() << endl;
+
+//    cout << "PRE     dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " thisX " << this_cell.X() << " thisY " << this_cell.Y() << " dir " << direction.Y() << endl;
         
         if (habitat_used != -2 && habitat_used != 3 && !TestBounds(center_cell, tot_bounds)) {
           // on diagonals...if any side cell is beyond specific parts of res bounds, we can exclude this side for this and any larger distances
@@ -720,13 +714,11 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
             if (direction == left) {
               if ( (facing == 1 && tcy < tot_bounds.min_y) || (facing == 3 && tcx > tot_bounds.max_x) ||
                   (facing == 5 && tcy > tot_bounds.max_y) || (facing == 7 && tcx < tot_bounds.min_x) ) {
-                do_left = true;
               }
             }
             else if (direction == right) {
               if ( (facing == 1 && tcx > tot_bounds.max_x) || (facing == 3 && tcy > tot_bounds.max_y) ||
                   (facing == 5 && tcx < tot_bounds.min_x) || (facing == 7 && tcy < tot_bounds.min_y) ) {
-                do_right = true;
               }
             }
             break;                                       // if not !do_left or !do_right, any cells on this side closer than this to center will be too at this distance, but not greater dist
@@ -802,7 +794,7 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
     center_cell += ahead_dir;
     CorrectTorusEdge(center_cell, worldBounds);
     assert(TestBounds(center_cell, worldBounds));
-    //  cout << "dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " thisX " << this_cell.X() << " thisY " << this_cell.Y() << endl;
+//    cout << "        dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " thisX " << this_cell.X() << " thisY " << this_cell.Y() << endl;
   } // END WALKING
   
   // begin reached end output
@@ -874,7 +866,7 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
 
 bool cOrgSensor::GetTorusDirection(Apto::Coord<int>& direction, sBounds& worldBounds, Apto::Coord<int>& center_cell, const int facing, Apto::Coord<int>& left, Apto::Coord<int>& right)
 {
-  bool cont_trig = false;
+  bool cont_trig = true;
   /* Min y cases facing 2,6,1,7 */
   if (center_cell.Y() == worldBounds.min_y) {
     switch (facing) {
@@ -887,7 +879,7 @@ bool cOrgSensor::GetTorusDirection(Apto::Coord<int>& direction, sBounds& worldBo
       case 4:
         if (direction == right) direction.Set(center_cell.X(), worldBounds.max_y - center_cell.Y());
       default:
-        cont_trig = true;
+        cont_trig = false;
     }
   }
   
@@ -903,7 +895,7 @@ bool cOrgSensor::GetTorusDirection(Apto::Coord<int>& direction, sBounds& worldBo
       case 3:
         if (direction == right) direction.Set(worldBounds.max_x - center_cell.X(), center_cell.Y());
       default:
-        cont_trig = true;
+        cont_trig = false;
     }
   }
   
@@ -919,7 +911,7 @@ bool cOrgSensor::GetTorusDirection(Apto::Coord<int>& direction, sBounds& worldBo
       case 5:
         if (direction == left) direction.Set(worldBounds.min_x - center_cell.X(), center_cell.Y());
       default:
-        cont_trig = true;
+        cont_trig = false;
     }
   }
   
@@ -935,7 +927,7 @@ bool cOrgSensor::GetTorusDirection(Apto::Coord<int>& direction, sBounds& worldBo
       case 7:
         if (direction == left) direction.Set(center_cell.X(), worldBounds.min_y - center_cell.Y());
       default:
-        cont_trig = true;
+        cont_trig = false;
     }
   }
   return cont_trig;
@@ -943,11 +935,11 @@ bool cOrgSensor::GetTorusDirection(Apto::Coord<int>& direction, sBounds& worldBo
 
 void cOrgSensor::CorrectTorusEdge(Apto::Coord<int>& cell, sBounds& worldBounds)
 {
-  if (cell.X() > worldBounds.max_x) cell.X() = worldBounds.min_x + (cell.X() - worldBounds.max_x - 1);
-  else if (cell.X() < worldBounds.min_x) cell.X() = worldBounds.max_x - (worldBounds.min_x - cell.X() - 1);
+  if (cell.X() > worldBounds.max_x) { cell.X() = worldBounds.min_x + (cell.X() - worldBounds.max_x - 1); }
+  else if (cell.X() < worldBounds.min_x) { cell.X() = worldBounds.max_x - (worldBounds.min_x - cell.X() - 1); }
   
-  if (cell.Y() > worldBounds.max_y) cell.Y() = worldBounds.min_y + (cell.Y() - worldBounds.max_y - 1);
-  else if (cell.Y() < worldBounds.min_y) cell.Y() = worldBounds.max_y - (worldBounds.min_y - cell.Y() - 1);
+  if (cell.Y() > worldBounds.max_y) { cell.Y() = worldBounds.min_y + (cell.Y() - worldBounds.max_y - 1); }
+  else if (cell.Y() < worldBounds.min_y) { cell.Y() = worldBounds.max_y - (worldBounds.min_y - cell.Y() - 1); }
 }
 
 void cOrgSensor::SetWalkLimits(cAvidaContext& ctx, sLookInit& in_defs, sWalkLimits& limits, sBounds& worldBounds, sBounds& tot_bounds, Apto::Array<int, Apto::Smart>& val_res, int worldx, Apto::Coord<int>& this_cell, int facing, int cell, Apto::Coord<int>& center_cell, const Apto::Coord<int>& ahead_dir)
