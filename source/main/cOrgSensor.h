@@ -128,7 +128,6 @@ class cOrgSensor
   void WalkCells(cAvidaContext& ctx, sLookInit& in_defs, const int facing, const int cell_id, sWalkLimits& limits, sLookOut& stuff_seen, Apto::Coord<int>& center_cell, sBounds& tot_bounds, sBounds& worldBounds, const Apto::Array<int, Apto::Smart>& val_res, Apto::Coord<int>& this_cell, const Apto::Coord<int>& ahead_dir, const int& worldx);
 
   void WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int facing, const int cell_id, sWalkLimits& limits, sLookOut& stuff_seen, Apto::Coord<int>& center_cell, sBounds& tot_bounds, sBounds& worldBounds, const Apto::Array<int, Apto::Smart>& val_res, Apto::Coord<int>& this_cell, const Apto::Coord<int>& ahead_dir, const int& worldx);
-  bool GetTorusDirection(Apto::Coord<int>& direction, sBounds& worldBounds, Apto::Coord<int>& center_cell, const int facing, Apto::Coord<int>& left, Apto::Coord<int>& right);
   void CorrectTorusEdge(Apto::Coord<int>& cell, sBounds& worldBounds);
   void GetTorusTravelDist(int& travel_dist, int& x_dist, int& y_dist, const int facing, const int worldx, const int worldy);
   void GetConfusionOddsDensity(cAvidaContext& ctx, double& odds, cOrganism* first_org);
