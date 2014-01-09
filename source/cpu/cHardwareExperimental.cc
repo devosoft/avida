@@ -3528,10 +3528,20 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
     const int target_y = target_org_cell / worldx;
     const int searching_x = searching_org_cell % worldx;
     const int searching_y = searching_org_cell / worldx;
-    const int x_dist = target_x - searching_x;
-    const int y_dist = target_y - searching_y;
+    int x_dist = target_x - searching_x;
+    int y_dist = target_y - searching_y;
     
-    const int travel_dist = max(abs(x_dist), abs(y_dist));
+    int travel_dist = max(abs(x_dist), abs(y_dist));
+    if (m_world->GetConfig().WORLD_GEOMETRY.Get() == 2) {
+      int travel_dist2 = travel_dist;
+      int facing = m_organism->GetOrgInterface().GetFacedDir();
+      if (m_use_avatar == 2) facing = m_organism->GetOrgInterface().GetAVFacing();
+      m_sensor.GetTorusTravelDist(travel_dist, x_dist, y_dist, facing, worldx, worldy);
+      if (travel_dist2 != travel_dist) {
+        x_dist *= -1;
+        y_dist *= -1;
+      }
+    }
     if (travel_dist > max_dist) return false;
     
     int correct_facing = 0;
@@ -3623,12 +3633,22 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
     const int target_y = target_org_cell / worldx;
     const int searching_x = searching_org_cell % worldx;
     const int searching_y = searching_org_cell / worldx;
-    const int x_dist =  target_x - searching_x;
-    const int y_dist = target_y - searching_y;
+    int x_dist =  target_x - searching_x;
+    int y_dist = target_y - searching_y;
     
-    const int travel_dist = max(abs(x_dist), abs(y_dist));
+    int travel_dist = max(abs(x_dist), abs(y_dist));
+    if (m_world->GetConfig().WORLD_GEOMETRY.Get() == 2) {
+      int travel_dist2 = travel_dist;
+      int facing = m_organism->GetOrgInterface().GetFacedDir();
+      if (m_use_avatar == 2) facing = m_organism->GetOrgInterface().GetAVFacing();
+      m_sensor.GetTorusTravelDist(travel_dist, x_dist, y_dist, facing, worldx, worldy);
+      if (travel_dist2 != travel_dist) {
+        x_dist *= -1;
+        y_dist *= -1;
+      }
+    }
     if (travel_dist > max_dist) return false;
-    
+
     int correct_facing = 0;
     if (y_dist < 0 && x_dist == 0) correct_facing = 4; // rotate away from N    
     else if (y_dist < 0 && x_dist > 0) correct_facing = 5; // rotate away from NE

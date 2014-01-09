@@ -680,7 +680,8 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
   // START WALKING
   bool first_step = true;
   for (int dist = limits.start; dist <= limits.end; dist++) {
-    if (!TestBounds(center_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) count_center = false;
+    assert(TestBounds(center_cell, worldBounds));
+    if (((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) count_center = false;
     
     // work on SIDE of center cells for this distance
     int num_cells_either_side = 0;
@@ -693,8 +694,6 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
       // walk in from the farthest cell on side towards the center
       for (int j = num_cells_either_side; j > 0; j--) {
         bool valid_cell = true;
-        // Accounting for special torus edge-of-world situations
-        bool edge = false;
         this_cell = center_cell + direction * j;
         CorrectTorusEdge(this_cell, worldBounds);
         assert(TestBounds(this_cell, worldBounds));
@@ -789,9 +788,7 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
     center_cell += ahead_dir;
     CorrectTorusEdge(center_cell, worldBounds);
     assert(TestBounds(center_cell, worldBounds));
-//    cout << "        dist " << dist << " centerX " << center_cell.X() << " centerY " << center_cell.Y() << " facing: " << facing << " thisX " << this_cell.X() << " thisY " << this_cell.Y() << endl;
   } // END WALKING
-  
   // begin reached end output
   stuff_seen.habitat = habitat_used;
   stuff_seen.search_type = search_type;
