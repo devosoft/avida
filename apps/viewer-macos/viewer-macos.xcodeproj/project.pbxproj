@@ -1,0 +1,1037 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		701269CA151B702D004865C2 /* AvidaED-OrganismValueDisplay.xib in Resources */ = {isa = PBXBuildFile; fileRef = 701269C9151B702D004865C2 /* AvidaED-OrganismValueDisplay.xib */; };
+		701269D3151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 701269D2151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.m */; };
+		701269D6151B724B004865C2 /* AvidaEDGraphicalValueDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = 701269D5151B724B004865C2 /* AvidaEDGraphicalValueDisplay.m */; };
+		701269DC151BA63F004865C2 /* AvidaEDOrganismValueDisplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 701269DB151BA63F004865C2 /* AvidaEDOrganismValueDisplayView.m */; };
+		7015B89B14C87DB50031B60B /* DraggableImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7015B89A14C87DB50031B60B /* DraggableImageView.m */; };
+		7015B89F14C883C60031B60B /* genome65.png in Resources */ = {isa = PBXBuildFile; fileRef = 7015B89D14C883C60031B60B /* genome65.png */; };
+		7015B8A014C883C60031B60B /* petri128empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 7015B89E14C883C60031B60B /* petri128empty.png */; };
+		7015B8A314C886820031B60B /* FreezerOutlineView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7015B8A214C886820031B60B /* FreezerOutlineView.mm */; };
+		70178C7D14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70178C7C14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm */; };
+		701BFFF113CF305200838CC9 /* OrgColorBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 701BFFF013CF305200838CC9 /* OrgColorBox.m */; };
+		701E3A1513576BD2000BFFBC /* petri128.png in Resources */ = {isa = PBXBuildFile; fileRef = 701E3A1413576BD2000BFFBC /* petri128.png */; };
+		701F535C157FBDED00DAE5FA /* avida-ed-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 701F535B157FBDED00DAE5FA /* avida-ed-icon.png */; };
+		702220E21703609900B99C52 /* Avida-Definitions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 702220E11703609900B99C52 /* Avida-Definitions.mm */; };
+		702837E5155C58B300C733D2 /* AvidaED-ExportData.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702837E4155C58B300C733D2 /* AvidaED-ExportData.xib */; };
+		702837E7155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702837E6155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib */; };
+		702837E9155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702837E8155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib */; };
+		702837EB155C5C8E00C733D2 /* AvidaED-ExportGraphics-Analysis.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702837EA155C5C8E00C733D2 /* AvidaED-ExportGraphics-Analysis.xib */; };
+		7029A49D1361CDBD0031433A /* CenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7029A49C1361CDBD0031433A /* CenteringClipView.m */; };
+		7032D0B715051F260090C93C /* OrganismView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7032D0B615051F260090C93C /* OrganismView.mm */; };
+		7032D0BB150534F40090C93C /* AvidaEDOrganismViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7032D0BA150534F40090C93C /* AvidaEDOrganismViewController.mm */; };
+		7032D0BE15067D6A0090C93C /* AvidaEDEnvActionsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 7032D0BD15067D680090C93C /* AvidaEDEnvActionsDataSource.m */; };
+		7035497613379FBD00D3865C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035497513379FBD00D3865C /* Cocoa.framework */; };
+		703549A91337A4B100D3865C /* AvidaED-MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703549A61337A4B100D3865C /* AvidaED-MainWindow.xib */; };
+		703549AB1337A4B100D3865C /* AvidaED-MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703549A81337A4B100D3865C /* AvidaED-MainMenu.xib */; };
+		703549B31337AD1600D3865C /* AvidaEDController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549B21337AD1600D3865C /* AvidaEDController.mm */; };
+		703549BB1337AD2600D3865C /* SubtleSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 703549B81337AD2600D3865C /* SubtleSplitView.m */; };
+		703549C21337AD4300D3865C /* AvidaRun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549BD1337AD4300D3865C /* AvidaRun.mm */; };
+		703549C31337AD4300D3865C /* ViewerListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549BF1337AD4300D3865C /* ViewerListener.mm */; };
+		703549C41337AD4300D3865C /* MapGridView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549C11337AD4300D3865C /* MapGridView.mm */; };
+		703549EB1337D25300D3865C /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EA1337D25300D3865C /* libapto.a */; };
+		703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549ED1337D28200D3865C /* libviewer-core.a */; };
+		703549F01337D28800D3865C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EF1337D28800D3865C /* libavida-core.a */; };
+		703ECC2C1513B14400AF9292 /* AvidaED-OrganismSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703ECC2B1513B14400AF9292 /* AvidaED-OrganismSettings.xib */; };
+		7041AC5B16558F1D008413DB /* AvidaCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7041AC5916558EDF008413DB /* AvidaCore.framework */; };
+		7041AC5C16558F38008413DB /* AvidaCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7041AC5916558EDF008413DB /* AvidaCore.framework */; };
+		7041AC5D16558F3C008413DB /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
+		7041AC5F16558F46008413DB /* AvidaCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7041AC5916558EDF008413DB /* AvidaCore.framework */; };
+		7041AC6016558F48008413DB /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
+		7041AC6116559245008413DB /* AvidaCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7041AC5916558EDF008413DB /* AvidaCore.framework */; };
+		7046CF7714D0B5320030F1DF /* petri.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7046CF7614D0B5320030F1DF /* petri.icns */; };
+		7046CFB814D9B7BA0030F1DF /* DroppableGraphHostingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7046CFB714D9B7BA0030F1DF /* DroppableGraphHostingView.m */; };
+		7046CFBC14D9C55B0030F1DF /* graph-preview-dashed.png in Resources */ = {isa = PBXBuildFile; fileRef = 7046CFBA14D9C55B0030F1DF /* graph-preview-dashed.png */; };
+		7046CFBD14D9C55B0030F1DF /* graph-preview-solid.png in Resources */ = {isa = PBXBuildFile; fileRef = 7046CFBB14D9C55B0030F1DF /* graph-preview-solid.png */; };
+		7047394814B65F19009D285C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7047394714B65F19009D285C /* QuartzCore.framework */; };
+		704B83971600E3C100D40AEA /* AvidaED-credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 704B83961600E3C100D40AEA /* AvidaED-credits.rtf */; };
+		705DE43D15EBFD2300B9D838 /* TaskTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 705DE43C15EBFD2300B9D838 /* TaskTimelineView.m */; };
+		705E042E15F112FE005F0361 /* CAAnimationBlockDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 705E042D15F112FE005F0361 /* CAAnimationBlockDelegate.m */; };
+		705E52E51696361F00392BA7 /* PopViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8515824EBA004B2423 /* PopViewerIcon.png */; };
+		705E52E61696361F00392BA7 /* petri128.png in Resources */ = {isa = PBXBuildFile; fileRef = 701E3A1413576BD2000BFFBC /* petri128.png */; };
+		705E530616973A5000392BA7 /* AvidaPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 705E530516973A5000392BA7 /* AvidaPreferences.m */; };
+		7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */; };
+		706544DF16E113D9009BABAC /* Apto.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706544DD16E11393009BABAC /* Apto.framework */; };
+		706544E016E113E3009BABAC /* Apto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 706544DD16E11393009BABAC /* Apto.framework */; };
+		706544E416E121AC009BABAC /* Avida-Population.xib in Resources */ = {isa = PBXBuildFile; fileRef = 706544E316E121AC009BABAC /* Avida-Population.xib */; };
+		706544E516E13368009BABAC /* Apto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 706544DD16E11393009BABAC /* Apto.framework */; };
+		706544E616E134CE009BABAC /* Apto.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706544DD16E11393009BABAC /* Apto.framework */; };
+		708308EB14B6A6E50051B354 /* ImageFlipperView.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308EA14B6A6E50051B354 /* ImageFlipperView.m */; };
+		708308EF14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308EE14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m */; };
+		708308F214B6A7650051B354 /* NSFileManager+TemporaryDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308F114B6A7650051B354 /* NSFileManager+TemporaryDirectory.m */; };
+		708308F514B6AA9C0051B354 /* FlipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308F414B6AA9C0051B354 /* FlipView.m */; };
+		708308F714B6ADEB0051B354 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 708308F614B6ADEB0051B354 /* OpenGL.framework */; };
+		7083E58414BE1E2900E4023E /* Freezer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7083E58314BE1E2900E4023E /* Freezer.mm */; };
+		708D31301342312100AE5CEF /* README in Resources */ = {isa = PBXBuildFile; fileRef = 708D312F1342312100AE5CEF /* README */; };
+		709AE9511684E45600E50275 /* WorkspaceViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9501684E45600E50275 /* WorkspaceViewController.mm */; };
+		709AE9551684E4D500E50275 /* WorkspaceProjectSelectViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9541684E4D500E50275 /* WorkspaceProjectSelectViewController.mm */; };
+		709AE9581684E50800E50275 /* WorkspaceProjectDetailViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9571684E50800E50275 /* WorkspaceProjectDetailViewController.mm */; };
+		709AE95B1684E52B00E50275 /* WorkspaceArchivesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE95A1684E52B00E50275 /* WorkspaceArchivesViewController.m */; };
+		709AE95E1684E56800E50275 /* ConfigEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE95D1684E56800E50275 /* ConfigEditViewController.m */; };
+		709AE9631684E64900E50275 /* PopulationViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9621684E64900E50275 /* PopulationViewController.mm */; };
+		709AE9671684E6AB00E50275 /* StatsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9661684E6AB00E50275 /* StatsViewController.m */; };
+		709AE96B1684E6CE00E50275 /* GraphingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE96A1684E6CE00E50275 /* GraphingViewController.m */; };
+		709AE96F1684E6F900E50275 /* OrganismAnalysisViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE96E1684E6F900E50275 /* OrganismAnalysisViewController.m */; };
+		709AE9731684E86100E50275 /* ActivityListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9721684E86100E50275 /* ActivityListViewController.m */; };
+		709AE9B61695F49D00E50275 /* AvidaController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9B51695F49D00E50275 /* AvidaController.mm */; };
+		70A2A6E2156423000086456A /* AvidaEDExportAccessoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70A2A6E1156423000086456A /* AvidaEDExportAccessoryController.m */; };
+		70A420CA15E6B97E002B2218 /* trash_can.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A420C915E6B97E002B2218 /* trash_can.png */; };
+		70A523A915139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */; };
+		70A5E00B15221E9800FA2D73 /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
+		70A671881677A1BB0087D2FC /* MainWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549AF1337AD0500D3865C /* MainWindowController.mm */; };
+		70C2DB8615824EBA004B2423 /* AnaViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */; };
+		70C2DB8715824EBA004B2423 /* OrgViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8415824EBA004B2423 /* OrgViewerIcon.png */; };
+		70C2DB8815824EBA004B2423 /* PopViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8515824EBA004B2423 /* PopViewerIcon.png */; };
+		70C99135167299B5004823A2 /* WorkspaceSelectWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70C99133167299B5004823A2 /* WorkspaceSelectWindowController.mm */; };
+		70C99139167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C99138167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib */; };
+		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
+		70E09DD8150AAC5400154C00 /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
+		70E6072A156588A200E7AA82 /* OrgExecStateValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 70E60729156588A200E7AA82 /* OrgExecStateValue.m */; };
+		70E6072D15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E6072C15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm */; };
+		70E6073015658B0600E7AA82 /* AvidaED-AnalyzeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70E6072F15658B0600E7AA82 /* AvidaED-AnalyzeView.xib */; };
+		70E6073215658B2400E7AA82 /* AvidaED-OrganismView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70E6073115658B2400E7AA82 /* AvidaED-OrganismView.xib */; };
+		70E8B19A16D6BD99001B2AB6 /* Avida-WorkspaceArchives.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70E8B19916D6BD99001B2AB6 /* Avida-WorkspaceArchives.xib */; };
+		70E8B19C16D6BDBE001B2AB6 /* Avida-WorkspaceProjectDetails.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70E8B19B16D6BDBE001B2AB6 /* Avida-WorkspaceProjectDetails.xib */; };
+		70FA09C715FFD4DE006DF5DF /* AvidaED-AboutPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70FA09C615FFD4DE006DF5DF /* AvidaED-AboutPanel.xib */; };
+		70FA09CA15FFD551006DF5DF /* avida-ED-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 70FA09C915FFD551006DF5DF /* avida-ED-logo.png */; };
+		70FA09CD15FFDC4A006DF5DF /* AvidaEDAboutController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70FA09CC15FFDC4A006DF5DF /* AvidaEDAboutController.m */; };
+		70FA3F59164418570003971F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035497513379FBD00D3865C /* Cocoa.framework */; };
+		70FA3F72164420270003971F /* AvidaED-main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70FA3F71164420270003971F /* AvidaED-main.mm */; };
+		70FA3F74164421730003971F /* Avida-MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70FA3F73164421730003971F /* Avida-MainMenu.xib */; };
+		70FA3F751644217E0003971F /* Avida-MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703549A71337A4B100D3865C /* Avida-MainWindow.xib */; };
+		70FA3F7C164422750003971F /* Avida-main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70FA3F79164422750003971F /* Avida-main.mm */; };
+		70FA3F7D164422750003971F /* AvidaAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70FA3F7B164422750003971F /* AvidaAppDelegate.mm */; };
+		70FA3F80164424060003971F /* AvidaEDAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70FA3F77164421D20003971F /* AvidaEDAppDelegate.mm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7038059614ACF76A002FA72A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				70A5E00B15221E9800FA2D73 /* CorePlot.framework in CopyFiles */,
+				7041AC5B16558F1D008413DB /* AvidaCore.framework in CopyFiles */,
+				706544DF16E113D9009BABAC /* Apto.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7041AC5E16558F40008413DB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				7041AC5F16558F46008413DB /* AvidaCore.framework in CopyFiles */,
+				7041AC6016558F48008413DB /* CorePlot.framework in CopyFiles */,
+				706544E616E134CE009BABAC /* Apto.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		701269C9151B702D004865C2 /* AvidaED-OrganismValueDisplay.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-OrganismValueDisplay.xib"; sourceTree = "<group>"; };
+		701269D1151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDOrganismValueDisplayCollectionView.h; sourceTree = "<group>"; };
+		701269D2151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDOrganismValueDisplayCollectionView.m; sourceTree = "<group>"; };
+		701269D4151B724B004865C2 /* AvidaEDGraphicalValueDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDGraphicalValueDisplay.h; sourceTree = "<group>"; };
+		701269D5151B724B004865C2 /* AvidaEDGraphicalValueDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDGraphicalValueDisplay.m; sourceTree = "<group>"; };
+		701269DA151BA63E004865C2 /* AvidaEDOrganismValueDisplayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDOrganismValueDisplayView.h; sourceTree = "<group>"; };
+		701269DB151BA63F004865C2 /* AvidaEDOrganismValueDisplayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDOrganismValueDisplayView.m; sourceTree = "<group>"; };
+		7015B89914C87DB50031B60B /* DraggableImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DraggableImageView.h; sourceTree = "<group>"; };
+		7015B89A14C87DB50031B60B /* DraggableImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DraggableImageView.m; sourceTree = "<group>"; };
+		7015B89D14C883C60031B60B /* genome65.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = genome65.png; sourceTree = "<group>"; };
+		7015B89E14C883C60031B60B /* petri128empty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = petri128empty.png; sourceTree = "<group>"; };
+		7015B8A114C886820031B60B /* FreezerOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FreezerOutlineView.h; sourceTree = "<group>"; };
+		7015B8A214C886820031B60B /* FreezerOutlineView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FreezerOutlineView.mm; sourceTree = "<group>"; };
+		70178C7B14D84CB900C715D7 /* AvidaEDAnalyzePopulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDAnalyzePopulation.h; sourceTree = "<group>"; };
+		70178C7C14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDAnalyzePopulation.mm; sourceTree = "<group>"; };
+		701BFFEF13CF305200838CC9 /* OrgColorBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgColorBox.h; sourceTree = "<group>"; };
+		701BFFF013CF305200838CC9 /* OrgColorBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgColorBox.m; sourceTree = "<group>"; };
+		701E3A1413576BD2000BFFBC /* petri128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = petri128.png; sourceTree = "<group>"; };
+		701F535B157FBDED00DAE5FA /* avida-ed-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "avida-ed-icon.png"; sourceTree = "<group>"; };
+		702220E01703609900B99C52 /* Avida-Definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Avida-Definitions.h"; sourceTree = "<group>"; };
+		702220E11703609900B99C52 /* Avida-Definitions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "Avida-Definitions.mm"; sourceTree = "<group>"; };
+		7026F1B11534D27F00480C8F /* libtcmalloc-1.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libtcmalloc-1.4.a"; path = "../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug/libtcmalloc-1.4.a"; sourceTree = "<group>"; };
+		702837E4155C58B300C733D2 /* AvidaED-ExportData.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-ExportData.xib"; sourceTree = "<group>"; };
+		702837E6155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-ExportGraphics-Population.xib"; sourceTree = "<group>"; };
+		702837E8155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-ExportGraphics-Organism.xib"; sourceTree = "<group>"; };
+		702837EA155C5C8E00C733D2 /* AvidaED-ExportGraphics-Analysis.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-ExportGraphics-Analysis.xib"; sourceTree = "<group>"; };
+		7029A49B1361CDBD0031433A /* CenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CenteringClipView.h; sourceTree = "<group>"; };
+		7029A49C1361CDBD0031433A /* CenteringClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CenteringClipView.m; sourceTree = "<group>"; };
+		703023381672556C008C60A2 /* Avida.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Avida.entitlements; path = ../../Avida.entitlements; sourceTree = "<group>"; };
+		7032D0B515051F260090C93C /* OrganismView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrganismView.h; sourceTree = "<group>"; };
+		7032D0B615051F260090C93C /* OrganismView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OrganismView.mm; sourceTree = "<group>"; };
+		7032D0B8150528C30090C93C /* DropDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DropDelegate.h; sourceTree = "<group>"; };
+		7032D0B9150534F40090C93C /* AvidaEDOrganismViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDOrganismViewController.h; sourceTree = "<group>"; };
+		7032D0BA150534F40090C93C /* AvidaEDOrganismViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDOrganismViewController.mm; sourceTree = "<group>"; };
+		7032D0BC15067D680090C93C /* AvidaEDEnvActionsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDEnvActionsDataSource.h; sourceTree = "<group>"; };
+		7032D0BD15067D680090C93C /* AvidaEDEnvActionsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDEnvActionsDataSource.m; sourceTree = "<group>"; };
+		7035497113379FBD00D3865C /* Avida-ED.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Avida-ED.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7035497513379FBD00D3865C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		7035497813379FBD00D3865C /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		7035497913379FBD00D3865C /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		7035497A13379FBD00D3865C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		703549A61337A4B100D3865C /* AvidaED-MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-MainWindow.xib"; sourceTree = "<group>"; };
+		703549A71337A4B100D3865C /* Avida-MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-MainWindow.xib"; sourceTree = "<group>"; };
+		703549A81337A4B100D3865C /* AvidaED-MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-MainMenu.xib"; sourceTree = "<group>"; };
+		703549AC1337A54700D3865C /* AvidaED-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "AvidaED-Info.plist"; sourceTree = "<group>"; };
+		703549AE1337AD0500D3865C /* MainWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainWindowController.h; sourceTree = "<group>"; };
+		703549AF1337AD0500D3865C /* MainWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MainWindowController.mm; sourceTree = "<group>"; };
+		703549B11337AD1600D3865C /* AvidaEDController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDController.h; sourceTree = "<group>"; };
+		703549B21337AD1600D3865C /* AvidaEDController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDController.mm; sourceTree = "<group>"; };
+		703549B71337AD2600D3865C /* SubtleSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubtleSplitView.h; sourceTree = "<group>"; };
+		703549B81337AD2600D3865C /* SubtleSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubtleSplitView.m; sourceTree = "<group>"; };
+		703549BC1337AD4300D3865C /* AvidaRun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaRun.h; sourceTree = "<group>"; };
+		703549BD1337AD4300D3865C /* AvidaRun.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaRun.mm; sourceTree = "<group>"; };
+		703549BE1337AD4300D3865C /* ViewerListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewerListener.h; sourceTree = "<group>"; };
+		703549BF1337AD4300D3865C /* ViewerListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewerListener.mm; sourceTree = "<group>"; };
+		703549C01337AD4300D3865C /* MapGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapGridView.h; sourceTree = "<group>"; };
+		703549C11337AD4300D3865C /* MapGridView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapGridView.mm; sourceTree = "<group>"; };
+		703549EA1337D25300D3865C /* libapto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapto.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		703549ED1337D28200D3865C /* libviewer-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libviewer-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		703549EF1337D28800D3865C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		703ECC2B1513B14400AF9292 /* AvidaED-OrganismSettings.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-OrganismSettings.xib"; sourceTree = "<group>"; };
+		7041AC5916558EDF008413DB /* AvidaCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AvidaCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7046CF7414D0B4F80030F1DF /* petri.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = petri.icns; sourceTree = "<group>"; };
+		7046CF7614D0B5320030F1DF /* petri.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = petri.icns; sourceTree = "<group>"; };
+		7046CFB614D9B7BA0030F1DF /* DroppableGraphHostingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DroppableGraphHostingView.h; sourceTree = "<group>"; };
+		7046CFB714D9B7BA0030F1DF /* DroppableGraphHostingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DroppableGraphHostingView.m; sourceTree = "<group>"; };
+		7046CFBA14D9C55B0030F1DF /* graph-preview-dashed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "graph-preview-dashed.png"; sourceTree = "<group>"; };
+		7046CFBB14D9C55B0030F1DF /* graph-preview-solid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "graph-preview-solid.png"; sourceTree = "<group>"; };
+		7047394714B65F19009D285C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		704B83961600E3C100D40AEA /* AvidaED-credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = "AvidaED-credits.rtf"; sourceTree = "<group>"; };
+		705DE43B15EBFD2300B9D838 /* TaskTimelineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TaskTimelineView.h; sourceTree = "<group>"; };
+		705DE43C15EBFD2300B9D838 /* TaskTimelineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TaskTimelineView.m; sourceTree = "<group>"; };
+		705E042C15F112FE005F0361 /* CAAnimationBlockDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAAnimationBlockDelegate.h; sourceTree = "<group>"; };
+		705E042D15F112FE005F0361 /* CAAnimationBlockDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CAAnimationBlockDelegate.m; sourceTree = "<group>"; };
+		705E530416973A5000392BA7 /* AvidaPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaPreferences.h; sourceTree = "<group>"; };
+		705E530516973A5000392BA7 /* AvidaPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaPreferences.m; sourceTree = "<group>"; };
+		7061AB4E13588B0E0000B036 /* AvidaEDPopViewStatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDPopViewStatView.h; sourceTree = "<group>"; };
+		7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDPopViewStatView.mm; sourceTree = "<group>"; };
+		706544DD16E11393009BABAC /* Apto.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Apto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		706544E316E121AC009BABAC /* Avida-Population.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-Population.xib"; sourceTree = "<group>"; };
+		708308E914B6A6E50051B354 /* ImageFlipperView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageFlipperView.h; sourceTree = "<group>"; };
+		708308EA14B6A6E50051B354 /* ImageFlipperView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageFlipperView.m; sourceTree = "<group>"; };
+		708308ED14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBitmapImageRep+GLExtensions.h"; sourceTree = "<group>"; };
+		708308EE14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBitmapImageRep+GLExtensions.m"; sourceTree = "<group>"; };
+		708308F014B6A7650051B354 /* NSFileManager+TemporaryDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+TemporaryDirectory.h"; sourceTree = "<group>"; };
+		708308F114B6A7650051B354 /* NSFileManager+TemporaryDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+TemporaryDirectory.m"; sourceTree = "<group>"; };
+		708308F314B6AA9C0051B354 /* FlipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlipView.h; sourceTree = "<group>"; };
+		708308F414B6AA9C0051B354 /* FlipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlipView.m; sourceTree = "<group>"; };
+		708308F614B6ADEB0051B354 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		7083E58214BE1E2900E4023E /* Freezer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Freezer.h; sourceTree = "<group>"; };
+		7083E58314BE1E2900E4023E /* Freezer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Freezer.mm; sourceTree = "<group>"; };
+		708D312F1342312100AE5CEF /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		709AE94F1684E45600E50275 /* WorkspaceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorkspaceViewController.h; sourceTree = "<group>"; };
+		709AE9501684E45600E50275 /* WorkspaceViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WorkspaceViewController.mm; sourceTree = "<group>"; };
+		709AE9531684E4D500E50275 /* WorkspaceProjectSelectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorkspaceProjectSelectViewController.h; sourceTree = "<group>"; };
+		709AE9541684E4D500E50275 /* WorkspaceProjectSelectViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WorkspaceProjectSelectViewController.mm; sourceTree = "<group>"; };
+		709AE9561684E50800E50275 /* WorkspaceProjectDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorkspaceProjectDetailViewController.h; sourceTree = "<group>"; };
+		709AE9571684E50800E50275 /* WorkspaceProjectDetailViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WorkspaceProjectDetailViewController.mm; sourceTree = "<group>"; };
+		709AE9591684E52B00E50275 /* WorkspaceArchivesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorkspaceArchivesViewController.h; sourceTree = "<group>"; };
+		709AE95A1684E52B00E50275 /* WorkspaceArchivesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WorkspaceArchivesViewController.m; sourceTree = "<group>"; };
+		709AE95C1684E56800E50275 /* ConfigEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigEditViewController.h; sourceTree = "<group>"; };
+		709AE95D1684E56800E50275 /* ConfigEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigEditViewController.m; sourceTree = "<group>"; };
+		709AE9611684E64900E50275 /* PopulationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopulationViewController.h; sourceTree = "<group>"; };
+		709AE9621684E64900E50275 /* PopulationViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PopulationViewController.mm; sourceTree = "<group>"; };
+		709AE9651684E6AB00E50275 /* StatsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatsViewController.h; sourceTree = "<group>"; };
+		709AE9661684E6AB00E50275 /* StatsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatsViewController.m; sourceTree = "<group>"; };
+		709AE9691684E6CD00E50275 /* GraphingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GraphingViewController.h; sourceTree = "<group>"; };
+		709AE96A1684E6CE00E50275 /* GraphingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GraphingViewController.m; sourceTree = "<group>"; };
+		709AE96D1684E6F900E50275 /* OrganismAnalysisViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrganismAnalysisViewController.h; sourceTree = "<group>"; };
+		709AE96E1684E6F900E50275 /* OrganismAnalysisViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrganismAnalysisViewController.m; sourceTree = "<group>"; };
+		709AE9711684E86100E50275 /* ActivityListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivityListViewController.h; sourceTree = "<group>"; };
+		709AE9721684E86100E50275 /* ActivityListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityListViewController.m; sourceTree = "<group>"; };
+		709AE9B41695F49D00E50275 /* AvidaController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaController.h; sourceTree = "<group>"; };
+		709AE9B51695F49D00E50275 /* AvidaController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaController.mm; sourceTree = "<group>"; };
+		70A2A6E0156423000086456A /* AvidaEDExportAccessoryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDExportAccessoryController.h; sourceTree = "<group>"; };
+		70A2A6E1156423000086456A /* AvidaEDExportAccessoryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDExportAccessoryController.m; sourceTree = "<group>"; };
+		70A420C915E6B97E002B2218 /* trash_can.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trash_can.png; sourceTree = "<group>"; };
+		70A523A715139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDOrganismSettingsViewController.h; sourceTree = "<group>"; };
+		70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDOrganismSettingsViewController.m; sourceTree = "<group>"; };
+		70B0DA0E156ADFFF00D134AB /* Definitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Definitions.h; sourceTree = "<group>"; };
+		70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AnaViewerIcon.png; sourceTree = "<group>"; };
+		70C2DB8415824EBA004B2423 /* OrgViewerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OrgViewerIcon.png; sourceTree = "<group>"; };
+		70C2DB8515824EBA004B2423 /* PopViewerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PopViewerIcon.png; sourceTree = "<group>"; };
+		70C99132167299B5004823A2 /* WorkspaceSelectWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorkspaceSelectWindowController.h; sourceTree = "<group>"; };
+		70C99133167299B5004823A2 /* WorkspaceSelectWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WorkspaceSelectWindowController.mm; sourceTree = "<group>"; };
+		70C99138167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-WorkspaceSelectWindow.xib"; sourceTree = "<group>"; };
+		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
+		70D3C087135739E1008374E3 /* MapScaleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapScaleView.mm; sourceTree = "<group>"; };
+		70DD5AE616D6CF1300821457 /* WorkspaceViewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkspaceViewDelegate.h; sourceTree = "<group>"; };
+		70E09DD7150AAC5400154C00 /* CorePlot.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CorePlot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		70E60728156588A200E7AA82 /* OrgExecStateValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgExecStateValue.h; sourceTree = "<group>"; };
+		70E60729156588A200E7AA82 /* OrgExecStateValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgExecStateValue.m; sourceTree = "<group>"; };
+		70E6072B15658A6000E7AA82 /* AvidaEDAnalyzeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDAnalyzeViewController.h; sourceTree = "<group>"; };
+		70E6072C15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDAnalyzeViewController.mm; sourceTree = "<group>"; };
+		70E6072F15658B0600E7AA82 /* AvidaED-AnalyzeView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-AnalyzeView.xib"; sourceTree = "<group>"; };
+		70E6073115658B2400E7AA82 /* AvidaED-OrganismView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-OrganismView.xib"; sourceTree = "<group>"; };
+		70E8B19916D6BD99001B2AB6 /* Avida-WorkspaceArchives.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-WorkspaceArchives.xib"; sourceTree = "<group>"; };
+		70E8B19B16D6BDBE001B2AB6 /* Avida-WorkspaceProjectDetails.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-WorkspaceProjectDetails.xib"; sourceTree = "<group>"; };
+		70FA09C615FFD4DE006DF5DF /* AvidaED-AboutPanel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-AboutPanel.xib"; sourceTree = "<group>"; };
+		70FA09C915FFD551006DF5DF /* avida-ED-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "avida-ED-logo.png"; sourceTree = "<group>"; };
+		70FA09CB15FFDC4A006DF5DF /* AvidaEDAboutController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDAboutController.h; sourceTree = "<group>"; };
+		70FA09CC15FFDC4A006DF5DF /* AvidaEDAboutController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDAboutController.m; sourceTree = "<group>"; };
+		70FA3F57164418570003971F /* Avida.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avida.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		70FA3F7016441FA70003971F /* Avida-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Avida-Info.plist"; sourceTree = "<group>"; };
+		70FA3F71164420270003971F /* AvidaED-main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "AvidaED-main.mm"; sourceTree = "<group>"; };
+		70FA3F73164421730003971F /* Avida-MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-MainMenu.xib"; sourceTree = "<group>"; };
+		70FA3F76164421D20003971F /* AvidaEDAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDAppDelegate.h; sourceTree = "<group>"; };
+		70FA3F77164421D20003971F /* AvidaEDAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDAppDelegate.mm; sourceTree = "<group>"; };
+		70FA3F79164422750003971F /* Avida-main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "Avida-main.mm"; sourceTree = "<group>"; };
+		70FA3F7A164422750003971F /* AvidaAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaAppDelegate.h; sourceTree = "<group>"; };
+		70FA3F7B164422750003971F /* AvidaAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaAppDelegate.mm; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7035496E13379FBD00D3865C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				708308F714B6ADEB0051B354 /* OpenGL.framework in Frameworks */,
+				7047394814B65F19009D285C /* QuartzCore.framework in Frameworks */,
+				7035497613379FBD00D3865C /* Cocoa.framework in Frameworks */,
+				7041AC6116559245008413DB /* AvidaCore.framework in Frameworks */,
+				70E09DD8150AAC5400154C00 /* CorePlot.framework in Frameworks */,
+				706544E016E113E3009BABAC /* Apto.framework in Frameworks */,
+				703549EB1337D25300D3865C /* libapto.a in Frameworks */,
+				703549F01337D28800D3865C /* libavida-core.a in Frameworks */,
+				703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70FA3F54164418570003971F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70FA3F59164418570003971F /* Cocoa.framework in Frameworks */,
+				7041AC5C16558F38008413DB /* AvidaCore.framework in Frameworks */,
+				7041AC5D16558F3C008413DB /* CorePlot.framework in Frameworks */,
+				706544E516E13368009BABAC /* Apto.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7035496113379F3F00D3865C = {
+			isa = PBXGroup;
+			children = (
+				703549991337A30500D3865C /* Source */,
+				703549961337A11C00D3865C /* Resources */,
+				7035497413379FBD00D3865C /* Frameworks */,
+				703549C91337AF1300D3865C /* Libraries */,
+				7035497213379FBD00D3865C /* Products */,
+				7046CF7614D0B5320030F1DF /* petri.icns */,
+				708D312F1342312100AE5CEF /* README */,
+			);
+			sourceTree = "<group>";
+		};
+		7035497213379FBD00D3865C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7035497113379FBD00D3865C /* Avida-ED.app */,
+				70FA3F57164418570003971F /* Avida.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7035497413379FBD00D3865C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				706544DD16E11393009BABAC /* Apto.framework */,
+				7041AC5916558EDF008413DB /* AvidaCore.framework */,
+				70E09DD7150AAC5400154C00 /* CorePlot.framework */,
+				7035497513379FBD00D3865C /* Cocoa.framework */,
+				708308F614B6ADEB0051B354 /* OpenGL.framework */,
+				7047394714B65F19009D285C /* QuartzCore.framework */,
+				7035497713379FBD00D3865C /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7035497713379FBD00D3865C /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7035497813379FBD00D3865C /* AppKit.framework */,
+				7035497913379FBD00D3865C /* CoreData.framework */,
+				7035497A13379FBD00D3865C /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		703549961337A11C00D3865C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				703549981337A27400D3865C /* Images */,
+				703549971337A12E00D3865C /* NIBs */,
+				7035499E1337A3A200D3865C /* Other */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		703549971337A12E00D3865C /* NIBs */ = {
+			isa = PBXGroup;
+			children = (
+				70E8B19816D6B326001B2AB6 /* Avida */,
+				70E8B19716D6AF64001B2AB6 /* Avida-ED */,
+			);
+			name = NIBs;
+			path = resources/nibs;
+			sourceTree = "<group>";
+		};
+		703549981337A27400D3865C /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				70FA09C915FFD551006DF5DF /* avida-ED-logo.png */,
+				70A420C915E6B97E002B2218 /* trash_can.png */,
+				70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */,
+				70C2DB8415824EBA004B2423 /* OrgViewerIcon.png */,
+				70C2DB8515824EBA004B2423 /* PopViewerIcon.png */,
+				701F535B157FBDED00DAE5FA /* avida-ed-icon.png */,
+				7015B89D14C883C60031B60B /* genome65.png */,
+				7046CFBA14D9C55B0030F1DF /* graph-preview-dashed.png */,
+				7046CFBB14D9C55B0030F1DF /* graph-preview-solid.png */,
+				7046CF7414D0B4F80030F1DF /* petri.icns */,
+				7015B89E14C883C60031B60B /* petri128empty.png */,
+				701E3A1413576BD2000BFFBC /* petri128.png */,
+			);
+			name = Images;
+			path = resources/images;
+			sourceTree = "<group>";
+		};
+		703549991337A30500D3865C /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				7035499A1337A32D00D3865C /* Avida */,
+				7035499B1337A32D00D3865C /* Avida-ED */,
+				7035499C1337A32D00D3865C /* Main */,
+				7035499D1337A32D00D3865C /* Viewer-Core */,
+			);
+			name = Source;
+			path = src;
+			sourceTree = "<group>";
+		};
+		7035499A1337A32D00D3865C /* Avida */ = {
+			isa = PBXGroup;
+			children = (
+				702220E01703609900B99C52 /* Avida-Definitions.h */,
+				702220E11703609900B99C52 /* Avida-Definitions.mm */,
+				70FA3F79164422750003971F /* Avida-main.mm */,
+				70FA3F7A164422750003971F /* AvidaAppDelegate.h */,
+				70FA3F7B164422750003971F /* AvidaAppDelegate.mm */,
+				709AE9B41695F49D00E50275 /* AvidaController.h */,
+				709AE9B51695F49D00E50275 /* AvidaController.mm */,
+				705E530416973A5000392BA7 /* AvidaPreferences.h */,
+				705E530516973A5000392BA7 /* AvidaPreferences.m */,
+				703549AE1337AD0500D3865C /* MainWindowController.h */,
+				703549AF1337AD0500D3865C /* MainWindowController.mm */,
+				70C99132167299B5004823A2 /* WorkspaceSelectWindowController.h */,
+				70C99133167299B5004823A2 /* WorkspaceSelectWindowController.mm */,
+				709AE9741684E86E00E50275 /* Activity Pane */,
+				709AE9601684E5AE00E50275 /* Config Edit View */,
+				709AE96C1684E6D100E50275 /* Graphing View */,
+				709AE9701684E6FC00E50275 /* Organism Analysis View */,
+				709AE9641684E65100E50275 /* Population View */,
+				709AE9681684E6AF00E50275 /* Stats View */,
+				709AE95F1684E59100E50275 /* Workspace Pane */,
+			);
+			name = Avida;
+			path = avida;
+			sourceTree = "<group>";
+		};
+		7035499B1337A32D00D3865C /* Avida-ED */ = {
+			isa = PBXGroup;
+			children = (
+				70FA3F71164420270003971F /* AvidaED-main.mm */,
+				70FA09CB15FFDC4A006DF5DF /* AvidaEDAboutController.h */,
+				70FA09CC15FFDC4A006DF5DF /* AvidaEDAboutController.m */,
+				70FA3F76164421D20003971F /* AvidaEDAppDelegate.h */,
+				70FA3F77164421D20003971F /* AvidaEDAppDelegate.mm */,
+				703549B11337AD1600D3865C /* AvidaEDController.h */,
+				703549B21337AD1600D3865C /* AvidaEDController.mm */,
+				7032D0BC15067D680090C93C /* AvidaEDEnvActionsDataSource.h */,
+				7032D0BD15067D680090C93C /* AvidaEDEnvActionsDataSource.m */,
+				7061AB4E13588B0E0000B036 /* AvidaEDPopViewStatView.h */,
+				7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */,
+				70A2A6E0156423000086456A /* AvidaEDExportAccessoryController.h */,
+				70A2A6E1156423000086456A /* AvidaEDExportAccessoryController.m */,
+				70E6072E15658A6F00E7AA82 /* Analyze View */,
+				70E607261565862500E7AA82 /* Organism View */,
+			);
+			name = "Avida-ED";
+			path = "src/avida-ed";
+			sourceTree = SOURCE_ROOT;
+		};
+		7035499C1337A32D00D3865C /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				7029A49B1361CDBD0031433A /* CenteringClipView.h */,
+				7029A49C1361CDBD0031433A /* CenteringClipView.m */,
+				70B0DA0E156ADFFF00D134AB /* Definitions.h */,
+				7015B89914C87DB50031B60B /* DraggableImageView.h */,
+				7015B89A14C87DB50031B60B /* DraggableImageView.m */,
+				7032D0B8150528C30090C93C /* DropDelegate.h */,
+				7046CFB614D9B7BA0030F1DF /* DroppableGraphHostingView.h */,
+				7046CFB714D9B7BA0030F1DF /* DroppableGraphHostingView.m */,
+				708308F314B6AA9C0051B354 /* FlipView.h */,
+				708308F414B6AA9C0051B354 /* FlipView.m */,
+				7015B8A114C886820031B60B /* FreezerOutlineView.h */,
+				7015B8A214C886820031B60B /* FreezerOutlineView.mm */,
+				708308E914B6A6E50051B354 /* ImageFlipperView.h */,
+				708308EA14B6A6E50051B354 /* ImageFlipperView.m */,
+				701BFFEF13CF305200838CC9 /* OrgColorBox.h */,
+				701BFFF013CF305200838CC9 /* OrgColorBox.m */,
+				70E60728156588A200E7AA82 /* OrgExecStateValue.h */,
+				70E60729156588A200E7AA82 /* OrgExecStateValue.m */,
+				703549B71337AD2600D3865C /* SubtleSplitView.h */,
+				703549B81337AD2600D3865C /* SubtleSplitView.m */,
+				708308ED14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.h */,
+				708308EE14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m */,
+				708308F014B6A7650051B354 /* NSFileManager+TemporaryDirectory.h */,
+				708308F114B6A7650051B354 /* NSFileManager+TemporaryDirectory.m */,
+				705E042C15F112FE005F0361 /* CAAnimationBlockDelegate.h */,
+				705E042D15F112FE005F0361 /* CAAnimationBlockDelegate.m */,
+			);
+			name = Main;
+			path = main;
+			sourceTree = "<group>";
+		};
+		7035499D1337A32D00D3865C /* Viewer-Core */ = {
+			isa = PBXGroup;
+			children = (
+				703549BC1337AD4300D3865C /* AvidaRun.h */,
+				703549BD1337AD4300D3865C /* AvidaRun.mm */,
+				7083E58214BE1E2900E4023E /* Freezer.h */,
+				7083E58314BE1E2900E4023E /* Freezer.mm */,
+				703549C01337AD4300D3865C /* MapGridView.h */,
+				703549C11337AD4300D3865C /* MapGridView.mm */,
+				70D3C086135739E1008374E3 /* MapScaleView.h */,
+				70D3C087135739E1008374E3 /* MapScaleView.mm */,
+				7032D0B515051F260090C93C /* OrganismView.h */,
+				7032D0B615051F260090C93C /* OrganismView.mm */,
+				705DE43B15EBFD2300B9D838 /* TaskTimelineView.h */,
+				705DE43C15EBFD2300B9D838 /* TaskTimelineView.m */,
+				703549BE1337AD4300D3865C /* ViewerListener.h */,
+				703549BF1337AD4300D3865C /* ViewerListener.mm */,
+			);
+			name = "Viewer-Core";
+			path = "viewer-core";
+			sourceTree = "<group>";
+		};
+		7035499E1337A3A200D3865C /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				703023381672556C008C60A2 /* Avida.entitlements */,
+				70FA3F7016441FA70003971F /* Avida-Info.plist */,
+				704B83961600E3C100D40AEA /* AvidaED-credits.rtf */,
+				703549AC1337A54700D3865C /* AvidaED-Info.plist */,
+			);
+			name = Other;
+			path = resources/other;
+			sourceTree = "<group>";
+		};
+		703549C91337AF1300D3865C /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				7026F1B11534D27F00480C8F /* libtcmalloc-1.4.a */,
+				703549EA1337D25300D3865C /* libapto.a */,
+				703549EF1337D28800D3865C /* libavida-core.a */,
+				703549ED1337D28200D3865C /* libviewer-core.a */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		709AE95F1684E59100E50275 /* Workspace Pane */ = {
+			isa = PBXGroup;
+			children = (
+				709AE9591684E52B00E50275 /* WorkspaceArchivesViewController.h */,
+				709AE95A1684E52B00E50275 /* WorkspaceArchivesViewController.m */,
+				709AE9561684E50800E50275 /* WorkspaceProjectDetailViewController.h */,
+				709AE9571684E50800E50275 /* WorkspaceProjectDetailViewController.mm */,
+				709AE9531684E4D500E50275 /* WorkspaceProjectSelectViewController.h */,
+				709AE9541684E4D500E50275 /* WorkspaceProjectSelectViewController.mm */,
+				709AE94F1684E45600E50275 /* WorkspaceViewController.h */,
+				709AE9501684E45600E50275 /* WorkspaceViewController.mm */,
+				70DD5AE616D6CF1300821457 /* WorkspaceViewDelegate.h */,
+			);
+			name = "Workspace Pane";
+			sourceTree = "<group>";
+		};
+		709AE9601684E5AE00E50275 /* Config Edit View */ = {
+			isa = PBXGroup;
+			children = (
+				709AE95C1684E56800E50275 /* ConfigEditViewController.h */,
+				709AE95D1684E56800E50275 /* ConfigEditViewController.m */,
+			);
+			name = "Config Edit View";
+			sourceTree = "<group>";
+		};
+		709AE9641684E65100E50275 /* Population View */ = {
+			isa = PBXGroup;
+			children = (
+				709AE9611684E64900E50275 /* PopulationViewController.h */,
+				709AE9621684E64900E50275 /* PopulationViewController.mm */,
+			);
+			name = "Population View";
+			sourceTree = "<group>";
+		};
+		709AE9681684E6AF00E50275 /* Stats View */ = {
+			isa = PBXGroup;
+			children = (
+				709AE9651684E6AB00E50275 /* StatsViewController.h */,
+				709AE9661684E6AB00E50275 /* StatsViewController.m */,
+			);
+			name = "Stats View";
+			sourceTree = "<group>";
+		};
+		709AE96C1684E6D100E50275 /* Graphing View */ = {
+			isa = PBXGroup;
+			children = (
+				709AE9691684E6CD00E50275 /* GraphingViewController.h */,
+				709AE96A1684E6CE00E50275 /* GraphingViewController.m */,
+			);
+			name = "Graphing View";
+			sourceTree = "<group>";
+		};
+		709AE9701684E6FC00E50275 /* Organism Analysis View */ = {
+			isa = PBXGroup;
+			children = (
+				709AE96D1684E6F900E50275 /* OrganismAnalysisViewController.h */,
+				709AE96E1684E6F900E50275 /* OrganismAnalysisViewController.m */,
+			);
+			name = "Organism Analysis View";
+			sourceTree = "<group>";
+		};
+		709AE9741684E86E00E50275 /* Activity Pane */ = {
+			isa = PBXGroup;
+			children = (
+				709AE9711684E86100E50275 /* ActivityListViewController.h */,
+				709AE9721684E86100E50275 /* ActivityListViewController.m */,
+			);
+			name = "Activity Pane";
+			sourceTree = "<group>";
+		};
+		70E607261565862500E7AA82 /* Organism View */ = {
+			isa = PBXGroup;
+			children = (
+				70A523A715139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.h */,
+				70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */,
+				7032D0B9150534F40090C93C /* AvidaEDOrganismViewController.h */,
+				7032D0BA150534F40090C93C /* AvidaEDOrganismViewController.mm */,
+				701269D1151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.h */,
+				701269D2151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.m */,
+				701269DA151BA63E004865C2 /* AvidaEDOrganismValueDisplayView.h */,
+				701269DB151BA63F004865C2 /* AvidaEDOrganismValueDisplayView.m */,
+				701269D4151B724B004865C2 /* AvidaEDGraphicalValueDisplay.h */,
+				701269D5151B724B004865C2 /* AvidaEDGraphicalValueDisplay.m */,
+			);
+			name = "Organism View";
+			sourceTree = "<group>";
+		};
+		70E6072E15658A6F00E7AA82 /* Analyze View */ = {
+			isa = PBXGroup;
+			children = (
+				70E6072B15658A6000E7AA82 /* AvidaEDAnalyzeViewController.h */,
+				70E6072C15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm */,
+				70178C7B14D84CB900C715D7 /* AvidaEDAnalyzePopulation.h */,
+				70178C7C14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm */,
+			);
+			name = "Analyze View";
+			sourceTree = "<group>";
+		};
+		70E8B19716D6AF64001B2AB6 /* Avida-ED */ = {
+			isa = PBXGroup;
+			children = (
+				70FA09C615FFD4DE006DF5DF /* AvidaED-AboutPanel.xib */,
+				70E6072F15658B0600E7AA82 /* AvidaED-AnalyzeView.xib */,
+				702837E4155C58B300C733D2 /* AvidaED-ExportData.xib */,
+				702837E6155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib */,
+				702837E8155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib */,
+				702837EA155C5C8E00C733D2 /* AvidaED-ExportGraphics-Analysis.xib */,
+				703549A81337A4B100D3865C /* AvidaED-MainMenu.xib */,
+				703549A61337A4B100D3865C /* AvidaED-MainWindow.xib */,
+				703ECC2B1513B14400AF9292 /* AvidaED-OrganismSettings.xib */,
+				701269C9151B702D004865C2 /* AvidaED-OrganismValueDisplay.xib */,
+				70E6073115658B2400E7AA82 /* AvidaED-OrganismView.xib */,
+			);
+			name = "Avida-ED";
+			sourceTree = "<group>";
+		};
+		70E8B19816D6B326001B2AB6 /* Avida */ = {
+			isa = PBXGroup;
+			children = (
+				70FA3F73164421730003971F /* Avida-MainMenu.xib */,
+				703549A71337A4B100D3865C /* Avida-MainWindow.xib */,
+				70C99138167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib */,
+				70E8B19916D6BD99001B2AB6 /* Avida-WorkspaceArchives.xib */,
+				70E8B19B16D6BDBE001B2AB6 /* Avida-WorkspaceProjectDetails.xib */,
+				706544E316E121AC009BABAC /* Avida-Population.xib */,
+			);
+			name = Avida;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7035497013379FBD00D3865C /* Avida-ED */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7035498F13379FBD00D3865C /* Build configuration list for PBXNativeTarget "Avida-ED" */;
+			buildPhases = (
+				7035496D13379FBD00D3865C /* Sources */,
+				7035496E13379FBD00D3865C /* Frameworks */,
+				7035496F13379FBD00D3865C /* Resources */,
+				7038059614ACF76A002FA72A /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Avida-ED";
+			productName = Avida;
+			productReference = 7035497113379FBD00D3865C /* Avida-ED.app */;
+			productType = "com.apple.product-type.application";
+		};
+		70FA3F56164418570003971F /* Avida-OSX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 70FA3F6E164418570003971F /* Build configuration list for PBXNativeTarget "Avida-OSX" */;
+			buildPhases = (
+				70FA3F53164418570003971F /* Sources */,
+				70FA3F54164418570003971F /* Frameworks */,
+				70FA3F55164418570003971F /* Resources */,
+				7041AC5E16558F40008413DB /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Avida-OSX";
+			productName = Avida;
+			productReference = 70FA3F57164418570003971F /* Avida.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7035496313379F3F00D3865C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "Michigan State University";
+			};
+			buildConfigurationList = 7035496613379F3F00D3865C /* Build configuration list for PBXProject "viewer-macos" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7035496113379F3F00D3865C;
+			productRefGroup = 7035497213379FBD00D3865C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7035497013379FBD00D3865C /* Avida-ED */,
+				70FA3F56164418570003971F /* Avida-OSX */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7035496F13379FBD00D3865C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				703549A91337A4B100D3865C /* AvidaED-MainWindow.xib in Resources */,
+				703549AB1337A4B100D3865C /* AvidaED-MainMenu.xib in Resources */,
+				708D31301342312100AE5CEF /* README in Resources */,
+				701E3A1513576BD2000BFFBC /* petri128.png in Resources */,
+				7015B89F14C883C60031B60B /* genome65.png in Resources */,
+				7015B8A014C883C60031B60B /* petri128empty.png in Resources */,
+				7046CF7714D0B5320030F1DF /* petri.icns in Resources */,
+				7046CFBC14D9C55B0030F1DF /* graph-preview-dashed.png in Resources */,
+				7046CFBD14D9C55B0030F1DF /* graph-preview-solid.png in Resources */,
+				703ECC2C1513B14400AF9292 /* AvidaED-OrganismSettings.xib in Resources */,
+				701269CA151B702D004865C2 /* AvidaED-OrganismValueDisplay.xib in Resources */,
+				702837E5155C58B300C733D2 /* AvidaED-ExportData.xib in Resources */,
+				702837E7155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib in Resources */,
+				702837E9155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib in Resources */,
+				702837EB155C5C8E00C733D2 /* AvidaED-ExportGraphics-Analysis.xib in Resources */,
+				70E6073015658B0600E7AA82 /* AvidaED-AnalyzeView.xib in Resources */,
+				70E6073215658B2400E7AA82 /* AvidaED-OrganismView.xib in Resources */,
+				701F535C157FBDED00DAE5FA /* avida-ed-icon.png in Resources */,
+				70C2DB8615824EBA004B2423 /* AnaViewerIcon.png in Resources */,
+				70C2DB8715824EBA004B2423 /* OrgViewerIcon.png in Resources */,
+				70C2DB8815824EBA004B2423 /* PopViewerIcon.png in Resources */,
+				70A420CA15E6B97E002B2218 /* trash_can.png in Resources */,
+				70FA09C715FFD4DE006DF5DF /* AvidaED-AboutPanel.xib in Resources */,
+				70FA09CA15FFD551006DF5DF /* avida-ED-logo.png in Resources */,
+				704B83971600E3C100D40AEA /* AvidaED-credits.rtf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70FA3F55164418570003971F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70FA3F74164421730003971F /* Avida-MainMenu.xib in Resources */,
+				70FA3F751644217E0003971F /* Avida-MainWindow.xib in Resources */,
+				70C99139167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib in Resources */,
+				705E52E51696361F00392BA7 /* PopViewerIcon.png in Resources */,
+				705E52E61696361F00392BA7 /* petri128.png in Resources */,
+				70E8B19A16D6BD99001B2AB6 /* Avida-WorkspaceArchives.xib in Resources */,
+				70E8B19C16D6BDBE001B2AB6 /* Avida-WorkspaceProjectDetails.xib in Resources */,
+				706544E416E121AC009BABAC /* Avida-Population.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7035496D13379FBD00D3865C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				703549B31337AD1600D3865C /* AvidaEDController.mm in Sources */,
+				703549BB1337AD2600D3865C /* SubtleSplitView.m in Sources */,
+				703549C21337AD4300D3865C /* AvidaRun.mm in Sources */,
+				703549C31337AD4300D3865C /* ViewerListener.mm in Sources */,
+				703549C41337AD4300D3865C /* MapGridView.mm in Sources */,
+				70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */,
+				7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */,
+				7029A49D1361CDBD0031433A /* CenteringClipView.m in Sources */,
+				701BFFF113CF305200838CC9 /* OrgColorBox.m in Sources */,
+				708308EB14B6A6E50051B354 /* ImageFlipperView.m in Sources */,
+				708308EF14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m in Sources */,
+				708308F214B6A7650051B354 /* NSFileManager+TemporaryDirectory.m in Sources */,
+				708308F514B6AA9C0051B354 /* FlipView.m in Sources */,
+				7083E58414BE1E2900E4023E /* Freezer.mm in Sources */,
+				7015B89B14C87DB50031B60B /* DraggableImageView.m in Sources */,
+				7015B8A314C886820031B60B /* FreezerOutlineView.mm in Sources */,
+				70178C7D14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm in Sources */,
+				7046CFB814D9B7BA0030F1DF /* DroppableGraphHostingView.m in Sources */,
+				7032D0B715051F260090C93C /* OrganismView.mm in Sources */,
+				7032D0BB150534F40090C93C /* AvidaEDOrganismViewController.mm in Sources */,
+				7032D0BE15067D6A0090C93C /* AvidaEDEnvActionsDataSource.m in Sources */,
+				70A523A915139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m in Sources */,
+				701269D3151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.m in Sources */,
+				701269D6151B724B004865C2 /* AvidaEDGraphicalValueDisplay.m in Sources */,
+				701269DC151BA63F004865C2 /* AvidaEDOrganismValueDisplayView.m in Sources */,
+				70A2A6E2156423000086456A /* AvidaEDExportAccessoryController.m in Sources */,
+				70E6072A156588A200E7AA82 /* OrgExecStateValue.m in Sources */,
+				70E6072D15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm in Sources */,
+				705DE43D15EBFD2300B9D838 /* TaskTimelineView.m in Sources */,
+				705E042E15F112FE005F0361 /* CAAnimationBlockDelegate.m in Sources */,
+				70FA09CD15FFDC4A006DF5DF /* AvidaEDAboutController.m in Sources */,
+				70FA3F72164420270003971F /* AvidaED-main.mm in Sources */,
+				70FA3F80164424060003971F /* AvidaEDAppDelegate.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70FA3F53164418570003971F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70FA3F7C164422750003971F /* Avida-main.mm in Sources */,
+				70FA3F7D164422750003971F /* AvidaAppDelegate.mm in Sources */,
+				70C99135167299B5004823A2 /* WorkspaceSelectWindowController.mm in Sources */,
+				70A671881677A1BB0087D2FC /* MainWindowController.mm in Sources */,
+				709AE9511684E45600E50275 /* WorkspaceViewController.mm in Sources */,
+				709AE9551684E4D500E50275 /* WorkspaceProjectSelectViewController.mm in Sources */,
+				709AE9581684E50800E50275 /* WorkspaceProjectDetailViewController.mm in Sources */,
+				709AE95B1684E52B00E50275 /* WorkspaceArchivesViewController.m in Sources */,
+				709AE95E1684E56800E50275 /* ConfigEditViewController.m in Sources */,
+				709AE9631684E64900E50275 /* PopulationViewController.mm in Sources */,
+				709AE9671684E6AB00E50275 /* StatsViewController.m in Sources */,
+				709AE96B1684E6CE00E50275 /* GraphingViewController.m in Sources */,
+				709AE96F1684E6F900E50275 /* OrganismAnalysisViewController.m in Sources */,
+				709AE9731684E86100E50275 /* ActivityListViewController.m in Sources */,
+				709AE9B61695F49D00E50275 /* AvidaController.mm in Sources */,
+				705E530616973A5000392BA7 /* AvidaPreferences.m in Sources */,
+				702220E21703609900B99C52 /* Avida-Definitions.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		7035496813379F3F00D3865C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_VERSION = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx10.7;
+			};
+			name = Debug;
+		};
+		7035496913379F3F00D3865C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_VERSION = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx10.7;
+			};
+			name = Release;
+		};
+		7035498D13379FBD00D3865C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = "resources/other/AvidaED-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../avida-core/include/public/ ../../libs/apto/include";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		7035498E13379FBD00D3865C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = "resources/other/AvidaED-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../avida-core/include/public/ ../../libs/apto/include";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		70FA3F6C164418570003971F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = Avida.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "resources/other/Avida-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = Avida;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = $BUILT_PRODUCTS_DIR/AvidaCore.framework/Versions/Current/CPPHeaders/;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		70FA3F6D164418570003971F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = Avida.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "resources/other/Avida-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = Avida;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = $BUILT_PRODUCTS_DIR/AvidaCore.framework/Versions/Current/CPPHeaders/;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7035496613379F3F00D3865C /* Build configuration list for PBXProject "viewer-macos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7035496813379F3F00D3865C /* Debug */,
+				7035496913379F3F00D3865C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7035498F13379FBD00D3865C /* Build configuration list for PBXNativeTarget "Avida-ED" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7035498D13379FBD00D3865C /* Debug */,
+				7035498E13379FBD00D3865C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		70FA3F6E164418570003971F /* Build configuration list for PBXNativeTarget "Avida-OSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70FA3F6C164418570003971F /* Debug */,
+				70FA3F6D164418570003971F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7035496313379F3F00D3865C /* Project object */;
+}
