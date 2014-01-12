@@ -5814,15 +5814,15 @@ bool cHardwareExperimental::Inst_AttackPoisonFTPrey(cAvidaContext& ctx)
         if (av_neighbors[rand_index + i]->GetShowForageTarget() == target_org_type) {
           target = av_neighbors[rand_index + i];      
           target_match = true;
+          break;
         }
-        break;
       }
       else {
         if (av_neighbors[j]->GetShowForageTarget() == target_org_type) {
           target = av_neighbors[j];      
           target_match = true;
+          break;
         }
-        break;          
         j++;
       }
     }
@@ -5871,15 +5871,15 @@ bool cHardwareExperimental::Inst_AttackPoisonFTPreyGenetic(cAvidaContext& ctx)
         if (av_neighbors[rand_index + i]->GetShowForageTarget() == target_org_type || accept_any_target) {
           target = av_neighbors[rand_index + i];
           target_match = true;
+          break;
         }
-        break;
       }
       else {
         if (av_neighbors[j]->GetShowForageTarget() == target_org_type || accept_any_target) {
           target = av_neighbors[j];
           target_match = true;
+          break;
         }
-        break;
         j++;
       }
     }
