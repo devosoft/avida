@@ -245,7 +245,7 @@
 		70FB4E881386EB5100D8F6F0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Michigan State University";
 			};
 			buildConfigurationList = 70FB4E8B1386EB5100D8F6F0 /* Build configuration list for PBXProject "TCMalloc-1.4" */;
@@ -291,7 +291,6 @@
 		70FB4E931386EB5100D8F6F0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -311,7 +310,6 @@
 		70FB4E941386EB5100D8F6F0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;

@@ -352,7 +352,7 @@
 		7041ABF41655823D008413DB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 			};
 			buildConfigurationList = 7041ABF71655823D008413DB /* Build configuration list for PBXProject "AvidaCore-ObjC" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -435,6 +435,7 @@
 		7041ABF91655823D008413DB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
 				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
@@ -450,19 +451,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -484,7 +481,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = AvidaCore;
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "../../../../avida-core/include/public/ ../../../../libs/apto/include/";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -494,20 +491,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				FRAMEWORK_VERSION = A;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -522,7 +515,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = AvidaCore;
 				PROVISIONING_PROFILE = "";
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "../../../../avida-core/include/public/ ../../../../libs/apto/include/";
 				WRAPPER_EXTENSION = framework;
 			};

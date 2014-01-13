@@ -1494,7 +1494,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1518,7 +1518,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -1568,7 +1568,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				RUN_CLANG_STATIC_ANALYZER = NO;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
@@ -1605,7 +1605,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OTHER_LDFLAGS = "";
 				RUN_CLANG_STATIC_ANALYZER = NO;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = debugging;
