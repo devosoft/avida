@@ -1,0 +1,85 @@
+# The *.help files in avida contain information on specific topics to
+# be used either in interactive help systems or in automatically
+# constructing documentation.  And '!' Must appear before all words
+# that should be linked to a definition when possible
+#
+# Commands are
+#   Type: The category of all subsequent keywords.
+#   Keyword: The lookup term for the particular piece of information.
+#      Each keyword command starts a new entry
+#   Desc: The description for this entry.
+#   Alias: Other lookup terms that might be used for the most recently
+#      defined alias.  (may have multiple alias lines)
+
+Type: Instruction
+
+Keyword: nop-instructions
+Desc: The instructions nop-A, nop-B, and nop-C are no-operation instructions, and will not do anything when executed.  They will, however, modifiy the behavior of the instruction preceeding it (by changing the !CPU component that it affects; see also !nop-register notation and !nop-head notation) or act as part of a !template to denote positions in the !genome.
+Alias: nop-a nop-b nop-c no-operation
+
+Keyword: IO
+Desc: This is the input/output instruction.  It takes the contents of the !?BX?! !register and outputs it, checking it for any !tasks that may have been performed.  It will then place a new !input into ?BX?.
+Alias: io
+
+Keyword: add
+Desc: This instruction reads in the contents of the BX and CX !registers and sums them together.  The result of this operation is then placed in the !?BX?! register.
+
+Keyword: dec
+Desc: This instruction reads in the contents of the !?BX?! !register and decrements it by one.
+
+Keyword: h-alloc
+Desc: This instruction allocates additional !memory for the organism up to the maximum it is allowed to use for its offspring.
+
+Keyword: h-copy
+Desc: This instruction reads the contents of the organism's !memory at the position of the !read-head, and copy that to the position of the !write-head.  If a non-zero !COPY_MUTATION_PROB is set, a test will be made based on this probability to determine if a !mutation occurs.  If so, a random instruction (chosen from the full set with equal probability) will be placed at the write-head instead.
+
+Keyword: h-divide
+Desc: This instruction is used for an organism to divide off an finnished offspring.  The original organism keeps the state of its !memory up until the !read-head.  The offspring's memory is initialized to everything between the read-head and the !write-head.  All memory past the write-head is removed entirely.
+
+Keyword: h-search
+Desc: This instruction will read in the !template the follows it, and find the location of a !complement template in the code.  The BX !register will be set to the distance to the complement from the current position of the !instruction-pointer, and the CX register will be set to the size of the template.  The !flow-head will also be placed at the beginning of the complement template.  If no template follows, both BX and CX will be set to zero, and the flow-head will be placed on the instruction immediatly following the h-search.
+
+Keyword: if-label
+Desc: This instruction reads in the !template that follows it, and tests if its !complement template was the most recent series of instructions copied.  If so, it executed the next instruction, otherwise it skips it.  This instruction is commonly used for an organism to determine when it has finished producing its offspring.
+
+Keyword: if-less
+Desc: This instruction compares the !?BX?! register to its !complement.  If ?BX? is the lesser of the pair, the next instruction (after a modifying !no-operation instruction, if one is present) is executed.  If it is greater or equal, then that next instruction is skipped.
+
+Keyword: if-n-equ
+Desc: This instruction compares the !?BX?! register to its !complement.  If they are not equal, the next instruction (after a modifying !no-operation instruction, if one is present) is executed.  If they are equal, that next instruction is skipped.
+
+Keyword: inc
+Desc: This instruction reads in the contents of the !?BX?! register and increments it by one
+
+Keyword: jmp-head
+Desc: This instruction will read in the value of the CX !register, and the move the !?IP?! by that fixed amount through the organism's !memory.
+
+Keyword: mov-head
+Desc: This instruction will cause the !?IP?! to jump to the position in !memory of the !flow-head.
+
+Keyword: nand
+Desc: This instruction reads in the contents of the BX and CX !registers (each of which are 32-bit numbers) and performs a !bitwise nand operation on them.  The result of this operation is placed in the !?BX?! register.  Note that this is the only !logic operation provided in the basic avida instruction set.
+
+Keyword: pop
+Desc: This instruction removes the top element from the active !stack, and places it into the !?BX?! register.
+
+Keyword: push
+Desc: This instruction reads in the contents of the !?BX?! register, and places it as a new entry at the top of the active !stack.  The ?BX? register itself remains unchanged.
+
+Keyword: set-flow
+Desc: This instruction moves the !flow-head to the !memory position denoted in the !?CX?! register.
+
+Keyword: shift-l
+Desc: This instruction reads in the contents of the !?BX?! register, and shifts all of the bits in that register to the left by one, placing a zero as the new rightmost bit, and trunkating any bits beyond the 32 maximum.  For values that require fewer than 32 bits, it effectively multiplies that value by two.
+
+Keyword: shift-r
+Desc: This instruction reads in the contents of the !?BX?! register, and shifts all of the bits in that register to the right by one.  In effect, it divides the value stored in the register by two, rounding down.
+
+Keyword: sub
+Desc: This instruction reads in the contents of the BX and CX !registers and subtracts CX from BX.  The result of this operation is then placed in the !?BX?! register.
+
+Keyword: swap-stk
+Desc: This instruction toggles the active !stack.
+
+Keyword: swap
+Desc: This instruction swaps the contents of the !?BX?! register with its !complement.

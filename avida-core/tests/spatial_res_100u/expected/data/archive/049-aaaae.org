@@ -1,0 +1,78 @@
+# Mon Sep 16 13:33:23 2013
+# Filename........: archive/049-aaaae.org
+# Update Output...: 90
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# 
+# Generation: 0
+# Merit...........: 1472.000000
+# Gestation Time..: 174
+# Fitness.........: 8.459770
+# Errors..........: 0
+# Genome Size.....: 49
+# Copied Size.....: 49
+# Executed Size...: 46
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# not 0 (0.000000)
+# nand 0 (0.000000)
+# and 0 (0.000000)
+# orn 1 (1.000000)
+# or 1 (1.000000)
+# andn 0 (0.000000)
+# nor 0 (0.000000)
+# xor 0 (0.000000)
+# equ 0 (0.000000)
+
+
+h-alloc
+h-search
+nop-C
+nop-A
+mov-head
+nop-C
+IO
+push
+pop
+nop-C
+IO
+nop-A
+nand
+IO
+nop-C
+nop-C
+h-copy
+swap-stk
+set-flow
+h-divide
+nop-C
+nand
+nop-C
+nop-C
+nop-C
+nand
+IO
+nop-C
+get-head
+nop-A
+IO
+inc
+nop-C
+nop-C
+get-head
+get-head
+nop-B
+nop-C
+push
+if-n-equ
+h-search
+h-copy
+if-label
+nop-C
+nop-A
+h-divide
+mov-head
+nop-A
+nop-B

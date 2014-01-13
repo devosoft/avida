@@ -1,0 +1,97 @@
+# Thu Jul 25 18:59:48 2013
+# Filename........: archive/ft-2_grp-1_073-aaaaf.org
+# Update Output...: 100
+# Is Viable.......: 0
+# Repro Cycle Size: 0
+# Depth to Viable.: -1
+# 
+# Generation: 0
+# Merit...........: 73.000000
+# Gestation Time..: 0
+# Fitness.........: 0.000000
+# Errors..........: 0
+# Genome Size.....: 73
+# Copied Size.....: 73
+# Executed Size...: 73
+# Last Birth Group ID........: -1
+# Last Birth Forager Type....: -2
+# Last Birth Cell............: 30062
+# Offspring.......: NONE
+# 
+# Tasks Performed:
+# eat-target 0 (0.000000)
+
+
+learn-parent
+search-seq-comp-s
+rotate-org-id
+nop-D
+one
+swap-stk
+rotate-away-org-id
+nop-A
+if-less
+fork-thread
+teach-offspring
+attack-prey
+look-ahead-intercept
+nop-E
+swap
+attack-prey
+rotate-away-org-id
+get-forage-target
+get-head
+fork-thread
+set-flow
+if-gtr-0
+wait-cond-less
+if-gtr-0
+nop-H
+rotate-away-org-id
+look-ahead-intercept
+nop-C
+nop-C
+nop-D
+nop-C
+rotate-x
+nop-F
+if-gtr-x
+nop-G
+nop-H
+if-less-0
+attack-prey
+nop-G
+rotate-org-id
+nop-C
+get-forage-target
+add
+IO
+rotate-away-org-id
+sub
+inc
+if-gtr-0
+rotate-org-id
+nop-C
+attack-prey
+if-gtr-0
+move
+nop-D
+IO
+nop-C
+add
+attack-prey
+add
+look-ahead-intercept
+nop-C
+nop-C
+nop-C
+attack-prey
+if-gtr-x
+rand
+rotate-x
+nop-G
+if-gtr-0
+repro
+attack-prey
+search-seq-comp-s
+get-forage-target

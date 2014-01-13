@@ -1,0 +1,26 @@
+#inst_set instset
+#hw_type 3 
+
+zero
+nop-B		# habitat 0
+IO			# max search dist
+nop-C
+zero
+nop-D		# search type 0: closest edible
+zero
+nop-E		# id_sought: res 0
+look-ahead
+nop-B
+dec
+nop-F			# count output reg
+if-not-0	# if no edible found
+nop-F
+IO
+nop-A
+if-not-0
+nop-F
+rotate-x	# rotate randomly
+nop-A
+if-equ-0
+nop-F
+move

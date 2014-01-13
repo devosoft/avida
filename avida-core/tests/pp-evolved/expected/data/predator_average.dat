@@ -1,0 +1,14 @@
+# Predator Average Data
+# Thu Jul 25 18:59:42 2013
+#  1: Update
+#  2: Fitness
+#  3: Gestation Time
+#  4: Merit
+#  5: Creature Age
+#  6: Generation
+#  7: Genome Length
+#  8: Total Predator Genotypic Entropy
+
+0 0 0 1063.66 1 0 0 0 
+50 0 0 1028.76 51 0 0 0 
+100 0.0312297 172.851 944.421 97.1131 0.0542986 0 0 

@@ -1,0 +1,58 @@
+body, table {
+  font: 10pt 'Lucida Grande', Verdana, sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+pre, .sub {
+  margin-left: 10px;
+}
+
+pre, code, kbd {
+  font: 9pt 'Monaco', monospace, Verdana, sans-serif;
+}
+
+div.revision {
+  float: right;
+}
+
+tr.important {
+  background-color: #AAFFAA;
+}
+
+h3 span {
+  color: #004400;
+}
+
+.resall {
+  color: #0000AA;
+}
+.resspatial {
+  color: #AA0000;
+}
+
+.cmdarg {
+  color: #0000AA;
+}
+
+.cmdargopt {
+  color: #008800;
+}
+
+.comment {
+  color: #886600;
+}
+.method {
+  color: #008800;
+}
+.class {
+  color: #880000;
+}
+.object {
+  color: #0000AA;
+}

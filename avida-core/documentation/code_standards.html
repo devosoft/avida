@@ -1,0 +1,318 @@
+<html>
+<head>
+  <title>Avida : Coding Standards</title>
+	<link rel="stylesheet" type="text/css" href="main.css" />
+</head>
+<body>
+
+<div class="revision">
+Revised 2006-09-05 DMB
+</div>
+
+<p><a href="index.html">Return to the Index</a></p>
+<hr />
+
+<div align="center">
+<h1>Coding Standards</h1>
+</div>
+
+<p>
+This document describes the coding standards that should be followed
+when developing within Avida.
+</p>
+
+
+<p>&nbsp;</p>
+<h2>Coding Style Guidelines</h2>
+
+<h3>Indentation</h3>
+<ul>
+<li>
+  All source code indentation should be spaces.  This includes C++, Python,
+  and HTML.
+</li>
+<li>
+  The size of a single indentation is 2 spaces.
+</li>
+</ul>
+
+
+
+<p>&nbsp;</p>
+<h3>Braces</h3>
+
+<div style="margin-left: 10px">
+  <h4>Function Definitions</h4>
+  <div style="margin-left: 10px">
+    <p>
+    Open and close braces should each be on their own line.  Do not
+    place the open brace on the same line as the function signature. The only
+    exception to this rule is single line class methods, in which both braces
+    are allowed to be on the same line as the code (but only in pairs).  Examples:
+    </p>
+    <h5 class="method">Right:</h5>
+<pre>
+void cFoo::Method()
+{
+  // code goes here
+}
+
+// ... in a class
+inline void Method() { ; }
+
+inline void Method()
+{ // longer code in here }
+</pre>
+    <h5 class="class">Wrong:</h5>
+<pre>
+void cFoo::Method() {
+  // code goes here
+}
+
+// ... in a class
+inline void Method() { 
+  ; }
+</pre>
+
+  </div>
+
+  <h4>For, While, Do Loops and Switch Statements</h4>
+  <div style="margin-left: 10px">
+    <p>
+    The open brace should go on the same line as the control structure,
+    the close brace on its own line.  Examples:
+    </p>
+    <h5 class="method">Right:</h5>
+<pre>
+while (foo) {
+  // code goes here
+}
+</pre>
+    <h5 class="class">Wrong:</h5>
+<pre>
+while (foo)
+{
+}
+</pre>
+
+  </div>
+
+  <h4>If/Else Statements</h4>
+  <div style="margin-left: 10px">
+    <p>
+    The same formatting rules as for/while/etc., but if there is an else clause
+    the close brace should go on the same line as the else statement.  Single
+    line if else statements should not get braces, unless they accompany a
+    multi-line statement.  Examples:
+    </p>
+    <h5 class="method">Right:</h5>
+<pre>
+if (foo) {
+  DoSomething();
+  DoAnotherSomething();
+} else {
+  DoADifferentSomthing();
+}
+
+if (!foo) CallAFunction();
+else CallBFunction();
+</pre>
+    <h5 class="class">Wrong:</h5>
+<pre>
+if (foo)
+{
+  DoSomething();
+  DoAnotherSomething();
+} else 
+  DoADifferentSomthing();
+
+if (!foo) {
+  CallAFunction();
+}
+else CallBFunction();
+</pre>
+  </div>
+</div>
+
+
+<p>&nbsp;</p>
+<h3>Parentheses</h3>
+<div style="margin-left: 10px">
+  <h4>Function Declarations and Calls</h4>
+  <div style="margin-left: 10px">
+    <p>
+    Do not use any space between the name and the open parenthesis, inside the
+    parentheses, or before commas that separate arguments.  A single space
+    should follow commas that separate arguments.  Examples:
+    </p>
+    <h5 class="method">Right:</h5>
+<pre>
+void cFoo::Method(int arg1, double arg2);
+int aFunction();
+</pre>
+    <h5 class="class">Wrong:</h5>
+<pre>
+void cFoo::Method( int arg1 , double arg2 );
+void cFoo::Method (int arg1, double arg2);
+int Function ( );
+</pre>
+
+  </div>
+
+  <h4>Control Structures</h4>
+  <div style="margin-left: 10px">
+    <p>
+    Control structures such as if, for, while, do, and switch statements use a
+    single space before the open parenthesis, but spaces inside them.
+    </p>
+  </div>
+</div>
+
+
+<p>&nbsp;</p>
+<h3>Other Punctation</h3>
+<ul>
+<li>
+  Pointer and reference types should be written with <strong>NO</strong> space
+  between the type name and the * or &amp;.
+</li>
+</ul>
+
+
+<p>&nbsp;</p>
+<h3>Include Guards and Statements</h3>
+<ul>
+<li>
+  All header files must use include guards, where the name of the guard is
+  exactly the filename with the period replaced with an underscore.  For
+  example, <kbd>cPopulation.h</kbd> is guarded by:
+<pre>
+#ifndef cPopulation_h
+#define cPopulation_h
+
+// Code goes here
+
+#endif
+</pre>
+</li>
+<li>
+  Include statements in header (<kbd>.h</kbd>) and implementation (<kbd>.cc</kbd>) files must
+  <strong>not</strong> check include guards (no <kbd>#ifndef</kbd> blocks).  This compile time
+  optimization is to be left for the compiler to perform.
+</li>
+</ul>
+
+
+<p>&nbsp;</p>
+<h2>Naming Conventions</h2>
+<ul>
+<li>
+  Variable names should be all lowercase.  Multi-word variables should have the
+  words separated by underscores ('_').  Examples:
+<pre>
+i
+position
+this_is_my_var
+</pre>
+</li>
+<li>
+  Class instance member variables should have the same format as regular
+  variables, but must be prefixed with 'm_'. Examples:
+<pre>
+m_type
+m_lexeme
+m_my_component
+</pre>
+</li>
+<li>
+  All functions and public struct/class methods should begin with a capital
+  letter followed by lowercase.  Additional words should be signified by
+  capital letters.  Underscores should only be used to indicate a category
+  of functions.  Examples:
+<pre>
+Sort() 
+ThisIsMyFunction() 
+cHardwareCPU::SingleProcess()
+</pre>
+</li>
+<li>
+  Private and protected struct/class support methods should begin with a
+  lowercase letter. Additional words should be signified by capital letters.
+  Underscores should only be used to indicate a category of functions.  Examples:
+<pre>
+cHardwareBase::doSlipMutation()
+cParser::parseCodeBlock()
+</pre>
+</li>
+<li>
+  All class names should begin with a lowercase 'c', followed by capital 
+  letters leading each word (similar to functions).  Templates have the same 
+  pattern, but beginning with a 't', and enumeration types begin with an 
+  'e'. Lastly, structs should begin with a 's'. Examples:
+<pre>
+cGenome
+tArray
+eHeadTypes
+sSomeData
+</pre>
+</li>
+<li>
+  All constant values (even as listed in enumerations) should be in all
+  capital letters, with words separated by underscores. Examples:
+<pre>
+NUM_REGISTERS
+MAX_STRING_LENGTH
+</pre>
+</li>
+<li>
+  All filenames should be the same as the class defined within that file.
+  Header files should use <kbd>.h</kbd>; implementation files should use
+  <kbd>.cc</kbd>.
+  Examples:
+<pre>
+cGenome.h
+tArray.h
+cPopulation.cc
+</pre>
+</li>
+<li>
+  Generally, there should only be one class defined in each header/source
+  file pair.  Implementation helper classes should be defined as internal
+  class members.
+</li>
+</ul>
+
+
+<p>&nbsp;</p>
+<h2>Class Dependency Guidelines</h2>
+<div style="margin-left: 10px">
+  <p>
+  Some groupings of classes should maintain important limitations with respect
+  to class dependency.
+  </p>
+
+  <h3>Tools Classes</h3>
+  <div style="margin-left: 10px">
+    <p>
+    All classes developed as general utility classes should be placed within the
+    <kbd style="color: #008844">source/tools</kbd> directory.   These classes
+    should have no dependencies that extend outside of this directory.
+    </p>
+  </div>
+
+  <h3>STL Usage</h3>
+  <div style="margin-left: 10px">
+    <p>
+    Usage of the Standard Template Library should be very limited.  A number of
+    these templates have unspecified orderings that can vary across platforms,
+    affecting consistency.  Where possible, it is greatly preferred to use the
+    local tools classes.
+    </p>
+  </div>
+</div>
+
+<hr />
+<p><a href="index.html">Return to the Index</a></p>
+
+</body>
+</html>

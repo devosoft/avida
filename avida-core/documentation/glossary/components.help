@@ -1,0 +1,42 @@
+# The *.help files in avida contain information on specific topics to
+# be used either in interactive help systems or in automatically
+# constructing documentation.  And '!' Must appear before all words
+# that should be linked to a definition when possible
+#
+# Commands are
+#   Type: The category of all subsequent keywords.
+#   Keyword: The lookup term for the particular piece of information.
+#      Each keyword command starts a new entry
+#   Desc: The description for this entry.
+#   Alias: Other lookup terms that might be used for the most recently
+#      defined alias.  (may have multiple alias lines)
+
+Type: CPU Components
+
+Keyword: CPU
+Desc: Each individual organism in an avida !population has its own virtual central processing unit (CPU) that executes its !genome.  An avida CPU consists of a !memory space with four !heads pointing to specific locaitions in that memory, three !registers, two !stacks, and !input and !output buffers.
+Alias: virtual-machine cpu cpus
+
+Keyword: Genome
+Desc: The genome of an organism is the original, underlying program that controls the behavior of that organism.  The !memory space in the !CPU of that organism is initialized to the genome, but will change with time.  A !genotype is is determined by a unique genome sequence.
+Alias: genome genomes
+
+Keyword: Heads
+Desc: Each !CPU has four heads associated with it.  The first is the instruction pointer (IP) which determines the next !instruction to be executed by the CPU.  After each execution, the IP is automaticall advanced (unless the instruction executed dictates otherwise).  The second is the read-head (RH), which determines what instruction is copied from a copy command, and then the write-head (WH) determines the position it is copied to.  Finally, the flow-head (FH) is used to mark positions in the genome to move the other heads to.  The flow-head is commonly used to mark the beginning of a loop to jump the IP back to from the loop's end.
+Alias: read-head write-head flow-head RH WH FH IP instruction-pointer heads head
+
+Keyword: Memory
+Desc: A !CPU contains a memory space to hold a sequence of !instructions to be executed.  The memory space is initialize to the genome of the organism, but it will be modified over the lifetime of the organism, typically as an offspring is produced.  As section of the memory is then divided off to initialize the ofpspring.
+Alias: memory
+
+Keyword: Registers
+Desc: Each !CPU in avida contains three registers, each of which is made up of 32 bits.  All math-based !instructions opperate on the registers, and various instruction will move the values in the registers around.
+Alias: register registers
+
+Keyword: Input/Output
+Desc: Each !CPU in avida is supplied with 3 input values of 32 bits each.  The !IO instruction is used by the organisms to get the an input (cyclying through the three options) into a !register and to output numbers from a register.  Each ouput is compared to all inputs to determing if any !tasks (by default, specified logical computations) have been performed by the organism.
+Alias: input inputs output outputs
+
+Keyword: Stack
+Desc: Each !CPU in avida has two stacks used for storage of numbers.  The !push and !pop instructions are used to move numbers between the !registers and the stack, and the !swap-stk instruction toggles the active stack in use.
+Alias: stack stacks

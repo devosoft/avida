@@ -1,0 +1,60 @@
+==> Drivers (these manage an avida run, with a viewer or otherwise.)
+cTextViewerAnalyzeDriver.h
+cTextViewerDriver.h
+cTextViewerDriver_Base.h
+
+==> General Tools
+cBaseTextWindow.h	- A generic text window base class (not NCurses specific).
+cTextWindow.h		- An easy-to-use text window for NCurses.
+cMenuWindow.h		- Creates a new cTextWindow, provides a menu of choices, and returns the user selection.
+cTabBox.h		- Accepts a cTextWindow and draws a set of tabs in it.  Returns id of current tab.
+
+==> Avida-Specific Tools
+cViewInfo.h		- Maintains information about the current state of avida population (map, geneback, etc)
+cSymbolUtil.h		- A simple utility to convert a property of a cell into a map-screen symbol.
+
+==> Managers for the current view.
+cView_Base.h		- Base view class for unified interface.
+cView.h			- Manages the normal text viewer.
+cAnalyzeView.h		- Manages the analyze-only text viewer (still needs some development.)
+cScreen.h		- Base class for all screen modes; defines general interface.  Derrived from cTextWindow
+
+
+==> The individual screen drivers. (all derrived from cScreen)
+cBarScreen.h		- Bar thats always along the top in all screen modes (main viewer only).
+
+cAnalyzeScreen.h
+cEnvironmentScreen.h
+cHistScreen.h
+cMapScreen.h
+cOptionsScreen.h
+cStatsScreen.h
+cZoomScreen.h
+
+
+New Generic Tools
+-----------------
+Environment moderator.  Provides lists of resources, reactions, tasks, etc.  If one of these is sent back in,
+more info will be returned.
+
+Historgram moderiator.  Provides a list of entries that can be historgramed.  If one is returned to it, it will
+provide a list of labels and numbers that describe the histogram.
+
+Map moderator.  Provides a list of map modes (with some editing-out of those that are not relevent for the current
+configs).  Also provides a grid of colors/symbols to be displayed (perhaps with some centering tools?).  If the
+interface returns one of the map modes, it changes the current mode.
+
+Options moderator.  Will send a list of the settings and their values, as well as their type (int, double, or string)
+or the set of allowable option, plus descriptions.  Some of them will come with "set" methods to run if they're
+changed from the interface.
+
+Stats moderator.  Keeps groups of stats and their current values.
+
+CPU moderator.  Will return the genome sequence(s) of the current organism.  Will also return various types of
+hardware info and stats, but in an generic form that can be described to the viewer to allow easy of new CPU
+development.  Entering a cpu ID (position in array given by map manager) will update to a new CPU.
+
+Genotype moderator.  Similar to cpu moderator, but keeping track of genotype information.  (Perhaps make a general
+taxanomic level moderator?)
+
+Analyze moderator.  Manage shell functionaity.

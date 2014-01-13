@@ -1,0 +1,39 @@
+#  1: Update
+#  2: nop-A
+#  3: nop-B
+#  4: nop-C
+#  5: if-n-equ
+#  6: if-less
+#  7: if-label
+#  8: mov-head
+#  9: jmp-head
+# 10: get-head
+# 11: set-flow
+# 12: shift-r
+# 13: shift-l
+# 14: inc
+# 15: dec
+# 16: push
+# 17: pop
+# 18: swap-stk
+# 19: swap
+# 20: add
+# 21: sub
+# 22: nand
+# 23: h-copy
+# 24: h-alloc
+# 25: set-mating-type-male
+# 26: set-mating-type-female
+# 27: div-sex-mating-type
+# 28: if-mating-type-juvenile
+# 29: if-mating-type-male
+# 30: if-mating-type-female
+# 31: set-mate-preference-random
+# 32: set-mate-preference-highest-display-a
+# 33: set-mate-preference-highest-merit
+# 34: increment-mating-display-a
+# 35: IO
+# 36: h-search
+
+100 678336 3949 338352 321 338 3934 9198 318 323 295 309 347 347 285 232 257 389 344 346 186 350 3954 6697 3359 3938 3915 293 277 336 245 1464 1265 18506 285 10157 
+200 580738 4475 427276 650 745 4307 11252 591 776 750 734 804 981 649 809 756 999 785 934 532 765 4595 9280 4446 5190 4381 753 645 680 710 2036 1526 15831 526 12918 

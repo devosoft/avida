@@ -1,0 +1,30 @@
+# Avida reaction data
+# Mon Oct 15 17:23:20 2012
+# First column gives the current update, all further columns give the number
+# of currently living organisms each reaction has affected.
+#  1: Update
+#  2: NAND
+
+0 0 
+10 0 
+20 2 
+30 4 
+40 7 
+50 7 
+60 12 
+70 21 
+80 33 
+90 39 
+100 48 
+110 73 
+120 101 
+130 100 
+140 99 
+150 96 
+160 95 
+170 95 
+180 91 
+190 2 
+200 2 
+210 2 
+220 1 

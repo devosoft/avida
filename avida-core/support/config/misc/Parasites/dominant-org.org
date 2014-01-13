@@ -1,0 +1,176 @@
+# Thu Sep 24 20:03:43 2009
+# Filename........: 155-aabmh
+# Update Output...: N/A
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# 
+# Generation: 0
+# Merit...........: 4672.000000
+# Gestation Time..: 996
+# Fitness.........: 4.690763
+# Errors..........: 0
+# Genome Size.....: 155
+# Copied Size.....: 155
+# Executed Size...: 146
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# not 10 (10.000000)
+
+
+Search
+Nop-C
+Nop-B
+Push-Prev
+SetMemory
+Nop-B
+Head-Move
+Nop-C
+Nop-C
+If-Not-Equal
+Val-Inc
+Nop-C
+Push-Comp
+Nop-C
+Val-Nand
+Nop-C
+Val-Add
+If-Equal
+Nop-C
+Inst-Write
+Val-Shift-L
+Val-Sub
+Val-Dec
+Nop-C
+Val-Dec
+If-Less
+Search
+Nop-C
+Val-Mult
+IO
+Nop-B
+Val-Delete
+IO
+Nop-C
+Nop-C
+Val-Div
+Val-Inc
+IO
+If-Equal
+Search
+Nop-C
+Nop-C
+Val-Dec
+Val-Nand
+Nop-C
+Nop-C
+Nop-C
+IO
+Nop-C
+Val-Delete
+Search
+Val-Shift-R
+Push-Comp
+Nop-C
+SetMemory
+Nop-C
+Search
+Val-Copy
+Nop-C
+Push-Comp
+Nop-C
+IO
+IO
+Nop-C
+Val-Mod
+Nop-C
+SetMemory
+Val-Mult
+IO
+Nop-C
+Nop-D
+Search
+Val-Shift-R
+Val-Shift-L
+SetMemory
+Nop-D
+If-Less
+Val-Inc
+If-Not-Equal
+Val-Div
+Val-Nand
+Push-Comp
+Nop-C
+Val-Inc
+Val-Div
+Nop-C
+If-Less
+Val-Shift-L
+Val-Nand
+Nop-C
+Val-Shift-R
+Nop-C
+SetMemory
+Nop-C
+SetMemory
+Val-Inc
+Nop-C
+Inst-Read
+Nop-C
+Nop-C
+Val-Nand
+Nop-C
+If-Less
+Head-Move
+Val-Div
+Nop-C
+If-Less
+Nop-A
+Inst-Write
+Val-Add
+Val-Delete
+Nop-C
+Val-Sub
+Val-Mult
+Search
+Val-Nand
+SetMemory
+IO
+Nop-C
+Nop-D
+Nop-C
+Nop-C
+Val-Sub
+Nop-C
+SetMemory
+Nop-D
+Nop-C
+Nop-C
+If-Greater
+Nop-A
+IO
+Nop-C
+Push-Comp
+Nop-C
+Push-Next
+Nop-C
+Val-Add
+Nop-C
+Search
+Head-Push
+IO
+Nop-B
+Nop-C
+Val-Copy
+Nop-C
+Search
+Inst-Read
+Inst-Write
+Head-Push
+Nop-C
+If-Equal
+Divide
+Head-Move
+Nop-A
+Nop-D

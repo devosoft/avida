@@ -1,0 +1,8 @@
+# Genotype IDs of the constituent organisms within each deme.
+# Mon Sep 16 13:33:18 2013
+#  1: Update [update]
+#  2: Deme id [demeid]
+#  3: Deme fitness [fitness]
+#  4: Number of unique genomes in deme [uniq]
+#  5: Genome ID [genomeids]
+100 0 6 10 10 10 15 1 1 19 2 1 3 3 18 14 1 13 1 1 1 1 1 11 1 1 1 1 

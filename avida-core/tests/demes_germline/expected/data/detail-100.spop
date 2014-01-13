@@ -1,0 +1,111 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Thu Jun 14 15:23:26 2012
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+713 div:int (none) 629 1 1 100 0 0 0 1 100 -1 1 0 instset-heads.cfg cccccccccccccccccccccccccccccccccccccccccutycfsvabrucavccccccccccccccccccccccccccccccccccccccccccccc 1151 33 0 
+621 dup:int germline (none) 1 1 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccmcccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3650 263 0 
+644 dup:int germline (none) 1 1 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccnccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 5850 230 0 
+690 div:int (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccmccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 7241 297 0 
+667 dup:int germline (none) 1 1 100 97 387 0.250646 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccwccccccccccccccccccccccccccccccjccccccccccccccccccccccccccccutycasvab 9550 329 0 
+1 div:ext (none) (none) 83 603 100 97 389 0.249357 0 -1 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 250,940,950,1040,1050,1350,1450,1451,1541,1550,1650,1750,1760,1840,1850,2041,2050,2150,2250,2260,2450,2461,2540,2550,2950,2961,3050,3150,3250,3261,3341,3350,3450,3451,4050,4240,4250,4450,4550,4650,4651,4850,4861,5050,5150,5160,5640,5650,6050,6150,6250,6450,6650,6661,6841,6850,6950,7050,7250,7350,7361,7650,7941,7950,8450,8550,8560,8650,8661,8750,8761,8950,9150,9160,9240,9250,9350,9450,9650,9660,9850,9860,9950 230,231,263,297,263,296,230,231,264,230,263,230,231,264,263,297,296,296,230,264,263,264,231,230,230,198,230,263,230,198,231,230,263,297,296,264,263,263,296,263,231,230,231,263,263,264,264,263,263,296,230,230,263,231,264,263,230,263,263,230,231,296,231,230,197,263,264,263,231,230,231,263,263,297,231,263,296,263,296,264,296,264,263 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+691 div:int (none) 1 1 1 99 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbcccccccccccccccccccccccutycasvab 4561 264 0 
+668 dup:int germline (none) 2 2 100 95 386 0.246114 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccwwccccccccccccccccccccccccccccccjccccccccccccccccccccccccccccutycasvab 4741,4750 231,230 0,0 
+669 dup:int germline (none) 4 4 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccqccccccccccccccccccccccccccccccccccccccccutycasvab 540,550,9750,9751 245,245,212,212 0,0,0,0 
+692 div:int (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavccccccccccccccccctcclccccccccccccccccccccccccccccccccccccccccccccbccccccccccccccccccccutycasvab 1661 264 0 
+646 dup:int germline (none) 1 1 100 0 0 0 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccmccccccccccccccccccccccccccccccccccccccccccccccccccccutfcasvab 5350 321 0 
+670 dup:int germline (none) 2 2 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccdcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 5750,5751 263,264 0,0 
+693 div:int (none) 1 1 1 99 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccceccccccccccccccccccccccccccccccccccccccccccccccccccccccctycasvab 6260 264 0 
+671 div:int (none) 632 1 1 100 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccncccccccccccccccccccccccccccccccccccccccccccccytycasvab 4361 297 0 
+625 dup:int germline (none) 2 2 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccjcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 4950,4951 296,264 0,0 
+694 div:int (none) 650 1 1 102 0 0 0 1 93 -1 1 0 instset-heads.cfg aarucavccccccccwccccccccccccccccccccccccccccccccccccccccccccccccbcccccccccccccccccmccccccccccutycasvab 8061 264 0 
+648 dup:int germline (none) 2 3 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccxccccccccccccccccccccccccccccccccutycasvab 8250,8261 230,264 0,0 
+626 dup:int germline (none) 2 2 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccgcccccutycasvab 150,161 263,264 0,0 
+672 div:int (none) 1 1 1 100 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavcccceccccccccccccccccccccccccccccccccccccccccccccccaccccccccccccccccccccccccccccccccccutycasvab 4041 297 0 
+695 div:int (none) 1 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccuccccutycasvab 5060 264 0 
+649 dup:int germline (none) 2 2 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccccccpcccccccscccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 5550,8850 248,248 0,0 
+650 dup:int germline (none) 1 2 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccccccwccccccccccccccccccccccccccccccccccccccccccccccccbccccccccccccccccccccccccccccutycasvab 8050 296 0 
+696 div:int (none) 1 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycaqvab 8940 264 0 
+673 div:int (none) 667 1 1 102 0 0 0 1 91 -1 1 0 instset-heads.cfg aarucavccccccccccmcccccccccccccccwccccccccccccccccccccccccccccccjccccccccccccccccccccccccccccutycasvab 9541 297 0 
+697 div:int (none) 658 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccmccwccccccccccccccccccccccccccccccccccccccutycasvab 841 264 0 
+674 div:int (none) 1 1 1 100 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccecccccccccccccccccccccccccccccccccccutycasvab 7061 264 0 
+651 dup:int germline (none) 1 1 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccutycasvab 7150 263 0 
+629 dup:int germline (none) 1 1 100 49 288 0.170139 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycfsvab 1150 32 0 
+675 div:int (none) 1 1 1 100 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavcccccccccccccqccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 1360 279 0 
+652 dup:int germline (none) 1 1 100 0 0 0 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccwccccccccccccccccccccccccccccccccutycaswab 5950 726 0 
+698 div:int (none) 1 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavcccccccccccccccczcccccccccccccccccccccccccccccccccqcccccccccccccccccccccccccccccccccccutycasvab 9951 249 0 
+699 div:int (none) 635 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceccccccccccccccccccdcccccutycasvab 2860 231 0 
+630 dup:int germline (none) 1 1 100 97 387 0.250646 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczcccccccwcccccutycasvab 4150 230 0 
+653 dup:int germline (none) 1 1 100 0 0 0 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccctcccccccccccccccccccccwccccccccccccccccccccccccccccccccutycaswab 5450 660 0 
+676 div:int (none) 1 1 1 100 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccwccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 6141 264 0 
+631 dup:int germline (none) 3 4 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccutycasvab 2750,3750,3761 230,263,297 0,0,0 
+677 div:int (none) 634 1 1 100 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavccccccccccccqcccccccccccccccqcccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 7561 293 0 
+700 div:int (none) 1 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyccccccccutycasvab 9440 264 0 
+701 div:int (none) 630 1 1 102 0 0 0 1 93 -1 1 0 instset-heads.cfg aarucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczcccccccwcccccutycasvab 4151 231 0 
+632 dup:int germline (none) 1 1 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccncccccccccccccccccccccccccccccccccccccccccccccutycasvab 4350 296 0 
+678 div:int (none) 649 1 1 100 49 237 0.206751 1 92 -1 1 0 instset-heads.cfg rucavccccccccpccsccccscccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccuttcasvab 5560 50 0 
+655 dup:int germline (none) 1 1 100 88 378 0.232804 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccuccccccccccccccccccccccccccccccccccccdcccccccccccutycasvab 6350 197 0 
+656 dup:int germline (none) 2 2 100 88 377 0.233422 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccckcccccccccccccccuccccccccccccccccccccccccccccccccccccdcccccccccccutycasvab 1240,1250 165,197 0,0 
+702 div:int (none) 1 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccccccccccccccccccccccccutycasvab 6460 231 0 
+679 div:int (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbutycasvab 7640 231 0 
+680 div:int (none) 618 1 1 101 0 0 0 1 92 -1 1 0 instset-heads.cfg aarucavcccccccccccccccccccccccccccccccccccccccccccccwcccccccccccccccccccccccceccccccccccccccutycasvab 341 297 0 
+657 dup:int germline (none) 1 1 100 97 389 0.249357 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbcccccccutycasvab 450 263 0 
+703 div:int (none) 636 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavcccccccclccccccccccccccccccccccccccccccccccccccncccccccccccccccccccccccccccccccccccccjutycasvab 2661 231 0 
+634 dup:int germline (none) 1 1 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccqcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 7550 278 0 
+658 dup:int germline (none) 4 4 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccmcccccccccccccccccccccccccccccccccccccccccutycasvab 850,3160,6540,6550 263,264,264,263 0,0,0,0 
+635 dup:int germline (none) 1 2 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdcccccutycasvab 2850 230 0 
+704 div:int (none) 1 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccvcccccccccccccccccccccccccccccccccccutycasvab 3040 231 0 
+681 div:int (none) 620 1 1 102 0 0 0 1 92 -1 1 0 instset-heads.cfg aarucavccccccccccccccccccccccccccczecccccwcccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 7451 264 0 
+636 dup:int germline (none) 1 1 100 97 389 0.249357 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccjutycasvab 2650 230 0 
+705 div:int (none) 631 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavccccccccpcccccccccccccccccccccccccccucccccccccccccccccccccccccccccccccccccccccciccccccutycasvab 2741 231 0 
+682 div:int (none) 651 1 1 99 0 0 0 1 92 -1 1 0 instset-heads.cfg rucaccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccutycasvab 7160 297 0 
+659 dup:int germline (none) 1 1 100 0 0 0 0 80 -1 0 0 instset-heads.cfg mucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccuoycasvab 9050 693 0 
+637 dup:int germline (none) 2 2 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccpccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 1950,1961 263,231 0,0 
+683 div:int (none) 621 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccomcccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3651 264 0 
+660 dup:int germline (none) 2 2 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccckccccccccccccccccccccccccccccccccccccccccccccccutycasvab 8150,8160 230,264 0,0 
+706 div:int (none) 1 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccbcccccccccccccccccccccccccccccccccccccccccccccutycasvab 8441 231 0 
+615 dup:int germline (none) 1 1 100 0 0 0 0 80 -1 0 0 instset-heads.cfg rucavgcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 50 660 0 
+707 div:int (none) 1 1 1 101 0 0 0 1 94 -1 1 0 instset-heads.cfg rucyvccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvahb 240 231 0 
+684 div:int (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbccccccccccccccccccccccutycasvab 2141 264 0 
+661 dup:int germline (none) 1 1 100 0 0 0 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutypasvab 3850 322 0 
+638 dup:int germline (none) 1 1 100 0 0 0 0 80 -1 0 0 instset-heads.cfg rmcavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 7750 686 0 
+662 dup:int germline (none) 2 2 100 97 389 0.249357 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccrccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 741,750 297,230 0,0 
+639 dup:int germline (none) 2 2 100 0 0 0 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccpcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasbab 3550,7850 660,660 0,0 
+708 div:int (none) 644 1 1 100 0 0 0 1 94 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccnccccchccccccccccccccccccccccccccccccccccccccccccccctccccccutycasvab 5840 231 0 
+685 div:int (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavccccccccccccccccccxcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 6051 264 0 
+709 div:int (none) 657 1 1 100 0 0 0 1 94 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbccccvccutycasvab 460 198 0 
+640 dup:int germline (none) 1 1 100 87 377 0.230769 0 80 -1 0 0 instset-heads.cfg rucavccccccccccyccccccccccccccccccccczcccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 2350 197 0 
+686 div:int (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccoccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 6940 264 0 
+663 dup:int germline (none) 2 2 100 97 389 0.249357 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccchccccccccccccccccccccccccccccutycasvab 8350,8351 296,297 0,0 
+618 dup:int germline (none) 1 1 100 97 387 0.250646 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccwccccccccccccccccccccccccecccccccccccccccutycasvab 350 263 0 
+641 dup:int germline (none) 2 3 100 97 387 0.250646 0 80 -1 0 0 instset-heads.cfg rucavccceccccccccccccccccccccccccccicccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3941,3950 264,296 0,0 
+710 div:int (none) 655 1 1 100 0 0 0 1 94 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccuczccccccccccccccccccccccccccccccccccdcccccccccccutycasvab 6361 198 0 
+687 div:int (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccdccccxccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 9351 264 0 
+711 div:int (none) 640 1 1 100 0 0 0 1 95 -1 1 0 instset-heads.cfg xuuavccccccccccyccccccccccccccccccccczccccccccccccccccccccccccccccccccccccccccccctcccccccccutycasvab 2340 198 0 
+665 dup:int germline (none) 2 2 100 97 388 0.25 0 80 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccjccccccccccccccccccccccccccccccccccccccccccccutycasvab 5250,5260 263,231 0,0 
+688 div:int (none) 649 1 1 101 0 0 0 1 92 -1 1 0 instset-heads.cfg rnucavccccccccpcccccccscccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 8861 249 0 
+643 dup:int germline (none) 1 1 100 0 0 0 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvaw 650 693 0 
+689 div:int (none) 1 1 1 99 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutyqasvab 4461 266 0 
+712 div:int (none) 678 1 1 100 0 0 0 2 99 -1 2 0 instset-heads.cfg cccccccccccccccccccccccccccccccccccccccccuttcasvabrucavccccccccpccsccccscccccccccccccccccccccccccccc 5561 33 0 
+666 dup:int germline (none) 1 1 100 0 0 0 0 80 -1 0 0 instset-heads.cfg rucavscccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 6750 627 0 
+620 dup:int germline (none) 1 1 100 97 387 0.250646 0 80 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccczccccccwcccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 7450 263 0 

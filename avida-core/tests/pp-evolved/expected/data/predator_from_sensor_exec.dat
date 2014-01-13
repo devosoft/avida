@@ -1,0 +1,67 @@
+# Predator org instruction execution data using values originating from sensory input
+# Thu Jul 25 18:59:42 2013
+#  1: Update
+#  2: nop-A
+#  3: nop-B
+#  4: nop-C
+#  5: nop-D
+#  6: nop-E
+#  7: nop-F
+#  8: nop-G
+#  9: nop-H
+# 10: if-n-equ
+# 11: if-less
+# 12: mov-head
+# 13: jmp-head
+# 14: get-head
+# 15: set-flow
+# 16: search-seq-comp-s
+# 17: search-seq-direct-s
+# 18: shift-r
+# 19: shift-l
+# 20: inc
+# 21: dec
+# 22: push
+# 23: pop
+# 24: swap-stk
+# 25: swap
+# 26: pop-all
+# 27: push-all
+# 28: add
+# 29: sub
+# 30: nand
+# 31: fork-thread
+# 32: exit-thread
+# 33: id-thread
+# 34: IO
+# 35: repro
+# 36: wait-cond-equ
+# 37: wait-cond-less
+# 38: wait-cond-gtr
+# 39: if-not-0
+# 40: if-equ-0
+# 41: if-gtr-0
+# 42: if-less-0
+# 43: if-gtr-x
+# 44: if-equ-x
+# 45: move
+# 46: get-north-offset
+# 47: rotate-x
+# 48: rotate-org-id
+# 49: rotate-away-org-id
+# 50: set-forage-target
+# 51: get-forage-target
+# 52: look-ahead-intercept
+# 53: attack-prey
+# 54: attack-pred
+# 55: teach-offspring
+# 56: learn-parent
+# 57: nop-X
+# 58: scramble-registers
+# 59: zero
+# 60: one
+# 61: rand
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+50 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+100 0 0 0 0 0 0 0 0 0 598 0 0 0 240 0 0 0 0 0 0 0 0 0 0 0 315 900 561 478 0 0 0 0 0 0 0 0 0 0 270 0 0 0 0 0 1046 216 0 0 0 1066 0 0 0 0 0 0 0 0 0 

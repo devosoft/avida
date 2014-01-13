@@ -1,0 +1,134 @@
+# Tue Sep 22 16:17:48 2009
+# Filename........: archive/100-aaaaa.org
+# Update Output...: 100
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# Update Created..: -1
+# Genotype ID.....: 1
+# Parent Gen ID...: -1
+# Tree Depth......: 0
+# Parent Distance.: -1
+# 
+# Generation: 0
+# Merit...........: 98.000000
+# Gestation Time..: 587
+# Fitness.........: 0.166951
+# Errors..........: 0
+# Genome Size.....: 100
+# Copied Size.....: 100
+# Executed Size...: 98
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# not 0 (0.000000)
+# nand 0 (0.000000)
+# and 0 (0.000000)
+# orn 0 (0.000000)
+# or 0 (0.000000)
+# andn 0 (0.000000)
+# nor 0 (0.000000)
+# xor 0 (0.000000)
+# equ 0 (0.000000)
+
+
+Search
+Nop-C
+Nop-D
+Push-Prev
+SetMemory
+Nop-A
+Head-Move
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Nop-C
+Search
+Inst-Read
+Inst-Write
+Head-Push
+Nop-C
+If-Equal
+Divide
+Head-Move
+Nop-A
+Nop-B

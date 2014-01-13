@@ -1,0 +1,65 @@
+# ---  Setup  ---
+h-alloc    # Allocate space for child
+h-search   # Locate the end of the organism
+nop-C      #
+nop-A      #
+nop-B      #
+mov-head   # Place write-head at beginning of offspring.
+nop-C      #
+
+# --- Not-so-Quick Tasks ---
+h-search   # Mark beginning of task loop
+push       # Push AX onto the stack to save it.
+nop-A
+swap-stk
+
+IO         # Random stuff that might help in doing tasks...
+pop
+nop-C
+nand
+swap
+push
+IO
+swap
+nop-A
+pop
+nand
+push
+nop-C
+
+swap-stk   # Restore AX and set BX to 0
+pop
+nop-A
+pop
+
+dec        # Decriment AX.  If it becomes zero, stop!
+nop-A
+if-n-equ
+nop-A
+mov-head
+
+# ---  Copy Loop  ---
+h-search   # Mark the beginning of the copy loop
+h-copy     # Do the copy
+
+if-label   # If we're done copying....
+nop-C      #
+nop-A      #
+nop-B      #
+
+h-search   # Set the next move to jump to the divide module...
+nop-C      #
+nop-C      #
+nop-C      #
+
+mov-head   # Jump to our "proper" destination.
+
+# ---  Divide Module ---
+nop-A      # Beginning marker
+nop-A      #
+nop-A      #
+h-divide   #    ...divide!
+
+nop-A      # End label.
+nop-B      #
+nop-C      #

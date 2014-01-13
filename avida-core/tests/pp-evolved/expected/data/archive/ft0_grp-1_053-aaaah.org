@@ -1,0 +1,77 @@
+# Thu Jul 25 18:59:48 2013
+# Filename........: archive/ft0_grp-1_053-aaaah.org
+# Update Output...: 100
+# Is Viable.......: 0
+# Repro Cycle Size: 0
+# Depth to Viable.: -1
+# 
+# Generation: 0
+# Merit...........: 53.000000
+# Gestation Time..: 0
+# Fitness.........: 0.000000
+# Errors..........: 0
+# Genome Size.....: 53
+# Copied Size.....: 53
+# Executed Size...: 53
+# Last Birth Group ID........: -1
+# Last Birth Forager Type....: 0
+# Last Birth Cell............: 14414
+# Offspring.......: NONE
+# 
+# Tasks Performed:
+# eat-target 0 (0.000000)
+
+
+move
+get-north-offset
+IO
+nop-H
+move
+fork-thread
+mov-head
+shift-r
+dec
+dec
+swap-stk
+if-less-0
+nop-C
+teach-offspring
+if-gtr-x
+move
+learn-parent
+nop-C
+rotate-away-org-id
+rand
+nop-B
+nop-F
+get-north-offset
+move
+shift-l
+move
+swap
+nop-A
+add
+if-not-0
+rotate-org-id
+rotate-x
+push
+one
+IO
+nop-B
+move
+wait-cond-less
+rand
+push
+nand
+look-ahead-intercept
+learn-parent
+move
+set-forage-target
+repro
+nop-A
+nop-C
+set-flow
+nand
+move
+if-less-0
+nop-X

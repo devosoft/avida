@@ -1,0 +1,958 @@
+<html>
+<head>
+  <title>Avida : The Analyze File</title>
+	<link rel="stylesheet" type="text/css" href="main.css" />
+</head>
+<body>
+
+<div class="revision">
+Revised 2007-07-01 CAO
+</div>
+
+<p><a href="index.html">Return to the Index</a></p>
+<hr />
+
+<div align="center">
+<h1>The Analyze File</h1>
+</div>
+
+<p>
+The file <kbd>analyze.cfg</kbd> is used to setup Avida when it is run in
+analyze mode, which can be done by running <kbd>avida -a</kbd>.  Analyze
+mode is useful for performing additional tests on genotypes after a run
+has completed.
+</p>
+<p>
+This analysis language is basically a simple programming language.  The
+structure of a program involves loading in genotypes in one or more
+<em>batches</em>, and then either manipulating single batches, or doing comparisons
+between batches.  Currently there can be up to 2000 batches of genotypes, but
+we will eventually remove this limit.
+</p>
+<p>
+The rest of this file describes how individual commands work, as well
+as some notes on other languages features, like how to use variables.  As
+a formatting guide, command arguments will be presented between brackets,
+such as [<span class="cmdarg">filename</span>].  If that argument is
+mandatory, it will be in blue.  If it is optional, it will be in green, and
+(if relevant) a default value will be listed, such as
+[<span class="cmdargopt">filename='output.dat'</span>].
+</p>
+
+<p>&nbsp;</p>
+<h2>Analyze Mode Commands</h2>
+
+<p>
+Analyze mode provides a number of commands for loading, manipulating,
+and saving analysis data. In addition to the analyze mode specific
+commands detailed in the following sections, all of the
+<a href="actions.html">Avida actions</a> can be called as well.
+</p>
+
+<p>&nbsp;</p>
+<h3>Load Commands</h3>
+<p>
+There are currently four ways to load in genotypes:
+</p>
+<dl>
+<dt><strong>LOAD_ORGANISM [<span class="cmdarg">filename</span>]</strong></dt>
+<dd>
+  Load in a normal single-organism file of the type that is output
+  from Avida.  These consist of lots of organismal information inside
+  of comments, and then the full genome of the organism with one
+  instruction per line.
+</dd>
+<dt><strong>LOAD [<span class="cmdarg">filename</span>]</strong></dt>
+<dd>  
+  Load in a file that contains a list of genotypes, one-per-line with
+  additional informaiton about those genotypes. Avida now includes a header
+  on such files indicating the values containted in each column.
+</dd>
+<dt><strong>LOAD_SEQUENCE [<span class="cmdarg">sequence</span>]</strong></dt>
+<dd>  
+	Load in a user-provided sequence as the genotype.  Avida has a
+  symbol associated with each instruction; this command is simply
+  followed by a sequence of such symbols that is than translated back
+  into a proper genotype.
+</dd>
+<dt><strong>
+  LOAD_MULTI_DETAIL [<span class="cmdarg">start-UD</span>]
+  [<span class="cmdarg">step-UD</span>] [<span class="cmdarg">stop-UD</span>]
+  [<span class="cmdargopt">dir='./'</span>] [<span class="cmdargopt">start batch=0</span>]
+</strong></dt>
+<dd>  
+  Allows the user to load in multiple detail files at once, one per
+  batch.  This is helpful when you're trying to do parallel analysis
+  on many detail files, or else to create a phylogenetic depth map.
+  <br />Example: <code>LOAD_MULTI_DETAIL 100 100 100000 ../my_run/run100/</code>
+  <br />
+  This would load in the files detail_pop.100 through detail_pop.100000 
+  in steps of 100, from the directory of my choosing.  Since 1000 files will
+  be loaded and we didn't specify starting batch, they will be put in
+  batches 0 through 999.
+</dd>
+</dl>
+
+<p>
+A future addition to this list is a command that will use the "dominant.dat"
+file to identify all of the dominant genotypes from a run, and then lookup and
+load their individual genomes from the archive directory.
+</p>
+
+
+<p>&nbsp;</p>
+<h3>Batch Control Commands</h3>
+<p>
+All of the load commands place the new genotypes into the <em>current</em> batch,
+which can be set with the <code>SET_BATCH</code> command.  Below is the list of control
+functions that allow you to manipulate the batches.
+</p>
+
+<dl>
+<dt><strong>SET_BATCH [<span class="cmdarg">id</span>]</strong></dt>
+<dd>
+  Set the batch that is currently active; the initial active batch
+  at the start of a program is 0.
+</dd>
+<dt><strong>NAME_BATCH [<span class="cmdarg">name</span>]</strong></dt>
+<dd>
+  Attach a name to the current batch.  Some of the printing methods
+  will print data from multiple batches, and we want the data from each
+  batch to be attached to a meaningful identifier.
+</dd>
+<dt><strong>PURGE_BATCH [<span class="cmdargopt">id=current</span>]</strong></dt>
+<dd>
+  Remove all genotypes in the specified batch (if no argument is given,
+  the current batch is purged.
+</dd>
+<dt><strong>DUPLICATE [<span class="cmdarg">id1</span>] [<span class="cmdargopt">id2=current</span>]</strong></dt>
+<dd>
+  Copy the genotypes from batch id1 into id2.  By default,
+  copy id1 into the current batch.  Note that duplicate is
+  <em>non-destructive</em> so you should purge the target batch first if
+  you don't want to just add more genotypes to the ones already in
+  that batch.
+</dd>
+<dt><strong>STATUS</strong></dt>
+<dd>
+  Print out (to the screen) the genotype count of each non-empty batch
+  and identify the currently active batch.
+</dd>
+</dl>
+
+
+<p>&nbsp;</p>
+<h3>Analysis Control Commands</h3>
+
+<p>
+There are several other commands that will allow you to interact with the
+analysis mode in some very important ways, but don't actually trigger any
+analysis tests or output.  Below are a list of some of the more important
+control commands.
+</p>
+
+<dl>
+<dt><strong>SYSTEM [<span class="cmdarg">command</span>]</strong></dt>
+<dd>
+  Run the command listed on the command line.  This is particularly
+  useful if you need to unzip files before you can use them, or if
+  you want to delete files no longer in use.
+</dd>
+<dt><strong>CLOSE_FILE [<span class="cmdarg">filename</span>]</strong></dt>
+  Close a file.  This is useful for instances where your script creates 
+  lots of unique files using command that support reentrant usage, such 
+  as DETAIL_AVERAGE for example.
+<dd>
+<dt><strong>INCLUDE [<span class="cmdarg">filename</span>]</strong></dt>
+<dd>
+  Include another file into this one and run its contents immediately.
+  This is useful if you have some pre-written routines that you want
+  to have available in several analysis files.  Watch out because there
+  are currently no protections against circular includes.
+</dd>
+<dt><strong>INTERACTIVE</strong></dt>
+<dd>
+  Place Avida analysis into interactive mode so that you can type
+  commands have have them immediately acted upon.  You can place this
+  anywhere within the analyze file, so that you can have some
+  processing done before interactive mode starts.  You can type <kbd>quit</kbd>
+  at any point to continue with the normal processing of the file.
+</dd>
+<dt><strong>DEBUG [<span class="cmdarg">message</span>]</strong></dt>
+<dt><strong>ECHO [<span class="cmdarg">message</span>]</strong></dt>
+<dd>
+  These are both <em>echo</em> commands that will print a message (the
+  arguments given) onto the screen.  If there are any variables (see
+  below) in the message, they will be translated before printing, so
+  this is a good way of debugging your programs.
+</dd>
+</dl>
+
+
+<p>&nbsp;</p>
+<h3>Genotype Manipulation Commands</h3>
+
+<p>
+Now that we know how to interact with analysis mode, and load in genotypes,
+its important to be able to manipulate them.  The next batch of commands
+will do basic analysis on genotypes, and allow the user to prune batches
+to only include those genotypes that are needed.
+</p>
+
+<dl>
+<dt><strong>RECALCULATE [<span class="cmdargopt">use_resources=0</span>] [<span class="cmdargopt">update=-1</span>] [<span class="cmdargopt">use_random_inputs=0</span>]  [<span class="cmdargopt">env_input.1 env_input.2 env_input.3</span>]</strong></dt>
+<dd>
+  Run all of the genotypes in the current batch through a test CPU
+  and record the measurements taken (fitness, gestation time, etc.).
+  This overrides any values that may have been loaded in with the
+  genotypes.  The use_resources flags signifies whether or not the
+  test cpu will use resources when it runs.  If resources are used, the
+  update parameter allows setting resource values from a specific time point
+  in the resource list. For more information on resources, see the 
+  <a href="#USING_RESOURCES">summary</a> below.  If the use_random_inputs flag
+  is set, then organisms will be provided with new, random input strings for 
+  each trace as they would experience during an actual Avida run. By default, 
+  the same inputs are provided every time to organisms in analysis mode.
+  If additional arguments are specified after use_random_input's value, these
+  integers will be used as environmental inputs for the genotype's test cpu
+  recalculation. Manually specified test cpu inputs must conform to the pseudo-random
+  formatting described in cEnvironment::SetupInputs. Phenotypic plasticity information is not available from the
+  RECALCULATE command; use RECALC with <kbd>num_trials X</kbd>, where X is greater than 1,
+  for phenotypic plasticity statistics.
+</dd>
+<dt><strong>RECALC [<span class="cmdargopt">use_resources</span>] [<span class="cmdargopt">use_random_inputs</span>] [<span class="cmdargopt">update N (N=-1)</span>] [<span class="cmdargopt">use_manual_inputs input.1 input.2 input.3</span>] [<span class="cmdargopt">num_trials T (T=1)</span>]</strong></dt>
+<dd>
+  This command will perform the same operations as RECALCULATE but has a few additional features.
+  Instead of having a specified ordering for inputs to this command, argument order does not matter.
+  To use resources, for instance, use the flag <kbd>use_resources</kbd> following RECALC.  
+  Arguments with parameters must have the values specified immediately after them.  For instance
+  <br>
+  <kbd>&nbsp;&nbsp;&nbsp;RECALC update 10 use_resources use_manual_inputs 256948023 870730840 1441302276</kbd>
+  <br>
+  will set the update to 10, request the use of resources, and test the genotypes using the inputs 256948023, 870730840, and 1441302276. Manually specified environment inputs must conform to the pseudo-random numbers as
+  described in cEnvironment::SetupInputs.
+  Typically, <kbd>use_manual_inputs</kbd> will override <kbd>use_random_inputs</kbd>, however if <kbd>num_trials</kbd> is set to greater than one, manual input specficiation will be overriden
+  and random inputs will be used to gather phenotypic plasticity information that will be available
+  for <a href="#GENOTYPE_STATS">genotype statistics</a> at the bottom of this document.  <i>Please note that phenotypic plasticity
+  analysis perfoemd by using RECALC will reset genotype statistics to the values for the most <b>likely</b> 
+  phenotype.</i>  Implicit phenotypic plasticity analysis (e.g. by not calling RECALC or calling RECALC with <kbd>num_trials 1</kbd>)
+  will not re-evaluate the genotype statistics in this manner and instead rely on the initial values or
+  those values from a single recalculation.
+<dt><strong>FILTER [<span class="cmdarg">stat</span>] [<span class="cmdarg">relation</span>] [<span class="cmdarg">test_value</span>] [<span class="cmdargopt">batch=current</span>]</strong></dt>
+<dd>
+    Perform the given test on all genotypes and Remove all those that do not pass.  Stat indicates which
+    metric you want to compare, relation is the test to perform (==, !=, &lt;, &gt;, &lt;=, or &gt;=), and
+    test_value is the value to compare it to.  For example <br>
+    &nbsp;&nbsp;<kbd>FILTER fitness >= 1.5</kbd><br>
+    will save only those genotypes with a fitness greater than or equal to 1.5.  Set the section on
+    <a href="#GENOTYPE_STATS">Genotype Statistics</a> for more information on what keywords can be used here.
+</dd>
+<dt><strong>FIND_GENOTYPE [<span class="cmdargopt">type='num_cpus' ...</span>]</strong></dt>
+<dd>
+  Remove all genotypes but the one selected.  Type indicates which
+  genotype to choose.  Options available for type are <em>num_cpus</em> (to
+  choose the genotype with the maximum organismal abundance at time of
+  printing), <em>total_cpus</em> (number of organisms ever of this genotype),
+  <em>fitness</em>, or <em>merit</em>.  If a the type entered is numerical, it is
+  used as an id number to indicate the desired genotype (if no such id
+  exists, a warning will be given).  Multiple arguments can be given to
+  this command, in which case all those genotypes in that list will be
+  preserved and the remainder deleted.
+</dd>
+<dt><strong>FIND_ORGANISM [<span class="cmdargopt">random</span>]</strong></dt>
+<dd>
+	Picks out a random organism from the population and removes all 
+	others. It is different from FIND_GENOTYPE because it takes into 
+	account relative number of organisms within each genotype. To pick 
+	more than one organisms, list the word 'random' multiple times. This 
+	is essentially sampling without replacement from the population.
+</dd>
+<dt><strong>FIND_LINEAGE [<span class="cmdargopt">type="num_cpus"</span>]</strong></dt>
+<dd>
+  Delete everything except the lineage from the chosen genotype back
+  to the most distant ancestor available.  This command will only
+  function properly if parental information was loaded in with the
+  genotypes.  Type is the same as the FIND_GENOTYPE command.
+</dd>
+<dt><strong>
+  FIND_SEX_LINEAGE [<span class="cmdargopt">type="num_cpus"</span>]
+  [<span class="cmdargopt">parent_method="rec_region_size"</span>]
+</strong></dt>
+<dd>
+  Delete everything except the lineage from the chosen genotype back
+  to the most distant ancestor available. Similar to FIND_LINEAGE but 
+  works in sexual populations. To simplify things, only maternal lineage plus
+  immediate fathers are saved, i.e. info about father's parents is discarded. 
+  The second option, parent_method, determines which parent is considered the 
+  'mother' in each particular recombination. If parent_method is "rec_region_size" :
+  'mother' is the parent contributing more code to the offspring genome 
+  (default); if it's <em>genome_size</em>, 'mother' is the parent with the longer 
+  genome, no matter how much of it was contributed to the offspring. 
+  This command will only function properly if parental information was 
+  loaded in with the genotypes.  Type is the same as the FIND_GENOTYPE command.
+</dd>
+<dt><strong>ALIGN</strong></dt>
+<dd>
+  Create an alignment of all the genome's sequences; It will place '_'s
+  in the sequences to show the alignment.  Note that a FIND_LINEAGE
+  must first be run on the batch in order for the alignment to be
+  possible.
+</dd>
+<dt><strong>SAMPLE_ORGANISMS [<span class="cmdarg">fraction</span>] [<span class="cmdargopt">test_viable=0</span>]</strong></dt>
+<dd>
+  Keep only fraction of organisms in the current batch.  This
+  is done per organism, <em>not</em> per genotype.  Thus, genotypes of high
+  abundance may only have their abundance lowered, while genotypes
+  of abundance 1 will either stay or be removed entirely. If test_viable is
+  set to 1, sample only from the viable organisms. 
+</dd>
+<dt><strong>SAMPLE_GENOTYPES [<span class="cmdarg">fraction</span>] [<span class="cmdargopt">test_viable=0</span>]</strong></dt>
+<dd>
+  Keep only fraction of genotypes in the current batch. If test_viable is
+  set to 1, sample only from the viable genotypes. 
+</dd>
+<dt><strong>RENAME [<span class="cmdargopt">start_id=0</span>]</strong></dt>
+<dd>
+  Change the id numbers of all the genotypes to start at a given value.
+  Often in long runs we will be dealing with ID's in the millions.  In
+  particular, after reducing a batch to a lineage, we will often want
+  to number the genotypes in order from the ancestor to the final one.
+</dd>
+</dl>
+
+
+<p>&nbsp;</p>
+<h3>Basic Output Commands</h3>
+
+<p>
+Next, we are going to look at the standard output commands that will used to
+save information generated in analyze mode.
+</p>
+
+<dl>
+<dt><strong>PRINT [<span class="cmdargopt">dir='archive/'</span>] [<span class="cmdargopt">filename</span>]</strong></dt>
+<dd>
+  Print the genotypes from the current batch as individual files (one
+  genotype per file) in the directory given. If no filename is specified,  
+  the files will be named by the genotype name, with a <kbd>.gen</kbd> appended to 
+  them. Specifying the filename is useful when printing a single genotype. 
+</dd>
+<dt><strong>TRACE [<span class="cmdargopt">dir='archive/'</span>] [ <span class="cmdargopt">use_resources=0</span>] [<span class="cmdargopt">update=-1</span>] [ <span class="cmdargopt">use_random_inputs=0</span>]  [<span class="cmdargopt">env_input.1 env_input.2 env_input.3</span>]</strong></dt>
+<dd>
+  Trace all of the genotypes and print a listing of their execution.
+  This will show step-by-step the status of all of the CPU components
+  and the genome during the course of the execution.  The filename used
+  for each trace will be the genotype's name with a <kbd>.trace</kbd> appended.
+  The use resources flag signifies whether or not the test cpu will use
+  resources when it runs.  If resources are used, the update parameter allows 
+  setting resource values from a specific time point in the resource list. 
+  For more information on resources, see the <a href="#USING_RESOURCES">summary</a> below.
+  If the use_random_inputs flag is set, then organisms will be provided with new, 
+  random input strings for each trace as they would experience during an actual Avida run.  
+  By default, the same inputs are provided every time to organisms in analysis mode.  You can
+  manually specify environmental inputs by setting use_random_inputs to 0 setting env_input.X
+  values.  Manually specified environment inputs must conform to the pseudo-random numbers as
+  described in cEnvironment::SetupInputs.
+</dd>
+<dt><strong>PRINT_TASKS [<span class="cmdargopt">file='tasks.dat'</span>]</strong></dt>
+<dd>
+  This will print out the tasks doable by each genotype, one per line
+  in the output file specified.  Note that this information must either
+  have been loaded in, or a RECALCULATE (or RECALC) must have been run to collect
+  it.
+</dd>
+<dt><strong>
+	PRINT_PHENOTYPES [<span class="cmdargopt">file='phenotype.dat']
+	[<span class="cmdargopt">total_task_count]
+	[<span class="cmdargopt">total_task_performance_count]
+</strong></dt>
+<dd>
+	Prints phenotypes in the current batch as determined by task-signature.  Default statistics for each phenotype are number of organisms, number of genotypes, average genome length, average gestation time, viability, and tasks performed.  Using the total_task_count and/or total_task_performance_count flags will add that statistic to the output.  (In the case of total_task_performance_count, this will be an average over the members of the phenotype.)
+</dd>
+<dt><strong>DETAIL [<span class="cmdargopt">file='detail.dat'</span>] [<span class="cmdargopt">format ...</span>]</strong></dt>
+<dd>
+  Print out all of the stats for each genotype, one per line.  The
+  format indicates the layout of columns in the file.  If the filename
+  specified ends in <kbd>.html</kbd>, html formatting will be used instead of
+  plain text.  For the format, see the section on
+  <a href="#GENOTYPE_STATS">Genotype Statistics</a> below.
+</dd>
+<dt><strong>
+  DETAIL_TIMELINE [<span class="cmdargopt">file='detail_timeline.dat'</span>] 
+	[<span class="cmdargopt">time_step=100</span>]
+	[<span class="cmdargopt">max_time=100000</span>]
+</strong></dt>
+<dd>
+	Details a time-sequence of dump files. 
+</dd>
+<dt><strong>
+  DETAIL_BATCHES [<span class="cmdargopt">file='detail_baches.dat'</span>]
+	[<span class="cmdargopt">format ...</span>]
+</strong></dt>
+<dd>
+  Details all batches. 
+</dd>
+<dt><strong>
+  DETAIL_INDEX [<span class="cmdarg">file</span>]
+	[<span class="cmdarg">min_batch</span>] [<span class="cmdarg">max_batch</span>]
+	[<span class="cmdargopt">format ...</span>]
+</strong></dt>
+<dd>
+	Detail all the batches between min_batch and max_batch. 
+</dd>
+<dt><strong>
+  DETAIL_AVERAGE [<span class="cmdargopt">file="detail.dat"</span>] 
+	[<span class="cmdargopt">format ...</span>]
+</strong></dt>
+<dd>
+	Detail the current batch, but print out the average for each argument, as opposed to the 
+	individual values for each genotype, the way DETAIL would. Arguments are the same as for DETAIL. 
+	it takes into account the relative abundance of each genotype in the batch when calculating the 
+	averages. 
+</dd>
+</dl>
+
+
+<p>&nbsp;</p>
+<h3>Analysis Commands</h3>
+
+<p>
+And at last, we have the actual analysis commands that perform tests on
+the data and output the results.
+</p>
+
+<dl>
+<dt><strong>
+  ANALYZE_EPISTASIS [<span class="cmdargopt">file='epistasis.dat'</span>]
+	[<span class="cmdargopt">num_test=(all)</span>]
+</strong></dt>
+<dd>
+  For each genotype in the current batch, test possible 
+  double mutatants, and single mutations composing them; print both of 
+  individual relative fitnesses and the double mutant relative fitness. 
+  By default all double mutants are tested. If in a hurry, specify the 
+  number to be tested.
+</dd>
+<dt><strong>
+  MAP_TASKS [<span class="cmdargopt">dir="phenotype/"</span>]
+	[<span class="cmdargopt">flags ...</span>] [<span class="cmdargopt">format ...</span>]
+</strong></dt>
+<dd>
+    Construct a genotype-phenotype array for each genotype in the current batch.  The format is
+    the list of stats that you want to include as columns in the array
+    (see <a href="#GENOTYPE_STATS">Genotype Statistics</a> for more info).  Additionally you can have
+    special format flags; the possible flags are 'html' to print output in HTML format, and
+    'link_maps' to create html links between consecutive genotypes in a lineage. The flag
+    'use_manual_inputs input.1 input.2 input.3' where input.X are integers
+    allow for designated environmental inputs to be used when evaluating the genotype-phenotype mapping.
+    Manually specified environment inputs must conform to the pseudo-random numbers as
+    described in cEnvironment::SetupInputs.
+</dd>
+<dt><strong>
+  MAP_MUTATIONS [<span class="cmdargopt">dir="mutations/"</span>]
+	[<span class="cmdargopt">flags ...</span>]
+</strong></dt>
+<dd>
+  Construct a genome-mutation array for each genotype in the
+  current batch.  The format has each line in the genome as a row
+  in the chart, and all available instructions representing the columns.
+  The cells in the chart indicate the fitness were a mutation to
+  occur at the position in the matrix, to the listed instruction.
+  If the 'html' flag is used, the charts will be output in HTML format.
+</dd>
+<dt><strong>
+  MAP_DEPTH [<span class="cmdargopt">filename='depth_map.dat'</span>]
+  [<span class="cmdargopt">min_batch=0</span>] [<span class="cmdargopt">max_batch=cur_batch-1</span>]
+</strong></dt>
+<dd>
+  This will create a depth map (like those we use for phylogeny
+  visualization) in the filename specified.  You can direct which
+  batches to take this from, but by default it will work perfectly after
+  a LOAD_MULTI_DETAIL.
+</dd>
+<dt><strong>
+  AVERAGE_MODULATITY [<span class="cmdargopt">file='modularity.dat'</span>]
+	[<span class="cmdargopt">task.0 task.1 task.2 task.3 task.4 task.5      
+	task.6 task.7 task.8</span>]
+</strong></dt>
+<dd>
+  Calculate several modularity measuers, such as how many tasks is an 
+  instruction involved in, number of sites required for each task, etc.
+  The measures are averaged over all the organisms in the current batch 
+  that perform any tasks. For the full output list, do 
+  <code>AVERAGE_MODULATITY legend.dat</code> At the moment doesn't support html
+  output format and works with only 1 and 2 input tasks. 
+</dd>
+<dt><strong>
+  HAMMING [<span class="cmdargopt">file="hamming.dat"</span>]
+	[<span class="cmdargopt">b1=current</span>] [<span class="cmdargopt">b2=b1</span>]
+</strong></dt>
+<dd>
+  Calculate the hamming distance between batches b1 and b2.  If only
+  one batch is given, calculations are on all pairs within that batch.
+</dd>
+<dt><strong>
+  LEVENSTEIN [<span class="cmdargopt">file='lev.dat'</span>]
+	[<span class="cmdargopt">batch1</span>] [<span class="cmdargopt">b2=b1</span>]
+</strong></dt>
+<dd>
+  Calculate the levenstein distance (edit distance) between batches b1
+  and b2.  This metric is similar to hamming distance, but calculates
+  the minimum number of single insertions, deletions, and mutations to
+  move from one sequence to the other.
+</dd>
+<dt><strong>
+  SPECIES [<span class="cmdargopt">file='species.dat'</span>]
+	[<span class="cmdarg">batch1</span>] [<span class="cmdarg">batch2</span>]
+  [<span class="cmdarg">num_recombinants</span>]
+</strong></dt>
+<dd>
+	Calculates the percentage of non-viable recombinants between all 
+	pairs of organisms from batches 1 and 2. Number of random recombination 
+	events for each pair of organisms is specified by num_recombinants.
+	Recombination is done in the same way as in the birth chamber when 
+	divide-sex is executed.
+  <br />Output:  Batch1Name  Batch2Name  AveDistance  Count  FailCount
+</dd>
+<dt><strong>
+  RECOMBINE 
+	[<span class="cmdarg">batch1</span>] [<span class="cmdarg">batch2</span>]
+	[<span class="cmdarg">batch3</span>] [<span class="cmdarg">num_recombinants</span>]
+</strong></dt>
+<dd>
+	Similar to Species command, but instead of calculating things on the spot, 
+	just create all the recombinant genotypes using organisms from baches 1 and 2
+	and put them in the batch3. 
+</dd>
+</dl>
+
+
+<p>&nbsp;</p>
+<h3>Building Input Files for Avida</h3>
+
+<p>
+These commands build input files for Avida, using the capabilities of analyze mode to 
+automate some tedium.
+</p>
+
+<dl>
+<dt><strong>
+  WRITE_CLONE [<span class="cmdargopt">file='clone.dat'</span>]
+  [<span class="cmdargopt">num_cells=-1</span>]
+</strong></dt>
+<dd>
+  Creates a clone population file (as <a href="actions.html#SaveClone">SaveClone</a>) 
+  from the current batch, suitable for loading with <a href="actions.html#LoadClone">LoadClone</a>.  
+  The starting update is 0 and the archive is empty.  num_cells should be the number 
+  of cells in the world -- the default value of -1 will not be accepted by LoadClone, 
+  so be sure to specify the correct number.
+  <br />
+  <strong>Warning:</strong> Unlike SaveClone, WRITE_CLONE does not preserve location.  
+  Any spatial structure the population had is lost.
+</dd>
+<dt><strong>
+  WRITE_INJECT_EVENTS [<span class="cmdargopt">file='events_inj.cfg'</span>]
+  [<span class="cmdargopt">start_cell=0</span>] [<span class="cmdargopt">lineage=0</span>]
+</strong></dt>
+<dd>
+  Creates an <a href="events.html">events file</a> which injects all the genotypes of the current 
+  batch at update 0.  Injection starts at the given start_cell id and increments 
+  upward.  All injected organisms are assigned the given lineage label and start 
+  with the relevant merit; num_cpus copies of each genotype are injected.
+  <br />
+  <strong>Warning:</strong> injection is in order that the genotypes appear in the batch.  
+  This will break any spatial structure your population may have had.
+</dd>
+<dt><strong>
+  WRITE_INJECT_INITIAL [<span class="cmdargopt">file='events_inj.cfg'</span>]
+  [<span class="cmdargopt">start_cell=0</span>] [<span class="cmdargopt">lineage=0</span>]
+</strong></dt>
+<dd>
+  Creates an <a href="events.html">events file</a> which injects all the genotypes of the current 
+  batch before update 0 (same as WRITE_INJECT_EVENTS but doesn't cause no organism errors).  Injection starts at 0 (this is made for reintroduction of single organisms only!) and injects a single organism only.  Injected organism is assigned the given lineage label and starts
+  with the relevant merit.
+  <br />
+  <strong>Warning:</strong> injection is in order that the genotypes appear in the batch and doesn't take into account the original location.
+  This will break any spatial structure your population may have had.
+</dd>
+
+<dt><strong>
+  WRITE_COMPETITION [<span class="cmdargopt">join_UD=0</span>]
+  [<span class="cmdargopt">start_merit=50000</span>] [<span class="cmdargopt">file='events_comp.cfg'</span>]
+  [<span class="cmdargopt">batch_A=cur_batch-1</span>] 
+  [<span class="cmdargopt">file=batch_B=cur_batch</span>] [<span class="cmdargopt">grid_side=-1</span>]
+  [<span class="cmdargopt">lineage=0</span>]
+</strong></dt>
+<dd>
+  Creates an <a href="events.html">events file</a> which acts much like the one produced 
+  by WRITE_INJECT_EVENTS, but injects two populations (from the given batches), separates 
+  the populations at update 0 (via SeverGridRow grid_side), and joins them at the given 
+  join_UD.  Organisms from batch_A are injected starting at cell id 0; organisms from 
+  batch_B are injected starting at cell id grid_side*grid_side.    (If grid_side is negative, 
+  an attempt will be made to infer it from the number of organisms in the population.)
+  <br />
+  Each population should be square, of grid_side x grid_side dimensions.  (You will have 
+  to set up the world in avida.cfg to have WORLD_X of grid_side and WORLD_Y of 2*grid_side.)  
+  Each population may not be larger than 10,000 organisms.  Organisms from batch_A will 
+  be assigned the given lineage label; organisms from batch_B will be assigned the given 
+  lineage label + 1.
+  <br />
+  <strong>Warning:</strong> Like WRITE_INJECT_EVENTS, WRITE_COMPEITITIONS will destroy any 
+  spatial structure the populations may have had.  Also, since it severs/joins only the grid_side 
+  row, it is not suitable for use with WORLD_GEOMETRY values other than 1 (bounded grid).
+</dd>
+</dl>
+
+
+<p>&nbsp;</p>
+<h2><a name="USING_RESOURCES">Using Test CPU Resources Summary</a></h2>
+
+<p>
+This summary is given to help explain the use and constraints for using resources.
+</p>
+<p>
+When a command specifies the use of resources for the test cpu, it should not
+affect the state of the test cpu after the command has finished.  However, this 
+means that the test cpu is no longer guaranteed to be reentrant.  Each command 
+will set up the environment and the resource count in the test cpu with it's own 
+environment and resource count.  When the command has finished it will set the the 
+test cpu's environment and resource count back to what they were before the command 
+was executed.
+</p>
+<p>
+Resource usage for the test cpu occurs by setting the environment and then 
+setting up the resource count using the environment.  Once the resource 
+count has been set up, it will not change during the use of the test cpu.  
+When an organism performs and IO, completing a task, the concentrations are 
+not changed.  This was a design decision, but is easily changed.
+</p>
+<p>
+In analyze, a new data structure was included which contains a time ordered 
+list of resource concentrations.  This list can be used to set up resources 
+from different time points.  By using the update parameter in the RECALCULATE (or RECALC) function, 
+you can use the resource concentrations from a specified time 
+point.  If the LOAD_RESOURCES command is not called, the list defaults to 
+a single entry which is the the initial concentrations of the resources 
+specified in the environment configuration file.
+</p>
+
+<dl>
+<dt><strong>PRINT_TEST_CPU_RESOURCES</strong></dt>
+<dd>
+  This command first prints the whether or not the test cpu is using 
+  resources.  Then it will print the concentration for each resource.
+</dd>
+<dt><strong>LOAD_RESOURCES [<span class="cmdargopt">file_name="resource.dat"</span>][<span> class="cmdargopt">resource_cpu_cycle_offset=0</span>]</strong></dt>
+<dd>
+  This command loads a time oriented list of resource concentrations.  
+  The command takes a file name containing this type of data, and 
+  defaults to resource.dat.  The format of the file must be the same 
+  as resource.dat, and each line must be in the correct chronological 
+  order with oldest first.
+  The resource_cpu_cycle_offset parameter will influence which update RECALCULATE, 
+  etc. will use from the resource.dat file.  Specifically, the update specified 
+  in RECALCULATE, etc. will have resource_cpu_cycle_offset / AVE_TIME_SLICE 
+  (integer division) added to it.  Unless you know exactly why you would use this 
+  option, you should leave it at its default of 0.
+</dd>
+</dl>
+
+
+
+<p>&nbsp;</p>
+<h2><a name="GENOTYPE_STATS">Genotype Statistics</a></h2>
+
+<p>
+    Avida analyze mode recognizes several keywords that correspond to information about genotypes.
+    Several commands (such as DETAIL and MAP) require the use of these as format parameters
+    to specify what genotypic features should be output.  Others (such as FILTER) use them to identify
+    specific genotypes that possess certain qualities.  Before these commands are used, other
+    processing functions may need to be run.
+</p>
+<p>
+Allowable formats after a normal load (assuming these values were available
+from the input file to be loaded in) are:
+</p>
+<div align="center">
+<table width="95%">
+<tr>
+  <td width="33%"><strong>id</strong> (Genome ID)</td>
+  <td width="33%"><strong>parent_id</strong> (Parent ID)</td>
+  <td width="33%"><strong>parent2_id</strong> (Second Parent ID in sexual genotypes)</td>
+</tr>
+<tr>
+  <td width="33%"><strong>num_cpus</strong> (Number of CPUs)</td>
+  <td><strong>total_cpus</strong> (Total CPUs Ever)</td>
+  <td><strong>length</strong> (Genome Length)</td>
+</tr>
+<tr>
+  <td><strong>update_born</strong> (Update Born)</td>
+  <td><strong>update_dead</strong> (Update Dead)</td>
+  <td><strong>depth</strong> (Tree Depth)</td>
+</tr>
+<tr>
+  <td><strong>lineage</strong> (Unique Lineage Label)</td>
+  <td><strong>sequence</strong> (Genome Sequence)</td>
+  <td><strong>task_list</strong> (List of all tasks performed)</td>
+</tr>
+</table>
+</div>
+
+<p>
+After a RECALCULATE (or RECALC), these additional formats become available:
+</p>
+
+<div align="center">
+<table width="95%">
+<tr>
+  <td width="33%"><strong>viable</strong> (Is Viable [0/1])</td>
+  <td width="33%"><strong>copy_length</strong> (Copied Length)</td>
+  <td width="33%"><strong>exe_length</strong> (Executed Length)</td>
+</tr>
+<tr>
+  <td><strong>merit</strong> (Merit)</td>
+  <td><strong>comp_merit</strong> (Computational Merit)</td>
+  <td><strong>gest_time</strong> (Gestation Time)</td>
+</tr>
+<tr>
+  <td><strong>efficiency</strong> (Replication Efficiency)</td>
+  <td><strong>fitness</strong> (Fitness)</td>
+  <td><strong>div_type</strong> (Divide type used; 1 is default)</td>
+</tr>
+<tr>
+  <td><strong>mate_id</strong> (Mate Selection ID Number 
+  	(sexual genotypes))</td>
+  <td><strong>executed_flags</strong> (Executed Flags)</td>
+	<td><strong>task_order</strong> (Task Performance Order)</td>
+</tr>
+<tr>
+  <td><strong>task.n</strong> (# of times task number n is done)</td>
+  <td><strong>task.n:binary</strong> (is task n done, 0/1)</td>
+  <td><strong>total_task_count</strong> (# of unique tasks done)</td>
+</tr>
+<tr>
+	<td><strong>total_task_performance_count</strong> (total # of tasks done)</td>
+  <td><strong>inst.n</strong> (# of times instruction #n is done)</td>
+  <td><strong>r_tot.n</strong> (amount of resource n added to the organism's store in its lifetime)</td>
+</tr>
+<tr>
+	<td><strong>r_avail.n</strong> (amount of resource n in organism's store)</td>
+	<td><strong>r_spec.n</strong> (# of times specification #n is used)</td>
+</tr>
+</table>
+</div>
+
+<p>
+It gives a count of 0 if there is no such instruction.
+</p>
+
+<p>
+<b>A note on r_spec.n</b>: This counts nop specifications done by any and all "collect-type" instructions -- that is, any instruction that uses the helper function DoCollect.  If more than one such instruction is included in the instruction set, r_spec.n will include specification counts for both instructions without any differentiation.
+For details on what the specification numbers mean, see cCodeLabel::AsIntUnique.
+</p>
+
+<p>
+If a FIND_LINEAGE was done before the RECALCULATE (or RECALC), the parent
+genotype for each regular genotype will be available, enabling the
+additional formats:
+</p>
+
+<div align="center">
+<table width="95%">
+<tr>
+  <td width="50%"><strong>parent_dist</strong> (Parent Distance)</td>
+  <td width="50%"><strong>ancestor_dist</strong> (Ancestor Distance)</td>
+</tr>
+<tr>
+  <td width="50%"><strong>comp_merit_ratio</strong>, (Computational Merit Ratio with parent)</td>
+  <td><strong>efficiency_ratio</strong> (Replication Efficiency Ratio with parent)</td>
+</tr>
+<tr>
+  <td><strong>fitness_ratio</strong> (Fitness Ratio with parent)</td>
+  <td><strong>parent_muts</strong> (Mutations from Parent)</td>
+</tr>
+<tr>
+  <td><strong>html.sequence</strong> (Genome Sequence in Color; html format)</td>
+</tr>
+</table>
+</div>
+
+<p>
+If an ALIGN is run, one additional format is available:
+</p>
+
+<div align="center">
+<table width="95%">
+<tr>
+  <td><strong>alignment</strong> (Aligned Sequence)</td>
+</tr>
+</table>
+</div>
+
+<p>
+If a RECALCULATE (or RECALC) was done before the ALIGN, the following format is available:
+</p>
+
+<div align="center">
+<table width="95%">
+<tr>
+  <td><strong>alignment_executed_flags</strong> (Alignment Executed Flags)</td>
+</tr>
+</table>
+</div>
+
+<p>
+If tags have been applied to genotypes in analyze mode, an additional format 
+is available:
+</p>
+
+<div align="center">
+<table width="95%">
+<tr>
+  <td><strong>tag</strong> (Genotype Tag)</td>
+</tr>
+</table>
+</div>
+    
+<p>
+There are a handful of commands that will automatically perform
+landscapping.  The landscape will only be run once per organism even when
+multiple output variables are used.  For enhanced performance on
+multi-processor/multi-core systems, see the
+<a href="actions.html#PrecalcLandscape">PrecalcLandscape</a> action.
+</p>
+
+<div align="center">
+<table width="95%">
+<tr>
+  <td width="50%"><strong>frac_dead</strong> (Fraction of Lethal Mutations)</td>
+  <td width="50%"><strong>frac_neg</strong> (Fraction of Harmful Mutations)</td>
+</tr>
+<tr>
+  <td><strong>frac_neut</strong> (Fraction of Neutral Mutations)</td>
+  <td><strong>frac_pos</strong> (Fraction of Beneficial Mutations)</td>
+</tr>
+<tr>
+  <td><strong>complexity</strong> (Physical Complexity of Organism)</td>
+  <td><strong>land_fitness</strong> (Average Mutation Fitness)</td>
+</tr>
+</table>
+</div>
+
+<p>
+Phenotypic plasticity information is available through a number
+of different commands.  This information will be gathered in one
+of two manners.  If <kbd>RECALC num_trials X</kbd> is called, where X is greater
+than 1, phenotypic plasticity information for each genotype in the
+batch will be collected.  If RECALC is not called or is called with
+with just one trial (the default for RECALC), then using these commands will request 1000
+trials for each genotype to gather plasticity information.  Requesting an analysis
+of phenotypic plasticity in this manner will not re-evaluate other genotype statistics.
+<p>
+<div align="center">
+<table width="95%">
+<tr>
+  <td width="50%"><strong>num_phen</strong> (Number of Phenotypes Identified)</td>
+  <td width="50%"><strong>phen_avg_fitness</strong> (Weighted Average Fitness)</td>
+</tr>
+<tr>
+  <td><strong>num_trials</strong> (Number of Phenotype Tests)</td>
+  <td><strong>phen_entropy</strong> (Phenotypic Entropy [bits])</td>
+</tr>
+<tr>
+  <td><strong>phen_max_fit_freq</strong> (Maximum Fitness Phenotype Frequency)</td>
+  <td><strong>phen_max_fitness</strong> (Maximum Phenotype Fitness)</td>
+</tr>
+<tr>
+  <td><strong>phen_min_fit_freq</strong> (Minimum Fitness Phenotype Frequency)</td>
+  <td><strong>phen_min_fitness</strong> (Minimum Phenotype Fitness)</td>
+</tr>
+<tr>
+  <td><strong>phen_likely_freq</strong> (Most Likely Phenotype Frequency)</td>
+  <td><strong>phen_likely_fitness</strong> (Fitness of the Most Likely Phenotype)</td>
+</tr>
+<tr>
+  <td><strong>prob_task.n</strong> (Probability of task n being performed) </td>
+  <td><strong>prob_viable</strong> (Probability of genotype viability) </td>
+</tr>
+</table>
+</div>
+
+<h3>Variables</h3>
+
+<p>
+For the moment, all variables can only be a single character (letter or
+number) and begin with a $ whenever they need to be translated to their
+value.  Lowercase letters are global variables, capital letters are
+local to a function (described later), and numbers are arguments to a
+function.  A $$ will act as a single dollar sign, if needed.
+</p>
+
+<dl>
+<dt><strong>SET [<span class="cmdarg">variable</span>] [<span class="cmdarg">value</span>]</strong></dt>
+<dd>
+  Sets the variable to the value...
+</dd>
+<dt><strong>CONFIG_GET [<span class="cmdarg">config variable</span>] [<span class="cmdarg">variable</span>]</strong></dt>
+<dd>
+  Retrieves the value of the supplied configuration variable and places it into the supplied analyze mode variable.
+  For example, 'CONFIG_GET RANDOM_SEED r' will place the value of the random number seed (as specified in the
+  configuration settings) into the variable r.
+</dd>
+<dt><strong>CONFIG_SET [<span class="cmdarg">config variable</span>] [<span class="cmdarg">value</span>]</strong></dt>
+<dd>
+  Sets the supplied configuration variable to the value specified with the command.
+</dd>
+<dt><strong>
+  FOREACH [<span class="cmdarg">variable</span>] [<span class="cmdarg">value</span>]
+	[<span class="cmdargopt">value ...</span>]
+</strong></dt>
+<dd>
+  Set the variable to each of the values listed, and run the code that
+  follows between here and the next END command once for each of
+  those values.
+</dd>
+<dt><strong>
+  FORRANGE [<span class="cmdarg">variable</span>] [<span class="cmdarg">min_value</span>]
+	[<span class="cmdarg">max_value</span>] [<span class="cmdargopt">step_value=1</span>]
+</strong></dt>
+<dd>
+  Set the variable to each of the values between min and max (at steps
+  given), and run the code that follows between here and the next END
+  command, once for each of those values.
+</dd>
+</dl>
+
+
+<p>&nbsp;</p>
+<h3>Functions</h3>
+
+<p>
+These functions are currently very primitive with fixed inputs of
+$0 through $9.  $0 is always the function name, and then there can be up
+to 9 other arguments passed through.  Once a function is created, it can
+be run just like any other command.
+</p>
+
+<dl>
+<dt><strong>FUNCTION [<span class="cmdarg">name</span>]</strong></dt>
+<dd>
+  This will create a function of the given name, including in it all
+  of the commands up until an END is found.  These commands will be
+  bound to the function, but are not executed until the function is
+  run as a command.  Inside the function, the variables $1 through $9
+  can be used to access arguments passed in.
+</dd>
+</dl>
+
+<p>
+Currently there are no conditionals or mathematical commands in this
+scripting language.  These are both planned for the future.
+</p>
+
+
+<hr />
+<p><a href="index.html">Return to the Index</a></p>
+
+</body>
+</html>

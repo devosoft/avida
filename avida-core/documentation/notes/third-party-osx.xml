@@ -1,0 +1,730 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2002-2004 The Apache Software Foundation
+ 
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>Installing Mac OS X Third-Party Development Software</title> 
+  </header>
+  <body>
+    <fixme author="KGN">Need docs for unix and windows.</fixme>
+    <fixme author="KGN">Include docs for downloading and installing XCode from Apple.</fixme>
+    <section id="osx_version_control_system">
+      <title>Version Control System</title>
+      <section id="osx_subversion">
+        <title>Subversion</title>
+        <p><strong>Requirements:</strong></p>
+        <p>None.</p>
+        <p><strong>Installation:</strong></p>
+        <p>
+          Download and run the Subversion installer for OS X via
+          <a href="http://devolab.cse.msu.edu/private/subversion-client-1.1.3.dmg">
+            http://devolab.cse.msu.edu/subversion-client-1.1.3.dmg
+          </a>
+        </p>
+        <p><strong>Where things are installed:</strong></p>
+        <p>
+          Java libraries into <code>/System/Library/Frameworks/JavaVM.framework</code>.
+          <br/>
+          Everything else into <code>/usr/local</code>.
+        </p>
+        <p><strong>Usage:</strong></p>
+        <p>
+          Basic instructions for use with Avida can be found on
+          <a href="http://devolab.cse.msu.edu/private/">the Devolab's web site.</a>
+        </p>
+        <fixme author="KGN">That link looks temporary. When it breaks, ask David for the new link.</fixme>
+        <p>
+          Read more detailed instructions at
+          <a href="http://svnbook.red-bean.com/en/1.1/">red-bean.com's online Subversion pages.</a>
+        </p>
+      </section>
+    </section>
+
+    <section id="osx_build_system">
+      <title>Build System</title>
+      <section id="osx_cmake">
+        <title>CMake</title>
+        <p><strong>Requirements:</strong></p>
+        <p>None.</p>
+        <p><strong>Installation:</strong></p>
+        <p>
+          Download and run the CMake installer for OS X via
+          <a href="http://www.cmake.org/files/v2.0/cmake-2.0.5-osx.dmg">
+            http://www.cmake.org/files/v2.0/cmake-2.0.5-osx.dmg
+          </a>
+        </p>
+        <p><strong>Where things are installed:</strong></p>
+        <p>Everything into <code>/usr/local</code>.</p>
+        <p><strong>Usage:</strong></p>
+        <p>
+          Basic instructions for use with Avida can be found in the file "<code>README</code>"
+          in the top-level Avida source code directory. Read more detailed instructions at
+          <a href="http://cmake.org/HTML/Documentation.html">CMake's online documentation pages.</a>
+        </p>
+      </section>
+    </section>
+
+    <section id="osx_avida_ed_gui_requirements">
+      <title>Avida-Ed interactive GUI requirements</title>
+
+      <section id="osx_readline">
+        <title>GNU Readline (optional but recommended)</title>
+        <p><strong>What is it?</strong></p>
+        <p> 
+          The GNU Readline library provides command-line editing, tab-completion, and history capabilities not
+          strictly required by the Avida-Ed GUI; but they're useful when developing Avida-Ed using its
+          interactive version.
+        </p>
+        <p><strong>Requirements:</strong></p>
+        <p>None.</p>
+        <p><strong>Installation:</strong></p>
+        <p>
+          Download and unpack the GNU Readline source archive
+          <a href="http://www.hmug.org/pub/MacOS_X/BSD/Libraries/System/readline/readline-5.0-2-osx3.tar.gz">
+            http://www.hmug.org/pub/MacOS_X/BSD/Libraries/System/readline/readline-5.0-2-osx3.tar.gz
+          </a>
+          into the directory of your choice using Terminal.app; for example:
+        </p>
+        <p>
+          <code>$ cd ~/Projects/Software</code>          
+          <br/>
+          <code>
+            $ curl -O http://www.hmug.org/pub/MacOS_X/BSD/Libraries/System/readline/readline-5.0-2-osx3.tar.gz
+          </code>          
+          <br/>
+          <code>$ tar xvfz readline-5.0-2-osx3.tar.gz</code>          
+        </p>
+        <p>
+          Configure, build, and install (beneath <code>/usr/local</code>, automatically):
+        </p>
+        <p>
+          <code>$ cd readline-5.0</code>          
+          <br/>
+          <code>$ mkdir build</code>          
+          <br/>
+          <code>$ cd build</code>          
+          <br/>
+          <code>$ ../configure</code>          
+          <br/>
+          <code>$ make</code>          
+          <br/>
+          <code>$ sudo make install</code>          
+        </p>
+        <p><strong>Where it installs:</strong></p>
+        <p>Everything into <code>/usr/local</code>.</p>
+      </section>
+
+      <section id="osx_python">
+        <title>Python</title>
+        <p><strong>What is it?</strong></p>
+        <p>
+          Python is an interpreted, interactive, object-oriented programming language.
+          It permits rapid experimentation with and design of new parts of
+          the Avida-Ed GUI without recompilation of c++ parts of Avida. Our Python code is then embedded
+          in the double-clickable Avida-Ed application, along with a Python interpreter, and is run
+          when Avida-Ed is launched.
+        </p>
+        <p><strong>Requirements:</strong></p>
+        <p>
+          Readline is suggested but not required. Using the Python interpreter without
+          Readline's command-line editing, tab-completion, and history is pretty tedious.
+          There are no other requirements.
+        </p>
+        <p><strong>Installation:</strong></p>
+        <p>
+          Download and unpack the Python source archive
+          <a href="http://www.python.org/ftp/python/2.4/Python-2.4.tgz">
+            http://www.python.org/ftp/python/2.4/Python-2.4.tgz
+          </a>
+          into the directory of your choice using Terminal.app; for example:
+        </p>
+        <p>
+          <code>$ cd ~/Projects/Software</code>          
+          <br/>
+          <code>
+            $ curl -O http://www.python.org/ftp/python/2.4/Python-2.4.tgz
+          </code>          
+          <br/>
+          <code>$ tar xvfz Python-2.4.tgz</code>          
+        </p>
+        <p>
+          Configure, build, and install the OS X Framework version of Python:
+        </p>
+        <p>
+          <code>$ cd Python-2.4</code>          
+          <br/>
+          <code>$ mkdir build</code>          
+          <br/>
+          <code>$ cd build</code>          
+          <br/>
+          <code>$ ../configure --enable-framework</code>          
+          <br/>
+          <code>$ sudo make frameworkinstall</code>          
+          <br/>
+          <code>$ sudo make frameworkinstallextras</code>          
+        </p>
+        <p><strong>Where things are installed:</strong></p>
+        <p>
+          A version-2.4 Python Framework is installed at <code>/Library/Frameworks/Python.framework</code>,
+          distinct from the built-in default version-2.3 Python Framework
+          <code>/System/Library/Frameworks/Python.framework</code> in OS X 10.3.
+          (The two Python Frameworks operate independently.)
+        </p>
+        <p>
+          Some developer and demonstration applications are installed in <code>/Applications/MacPython-2.4</code>.
+        </p>
+        <p>
+          The remaining software is installed in <code>/usr/local/bin</code>.
+          In particular, <code>/usr/local/bin/python2.4</code> is a Python interpreter.
+        </p>
+        <p><strong>Usage:</strong></p>
+        <p>Oodles of instruction can be had at <a href="http://python.org/doc/2.4/">Python's documentation pages.</a></p>
+      </section>
+
+      <section id="osx_qt3">
+        <title>Qt/Mac</title>
+<!--
+        <p>
+          Qt/Mac appears to have no special prerequisites.
+        </p>
+-->
+        <p>
+          Download and unpack the Qt/Mac source archive
+          <a href="ftp://ftp.trolltech.com/qt/source/qt-mac-free-3.3.4.tar.gz">
+            ftp://ftp.trolltech.com/qt/source/qt-mac-free-3.3.4.tar.gz
+          </a>
+          into the directory of your choice using Terminal.app; for example:
+        </p>
+        <p>
+          <code>$ cd ~/Projects/Software</code>          
+          <br/>
+          <code>
+            $ curl -O ftp://ftp.trolltech.com/qt/source/qt-mac-free-3.3.4.tar.gz
+          </code>          
+          <br/>
+          <code>$ tar xvfz qt-mac-free-3.3.4.tar.gz</code>          
+        </p>
+        <p>
+          Qt/Mac and some of the third-party software that depends on
+          Qt/Mac require that certain environment variables be set.
+          For example, if you use <code>bash</code> as your shell:
+        </p>
+        <p>
+          <code>$ cd qt-mac-free-3.3.4</code>          
+          <br/>
+          <code>$ QTDIR=`pwd`</code>          
+          <br/>
+          <code>$ PATH=$QTDIR/bin:$PATH</code>          
+          <br/>
+          <code>$ DYLD_LIBRARY_PATH=$QTDIR/lib:$DYLD_LIBRARY_PATH</code>          
+          <br/>
+          <code>$ export QTDIR PATH DYLD_LIBRARY_PATH</code>          
+        </p>
+        <p>
+          Or if you use <code>csh</code> or <code>tcsh</code> as your shell:
+        </p>
+        <p>
+          <code>$ cd qt-mac-free-3.3.4</code>          
+          <br/>
+          <code>$ setenv QTDIR `pwd`</code>          
+          <br/>
+          <code>$ setenv PATH $QTDIR/bin:$PATH</code>          
+          <br/>
+          <code>$ setenv DYLD_LIBRARY_PATH $QTDIR/lib:$DYLD_LIBRARY_PATH</code>          
+        </p>
+        <note label="Important">
+          Record the value of <code>$QTDIR</code>.
+          These settings of <code>$QTDIR</code>, <code>$PATH</code>, and <code>$DYLD_LIBRARY_PATH</code>
+          will be required later by other third-party software.
+          To determine the value of <code>$QTDIR</code>, for example:
+          <br/>
+          <code>$ echo $QTDIR</code>
+          <br/>
+          <code>/Users/kaben/Projects/Software/qt-mac-free-3.3.4</code>
+        </note>
+        <p>
+          Configure and build:
+        </p>
+        <p>
+          <code>$ ./configure -thread -verbose</code>          
+          <br/>
+          <code>$ make symlinks src-qmake src-moc sub-src sub-tools</code>          
+        </p>
+        <p>
+          Finally, some of the third-party software we will use wants two of the Qt/Mac libraries produced above to be
+          accessible in the standard location <code>/usr/lib</code>, so symlink the libraries accordingly:
+        </p>
+        <p>
+          <code>$ ln -sf $QTDIR/lib/libqt.3.dylib /usr/lib</code>          
+          <br/>
+          <code>$ ln -sf $QTDIR/lib/libqui.1.dylib /usr/lib</code>          
+        </p>
+      </section>
+      
+      <section id="osx_sip">
+        <title>SIP</title>
+        <p>
+          SIP requires that the <code>$QTDIR</code>, <code>$PATH</code>, and <code>$DYLD_LIBRARY_PATH</code>
+          environment variables point to your Qt/Mac installation, so set them accordingly if they aren't already set.
+          For example, if you use <code>bash</code> as your shell:
+        </p>
+        <p>
+          <code>$ QTDIR=/Users/kaben/Projects/Software/qt-mac-free-3.3.4</code>          
+          <br/>
+          <code>$ PATH=$QTDIR/bin:$PATH</code>          
+          <br/>
+          <code>$ DYLD_LIBRARY_PATH=$QTDIR/lib:$DYLD_LIBRARY_PATH</code>          
+          <br/>
+          <code>$ export QTDIR PATH DYLD_LIBRARY_PATH</code>          
+        </p>
+        <p>
+          Or if you use <code>csh</code> or <code>tcsh</code> as your shell:
+        </p>
+        <p>
+          <code>$ setenv QTDIR /Users/kaben/Projects/Software/qt-mac-free-3.3.4</code>          
+          <br/>
+          <code>$ setenv PATH $QTDIR/bin:$PATH</code>          
+          <br/>
+          <code>$ setenv DYLD_LIBRARY_PATH $QTDIR/lib:$DYLD_LIBRARY_PATH</code>          
+        </p>
+        <p>
+          Download and unpack the SIP source archive
+          <a href="http://www.river-bank.demon.co.uk/download/sip/sip-4.1.1.tar.gz">
+            http://www.river-bank.demon.co.uk/download/sip/sip-4.1.1.tar.gz
+          </a>
+          into the directory of your choice using Terminal.app; for example:
+        </p>
+        <p>
+          <code>$ cd ~/Projects/Software</code>          
+          <br/>
+          <code>
+            $ curl -O http://www.river-bank.demon.co.uk/download/sip/sip-4.1.1.tar.gz
+          </code>          
+          <br/>
+          <code>$ tar xvfz sip-4.1.1.tar.gz</code>          
+        </p>
+        <p>
+          Configure, build, and install:
+        </p>
+        <p>
+          <code>$ cd sip-4.1.1</code>          
+          <br/>
+          <code>$ /usr/local/bin/python2.4 ./configure.py</code>          
+          <br/>
+          <code>$ make</code>          
+          <br/>
+          <code>$ sudo make install</code>          
+        </p>
+      </section>
+      
+      <section id="osx_pyqt">
+        <title>PyQt</title>
+        <p>
+          PyQt requires that the <code>$QTDIR</code>, <code>$PATH</code>, and <code>$DYLD_LIBRARY_PATH</code>
+          environment variables point to your Qt/Mac installation, so set them accordingly if they aren't already set.
+          For example, if you use <code>bash</code> as your shell:
+        </p>
+        <p>
+          <code>$ QTDIR=/Users/kaben/Projects/Software/qt-mac-free-3.3.4</code>          
+          <br/>
+          <code>$ PATH=$QTDIR/bin:$PATH</code>          
+          <br/>
+          <code>$ DYLD_LIBRARY_PATH=$QTDIR/lib:$DYLD_LIBRARY_PATH</code>          
+          <br/>
+          <code>$ export QTDIR PATH DYLD_LIBRARY_PATH</code>          
+        </p>
+        <p>
+          Or if you use <code>csh</code> or <code>tcsh</code> as your shell:
+        </p>
+        <p>
+          <code>$ setenv QTDIR /Users/kaben/Projects/Software/qt-mac-free-3.3.4</code>          
+          <br/>
+          <code>$ setenv PATH $QTDIR/bin:$PATH</code>          
+          <br/>
+          <code>$ setenv DYLD_LIBRARY_PATH $QTDIR/lib:$DYLD_LIBRARY_PATH</code>          
+        </p>
+        <p>
+          Download and unpack the PyQt source archive
+          <a href="http://www.river-bank.demon.co.uk/download/PyQt/PyQt-mac-gpl-3.13.tar.gz">
+            http://www.river-bank.demon.co.uk/download/PyQt/PyQt-mac-gpl-3.13.tar.gz
+          </a>
+          into the directory of your choice using Terminal.app; for example:
+        </p>
+        <p>
+          <code>$ cd ~/Projects/Software</code>          
+          <br/>
+          <code>
+            $ curl -O http://www.river-bank.demon.co.uk/download/PyQt/PyQt-mac-gpl-3.13.tar.gz
+          </code>          
+          <br/>
+          <code>$ tar xvfz PyQt-mac-gpl-3.13.tar.gz</code>          
+        </p>
+        <p>
+          Configure, build, and install:
+        </p>
+        <p>
+          <code>$ cd PyQt-mac-gpl-3.13</code>          
+          <br/>
+          <code>$ /usr/local/bin/python2.4 ./configure.py</code>          
+          <br/>
+          <code>$ make</code>          
+          <br/>
+          <code>$ sudo make install</code>          
+        </p>
+      </section>
+      
+      <section id="osx_numeric">
+        <title>Numeric</title>
+        <p>
+          Download and unpack the Numeric Python package source archive for OS X
+          <a href="http://stochastic.net/~kaben/for_devolab/Numeric-23.6-osx3.tar.gz">
+            http://stochastic.net/~kaben/for_devolab/Numeric-23.6-osx3.tar.gz
+          </a>
+          into the directory of your choice using Terminal.app; for example:
+        </p>
+        <p>
+          <code>$ cd ~/Projects/Software</code>          
+          <br/>
+          <code>
+            $ curl -O http://stochastic.net/~kaben/for_devolab/Numeric-23.6-osx3.tar.gz
+          </code>          
+          <br/>
+          <code>$ tar xvfz Numeric-23.6-osx3.tar.gz</code>          
+        </p>
+        <p>
+          Build and install:
+        </p>
+        <p>
+          <code>$ cd Numeric-23.6-osx3</code>          
+          <br/>
+          <code>$ /usr/local/bin/python2.4 ./setup.py build</code>          
+          <br/>
+          <code>$ sudo /usr/local/bin/python2.4 ./setup.py install</code>          
+        </p>
+      </section>
+
+      <section id="osx_pyqwt">
+        <title>PyQwt</title>
+        <p>
+          PyQwt requires that the <code>$QTDIR</code>, <code>$PATH</code>, and <code>$DYLD_LIBRARY_PATH</code>
+          environment variables point to your Qt/Mac installation, so set them accordingly if they aren't already set.
+          For example, if you use <code>bash</code> as your shell:
+        </p>
+        <p>
+          <code>$ QTDIR=/Users/kaben/Projects/Software/qt-mac-free-3.3.4</code>          
+          <br/>
+          <code>$ PATH=$QTDIR/bin:$PATH</code>          
+          <br/>
+          <code>$ DYLD_LIBRARY_PATH=$QTDIR/lib:$DYLD_LIBRARY_PATH</code>          
+          <br/>
+          <code>$ export QTDIR PATH DYLD_LIBRARY_PATH</code>          
+        </p>
+        <p>
+          Or if you use <code>csh</code> or <code>tcsh</code> as your shell:
+        </p>
+        <p>
+          <code>$ setenv QTDIR /Users/kaben/Projects/Software/qt-mac-free-3.3.4</code>          
+          <br/>
+          <code>$ setenv PATH $QTDIR/bin:$PATH</code>          
+          <br/>
+          <code>$ setenv DYLD_LIBRARY_PATH $QTDIR/lib:$DYLD_LIBRARY_PATH</code>          
+        </p>
+        <p>
+          Download and unpack the PyQwt-4.1 Python package source archive
+          <a href="http://stochastic.net/~kaben/for_devolab/PyQwt-4.1.tar.gz">
+            http://stochastic.net/~kaben/for_devolab/PyQwt-4.1.tar.gz
+          </a>
+          into the directory of your choice using Terminal.app; for example:
+        </p>
+        <p>
+          <code>$ cd ~/Projects/Software</code>          
+          <br/>
+          <code>
+            $ curl -O http://stochastic.net/~kaben/for_devolab/PyQwt-4.1.tar.gz
+          </code>          
+          <br/>
+          <code>$ tar xvfz PyQwt-4.1.tar.gz</code>          
+        </p>
+        <p>
+          Download and apply the bug fixes and upgrades patch for PyQwt-4.1 from
+          <a href="http://stochastic.net/~kaben/for_devolab/PyQwt-4.1a.patch">
+            http://stochastic.net/~kaben/for_devolab/PyQwt-4.1a.patch
+          </a>
+          using the following commands:
+        </p>
+        <p>
+          <code>$ curl -O http://stochastic.net/~kaben/for_devolab/PyQwt-4.1a.patch</code>          
+          <br/>
+          <code>$ patch -p0 -b -z .upgrade &lt; PyQwt-4.1a.patch</code>          
+        </p>
+        <p>
+          While you're at it, make the ErrorBarDemo.py example executable:
+        </p>
+        <p>
+          <code>chmod +x PyQwt-4.1/examples/ErrorBarDemo.py</code>          
+        </p>
+        <p>
+          Build and install:
+        </p>
+        <p>
+          <code>$ cd PyQwt-4.1/configure</code>          
+          <br/>
+          <code>$ /usr/local/bin/python2.4 ./configure.py</code>          
+          <br/>
+          <code>$ make</code>          
+          <br/>
+          <code>$ sudo make install</code>          
+        </p>
+      </section>
+      
+      <section id="osx_elementtree">
+        <title>ElementTree</title>
+        <p>
+          Download and unpack the ElementTree Python package source archive
+          <a href="http://effbot.org/downloads/elementtree-1.2.4-20041228.zip">
+            http://effbot.org/downloads/elementtree-1.2.4-20041228.zip
+          </a>
+          into the directory of your choice using Terminal.app; for example:
+        </p>
+        <p>
+          <code>$ cd ~/Projects/Software</code>          
+          <br/>
+          <code>
+            $ curl -O http://effbot.org/downloads/elementtree-1.2.4-20041228.zip
+          </code>          
+          <br/>
+          <code>$ unzip elementtree-1.2.4-20041228.zip</code>          
+        </p>
+        <p>
+          Build and install:
+        </p>
+        <p>
+          <code>$ cd elementtree-1.2.4-20041228</code>          
+          <br/>
+          <code>$ /usr/local/bin/python2.4 ./setup.py build</code>          
+          <br/>
+          <code>$ sudo /usr/local/bin/python2.4 ./setup.py install</code>          
+        </p>
+      </section>
+
+      <section id="osx_gccxml">
+        <title>GCC-XML</title>
+        <p>
+          Download and unpack the GCC-XML source archive
+          <a href="http://www.gccxml.org/files/v0.6/gccxml-0.6.0.tar.gz">
+            http://www.gccxml.org/files/v0.6/gccxml-0.6.0.tar.gz
+          </a>
+          into the directory of your choice using Terminal.app; for example:
+        </p>
+        <p>
+          <code>$ cd ~/Projects/Software</code>          
+          <br/>
+          <code>
+            $ curl -O http://www.gccxml.org/files/v0.6/gccxml-0.6.0.tar.gz
+          </code>          
+          <br/>
+          <code>$ tar xvfz gccxml-0.6.0.tar.gz</code>          
+        </p>
+        <p>
+          Configure, build, and install:
+        </p>
+        <p>
+          <code>$ cd gccxml-0.6.0</code>          
+          <br/>
+          <code>$ mkdir build</code>          
+          <br/>
+          <code>$ cd build</code>          
+          <br/>
+          <code>$ /usr/local/bin/cmake .. -DCMAKE_INSTALL_PREFIX:PATH=/usr/local</code>          
+          <br/>
+          <code>$ make</code>          
+          <br/>
+          <code>$ sudo make install</code>          
+        </p>
+      </section>
+
+      <section id="osx_boost_python">
+        <title>Boost.Python</title>
+        <p>
+          Download and unpack the Boost source archive
+          <a href="http://www.stochastic.net/~kaben/for_devolab/boost_1_32_0-osx3.tgz">
+            http://www.stochastic.net/~kaben/for_devolab/boost_1_32_0-osx3.tgz
+          </a>
+          into the directory of your choice using Terminal.app; for example:
+        </p>
+        <p>
+          <code>$ cd ~/Projects/Software</code>          
+          <br/>
+          <code>
+            $ curl -O http://www.stochastic.net/~kaben/for_devolab/boost_1_32_0-osx3.tgz
+          </code>          
+          <br/>
+          <code>$ tar xvfz boost_1_32_0-osx3.tgz</code>          
+        </p>
+        <p>
+          Build Boost.Jam, the Boost Build system:
+        </p>
+        <p>
+          <code>$ cd boost_1_32_0-osx3</code>          
+          <br/>
+          <code>$ pushd tools/build/jam_src</code>          
+          <br/>
+          <code>$ ./build.sh</code>          
+          <br/>
+          <code>$ popd</code>          
+        </p>
+        <p>
+          Copy <code>bjam</code>, the Boost build tool, to the top level of the Boost source directory:
+        </p>
+        <p>
+          <code>$ cp tools/build/jam_src/bin.macosxppc/bjam ./</code>          
+        </p>
+        <p>
+          Build Boost.Python (warning -- because Boost is a big package, most of which we don't need
+          and would take a long time to compile, we disable most of Boost, resulting in a big and ugly command):
+        </p>
+        <p>
+          <code>$ ./bjam -sTOOLS=darwin \</code>          
+          <br/>
+          <code>
+            "-sBUILD=release &lt;runtime-link&gt;shared &lt;threading&gt;multiple framework bundle-loader" \
+          </code>          
+          <br/>
+          <code>--prefix=/usr/local \</code>          
+          <br/>
+          <code>--without-serialization \</code>          
+          <br/>
+          <code>--without-test \</code>          
+          <br/>
+          <code>--without-date_time \</code>          
+          <br/>
+          <code>--without-filesystem \</code>          
+          <br/>
+          <code>--without-regexp \</code>          
+          <br/>
+          <code>--without-signals \</code>          
+          <br/>
+          <code>--without-program_options \</code>          
+          <br/>
+          <code>--with-python-root=/Library/Frameworks/Python.framework/Versions/2.4 \</code>          
+          <br/>
+          <code>-sPYTHON_VERSION=2.4</code>          
+        </p>
+        <p>
+          Install Boost.Python (again, a big and ugly command -- essentially the same as the previous,
+          but prepended with "<code>sudo</code>" and appended with "<code>install</code>"):
+        </p>
+        <p>
+          <code>$ sudo ./bjam -sTOOLS=darwin \</code>          
+          <br/>
+          <code>
+            "-sBUILD=release &lt;runtime-link&gt;shared &lt;threading&gt;multiple framework bundle-loader" \
+          </code>          
+          <br/>
+          <code>--prefix=/usr/local \</code>          
+          <br/>
+          <code>--without-serialization \</code>          
+          <br/>
+          <code>--without-test \</code>          
+          <br/>
+          <code>--without-date_time \</code>          
+          <br/>
+          <code>--without-filesystem \</code>          
+          <br/>
+          <code>--without-regexp \</code>          
+          <br/>
+          <code>--without-signals \</code>          
+          <br/>
+          <code>--without-program_options \</code>          
+          <br/>
+          <code>--with-python-root=/Library/Frameworks/Python.framework/Versions/2.4 \</code>          
+          <br/>
+          <code>-sPYTHON_VERSION=2.4 \</code>          
+          <br/>
+          <code>install</code>          
+        </p>
+      </section>
+      
+      <section id="osx_py2app">
+        <title>py2app</title>
+        <warning>
+          You may be tempted to download the py2app metapackage installer for Mac OS X from
+          <code>http://undefined.org/python/py2app-0.1.7.mpkg.zip</code>.
+          <br/>
+          Don't do it. It will by default install itself into the built-in version-2.3 of Python
+          instead of the special version-2.4 of Python we've built for Avida-Ed,
+          rendering it useless to us.
+        </warning>
+        <p>
+          Download and unpack the py2app package source archive for OS X
+          <a href="http://undefined.org/python/py2app-0.1.7.tar.gz">
+            http://undefined.org/python/py2app-0.1.7.tar.gz
+          </a>
+          into the directory of your choice using Terminal.app; for example:
+        </p>
+        <p>
+          <code>$ cd ~/Projects/Software</code>          
+          <br/>
+          <code>
+            $ curl -O http://undefined.org/python/py2app-0.1.7.tar.gz
+          </code>          
+          <br/>
+          <code>$ tar xvfz py2app-0.1.7.tar.gz</code>          
+        </p>
+        <p>
+          Build and install:
+        </p>
+        <p>
+          <code>$ cd py2app-0.1.7</code>          
+          <br/>
+          <code>$ /usr/local/bin/python2.4 ./setup.py build</code>          
+          <br/>
+          <code>$ sudo /usr/local/bin/python2.4 ./setup.py install</code>          
+        </p>
+      </section>
+
+      <section id="osx_ipython">
+        <title>IPython (optional but recommended)</title>
+        <p>
+          Download and unpack the IPython package source archive for OS X
+          <a href="http://ipython.scipy.org/dist/ipython-0.6.11.tar.gz">
+            http://ipython.scipy.org/dist/ipython-0.6.11.tar.gz
+          </a>
+          into the directory of your choice using Terminal.app; for example:
+        </p>
+        <p>
+          <code>$ cd ~/Projects/Software</code>          
+          <br/>
+          <code>
+            $ curl -O http://ipython.scipy.org/dist/ipython-0.6.11.tar.gz
+          </code>          
+          <br/>
+          <code>$ tar xvfz ipython-0.6.11.tar.gz</code>          
+        </p>
+        <p>
+          Install:
+        </p>
+        <p>
+          <code>$ cd ipython-0.6.11</code>          
+          <br/>
+          <code>$ sudo /usr/local/bin/python2.4 ./setup.py install</code>          
+        </p>
+      </section>
+
+    </section>
+  </body>
+</document>

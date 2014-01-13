@@ -1,0 +1,5 @@
+# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,av_cellx,av_celly,av_facing
+0,12,25,0,0,6,12,5,0
+1,12,75,3,0,6,15,92,1
+2,12,27,-2,-1,6,7,3,5
+3,12,79,-2,-1,6,15,92,1

@@ -1,0 +1,21 @@
+- Everywhere -
+
+B: Blank
+C: Choose New CPU
+H: Histograms
+M: Map
+N: Next Update
+O: Options
+P: Pause
+Q: Quit
+S: Stats
+W: Write Soup
+X: Extract Organism
+Z: Zoom
+
+- Zoom -
+SPACE: Next Instruction
+TAB: Toggle Component (+shift-TAB?)
+E: Edit Component
+T: Thread Info
+V: View Component
