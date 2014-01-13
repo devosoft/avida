@@ -1,0 +1,678 @@
+=== Action Exit ===
+  Unconditionally terminate the current run.
+=== Action ExitAveLineageLabelGreater ===
+   Halts the run if the current average lineage label is larger
+   than <span class="cmdarg">threshold</span>.
+=== Action ExitAveLineageLabelLess ===
+   Halts the run if the current average lineage label is smaller
+   than <span class="cmdarg">threshold</span>.
+=== Action PrintAverageData ===
+  [<span class="cmdarg">string filename='average.dat'</span>]
+  Print all of the population averages the specified file.
+=== Action PrintCCladeCounts ===
+    Print a count of the number of oraganisms belonging to a each coalescence clade currently in the population.
+    <br />This action will only work in run mode.
+    <br />This action will require TRACK_CCLADE to be enabled.
+=== Action PrintCCladeFitnessHistogram ===
+    Print a histogram of fitnesses for each coalescence clade in the population.
+    <br />This action will only work in run mode.
+    <br />This action will rerequire TRACK_CCLADE to be enabled.
+    <br/>
+    <kbd>mode</kbd> may be {<kbd>CURRENT, ACTUAL, TESTCPU</kbd>}, where
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>CURRENT</kbd> uses the current phenotype value of fitness</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>ACTUAL</kbd> uses the current merit and the true gestation time (via test cpu calculation)</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>TESTCPU</kbd> uses the test cpu measurement.</li>
+      <br />
+    <kbd>lower_bound, step, upper_bound</kbd> are log10 values for the individual histogram bins.</kbd>
+=== Action PrintCCladeRelativeFitnessHistogram ===
+    Print a histogram of parent-relative fitness ratios for each coalescence clade in the population.
+    <br />This action will only work in run mode.
+    <br />This action will rerequire TRACK_CCLADE to be enabled.
+    <br/>
+    <kbd>mode</kbd> may be {<kbd>CURRENT, ACTUAL, TESTCPU</kbd>}, where
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>CURRENT</kbd> uses the current phenotype value of fitness</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>ACTUAL</kbd> uses the current merit and the true gestation time (via test cpu calculation)</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>TESTCPU</kbd> uses the test cpu measurement.</li>
+      <br />
+    <kbd>lower_bound, step, upper_bound</kbd> are values for the individual histogram bins.</kbd>
+=== Action PrintCompetitionData ===
+  Print out CompeteOrganism statistics. Make the first call after the first set of trials has been completed to get a complete header.
+=== Action PrintErrorData ===
+  Print all of the standard errors of the average population statistics.
+=== Action PrintVarianceData ===
+  Print all of the variances of the average population statistics.
+=== Action PrintDominantData ===
+  Print all of the statistics relating to the dominant genotype.
+=== Action PrintStatsData ===
+  Print all of the miscellanous population statistics.
+=== Action PrintCountData ===
+  Print all of the statistics the keep track of counts (such as the number of organisms
+  in the population or the number of instructions executed).
+=== Action PrintTotalsData ===
+  Print various totals for the entire length of the run (for example, the total number of
+  organisms ever).
+=== Action PrintTasksData ===
+  Print the number of organisms that are able to perform each task.  This uses the
+  environment configuration to determine what tasks are in use.
+=== Action PrintInternalTasksData ===
+	Print the number of organisms that have performed each task using internal resources.
+	<p>Note that tasks performed using internal resources are also counted as tasks perfomed (by <a href="#PrintTasksData">PrintTasksData</a>), so that if you wish to know the number of tasks performed <i>not</i> using internal resources you must do some subtraction.
+=== Action PrintTasksExeData ===
+  Print number of times the particular task has been executed this update.
+=== Action PrintTasksQualData ===
+  Print the total quality of each task.  By default a successful task is valued
+  as 1.0.  Some tasks, however, can grant partial values and/or special bonuses
+  via the quality value.
+=== Action PrintInternalTasksQualData ===
+	Print the total quality of each task when performed using internal resources.  (See <a href="#PrintTasksQualData">PrintTasksQualData</a> for more about task quality.
+=== Action PrintNewTasksData ===
+  Print number of times the particular task has newly appeared in the population since
+  the last time this datum was printed.  Newly appeared is defined as an organism executing 
+  a task that was not executed by its parent.
+=== Action PrintNewReactionData ===
+  Print number of times the particular reaction has newly appeared in the population since
+  the last time this datum was printed.  Newly appeared is defined as an organism triggering
+  a reaction that was not triggered by its parent.
+=== Action PrintResourceData ===
+  Print the current counts of each resource available to the population.  This uses
+  the environment configuration to determine what resources are in use.  Also creates
+  seperate files <kbd>resource_<em>resource_name</em>.m</kbd> (in a format that is
+  designed to be read into Matlab) for each spatial resource.
+=== Action PrintTimeData ===
+  Print all of the timing related statistics.
+=== Action PrintMutationRateData ===
+  Output (regular and log) statistics about individual copy mutation rates
+  (aver, stdev, skew, cur). Useful only when mutation rate is set per organism.
+=== Action PrintDivideMutData ===
+  Output (regular and log) statistics about individual, per site, rates divide mutation
+  rates (aver, stdev, skew, cur) to divide_mut.dat. Use with multiple divide instuction set.
+=== Action PrintDominantParaData ===
+  Print various quantites related to the dominant parasite.
+=== Action PrintInstructionData ===
+  Print the by-organisms counts of what instructions they _successfully_ executed
+  beteween birth and divide. Prior to their first divide, organisms values for their parents.
+=== Action PrintGenotypeMap ===
+  This event is used to output a map of the genotype IDs for the
+  population grid to a file that is suitable to be read into Matlab.
+=== Action PrintPhenotypeData ===
+  [<span class="cmdarg">string filename='phenotype_count.dat'</span>]
+  Print the number of phenotypes based on tasks executed this update.  Executing
+  a task any number of times is considered the same as executing it once. 
+=== Action PrintPhenotypeStatus ===
+=== Action PrintDemeStats ===
+=== Action PrintData ===
+  Append to the file specified (continuous output), the data given in the
+  column list.  The column list needs to be a comma-seperated list of
+  keywords representing the data types.  Many possible data types can be
+  output; see the <a href="print_data.html">complete listing</a> for details.
+  Note that this event will even create a detailed column legend at the top
+  of your file so you don't need to seperately keep track of what the
+  columns mean.
+=== Action PrintDemeGlobalResources ===
+	Prints each resource in each deme.  The format is different than normal Avida output and no information besides the date and time is given in the comments.
+	Format at each update:
+	deme_global_resouces_&lt;update in 6 digits, padded with left 0s&gt; = [ ...
+	&lt;deme_number&gt; &lt;resource0&gt; etc.
+	&lt;deme_number&gt; &lt;resource0&gt; etc.
+	];
+=== Action PrintDemeResourceStats ===
+	Prints each resource in each deme, with the format noted in the initial comments as normal.
+=== Action PrintInstructionAbundanceHistogram ===
+  Appends a line containing the bulk count (abundance) of each instruction
+  in the population onto a file.
+=== Action PrintDepthHistogram ===
+=== Action Echo ===
+  Print the supplied message to standard output.
+=== Action PrintGenotypeAbundanceHistogram ===
+  Writes out a genotype abundance histogram.
+=== Action PrintSpeciesAbundanceHistogram ===
+  Writes out a species abundance histogram.
+=== Action PrintLineageTotals ===
+=== Action PrintLineageCounts ===
+=== Action PrintDominantGenotype ===
+  Print the dominant organism's genome (and lots of information about it)
+  into the file specified.  If no filename is given, the genotype's assigned name
+  is used and the file is placed into the archive subdirectory.
+=== Action PrintDominantParasiteGenotype ===
+  Print the dominant parasite's genome (and lots of information about it)
+  into the file specified.  If no filename is given, the parasite's assigned name
+  is used and the file is placed into the archive subdirectory.
+=== Action PrintDetailedFitnessData ===
+=== Action PrintLogFitnessHistogram ===
+    Print a histogram of organism fitnesses in the current population.
+    <br />This action will only work in run mode.
+    <br/>
+    <kbd>mode</kbd> may be {<kbd>CURRENT, ACTUAL, TESTCPU</kbd>}, where
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>CURRENT</kbd> uses the current phenotype value of fitness</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>ACTUAL</kbd> uses the current merit and the true gestation time (via test cpu calculation)</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>TESTCPU</kbd> uses the test cpu measurement.</li>
+      <br />
+    <kbd>lower_bound, step, upper_bound</kbd> are log10 values for the individual histogram bins.</kbd>
+=== Action PrintRelativeFitnessHistogram ===
+    Print a histogram of parent-relative fitness ratios for each coalescence clade in the population.
+    <br />This action will only work in run mode.
+    <br/>
+    <kbd>mode</kbd> may be {<kbd>CURRENT, ACTUAL, TESTCPU</kbd>}, where
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>CURRENT</kbd> uses the current phenotype value of fitness</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>ACTUAL</kbd> uses the current merit and the true gestation time (via test cpu calculation)</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>TESTCPU</kbd> uses the test cpu measurement.</li>
+      <br />
+    <kbd>lower_bound, step, upper_bound</kbd> are values for the individual histogram bins.</kbd>
+=== Action PrintGenomicSiteEntropy ===
+   This function will take the initial genotype for each organism in the
+   population/batch, align them, and calculate the per-site entropy of the
+   aligned sequences.  Please note that there may be a variable number
+   of columns in each line if the runs are not fixed length.  The site
+   entropy will be measured in mers, normalized by the instruction set size.
+   This is a population/batch measure of entropy, not a mutation-selection balance
+   measure.  
+=== Action PrintPhenotypicPlasticity ===
+  This function will provided detailed information about the phenotypic varients
+  of the current population/batch by running each genome through a test cpu <kbd>num_trials</kbd> times.
+  If this command is executed in run mode, the
+  <kbd>filename</kbd> will be appeneded with <kbd>-Update.dat</kbd> where <kbd>Update</kbd>
+  is the current update.  In analyze mode, the default file is merely </kbd>phenplast.dat</kbd>.
+  The output file contains the following: id, parent_id, phenotypic_varient_number, frequency, fitness, merit, 
+  gestation_time, and task counts for each phenotypic variant of each genotype.
+=== Action PrintGeneticDistanceData ===
+=== Action PrintPopulationDistanceData ===
+=== Action PrintDebug ===
+=== Action PrintGenotypes ===
+  This command is used to print out information about all of the genotypes
+  in the population.  The file output from here can be read
+  back into the analyze mode of Avida with the <code>LOAD</code> command.
+  </p>
+  <p>
+  The <span class="cmdarg">data_fields</span> parameter indicates what
+  columns should be included in the file, which must be comma seperated.
+  Options are:
+  <em>all, id, parent_id, parent2_id (for sex), parent_dist, num_cpus,
+  total_cpus, length, merit, gest_time, fitness, update_born, update_dead,
+  depth, lineage, sequence.</em>
+  Use <em>all</em> (the default) if you want all of the fields included.
+  </p>
+  <p>
+  The <span class="cmdarg">print_historic</span> parameter indicates how
+  many updates back in time should be included in this output.  For example,
+  '200' would indicate that any ancestor of the current population that died
+  out in the last 200 updates should also be printed. A '-1' in this field
+  indicates that all ancestors should be printed.
+  </p>
+  <p>
+  The <span class="cmdarg">filename</span> parameter simply indicates what
+  you want to call the file.
+  </p>
+  <p>
+  <em>Example</em>:
+  <br />&nbsp;&nbsp;<kbd>u 1000:1000 print_genotypes id,parent_id,fitness 1000</kbd>
+  <br />This will print out the full population every 1000 updates, including all
+  genotypes that have died out since the last time it was printed.
+=== Action TestDominant ===
+=== Action PrintTaskSnapshot ===
+  Run all organisms in the population through test cpus and print out the
+  number of tasks each can perform.
+=== Action PrintViableTasksData ===
+=== Action PrintTreeDepths ===
+  Reconstruction of phylogenetic trees.
+=== Action DumpMemory ===
+  Dump memory summary information.
+=== Action DumpFitnessGrid ===
+  Print out the grid of organism fitness values.
+=== Action DumpLineageGrid ===
+  Print out the grid of lineage labels (set when ancestor was injected with action like InjectSequence)
+=== Action DumpGenotypeIDGrid ===
+  Print out the grid of genotype IDs.
+=== Action DumpTaskGrid ===
+  Print out the grid of tasks that organisms do. For each organism, tasks are first 
+  encoded as a binary string (e.g. 100000001 means that organism is doing NOT and EQU
+  and then reported as a base-10 number (257 in the example above).
+=== Action DumpHostTaskGrid ===
+  Print out the grid of takss that host organisms did in the last gestation cycle. For 
+  each host, tasks are first encoded as a binary string (e.g. 100000001 means that 
+  organism is doing NOT and EQU and then reported as a base-10 number (257 in the example above).
+=== Action DumpParasiteTaskGrid ===
+  Print out the grid of tasks that parasites did last gestation. For each parasite, tasks are first 
+  encoded as a binary string (e.g. 100000001 means that organism is doing NOT and EQU
+  and then reported as a base-10 number (257 in the example above).
+=== Action DumpDonorGrid ===
+  Print out the grid of organisms who donated their merit.
+=== Action DumpRecieverGrid ===
+  Print out the grid of organisms who received merit.
+=== Action SetVerbose ===
+  Change the level of output verbosity.  Verbose messages will print all
+  of the details of what is happening to the screen.  Minimal messages
+  will only briefly state the process being run.  Verbose messages are
+  recommended if you're in interactive analysis mode. When no arguments
+  are supplied, action will toggle between NORMAL and ON.
+  <br />Levels: SILENT, NORMAL, ON, DETAILS, DEBUG
+=== Action Inject ===
+  Inject a single organisms into the population.  Arguments must be
+  included from left to right; if all arguments are left out, the default
+  creature is the ancestral organism, and it will be injected into cell 0,
+  have an uninitialized merit, and be marked as liniage id 0.
+=== Action InjectRandom ===
+  Injects a randomly generated genome of the supplied length into the population.
+=== Action InjectAll ===
+  Same as Inject, but no cell_id is specified and the organism is placed
+  into <em>all</em> cells in the population.
+=== Action InjectRange ===
+  Injects identical organisms into a range of cells of the population.
+  </p>
+  <p>
+  <em>Example</em>:
+  <br /><code>InjectRange 000-aaaaa.org 0 10</code>
+  <br />Will inject 10 organisms into cells 0 through 9.
+=== Action InjectSequence ===
+  Injects identical organisms based on the supplied genome sequence into
+  a range of cells of the population.
+  </p>
+  <p>
+  <em>Example</em>:
+  <br /><code>InjectSequence ckdfhgklsahnfsaggdsgajfg 0 10 100</code>
+  <br />Will inject 10 organisms into cells 0 through 9 with a merit of 100.
+=== Action InjectParasite ===
+  Attempt to inject a parasite genome into the supplied population cell
+  range with the specified label.
+=== Action InjectParasitePair ===
+  Inject host parasite pairs into the population cell range specified. 
+=== Action KillProb ===
+  Using the specified probability, test each organism to see if it is killed off.
+=== Action KillRate ===
+  Randomly removes a certain proportion of the population.
+  In principle, this action does the same thing as the KillProb event.
+  However, instead of a probability, here one has to specify a rate. The
+  rate has the same unit as fitness. So if the average fitness is 20000,
+  than you remove 50% of the population on every update with a removal rate
+  of 10000.
+=== Action KillRectangle ===
+  Kill off all organisms in a rectangle defined by the points (x1, y1) and (x2, y2).
+=== Action SerialTransfer ===
+  Similar to KillProb, but we specify the exact number of organisms to
+  keep alive after the event.  The <span class="cmdarg">ignore_deads</span>
+  argument determines whether only living organisms are retainted.
+=== Action SetMutProb ===
+	For a list of values for mut_type, see <a href="#SetMutProb">SetMutProb</a>.
+=== Action ModMutProb ===
+	Values for mut_type are POINT, COPY_MUT, COPY_INS, COPY_DEL, COPY_UNIFORM, COPY_SLIP, DIV_MUT, DIV_INS, DIV_DEL, DIV_UNIFORM, DIV_SLIP, DIVIDE_MUT, DIVIDE_INS, DIVIDE_DEL, DIVIDE_UNIFORM, DIVIDE_SLIP, PARENT, INJECT_MUT, INJECT_INS, and INJECT_DEL.  These correspond to their counterparts in avida.cfg.
+	<p>To turn off all mutations, use <a href="#ZeroMuts">ZeroMuts</a>.
+=== Action ZeroMuts ===
+  This event will set all mutation rates to zero.  That is, it will set all cell mutation rates to zero, so that new organisms born will have zero mutation rates.  Current organisms will not be affected, and may still mutate.
+=== Action CompeteDemes ===
+=== Action ResetDemes ===
+=== Action CopyDeme ===
+=== Action SeverGridCol ===
+  Remove the connections between cells along a column in an Avida grid.
+=== Action SeverGridRow ===
+  Remove the connections between cells along a row in an Avida grid.
+=== Action JoinGridCol ===
+  Add connections between cells along a column in an Avida grid.
+=== Action JoinGridRow ===
+  Add connections between cells along a row in an Avida grid.
+=== Action ConnectCells ===
+  Connects a pair of specified cells.
+=== Action DisconnectCells ===
+  Disconnects a pair of specified cells.
+=== Action NewTrial ===
+  Immediately calculates the fitness of each organism in the population, saves this value for use with the CompeteOrganisms
+  event, and resets the state of all organisms.
+=== Action CompeteOrganisms ===
+  Calculates fitness of each organism in the population and creates a new population of descendants
+  where each organism has a chance of replication proportional to its fitness. Can be used to make Avida 
+  operate without population dynamics and asynchronous replication, i.e. like a genetic algorithm. If NewTrial 
+  events have occurred since the last CompeteOrganisms event, then the average fitness over those trials 
+  will be used.
+  </p>
+ 
+  <code>competition_type</code> controls how the fitnesses of multiple trials determine the overall fitness
+  used for the competition: 0=geometric mean of fitnesses, 1=scaled geometric mean of fitnesses (the greatest fitness
+  of each trial is scaled to 1.0 before taking the geometric mean), 2=arithmetic mean, 3=geometric mean plus 
+  rescales effective fitness values by the geometric mean of the difference from the top score and the median.
+ <p>Setting <code>parents_survive</code> to 1, causes the first copy of an organism that makes it into the new 
+  population to be the original (unmutated) parent organism.
+=== Action AnalyzeLandscape ===
+=== Action PrecalcLandscape ===
+  Precalculate the distance 1 full landscape for the current batch in parallel
+  using multiple threads.  The resulting data is stored into the current batch
+  and can be used by many subsequent output commands within Analyze mode.
+=== Action FullLandscape ===
+  Do a landscape analysis of the dominant genotype or current batch of genotypes,
+  depending on the current mode.  The resulting output is a collection of 
+  statistics obtained from examining all possible mutations at the distance
+  specified.  The default distance is one.
+=== Action DeletionLandscape ===
+=== Action InsertionLandscape ===
+=== Action PredictWLandscape ===
+=== Action PredictNuLandscape ===
+=== Action RandomLandscape ===
+=== Action SampleLandscape ===
+=== Action HillClimb ===
+  Does a hill climb with the dominant genotype.
+=== Action PairTestLandscape ===
+  If sample_size = 0, pairtest the full landscape.
+=== Action AnalyzePopulation ===
+=== Action SaveClone ===
+  Save a clone of this population to the file specified; if no filename is
+  given, use the name clone.<em>update</em>.  The update number allows regular
+  clones with distinct filenames to be saved with the same periodic event.
+  Running <kbd>avida -l filename</kbd> will start an Avida population with the
+  saved clone.  Note that a clone only consists of the genomes in
+  the population, and their current state is lost, so the run may not
+  proceed identically as it would have if it had continued as it was going.
+=== Action LoadClone ===
+  Sets up a population based on a save file generated by <a href="#SaveClone">SaveClone</a>
+    or WRITE_CLONE (an analyze command).  Note that a clone only consists of
+    the genomes in the population, and their current state is lost, so the
+    run may not proceed identically as it would have if it had continued as
+    it was going.
+=== Action LoadPopulation ===
+  Sets up a population based on a save file such as written out by
+  SavePopulation. It is also possible to append a history file to the
+  save file, in order to preserve the history of a previous run.<br>
+  <i>update</i> allows user to set the current update number to a new value
+=== Action LoadSexPopulation ===
+  Sets up a sexual population based on a save file such as written out by
+  SaveSexPopulation. It is also possible to append a history file to the
+  save file, in order to preserve the history of a previous run.<br>
+  <i>update</i> allows user to set the current update number to a new value
+=== Action DumpPopulation ===
+=== Action SavePopulation ===
+  Save the genotypes and lots of statistics about the population to the
+  file specified; if not filename is given, use the name
+  <kbd>detail-<em>update</em>.pop</kbd>.  As with clones, the update number
+  allows a single event to produce many detail files.  The details are used
+  to collect crossection data about the population.
+  The filename is a string that is used to prefix the update number and file extension, e.g. detail-100.spop.
+  The save_historic option determines whether the action saves the full history for the current population.
+=== Action SaveSexPopulation ===
+  Save the genotypes and lots of statistics about a population where 
+  organisms have two parents to the
+  file specified; if not filename is given, use the name
+  <kbd>detail-<em>update</em>.pop</kbd>.  As with clones, the update number
+  allows a single event to produce many detail files.  The details are used
+  to collect crossection data about the population.
+=== Action SaveParasitePopulation ===
+=== Action SaveHistoricPopulation ===
+  This action is used to output all of the ancestors of the currently
+  living population to the file specified, or <kbd>historic-<em>update</em>.pop</kbd>.
+=== Action SaveHistoricSexPopulation ===
+  This action is used to output all of the ancestors of the currently
+  living population to the file specified, or <kbd>historic-<em>update</em>.pop</kbd>.
+=== Action InjectResource ===
+  Inject (add) a specified amount of a specified resource. 
+  <span class="cmdarg">res_name</span> must already exist as
+  a resource in environment file.
+=== Action InjectScaledResource ===
+=== Action OutflowScaledResource ===
+=== MergeResourceAcrossDemes ===
+	Sums the named deme resource across demes, sets the named global resource to the sum level, and zeroes out the deme resource.  Inflow and outflow are also merged -- inflow is summed and the outflow remains the same.
+	The global resource must already exist in the environment file; it should have its initial (or inflow, or outflow) value trivially set to 0 so that Avida knows the RESOURCE statement is not merely a pre-declaration.
+=== Action SetEnvironmentInputs ===
+  Set the inputs that all organisms get from the environment when doing IO to these specific values. There must 
+  be exactly three inputs, and they must have the usual values for the top 8 "key" bits, i.e. they must be of the form
+  0x0F?????? 0x33?????? 0x55?????? where ? can be replaced with any hexadecimal digit.
+=== Action SetResource ===
+  Set the resource amount to a specific level.
+  <span class="cmdarg">res_name</span> must already exist as
+  a resource in environment file.
+=== Action SetResourceInflow ===
+  Set the resource inflow to a specific level.
+  <span class="cmdarg">res_name</span> must already exist as
+  a resource in environment file.
+=== Action SetResourceOutflow ===
+  Set the resource outflow to a specific level.
+  <span class="cmdarg">res_name</span> must already exist as
+  a resource in environment file.
+=== Action SetReactionValue ===
+  Set the reaction value to a specific level.
+  <span class="cmdarg">reaction_name</span> must already 
+  exist in the environment file.
+  <span class="cmdarg">value</span> can be negative. 
+=== Action SetReactionMinTaskCount ===
+  Set the min task count required to trigger a reaction to <span class="cmdarg">task_count</span>.
+  <span class="cmdarg">reaction_name</span> must already 
+  exist in the environment file.
+=== Action SetReactionMaxTaskCount ===
+  Set the max task count required to trigger a reaction to <span class="cmdarg">task_count</span>.
+  <span class="cmdarg">reaction_name</span> must already 
+  exist in the environment file.
+=== Action SetReactionTask ===
+  Set the task required to trigger a reaction to <span class="cmdarg">task_name</span>.
+  <span class="cmdarg">reaction_name</span> and <span class="cmdarg">task_name</span> must already 
+  exist in the environment file.
+=== Action SetReactionValueMult ===
+  Multiply the reaction value by the <span class="cmdarg">value</span>.
+  <span class="cmdarg">reaction_name</span> must already 
+  exist in the environment file.
+  <span class="cmdarg">value</span> can be negative. 
+=== Action SetReactionInst ===
+  Set the instruction triggered by this reaction.
+  <span class="cmdarg">reaction_name</span> must already
+  exist in the environment file.
+  <span class="cmdarg">inst</span> must be in the instruction set. 
+=== Action ZeroResources ===
+  Set all resurce levels to zero.
+=== Action ChangeEnvironment ===
+  Action designed to read in and process a line formatted as if it were in the
+  <a href="environment.html">environment</a> file.  This will change 
+  environmental settings on the fly.  <b>You should create all resources and 
+  reactions in the environment file</b> and only use this file to change these
+  resources and reactions. 
+=== Action cAssignRandomCellData ===
+  Assign a random identifier to the data for each cell and save those IDs for 
+  later use, respecting deme boundaries.
+=== Action CompeteDemesByTaskCount ===
+  Competes demes based on the total number of times that a
+  task has been completed by an organism in the deme since the
+  was initialized. This action takes one integer parameter representing
+  number of the task that is to be used for competition. If no parameter
+  supplied, the class uses the first task defined in the environment file
+  compete the demes.
+=== Action DecayPoints ===
+  Decays the number of points a deme has accumulated by
+  a percentage that is set in the configuration file.
+=== InjectDemesRandom ===
+  Injects one or more organisms into all demes in a randomly-chosen cell.
+  <P>*  Note: This gets the genotype from the germline, so germline use is required</P>
+  <p>*  Note: one organism is inserted each time this is called, and it will 
+  stop when the given number of organisms has been injected.</p>
+
+  <p>Parameters:
+    <ul>
+      <li>number of orgs (int): number of organisms to inject into each deme - default 1
+      <li>merit (double): The initial merit of the organism. If set to -1, this is ignored - default -1
+      <li>lineage label (integer): An integer that marks all descendants of this organism  - default 0
+      <li>neutral metric (double):  A double value that randomly drifts over time - default 0
+    </ul>
+  </p>
+=== Action SetMigrationMatrix ===
+  Resets the migration matrix to use the connection weights in the specified filename argument. 
+  <p>Parameters:
+    <ul>
+      <li>migration matrix file name (string): name of the migration file (must be in same working directory as Avida)
+    </ul>
+  </p>
+=== Action AlterMigrationConnection ===
+  Alters the migration_matrix[from][to] connection weight by alter_amount (can be positive or negative amount)
+  <p>Parameters:
+    <ul>
+      <li>from_deme_id (int): Index of the "from" subpopulation (must be from 0 to NUM_DEMES)
+      <li>to_deme_id (int): Index of the "to" subpopulation (must be from 0 to NUM_DEMES)
+      <li>alter_amount (double): Value to be added to the current connection weight (note: future "alterings" will use this updated value)
+    </ul>
+  </p>
+=== Action SetSeasonalResource ===
+  Sets resource availiblity to seasonal
+=== Action SetSeasonalResource1Kyears_1To_1 ===
+  Sets resource availiblity to seasonal 1 to -1 for 1K years of 365 updates
+=== Action SetSeasonalResource10Kyears_1To_1 ===
+  Sets resource availiblity to seasonal 1 to -1 for 10K years of 365 updates
+=== head ===
+<html>
+<!-- ************************************************************************** --->
+<!-- * This HTML was generated by the make_actions_html routine please modify * --->
+<!-- * the source/utils/make_actions_html/actions_source_info file            * --->
+<!-- ************************************************************************** --->
+<head>
+  <title>Avida : List of Actions</title>
+	<link rel="stylesheet" type="text/css" href="main.css" />
+</head>
+<body>
+
+<div class="revision">
+Revised 2006-09-03 DMB
+xxxx-xx-xx # this line will be replaced by make_actions_html.pl
+</div>
+
+<p>
+<a href="index.html">Return to the Index</a> &nbsp;|&nbsp;
+<a href="events.html">The Events File</a> &nbsp;|&nbsp;
+<a href="analyze.html">The Analyze File</a>
+</p>
+<hr />
+
+<div align="center">
+<h1>List of Actions</h1>
+</div>
+
+<a name="ActionCategories"><h2>Action Categories</h2></a>
+<p>
+There is a large library of actions available for scheduling as events.
+Additionally, all of these actions can be used within analyze scripts.
+Below you will find a listing of the high level groupings of these
+actions, along with detailed sections for each them.
+</p>
+
+
+<dl>
+<dt><a href="#PrintActions">Print</a></dt>
+<dd>Print actions are the primary way of saving data from an Avida experiments.</dd>
+<dt><a href="#PopulationActions">Population</a></dt>
+<dd>Population actions modify the state of the population, and will actually change the course of the run.</dd>
+<dt><a href="#EnvironmentActions">Environment</a></dt>
+<dd>Actions that allow user to change properties of the environment, including resources.</dd>
+<dt><a href="#SaveLoadActions">Save and Load</a></dt>
+<dd>Actions that allow for saving and loading large data sets, such as full populations.</dd>
+<dt><a href="#LandscapeActions">Landscape Analysis</a></dt>
+<dd>Actions that use data from the current state of Avida, process it and then output the results.</dd>
+<dt><a href="#DriverActions">Driver</a></dt>
+<dd>Actions that allow user to control program execution, including experiment termination.</dd>
+</dl>
+
+<p>
+For a brief overview of writing a new action, please see <a href="#CreateAction">Creating an Action</a> below.
+</p>
+
+<p>&nbsp;</p>
+<h2>Alphabetical Listing of Available Actions</h2>
+
+=== Section Print Actions ===
+<p>&nbsp;</p>
+<h2><a name="PrintActions">Print Actions</a></h2>
+
+<p>
+Output events are the primary way of saving data from an Avida experiments.
+The main two types are <em>continuous output</em>, which append to a single file 
+every time the event is trigged, and <em>singular output</em>, which produce
+a single, complete file for each trigger.
+</p>
+=== Section Population Actions ===
+<p>&nbsp;</p>
+<h2><a name="PopulationActions">Population Actions</a></h2>
+
+<p>
+Population events modify the state of the population, and will actually
+change the course of the run.  There are a wide variety of these.
+</p>
+=== Section Environment Actions ===
+<p>&nbsp;</p>
+<h2><a name="EnvironmentActions">Environment Actions</a></h2>
+
+<p>
+Events that allow user to change environment properties, such as resources
+and reaction parameters.
+</p>
+=== Section Save Load Actions ===
+<p>&nbsp;</p>
+<h2><a name="SaveLoadActions">Save Load Actions</a></h2>
+
+<p>
+</p>
+=== Section Landscape Actions ===
+<p>&nbsp;</p>
+<h2><a name="LandscapeActions">Landscape Analysis Actions</a></h2>
+
+<p>
+Landscape analysis actions perform various types mutation studies to
+calculate properties of the fitness landscape for a particular genome.
+When scheduled as an event during a run, these actions will typically
+perform analysis on the dominant genotype.  In analyze mode, analysis
+is performed on the entire currently selected batch.
+</p>
+<p>
+These actions are often very computationally intensive, thus will
+take a long time to compute.  In order to take advantage of increasingly
+available multi-processor/multi-core systems, a number of these actions
+have been enhanced to make use of multiple threads to parallize work.
+Set the configuration setting <code>MT_CONCURRENCY</code> to the number
+of logical processors available to make use of all processor resources
+for these compuations.
+</p>
+=== Section Driver Actions ===
+<p>&nbsp;</p>
+<h2><a name="DriverActions">Driver Actions</a></h2>
+
+<p>
+These actions control the driver object responsible for executing the current run.
+</p>
+=== tail ===
+<p>&nbsp;</p>
+<h2><a name="CreateAction">Creating an Action</a></h2>
+
+<p>
+The action source code is contained in the source/action directory.  
+Each of the individual <a href="#ActionCategories">action categories</a> has its own source code files (e.g. Landcape Actions are located in the LandscapeActions files).
+</p>
+<p>Each action is derrived from the cAction class.  Briefly, to get an action to work you must create a child class that has a Process and GetDescription function defined as well as a constructor.  You must also register this new class with the action library.</p>
+<p>So, with that quick review of what must be done, here is a step by step guide to creating an action:
+<ol>
+	<li>Identify which of the action categories your action should be assigned to.  There are six different action categories described <a href="#ActionCategories">above</a>.  Each category has a similar means of creating a new action, but do note that some action commands are generated via macros defined at the top of the files.  For instance, in the PrintActions file, you will notice a number of STATS_OUT_FILE macros being used to generate rather repetitively coded standard output files.&nbsp;</p></li>
+	<li><p>Create a new class in the file that follows proper naming conventions.  Any class should begin with "cAction" and be followed by the name of the action command you will register with the library.  For instance, if we were to create a new command "MyAction", we'd name the class cActionMyAction.  Below is a stub for this new action class:</p>
+			<p>
+			<pre>
+class cActionMyAction : public cAction
+{
+	private:
+		// Private data members for this action
+	public:
+		cActionMyAction(cWorld* world, const cString& args) : cAction(world, args) { ; }
+		
+		static const cString GetDescription() { return "Arguments: My Arguments"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			//Perform whatever processing is needed when the action is triggered.
+		}
+};
+</pre></p>
+
+	<li><p>Define the private data members, constructor, description string in GetDescription, and the Process function.  Any arguments that you specify after the action name in the events configuration will be passed to your new class via the args argument in the constructor.  (If you want more documentation for your actions than just the arguments, see the final step in this list.</p></li>
+	<li><p>Register the new action with the action library.  At the bottom of each action definitions file, there are the commands that register the individual actions with the action library.  In the PrintActions.cc file, for instance, this function is called RegisterPrintActions.
+	<p>  To register our example action "MyAction", we'd write:<p>
+<p><pre>action_lib->Register&lt;cActionMyAction&gt;("MyAction");</pre><p>
+	<li><p>Test your action.</p></li>
+	<li><p>Add a ==== Action <i>action name</i> ==== line in
+               source/utils/make_actions_html/actions_source_info file</p></li>
+</ol>
+</p>
+
+
+
+<hr />
+<p>
+<a href="index.html">Return to the Index</a> &nbsp;|&nbsp;
+<a href="events.html">The Events File</a> &nbsp;|&nbsp;
+<a href="analyze.html">The Analyze File</a>
+</p>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+# Predator org instruction execution data
+# Sat Jun  1 18:46:51 2013
+#  1: Update
+#  2: nop-A
+#  3: nop-B
+#  4: nop-C
+#  5: nop-D
+#  6: nop-E
+#  7: nop-F
+#  8: nop-G
+#  9: nop-H
+# 10: if-n-equ
+# 11: if-less
+# 12: mov-head
+# 13: jmp-head
+# 14: get-head
+# 15: set-flow
+# 16: search-seq-comp-s
+# 17: search-seq-direct-s
+# 18: shift-r
+# 19: shift-l
+# 20: inc
+# 21: dec
+# 22: push
+# 23: pop
+# 24: swap-stk
+# 25: swap
+# 26: pop-all
+# 27: push-all
+# 28: add
+# 29: sub
+# 30: nand
+# 31: fork-thread
+# 32: exit-thread
+# 33: id-thread
+# 34: IO
+# 35: repro
+# 36: wait-cond-equ
+# 37: wait-cond-less
+# 38: wait-cond-gtr
+# 39: if-not-0
+# 40: if-equ-0
+# 41: if-gtr-0
+# 42: if-less-0
+# 43: if-gtr-x
+# 44: if-equ-x
+# 45: move
+# 46: get-north-offset
+# 47: rotate-x
+# 48: rotate-org-id
+# 49: rotate-away-org-id
+# 50: set-forage-target
+# 51: get-forage-target
+# 52: look-ahead-intercept
+# 53: attack-prey
+# 54: attack-pred
+# 55: teach-offspring
+# 56: learn-parent
+# 57: nop-X
+# 58: scramble-registers
+# 59: zero
+# 60: one
+# 61: rand
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+50 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+100 282 714 463 0 314 169 548 1042 0 673 30 0 544 246 316 339 232 603 726 617 498 0 345 772 41 0 2491 782 655 980 0 121 2056 14 0 245 0 553 0 2698 716 2278 874 3781 772 1529 3 2 556 874 1477 36 0 760 1340 209 0 393 1008 982 

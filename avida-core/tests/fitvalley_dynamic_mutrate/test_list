@@ -1,0 +1,37 @@
+;--- Begin Test Configuration File (test_list) ---
+[main]
+; Command line arguments to pass to the application
+args = -s 1 -set CHILD_SIZE_RANGE 1 -set DIVIDE_INS_PROB 0  -set MIN_EXE_LINES 0 -set DIVIDE_DEL_PROB 0 -set INST_SET instset-reprosA-B.cfg  -set BASE_MERIT_METHOD 6 -set WORLD_X 10 -set WORLD_Y 10 -set MERIT_BONUS_INST 2 -set COPY_MUT_PROB .1 -set MERIT_BONUS_EFFECT 1 -set EVENT_FILE events-toggleEvery10.cfg -v2 -set META_COPY_MUT .5 -set META_STD_DEV  .1 -set MUT_RATE_SOURCE 2 -set NUM_DEMES 1 -set FITNESS_VALLEY 1 -set FITNESS_VALLEY_START 5 -set FITNESS_VALLEY_STOP 6 
+
+app = %(default_app)s
+nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
+                         ;  disallow - treat non-zero exit codes as failures
+                         ;  allow - all exit codes are acceptable
+                         ;  require - treat zero exit codes as failures, useful
+                         ;            for creating tests for app error checking
+createdby = Jeff Clune ; Who created the test
+email = jclune@msu.edu ; Email address for the test's creator
+
+[consistency]
+enabled = yes            ; Is this test a consistency test?
+long = no                ; Is this test a long test?
+
+[performance]
+enabled = no             ; Is this test a performance test?
+long = no                ; Is this test a long test?
+
+; The following variables can be used in constructing setting values by calling
+; them with %(variable_name)s.  For example see 'app' above.
+;
+; app 
+; builddir 
+; cpus 
+; mode 
+; perf_repeat 
+; perf_user_margin 
+; perf_wall_margin 
+; svn 
+; svnmetadir 
+; svnversion 
+; testdir 
+;--- End Test Configuration File ---

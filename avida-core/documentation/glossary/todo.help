@@ -1,0 +1,34 @@
+# Components
+!CPU
+!input
+!output
+!memory
+!register registers
+!flow-head
+!read-head
+!write-head
+!instruction-pointer
+!stack stacks
+!instructions
+
+# Inst-set operation
+!?AX? ?BX? ?CX?
+!?IP? ?RH? ?WH? ?FH?
+!no-operation
+!template label
+!complement
+
+# Genesis
+COPY_MUT_PROB
+
+# Other info
+!mutations mutation
+!population
+!genotype
+!threshold
+!species
+
+#Tasks...
+!tasks task
+!bitwise
+!logic

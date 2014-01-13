@@ -1,0 +1,136 @@
+#inst_set instset
+#hw_type 0 
+
+zero					#clear the registers so we can keep accurate counts
+nop-A      #
+zero
+nop-B
+zero
+nop-C      #
+join-group				#join the foragers (group 0)
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+IO	
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+zero
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+inc
+join-group
+IO
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+rotate-to-unoccupied-cell
+repro

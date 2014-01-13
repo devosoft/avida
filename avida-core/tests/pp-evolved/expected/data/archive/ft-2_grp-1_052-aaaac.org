@@ -1,0 +1,76 @@
+# Sat Jun  1 18:46:57 2013
+# Filename........: archive/ft-2_grp-1_052-aaaac.org
+# Update Output...: 100
+# Is Viable.......: 0
+# Repro Cycle Size: 0
+# Depth to Viable.: -1
+# 
+# Generation: 0
+# Merit...........: 52.000000
+# Gestation Time..: 0
+# Fitness.........: 0.000000
+# Errors..........: 0
+# Genome Size.....: 52
+# Copied Size.....: 52
+# Executed Size...: 52
+# Last Birth Group ID........: -1
+# Last Birth Forager Type....: -2
+# Last Birth Cell............: 23115
+# Offspring.......: NONE
+# 
+# Tasks Performed:
+# eat-target 0 (0.000000)
+
+
+move
+nop-F
+IO
+nop-H
+move
+fork-thread
+mov-head
+search-seq-direct-s
+zero
+dec
+nop-H
+nop-C
+shift-l
+if-gtr-x
+move
+learn-parent
+add
+rotate-away-org-id
+rand
+nop-B
+nop-F
+get-north-offset
+move
+move
+if-gtr-x
+swap
+nop-A
+add
+if-not-0
+attack-prey
+rotate-x
+push
+move
+IO
+nop-B
+move
+wait-cond-less
+rand
+push
+nand
+look-ahead-intercept
+learn-parent
+move
+set-forage-target
+repro
+nop-A
+nop-C
+set-flow
+nand
+set-flow
+if-less-0
+nop-X

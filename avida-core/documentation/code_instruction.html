@@ -1,0 +1,328 @@
+<html>
+<head>
+  <title>Avida : Instruction Implementation Checklist</title>
+	<link rel="stylesheet" type="text/css" href="main.css" />
+</head>
+<body>
+
+<div class="revision">
+Revised 2011-02-14 MV
+</div>
+
+<p><a href="index.html">Return to the Index</a></p>
+<hr />
+
+<div align="center">
+<h1>Instruction Implementation Checklist</h1>
+</div>
+
+<p>
+This document discusses how to implement your own instructions.
+</p>
+
+
+<p>&nbsp;</p>
+<h2>1. Build the method to be attached to the new instruction</h2>
+
+<p>
+For this first step, you will be editing the virtual CPU definition in 
+<kbd>cHardwareCPU.h</kbd> and <kbd>cHardwareCPU.cc</kbd>, both of which are
+found in the directory <kbd>source/cpu/</kbd>.  Start by going to the
+final section of the class definition in the header file and writing
+the declaration for the new method that will be called whenever the
+instruction is executed. For example, if you were going to add the
+instruction <code>minus-17</code> (which performs the oh-so-useful behavior
+of subtracting 17 from the ?BX? register), you would add the line:
+</p>
+<pre>
+bool <span class="method">Inst_Minus17</span>(<span class="class">cAvidaContext</span>&amp; <span class="object">ctx</span>);
+</pre>
+
+<p>
+If possible, place it near other instructions of the same type.  There are
+about a hundred methods cHardwareCPU.  This instruction would likely fit best
+with the group of instruction described as &quot;Single-Argument Math&quot;.
+That is, all those instructions that perform mathematical operation that only
+affect a single register.
+</p>
+<p>
+All methods associated with instructions return a
+<span class="class">bool</span> value that determines if it was
+successfully executed.  Most instructions will always return true since they
+have now way to fail.  The convention that we use to designate a method
+explicitly associated with an instruction is placing a prefix of
+<code>Inst_</code> in front of it.
+</p>
+<p>
+Next, you have to write the function body in the code file
+(<kbd>cHardwareCPU.cc</kbd>).  The method bodies will be listed at the end of
+this file in the same order that they were declared in the header. You would
+find the proper position, and write something to the effect of:
+</p>
+
+<pre>
+bool <span class="class">cHardwareCPU</span>::<span class="method">Inst_Minus17</span>(<span class="class">cAvidaContext</span>&amp; <span class="object">ctx</span>)
+{
+  const <span class="class">int</span> <span class="object">reg_used</span> = <span class="method">FindModifiedRegister</span>(REG_BX);
+  <span class="method">GetRegister</span>(<span class="object">reg_used</span>) -= 17;
+  return true;
+}
+</pre>
+
+<p>
+The first line of this method uses a helper function called
+<span class="method">FindModifiedRegister</span>() to identify the register
+that should be affected (it scans the next instruction to test if it is a
+<code>nop</code>), with a default value of <code>REG_BX</code> passed in.
+The second line then subtracts 17 from the value in that register.  The
+constant values and available helper functions will be described in more
+detail below, as will a guide to accessing the components in the virtual
+CPU.  For the moment, you have finished implementing the method!
+</p>
+<p>
+Note that this would be a good time to recompile if you want to test how
+well your implementation is going so far.
+</p>
+
+
+<p>&nbsp;</p>
+<h2>2. Link the instruction name to its method</h2>
+
+For this step, you will need to edit the code file.  You would go into the method
+<span class="class">cHardwareCPU</span>::<span class="method">initInstLib</span>(void)
+and add in the line
+
+<pre>
+<span class="class">cInstEntryCPU</span>(&quot;minus-17&quot;, &amp;<span class="class">cHardwareCPU</span>::<span class="method">Inst_Minus17</span>);
+</pre>
+
+<p>
+in the same order that it was defined in the class definition.
+</p>
+<p>
+Since we want to use a pointer to the appropriate method, that is what we
+must pass into the dictionary.  To obtain said pointer, we must list the class
+the function is part of (<span class="class">cHardwareCPU</span>) follow it
+by a double colon (::) and then give the method name
+(<span class="method">Inst_Minus17</span>) <em>without</em> the normal
+parentheses following it.  The parentheses indicate that we should execute
+the method.  Without them, it is just the data that represents the method,
+and by preceding this whole mess with an ampersand ('&amp;') we get the pointer
+to the location in memory that the method resides.
+</p>
+<p>
+<b>IMPORTANT:</b> If your instruction interacts with the population, resources,
+or IO, make sure to flag the instruction for speculative stall by adding a third
+ argument, <i>nInstFlags::STALL</i>.  For an example, look at the 'h-divide'
+ instruction.
+</p>
+<p>
+Compile again, and you should have your instruction ready for use.
+</p>
+
+
+<p>&nbsp;</p>
+<h2>3. Add the entry to your instruction set and test it!</h2>
+
+<p>
+This last part should be the easiest.  If you want the new instruction you
+just created to be loaded on startup, you must add a line in the instruction
+set you are using (specified in the configuration file) to indicate its
+inclusion:
+</p>
+<pre>
+minus-17 1
+</pre>
+
+<p>
+And there you have it!  Now the real trick is to test if its working 
+properly.  I'd recommend using as a framework the creature
+<kbd>default-classic.org</kbd> and modifying some of the long series of
+<code>nop-C</code> instructions inside of it to perform some math using the
+new instruction (only the very first <code>nop-C</code> cannot be changed). You
+can then either go into zoom mode in the viewer and step through the creature,
+or else use analyze mode trace its execution.  If you are going to use zoom
+mode, setup your modified creature as the START_CREATURE in configuration file.
+If you want to use analyze mode, put the following lines into the
+<code>analyze.cfg</code> file in your work/ directory:
+
+<pre>
+  LOAD_ORGANISM inst_test.org
+  TRACE
+</pre>
+
+<p>
+Where you have to replace <kbd>inst_test.org</kbd> with the name of the
+organism you want to trace.  The new file will appear in the
+<kbd>data/archive/</kbd> directory, with the same name as the one you loaded
+in, but a <kbd>.trace</kbd> appended to the end.
+</p>
+
+
+<p>&nbsp;</p>
+<h3>CPU Components</h3>
+
+<p>
+Various CPU components are often manipulated by instructions, and we
+need a standard way of doing this.  We have settled on each component being
+associated with a method to access it, to provide a single location that can
+control that access.  This has already been useful -- in a multi-threaded 
+CPU (i.e., a CPU that has multiple positions in its genome being executed at
+the same time) each thread has its own registers and heads, so we need to
+always be sure we are manipulating the component of the active thread.  If
+you simply use the following methods, they will always find the correct
+component for you.
+</p>
+
+<dl>
+<dt>
+<pre>
+void <span class="method">StackPush</span>(<span class="class">int</span> <span class="object">value</span>);
+<span class="class">int</span> <span class="method">StackPop</span>();
+void <span class="method">SwitchStack</span>();
+</pre>
+</dt>
+<dd>
+There are two stacks in a normal CPU, and more in a multi-threaded version
+(one global stack, and one local to each thread).  The first stack method will
+place a new value on the top of the currently active stack, the second will
+remove the top value, and the last will toggle the currently active stack.
+</dd>
+<dt>
+<pre>
+<span class="class">cCPUHead</span>&amp; <span class="method">GetHead</span>(int <span class="object">head_id</span>);
+<span class="class">cCPUHead</span>&amp; <span class="method">IP</span>();</pre>
+</dt>
+<dd>
+Each thread in a CPU has four heads associated with it, designated by the
+constants <code>HEAD_IP</code>, <code>HEAD_READ</code>,
+<code>HEAD_WRITE</code>, and  <code>HEAD_FLOW</code>.  These heads each point
+to a position in memory, and all have their own purpose.  A head can be
+accessed by passing the appropriate constant into the GetHead() method.  The
+extra method IP() was added to more easily obtain just the instruction pointer.
+The IP is a very special head since it designates what instruction is going to
+be executed next, and often it will make code clearer if you obtain it by
+calling IP().  (It will show that you need to make sure of the special
+qualities of the instruction pointer.)
+</dd>
+<dt>
+<pre>
+int&amp; <span class="method">Register</span>(int <span class="object">reg_id</span>);
+</pre>
+</dt>
+<dd>
+There are three registers available, associated with the constants
+<code>REG_AX</code>, <code>REG_BX</code>, and <code>REG_CX</code>. If the
+Register() method is called, an integer reference will be returned associated
+with that register.  Any change to this integer will make a corresponding
+change to the register in question.
+</dd>
+<dt>
+<pre>
+<span class="class">InstMemSpace</span>&amp; <span class="method">GetMemory</span>();
+</pre>
+</dt>
+<dd>
+This method allows the programmer to access the full memory of the CPU.  As
+you know, the class InstMemSpace is built on top of Genome, so you can
+manipulate it in all of the same ways.
+</dd>
+</dl>
+
+<p>
+These are only a sampling of the available methods of interacting with the
+components of the CPU, but they give you a good cross-section without
+overwhelming you with all of the possibilities.  You should look through the
+source files if you want to see the other options that are available to you.
+</p>
+
+
+<p>&nbsp;</p>
+<h2>Helper Methods</h2>
+
+<p>
+There are several very common tasks that are performed during the execution
+of many of the instructions.  For each of these tasks we have created a
+helper function to ease the creation of new instructions.
+</p>
+
+<dl>
+<dt>
+<pre>
+void <span class="method">ReadLabel</span>();
+<span class="class">Util::NopSequence</span>&amp; <span class="method">GetLabel</span>();
+<span class="class">cCPUHead</span> <span class="method">FindLabel</span>(int <span class="object">direction</span>);
+</pre>
+</dt>
+<dd>
+ReadLabel() will read in the label (series of nop instructions) that
+immediately follows the instruction being executed.  The label that was read
+can then be accessed (and even modified)  using GetLabel().  Finally, the
+Findlabel() method takes single int argument that determines the direction
+(from the instruction pointer) in which the label should be search for.  If
+this argument is a 1 it will search forward, and if its a -1, it will search
+backwards.  A zero indicates that the search should start from the beginning
+of the genome, and proceed to the end.  Once it finds the matching label, it
+will return a head at the position in which the label was found.  These
+helper methods are particularly useful in any instruction that has to affect
+other portions of the source code.  See the method Inst_HeadSearch for an
+example of how these are used.
+</dd>
+<dt>
+<pre>
+int <span class="method">FindModifiedRegister</span>(int <span class="object">default_register</span>);
+int <span class="method">FindModifiedHead</span>(int <span class="object">default_head</span>);
+</pre>
+</dt>
+<dd>
+These two methods will look ahead and determine if a nop instruction is
+immediately following the instruction being executed.  If so, it will return
+the register or head ID associated with that nop (for use in the rest of the
+method), and if no nop is found, it will automatically return the
+default value passed in.  We used FindModifiedRegister in the example new
+instruction above.
+</dd>
+<dt>
+<pre>
+int <span class="method">FindComplementRegister</span>(int <span class="object">base_reg</span>);
+</pre>
+</dt>
+<dd>
+Several instructions are defined as affecting a certain, modifiable register
+and its complement.  In order to have a standard way of determining the
+complement of a register (which, by default, cycle in the same order as
+complement labels), we use this function whenever we need to determine one.
+See, for example, see the definition of Inst_IfNEqu().
+</dd>
+</dl>
+
+
+<p>&nbsp;</p>
+<h2>Problem</h2>
+
+<p>
+To test your understanding of adding instruction into Avida, try writing two
+new instructions.  The first one is the mathematical instruction
+<strong><code>cube</code></strong> that will take the ?BX? register, and put
+its value to the third power.  If you look in the actual source files, you
+will see that there is already a <code>square</code> instruction that you can
+model this on.
+</p>
+<p>
+Next, you will implement the instruction <strong><code>if-twice</code></strong>
+that will execute the next instruction if-and-only-if the value in the ?BX?
+register is twice that of the value in its complement.  In other words by
+default, if would test of BX was twice CX, but if it is followed by a
+<code>nop-C</code> it will test if CX is twice AX.
+</p>
+<p>
+For both of these instruction make sure to craft an organism to test that
+they are working properly!
+</p>
+
+
+<hr />
+<p><a href="index.html">Return to the Index</a></p>
+
+</body>
+</html>

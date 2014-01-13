@@ -1,0 +1,132 @@
+IO         # five IO's gets all of the input values
+push
+IO
+push
+IO
+push
+IO
+push
+IO
+push
+IO         # five IO's gets all of the input values
+push
+IO
+push
+IO
+push
+IO
+push
+IO
+push
+
+nop-B      # main routine, searches for least value
+nop-A
+nop-A
+h-search
+nop-A
+nop-A
+nop-C
+pop
+pop
+nop-C
+if-n-equ
+nop-C
+mov-head
+
+swap-stk   # switch todo stack as the new source
+IO         # output found min
+h-search
+nop-A
+nop-C
+nop-C
+pop
+push
+if-n-equ
+nop-A
+mov-head
+
+h-search   # exit sorting routine
+nop-A
+nop-C
+nop-A
+mov-head
+
+nop-A      # push value, return to start
+nop-B
+nop-B
+push
+push
+nop-C
+h-search
+nop-A
+nop-C
+nop-C
+mov-head   # try next value
+dec
+
+nop-B      # check value, looking for min
+nop-B
+nop-A
+swap-stk   # change to the todo stack
+push       # save both values becaus h-search screws up reg-B and reg-C
+push
+nop-C
+h-search
+nop-A
+nop-A
+nop-A
+pop        # restore values
+nop-C
+pop
+if-less
+mov-head
+
+# if reg-C is <= reg-B
+push       # save reg-B on todo stack
+swap-stk   # flip back to source stack
+push       # put reg-C back onto the source stack
+nop-C
+h-search
+nop-A
+nop-C
+nop-C
+mov-head   # try next value
+dec
+
+# if reg-B is < reg-C
+nop-B
+nop-B
+nop-B
+push       # save reg-C on todo stack
+nop-C
+swap-stk   # flip back to source stack
+push       # put reg-B back onto the source stack
+h-search
+nop-A
+nop-C
+nop-C
+mov-head   # try next value
+dec
+
+# main replication routine
+nop-B
+nop-A
+nop-B
+h-alloc    # Allocate space for child
+h-search   # Locate the end of the organism
+nop-C      #
+nop-B      #
+nop-A      #
+mov-head   # Place write-head at beginning of offspring.
+nop-C      #
+h-search   # Mark the beginning of the copy loop
+h-copy     # Do the copy
+if-label   # If we're done copying....
+nop-C      #
+nop-B      #
+nop-A      #
+h-divide   #    ...divide!
+mov-head   # Otherwise, loop back to the beginning of the copy loop.
+nop-A      # End label.
+nop-C      #
+nop-B      #

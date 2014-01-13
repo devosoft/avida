@@ -1,0 +1,42 @@
+h-alloc    # Allocate space for child
+h-search   # Locate the end of the organism
+nop-C      #
+nop-A      #
+mov-head   # Place write-head at beginning of offspring.
+nop-C      #
+IO
+nop-C      #
+IO         # 1
+nop-C      #
+IO         # 2
+nop-C      #
+IO         # 3
+nop-C      #
+IO         # 4
+nop-C      #
+IO         # 5
+nop-C      #
+IO         # 6
+nop-C      #
+IO         # 7
+nop-C      #
+IO         # 8
+nop-C      #
+IO
+IO         # echo 9
+nop-C      #
+nand
+IO	   # nand 1
+IO
+nop-C	   # echo 10
+nand
+IO         # nand 2
+h-search   # Mark the beginning of the copy loop
+h-copy     # Do the copy
+if-label   # If we're done copying....
+nop-C      #
+nop-A      #
+h-divide   #    ...divide!
+mov-head   # Otherwise, loop back to the beginning of the copy loop.
+nop-A      # End label.
+nop-B      #

@@ -1,0 +1,230 @@
+##############################################################################
+#
+# Filename: environment.cfg
+#
+# This is the setup file for the new task/resource system, which takes the
+# place of the old "task_set" and "resources" files.  Additionally, there
+# are several events that can affect the inflow and outflow of resources in
+# the environment.
+# 
+# Two main keywords are used in this file, RESOURCE and REACTION.  Their
+# formats are:
+# 
+#   RESOURCE  name  {name ...}
+#   REACTION  name  task  [process:...]  [requisite:...]
+# 
+# Where 'name' is a unique identifier.   Reactions are further described by
+# the task that triggers them, the processes they perform (including
+# resources used and the results of using them), and requisites on when
+# they can occur.
+# 
+# All entries on a resource line are names of individual resources.
+# Resources will have a quantity at each location in the population, and a
+# global quantity depleatable by all organisms.  Typically only global or the
+# local will be used alone in single experiment, but if both local and global
+# resources are present, local is depleated first.  The resouce name "infinite"
+# is used to refer to an undepleatable resource.
+# 
+# When describing a reaction, the "process" portion determines consumption
+# of resources, their byproducts, and the resulting bonuses.  There are
+# several arguments (sepated by colons; example below) to detail the use of a
+# resource.  Default values are in brackets:
+# 
+#   'resource' is the name of the resource consumed.                 [infinite]
+#   'value' multiplied by the amount of the resource consumed gives bonus.
+#      (0.5 may be inefficient, while 5.0 is very efficient.)        [1.0]
+#   'type' determines how to apply the bonus.                        [add]
+#      add: increase current merit by bonus
+#      mult: multiply merit by current bonus (watch for bonus < 1)
+#      pow: multiply merit by 2^bonus (positive bonus -> benefit)
+#   'max' is the max amount of the resource consumed per occurance.  [1.0]
+#   'min' is the min amount of resource required.                    [0.0]
+#   'frac' is the max fraction of the resource that can be consumed. [1.0]
+#   'product' is the name of the by-product resource.                [none]
+#   'conversion' is the conversion rate to product resource.         [1.0]
+# 
+# If no process is given, a single associated process with all default
+# settings is assumed.  If multiple process statements are given, *all* are
+# acted upon when the reaction is triggered.
+# 
+# The "requisite" entry limits when this reaction can be triggered.  The
+# following requisites (in any combination) are possible:
+# 
+#   'reaction' is a reaction that must be triggered first.           [none]
+#   'noreaction' is a reaction the must not have been triggered yet. [none]
+#   'min_count' is min times task must be performed for bonus.       [0]
+#   'max_count' is max times task can be performed for bonus.        [INT_MAX]
+# 
+# No restructions are present by default.  If there are multiple requisite 
+# entries, only *one* of them need be satisfied in order to trigger the
+# reaction.  Note though that a single requisite entry can have as many
+# portions as needed.
+# 
+# EXAMPLES:
+# 
+# We could simulate the old system with a file including only lines like:
+# 
+#   REACTION AND logic:2a process:type=mult:value=4.0   requisite:max_count=1
+#   REACTION EQU logic:2h process:type=mult:value=32.0  requisite:max_count=1
+# 
+# No RESOURCE statements need be included since only the infinite resource is
+# used (by default, since we don't specify another resources' name)
+#
+# To create an environment with two resources that are converted back and
+# forth as tasks are performed, we might have:
+# 
+#   RESOURCE  yummyA
+#   RESOURCE  yummyB
+#   REACTION  AtoB  gobbleA  process:resource=yummyA:frac=0.001:product=yummyB
+#   REACTION  BtoA  gobbleB  process:resource=yummyB:frac=0.001:product=yummyA
+# 
+# A value of 1.0 per reaction is default.  Obviously "gobbleA" and "gobbleB"
+# would have to be tasks described within avida.
+# 
+# A requisite against the other reaction being performed would prevent a
+# single organism from garnering both rewards in equal measure.
+# 
+# 
+# The three main events to directly relate to resources are:
+# 
+#   resource_in  res_name  amount  cell_id
+# 
+# 	Introduces resources into the environment.  The 'amount' input
+# 	indicates the numerical quatity to input, and 'cell_id' indicates
+#	which cell to put the resource in.  If cell_id is -1 (the default),
+#	this amount is globally accessable by all organisms.  A -2 indicates
+#	that this amount is placed locally into _each_ cell.
+# 
+#   resource_out  res_name  fraction  cell_id
+# 
+# 	Removes resources from the environment.  The 'fraction' input is the
+# 	portion of the current resource that flows out, and 'cell_id' works
+# 	as in the previous event.
+# 
+#   resource_decay  from_resource  to_resource  rate  conversion  cell_id
+# 
+# 	Resource decay converts a portion of one resource into another.
+# 	The 'from_resource' and 'to_resource' inputs determine the resources
+# 	involved in this decay process, 'rate' is the portion of the
+# 	from resource that decays, and 'conversion' is the the amount of the
+# 	to resource that a single unit of the from resource will turn into.
+# 	The 'cell_id' input works as above.
+# 
+# As an example, to simulate a chemostat, we might have:
+#   RESOURCE glucose
+# 
+# with events:
+#   u 0:1 resource_in   glucose  10000
+#   u 0:1 resource_out  glucose    0.2
+# 
+#  [ Note: events triggered on an update begin with a 'u' followed by the
+#    update number.  Periodic events then have a ':' and their frequency. ]
+# 
+# This would create a resource called "glucose" that has a fixed inflow rate of
+# 10000 units where 20% flows out every update.  (Leaving a steady state of
+# 50,000 units if no organism-consumption occurs).
+#
+#
+# An environment with a fixed supply of resources might simply look like:
+#   u 0 resource_in  glucose   10000
+#   u 0 resource_in  maltose   10000
+#
+# And left to develop further on its own.
+# 
+# Limitations to this system:
+# * Only a single resource can be required at a time, and only a single
+#   by-product can be produced.
+#
+##############################################################################
+
+RESOURCE res_NOT     res_NAND    res_AND     res_ORN     res_OR      res_ANDN
+RESOURCE res_NOR     res_XOR     res_EQU     res_LOG3AA  res_LOG3AB  res_LOG3AC
+RESOURCE res_LOG3AD  res_LOG3AE  res_LOG3AF  res_LOG3AG  res_LOG3AH  res_LOG3AI
+RESOURCE res_LOG3AJ  res_LOG3AK  res_LOG3AL  res_LOG3AM  res_LOG3AN  res_LOG3AO
+RESOURCE res_LOG3AP  res_LOG3AQ  res_LOG3AR  res_LOG3AS  res_LOG3AT  res_LOG3AU
+RESOURCE res_LOG3AV  res_LOG3AW  res_LOG3AX  res_LOG3AY  res_LOG3AZ  res_LOG3BA
+RESOURCE res_LOG3BB  res_LOG3BC  res_LOG3BD  res_LOG3BE  res_LOG3BF  res_LOG3BG
+RESOURCE res_LOG3BH  res_LOG3BI  res_LOG3BJ  res_LOG3BK  res_LOG3BL  res_LOG3BM
+RESOURCE res_LOG3BN  res_LOG3BO  res_LOG3BP  res_LOG3BQ  res_LOG3BR  res_LOG3BS
+RESOURCE res_LOG3BT  res_LOG3BU  res_LOG3BV  res_LOG3BW  res_LOG3BX  res_LOG3BY
+RESOURCE res_LOG3BZ  res_LOG3CA  res_LOG3CB  res_LOG3CC  res_LOG3CD  res_LOG3CE
+RESOURCE res_LOG3CF  res_LOG3CG  res_LOG3CH  res_LOG3CI  res_LOG3CJ  res_LOG3CK
+RESOURCE res_LOG3CL  res_LOG3CM  res_LOG3CN  res_LOG3CO  res_LOG3CP
+
+REACTION  NOT     not        process:value=1.0:type=pow:resource=res_NOT:product=res_NOT        requisite:max_count=1
+REACTION  NAND    nand       process:value=1.0:type=pow:resource=res_NAND:product=res_NAND      requisite:max_count=1
+REACTION  AND     and        process:value=1.0:type=pow:resource=res_AND:product=res_AND        requisite:max_count=1
+REACTION  ORN     orn        process:value=1.0:type=pow:resource=res_ORN:product=res_ORN        requisite:max_count=1
+REACTION  OR      or         process:value=1.0:type=pow:resource=res_OR:product=res_OR          requisite:max_count=1
+REACTION  ANDN    andn       process:value=1.0:type=pow:resource=res_ANDN:product=res_ANDN      requisite:max_count=1
+REACTION  NOR     nor        process:value=1.0:type=pow:resource=res_NOR:product=res_NOR        requisite:max_count=1
+REACTION  XOR     xor        process:value=1.0:type=pow:resource=res_XOR:product=res_XOR        requisite:max_count=1
+REACTION  EQU     equ        process:value=1.0:type=pow:resource=res_EQU:product=res_EQU        requisite:max_count=1
+REACTION  LOG3AA  logic_3AA  process:value=1.0:type=pow:resource=res_LOG3AA:product=res_LOG3AA  requisite:max_count=1
+REACTION  LOG3AB  logic_3AB  process:value=1.0:type=pow:resource=res_LOG3AB:product=res_LOG3AB  requisite:max_count=1
+REACTION  LOG3AC  logic_3AC  process:value=1.0:type=pow:resource=res_LOG3AC:product=res_LOG3AC  requisite:max_count=1
+REACTION  LOG3AD  logic_3AD  process:value=1.0:type=pow:resource=res_LOG3AD:product=res_LOG3AD  requisite:max_count=1
+REACTION  LOG3AE  logic_3AE  process:value=1.0:type=pow:resource=res_LOG3AE:product=res_LOG3AE  requisite:max_count=1
+REACTION  LOG3AF  logic_3AF  process:value=1.0:type=pow:resource=res_LOG3AF:product=res_LOG3AF  requisite:max_count=1
+REACTION  LOG3AG  logic_3AG  process:value=1.0:type=pow:resource=res_LOG3AG:product=res_LOG3AG  requisite:max_count=1
+REACTION  LOG3AH  logic_3AH  process:value=1.0:type=pow:resource=res_LOG3AH:product=res_LOG3AH  requisite:max_count=1
+REACTION  LOG3AI  logic_3AI  process:value=1.0:type=pow:resource=res_LOG3AI:product=res_LOG3AI  requisite:max_count=1
+REACTION  LOG3AJ  logic_3AJ  process:value=1.0:type=pow:resource=res_LOG3AJ:product=res_LOG3AJ  requisite:max_count=1
+REACTION  LOG3AK  logic_3AK  process:value=1.0:type=pow:resource=res_LOG3AK:product=res_LOG3AK  requisite:max_count=1
+REACTION  LOG3AL  logic_3AL  process:value=1.0:type=pow:resource=res_LOG3AL:product=res_LOG3AL  requisite:max_count=1
+REACTION  LOG3AM  logic_3AM  process:value=1.0:type=pow:resource=res_LOG3AM:product=res_LOG3AM  requisite:max_count=1
+REACTION  LOG3AN  logic_3AN  process:value=1.0:type=pow:resource=res_LOG3AN:product=res_LOG3AN  requisite:max_count=1
+REACTION  LOG3AO  logic_3AO  process:value=1.0:type=pow:resource=res_LOG3AO:product=res_LOG3AO  requisite:max_count=1
+REACTION  LOG3AP  logic_3AP  process:value=1.0:type=pow:resource=res_LOG3AP:product=res_LOG3AP  requisite:max_count=1
+REACTION  LOG3AQ  logic_3AQ  process:value=1.0:type=pow:resource=res_LOG3AQ:product=res_LOG3AQ  requisite:max_count=1
+REACTION  LOG3AR  logic_3AR  process:value=1.0:type=pow:resource=res_LOG3AR:product=res_LOG3AR  requisite:max_count=1
+REACTION  LOG3AS  logic_3AS  process:value=1.0:type=pow:resource=res_LOG3AS:product=res_LOG3AS  requisite:max_count=1
+REACTION  LOG3AT  logic_3AT  process:value=1.0:type=pow:resource=res_LOG3AT:product=res_LOG3AT  requisite:max_count=1
+REACTION  LOG3AU  logic_3AU  process:value=1.0:type=pow:resource=res_LOG3AU:product=res_LOG3AU  requisite:max_count=1
+REACTION  LOG3AV  logic_3AV  process:value=1.0:type=pow:resource=res_LOG3AV:product=res_LOG3AV  requisite:max_count=1
+REACTION  LOG3AW  logic_3AW  process:value=1.0:type=pow:resource=res_LOG3AW:product=res_LOG3AW  requisite:max_count=1
+REACTION  LOG3AX  logic_3AX  process:value=1.0:type=pow:resource=res_LOG3AX:product=res_LOG3AX  requisite:max_count=1
+REACTION  LOG3AY  logic_3AY  process:value=1.0:type=pow:resource=res_LOG3AY:product=res_LOG3AY  requisite:max_count=1
+REACTION  LOG3AZ  logic_3AZ  process:value=1.0:type=pow:resource=res_LOG3AZ:product=res_LOG3AZ  requisite:max_count=1
+REACTION  LOG3BA  logic_3BA  process:value=1.0:type=pow:resource=res_LOG3BA:product=res_LOG3BA  requisite:max_count=1
+REACTION  LOG3BB  logic_3BB  process:value=1.0:type=pow:resource=res_LOG3BB:product=res_LOG3BB  requisite:max_count=1
+REACTION  LOG3BC  logic_3BC  process:value=1.0:type=pow:resource=res_LOG3BC:product=res_LOG3BC  requisite:max_count=1
+REACTION  LOG3BD  logic_3BD  process:value=1.0:type=pow:resource=res_LOG3BD:product=res_LOG3BD  requisite:max_count=1
+REACTION  LOG3BE  logic_3BE  process:value=1.0:type=pow:resource=res_LOG3BE:product=res_LOG3BE  requisite:max_count=1
+REACTION  LOG3BF  logic_3BF  process:value=1.0:type=pow:resource=res_LOG3BF:product=res_LOG3BF  requisite:max_count=1
+REACTION  LOG3BG  logic_3BG  process:value=1.0:type=pow:resource=res_LOG3BG:product=res_LOG3BG  requisite:max_count=1
+REACTION  LOG3BH  logic_3BH  process:value=1.0:type=pow:resource=res_LOG3BH:product=res_LOG3BH  requisite:max_count=1
+REACTION  LOG3BI  logic_3BI  process:value=1.0:type=pow:resource=res_LOG3BI:product=res_LOG3BI  requisite:max_count=1
+REACTION  LOG3BJ  logic_3BJ  process:value=1.0:type=pow:resource=res_LOG3BJ:product=res_LOG3BJ  requisite:max_count=1
+REACTION  LOG3BK  logic_3BK  process:value=1.0:type=pow:resource=res_LOG3BK:product=res_LOG3BK  requisite:max_count=1
+REACTION  LOG3BL  logic_3BL  process:value=1.0:type=pow:resource=res_LOG3BL:product=res_LOG3BL  requisite:max_count=1
+REACTION  LOG3BM  logic_3BM  process:value=1.0:type=pow:resource=res_LOG3BM:product=res_LOG3BM  requisite:max_count=1
+REACTION  LOG3BN  logic_3BN  process:value=1.0:type=pow:resource=res_LOG3BN:product=res_LOG3BN  requisite:max_count=1
+REACTION  LOG3BO  logic_3BO  process:value=1.0:type=pow:resource=res_LOG3BO:product=res_LOG3BO  requisite:max_count=1
+REACTION  LOG3BP  logic_3BP  process:value=1.0:type=pow:resource=res_LOG3BP:product=res_LOG3BP  requisite:max_count=1
+REACTION  LOG3BQ  logic_3BQ  process:value=1.0:type=pow:resource=res_LOG3BQ:product=res_LOG3BQ  requisite:max_count=1
+REACTION  LOG3BR  logic_3BR  process:value=1.0:type=pow:resource=res_LOG3BR:product=res_LOG3BR  requisite:max_count=1
+REACTION  LOG3BS  logic_3BS  process:value=1.0:type=pow:resource=res_LOG3BS:product=res_LOG3BS  requisite:max_count=1
+REACTION  LOG3BT  logic_3BT  process:value=1.0:type=pow:resource=res_LOG3BT:product=res_LOG3BT  requisite:max_count=1
+REACTION  LOG3BU  logic_3BU  process:value=1.0:type=pow:resource=res_LOG3BU:product=res_LOG3BU  requisite:max_count=1
+REACTION  LOG3BV  logic_3BV  process:value=1.0:type=pow:resource=res_LOG3BV:product=res_LOG3BV  requisite:max_count=1
+REACTION  LOG3BW  logic_3BW  process:value=1.0:type=pow:resource=res_LOG3BW:product=res_LOG3BW  requisite:max_count=1
+REACTION  LOG3BX  logic_3BX  process:value=1.0:type=pow:resource=res_LOG3BX:product=res_LOG3BX  requisite:max_count=1
+REACTION  LOG3BY  logic_3BY  process:value=1.0:type=pow:resource=res_LOG3BY:product=res_LOG3BY  requisite:max_count=1
+REACTION  LOG3BZ  logic_3BZ  process:value=1.0:type=pow:resource=res_LOG3BZ:product=res_LOG3BZ  requisite:max_count=1
+REACTION  LOG3CA  logic_3CA  process:value=1.0:type=pow:resource=res_LOG3CA:product=res_LOG3CA  requisite:max_count=1
+REACTION  LOG3CB  logic_3CB  process:value=1.0:type=pow:resource=res_LOG3CB:product=res_LOG3CB  requisite:max_count=1
+REACTION  LOG3CC  logic_3CC  process:value=1.0:type=pow:resource=res_LOG3CC:product=res_LOG3CC  requisite:max_count=1
+REACTION  LOG3CD  logic_3CD  process:value=1.0:type=pow:resource=res_LOG3CD:product=res_LOG3CD  requisite:max_count=1
+REACTION  LOG3CE  logic_3CE  process:value=1.0:type=pow:resource=res_LOG3CE:product=res_LOG3CE  requisite:max_count=1
+REACTION  LOG3CF  logic_3CF  process:value=1.0:type=pow:resource=res_LOG3CF:product=res_LOG3CF  requisite:max_count=1
+REACTION  LOG3CG  logic_3CG  process:value=1.0:type=pow:resource=res_LOG3CG:product=res_LOG3CG  requisite:max_count=1
+REACTION  LOG3CH  logic_3CH  process:value=1.0:type=pow:resource=res_LOG3CH:product=res_LOG3CH  requisite:max_count=1
+REACTION  LOG3CI  logic_3CI  process:value=1.0:type=pow:resource=res_LOG3CI:product=res_LOG3CI  requisite:max_count=1
+REACTION  LOG3CJ  logic_3CJ  process:value=1.0:type=pow:resource=res_LOG3CJ:product=res_LOG3CJ  requisite:max_count=1
+REACTION  LOG3CK  logic_3CK  process:value=1.0:type=pow:resource=res_LOG3CK:product=res_LOG3CK  requisite:max_count=1
+REACTION  LOG3CL  logic_3CL  process:value=1.0:type=pow:resource=res_LOG3CL:product=res_LOG3CL  requisite:max_count=1
+REACTION  LOG3CM  logic_3CM  process:value=1.0:type=pow:resource=res_LOG3CM:product=res_LOG3CM  requisite:max_count=1
+REACTION  LOG3CN  logic_3CN  process:value=1.0:type=pow:resource=res_LOG3CN:product=res_LOG3CN  requisite:max_count=1
+REACTION  LOG3CO  logic_3CO  process:value=1.0:type=pow:resource=res_LOG3CO:product=res_LOG3CO  requisite:max_count=1
+REACTION  LOG3CP  logic_3CP  process:value=1.0:type=pow:resource=res_LOG3CP:product=res_LOG3CP  requisite:max_count=1

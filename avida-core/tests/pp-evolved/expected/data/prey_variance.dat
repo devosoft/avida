@@ -1,0 +1,13 @@
+# Prey Variance Data
+# Sat Jun  1 18:46:51 2013
+#  1: Update
+#  2: Fitness
+#  3: Gestation Time
+#  4: Merit
+#  5: Creature Age
+#  6: Generation
+#  7: Genome Length
+
+0 0 0 2.55785e+06 0 0 0 
+50 0.228074 1.01409e+06 2.72656e+06 252.707 0.110568 0 
+100 0.452449 1.31138e+06 265395 558.133 0.136139 0 

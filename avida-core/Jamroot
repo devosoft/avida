@@ -1,0 +1,8 @@
+use-project /avida : ./source ;
+use-project /avida-mp : ./source/targets/avida-mp ;
+
+alias avida : /avida//avida ;
+alias avida-mp : /avida-mp//avida-mp ;
+
+build-project avida ;
+explicit avida-mp ;

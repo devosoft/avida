@@ -1,0 +1,34 @@
+# The *.help files in avida contain information on specific topics to
+# be used either in interactive help systems or in automatically
+# constructing documentation.  And '!' Must appear before all words
+# that should be linked to a definition when possible
+#
+# Commands are
+#   Type: The category of all subsequent keywords.
+#   Keyword: The lookup term for the particular piece of information.
+#      Each keyword command starts a new entry
+#   Desc: The description for this entry.
+#   Alias: Other lookup terms that might be used for the most recently
+#      defined alias.  (may have multiple alias lines)
+
+Type: Other Notation
+
+Keyword: Nop-Register Notation
+Desc: A !register name (AX, BX, or CX) surrounded by question marks refers to that register being used by default when the !instruction in question is being executed, but if the instruction is followed by a !no-operation (nop) instruction, the nop will alter the register used.  A nop-A instruction indicates AX, nop-B is BX, and nop-C is CX.
+Alias: ?ax? ?bx? ?cx? nop-register
+
+Keyword: Nop-Head Notation
+Desc: A !head abbreviation (IP, RH, WH, or FH) surrounded by question marks refers to that head being used as a default, when the !instruction in question is being executed, but if the instruction is followed by a !no-operation (nop) instruction, the nop will alter the register used.  A nop-A instruction indicates the instruction pointer (IP), nop-B is the read-head (RH), nop-C is the write-head (WH), and there is no way to use the flow-head (FH) unless it is by default.
+Alias: ?ip? ?rh? ?wh? ?fh? nop-head
+
+Keyword: Genotype
+Desc: A genotype is a unique sequence of !instructions that make up a !genome of an !organism.  Any two organisms with identical genomes are considered to be the same genotype.
+Alias: genotype genotypes
+
+Keyword: Template
+Desc: A template (sometimes called a label) is a sequence of !no-operation instructions used to mark regions of code withing a !genome.  Some instructions (such a !h-search) are followed by a template; the !complement of that template is then used to match against other templates.  See the descriptions of the individual !instructions for how they use templates.
+Alias: template teplates label labels
+
+Keyword: Complement Template
+Desc: The complement of a !template is found by taking each !no-operation instruction that makes up that template, and shifting it to the next in alphabetical order, looping around at the end.  Thus, in the default instruction set, nop-A -> nop-B -> nop-C -> nop-A.  The template "nop-B nop-A nop-C nop-C" has the complement "nop-C nop-B nop-A nop-A".
+Alias: complement complements

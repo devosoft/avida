@@ -1,0 +1,53 @@
+<project name="avida-core" default="install" basedir=".">
+  <property name="root" location=""/>
+  <property name="build" location="cbuild"/>
+  <property name="apto.include" value="${build}/include"/>
+  <property name="apto.library" value="#{build}/lib"/>
+  <property name="tcmalloc.library" value="#{build}/lib"/>
+
+  <target name="builddir">
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="configure" depends="builddir">
+    <exec dir="${build}" executable="cmake" failonerror="true">
+      <arg value="-DCMAKE_INCLUDE_PATH:STRING='${apto.include}'"/>
+      <arg value="-DCMAKE_LIBRARY_PATH:STRING='${apto.library};${tcmalloc.library}'"/>
+      <arg path="${root}"/>
+    </exec>
+  </target>
+
+  <target name="compile" depends="configure">
+    <exec dir="${build}" osfamily="unix" executable="make" failonerror="true"/>
+  </target>
+
+  <target name="install" depends="compile">
+    <exec dir="${build}" osfamily="unix" executable="make" failonerror="true">
+      <arg value="install"/>
+    </exec>
+  </target>
+
+  <target name="move-platform-consistencytesting-targets" if="platform">
+    <delete file="${build}/work/avida" quiet="true"/>
+    <copy file="${build}/work/platform=${platform}/avida" todir="${build}/work"/>
+  </target>
+  <target name="check-for-consistencytesting-targets" depends="move-platform-consistencytesting-targets">
+    <available file="${build}/work/avida" property="avida.built"/>
+    <fail unless="avida.built">unable to locate avida</fail>
+  </target>
+  <target name="consistencytest" depends="check-for-consistencytesting-targets" if="avida.built">
+    <chmod file="${build}/work/avida" perm="ugo+rx"/>
+    <mkdir dir="${build}/reports"/>
+    <exec dir="${root}" osfamily="unix" executable="python" failonerror="true">
+      <arg path="${root}/tests/_testrunner/testrunner.py"/>
+      <arg value="--mode=slave"/>
+      <arg value="--testdir=tests"/>
+      <arg value="--xml-report=${build}/reports/avida.xml"/>
+    </exec>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+  </target>
+</project>
+

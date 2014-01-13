@@ -1,0 +1,77 @@
+# Sat Jun  1 18:46:53 2013
+# Filename........: minitraces/trace_genomes/org916-ud40-grp-1_ft0-gt294.trcgeno
+# Update Output...: 40
+# Is Viable.......: 0
+# Repro Cycle Size: 0
+# Depth to Viable.: -1
+# 
+# Generation: 0
+# Merit...........: 56.000000
+# Gestation Time..: 0
+# Fitness.........: 0.000000
+# Errors..........: 0
+# Genome Size.....: 56
+# Copied Size.....: 56
+# Executed Size...: 56
+# Offspring.......: NONE
+# 
+# Tasks Performed:
+# eat-target 0 (0.000000)
+
+
+nand
+move
+IO
+nop-H
+move
+fork-thread
+mov-head
+search-seq-direct-s
+zero
+nop-E
+swap-stk
+nop-C
+learn-parent
+nop-G
+dec
+rand
+nop-F
+move
+shift-l
+IO
+move
+teach-offspring
+if-gtr-x
+nop-E
+push-all
+add
+if-not-0
+rotate-x
+rotate-x
+push
+shift-l
+IO
+nop-B
+move
+one
+push
+rand
+push
+nand
+look-ahead-intercept
+learn-parent
+swap-stk
+set-forage-target
+shift-l
+push-all
+zero
+repro
+move
+swap-stk
+id-thread
+push-all
+move
+nop-X
+nop-X
+sub
+nop-A

@@ -1,0 +1,41 @@
+#filetype genotype_data
+#format inst task task task task task task task task task sequence num_cpus length merit exe_length gest_time fitness r_spec r_spec r_spec r_spec r_spec r_spec r_spec r_spec r_spec r_spec r_spec r_spec r_spec 
+
+# Legend:
+# 1: # Times destroy Executed
+# 2: Not
+# 3: Nand
+# 4: And
+# 5: OrNot
+# 6: Or
+# 7: AndNot
+# 8: Nor
+# 9: Xor
+# 10: Equals
+# 11: Genome Sequence
+# 12: Number of CPUs
+# 13: Genome Length
+# 14: Merit
+# 15: Executed Length
+# 16: Gestation Time
+# 17: Fitness
+# 18: # times specification 0 used
+# 19: # times specification 1 used
+# 20: # times specification 2 used
+# 21: # times specification 3 used
+# 22: # times specification 4 used
+# 23: # times specification 5 used
+# 24: # times specification 6 used
+# 25: # times specification 7 used
+# 26: # times specification 8 used
+# 27: # times specification 9 used
+# 28: # times specification 10 used
+# 29: # times specification 11 used
+# 30: # times specification 12 used
+
+112 0 0 0 37 0 74 0 36 36 rhuucavczebAqrjgjkslAdpsomfuhhpawxxeyrspgigtcszuuqqcppqpclAtncogcAqchhmdfctkaoqcgqfmoclythyamfomhAbycasvab 1043 106 102 102 1518 0.0671937 75 0 37 0 0 0 0 0 0 0 0 0 0 
+37 0 35 0 0 0 70 0 0 68 ArpucavczmnqrhAsnndlosimuqhcmptflqtlpwwaxkzunqqcdpqpclbtncogcAqchhmdfctpaoqcgqfmocloytpyaofahofycasvab 834 102 99 99 1436 0.0689415 37 0 0 0 0 0 0 0 0 0 0 0 0 
+112 0 0 0 37 0 74 0 36 36 rhuucavczebAqrbgjkslAdpsomfuhhpawxxeyrspgigtcszuuqqcppqpclAtncogcAqchhmdfctkaoqcgqfmoclythyamfomhAbycasvab 759 106 102 102 1518 0.0671937 75 0 37 0 0 0 0 0 0 0 0 0 0 
+114 56 0 0 0 116 0 164 0 0 rxuczaagvcjzjkcdqeadffpmxpmomtqodpdbzitgiyshebinlzsnnygunqtppqpdlceqnccptgcqcAAacycgfckaqfigfcqdetqcfbjpbapccecfycasvab 574 119 116 116 2334 0.0497001 57 0 0 0 0 0 57 0 0 0 0 0 0 
+110 54 0 0 0 108 0 157 0 0 rxucajgvcczjkcAqkridrmbpmzAmtqodndhigftsuhebazfbylulnqtppqplceqncpbtgcqcAAacycgfckaqfigfcqdetqcfbjpbpccejycasvab 243 112 106 106 2045 0.0518337 56 0 0 0 0 0 54 0 0 0 0 0 0 
+159 52 51 153 0 51 0 0 0 0 rxucavcczykfctfnfjmzpsqtodfpchzbxjheyitznruulnqtppqpclceuncptgcqcAAacycefckaqigfcqAetqcfbkpkapcceaAycasvrab 147 107 99 99 1966 0.0503561 107 0 0 0 0 0 52 0 0 0 0 0 0 

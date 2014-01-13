@@ -1,0 +1,47 @@
+# Group level tolerance data.
+# Thu Apr 19 10:23:51 2012
+#  1: Update [update]
+#  2: group id [groupid]
+#  3: size of groups [grsize]
+#  4: group resource available [grfood]
+#  5: per capita group resource available [grfoodper]
+#  6: odds for immigrants coming into group [oddsimmigrants]
+#  7: average intra-group tolerance to immigrants [aveimmigrants]
+#  8: standard deviation for group tolerance to immigrants [sdevimmigrants]
+#  9: odds for offspring being accepted by group [oddsoffspring]
+# 10: average intra-group tolerance to other offspring being born into group [aveothers]
+# 11: standard deviation for group tolerance to other offspring being born into the group [sdevothers]
+# 12: average intra-group tolerance to individual's own offspring [aveown]
+# 13: standard deviation for tolerance to own offspring [sdevown]
+
+0 0 1 100 100 0.9 9 0 1 10 0 10 0 
+1 0 4 100 25 1 10 0 1 10 0 10 0 
+2 0 9 100 11.1111 1 10 0 1 10 0 10 0 
+3 0 14 100 7.14286 0.3 9.5 0.518875 1 10 0 10 0 
+4 0 25 100 4 0.9 9.96 0.2 1 10 0 10 0 
+5 0 31 100 3.22581 0 9.51613 0.508001 1 10 0 10 0 
+6 0 49 100 2.04082 0.5 9.89796 0.305839 1 10 0 10 0 
+7 0 62 100 1.6129 0 9.59677 0.526656 1 10 0 10 0 
+8 0 75 100 1.33333 0 9.61333 0.490266 1 10 0 10 0 
+9 0 104 100 0.961538 0 9.80769 0.419823 1 10 0 10 0 
+10 0 117 100 0.854701 0 9.57265 0.561958 1 10 0 10 0 
+11 0 149 100 0.671141 0 9.79866 0.434646 1 10 0 10 0 
+12 0 162 100 0.617284 0 9.52469 0.513188 1 10 0 10 0 
+13 0 201 100 0.497512 0 9.83085 0.388901 1 10 0 10 0 
+14 0 241 100 0.414938 0 9.74274 0.447445 1 10 0 10 0 
+15 0 274 100 0.364964 0 9.81752 0.386948 1 10 0 10 0 
+16 0 326 100 0.306748 0 9.79755 0.410021 1 10 0 10 0 
+17 0 352 100 0.284091 0 9.69602 0.50206 1 10 0 10 0 
+18 0 386 100 0.259067 0 9.77461 0.430618 1 10 0 10 0 
+19 0 395 100 0.253165 0 9.77215 0.471238 1 10 0 10 0 
+20 0 398 100 0.251256 0 9.77387 0.442253 1 10 0 10 0 
+21 0 399 100 0.250627 0 9.81454 0.414182 1 10 0 10 0 
+22 0 399 100 0.250627 0 9.75439 0.475347 1 10 0 10 0 
+23 0 399 100 0.250627 0 9.77694 0.451541 1 10 0 10 0 
+24 0 399 100 0.250627 0 9.83459 0.404381 1 10 0 10 0 
+25 0 399 100 0.250627 0 9.84211 0.398025 1 10 0 10 0 
+26 0 399 100 0.250627 0 9.74436 0.525541 1 10 0 10 0 
+27 0 399 100 0.250627 0 9.82707 0.416578 1 10 0 10 0 
+28 0 399 100 0.250627 0 9.72431 0.534428 1 10 0 10 0 
+29 0 399 100 0.250627 0 9.75439 0.475347 1 10 0 10 0 
+30 0 399 100 0.250627 0 9.79198 0.447591 1 10 0 10 0 

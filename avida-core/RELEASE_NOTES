@@ -1,0 +1,85 @@
+Avida 2.13 Release Notes
+
+The following items are  features and changes present in this release of
+Avida.
+
+New Features:
+
+- Environment Reaction Requisite : Reaction Max/Min Count Support
+
+    Reaction requisites now support reaction_max_count and reaction_min_count.
+    These requisites refer to the number of times the specific reaction has
+    been triggered, regardless of how many times the referenced task has been
+    performed.
+
+- SavePopulation now supports saving only the current population, see Changes
+
+
+
+Enhancements:
+
+-
+
+
+
+Changes:
+
+- cHardwareCPU first time Costs now honor DIVIDE_METHOD = OFFSPRING (0)
+
+    cHardwareCPU no longer resets first time cost counts when DIVIDE_METHOD
+    is set to DIVIDE_METHOD_OFFSPRING (0).  Other hardware types are not
+    current affected.
+
+- SavePopulation action argument format change
+
+    The action arguments now follow standard argument syntax:
+      argument_name=argumentvalue:argument2_name=argument2_value
+    Save population accepts two arguments:
+      filename - default=detail
+        a string that is used to prefix the update number and file extension,
+        i.e.  detail-100.spop
+      save_historic - default=1
+        a boolean (0 or 1) value that determines whether the action saves the
+        full history for the current population
+
+- "collect" instruction family nop-specification change
+
+		Previously, the collect family of instructions required the number of
+    resources to be a power of the number of nops; Avida would crash otherwise.
+    The new nop-specification method fixes this issue, reading the specification
+    as a range in which to choose a resource to manipulate.  The resource is
+    chosen randomly within this range, weighted by how much of the range the
+    resource occupies.  In the standard 9-resource 3-nop system this behaves in
+    the same way as the previous specification method.
+
+- START_CREATURE/START_ORGANISM Removed
+
+    Use Inject actions at the beginning of your experiment to specify exactly
+    how you would like the experiment to be seeded.
+
+
+
+Deprecated features will be removed in the next version of Avida.
+
+
+
+Deprecated Features that will be removed in 2.14:
+
+- HARDWARE_TYPE Setting and INST_SET File Deprecated
+
+    Use the new instruction set format instead.  Backward compatibility may be
+    activated by setting the avida.cfg option INST_SET_LOAD_LEGACY to 1.  The
+    name of the instruction set will be the filename/path specified in INST_SET.
+
+
+
+Known Issues:
+
+- The PARENT_MUT_RATE setting will cause the parent's genome to mutate when
+  it gives birth, but currently it is not treated like a second offspring, so
+  the genotype will not be changed, and in general it cannot act with many
+  other settings (like mutation reversions)
+
+- BIRTH_METHOD 7 is currently a local birth method, but not grouped with the
+  rest of them.  This required a special condition in cBirthChamber.cc for
+  local recombination and in cPopulation.cc for offspring facing parent.

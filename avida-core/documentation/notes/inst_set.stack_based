@@ -1,0 +1,179 @@
+# This new CPU has 8 heads, 2 of each main type, and otherwise has four
+# stacks (A, B, C, and D) and no registers.
+
+# Base Instruction Set
+# Nops (1-4)
+Nop-A      1   # Associated with the Instruction Pointers
+Nop-B      1   # Associated with the Read Heads
+Nop-C      1   # Associated with the Write Heads
+Nop-D      1   # Associated with the Flow Heads
+
+# Other control functions (5)
+Toggle     1  # Causes all instructions to swap to a complementary behavior
+              # affects only the instruction that immediately follows it.
+              # A nop indicates that the associate head should be toggled
+              # to its alternate.  Two toggles will reset all toggled states
+
+# Single input Math -- *modifies* top of ?Stack-B? (6-7)
+Val-Shift  1  # shirt-r before toggle, shift-l after.
+Val-Inc    1  # inc before toggle, dec after
+
+# Double input math -- uses top of Stack-A and Stack-B; pushes result onto
+# the top of Stack-B (8-9)
+Val-Nand   1  # unaffected by toggle
+Val-Add    1  # add before toggle, sub after
+
+# Biological  (10-13)
+SetMemory  1  # Set the write head at the beginning of a memory space.  Up
+              #   to four memory spaces can be used at once.  Nop-A is the
+              #   main genome, and the other nops are possible offspring.
+              #   A nop argument will indicate a space; no nops will find
+              #   an "unclaimed" memory space (if possible)
+              #   Perhaps Toggle can be used for recombination somehow??
+Divide     1  # Divide off offspring memory.  After toggle becomes Inject.
+              #   If threads are active a successful inject will also cause
+              #   a fork.  In either case, it uses the memory that contains
+              #   the active write head.
+Inst-Read  1  # Push the instruction at ?read-head? into Stack-A (advance 
+              #   head) Toggle to move head back by one rather than advance.
+Inst-Write 1  # Pop Stack-A into position at ?write-head? (advance head)
+              #   Toggle to move head back by one rather than advance.
+
+# Flow Control (14-15)
+If-Equal   1  # Compares top of ?Stack-A? with successor (Default: Stack-B)
+              #   Becomes If-NEqual after toggle
+If-Less    1  # Compares top of ?Stack-A? with successor (Default: Stack-B)
+              #   Becomes If-Greater after toggle
+
+# Head Control (16-19)
+Head-Push  1  # Push position of ?IP? head onto Stack-B.
+              #   Toggle to use Stack-D
+Head-Pop   1  # Move ?flow-head? to address in Stack-B (pop Stack-B)
+              #   Toggle to use Stack-D
+
+Head-Move  1  # Move ?IP? head to flow-head
+              #   - if flow-head is given as nop, advance flow-head
+              #   Toggle to decrement flow-head when given as nop.
+Search     1  # Search for matching template, set flow head to last line,
+              #   template size to Stack-A and template distance to Stack-B
+	         #   If no template, move flow-head to next line, set A&B=0.
+              #   Toggle to NOT leave size&distance
+
+# Stack Control (20-24)
+Push-Next  1   # Pop off ?Stack-A? and push on successor   (Default: Stack-B)
+Push-Prev  1   # Pop off ?Stack-B? and push on predecessor (Default: Stack-A)
+Push-Comp  1   # Pop off ?Stack-B? and push on complement  (Default: Stack-D)
+Val-Delete 1   # Pop off (and lose) top value of ?Stack-B?
+Val-Copy   1   # Duplicate the contents at the top of ?Stack-B?
+
+# CPU:
+#  Stack-A (Used in copying & math)
+#  Stack-B (Used for positioning and math)
+#  Stack-C (Input)      -- Filled on birth
+#  Stack-D (Output)     -- Scanned (and emptied) on divide
+#
+# Four nops.  Each nop has a predecessor, successor and complement (opposite)
+#
+#  nop-A -> IP
+#  nop-B -> Read Head
+#  nop-C -> Write Head
+#  nop-D -> Flow Head
+#
+# Note lack of allocate instruction!
+# The organism has additional memory space that the write heads starts out
+# at the beginning of.  It is treated as an extension of the main memory,
+# BUT is local to each thread if there is more than one.
+
+# SAMPLE ORGANISM:
+#
+# Search       #  1:  Find organism end.
+# Nop-C        #  2:  - Match A:A
+# Nop-C        #  3:
+# Head-Push    #  4:  Save end position to Stack-B
+# Nop-D        #  5:  - Flow head is at end...
+# Push-Prev    #  6:  Move end position to Stack-A
+# SetMemory    #  7:  Place write-head in memory space for offspring
+# Search       #  8:  Drop flow head at start of copy loop
+# Inst-Read    #  9:
+# Inst-Write   # 10: 
+# Head-Push    # 11:  Get current position of...
+# Nop-C        # 12:  - Read-Head
+# If-Equal     # 13:  Test if we are done copying...
+# Divide       # 14:  ...If so, divide.
+# Head-Move    # 15:  ...If not, continue with loop.
+# Nop-A        # 16:
+# Nop-A        # 17:
+
+# Other possible, special instructions...
+# ScanWorld  1   # Environment-specific scanning instruction...
+# Val-Swap   1   # Swap top contents of ?Stack-A? with successor (Default: B)
+                 #  Toggle will swap with complement.
+# Inst-Copy  1   # Combine read and write
+# Inst-Move  1   # Like Inst-Copy, but actually deletes original and can
+                 #   move multiple lines at once (as indicated by ?Stack-B?)
+# SearchOut  1   # Like search, but in faced creature.  Needs exact match!
+# Rotate     1   # Rotate to neighbor with template (toggle reverses dir)
+                 #   in mass action, find randomly in population.
+# If-Bit-1   1   # Is last bit of ?Stack-B? a one? (toggle to If-Bit-0)
+# If-Zero    1   # Toggle to If-N-Zero
+# If-InstEqu 1   # Does contents of ?read-head? match successor (write-head)
+                 #   (toggle to If-InstNEqu)
+# Order      1   # Put top two numbers in ?Stack-B? into numerical order
+# Push-Zero  1   # Push a zero onto the top of ?Stack-B?
+# Replicate  1   # Make a full offspring
+
+ 
+# ------- THREADING --------
+# There can only be up to four threads in an organism, specified as
+# Thead-A through Thread-D
+
+# Hardware:
+#  For threads, Stacks A and B are local, while C and D are global.
+#  All heads are local to each thread.
+#   - Read and Flow heads will initialize to fork.
+#   - Write head will initialize on new offspring memory.
+#  Each thread has its own offspring memory.
+#  Each thread keeps its own list of toggled instructions.
+
+# Instructions:
+#  ThreadFork 1   # Create a new thread.  By default this will be the next
+                  #   available thread ID, but if a nop follows it will
+                  #   indicate the thread instead.  If a thread is specified
+                  #   that already exists, its priority will increase to a
+                  #   maximum.  On the original thread executes the next
+                  #   instruction.  Toggle to ThreadKill ?cur-Thread?, which
+                  #   will decrement a thread one step, to a min of 0.
+#  If-Thread  1   # Only execute next instruction if this is ?Thread-A?
+                  #   Toggle to IfNThread
+#  ThreadCopy 1   # Make this thread an exact copy of ?Thread A? including
+                  #   working on the same memory space.  Toggle to ThreadClr
+                  #   which will reset the specifed thread (default current)
+
+# SAMPLE PARASITE
+#
+# Nop-A        #  1: Some nop to extend the template above
+# Toggle       #  2: Toggle the Divide command...
+#  Divide      #  3:   ... to become "Inject"
+# Toggle       #  4: Toggle the If-Equal command...
+#  If-Equal    #  5:   ... to become "If-NEqual"
+# Search       #  6: Locate the end, so we know when to stop.
+# Nop-C        #  7:
+# Nop-D        #  8:
+# Head-Push    #  9: Save the location of the flow head to mark the end.
+# Nop-D        # 10:
+# Push-Prev    # 11:  Move end position to Stack-A
+# SetMemory    # 12:  Claim and empty memory space
+# Search       # 13:  Drop flow head at start of copy loop
+# Inst-Read    # 14:
+# Inst-Write   # 15: 
+# Head-Push    # 16:  Get current position of...
+# Nop-C        # 17:  - Read-Head
+# If-Equal     # 18:  Test if we are done copying... (If-NEqual)
+# Head-Move    # 19:  ...If not, continue with loop.
+# Divide       # 20:  ...If so, Inject!
+# Nop-C        # 21:     ... Into the very end of the host.
+# Nop-C        # 22
+# Head-Move    # 23: Go to the beginning of the copy loop and start over!
+# Nop-A        # 24: End Template
+# Nop-B        # 25:
+
