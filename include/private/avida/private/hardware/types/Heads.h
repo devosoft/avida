@@ -404,7 +404,6 @@ namespace Avida {
         bool Inst_Sterilize(Context& ctx);
         
         bool Inst_Die(Context& ctx);
-        bool Inst_Poison(Context& ctx);
         bool Inst_Suicide(Context& ctx);
         
         // I/O

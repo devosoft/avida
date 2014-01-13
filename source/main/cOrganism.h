@@ -74,8 +74,6 @@ public:
   void NotifyDeath(cAvidaContext& ctx);
 
   void PrintStatus(std::ostream& fp);
-  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp);
-  void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success);
   void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;
 
   // --------  Accessor Methods  --------

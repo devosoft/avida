@@ -30,13 +30,12 @@ class cHardwareStatusPrinter : public cHardwareTracer
 {
 protected:
   Avida::Output::FilePtr m_file;
-  bool m_minitracer;
 
 public:
-  cHardwareStatusPrinter(Avida::Universe* universe, const Apto::String& filename, bool minitracer = false)
-    : m_file(Avida::Output::File::CreateWithPath(universe, filename)), m_minitracer(minitracer) { ; }
+  cHardwareStatusPrinter(Avida::Universe* universe, const Apto::String& filename)
+    : m_file(Avida::Output::File::CreateWithPath(universe, filename)) { ; }
 
-  virtual void TraceHardware(cAvidaContext& ctx, cHardwareBase& hardware, bool bonus, bool mini, int exec_success);
+  virtual void TraceHardware(cAvidaContext& ctx, cHardwareBase& hardware, bool bonus, int exec_success);
   virtual void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism);
 };
 

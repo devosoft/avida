@@ -31,8 +31,6 @@
 #include <climits>
 #include <iostream>
 
-#include "cInstSet.h"
-
 class cAvidaContext;
 class cMutation;
 class cOrganism;
@@ -51,18 +49,7 @@ protected:
   cInstSet* m_inst_set;             // Instruction set being used.
 
   HardwareTracerPtr m_tracer;        // Set this if you want execution traced.
-  Apto::Array<char, Apto::Smart> m_microtracer;
-  Apto::Array<int, Apto::Smart> m_navtraceloc;
-  Apto::Array<int, Apto::Smart> m_navtracefacing;
-  Apto::Array<int, Apto::Smart> m_navtraceupdate;
   
-  struct {
-    bool m_minitrace:1;
-    bool m_microtrace:1;
-    bool m_topnavtrace:1;
-    bool m_reprotrace:1;
-  };
-
   // --------  Instruction Costs  ---------
   Apto::Array<int> m_inst_ft_cost;
   Apto::Array<double> m_inst_res_cost;
@@ -112,26 +99,7 @@ public:
   
   
   virtual void PrintStatus(std::ostream& fp) = 0;
-  virtual void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp) = 0;
-  virtual void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) = 0;
-  void SetTrace(HardwareTracerPtr tracer) { m_tracer = tracer; }
-  void SetMiniTrace(const cString& filename);
-  void SetMicroTrace() { m_microtrace = true; } 
-  void SetTopNavTrace(bool nav_trace) { m_topnavtrace = nav_trace; }
-  bool IsTopNavTrace() { return m_topnavtrace; }
-  void SetReproTrace(bool repro_trace) { m_reprotrace = repro_trace; }
-  bool IsReproTrace() { return m_reprotrace; }
-  void RecordMicroTrace(const Instruction& cur_inst);
-  void PrintMicroTrace(int gen_id);
-  void RecordNavTrace(bool use_avatar);
-  Apto::Array<char, Apto::Smart>& GetMicroTrace() { return m_microtracer; }
-  Apto::Array<int, Apto::Smart>& GetNavTraceLoc() { return m_navtraceloc; }
-  Apto::Array<int, Apto::Smart>& GetNavTraceFacing() { return m_navtracefacing; }
-  Apto::Array<int, Apto::Smart>& GetNavTraceUpdate() { return m_navtraceupdate; }
-  void DeleteMiniTrace(bool print_reacs);
-  virtual void SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype) = 0;
   void SetupExtendedMemory(const Apto::Array<int, Apto::Smart>& ext_mem) { m_ext_mem = ext_mem; }
-  void PrintMiniTraceReactions();
   
   // --------  Stack Manipulation...  --------
   virtual int GetStack(int depth = 0, int stack_id = -1, int in_thread = -1) const = 0;
@@ -210,7 +178,6 @@ protected:
   void doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head);
   void doSlipMutation(cAvidaContext& ctx, InstructionSequence& genome, int from = -1);
   void doTransMutation(cAvidaContext& ctx, InstructionSequence& genome, int from = -1);
-  void doLGTMutation(cAvidaContext& ctx, InstructionSequence& genome);
   
 
   // --------  Organism Execution Property Calculation  --------

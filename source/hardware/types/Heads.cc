@@ -373,17 +373,7 @@ StaticTableInstLib<tMethod>::MethodEntry("sterilize", &cHardwareCPU::Inst_Steril
 
 // Suicide
 StaticTableInstLib<tMethod>::MethodEntry("die", &cHardwareCPU::Inst_Die, INST_CLASS_OTHER, STALL),
-StaticTableInstLib<tMethod>::MethodEntry("poison", &cHardwareCPU::Inst_Poison),
 StaticTableInstLib<tMethod>::MethodEntry("suicide", &cHardwareCPU::Inst_Suicide, INST_CLASS_OTHER, STALL),
-
-// Promoter Model
-StaticTableInstLib<tMethod>::MethodEntry("promoter", &cHardwareCPU::Inst_Promoter, INST_CLASS_FLOW_CONTROL),
-StaticTableInstLib<tMethod>::MethodEntry("terminate", &cHardwareCPU::Inst_Terminate, INST_CLASS_FLOW_CONTROL),
-StaticTableInstLib<tMethod>::MethodEntry("regulate", &cHardwareCPU::Inst_Regulate, INST_CLASS_FLOW_CONTROL),
-StaticTableInstLib<tMethod>::MethodEntry("regulate-sp", &cHardwareCPU::Inst_RegulateSpecificPromoters, INST_CLASS_FLOW_CONTROL),
-StaticTableInstLib<tMethod>::MethodEntry("s-regulate", &cHardwareCPU::Inst_SenseRegulate, INST_CLASS_FLOW_CONTROL),
-StaticTableInstLib<tMethod>::MethodEntry("numberate", &cHardwareCPU::Inst_Numberate, INST_CLASS_DATA),
-StaticTableInstLib<tMethod>::MethodEntry("numberate-24", &cHardwareCPU::Inst_Numberate24, INST_CLASS_DATA),
 
 // Bit Consensus
 StaticTableInstLib<tMethod>::MethodEntry("bit-cons", &cHardwareCPU::Inst_BitConsensus, INST_CLASS_ARITHMETIC_LOGIC),
@@ -417,7 +407,6 @@ StaticTableInstLib<tMethod>::MethodEntry("skip", &cHardwareCPU::Inst_Skip),
 
 // Data collection
 StaticTableInstLib<tMethod>::MethodEntry("get-id", &cHardwareCPU::Inst_GetID, INST_CLASS_ENVIRONMENT),
-StaticTableInstLib<tMethod>::MethodEntry("get-faced-vitality-diff", &cHardwareCPU::Inst_GetFacedVitalityDiff, INST_CLASS_ENVIRONMENT, STALL),
 StaticTableInstLib<tMethod>::MethodEntry("get-faced-org-id", &cHardwareCPU::Inst_GetFacedOrgID, INST_CLASS_ENVIRONMENT, STALL),
 StaticTableInstLib<tMethod>::MethodEntry("attack-faced-org", &cHardwareCPU::Inst_AttackFacedOrg, INST_CLASS_ENVIRONMENT, STALL),
 StaticTableInstLib<tMethod>::MethodEntry("get-attack-odds", &cHardwareCPU::Inst_GetAttackOdds, INST_CLASS_ENVIRONMENT, STALL),
@@ -454,9 +443,6 @@ cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
   
   m_thread_slicing_parallel = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1);
   m_no_cpu_cycle_time = m_world->GetConfig().NO_CPU_CYCLE_TIME.Get();
-  
-  m_promoters_enabled = m_world->GetConfig().PROMOTERS_ENABLED.Get();
-  m_constitutive_regulation = m_world->GetConfig().CONSTITUTIVE_REGULATION.Get();
   
   m_slip_read_head = !m_world->GetConfig().SLIP_COPY_MODE.Get();
   
@@ -517,11 +503,7 @@ void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
   read_label.Clear();
   next_label.Clear();
   
-  // Promoter model
-  m_promoter_inst_executed = 0;
 }
-
-void cHardwareCPU::SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype) { (void)df, (void)gen_id, (void)genotype; }
 
 
 // This function processes the very next command in the genome, and is made
@@ -543,9 +525,6 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
   }
   
   cPhenotype& phenotype = m_organism->GetPhenotype();
-  
-  // First instruction - check whether we should be starting at a promoter, when enabled.
-  if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) Inst_Terminate(ctx);
   
   // Count the cpu cycles used
   phenotype.IncCPUCyclesUsed();
@@ -589,11 +568,6 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     bool exec = true;
     if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
     
-    // Constitutive regulation applied here
-    if (m_constitutive_regulation) Inst_SenseRegulate(ctx);
-    
-    // If there are no active promoters and a certain mode is set, then don't execute any further instructions
-    if (m_promoters_enabled && m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2 && m_promoter_index == -1) exec = false;
     
     // Now execute the instruction...
     if (exec == true) {
@@ -613,9 +587,6 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
       // Mark the instruction as executed
       getIP().SetFlagExecuted();
       
-      // Add to the promoter inst executed count before executing the inst (in case it is a terminator)
-      if (m_promoters_enabled) m_threads[m_cur_thread].IncPromoterInstExecuted();
-      
       if (exec == true) {
         if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
           SingleProcess_PayPostResCosts(ctx, cur_inst);
@@ -633,13 +604,6 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
       // Pay the time cost of the instruction now
       phenotype.IncTimeUsed(time_cost);
       
-      // In the promoter model, we may force termination after a certain number of inst have been executed
-      if (m_promoters_enabled) {
-        const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
-        if (ctx.GetRandom().P(1 - processivity)) Inst_Terminate(ctx);
-        if (m_world->GetConfig().PROMOTER_INST_MAX.Get() && (m_threads[m_cur_thread].GetPromoterInstExecuted() >= m_world->GetConfig().PROMOTER_INST_MAX.Get()))
-          Inst_Terminate(ctx);
-      }
       
       // check for difference in thread count caused by KillThread or ForkThread
       if (num_threads == m_threads.GetSize()+1){
@@ -755,16 +719,6 @@ void cHardwareCPU::PrintStatus(ostream& fp)
     fp << endl;
   }
   
-  if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
-  {
-    fp << "  Promoters: index=" << m_promoter_index << " offset=" << m_promoter_offset;
-    fp << " exe_inst=" << m_threads[m_cur_thread].GetPromoterInstExecuted();
-    for (int i=0; i<m_promoters.GetSize(); i++) {
-      fp << setfill(' ') << setbase(10) << " " << m_promoters[i].m_pos << ":";
-      fp << "Ox" << setbase(16) << setfill('0') << setw(8) << (m_promoters[i].GetRegulatedBitCode()) << " ";
-    }
-    fp << setfill(' ') << setbase(10) << endl;
-  }
   fp.flush();
 }
 
@@ -2533,11 +2487,6 @@ bool cHardwareCPU::Inst_MaxAllocMoveWriteHead(cAvidaContext& ctx)   // Allocate 
 
 bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
 {
-  // check if repro can replace an existing organism
-  if (m_world->GetConfig().REPRO_METHOD.Get() == 0 && m_organism->IsNeighborCellOccupied()) {
-    return false;
-  }
-  
   if (m_organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) {
     return false;
   }
@@ -2647,13 +2596,6 @@ bool cHardwareCPU::Inst_Sterilize(cAvidaContext&)
 bool cHardwareCPU::Inst_Die(cAvidaContext& ctx)
 {
   m_organism->Die(ctx);
-  return true;
-}
-
-bool cHardwareCPU::Inst_Poison(cAvidaContext&)
-{
-  double poison_multiplier = 1.0 - m_world->GetConfig().POISON_PENALTY.Get();
-  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() * poison_multiplier);
   return true;
 }
 

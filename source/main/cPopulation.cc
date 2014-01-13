@@ -166,10 +166,6 @@ cPopulation::cPopulation(cWorld* world)
 : m_world(world)
 , m_scheduler(NULL)
 , birth_chamber(world)
-, print_mini_trace_genomes(false)
-, use_micro_traces(false)
-, m_next_prey_q(0)
-, m_next_pred_q(0)
 , environment(world->GetEnvironment())
 , num_organisms(0)
 , num_prey_organisms(0)
@@ -343,7 +339,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   // Update the parent's phenotype.
   // This needs to be done before the parent goes into the birth chamber
   // or the merit doesn't get passed onto the offspring correctly
-  UpdateQs(parent_organism, true);
   cPhenotype& parent_phenotype = parent_organism->GetPhenotype();
   ConstInstructionSequencePtr seq;
   seq.DynamicCastFrom(parent_organism->GetGenome().Representation());
@@ -444,31 +439,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     }
     else {
       // Reset inputs and re-calculate merit if required
-      if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
-        environment.SetupInputs(ctx, parent_cell.m_inputs);
-        
-        int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
-        if (pc_phenotype) {
-          cCPUTestInfo test_info;
-          cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-          test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
-          Genome mg(parent_organism->GetGenome().HardwareType(),
-                    parent_organism->GetGenome().Properties(),
-                    GeneticRepresentationPtr(new InstructionSequence(parent_organism->GetHardware().GetMemory())));
-          test_cpu->TestGenome(ctx, test_info, mg); // Use the true genome
-          if (pc_phenotype & 1) {  // If we must update the merit
-            parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());
-          }
-          if (pc_phenotype & 2) {  // If we must update the gestation time
-            parent_phenotype.SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
-          }
-          if (pc_phenotype & 4) {  // If we must update the last instruction counts
-            parent_phenotype.SetTestCPUInstCount(test_info.GetTestPhenotype().GetLastInstCount());
-          }
-          parent_phenotype.SetFitness(parent_phenotype.GetMerit().CalcFitness(parent_phenotype.GetGestationTime())); // Update fitness
-          delete test_cpu;
-        }
-      }
+      if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0) environment.SetupInputs(ctx, parent_cell.m_inputs);
       AdjustSchedule(parent_cell, parent_phenotype.GetMerit());
       
       if (!is_doomed) {
@@ -497,7 +468,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
         int avatar_target_cell = PlaceAvatar(ctx, parent_organism);
         if (avatar_target_cell != -1) {
           offspring_array[i]->GetPhenotype().SetAVBirthCellID(avatar_target_cell);
-          offspring_array[i]->GetOrgInterface().TryWriteBirthLocData(offspring_array[i]->GetOrgIndex());
           if (offspring_array[i] != parent_organism) {
             offspring_array[i]->GetOrgInterface().AddPredPreyAV(ctx, avatar_target_cell);
           }
@@ -515,49 +485,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   return parent_alive;
 }
 
-void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
-{
-  // yank the org out of any current trace queues, as appropriate (i.e. if dead (==!reproduced) or if reproduced and splitting on divide)
-  bool split = m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT;
-  
-  if (!reproduced || (reproduced && split)) {
-    org->GetHardware().PrintMicroTrace(org->SystematicsGroup("genotype")->ID());
-    org->GetHardware().DeleteMiniTrace(print_mini_trace_reacs);
-  }
-  
-  if (org->GetHardware().IsReproTrace() && repro_q.GetSize()) {
-    for (int i = 0; i < repro_q.GetSize(); i++) {
-      if (repro_q[i] == org) {
-        if (reproduced) m_world->GetStats().PrintReproData(org);
-        if (!reproduced || (reproduced && split)) {
-          int last = repro_q.GetSize() - 1;
-          repro_q.Swap(i, last);
-          repro_q.Pop();
-          org->GetHardware().SetReproTrace(false);
-        }
-        break;
-      }
-    }
-  }
-  if (org->GetHardware().IsTopNavTrace() && topnav_q.GetSize()) {
-    for (int i = 0; i < topnav_q.GetSize(); i++) {
-      if (topnav_q[i] == org) {
-        if (reproduced) m_world->GetStats().UpdateTopNavTrace(org);
-        if (!reproduced || (reproduced && split)) {
-          int last = topnav_q.GetSize() - 1;
-          topnav_q.Swap(i, last);
-          topnav_q.Pop();
-          org->GetHardware().SetTopNavTrace(false);
-        }
-        break;
-      }
-    }
-  }
-}
-
-
-
-
 
 bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group, bool is_inject)
 {
@@ -572,26 +499,6 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   
   // Setup the inputs in the target cell.
   environment.SetupInputs(ctx, target_cell.m_inputs);
-  
-  // Precalculate the phenotype if requested
-  int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
-  if (pc_phenotype){
-    cCPUTestInfo test_info;
-    cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-    test_info.UseManualInputs(target_cell.GetInputs()); // Test using what the environment will be
-    Genome mg(in_organism->GetGenome().HardwareType(),
-              in_organism->GetGenome().Properties(),
-              GeneticRepresentationPtr(new InstructionSequence(in_organism->GetHardware().GetMemory())));
-    test_cpu->TestGenome(ctx, test_info, mg);  // Use the true genome
-    
-    if (pc_phenotype & 1)
-      in_organism->GetPhenotype().SetMerit(test_info.GetTestPhenotype().GetMerit());
-    if (pc_phenotype & 2)
-      in_organism->GetPhenotype().SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
-    in_organism->GetPhenotype().SetFitness(in_organism->GetPhenotype().GetMerit().CalcFitness(in_organism->GetPhenotype().GetGestationTime()));
-    delete test_cpu;
-  }
-  // Update the archive...
   
   
   // Initialize the time-slice for this new organism.
@@ -637,7 +544,6 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   
     
     in_organism->GetPhenotype().SetBirthCellID(target_cell.GetID());
-//    in_organism->GetOrgInterface().TryWriteBirthLocData(in_organism->GetOrgIndex());
     in_organism->GetPhenotype().SetBirthGroupID(op);
     in_organism->GetPhenotype().SetBirthForagerType(in_organism->GetForageTarget());
     Systematics::GenotypePtr genotype;
@@ -652,10 +558,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // For tolerance_window, we cheated by dumping doomed offspring into cell (X * Y) - 1 ...now that we updated the stats, we need to 
   // kill that org. @JJB
   int doomed_cell = (world_x * world_y) - 1;
-  if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) && (target_cell.GetID() == doomed_cell) && (m_world->GetStats().GetUpdate() > 0)) {
-    KillOrganism(target_cell, ctx);
-    org_survived = false;
-  }
+
   // Kill org born on deadly world boundaries
   if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1 && target_cell.GetID() >= 0) {
     int dest_x = target_cell.GetID() % m_world->GetConfig().WORLD_X.Get();  
@@ -670,543 +573,9 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
       KillOrganism(target_cell, ctx); 
       org_survived = false; 
   }
-  // are there traces we need to test for?
-  if (org_survived) {
-    if (m_next_prey_q > 0 && in_organism->GetParentFT() > -2) { 
-      SetupMiniTrace(in_organism); 
-      m_next_prey_q--; 
-    }
-    else if (m_next_pred_q > 0 && in_organism->GetParentFT() <= -2) { 
-      SetupMiniTrace(in_organism); 
-      m_next_pred_q--; 
-    }
-    else if (minitrace_queue.GetSize() > 0) TestForMiniTrace(in_organism);  
-  }
+
   return org_survived;
 }
-
-void cPopulation::TestForMiniTrace(cOrganism* in_organism) 
-{
-  // if the org's genotype is on our to do list, setup the trace and remove the instance of the genotype from the list
-  int org_bg_id = in_organism->SystematicsGroup("genotype")->ID();
-  for (int i = 0; i < minitrace_queue.GetSize(); i++) {
-    if (org_bg_id == minitrace_queue[i]) {
-      unsigned int last = minitrace_queue.GetSize() - 1;
-      minitrace_queue.Swap(i, last);
-      minitrace_queue.Pop();
-      SetupMiniTrace(in_organism);
-      break;
-    }
-  }
-}
-
-void cPopulation::SetupMiniTrace(cOrganism* in_organism)
-{
-  const int target = in_organism->GetParentFT();
-  const int id = in_organism->GetID();
-  int group_id = m_world->GetConfig().DEFAULT_GROUP.Get();
-  
-  cString filename = cStringUtil::Stringf("minitraces/org%d-ud%d-grp%d_ft%d-gt%d.trc", id, m_world->GetStats().GetUpdate(), group_id, target, in_organism->SystematicsGroup("genotype")->ID());
-  
-  if (!use_micro_traces) in_organism->GetHardware().SetMiniTrace(filename);
-  else in_organism->GetHardware().SetMicroTrace();
-  
-  if (print_mini_trace_genomes) {
-    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/org%d-ud%d-grp%d_ft%d-gt%d.trcgeno", id, m_world->GetStats().GetUpdate(), group_id, target, in_organism->SystematicsGroup("genotype")->ID());
-    PrintMiniTraceGenome(in_organism, gen_file);
-  }
-}
-
-void cPopulation::PrintMiniTraceGenome(cOrganism* in_organism, cString& filename)
-{
-  // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
-  Apto::RNG::AvidaRNG rng(0);
-  cAvidaContext ctx2(&m_world->GetDriver(), rng);
-  
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
-  testcpu->PrintGenome(ctx2, Genome(in_organism->SystematicsGroup("genotype")->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate());
-  delete testcpu;
-}
-
-void cPopulation::SetMiniTraceQueue(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool print_reacs, const bool use_micro)
-{
-  minitrace_queue.Resize(0);
-  for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]);
-  print_mini_trace_genomes = print_genomes;
-  print_mini_trace_reacs = print_reacs;
-  use_micro_traces = use_micro;
-}
-
-void cPopulation::AppendMiniTraces(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool print_reacs, const bool use_micro)
-{
-  for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]); 
-  print_mini_trace_genomes = print_genomes;
-  print_mini_trace_reacs = print_reacs;
-  use_micro_traces = use_micro;
-}
-
-void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes, bool print_reacs)
-{
-  cInitFile input_file(filename, m_world->GetWorkingDir());
-  if (!input_file.WasOpened()) {
-    const cUserFeedback& feedback = input_file.GetFeedback();
-    for (int i = 0; i < feedback.GetNumMessages(); i++) {
-      switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:    m_world->GetDriver().Feedback().Error(feedback.GetMessage(i)); break;
-        case cUserFeedback::UF_WARNING:  m_world->GetDriver().Feedback().Warning(feedback.GetMessage(i)); break;
-        default:                      m_world->GetDriver().Feedback().Notify(feedback.GetMessage(i)); break;
-      };
-    }
-  }
-  
-  Apto::Array<int, Apto::Smart> bg_id_list;
-  Apto::Array<int, Apto::Smart> queue = m_world->GetPopulation().GetMiniTraceQueue();
-  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
-    cString cur_line = input_file.GetLine(line_id);
-    
-    Apto::SmartPtr<Apto::Map<Apto::String, Apto::String> > line = input_file.GetLineAsDict(line_id);
-    int gen_id_num = Apto::StrAs(line->Get("id"));
-    
-    // setup the genotype 'list' which will be checked in activateorg
-    // skip if enough already in the existing trace queue (e.g if loading multiple genotype id files that overlap)
-    int add_num = orgs_per;
-    for (int i = 0; i < queue.GetSize(); i++) {
-      if (gen_id_num == queue[i]) {
-        add_num--;
-        if (add_num <= 0) break;
-      }
-    }
-    for (int j = 0; j < add_num; j++) {
-      bg_id_list.Push(gen_id_num);
-    }
-  }
-  
-  if (queue.GetSize() > 0) {
-    AppendMiniTraces(bg_id_list, print_genomes, print_reacs);
-  }
-  else {
-    SetMiniTraceQueue(bg_id_list, print_genomes, print_reacs);
-  }
-}
-
-Apto::Array<int, Apto::Smart> cPopulation::SetRandomTraceQ(int max_samples)
-{
-  // randomly sample (w/ replacement) bgs in pop
-  Apto::Array<int, Apto::Smart> bg_id_list;
-  Apto::Array<cOrganism*, Apto::Smart> live_orgs = GetLiveOrgList();
-
-  int max_bgs = 1;
-  if (max_samples) max_bgs = max_samples;
-  if (max_samples > live_orgs.GetSize()) max_bgs = live_orgs.GetSize();
-  
-  Apto::Array<bool> used_orgs;
-  used_orgs.Resize(live_orgs.GetSize());
-  used_orgs.SetAll(false);
-  
-  while (bg_id_list.GetSize() < max_bgs) {
-    Apto::RNG::AvidaRNG rng(0);
-    cAvidaContext ctx2(&m_world->GetDriver(), rng);
-    int this_rand_sample = ctx2.GetRandom().GetInt(0, live_orgs.GetSize());
-
-    if (!used_orgs[this_rand_sample]) {
-      cOrganism* rand_org = live_orgs[this_rand_sample];
-      bg_id_list.Push(rand_org->SystematicsGroup("genotype")->ID());
-      used_orgs[this_rand_sample] = true;
-    }
-  } 
-  return bg_id_list;
-}
-
-Apto::Array<int, Apto::Smart> cPopulation::SetRandomPreyTraceQ(int max_samples)
-{
-  // randomly sample (w/ replacement) bgs in pop
-  Apto::Array<int, Apto::Smart> bg_id_list;
-  const Apto::Array<cOrganism*, Apto::Smart> live_orgs = GetLiveOrgList();
-
-  int max_bgs = 1;
-  if (max_samples) max_bgs = max_samples;
-  if (max_samples > num_prey_organisms) max_bgs = num_prey_organisms;
-  
-  Apto::Array<bool> used_orgs;
-  used_orgs.Resize(live_orgs.GetSize());
-  used_orgs.SetAll(false);
-  
-  while (bg_id_list.GetSize() < max_bgs) {
-    Apto::RNG::AvidaRNG rng(0);
-    cAvidaContext ctx2(&m_world->GetDriver(), rng);
-    int this_rand_sample = ctx2.GetRandom().GetInt(0, live_orgs.GetSize());
-
-    if (!used_orgs[this_rand_sample]) {
-      cOrganism* rand_org = live_orgs[this_rand_sample];
-      if (rand_org->IsPreyFT()) {
-        bg_id_list.Push(rand_org->SystematicsGroup("genotype")->ID());
-        used_orgs[this_rand_sample] = true;
-      }
-    }
-  } 
-  return bg_id_list;
-}
-
-Apto::Array<int, Apto::Smart> cPopulation::SetRandomPredTraceQ(int max_samples)
-{
-  // randomly sample (w/ replacement) bgs in pop
-  Apto::Array<int, Apto::Smart> bg_id_list;
-  const Apto::Array<cOrganism*, Apto::Smart> live_orgs = GetLiveOrgList();
-
-  int max_bgs = 1;
-  if (max_samples) max_bgs = max_samples;
-  if (max_samples > num_pred_organisms) max_bgs = num_pred_organisms;
-  
-  Apto::Array<bool> used_orgs;
-  used_orgs.Resize(live_orgs.GetSize());
-  used_orgs.SetAll(false);
-  
-  while (bg_id_list.GetSize() < max_bgs) {
-    Apto::RNG::AvidaRNG rng(0);
-    cAvidaContext ctx2(&m_world->GetDriver(), rng);
-    int this_rand_sample = ctx2.GetRandom().GetInt(0, live_orgs.GetSize());
-
-    if (!used_orgs[this_rand_sample]) {
-      cOrganism* rand_org = live_orgs[this_rand_sample];
-      if (!rand_org->IsPreyFT()) {
-        bg_id_list.Push(rand_org->SystematicsGroup("genotype")->ID());
-        used_orgs[this_rand_sample] = true;
-      }
-    }
-  } 
-  return bg_id_list;
-}
-
-void cPopulation::SetNextPreyQ(int num_prey, bool print_genomes, bool print_reacs, bool use_micro)
-{
-  m_next_prey_q = num_prey;
-  print_mini_trace_genomes = print_genomes;
-  print_mini_trace_reacs = print_reacs;
-  use_micro_traces = use_micro;
-}
-
-void cPopulation::SetNextPredQ(int num_pred, bool print_genomes, bool print_reacs, bool use_micro)
-{
-  m_next_pred_q = num_pred;
-  print_mini_trace_genomes = print_genomes;
-  print_mini_trace_reacs = print_reacs;
-  use_micro_traces = use_micro;
-}
-
-Apto::Array<int, Apto::Smart> cPopulation::SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples)
-{
-  // setup the genotype 'list' which will be checked in activateorg
-  // this should setup a 'list' of genotypes at each event update which should be followed (e.g. if orgs_per = 10, save top 10 prey genotypes + top 10 predator genotypes at this update or one org from top 10 most common genotypes over all)
-  // items should be removed from list once an org of that type is set to be traced
-  // number of items in list should be capped by max_samples, filling the list with the more dominant genotypes first (this is necessary in the case of saving groups because we may not know how many groups there will be at any time during a run and so cannot set orgs_per to function as an absolute cap...should not be neccessary for saving by dominants or saving by foragers)
-  // when we go to check if an org is to be traced, all we need to then do is remove the genotype from the list if the org's genotype is there
-  // in activateorganism we can just check the size of this array, 
-  // if it is 0, there is nothing to check, if it is > 0, there are genotypes waiting
-  // this will allow genotypes to wait until the next event (which will overwrite the array contents)
-  // only tracing for orgs within threshold (unless none are, then just use first bg)
-  Apto::Array<int, Apto::Smart> bg_id_list;
-  
-  Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
-  Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
-  Systematics::GroupPtr bg = (it->Next());
-  Apto::Array<int, Apto::Smart> fts_to_use;
-  int num_doms = 0;
-  int fts_left = 0;
-  
-  if (save_dominants) num_doms = orgs_per;
-  
-  // get forager types in pop
-  Apto::Array<int, Apto::Smart> ft_check_counts;
-  ft_check_counts.Resize(0);
-  if (save_foragers) {
-    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
-      fts_to_use.Push(-3);
-      fts_to_use.Push(-2);
-    }
-    fts_to_use.Push(-1);  // account for -1 default's
-    std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
-    set <int>::iterator itr;    
-    for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2 && *itr != -3) fts_to_use.Push(*itr);
-    ft_check_counts.Resize(fts_to_use.GetSize());
-    ft_check_counts.SetAll(orgs_per);
-    fts_left = orgs_per * fts_to_use.GetSize();
-  }
-  
-  // this will add biogroup genotypes up to max_bgs with priority on dominants, then forager types, then group ids, without repeats
-  // priority is non-issue if you don't double up on the settings in one go
-  int max_bgs = 1;
-  if (max_samples) max_bgs = max_samples;
-  else max_bgs = num_doms + (orgs_per * fts_to_use.GetSize());
-  int num_types = 3;
-  bool doms_done = false;
-  bool fts_done = false;
-  if (!save_dominants) doms_done = true;
-  if (!save_foragers) fts_done = true;
-  for (int i = 0; i < num_types; i++) {
-    if (bg_id_list.GetSize() < max_bgs && (!doms_done || !fts_done || !grps_done)) {
-      if (i == 0 && save_dominants && num_doms > 0) {
-        for (int j = 0; j < num_doms; j++) {
-          if (bg && ((bool)Apto::StrAs(bg->Properties().Get("threshold")) || bg_id_list.GetSize() == 0)) {
-            bg_id_list.Push(bg->ID());
-            if (save_foragers) {
-              int ft = Apto::StrAs(bg->Properties().Get("last_forager_type")); 
-              if (fts_left > 0) {
-                for (int k = 0; k < fts_to_use.GetSize(); k++) {
-                  if (ft == fts_to_use[k]) {
-                    ft_check_counts[k]--;
-                    if (ft_check_counts[k] == 0) {
-                      unsigned int last = fts_to_use.GetSize() - 1;
-                      fts_to_use.Swap(k, last);
-                      fts_to_use.Pop();
-                      ft_check_counts.Swap(k, last);
-                      ft_check_counts.Pop();
-                    }
-                    fts_left--;
-                    break;
-                  }
-                }
-              }
-            }
-            if (bg == it->Next()) { // no more to check
-              doms_done = true; 
-              break; 
-            }
-            else bg = it->Next();
-          }
-          else if (bg && !((bool)Apto::StrAs(bg->Properties().Get("threshold")))) {      // no more above threshold
-            doms_done = true; 
-            break; 
-          }
-        }
-        if (doms_done) continue;
-      } // end of dominants
-      
-      else if (i == 1 && save_foragers && fts_left > 0) {
-        for (int j = 0; j < fts_left; j++) {
-          if (bg && ((bool)Apto::StrAs(bg->Properties().Get("threshold")) || bg_id_list.GetSize() == 0)) {
-            int ft = bg->Properties().Get("last_forager_type"); 
-            bool found_one = false;
-            for (int k = 0; k < fts_to_use.GetSize(); k++) {
-              if (ft == fts_to_use[k]) {
-                bg_id_list.Push(bg->ID());
-                ft_check_counts[k]--;
-                if (ft_check_counts[k] == 0) {
-                  unsigned int last = fts_to_use.GetSize() - 1;
-                  fts_to_use.Swap(k, last);
-                  fts_to_use.Pop();
-                  ft_check_counts.Swap(k, last);
-                  ft_check_counts.Pop();
-                }
-                found_one = true;
-                break;
-              }
-            }
-            if (bg == it->Next()) { // no more to check
-              fts_done = true; 
-              break; 
-            }
-            else bg = it->Next();
-            if (!found_one) j--;
-          }
-          else if (bg && !((bool)Apto::StrAs(bg->Properties().Get("threshold")))) {  // no more above threshold
-            fts_done = true; 
-            break; 
-          }
-        }
-        if (fts_done) continue;
-      } // end of forage types
-      
-    } // end of while < max_bgs
-  }
-  return bg_id_list;
-}
-
-void cPopulation::SetTopNavQ()
-{
-  topnav_q.Resize(live_org_list.GetSize());
-  for (int i = 0; i < live_org_list.GetSize(); i++) {
-    live_org_list[i]->GetHardware().SetTopNavTrace(true);  
-    topnav_q[i] = live_org_list[i];
-  }
-}
-
-void cPopulation::AppendRecordReproQ(cOrganism* new_org) 
-{ 
-  repro_q.Push(new_org); 
-  new_org->GetHardware().SetReproTrace(true); 
-}
-
-// @WRE 2007/07/05 Helper function to take care of side effects of Avidian
-// movement that cannot be directly handled in cHardwareCPU.cc
-bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id, int true_cell)
-{
-  cPopulationCell& src_cell = GetCell(src_cell_id);
-  cPopulationCell& dest_cell = GetCell(dest_cell_id);
-  
-  const int dest_x = dest_cell_id % m_world->GetConfig().WORLD_X.Get();  
-  const int dest_y = dest_cell_id / m_world->GetConfig().WORLD_X.Get();
-  
-  // check for boundary effects on movement
-  if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1) {
-    // Fail if we're running in the test CPU.
-    if (src_cell_id < 0) return false;
-    bool faced_is_boundary = false;
-    if (dest_x == 0 || dest_y == 0 || 
-        dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || 
-        dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) faced_is_boundary = true;
-    if (faced_is_boundary) {
-      if (true_cell != -1) KillOrganism(GetCell(true_cell), ctx);
-      else if (true_cell == -1) KillOrganism(src_cell, ctx);
-      return false;
-    }
-  }    
-  
-  // get the resource library
-  const cResourceDefLib& resource_lib = environment.GetResDefLib();
-  
-  // test for death by predatory resource or injury
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResDef(i)->IsPredatory()) {
-      // get the destination cell resource levels
-      double dest_cell_resources = m_pop_res.GetCellResVal(ctx, dest_cell_id, i);
-      if (dest_cell_resources > 0) {
-        // if you step on a predatory resource, we're going to try to kill you regardless of whether there is a den there
-        if (ctx.GetRandom().P(resource_lib.GetResDef(i)->GetPredatorResOdds())) {
-          if (true_cell != -1) KillOrganism(GetCell(true_cell), ctx);
-          else if (true_cell == -1) KillOrganism(src_cell, ctx);
-          return false;
-        }
-      }
-    }
-    if (resource_lib.GetResource(i)->GetDamage()) {
-      double dest_cell_resources = GetCellResVal(ctx, dest_cell_id, i);
-      if (dest_cell_resources > resource_lib.GetResource(i)->GetThreshold()) {
-        InjureOrg(GetCell(true_cell), resource_lib.GetResource(i)->GetDamage());
-      }
-    }
-  }
-  
-  // movement fails if there are any barrier resources in the faced cell (unless the org is already on a barrier,
-  // which would happen if we built a new barrier under an org and we need to let it get off)
-  bool curr_is_barrier = false;
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    // get the current cell resource levels
-    if (resource_lib.GetResDef(i)->GetHabitat() == 2 ) {
-      if (m_pop_res.GetCellResVal(ctx, src_cell_id, i) > 0) {
-        curr_is_barrier = true;
-        break;
-      }
-    }
-  }
-  if (!curr_is_barrier) {
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResDef(i)->GetHabitat() == 2 && resource_lib.GetResDef(i)->GetResistance() != 0) {
-        // fail if faced cell has this wall resource
-        if (m_pop_res.GetCellResVal(ctx, dest_cell_id, i) > 0) return false;
-      }    
-    }
-  }
-  // if any of the resources in current cells are hills, find the id of the most resistant resource
-  int steepest_hill = 0;
-  double curr_resistance = 1.0;
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResDef(i)->GetHabitat() == 1) {
-      if (m_pop_res.GetCellResVal(ctx, src_cell_id, i) != 0) {
-        if (resource_lib.GetResDef(i)->GetResistance() > curr_resistance) {
-          curr_resistance = resource_lib.GetResDef(i)->GetResistance();
-          steepest_hill = i;
-        }
-      }
-    }
-  } 
-  // apply the chance of move failing for the steepest hill in this cell, if there is a hill at all
-  if (resource_lib.GetResDef(steepest_hill)->GetHabitat() == 1) {
-    if (m_pop_res.GetCellResVal(ctx, src_cell_id, steepest_hill) > 0) {
-      // we use resistance to determine chance of movement succeeding: 'resistance == # move instructions executed, on average, to move one step/cell'
-      int chance_move_success = int(((1/curr_resistance) * 100) + 0.5);
-      if (ctx.GetRandom().GetInt(0,101) > chance_move_success) return false;
-    }
-  }
-  
-  // effects not applied to avatars:
-  if (true_cell == -1) {
-    if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() && dest_cell.IsOccupied()) {
-      if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() == 2) return false;
-      bool kill_source = true;
-      switch (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get()) {
-        case 0: // 50% chance, no modifiers
-        default:
-          kill_source = ctx.GetRandom().P(0.5);
-          break;
-      }
-      if (kill_source) {
-        KillOrganism(src_cell, ctx); 
-        // Killing the moving organism means that we shouldn't actually do the swap, so return
-        return false;
-      }
-      KillOrganism(dest_cell, ctx); 
-    }
-    SwapCells(src_cell_id, dest_cell_id, ctx); 
-    
-    // Declarations
-    int actualNeighborhoodSize, fromFacing, destFacing, newFacing, success;
-#ifdef DEBBUG
-    int sID, dID, xx1, yy1, xx2, yy2;
-#endif
-    
-    // Swap inputs between cells to fix bus error when Avidian moves into an unoccupied cell
-    // LHZ: Moved to SwapCells function
-    //environment.SwapInputs(ctx, src_cell.m_inputs, dest_cell.m_inputs);
-    
-    // Find neighborhood size for facing
-    if (NULL != dest_cell.GetOrganism()) {
-      actualNeighborhoodSize = dest_cell.ConnectionList().GetSize();
-    } else {
-      if (NULL != src_cell.GetOrganism()) {
-        actualNeighborhoodSize = src_cell.ConnectionList().GetSize();
-      } else {
-        // Punt
-        actualNeighborhoodSize = 8;
-      }
-    }
-    
-    // Swap cell facings between cells, so that if movement is directed, it continues to be associated with
-    // the same organism
-    // Determine absolute facing for each cell
-    fromFacing = src_cell.GetFacing();
-    destFacing = dest_cell.GetFacing();
-    
-    // Set facing in source cell
-    success = 0;
-    newFacing = destFacing;
-    for(int i = 0; i < actualNeighborhoodSize; i++) {
-      if (src_cell.GetFacing() != newFacing) {
-        src_cell.ConnectionList().CircNext();
-        //cout << "MO: src_cell facing not yet at " << newFacing << endl;
-      } else {
-        //cout << "MO: src_cell facing successfully set to " << newFacing << endl;
-        success = 1;
-        break;
-      }
-    }
-    
-    // Set facing in destinatiion cell
-    success = 0;
-    newFacing = fromFacing;
-    for(int i = 0; i < actualNeighborhoodSize; i++) {
-      if (dest_cell.GetFacing() != newFacing) {
-        dest_cell.ConnectionList().CircNext();
-        // cout << "MO: dest_cell facing not yet at " << newFacing << endl;
-      } else {
-        // cout << "MO: dest_cell facing successfully set to " << newFacing << endl;
-        success = 1;
-        break;
-      }
-    }
-  }
-  return true;
-}
-
 
 
 // Attack organism faced by this one, if there is an organism in front.
@@ -1273,7 +642,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   const int ft = organism->GetForageTarget();
 
   RemoveLiveOrg(organism);
-  UpdateQs(organism, false);
   
   organism->NotifyDeath(ctx);
   
@@ -1295,31 +663,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   // Alert the scheduler that this cell has a 0 merit.
   AdjustSchedule(in_cell, cMerit(0));
 }
-
-void cPopulation::InjureOrg(cPopulationCell& in_cell, double injury)
-{
-  if (injury == 0) return;
-  cOrganism* target = in_cell.GetOrganism();
-  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
-    double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-    target_merit -= target_merit * injury;
-    target->UpdateMerit(target_merit);
-  }
-  Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
-  for (int i = 0; i < target_reactions.GetSize(); i++) {
-    target->GetPhenotype().SetReactionCount(i, target_reactions[i] - (int)((target_reactions[i] * injury)));
-  }
-  const double target_bonus = target->GetPhenotype().GetCurBonus();
-  target->GetPhenotype().SetCurBonus(target_bonus - (target_bonus * injury));
-  
-  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-    Apto::Array<double> target_bins = target->GetRBins();
-    for (int i = 0; i < target_bins.GetSize(); i++) {
-      target->AddToRBin(i, -1 * (target_bins[i] * injury));
-    }
-  }
-}
-
 
 
 void cPopulation::SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx)
@@ -1622,10 +965,7 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
   
   cell.GetHardware()->SingleProcess(ctx);
   
-  if (cur_org->GetPhenotype().GetToDelete() == true) {
-    cur_org->GetHardware().DeleteMiniTrace(print_mini_trace_reacs);
-    delete cur_org;
-  }
+  if (cur_org->GetPhenotype().GetToDelete() == true) delete cur_org;
   
   m_world->GetStats().IncExecuted();
   m_pop_res.Update(step_size);
@@ -1663,11 +1003,7 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
     }
   }
   
-  if (cur_org->GetPhenotype().GetToDelete() == true) {
-    cur_org->GetHardware().DeleteMiniTrace(print_mini_trace_reacs);
-    delete cur_org;
-    cur_org = NULL;
-  }
+  if (cur_org->GetPhenotype().GetToDelete() == true) delete cur_org;
   
   m_world->GetStats().IncExecuted();
   m_pop_res.Update(step_size);
@@ -2341,68 +1677,6 @@ bool cPopulation::LoadStructuredSystematicsGroup(cAvidaContext& ctx, const Syste
   return true;
 }
 
-bool cPopulation::SaveFlameData(const cString& filename)
-{
-  Apto::String file_path((const char*)filename);
-  Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), file_path);
-  df->WriteComment("Flame Data Save");
-  df->WriteTimeStamp();
-  
-  // Build up hash table of all current genotypes
-  Apto::Map<int, sGroupInfo*> genotype_map;
-  
-  for (int cell = 0; cell < cell_array.GetSize(); cell++) {
-    if (cell_array[cell].IsOccupied()) {
-      cOrganism* org = cell_array[cell].GetOrganism();
-      
-      // Handle any parasites
-      const Apto::Array<Systematics::UnitPtr>& parasites = org->GetParasites();
-      for (int p = 0; p < parasites.GetSize(); p++) {
-        Systematics::GroupPtr pg = parasites[p]->SystematicsGroup("genotype");
-        if (pg == NULL) continue;
-        
-        sGroupInfo* map_entry = NULL;
-        if (genotype_map.Get(pg->ID(), map_entry)) {
-          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, 0, -1, -1, -1, 0, 1));
-        } else {
-          map_entry = new sGroupInfo(pg, true);
-          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, 0, -1, -1, -1, 0, 1));
-          genotype_map.Set(pg->ID(), map_entry);
-        }
-      }
-      
-      
-      // Handle the organism itself
-      Systematics::GroupPtr genotype = org->SystematicsGroup("genotype");
-      if (genotype == NULL) continue;
-      
-      int offset = org->GetPhenotype().GetCPUCyclesUsed();
-      sGroupInfo* map_entry = NULL;
-      if (genotype_map.Get(genotype->ID(), map_entry)) {
-        map_entry->orgs.Push(sOrgInfo(cell, offset, -1, -1, 0, -1, -1, -1, 0, 1));
-      } else {
-        map_entry = new sGroupInfo(genotype);
-        map_entry->orgs.Push(sOrgInfo(cell, offset, -1, -1, 0, -1, -1, -1, 0, 1));
-        genotype_map.Set(genotype->ID(), map_entry);
-      }
-    }
-  }
-  
-  // Output all current genotypes
-  for (Apto::Map<int, sGroupInfo*>::ValueIterator it = genotype_map.Values(); it.Next();) {
-    sGroupInfo* group_info = *it.Get();
-    Systematics::GroupPtr genotype = group_info->bg;
-    
-    df->Write(genotype->ID(), "ID", "genotype_id");
-    df->Write(genotype->NumUnits(), "Number of currently living organisms", "num_units");
-    df->Write(genotype->Depth(), "Phylogenetic Depth", "depth");
-    df->Endl();    
-    delete group_info;
-  }  
-
-  return true;
-}
-
 struct sTmpGenotype
 {
 public:
@@ -2715,7 +1989,6 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           new_organism->GetPhenotype().SetAVBirthCellID(tmp.avatar_cells[cell_i]);
         }
       }
-      if (org_survived) new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
     }
   }
   sync_events = true;
@@ -2774,14 +2047,12 @@ void cPopulation::Inject(const Genome& genome, Systematics::Source src, cAvidaCo
     cell_array[cell_id].GetOrganism()->SetForageTarget(ctx, forager_type);
     
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthCellID(cell_id);
-    cell_array[cell_id].GetOrganism()->GetOrgInterface().TryWriteBirthLocData(cell_array[cell_id].GetOrganism()->GetOrgIndex());
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthGroupID(group_id);
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthForagerType(forager_type);
   }
   if (m_world->GetConfig().USE_AVATARS.Get()) {
     cell_array[cell_id].GetOrganism()->GetOrgInterface().AddPredPreyAV(cell_id);
   }
-  if (trace) SetupMiniTrace(cell_array[cell_id].GetOrganism());    
 }
 
 void cPopulation::InjectGroup(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id, double merit, double neutral, int group_id, int forager_type, int trace)
@@ -2891,7 +2162,6 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org, Systematics::Sou
     int avatar_target_cell = PlaceAvatar(ctx, &orig_org);
     if (avatar_target_cell != -1) {
       new_organism->GetPhenotype().SetAVBirthCellID(avatar_target_cell);
-      new_organism->GetOrgInterface().TryWriteBirthLocData(new_organism->GetOrgIndex());
       new_organism->GetOrgInterface().AddPredPreyAV(ctx, avatar_target_cell);
       if (m_world->GetConfig().AVATAR_BIRTH_FACING.Get() == 1) {
         const int rots = ctx.GetRandom().GetUInt(0,8);
@@ -2998,40 +2268,6 @@ void cPopulation::InjectGenome(int cell_id, Systematics::Source src, const Genom
   else ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
 }
 
-void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx)
-{
-  assert(transfer_size > 0);
-  
-  // If we are ignoring all dead organisms, remove them from the population.
-  if (ignore_deads == true) {
-    for (int i = 0; i < GetSize(); i++) {
-      cPopulationCell & cell = cell_array[i];
-      if (cell.IsOccupied() && cell.GetOrganism()->GetTestFitness(m_world->GetDefaultContext()) == 0.0) {
-        KillOrganism(cell, ctx);
-      }
-    }
-  }
-  
-  // If removing the dead was enough, stop here.
-  if (num_organisms <= transfer_size) return;
-  
-  // Collect a vector of the occupied cells...
-  vector<int> transfer_pool;
-  transfer_pool.reserve(num_organisms);
-  for (int i = 0; i < GetSize(); i++) {
-    if (cell_array[i].IsOccupied()) transfer_pool.push_back(i);
-  }
-  
-  // Remove the proper number of cells.
-  const int removal_size = num_organisms - transfer_size;
-  for (int i = 0; i < removal_size; i++) {
-    int j = (int) ctx.GetRandom().GetUInt(transfer_pool.size());
-    KillOrganism(cell_array[transfer_pool[j]], ctx); 
-    transfer_pool[j] = transfer_pool.back();
-    transfer_pool.pop_back();
-  }
-}
-
 void cPopulation::RemovePredators(cAvidaContext& ctx)
 {
   for (int i = 0; i < live_org_list.GetSize(); i++) {
@@ -3042,130 +2278,6 @@ void cPopulation::RemovePredators(cAvidaContext& ctx)
 void cPopulation::InjectPreyClone(cAvidaContext& ctx, cOrganism* org_to_clone) {
   int target_cell = PositionOffspring(GetCell(org_to_clone->GetCellID()), ctx, 0).GetID();
   InjectClone(target_cell, *org_to_clone, Systematics::Source(Systematics::DUPLICATION, ""));
-}
-
-void cPopulation::PrintPhenotypeData(const cString& filename)
-{
-  set<int> ids;
-  set<cString> complete;
-  double average_shannon_diversity = 0.0;
-  int num_orgs = 0; //could get from elsewhere, but more self-contained this way
-  double average_num_tasks = 0.0;
-  
-  //implementing a very poor man's hash...
-  Apto::Array<int> phenotypes;
-  Apto::Array<int> phenotype_counts;
-  
-  for (int i = 0; i < cell_array.GetSize(); i++) {
-    // Only look at cells with organisms in them.
-    if (cell_array[i].IsOccupied() == false) continue;
-    
-    num_orgs++;
-    const cPhenotype& phenotype = cell_array[i].GetOrganism()->GetPhenotype();
-    
-    int total_tasks = 0;
-    int id = 0;
-    cString key;
-    for (int j = 0; j < phenotype.GetLastTaskCount().GetSize(); j++) {
-      if (phenotype.GetLastTaskCount()[j] > 0) id += (1 << j);
-      if (phenotype.GetLastTaskCount()[j] > 0) average_num_tasks += 1.0;
-      key += cStringUtil::Stringf("%i-", phenotype.GetLastTaskCount()[j]);
-      total_tasks += phenotype.GetLastTaskCount()[j];
-    }
-    ids.insert(id);
-    complete.insert(key);
-    
-    // add one to our count for this key
-    int k;
-    for(k=0; k<phenotypes.GetSize(); k++)
-    {
-      if (phenotypes[k] == id) {
-        phenotype_counts[k] = phenotype_counts[k] + 1;
-        break;
-      }
-    }
-    // this is a new key
-    if (k == phenotypes.GetSize()) {
-      phenotypes.Push(id);
-      phenotype_counts.Push(1);
-    }
-    
-    // go through again to calculate Shannon Diversity of task counts
-    // now that we know the total number of tasks done
-    double shannon_diversity = 0;
-    for (int j = 0; j < phenotype.GetLastTaskCount().GetSize(); j++) {
-      if (phenotype.GetLastTaskCount()[j] == 0) continue;
-      double fraction = static_cast<double>(phenotype.GetLastTaskCount()[j]) / static_cast<double>(total_tasks);
-      shannon_diversity -= fraction * log(fraction) / log(2.0);
-    }
-    
-    average_shannon_diversity += static_cast<double>(shannon_diversity);
-  }
-  
-  double shannon_diversity_of_phenotypes = 0.0;
-  for (int j = 0; j < phenotype_counts.GetSize(); j++) {
-    double fraction = static_cast<double>(phenotype_counts[j]) / static_cast<double>(num_orgs);
-    shannon_diversity_of_phenotypes -= fraction * log(fraction) / log(2.0);
-  }
-  
-  average_shannon_diversity /= static_cast<double>(num_orgs);
-  average_num_tasks /= num_orgs;
-  
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  df->WriteTimeStamp();
-  df->Write(m_world->GetStats().GetUpdate(), "Update");
-  df->Write(static_cast<int>(ids.size()), "Unique Phenotypes (by task done)");
-  df->Write(shannon_diversity_of_phenotypes, "Shannon Diversity of Phenotypes (by task done)");
-  df->Write(static_cast<int>(complete.size()), "Unique Phenotypes (by task count)");
-  df->Write(average_shannon_diversity, "Average Phenotype Shannon Diversity (by task count)");
-  df->Write(average_num_tasks, "Average Task Diversity (number of different tasks)");
-  df->Endl();
-}
-
-void cPopulation::PrintPhenotypeStatus(const cString& filename)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment("Num orgs doing each task in population");
-  df->WriteTimeStamp();
-  df->Write(m_world->GetStats().GetUpdate(), "Update");
-  
-  cString comment;
-  
-  for (int i = 0; i < cell_array.GetSize(); i++)
-  {
-    // Only look at cells with organisms in them.
-    if (cell_array[i].IsOccupied() == false) continue;
-    
-    const cPhenotype& phenotype = cell_array[i].GetOrganism()->GetPhenotype();
-    
-    comment.Set("cur_merit %d;", i);
-    df->Write(phenotype.GetMerit().GetDouble(), comment);
-    
-    comment.Set("cur_merit_base %d;", i);
-    df->Write(phenotype.GetCurMeritBase(), comment);
-    
-    comment.Set("cur_merit_bonus %d;", i);
-    df->Write(phenotype.GetCurBonus(), comment);
-    
-    //    comment.Set("last_merit %d", i);
-    //    df->Write(phenotype.GetLastMerit(), comment);
-    
-    comment.Set("last_merit_base %d", i);
-    df->Write(phenotype.GetLastMeritBase(), comment);
-    
-    comment.Set("last_merit_bonus %d", i);
-    df->Write(phenotype.GetLastBonus(), comment);
-    
-    comment.Set("life_fitness %d", i);
-    df->Write(phenotype.GetLifeFitness(), comment);
-    
-    comment.Set("*");
-    df->Write("*", comment);
-    
-  }
-  df->Endl();
-  
 }
 
 

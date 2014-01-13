@@ -67,7 +67,6 @@ public:
     int energy_cost;          // energy required to execute.
     double prob_fail;         // probability of failing to execute inst
     int addl_time_cost;       // additional time added to age for executing instruction
-    int inst_code;            // instruction binary code
     double res_cost;          // resources (from bins) required to execute inst
     double fem_res_cost;      
     int female_cost;          // additional cost paid by females to execute the instruction @CHC
@@ -117,7 +116,6 @@ public:
   int GetFTCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].ft_cost; }
   double GetProbFail(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].prob_fail; }
   int GetAddlTimeCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].addl_time_cost; }
-  int GetInstructionCode(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].inst_code; }
   double GetResCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].res_cost; }
   double GetFemResCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].fem_res_cost; }
   int GetFemaleCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].female_cost; } //@CHC

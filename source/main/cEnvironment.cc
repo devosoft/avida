@@ -1113,19 +1113,13 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     
     // If this task wasn't performed, move on to the next one.
     
-    // @MRR task_probability will be either the probability [0,1] for the task or it will
-    // be -1.0 if the value is not needed for this reaction.
-    bool force_mark_task = false; //@MRR Some phenplastbonus settings will force a task to be counted even if it isn't demonstrated.
-    double task_probability = GetTaskProbability(ctx, taskctx, cur_reaction->GetProcesses(), force_mark_task);
-    
-    if (task_quality == 0.0 && !force_mark_task) continue;
+    if (task_quality == 0.0) continue;
     
     // Mark this task as performed...
     result.MarkTask(task_id, task_quality, taskctx.GetTaskValue());
     
     // And let's process it!
-    DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count,
-                task_quality, task_probability, task_cnt, i, result, taskctx);
+    DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count, task_quality, task_cnt, i, result, taskctx);
     
     if (result.ReactionTriggered(i) == true) {
       reaction_count[i]++;
@@ -1288,35 +1282,9 @@ bool cEnvironment::TestContextRequisites(const cReaction* cur_reaction,
 
 
 
-double cEnvironment::GetTaskProbability(cAvidaContext& ctx, cTaskContext& taskctx,
-                                        const tList<cReactionProcess>& req_proc, bool& force_mark_task) const
-{
-  force_mark_task = false;
-  if (ctx.GetTestMode()) { //If we're in test-cpu mode, do not do this.
-    return -1.0;
-  }
-  
-  double task_prob = -1.0;
-  tLWConstListIterator<cReactionProcess> proc_it(req_proc);
-  cReactionProcess* cur_proc;
-  bool test_plasticity = false;
-  while ( (cur_proc = proc_it.Next()) != NULL){  //Determine whether or not we need to test for plastcity
-    ePHENPLAST_BONUS_METHOD pp_meth = cur_proc->GetPhenPlastBonusMethod();
-    if (pp_meth != DEFAULT){  //DEFAULT doesn't modify bonuses
-      test_plasticity = true;
-      if (pp_meth == FULL_BONUS || pp_meth == FRAC_BONUS)  //These will require us to force a task to be marked
-        force_mark_task = true;
-    }
-  }
-  force_mark_task = force_mark_task && (task_prob > 0.0);  //If the task isn't demonstrated, we don't need to worry about marking it.
-  return task_prob;
-}
-
-
-
 void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list,
                                const Apto::Array<double>& resource_count, const Apto::Array<double>& rbins_count,
-                               const double task_quality, const double task_probability, const int task_count,
+                               const double task_quality, const int task_count,
                                const int reaction_id, cReactionResult& result, cTaskContext& taskctx) const
 {
   const int num_process = process_list.GetSize();
@@ -1328,14 +1296,9 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     const double max_consumed = cur_process->GetMaxNumber();
     const double min_consumed = cur_process->GetMinNumber();
     
-    ePHENPLAST_BONUS_METHOD pp_meth = cur_process->GetPhenPlastBonusMethod();
-    const double task_plasticity_modifier =
-    (pp_meth == NO_BONUS && task_probability != 1.0) ? 0.0 :
-    (pp_meth == FRAC_BONUS) ? task_probability : 1.0;
     
     //Phenplast full bonus will use a 1.0 task quality
-    const double local_task_quality =
-    (pp_meth == FULL_BONUS || pp_meth == FRAC_BONUS) ? 1.0 : task_quality;
+    const double local_task_quality = task_quality;
     
     // Determine resource consumption
     double consumed = 0.0;
@@ -1343,7 +1306,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     
     if (in_resource == NULL) {
       // Test if infinite resource
-      consumed = max_consumed * local_task_quality * task_plasticity_modifier;
+      consumed = max_consumed * local_task_quality;
       
     } else {
       // Otherwise we're using a finite resource

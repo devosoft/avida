@@ -24,7 +24,6 @@
 
 #include "DriverActions.h"
 #include "EnvironmentActions.h"
-#include "LandscapeActions.h"
 #include "PopulationActions.h"
 #include "PrintActions.h"
 #include "SaveLoadActions.h"
@@ -38,7 +37,6 @@ void cActionLibrary::Initialize()
   cActionLibrary* actlib = &cActionLibrarySingleton::Instance();
   RegisterDriverActions(actlib);
   RegisterEnvironmentActions(actlib);
-  RegisterLandscapeActions(actlib);
   RegisterPopulationActions(actlib);
   RegisterPrintActions(actlib);
   RegisterSaveLoadActions(actlib);

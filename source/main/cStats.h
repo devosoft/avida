@@ -247,27 +247,6 @@ private:
   double pred_entropy;
   double tpred_entropy;
 
-  
-  // --------  TopNavTrace Stats  ---------
-  Apto::Array<char> toptrace;
-  Apto::Array<int> topnavtraceupdate;
-  Apto::Array<int> topnavtraceloc;
-  Apto::Array<int> topnavtracefacing;
-  Apto::Array<int> topreactions;
-  Apto::Array<int> topreactioncycles;
-  Apto::Array<int> topreactionexecs;
-  int topreac;
-  int topcycle;
-  int topid;
-  int topgenid;
-  int toptarget;
-  int topgroup;
-  int topbirthud;
-  int topstart;
-  int toprepro;
-  bool firstnavtrace;
-  Genome topgenome;
-    
 public:
   cStats(cWorld* world);
   ~cStats() { ; }
@@ -620,13 +599,6 @@ public:
   void PrintMimicDisplays(const cString& filename);
   void PrintTopPredTargets(const cString& filename);
 
-  void PrintMiniTraceReactions(cOrganism* org);
-  void PrintMicroTraces(Apto::Array<char, Apto::Smart>& exec_trace, int birth_update, int org_id, int ft, int gen_id);
-  void UpdateTopNavTrace(cOrganism* org, bool force_update = false);
-  void SetNavTrace(bool use_first) { firstnavtrace = use_first; }
-  void PrintTopNavTrace(bool flush = false);
-  void PrintReproData(cOrganism* org);
-    
 
 	// -------- Support for organism locations --------
 public:

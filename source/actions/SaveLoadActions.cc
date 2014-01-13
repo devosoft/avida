@@ -208,36 +208,6 @@ public:
   }
 };
 
-class cActionSaveFlameData : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionSaveFlameData(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_filename("")
-  {
-    Util::ArgSchema schema;
-    
-    // String Entries
-    schema.Define("filename", "flame_data");
-    
-    Util::Args* argc = Util::Args::Load((const char*)args, schema, ':', '=', &feedback);
-    
-    if (args) {
-      m_filename = argc->String(0);
-    }
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string filename='flame']"; }
-  
-  void Process(cAvidaContext&)
-  {
-    int update = m_world->GetStats().GetUpdate();
-    cString filename = cStringUtil::Stringf("flamedat/%s-%d.spop", (const char*)m_filename, update);
-    m_world->GetPopulation().SaveFlameData(filename);
-  }
-};
 
 void RegisterSaveLoadActions(cActionLibrary* action_lib)
 {
@@ -245,5 +215,4 @@ void RegisterSaveLoadActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSavePopulation>("SavePopulation");
   action_lib->Register<cActionLoadStructuredSystematicsGroup>("LoadStructuredSystematicsGroup");
   action_lib->Register<cActionSaveStructuredSystematicsGroup>("SaveStructuredSystematicsGroup");
-  action_lib->Register<cActionSaveFlameData>("SaveFlameData");
 }

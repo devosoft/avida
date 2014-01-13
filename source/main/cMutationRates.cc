@@ -40,7 +40,6 @@ void cMutationRates::Setup(cWorld* world)
   divide.uniform_prob = world->GetConfig().DIV_UNIFORM_PROB.Get();
   divide.slip_prob = world->GetConfig().DIV_SLIP_PROB.Get();
   divide.trans_prob = world->GetConfig().DIV_TRANS_PROB.Get();
-  divide.lgt_prob = world->GetConfig().DIV_LGT_PROB.Get();
   
   divide.divide_mut_prob = world->GetConfig().DIVIDE_MUT_PROB.Get();
   divide.divide_ins_prob = world->GetConfig().DIVIDE_INS_PROB.Get();
@@ -48,14 +47,12 @@ void cMutationRates::Setup(cWorld* world)
   divide.divide_uniform_prob = world->GetConfig().DIVIDE_UNIFORM_PROB.Get();
   divide.divide_slip_prob = world->GetConfig().DIVIDE_SLIP_PROB.Get();
   divide.divide_trans_prob = world->GetConfig().DIVIDE_TRANS_PROB.Get();
-  divide.divide_lgt_prob = world->GetConfig().DIVIDE_LGT_PROB.Get();
   
   divide.divide_poisson_mut_mean = world->GetConfig().DIVIDE_POISSON_MUT_MEAN.Get();
   divide.divide_poisson_ins_mean = world->GetConfig().DIVIDE_POISSON_INS_MEAN.Get();
   divide.divide_poisson_del_mean = world->GetConfig().DIVIDE_POISSON_DEL_MEAN.Get();
   divide.divide_poisson_slip_mean = world->GetConfig().DIVIDE_POISSON_SLIP_MEAN.Get();
   divide.divide_poisson_trans_mean = world->GetConfig().DIVIDE_POISSON_TRANS_MEAN.Get();
-  divide.divide_poisson_lgt_mean = world->GetConfig().DIVIDE_POISSON_LGT_MEAN.Get();
   
   divide.parent_mut_prob = world->GetConfig().PARENT_MUT_PROB.Get();  
   divide.parent_ins_prob = world->GetConfig().PARENT_INS_PROB.Get();
@@ -89,7 +86,6 @@ void cMutationRates::Clear()
   divide.uniform_prob = 0.0;
   divide.slip_prob = 0.0;
   divide.trans_prob = 0.0;
-  divide.lgt_prob = 0.0;
   
   divide.divide_mut_prob = 0.0;
   divide.divide_ins_prob = 0.0;
@@ -97,14 +93,12 @@ void cMutationRates::Clear()
   divide.divide_uniform_prob = 0.0;
   divide.divide_slip_prob = 0.0;
   divide.divide_trans_prob = 0.0;
-  divide.divide_lgt_prob = 0.0;
   
   divide.divide_poisson_mut_mean = 0.0;
   divide.divide_poisson_ins_mean = 0.0;
   divide.divide_poisson_del_mean = 0.0;
   divide.divide_poisson_slip_mean = 0.0;
   divide.divide_poisson_trans_mean = 0.0;
-  divide.divide_poisson_lgt_mean = 0.0;
   
   divide.parent_mut_prob = 0.0;
   divide.parent_ins_prob = 0.0;

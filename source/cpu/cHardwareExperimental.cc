@@ -164,11 +164,9 @@ StaticTableInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initI
     StaticTableInstLib<tMethod>::MethodEntry("nand", &cHardwareExperimental::Inst_Nand, INST_CLASS_ARITHMETIC_LOGIC, 0, "Nand BX by CX and place the result in ?BX?"),
     
     StaticTableInstLib<tMethod>::MethodEntry("IO", &cHardwareExperimental::Inst_TaskIO, INST_CLASS_ENVIRONMENT, STALL, "Output ?BX?, and input new number back into ?BX?"),
-    StaticTableInstLib<tMethod>::MethodEntry("IO-expire", &cHardwareExperimental::Inst_TaskIOExpire, INST_CLASS_ENVIRONMENT, STALL, "Output ?BX?, and input new number back into ?BX?, if the number has not yet expired"),
     StaticTableInstLib<tMethod>::MethodEntry("input", &cHardwareExperimental::Inst_TaskInput, INST_CLASS_ENVIRONMENT, STALL, "Input new number into ?BX?"),
     StaticTableInstLib<tMethod>::MethodEntry("output", &cHardwareExperimental::Inst_TaskOutput, INST_CLASS_ENVIRONMENT, STALL, "Output ?BX?"),
     StaticTableInstLib<tMethod>::MethodEntry("output-zero", &cHardwareExperimental::Inst_TaskOutputZero, INST_CLASS_ENVIRONMENT, STALL, "Output ?BX?"),
-    StaticTableInstLib<tMethod>::MethodEntry("output-expire", &cHardwareExperimental::Inst_TaskOutputExpire, INST_CLASS_ENVIRONMENT, STALL, "Output ?BX?, as long as the output has not yet expired"),
     
     StaticTableInstLib<tMethod>::MethodEntry("mult", &cHardwareExperimental::Inst_Mult, INST_CLASS_ARITHMETIC_LOGIC, 0, "Multiple BX by CX and place the result in ?BX?"),
     StaticTableInstLib<tMethod>::MethodEntry("div", &cHardwareExperimental::Inst_Div, INST_CLASS_ARITHMETIC_LOGIC, 0, "Divide BX by CX and place the result in ?BX?"),
@@ -226,22 +224,6 @@ StaticTableInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initI
     StaticTableInstLib<tMethod>::MethodEntry("wait-cond-less", &cHardwareExperimental::Inst_WaitCondition_Less, INST_CLASS_OTHER, STALL, ""),
     StaticTableInstLib<tMethod>::MethodEntry("wait-cond-gtr", &cHardwareExperimental::Inst_WaitCondition_Greater, INST_CLASS_OTHER, STALL, ""),
         
-    // Promoter Model
-    StaticTableInstLib<tMethod>::MethodEntry("promoter", &cHardwareExperimental::Inst_Promoter, INST_CLASS_FLOW_CONTROL, PROMOTER),
-    StaticTableInstLib<tMethod>::MethodEntry("terminate", &cHardwareExperimental::Inst_Terminate, INST_CLASS_FLOW_CONTROL),
-    StaticTableInstLib<tMethod>::MethodEntry("term-cons", &cHardwareExperimental::Inst_TerminateConsensus, INST_CLASS_FLOW_CONTROL),
-    StaticTableInstLib<tMethod>::MethodEntry("term-cons-24", &cHardwareExperimental::Inst_TerminateConsensus24, INST_CLASS_FLOW_CONTROL),
-    StaticTableInstLib<tMethod>::MethodEntry("regulate", &cHardwareExperimental::Inst_Regulate, INST_CLASS_FLOW_CONTROL),
-    StaticTableInstLib<tMethod>::MethodEntry("regulate-sp", &cHardwareExperimental::Inst_RegulateSpecificPromoters, INST_CLASS_FLOW_CONTROL),
-    StaticTableInstLib<tMethod>::MethodEntry("s-regulate", &cHardwareExperimental::Inst_SenseRegulate, INST_CLASS_FLOW_CONTROL),
-    StaticTableInstLib<tMethod>::MethodEntry("numberate", &cHardwareExperimental::Inst_Numberate, INST_CLASS_DATA),
-    StaticTableInstLib<tMethod>::MethodEntry("numberate-24", &cHardwareExperimental::Inst_Numberate24, INST_CLASS_DATA),
-    StaticTableInstLib<tMethod>::MethodEntry("bit-cons", &cHardwareExperimental::Inst_BitConsensus, INST_CLASS_DATA),
-    StaticTableInstLib<tMethod>::MethodEntry("bit-cons-24", &cHardwareExperimental::Inst_BitConsensus24, INST_CLASS_DATA),
-    StaticTableInstLib<tMethod>::MethodEntry("execurate", &cHardwareExperimental::Inst_Execurate, INST_CLASS_DATA),
-    StaticTableInstLib<tMethod>::MethodEntry("execurate-24", &cHardwareExperimental::Inst_Execurate24, INST_CLASS_DATA),
-    
-    
     // Movement and Navigation instructions
     StaticTableInstLib<tMethod>::MethodEntry("move", &cHardwareExperimental::Inst_Move, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("juv-move", &cHardwareExperimental::Inst_JuvMove, INST_CLASS_ENVIRONMENT, STALL),
@@ -266,16 +248,6 @@ StaticTableInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initI
     StaticTableInstLib<tMethod>::MethodEntry("rotate-x", &cHardwareExperimental::Inst_RotateX, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("rotate-org-id", &cHardwareExperimental::Inst_RotateOrgID, INST_CLASS_ENVIRONMENT, STALL),
     StaticTableInstLib<tMethod>::MethodEntry("rotate-away-org-id", &cHardwareExperimental::Inst_RotateAwayOrgID, INST_CLASS_ENVIRONMENT, STALL),
-    
-    // Neural networking instructions 
-    StaticTableInstLib<tMethod>::MethodEntry("rotate-neuron-AV-left-one", &cHardwareExperimental::Inst_RotateNeuronAVLeft, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("rotate-neuron-AV-right-one", &cHardwareExperimental::Inst_RotateNeuronAVRight, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("rotate-neuron-AV-by-X", &cHardwareExperimental::Inst_RotateNeuronAVbyX, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("move-neuron-AV", &cHardwareExperimental::Inst_MoveNeuronAV, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("if-neuron-input-has-output-AV", &cHardwareExperimental::Inst_IfNeuronInputHasOutputAV, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("if-not-neuron-input-has-output-AV", &cHardwareExperimental::Inst_IfNotNeuronInputHasOutputAV, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("if-neuron-input-faced-has-output-AV", &cHardwareExperimental::Inst_IfNeuronInputFacedHasOutputAV, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("if-not-neuron-input-faced-has-output-AV", &cHardwareExperimental::Inst_IfNotNeuronInputFacedHasOutputAV, INST_CLASS_ENVIRONMENT, STALL),
     
     // Resource and Topography Sensing
     StaticTableInstLib<tMethod>::MethodEntry("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, INST_CLASS_ENVIRONMENT, STALL),
@@ -387,12 +359,6 @@ cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, 
   m_thread_slicing_parallel = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1);
   m_no_cpu_cycle_time = m_world->GetConfig().NO_CPU_CYCLE_TIME.Get();
   
-  m_promoters_enabled = m_world->GetConfig().PROMOTERS_ENABLED.Get();
-  if (m_promoters_enabled) {
-    m_constitutive_regulation = m_world->GetConfig().CONSTITUTIVE_REGULATION.Get();
-    m_no_active_promoter_halt = (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2);
-  }
-  
   m_slip_read_head = !m_world->GetConfig().SLIP_COPY_MODE.Get();
   
   const Genome& in_genome = in_organism->GetGenome();
@@ -425,22 +391,6 @@ void cHardwareExperimental::internalReset()
   m_mal_active = false;
   m_executedmatchstrings = false;
   
-  // Promoter model
-  if (m_promoters_enabled) {
-    m_promoter_index = -1; // Meaning the last promoter was nothing
-    m_promoter_offset = 0;
-    
-    m_promoters.Resize(0);
-    
-    for (int i=0; i < m_memory.GetSize(); i++) {
-      if (m_inst_set->IsPromoter(m_memory[i])) {
-        int code = Numberate(i - 1, -1, m_world->GetConfig().PROMOTER_CODE_SIZE.Get());
-        m_promoters.Push(cPromoter(i, code));
-      }
-    }
-  }
-  
-  m_io_expire = m_world->GetConfig().IO_EXPIRE.Get();
   m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
   m_sensor.Reset();
 }
@@ -454,8 +404,6 @@ void cHardwareExperimental::internalResetOnFailedDivide()
 void cHardwareExperimental::cLocalThread::operator=(const cLocalThread& in_thread)
 {
   m_id = in_thread.m_id;
-  m_promoter_inst_executed = in_thread.m_promoter_inst_executed;
-  m_execurate = in_thread.m_execurate;
   
   for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = in_thread.reg[i];
   for (int i = 0; i < NUM_HEADS; i++) heads[i] = in_thread.heads[i];
@@ -494,9 +442,6 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardwa
   read_label.Clear();
   next_label.Clear();
   
-  // Promoter model
-  m_execurate = 0;
-  m_promoter_inst_executed = 0;
 }
 
 
@@ -517,9 +462,6 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   }
   
   cPhenotype& phenotype = m_organism->GetPhenotype();
-  
-  // First instruction - check whether we should be starting at a promoter, when enabled.
-  if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) PromoterTerminate(ctx);
   
   m_cycle_count++;
   assert(m_cycle_count < 0x8000);
@@ -550,13 +492,6 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     m_advance_ip = true;
     cHeadCPU& ip = m_threads[m_cur_thread].heads[HEAD_IP];
     ip.Adjust();
-       
-/*    if (m_organism->GetID() == 0 && m_world->GetStats().GetUpdate() >= 0) cout << " org: " << m_organism->GetID()
-    << " thread: " << m_cur_thread << " ip_position: " << ip.GetPosition() << " inst: "
-      << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName()
-      << " write head: " << m_threads[m_cur_thread].heads[HEAD_WRITE].GetPosition()
-      << " flow head: " << m_threads[m_cur_thread].heads[HEAD_WRITE].GetPosition()
-      <<  " cell: " << m_organism->GetOrgInterface().GetAVCellID() << endl; */
 
     // Print the status of this CPU at each step...
     if (m_tracer) m_tracer->TraceHardware(ctx, *this);
@@ -586,13 +521,6 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);    
     if (!exec) exec_success = -1;
 
-    if (m_promoters_enabled) {
-      // Constitutive regulation applied here
-      if (m_constitutive_regulation) Inst_SenseRegulate(ctx); 
-      
-      // If there are no active promoters and a certain mode is set, then don't execute any further instructions
-      if (m_no_active_promoter_halt && m_promoter_index == -1) exec = false;
-    }
     
     // Now execute the instruction...
     bool rand_fail = false;
@@ -608,8 +536,6 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
         rand_fail = !exec;
       }
       
-      //Add to the promoter inst executed count before executing the inst (in case it is a terminator)
-      if (m_promoters_enabled) m_threads[m_cur_thread].IncPromoterInstExecuted();
       
       if (exec == true) {
         if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
@@ -632,15 +558,6 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
       // Pay the additional death_cost of the instruction now
       phenotype.IncTimeUsed(addl_time_cost);
       
-      // In the promoter model, we may force termination after a certain number of inst have been executed
-      if (m_promoters_enabled) {
-        const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
-        if (ctx.GetRandom().P(1 - processivity)) PromoterTerminate(ctx);
-        if (m_world->GetConfig().PROMOTER_INST_MAX.Get() &&
-            (m_threads[m_cur_thread].GetPromoterInstExecuted() >= m_world->GetConfig().PROMOTER_INST_MAX.Get())) {
-          PromoterTerminate(ctx);
-        }
-      }
     }
     // if using mini traces, report success or failure of execution
     if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true, exec_success);
@@ -658,10 +575,6 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (do_record) {
       // this will differ from time used 
       phenotype.IncNumExecs();
-      if (m_microtrace || m_topnavtrace) {
-        RecordMicroTrace(cur_inst);
-        if (m_topnavtrace) RecordNavTrace(m_use_avatar);      
-      }
     }    
   } // Previous was executed once for each thread...
   
@@ -700,8 +613,6 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
   
 	if (exec_success) {
-    int code_len = m_world->GetConfig().INST_CODE_LENGTH.Get();
-    m_threads[m_cur_thread].UpdateExecurate(code_len, m_inst_set->GetInstructionCode(actual_inst));
     if (m_from_sensor) m_organism->GetPhenotype().IncCurFromSensorInstCount(actual_inst.GetOp());
   }
   
@@ -766,143 +677,9 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   << endl;
   
   
-  if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
-  {
-    fp << "Promoters: index=" << m_promoter_index << " offset=" << m_promoter_offset;
-    fp << " exe_inst=" << m_threads[m_cur_thread].GetPromoterInstExecuted();
-    for (int i=0; i<m_promoters.GetSize(); i++)
-    {
-      fp << setfill(' ') << setbase(10) << m_promoters[i].pos << ":";
-      fp << "Ox" << setbase(16) << setfill('0') << setw(8) << (m_promoters[i].GetRegulatedBitCode()) << " "; 
-    }
-    fp << endl;    
-    fp << setfill(' ') << setbase(10) << endl;
-  }    
-  
   fp.flush();
 }
 
-void cHardwareExperimental::SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype)
-{
-  const Genome& in_genome = m_organism->GetGenome();
-  ConstInstructionSequencePtr in_seq_p;
-  in_seq_p.DynamicCastFrom(in_genome.Representation());
-  const InstructionSequence& in_seq = *in_seq_p;
-
-  df.WriteTimeStamp();
-  cString org_dat("");
-  df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
-  df.WriteComment(org_dat.Set("Org ID: %d", m_organism->GetID()));
-  df.WriteComment(org_dat.Set("Genotype ID: %d", gen_id));
-  df.WriteComment(org_dat.Set("Genotype: %s", (const char*) genotype));
-  df.WriteComment(org_dat.Set("Genome Length: %d", in_seq.GetSize()));
-  df.WriteComment(" ");
-  df.WriteComment("Exec Stats Columns:");
-  df.WriteComment("CPU Cycle");
-  df.WriteComment("Current Update");
-  df.WriteComment("Register Contents (CPU Cycle Origin of Contents)");
-  df.WriteComment("Current Thread");
-  df.WriteComment("IP Position");
-  df.WriteComment("RH Position");
-  df.WriteComment("WH Position");
-  df.WriteComment("FH Position");
-  df.WriteComment("CPU Cycle of Last Output");
-  df.WriteComment("Current Merit");
-  df.WriteComment("Current Bonus");
-  df.WriteComment("Forager Type");
-  df.WriteComment("Current Cell");
-  df.WriteComment("Avatar Cell");
-  df.WriteComment("Faced Direction");
-  df.WriteComment("Faced Cell Occupied?");
-  df.WriteComment("Faced Cell Has Hill?");
-  df.WriteComment("Faced Cell Has Wall?");
-  df.WriteComment("Queued Instruction");
-  df.WriteComment("Trailing NOPs");
-  df.WriteComment("Did Queued Instruction Execute (-1=no, paying cpu costs; 0=failed; 1=yes)");
-  df.Endl();
-}
-
-void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
-{
-  // basic status info
-  fp << m_cycle_count << " ";
-  fp << m_world->GetStats().GetUpdate() << " ";
-  for (int i = 0; i < NUM_REGISTERS; i++) {
-    DataValue& reg = m_threads[m_cur_thread].reg[i];
-    fp << GetRegister(i) << " ";
-    fp << "(" << reg.originated << ") ";
-  }    
-  // genome loc info
-  fp << m_cur_thread << " ";
-  fp << getIP().GetPosition() << " ";  
-  fp << getHead(HEAD_READ).GetPosition() << " ";
-  fp << getHead(HEAD_WRITE).GetPosition()  << " ";
-  fp << getHead(HEAD_FLOW).GetPosition()   << " ";
-  // last output
-  fp << m_last_output << " ";
-  // phenotype/org status info
-  fp << m_organism->GetPhenotype().GetMerit().GetDouble() << " ";
-  fp << m_organism->GetPhenotype().GetCurBonus() << " ";
-  fp << m_organism->GetForageTarget() << " ";
-  // environment info / things that affect movement
-  fp << m_organism->GetOrgInterface().GetCellID() << " ";
-  if (m_use_avatar) fp << m_organism->GetOrgInterface().GetAVCellID() << " ";
-  if (!m_use_avatar) fp << m_organism->GetOrgInterface().GetFacedDir() << " ";
-  else fp << m_organism->GetOrgInterface().GetAVFacing() << " ";
-  if (!m_use_avatar) fp << m_organism->IsNeighborCellOccupied() << " ";  
-  else fp << m_organism->GetOrgInterface().FacedHasAV() << " ";
-  const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
-  Apto::Array<double> cell_resource_levels;
-  if (!m_use_avatar) cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
-  else cell_resource_levels = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
-  int wall = 0;
-  int hill = 0;
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResDef(i)->GetHabitat() == 2) {
-      double wall_level = 0.0;
-      if (!m_use_avatar) wall_level = m_organism->GetOrgInterface().GetFacedResourceVal(ctx, i);
-      else wall_level = m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, i);
-      if (wall_level > 0) wall = 1;
-    }
-    else if (resource_lib.GetResDef(i)->GetHabitat() == 1) {
-      double hill_level = 0.0;
-      if (!m_use_avatar) hill_level = m_organism->GetOrgInterface().GetFacedResourceVal(ctx, i);
-      else hill_level = m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, i);
-      if (hill_level > 0)  hill = 1;
-    }
-    if (hill == 1 && wall == 1) break;
-  }
-  fp << hill << " ";
-  fp << wall << " ";
-  // instruction about to be executed
-  cString next_name(GetInstSet().GetName(IP().GetInst()));
-
-  fp << next_name << " ";
-  // any trailing nops (up to NUM_REGISTERS)
-  InstMemSpace& memory = m_memory;
-  int pos = getIP().GetPosition();
-  Apto::Array<int, Apto::Smart> seq;
-  seq.Resize(0);
-  for (int i = 0; i < NUM_REGISTERS; i++) {
-    pos += 1;
-    if (pos >= memory.GetSize()) pos = 0;
-    if (m_inst_set->IsNop(memory[pos])) seq.Push(m_inst_set->GetNopMod(memory[pos])); 
-    else break;
-  }
-  cString mod_string;
-  for (int j = 0; j < seq.GetSize(); j++) {
-    mod_string += (char) seq[j] + 'A';  
-  }  
-  if (mod_string.GetSize() != 0) fp << mod_string << " ";
-  else fp << "NoMods" << " ";
-}
-
-void cHardwareExperimental::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
-{
-  fp << exec_sucess;
-  fp << endl;
-  fp.flush();
-}
 
 cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
 {
@@ -1973,26 +1750,6 @@ bool cHardwareExperimental::Inst_TaskIO(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_TaskIOExpire(cAvidaContext& ctx)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  DataValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  
-  if (m_io_expire && reg.env_component && reg.oldest_component < m_last_output) return false;
-  
-  // Do the "put" component
-  m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
-  m_last_output = m_cycle_count;  
-  
-  // Do the "get" component
-  const int value_in = m_organism->GetNextInput();
-  setInternalValue(reg_used, value_in, true);
-  m_organism->DoInput(value_in);
-  
-  return true;
-}
-
-
 bool cHardwareExperimental::Inst_TaskInput(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
@@ -2032,20 +1789,6 @@ bool cHardwareExperimental::Inst_TaskOutputZero(cAvidaContext& ctx)
   m_last_output = m_cycle_count;
   
   setInternalValue(reg_used, 0);
-  
-  return true;
-}
-
-bool cHardwareExperimental::Inst_TaskOutputExpire(cAvidaContext& ctx)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  DataValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  
-  if (m_io_expire && reg.env_component && reg.oldest_component < m_last_output) return false;
-  
-  // Do the "put" component
-  m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
-  m_last_output = m_cycle_count;
   
   return true;
 }
@@ -2527,258 +2270,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Greater(cAvidaContext&)
 }
 
 
-// --------  Promoter Model  --------
 
-bool cHardwareExperimental::Inst_Promoter(cAvidaContext&)
-{
-  // Promoters don't do anything themselves
-  return true;
-}
-
-
-// Move the instruction ptr to the next active promoter
-bool cHardwareExperimental::Inst_Terminate(cAvidaContext& ctx)
-{
-  PromoterTerminate(ctx);
-  return true;
-}
-
-// Move the instruction ptr to the next active promoter
-bool cHardwareExperimental::Inst_TerminateConsensus(cAvidaContext& ctx)
-{
-  const int op1 = FindModifiedRegister(rDX);
-  if (BitCount(GetRegister(op1)) <  CONSENSUS)  PromoterTerminate(ctx);
-  return true;
-}
-
-// Move the instruction ptr to the next active promoter
-bool cHardwareExperimental::Inst_TerminateConsensus24(cAvidaContext& ctx)
-{
-  const int op1 = FindModifiedRegister(rDX);
-  if (BitCount(GetRegister(op1) & MASK_LOW24) <  CONSENSUS24)  PromoterTerminate(ctx);
-  return true;
-}
-
-// Set a new regulation code (which is XOR'ed with ALL promoter codes).
-bool cHardwareExperimental::Inst_Regulate(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  int regulation_code = GetRegister(reg_used);
-  
-  for (int i = 0; i < m_promoters.GetSize(); i++) m_promoters[i].regulation = regulation_code;
-  
-  return true;
-}
-
-// Set a new regulation code, but only on a subset of promoters.
-bool cHardwareExperimental::Inst_RegulateSpecificPromoters(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  const int reg_promoter = FindModifiedNextRegister(reg_used);
-  
-  int regulation_code = GetRegister(reg_used);
-  int regulation_promoter = GetRegister(reg_promoter);
-  
-  for (int i = 0; i < m_promoters.GetSize(); i++) {
-    
-    // @DMB - should this always be using the low order bits?
-    
-    // Look for consensus bit matches over the length of the promoter code
-    int test_p_code = m_promoters[i].bit_code;    
-    int test_r_code = regulation_promoter;
-    int bit_count = 0;
-    for (int j = 0; j < m_world->GetConfig().PROMOTER_EXE_LENGTH.Get(); j++) {      
-      if ((test_p_code & 1) == (test_r_code & 1)) bit_count++;
-      test_p_code >>= 1;
-      test_r_code >>= 1;
-    }
-    
-    if (bit_count >= m_world->GetConfig().PROMOTER_EXE_LENGTH.Get() / 2) m_promoters[i].regulation = regulation_code;
-  }
-  
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SenseRegulate(cAvidaContext& ctx)
-{
-  unsigned int bits = 0;
-  const Apto::Array<double> & res_count = m_organism->GetOrgInterface().GetResources(ctx);
-  assert (res_count.GetSize() != 0);
-  for (int i=0; i<m_world->GetConfig().PROMOTER_CODE_SIZE.Get(); i++)
-  {
-    int b = i % res_count.GetSize();
-    bits <<= 1;
-    bits += (res_count[b] != 0);
-  }  
-  
-  for (int i=0; i< m_promoters.GetSize();i++)
-  {
-    m_promoters[i].regulation = bits;
-  }
-  return true;
-}
-
-// Create a number from inst bit codes
-bool cHardwareExperimental::Do_Numberate(cAvidaContext&, int num_bits)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  
-  // advance the IP now, so that it rests on the beginning of our number
-  getIP().Advance();
-  m_advance_ip = false;
-  
-  int num = Numberate(getIP().GetPosition(), +1, num_bits);
-  setInternalValue(reg_used, num);
-  return true;
-}
-
-void cHardwareExperimental::PromoterTerminate(cAvidaContext& ctx)
-{
-  // Optionally,
-  // Reset the thread.
-  if (m_world->GetConfig().TERMINATION_RESETS.Get())
-  {
-    m_threads[m_cur_thread].Reset(this, m_threads[m_cur_thread].GetID());
-    
-    //Setting this makes it harder to do things. You have to be modular.
-    m_organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
-    m_organism->ClearInput();                         // Also clear their input buffers, or they can still claim
-                                                      // rewards for numbers no longer in their environment!
-  }
-  
-  // Reset our count
-  m_threads[m_cur_thread].ResetPromoterInstExecuted();
-  m_advance_ip = false;
-  const int promoter_reg_used = rDX; // register to put chosen promoter code in, default to DX
-  
-  
-  // @DMB - should the promoter index and offset be stored in cLocalThread to allow multiple threads?
-  
-  // Search for an active promoter  
-  int start_offset = m_promoter_offset;
-  int start_index  = m_promoter_index;
-  
-  
-  bool no_promoter_found = true;
-  if (m_promoters.GetSize() > 0) {
-    const int promoter_exe_length = m_world->GetConfig().PROMOTER_EXE_LENGTH.Get();
-    const int promoter_code_size = m_world->GetConfig().PROMOTER_CODE_SIZE.Get();
-    const int promoter_exe_threshold = m_world->GetConfig().PROMOTER_EXE_THRESHOLD.Get();
-    
-    while (true) {
-      // If the next promoter is active, then break out
-      
-      // Move promoter index, rolling over if necessary
-      m_promoter_index++;
-      
-      if (m_promoter_index == m_promoters.GetSize()) {
-        m_promoter_index = 0;
-        
-        // Move offset, rolling over when there are not enough bits before we would have to wrap around left
-        m_promoter_offset += promoter_exe_length;
-        if (m_promoter_offset + promoter_exe_length > promoter_code_size) m_promoter_offset = 0;
-      }
-      
-      
-      int count = 0;
-      unsigned int code = m_promoters[m_promoter_index].GetRegulatedBitCode();
-      for (int i = 0; i < promoter_exe_length; i++) {
-        // @DMB - changed the following to avoid integer division. We should only ever need to circle around once
-        //int offset = (m_promoter_offset + i) % promoter_code_size;
-        int offset = m_promoter_offset + i;
-        if (offset >= promoter_code_size) offset -= promoter_code_size;
-        int state = code >> offset;
-        count += (state & 1);
-      }
-      
-      if (count >= promoter_exe_threshold) {
-        no_promoter_found = false;
-        break;
-      }
-      
-      // If we just checked the promoter that we were originally on, then there
-      // are no active promoters.
-      if ((start_offset == m_promoter_offset) && (start_index == m_promoter_index)) break;
-      
-      // If we originally were not on a promoter, then stop once we check the
-      // first promoter and an offset of zero
-      if (start_index == -1) start_index = 0;
-    } 
-  }
-  
-  if (no_promoter_found) {
-    switch (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get()) {
-      case 0:
-      case 2:
-        // Set defaults for when no active promoter is found
-        m_promoter_index = -1;
-        getIP().Set(0);
-        setInternalValue(promoter_reg_used, 0);
-        break;
-        
-      case 1: // Death to organisms that refuse to use promoters!
-        m_organism->Die(ctx);
-        break;
-        
-      default:
-        cout << "Unrecognized NO_ACTIVE_PROMOTER_EFFECT setting: " << m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() << endl;
-        exit(1);
-        break;
-    }
-  } else {
-    // We found an active match, offset to just after it.
-    // cHeadCPU will do the mod genome size for us
-    getIP().Set(m_promoters[m_promoter_index].pos + 1);
-    
-    // Put its bit code in BX for the organism to have if option is set
-    if (m_world->GetConfig().PROMOTER_TO_REGISTER.Get())
-      setInternalValue(promoter_reg_used, m_promoters[m_promoter_index].bit_code);
-  }  
-}
-
-// Construct a promoter bit code from instruction bit codes
-int cHardwareExperimental::Numberate(int _pos, int _dir, int _num_bits)
-{  
-  int code_size = 0;
-  unsigned int code = 0;
-  unsigned int max_bits = sizeof(code) * 8;
-  assert(_num_bits <= (int)max_bits);
-  if (_num_bits == 0) _num_bits = max_bits;
-  
-  // Enforce a boundary, sometimes -1 can be passed for _pos
-  int j = _pos + m_memory.GetSize();
-  j %= m_memory.GetSize();
-  assert(j >=0);
-  assert(j < m_memory.GetSize());
-  while (code_size < _num_bits)
-  {
-    unsigned int inst_code = (unsigned int) GetInstSet().GetInstructionCode(m_memory[j]);
-    // shift bits in, one by one ... excuse the counter variable pun
-    for (int code_on = 0; (code_size < _num_bits) && (code_on < m_world->GetConfig().INST_CODE_LENGTH.Get()); code_on++)
-    {
-      if (_dir < 0)
-      {
-        code >>= 1; // shift first so we don't go one too far at the end
-        code += (1 << (_num_bits - 1)) * (inst_code & 1);
-        inst_code >>= 1; 
-      }
-      else
-      {
-        code <<= 1; // shift first so we don't go one too far at the end;        
-        code += (inst_code >> (m_world->GetConfig().INST_CODE_LENGTH.Get() - 1)) & 1;
-        inst_code <<= 1; 
-      }
-      code_size++;
-    }
-    
-    // move back one inst
-    j += m_memory.GetSize() + _dir;
-    j %= m_memory.GetSize();
-    
-  }
-  
-  return code;
-}
 
 /*! 
  Sets BX to 1 if >=50% of the bits in the specified register places
@@ -2805,23 +2297,6 @@ bool cHardwareExperimental::Inst_BitConsensus24(cAvidaContext&)
   setInternalValue(reg_used, (BitCount(val.value & MASK_LOW24) >= CONSENSUS24) ? 1 : 0, val); 
   return true; 
 }
-
-// Create a number from inst bit codes of the previously executed instructions
-bool cHardwareExperimental::Inst_Execurate(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, m_threads[m_cur_thread].GetExecurate());
-  return true;
-}
-
-// Create a number from inst bit codes of the previously executed instructions, truncated to 24 bits
-bool cHardwareExperimental::Inst_Execurate24(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, (MASK_LOW24 & m_threads[m_cur_thread].GetExecurate()));
-  return true;
-}
-
 
 bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
 {
@@ -3340,111 +2815,6 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   }
 }
 
-// -------- Neural networking -------- @JJB
-// All only linked to input avatars for now
-
-// Rotate the register-value-selected avatar, left by one
-bool cHardwareExperimental::Inst_RotateNeuronAVLeft(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  return m_organism->GetOrgInterface().RotateAV(ctx, -1, avatar_num);
-}
-
-// Rotate the register-value-selected avatar, right by one
-bool cHardwareExperimental::Inst_RotateNeuronAVRight(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  return m_organism->GetOrgInterface().RotateAV(ctx, 1, avatar_num);
-}
-
-// Rotate the register-value-selected avatar, by the register set amount
-bool cHardwareExperimental::Inst_RotateNeuronAVbyX(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  const int rotate_reg = FindModifiedNextRegister(avatar_reg);
-
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-  const int rotate = m_threads[m_cur_thread].reg[rotate_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  return m_organism->GetOrgInterface().RotateAV(ctx, rotate, avatar_num);
-}
-
-// Move the register-value-selected avatar forward into its faced cell
-bool cHardwareExperimental::Inst_MoveNeuronAV(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  return m_organism->GetOrgInterface().MoveAV(ctx, avatar_num);
-}
-
-// If the register-value-selected input avatar occupies a cell that also has an output avatar, execute next
-bool cHardwareExperimental::Inst_IfNeuronInputHasOutputAV(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  if (!m_organism->GetOrgInterface().HasOutputAV(avatar_num)) {
-    getIP().Advance();
-  }
-  return true;
-}
-
-// If the register-value-selected input avatar does not occupy a cell that has an output avatar, execute next
-bool cHardwareExperimental::Inst_IfNotNeuronInputHasOutputAV(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  if (m_organism->GetOrgInterface().HasOutputAV(avatar_num)) {
-    getIP().Advance();
-  }
-  return true;
-}
-
-// If the register-value-selected input avatar is facing a cell with an output avatar, execute next
-bool cHardwareExperimental::Inst_IfNeuronInputFacedHasOutputAV(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  if (!m_organism->GetOrgInterface().FacedHasOutputAV(avatar_num)) {
-    getIP().Advance();
-  }
-  return true;
-}
-
-// If the register-value-selected input avatar is facing a cell without an output avatar, execute next
-bool cHardwareExperimental::Inst_IfNotNeuronInputFacedHasOutputAV(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  if (m_organism->GetOrgInterface().FacedHasOutputAV(avatar_num)) {
-    getIP().Advance();
-  }
-  return true;
-}
 
 
 bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
@@ -5948,7 +5318,8 @@ bool cHardwareExperimental::TestAttackChance(cAvidaContext& ctx, cOrganism* targ
   if (odds == -1) odds = m_world->GetConfig().PRED_ODDS.Get();
   if (ctx.GetRandom().GetDouble() >= odds ||
       (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    InjureOrg(target);
+    assert(false);
+    //InjureOrg(target);
     setInternalValue(reg.success_reg, -1, true);
     setInternalValue(reg.bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(reg.bin_reg, -1, true);

@@ -29,8 +29,6 @@
 
 #include "avida/private/systematics/GenotypeArbiter.h"
 
-#include "cAnalyze.h"
-#include "cAnalyzeGenotype.h"
 #include "cEnvironment.h"
 #include "cEventList.h"
 #include "cHardwareManager.h"
@@ -125,9 +123,6 @@ bool cWorld::setup(Universe* new_world, cUserFeedback* feedback, const Apto::Map
   if (m_hw_mgr->GetNumInstSets() == 0) {
     if (feedback) {
       feedback->Error("no instruction sets defined");
-      if (!m_conf->INST_SET_LOAD_LEGACY.Get() && m_conf->INST_SET.Get() != "" && m_conf->INST_SET.Get() != "-") {
-        feedback->Notify("It looks like you are attempting to load a legacy format instruction set file.  Try setting INST_SET_LOAD_LEGACY to 1.");
-      }
     }
     success = false;
   }
@@ -152,12 +147,6 @@ bool cWorld::setup(Universe* new_world, cUserFeedback* feedback, const Apto::Map
 Data::ProviderPtr cWorld::GetStatsProvider(Universe*) { return m_stats; }
 Data::ArgumentedProviderPtr cWorld::GetPopulationProvider(Universe*) { return m_pop; }
 
-
-cAnalyze& cWorld::GetAnalyze()
-{
-  if (m_analyze == NULL) m_analyze = new cAnalyze(this);
-  return *m_analyze;
-}
 
 void cWorld::GetEvents(cAvidaContext& ctx)
 {  

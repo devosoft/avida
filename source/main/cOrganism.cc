@@ -299,16 +299,6 @@ void cOrganism::PrintStatus(ostream& fp)
   fp << setfill(' ') << setbase(10);
 }
 
-void cOrganism::PrintMiniTraceStatus(cAvidaContext& ctx, ostream & fp)
-{
-  m_hardware->PrintMiniTraceStatus(ctx, fp);
-}
-
-void cOrganism::PrintMiniTraceSuccess(ostream & fp, const int exec_success)
-{
-  m_hardware->PrintMiniTraceSuccess(fp, exec_success);
-}
-
 void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated) const
 {
   fp << "---------------------------" << endl;

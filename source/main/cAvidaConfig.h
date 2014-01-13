@@ -291,9 +291,6 @@ public:
   CONFIG_ADD_VAR(WORLD_X, int, 60, "Width of the Avida world");
   CONFIG_ADD_VAR(WORLD_Y, int, 60, "Height of the Avida world");
   CONFIG_ADD_VAR(WORLD_GEOMETRY, int, 2, "1 = Bounded Grid (WOLRD_X x WORLD_Y)\n2 = Toroidal Grid (WOLRD_X x WORLD_Y; wraps at edges\n3 = Clique (all population cells are connected)\n4 = Hexagonal grid\n5 = Partial\n6 = 3D Lattice (under development)\n7 = Random connected\n8 = Scale-free (detailed below)");
-  CONFIG_ADD_VAR(SCALE_FREE_M, int, 3, "Number of connections per cell in a scale-free geometry");
-  CONFIG_ADD_VAR(SCALE_FREE_ALPHA, double, 1.0, "Attachment power (1=linear)");
-  CONFIG_ADD_VAR(SCALE_FREE_ZERO_APPEAL, double, 0.0, "Appeal of cells with zero connections");	
     
   // -------- Configuration File config options --------
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Other configuration Files");
@@ -326,7 +323,6 @@ public:
   CONFIG_ADD_VAR(DIV_UNIFORM_PROB, double, 0.0, "Uniform mutation probability (per site, applied on divide)\n- Randomly apply insertion, deletion or point mutation");
   CONFIG_ADD_VAR(DIV_SLIP_PROB, double, 0.0, "Slip rate (per site, applied on divide)");
   CONFIG_ADD_VAR(DIV_TRANS_PROB, double, 0.0, "Translocation rate (per site, applied on divide)");
-  CONFIG_ADD_VAR(DIV_LGT_PROB, double, 0.0, "Lateral Gene Transfer rate (per site, applied on divide)");
   
   CONFIG_ADD_VAR(DIVIDE_MUT_PROB, double, 0.0, "Substitution rate (max one, per divide)");
   CONFIG_ADD_VAR(DIVIDE_INS_PROB, double, 0.05, "Insertion rate (max one, per divide)");
@@ -334,15 +330,13 @@ public:
   CONFIG_ADD_VAR(DIVIDE_UNIFORM_PROB, double, 0.0, "Uniform mutation probability (per divide)\n- Randomly apply insertion, deletion or point mutation");
   CONFIG_ADD_VAR(DIVIDE_SLIP_PROB, double, 0.0, "Slip rate (per divide) - creates large deletions/duplications");
   CONFIG_ADD_VAR(DIVIDE_TRANS_PROB, double, 0.0, "Translocation rate (per divide) - creates large deletions/duplications");
-  CONFIG_ADD_VAR(DIVIDE_LGT_PROB, double, 0.0, "Lateral Gene Transfer rate (per divide) - creates large deletions/duplications");
   
   CONFIG_ADD_VAR(DIVIDE_POISSON_MUT_MEAN, double, 0.0, "Substitution rate (Poisson distributed, per divide)");
   CONFIG_ADD_VAR(DIVIDE_POISSON_INS_MEAN, double, 0.0, "Insertion rate (Poisson distributed, per divide)");
   CONFIG_ADD_VAR(DIVIDE_POISSON_DEL_MEAN, double, 0.0, "Deletion rate (Poisson distributed, per divide)");
   CONFIG_ADD_VAR(DIVIDE_POISSON_SLIP_MEAN, double, 0.0, "Slip rate (Poisson distributed, per divide)");
   CONFIG_ADD_VAR(DIVIDE_POISSON_TRANS_MEAN, double, 0.0, "Translocation rate (Poisson distributed, per divide)");
-  CONFIG_ADD_VAR(DIVIDE_POISSON_LGT_MEAN, double, 0.0, "Lateral Gene Transfer rate (Poisson distributed, per divide)");
-    
+  
   CONFIG_ADD_VAR(INJECT_MUT_PROB, double, 0.0, "Substitution rate (per site, applied on inject)");
   CONFIG_ADD_VAR(INJECT_INS_PROB, double, 0.0, "Insertion rate (per site, applied on inject)");
   CONFIG_ADD_VAR(INJECT_DEL_PROB, double, 0.0, "Deletion rate (per site, applied on inject)");
@@ -350,8 +344,6 @@ public:
   CONFIG_ADD_VAR(SLIP_FILL_MODE, int, 0, "Fill insertions from slip mutations with:\n0 = Duplication\n1 = nop-X\n2 = Random\n3 = Scrambled\n4 = nop-C");
   CONFIG_ADD_VAR(SLIP_COPY_MODE, int, 0, "How to handle 'on-copy' slip mutations:\n0 = actual read head slip\n1 = instant large mutation (obeys slip mode)");
   CONFIG_ADD_VAR(TRANS_FILL_MODE, int, 0, "Fill insertions from translocation mutations with:\n0 = Duplication\n1 = Scrambled");
-  CONFIG_ADD_VAR(LGT_FILL_MODE, int, 0, "Fill insertions from lateral gene transfer mutations with:\n0 = Duplication\n1 = scrambled");
-  CONFIG_ADD_VAR(LGT_SOURCE_REGION, int, 0, "Extract gene for lateral transfer from:\n0 = Local Neighborhood\n1 = Entire Population");
   CONFIG_ADD_VAR(PARENT_MUT_PROB, double, 0.0, "Parent substitution rate (per-site, applied on divide)");
   CONFIG_ADD_VAR(PARENT_INS_PROB, double, 0.0, "Parent insertion rate (per-site, applied on divide)");
   CONFIG_ADD_VAR(PARENT_DEL_PROB, double, 0.0, "Parent deletion rate (per-site, applied on divide)");
@@ -423,11 +415,6 @@ public:
   CONFIG_ADD_VAR(ALLOW_MATE_SELECTION, bool, 0, "Allow organisms to select mates (requires instruction set support)");
 
 	
-  // -------- CPU Archetecture
-  CONFIG_ADD_GROUP(ARCHETECTURE_GROUP, "Details on how CPU should work");
-  CONFIG_ADD_VAR(IO_EXPIRE, bool, 1, "Is the expiration functionality of '-expire' I/O instructions enabled?");
-  CONFIG_ADD_VAR(POISON_PENALTY, double, 0.01, "Metabolic rate penalty applied when the 'poison' instruction is executed.");
-
   
   // -------- Reversion config options --------
   CONFIG_ADD_GROUP(REVERSION_GROUP, "Mutation Reversion\nMost of these slow down avida a lot, and should be set to 0.0 normally.");
@@ -470,8 +457,6 @@ public:
   CONFIG_ADD_VAR(THREAD_SLICING_METHOD, int, 0, "Formula for allocating CPU cycles across threads in an organism\n  (num_threads-1) * THREAD_SLICING_METHOD + 1\n0 = One thread executed per time slice.\n1 = All threads executed each time slice.\n");
   CONFIG_ADD_VAR(NO_CPU_CYCLE_TIME, int, 0, "Don't count each CPU cycle as part of gestation time\n");
   CONFIG_ADD_VAR(MAX_LABEL_EXE_SIZE, int, 1, "Max nops marked as executed when labels are used");
-  CONFIG_ADD_VAR(PRECALC_PHENOTYPE, int, 0, "0 = Disabled\n 1 = Assign precalculated merit at birth (unlimited resources only)\n 2 = Assign precalculated gestation time\n 3 = Assign precalculated merit AND gestation time.\n 4 = Assign last instruction counts \n 5 = Assign last instruction counts and merit\n 6 = Assign last instruction counts and gestation time \n 7 = Assign everything currently supported\nFitness will be evaluated for organism based on these settings.");
-  CONFIG_ADD_VAR(GENOTYPE_PHENPLAST_CALC, int, 100, "Number of times to test a genotype's\nplasticity during runtime.");
   
 
   // -------- Geneology config options --------
@@ -479,13 +464,6 @@ public:
   CONFIG_ADD_VAR(THRESHOLD, int, 3, "Number of organisms in a genotype needed for it\n  to be considered viable.");
   CONFIG_ADD_VAR(TEST_CPU_TIME_MOD, int, 20, "Time allocated in test CPUs (multiple of length)");
   
-
-  // -------- Organism Network config options --------
-  CONFIG_ADD_GROUP(ORGANISM_NETWORK_GROUP, "Organism Network Communication");
-  CONFIG_ADD_VAR(NET_DROP_PROB, double, 0.0, "Message drop rate");
-  CONFIG_ADD_VAR(NET_LOG_MESSAGES, int, 0, "Whether all messages are logged; 0=false (default), 1=true.");
-  CONFIG_ADD_VAR(NET_LOG_RETMESSAGES, int, 0, "Whether retrieved messages are logged; 0=false (default), 1=true.");
-
 
   // -------- Resource Hoarding (Collect) config options --------
   CONFIG_ADD_GROUP(HOARD_RESOURCE_GROUP, "Resource Hoarding Parameters");
@@ -513,23 +491,6 @@ public:
 
   
 
-  // -------- Promoters config options --------
-  CONFIG_ADD_GROUP(PROMOTER_GROUP, "Promoters");
-  CONFIG_ADD_VAR(PROMOTERS_ENABLED, int, 0, "Use the promoter/terminator execution scheme.\nCertain instructions must also be included.");
-  CONFIG_ADD_VAR(PROMOTER_INST_MAX, int, 0, "Maximum number of instructions to execute before terminating. 0 = off");
-  CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY, double, 1.0, "Chance of not terminating after each cpu cycle.");
-  CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY_INST, double, 1.0, "Chance of not terminating after each instruction.");
-  CONFIG_ADD_VAR(PROMOTER_TO_REGISTER, int, 0, "Place a promoter's base bit code in register BX when starting execution from it?");
-  CONFIG_ADD_VAR(TERMINATION_RESETS, int, 0, "Does termination reset the thread's state?");
-  CONFIG_ADD_VAR(NO_ACTIVE_PROMOTER_EFFECT, int, 0, "What happens when there are no active promoters?\n0 = Start execution at the beginning of the genome.\n1 = Kill the organism.\n2 = Stop the organism from executing any further instructions.");
-  CONFIG_ADD_VAR(PROMOTER_CODE_SIZE, int, 24, "Size of a promoter code in bits. (Maximum value is 32)");
-  CONFIG_ADD_VAR(PROMOTER_EXE_LENGTH, int, 3, "Length of promoter windows used to determine execution.");
-  CONFIG_ADD_VAR(PROMOTER_EXE_THRESHOLD, int, 2, "Minimum number of bits that must be set in a promoter window to allow execution.");
-  CONFIG_ADD_VAR(INST_CODE_LENGTH, int, 3, "Instruction binary code length (number of bits)");
-  CONFIG_ADD_VAR(INST_CODE_DEFAULT_TYPE, int, 0, "Default value of instruction binary code value.\n0 = All zeros\n1 = Based off the instruction number");
-  CONFIG_ADD_VAR(CONSTITUTIVE_REGULATION, int, 0, "Sense a new regulation value before each CPU cycle?");
-  
-
   // -------- Output Colors config options --------
   CONFIG_ADD_GROUP(COLORS_GROUP, "Output colors for when data files are printed in HTML mode.\nThere are two sets of these; the first are for lineages,\nand the second are for mutation tests.");
   CONFIG_ADD_VAR(COLOR_DIFF, cString, "CCCCFF", "Color to flag stat that has changed since parent.");
@@ -547,16 +508,8 @@ public:
   
   // -------- Movement config options --------
   CONFIG_ADD_GROUP(MOVEMENT_GROUP, "Movement Features Settings");
-  CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_LETHAL, int, 0, "Are collisions during movement lethal (not applied to avatars)? (0=no, use swap; 1=yes, use collision selection type; 2=no, but movement fails)"); 
-  CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_SELECTION_TYPE, int, 0, "0 = 50% chance\n1 = binned vitality based");
-  CONFIG_ADD_VAR(VITALITY_BIN_EXTREMES, double, 1.0, "vitality multiplier for extremes (> 1 stddev from the mean population age)");
-  CONFIG_ADD_VAR(VITALITY_BIN_CENTER, double, 10.0, "vitality multiplier for center bin (with 1 stddev of the mean population age)");
   CONFIG_ADD_VAR(DEADLY_BOUNDARIES, int, 0, "Are bounded grid border cell deadly? If == 1, orgs stepping onto boundary cells will disappear into oblivion (aka die)");
   CONFIG_ADD_VAR(STEP_COUNTING_ERROR, int, 0, "% chance a step is not counted as part of easterly/northerly travel.");
-  CONFIG_ADD_VAR(USE_AVATARS, int, 0, "Set orgs to move & navigate in solo avatar worlds(1=yes, 2=yes, with org interactions).");
-  CONFIG_ADD_VAR(AVATAR_BIRTH, int, 0, "0 = Same as parent\n1 = Random\n2 = Cell faced by parent avatar\n3 = next grid cell\n4 = Center of the world");
-  CONFIG_ADD_VAR(AVATAR_BIRTH_FACING, int, 0, "0 North \n 1 Random");
-  CONFIG_ADD_VAR(TRACK_BIRTH_LOCS, int, 0, "Log and print locations for all births place.");
 
   // -------- Sensing config options --------
   CONFIG_ADD_VAR(LOOK_DIST, int, -1, "-1: use limits set inside look instructions \n >-1: limit sight distance of look instructions to this number of cells");
@@ -599,11 +552,8 @@ public:
   // -------- DEPRECATED ---------
   CONFIG_ADD_GROUP(DEPRECATED_GROUP, "DEPRECATED (New functionality listed in comments)");
   CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive\nDEPRECATED: use command line options -a[nalyze] or -i[nteractive])");
-  CONFIG_ADD_VAR(REPRO_METHOD, int, 1, "Replace existing organism: 1=yes\nDEPRECATED: Use BIRTH_METHOD 3 instead.");
   CONFIG_ADD_VAR(LEGACY_GRID_LOCAL_SELECTION, bool, 0, "Enable legacy grid local mate selection.\nDEPRECATED: Birth chameber now uses population structure)");
-  CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Default, heads-based CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Multi-threaded Behavioral CPU");
   CONFIG_ADD_VAR(INST_SET, cString, "-", "Instruction set file ('-' = use default for hardware type)");
-  CONFIG_ADD_VAR(INST_SET_LOAD_LEGACY, int, 0, "Load legacy format instruction set file format");
 
 
 #endif

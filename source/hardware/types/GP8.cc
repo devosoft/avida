@@ -522,10 +522,6 @@ bool Hardware::Types::GP8::SingleProcess(cAvidaContext& ctx, bool speculative)
       if (do_record) {
         // this will differ from time used
         phenotype.IncNumExecs();
-        if (m_microtrace || m_topnavtrace) {
-          RecordMicroTrace(cur_inst);
-          if (m_topnavtrace) RecordNavTrace(m_use_avatar);
-        }
       }
       
       if (phenotype.GetToDelete()) {
@@ -673,119 +669,6 @@ void Hardware::Types::GP8::PrintStatus(ostream& fp)
     fp << "  Gene " << i << " (" << mem.GetSize() << "): " << mem.AsString() << endl;
   }
   
-  fp.flush();
-}
-
-void Hardware::Types::GP8::SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype)
-{
-  const Genome& in_genome = m_organism->GetGenome();
-  ConstInstructionSequencePtr in_seq_p;
-  in_seq_p.DynamicCastFrom(in_genome.Representation());
-  const InstructionSequence& in_seq = *in_seq_p;
-  
-  df.WriteTimeStamp();
-  cString org_dat("");
-  df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
-  df.WriteComment(org_dat.Set("Org ID: %d", m_organism->GetID()));
-  df.WriteComment(org_dat.Set("Genotype ID: %d", gen_id));
-  df.WriteComment(org_dat.Set("Genotype: %s", (const char*) genotype));
-  df.WriteComment(org_dat.Set("Genome Length: %d", in_seq.GetSize()));
-  df.WriteComment(" ");
-  df.WriteComment("Exec Stats Columns:");
-  df.WriteComment("CPU Cycle");
-  df.WriteComment("MicroOp");
-  df.WriteComment("Current Update");
-  df.WriteComment("Register Contents (CPU Cycle Origin of Contents)");
-  df.WriteComment("Current Thread");
-  df.WriteComment("IP Position");
-  df.WriteComment("RH Position");
-  df.WriteComment("WH Position");
-  df.WriteComment("FH Position");
-  df.WriteComment("CPU Cycle of Last Output");
-  df.WriteComment("Current Merit");
-  df.WriteComment("Current Bonus");
-  df.WriteComment("Forager Type");
-  df.WriteComment("Current Cell");
-  df.WriteComment("Avatar Cell");
-  df.WriteComment("Faced Direction");
-  df.WriteComment("Faced Cell Occupied?");
-  df.WriteComment("Faced Cell Has Hill?");
-  df.WriteComment("Faced Cell Has Wall?");
-  df.WriteComment("Queued Instruction");
-  df.WriteComment("Trailing NOPs");
-  df.WriteComment("Did Queued Instruction Execute (-1=no, paying cpu costs; 0=failed; 1=yes)");
-  df.Endl();
-}
-
-void Hardware::Types::GP8::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
-{
-  // basic status info
-  fp << m_cycle_count << " ";
-  fp << m_cur_uop << " ";
-  fp << m_world->GetStats().GetUpdate() << " ";
-  for (int i = 0; i < NUM_REGISTERS; i++) {
-    DataValue& reg = m_threads[m_cur_thread].reg[i];
-    fp << getRegister(ctx, i) << " ";
-    fp << "(" << reg.originated << ") ";
-  }
-  // genome loc info
-  fp << m_cur_thread << " ";
-  fp << getIP().Position() << " ";
-  fp << getHead(hREAD).Position() << " ";
-  fp << getHead(hWRITE).Position()  << " ";
-  fp << getHead(hFLOW).Position()   << " ";
-  // last output
-  fp << m_last_output << " ";
-  // phenotype/org status info
-  fp << m_organism->GetPhenotype().GetMerit().GetDouble() << " ";
-  fp << m_organism->GetPhenotype().GetCurBonus() << " ";
-  fp << m_organism->GetForageTarget() << " ";
-  // environment info / things that affect movement
-  fp << m_organism->GetOrgInterface().GetCellID() << " ";
-  if (m_use_avatar) fp << m_organism->GetOrgInterface().GetAVCellID() << " ";
-  if (!m_use_avatar) fp << m_organism->GetOrgInterface().GetFacedDir() << " ";
-  else fp << m_organism->GetOrgInterface().GetAVFacing() << " ";
-  if (!m_use_avatar) fp << m_organism->IsNeighborCellOccupied() << " ";
-  else fp << m_organism->GetOrgInterface().FacedHasAV() << " ";
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  Apto::Array<double> cell_resource_levels;
-  if (!m_use_avatar) cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
-  else cell_resource_levels = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
-  int wall = 0;
-  int hill = 0;
-  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) wall = 1;
-    if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) hill = 1;
-    if (hill == 1 && wall == 1) break;
-  }
-  fp << hill << " ";
-  fp << wall << " ";
-  // instruction about to be executed
-  cString next_name(GetInstSet().GetName(getIP().GetInst()));
-  fp << next_name << " ";
-  // any trailing nops (up to NUM_REGISTERS)
-  InstMemSpace& memory = getIP().MemSpaceIsGene() ? m_genes[getIP().MemSpaceIndex()].memory : m_mem_array[getIP().MemSpaceIndex()];
-  int pos = getIP().Position();
-  Apto::Array<int, Apto::Smart> seq;
-  seq.Resize(0);
-  for (int i = 0; i < NUM_REGISTERS; i++) {
-    pos += 1;
-    if (pos >= memory.GetSize()) pos = 0;
-    if (m_inst_set->IsNop(memory[pos])) seq.Push(m_inst_set->GetNopMod(memory[pos]));
-    else break;
-  }
-  cString mod_string;
-  for (int j = 0; j < seq.GetSize(); j++) {
-    mod_string += (char) seq[j] + 'A';
-  }
-  if (mod_string.GetSize() != 0) fp << mod_string << " ";
-  else fp << "NoMods" << " ";
-}
-
-void Hardware::Types::GP8::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
-{
-  fp << exec_sucess;
-  fp << endl;
   fp.flush();
 }
 

@@ -165,15 +165,6 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
   schema.Define("fem_res_cost", 0.0);  
   schema.Define("bonus_cost", 0.0);
   
-  // String  
-  schema.Define("inst_code", "");
-  
-  
-  // Ensure that the instruction code length is in the range of bits supported by the int type
-  int inst_code_len = m_world->GetConfig().INST_CODE_LENGTH.Get();
-  if ((unsigned)inst_code_len > (sizeof(int) * 8)) inst_code_len = sizeof(int) * 8;
-  else if (inst_code_len <= 0) inst_code_len = 1;
-  
   bool success = true;
   for (int line_id = 0; line_id < sl.GetSize(); line_id++) {
     cString cur_line = sl.GetLine(line_id);
@@ -245,36 +236,6 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     if (m_lib_name_map[inst_id].choosy_female_cost) m_has_choosy_female_costs = true;
     if (m_lib_name_map[inst_id].post_cost > 1) m_has_post_costs = true;
     if (m_lib_name_map[inst_id].bonus_cost) m_has_bonus_costs = true;
-    
-    // Parse the instruction code
-    cString inst_code = (const char*)args->String(0);
-    if (inst_code == "") {
-      switch (m_world->GetConfig().INST_CODE_DEFAULT_TYPE.Get()) {
-        case INST_CODE_ZEROS:
-          m_lib_name_map[inst_id].inst_code = 0;
-          break;
-        case INST_CODE_INSTNUM:
-          m_lib_name_map[inst_id].inst_code = ((~0) >> ((sizeof(int) * 8) - inst_code_len)) & inst_id;
-          break;
-        default:
-          if (feedback) feedback->Error("invalid default instruction code type");
-          success = false;
-          break;
-      }
-    } else {
-      int inst_code_val = 0;
-      for (int i = 0; i < inst_code_len && i < inst_code.GetSize(); i++) {
-        inst_code_val <<= 1;
-        if (inst_code[i] == '1') inst_code_val |= 1;
-        else if (inst_code[i] != '0') {
-          if (feedback) feedback->Error("invalid character in instruction code, must be 0 or 1");
-          success = false;
-          break;
-        }
-      }
-      
-      m_lib_name_map[inst_id].inst_code = inst_code_val;
-    }
     
 
     // If this is a nop, add it to the proper mappings

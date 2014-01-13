@@ -267,8 +267,6 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
            ("env_input", &cAnalyzeGenotype::DescEnvInput, &cAnalyzeGenotype::GetEnvInput));
   dcm->Add("inst", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
            ("inst", &cAnalyzeGenotype::DescInstExe, &cAnalyzeGenotype::GetInstExecutedCount));
-  dcm->Add("prob_task", new tDataEntryOfType<cAnalyzeGenotype, double (int)>
-           ("prob_task", &cAnalyzeGenotype::DescTaskProb, &cAnalyzeGenotype::GetTaskProbability, 5));
   
   
   // The remaining values should actually go in a separate list called
@@ -294,12 +292,6 @@ cString cAnalyzeGenotype::DescTask(int task_id) const
 {
   if (task_id > m_world->GetEnvironment().GetNumTasks()) return "";
   return m_world->GetEnvironment().GetTask(task_id).GetDesc();
-}
-
-cString cAnalyzeGenotype::DescTaskProb(int task_id) const
-{
-  if (task_id > m_world->GetEnvironment().GetNumTasks()) return "";
-  return DescTask(task_id) + " (Probability)";
 }
 
 

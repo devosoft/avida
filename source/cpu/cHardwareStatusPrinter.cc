@@ -27,23 +27,14 @@
 #include "cString.h"
 #include "cStringUtil.h"
 
-void cHardwareStatusPrinter::TraceHardware(cAvidaContext& ctx, cHardwareBase& hardware, bool bonus, bool minitrace, const int exec_success)
+void cHardwareStatusPrinter::TraceHardware(cAvidaContext& ctx, cHardwareBase& hardware, bool bonus, const int exec_success)
 {
   cOrganism* organism = hardware.GetOrganism();
 
   if (!organism) return;
   
-  if (m_minitracer && minitrace && !m_file->HeaderDone()) {
-    Apto::String genotype_name = organism->SystematicsGroup("genotype")->Properties().Get("genotype").StringValue();
-    hardware.SetupMiniTraceFileHeader(*m_file, organism->SystematicsGroup("genotype")->ID(), genotype_name);
-  }
-    
-  if (exec_success == -2) {
-    if (!m_minitracer && !minitrace) organism->PrintStatus(m_file->OFStream());
-    else if (m_minitracer && minitrace && exec_success == -2) organism->PrintMiniTraceStatus(ctx, m_file->OFStream());
-  } else if (m_minitracer && minitrace && exec_success != -2) {
-    organism->PrintMiniTraceSuccess(m_file->OFStream(), exec_success);
-  }
+  
+  if (exec_success == -2) organism->PrintStatus(m_file->OFStream());
 }
 
 void cHardwareStatusPrinter::TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism)

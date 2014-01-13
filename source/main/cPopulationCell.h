@@ -134,12 +134,9 @@ public:
   inline bool HasAV() const { return (GetNumPredAV() > 0 || GetNumPreyAV() > 0); }
   inline bool HasPredAV() const { return GetNumPredAV() > 0; }
   inline bool HasPreyAV() const { return GetNumPreyAV() > 0; }
-  bool HasOutputAV(cOrganism* org);
   cOrganism* GetRandAV(cAvidaContext& ctx) const;
   cOrganism* GetRandPredAV() const;
   cOrganism* GetRandPreyAV() const;
-  Apto::Array<cOrganism*> GetCellInputAVs();
-  Apto::Array<cOrganism*> GetCellOutputAVs();
   Apto::Array<cOrganism*> GetCellAVs();
 
 

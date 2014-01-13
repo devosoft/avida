@@ -158,9 +158,6 @@ private:
   bool LoadSetActive(cString desc, Feedback& feedback);
   
   bool LoadDynamicResource(cString desc, Feedback& feedback);
-  double GetTaskProbability(cAvidaContext& ctx, cTaskContext& taskctx,
-
-                            const tList<cReactionProcess>& req_proc, bool& force_mark_task) const;
   
   bool TestRequisites(cTaskContext& taskctx, const cReaction* cur_reaction, int task_count,
                       const Apto::Array<int>& reaction_count, const bool on_divide = false) const;
@@ -168,7 +165,7 @@ private:
                       const Apto::Array<int>& reaction_count, const bool on_divide = false) const;
   void DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list, 
                    const Apto::Array<double>& resource_count, const Apto::Array<double>& rbin_count,
-                   const double task_quality, const double task_probability,
+                   const double task_quality,
                    const int task_count, const int reaction_id, 
                    cReactionResult& result, cTaskContext& taskctx) const;
     

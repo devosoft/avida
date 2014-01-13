@@ -63,7 +63,7 @@ void cTestCPU::InitResources(cAvidaContext& ctx)
   
   // If they didn't send anything (usually during an avida run as opposed to analyze mode),
   // then we set up a static variable (or just point to it) that reflects the initial conditions of the run
-  // from the environment file.  (JEB -- This code moved from cAnalyze::cAnalyze).
+  // from the environment file.
   if (m_res_method == RES_INITIAL)
   {
     // Initialize the time oriented resource list to be just the initial

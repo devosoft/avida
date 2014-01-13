@@ -38,8 +38,6 @@
 
 #include "cAction.h"
 #include "cActionLibrary.h"
-#include "cAnalyze.h"
-#include "cAnalyzeGenotype.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
@@ -121,25 +119,6 @@ STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
 STATS_OUT_FILE(PrintTargets,                  targets.dat);
 STATS_OUT_FILE(PrintMimicDisplays,            mimics.dat);
 STATS_OUT_FILE(PrintTopPredTargets,           top_pred_targets.dat);
-
-
-
-#define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
-class cAction ## METHOD : public cAction {                                                /*  2 */ \
-private:                                                                                  /*  3 */ \
-cString m_filename;                                                                     /*  4 */ \
-public:                                                                                   /*  5 */ \
-cAction ## METHOD(cWorld* world, const cString& args, Feedback&) : cAction(world, args)            /*  6 */ \
-{                                                                                       /*  7 */ \
-cString largs(args);                                                                  /*  8 */ \
-if (largs == "") m_filename = #DEFAULT; else m_filename = largs.PopWord();            /*  9 */ \
-}                                                                                       /* 10 */ \
-static const cString GetDescription() { return "Arguments: [string fname=\"" #DEFAULT "\"]"; }  /* 11 */ \
-void Process(cAvidaContext&) { m_world->GetPopulation().METHOD(m_filename); }       /* 12 */ \
-}                                                                                         /* 13 */ \
-
-POP_OUT_FILE(PrintPhenotypeData,       phenotype_count.dat );
-POP_OUT_FILE(PrintPhenotypeStatus,     phenotype_status.dat);
 
 
 class cActionPrintResourceData : public cAction
@@ -1318,12 +1297,6 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    //Handle possible errors
-    if (ctx.GetAnalyzeMode()) {
-      ctx.Driver().Feedback().Error("PrintRelativeFitnessHistogram requires avida to be in run mode.");
-      ctx.Driver().Abort(Avida::INVALID_CONFIG);
-    }
-    
     //Gather data objects
     cPopulation& pop        = m_world->GetPopulation();
     const int    update     = m_world->GetStats().GetUpdate();
@@ -1358,130 +1331,6 @@ public:
 
 
 
-/*
- @MRR March 2007 [UNTESTED]
- This function will take the initial genotype for each organism in the
- population/batch, align them, and calculate the per-site entropy of the
- aligned sequences.  Please note that there may be a variable number
- of columns in each line if the runs are not fixed length.  The site
- entropy will be measured in mers, normalized by the instruction set size.
- This is a population/batch measure of entropy, not a mutation-selection balance
- measure.
- */
-class cActionPrintGenomicSiteEntropy : public cAction
-{
-private:
-  cString m_filename;
-  bool    m_use_gap;
-  
-public:
-  cActionPrintGenomicSiteEntropy(cWorld* world, const cString& args, Feedback&) : cAction(world, args){
-    cString largs = args;
-    m_filename = (largs.GetSize()) ? largs.PopWord() : "GenomicSiteEntropy.dat";
-  }
-  
-  static const cString GetDescription() { return "Arguments: [filename = \"GenomicSiteEntropyData.dat\"]";}
-  
-  void Process(cAvidaContext& ctx)
-  {
-    const int        num_insts  = m_world->GetHardwareManager().GetDefaultInstSet().GetSize();
-    Apto::Array<cString> aligned;  //This will hold all of our aligned sequences
-    
-    if (ctx.GetAnalyzeMode()) //We're in analyze mode, so process the current batch
-    {
-      cAnalyze& analyze = m_world->GetAnalyze();
-      if (!analyze.GetCurrentBatch().IsAligned()) analyze.AlignCurrentBatch(); //Let analyze take charge of aligning this batch
-      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
-      cAnalyzeGenotype* genotype = NULL;
-      while((genotype = batch_it.Next()))
-      {
-        aligned.Push(genotype->GetAlignedSequence());
-      }
-    }
-    else //We're not in analyze mode, process the population
-    {
-      cPopulation& pop = m_world->GetPopulation();
-      for (int i = 0; i < pop.GetSize(); i++)
-      {
-        if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
-        ConstInstructionSequencePtr seq;
-        seq.DynamicCastFrom(pop.GetCell(i).GetOrganism()->GetGenome().Representation());
-        aligned.Push((const char*)seq->AsString());
-      }
-      AlignStringArray(aligned);  //Align our population genomes
-    }
-    
-    //With all sequences aligned and stored, we can proceed to calculate per-site entropies
-    if (!aligned.GetSize())
-    {
-      ctx.Driver().Feedback().Notify("cActionPrintGenomicSiteEntropy: No sequences available.  Abort.");
-      return;
-    }
-    
-    const int gen_size = aligned[0].GetSize();
-    Apto::Array<double> site_entropy(gen_size);
-    site_entropy.SetAll(0.0);
-    
-    Apto::Array<int> inst_count( (m_use_gap) ? num_insts + 1 : num_insts);  //Add an extra place if we're using gaps
-    inst_count.SetAll(0);
-    for (int pos = 0; pos < gen_size; pos++)
-    {
-      inst_count.SetAll(0);  //Reset the counter for each aligned position
-      int total_count = 0;
-      for (int seq = 0; seq < aligned.GetSize(); seq++)
-      {
-        char ch = aligned[seq][pos];
-        if (ch == '_' && !m_use_gap) continue;                  //Skip gaps when applicable
-        else if (ch == '_') site_entropy[num_insts]++;          //Update gap count at end
-        else inst_count[ Instruction(ch).GetOp() ]++;   //Update true instruction count
-        total_count++;
-      }
-      for (int c = 0; c < inst_count.GetSize(); c++)
-      {
-        double p = (inst_count[c] > 0) ? inst_count[c] / static_cast<double>(total_count) : 0.0;
-        site_entropy[pos] += (p > 0.0) ? - p * log(p) / log(static_cast<double>(inst_count.GetSize())) : 0.0;
-      }
-    }
-  }
-  
-  
-private:
-  void AlignStringArray(Apto::Array<cString>& unaligned)  //Taken from cAnalyze::CommandAnalyze
-  {
-    // Create an array of all the sequences we need to align.
-    const int num_sequences = unaligned.GetSize();
-    
-    // Move through each sequence an update it.
-    cString diff_info;
-    for (int i = 1; i < num_sequences; i++) {
-      // Track of the number of insertions and deletions to shift properly.
-      int num_ins = 0;
-      int num_del = 0;
-      
-      // Compare each string to the previous.
-      cStringUtil::EditDistance(unaligned[i], unaligned[i-1], diff_info, '_');
-      while (diff_info.GetSize() != 0) {
-        cString cur_mut = diff_info.Pop(',');
-        const char mut_type = cur_mut[0];
-        cur_mut.ClipFront(1); cur_mut.ClipEnd(1);
-        int position = cur_mut.AsInt();
-        if (mut_type == 'M') continue;   // Nothing to do with Mutations
-        
-        if (mut_type == 'I') {           // Handle insertions
-          for (int j = 0; j < i; j++)    // Loop back and insert an '_' into all previous sequences
-            unaligned[j].Insert('_', position + num_del);
-          num_ins++;
-        }
-        
-        else if (mut_type == 'D'){      // Handle Deletions
-          // Insert '_' into the current sequence at the point of deletions.
-          unaligned[i].Insert("_", position + num_ins);
-          num_del++;
-        }
-      }
-    }
-  }
-};
 
 
 
@@ -2730,10 +2579,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintInstructionData>("PrintInstructionData");
   action_lib->Register<cActionPrintDynamicMaxMinData>("PrintDynamicMaxMinData");
   
-  // Population Out Files
-  action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
-  action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
-  
   
   action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
   action_lib->Register<cActionPrintOrgLocData>("PrintOrgLocData");
@@ -2759,8 +2604,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTaskSnapshot>("PrintTaskSnapshot");
   action_lib->Register<cActionPrintViableTasksData>("PrintViableTasksData");
   action_lib->Register<cActionPrintAveNumTasks>("PrintAveNumTasks");
-  
-  action_lib->Register<cActionPrintGenomicSiteEntropy>("PrintGenomicSiteEntropy");
   
   // Grid Information Dumps
   action_lib->Register<cActionDumpClassificationIDGrid>("DumpClassificationIDGrid");

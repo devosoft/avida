@@ -31,10 +31,6 @@
 #include "avida/private/systematics/Genotype.h"
 
 #include "cActionLibrary.h"
-#include "cAnalyzeGenotype.h"
-#include "cHardwareManager.h"
-#include "cModularityAnalysis.h"
-#include "cOrganism.h"
 
 #include <csignal>
 
@@ -55,10 +51,6 @@ void Avida::Initialize()
   GlobalObjectManager::Initialize();
   
   cActionLibrary::Initialize();
-  cAnalyzeGenotype::Initialize();
-  cHardwareManager::Initialize();
-  cModularityAnalysis::Initialize();
-  cOrganism::Initialize();
   
   Environment::Resources::Global::Initialize();
   Biota::Organism::Initialize();

@@ -31,8 +31,6 @@
 
 #include <cassert>
 
-class cAnalyze;
-class cAnalyzeGenotype;
 class cEnvironment;
 class cEventList;
 class cHardwareManager;
@@ -54,7 +52,6 @@ class cWorld
 protected:
   cString m_working_dir;
   
-  cAnalyze* m_analyze;
   cAvidaConfig* m_conf;
   
   cEnvironment* m_env;
@@ -81,7 +78,6 @@ public:
   const cString& GetWorkingDir() const { return m_working_dir; }
   
   // General Object Accessors
-  cAnalyze& GetAnalyze();
   cAvidaConfig& GetConfig() { return *m_conf; }
   cEnvironment& GetEnvironment() { return *m_env; }
   cHardwareManager& GetHardwareManager() { return *m_hw_mgr; }

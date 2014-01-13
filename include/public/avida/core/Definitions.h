@@ -124,12 +124,6 @@ enum eBASE_MERIT
   
 };
 
-enum eINST_CODE_DEFAULT
-{
-  INST_CODE_ZEROS = 0,
-  INST_CODE_INSTNUM
-};
-
 
 enum eVerbosity {
   VERBOSE_SILENT = 0,   // 0: No output at all

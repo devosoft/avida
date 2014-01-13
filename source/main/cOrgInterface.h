@@ -77,8 +77,7 @@ public:
   virtual void KillOrganism(cAvidaContext& ctx, int cell_id) = 0;
   virtual void Rotate(cAvidaContext& ctx, int direction = 1) = 0;
   
-  virtual bool GetLGTFragment(cAvidaContext& ctx, int region, const Genome& dest_genome, InstructionSequence& seq) = 0;
-  
+ 
   virtual int GetInputAt(int& input_pointer) = 0;
   virtual void ResetInputs(cAvidaContext& ctx) = 0;
   virtual const Apto::Array<int>& GetInputs() const = 0;
@@ -114,7 +113,6 @@ public:
   virtual void IncNumTopPredOrganisms() = 0;
   virtual void AttackFacedOrg(cAvidaContext& ctx, int loser) = 0;
   
-  virtual void TryWriteBirthLocData(int org_idx) = 0;
   virtual void InjectPreyClone(cAvidaContext& ctx, int gen_id) = 0;
   virtual void KillRandPred(cAvidaContext& ctx, cOrganism* org) = 0;
   virtual void KillRandPrey(cAvidaContext& ctx, cOrganism* org) = 0;
@@ -122,12 +120,9 @@ public:
   virtual void TryWriteLookOutput(cString& string) = 0;
   virtual void TryWriteLookEXOutput(cString& string) = 0;
   
-  virtual bool HasOutputAV(int av_num = 0) = 0;
-  virtual bool FacedHasOutputAV(int av_num = 0) = 0;
   virtual bool FacedHasAV(int av_num = 0) = 0;
   virtual bool FacedHasPredAV(int av_num = 0) = 0;
   virtual bool FacedHasPreyAV(int av_num = 0) = 0;
-  virtual void AddIOAV(cAvidaContext& ctx, int av_cell_id, int av_facing, bool input, bool output) = 0;
   virtual void AddPredPreyAV(cAvidaContext& ctx, int av_cell_id) = 0;
   virtual void SwitchPredPrey(cAvidaContext& ctx, int av_num = 0) = 0;
   virtual void RemoveAllAV() = 0;

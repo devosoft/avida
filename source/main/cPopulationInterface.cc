@@ -98,87 +98,6 @@ cPopulationCell* cPopulationInterface::GetCellFaced() {
 }
 
 
-bool cPopulationInterface::GetLGTFragment(cAvidaContext& ctx, int region, const Genome& dest_genome, InstructionSequence& seq)
-{
-  const int MAX_POP_SAMPLES = 10;
-  ConstInstructionSequencePtr src_seq(NULL);
-  
-  switch (region) {
-      // Local Neighborhood
-    case 0:
-    {
-      Apto::Array<cPopulationCell*> occupied_cells;
-      GetCell()->GetOccupiedNeighboringCells(occupied_cells);
-      
-      int num_cells = occupied_cells.GetSize();
-      for (int i = 0; i < num_cells;) {
-        const Genome* cell_genome = &occupied_cells[i]->GetOrganism()->GetGenome();
-        if (cell_genome->HardwareType() != dest_genome.HardwareType()) {
-          // Organism type mis-match, remove from consideration;
-          num_cells--;
-          occupied_cells[i] = occupied_cells[num_cells];
-        } else {
-          i++;
-        }
-      }
-      
-      if (num_cells == 0) return false;
-      
-      int cell_idx = ctx.GetRandom().GetInt(num_cells);
-      src_seq.DynamicCastFrom(occupied_cells[cell_idx]->GetOrganism()->GetGenome().Representation());
-    }
-      break;
-      
-      // Entire Population
-    case 1:
-    {
-      const Apto::Array<cOrganism*, Apto::Smart>& live_org_list = m_world->GetPopulation().GetLiveOrgList();
-      for (int i = 0; i < MAX_POP_SAMPLES; i++) {
-        int org_idx = ctx.GetRandom().GetInt(live_org_list.GetSize());
-        const Genome* org_genome = &live_org_list[org_idx]->GetGenome();
-        if (org_genome->HardwareType() != dest_genome.HardwareType()) {
-          src_seq.DynamicCastFrom(org_genome->Representation());
-          break;
-        }
-      }
-      
-      if (!src_seq) return false;
-    }
-      break;
-      
-    default:
-      return false;
-  }
-  
-  assert(src_seq);
-  
-  // Select random start and end point
-  int from = ctx.GetRandom().GetInt(src_seq->GetSize());
-  int to = ctx.GetRandom().GetInt(src_seq->GetSize());
-
-  // Order from and to indices
-  if (from > to) {
-    int tmp = to;
-    to = from;
-    from = tmp;
-  }
-  
-  // Resize outgoing sequence and copy over the fragment
-  int new_size = to - from;
-  if (new_size == 0) {
-    // zero size treated as transfer of the whole genome
-    seq = (*src_seq);
-  } else {
-    seq.Resize(new_size);
-    for (int i = from; i < to; i++) {
-      seq[i - from] = (*src_seq)[i];
-    }
-  }
-  
-  return true;
-}
-
-
 bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome)
 {
   assert(parent != NULL);
@@ -376,12 +295,7 @@ bool cPopulationInterface::UpdateMerit(double new_merit)
 
 
 
-bool cPopulationInterface::Move(cAvidaContext& ctx, int src_id, int dest_id)
-{
-  return m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, -1);
-}
-
-void cPopulationInterface::AddLiveOrg()  
+void cPopulationInterface::AddLiveOrg()
 {
   m_world->GetPopulation().AddLiveOrg(GetOrganism());
 }
@@ -426,11 +340,6 @@ void cPopulationInterface::IncNumTopPredOrganisms()
 void cPopulationInterface::AttackFacedOrg(cAvidaContext& ctx, int loser)
 {
   m_world->GetPopulation().AttackFacedOrg(ctx, loser);
-}
-
-void cPopulationInterface::TryWriteBirthLocData(int org_idx)
-{
-  if (m_world->GetConfig().TRACK_BIRTH_LOCS.Get()) m_world->GetStats().PrintBirthLocData(org_idx);
 }
 
 void cPopulationInterface::InjectPreyClone(cAvidaContext& ctx, int gen_id)
@@ -487,28 +396,6 @@ void cPopulationInterface::TryWriteLookEXOutput(cString& string)
  * supported: input and output, also used as predators and prey. 
  */
 
-// Check if the avatar has any output avatars sharing the same cell
-bool cPopulationInterface::HasOutputAV(int av_num)
-{
-  // If the avatar exists..
-  if (av_num < GetNumAV()) {
-    // Check the avatar's cell for an output avatar
-    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).HasOutputAV(GetOrganism());
-  }
-  return false;
-}
-
-// Check if the avatar's faced cell has any output avatars
-bool cPopulationInterface::FacedHasOutputAV(int av_num)
-{
-  // If the avatar exists..
-  if (av_num < GetNumAV()) {
-    // Check the avatar's faced cell for an output avatar
-    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).HasOutputAV(GetOrganism());
-  }
-  return false;
-}
-
 // Check if the avatar's faced cell has any avatars
 bool cPopulationInterface::FacedHasAV(int av_num)
 {
@@ -540,27 +427,6 @@ bool cPopulationInterface::FacedHasPreyAV(int av_num)
     return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).HasOutputAV();
   }
   return false;
-}
-
-// Creates a new avatar and adds it to the cell avatar lists
-void cPopulationInterface::AddIOAV(cAvidaContext& ctx, int av_cell_id, int av_facing, bool input, bool output)
-{
-  // Add new avatar to m_avatars
-  sIO_avatar tmpAV(av_cell_id, av_facing, -1, input, output);
-  m_avatars.Push(tmpAV);
-
-  // If this is an input avatar add to the target cell
-  if (input) {
-    m_world->GetPopulation().GetCell(av_cell_id).AddPredAV(ctx, GetOrganism());
-  }
-
-  // If this is an output avatar add to the target cell
-  if (output) {
-    m_world->GetPopulation().GetCell(av_cell_id).AddPreyAV(ctx, GetOrganism());
-  }
-
-  // Find the created avatar's faced cell
-  SetAVFacedCellID(ctx, GetNumAV() - 1);
 }
 
 // Creates a new avatar based on the organism's forage target as a predator or prey, and adds it to the cell

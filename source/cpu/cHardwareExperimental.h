@@ -26,35 +26,11 @@
 #include "avida/hardware/InstLib.h"
 #include "avida/util/NopSequence.h"
 
-#include "avida/private/hardware/features/VisualSensor.h"
-
-#include "cEnvironment.h"
-#include "cHardwareBase.h"
-#include "cHeadCPU.h"
-#include "cStats.h"
-
-
-#include "cEnvironment.h"
-
-#include <cstring>
-#include <iomanip>
-
-/**
- * Each organism may have a cHardwareExperimental structure which keeps track of the
- * current status of all the components of the simulated hardware.
- **/
-
-class cInstSet;
-class cMutation;
-class cOrganism;
-
-using namespace Avida::Hardware;
-
 
 class cHardwareExperimental : public cHardwareBase
 {
 public:
-  typedef bool (cHardwareExperimental::*tMethod)(cAvidaContext& ctx);
+  typedef bool (cHardwareExperimental::*tMethod)(Context& ctx);
 
 private:
   // --------  Structure Constants  --------
@@ -118,8 +94,6 @@ private:
   {
   private:
     int m_id;
-    int m_promoter_inst_executed;
-    unsigned int m_execurate;
     
 
     cLocalThread(const cLocalThread&);
@@ -155,26 +129,6 @@ private:
     void Reset(cHardwareExperimental* in_hardware, int in_id);
     inline int GetID() const { return m_id; }
     inline void SetID(int in_id) { m_id = in_id; }
-    
-    inline unsigned int GetExecurate() const { return m_execurate; }
-    inline void UpdateExecurate(int code_len, unsigned int inst_code) { m_execurate <<= code_len; m_execurate |= inst_code; }      
-    
-    inline int GetPromoterInstExecuted() const { return m_promoter_inst_executed; }
-    inline void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
-    inline void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
-  };
-  
-  
-  struct cPromoter 
-  {
-  public:
-    int pos;        // position within genome
-    int bit_code;   // bit code of promoter
-    int regulation;
-    
-    inline cPromoter(int p = 0, int bc = 0, int reg = 0) : pos(p), bit_code(bc), regulation(reg) { ; }
-    inline int GetRegulatedBitCode() { return bit_code ^ regulation; }
-    inline ~cPromoter() { ; }
   };
   
   
@@ -206,10 +160,6 @@ private:
     bool m_thread_slicing_parallel:1;
     bool m_no_cpu_cycle_time:1;
     
-    bool m_promoters_enabled:1;
-    bool m_constitutive_regulation:1;
-    bool m_no_active_promoter_halt:1;
-    
     bool m_slip_read_head:1;
     
     bool m_io_expire:1;
@@ -217,11 +167,6 @@ private:
     unsigned int m_waiting_threads:4;
   };
   
-  
-  // Promoter model
-  int m_promoter_index;       // site to begin looking for the next active promoter from
-  int m_promoter_offset;      // bit offset when testing whether a promoter is on
-  Apto::Array<cPromoter, Apto::ManagedPointer> m_promoters;
   
   
   cHardwareExperimental(const cHardwareExperimental&); // @not_implemented
@@ -245,9 +190,6 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_EXPERIMENTAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype);
-  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp);
-  void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success);
   
   // --------  Stack Manipulation  --------
   inline int GetStack(int depth=0, int stack_id = -1, int in_thread = -1) const;
@@ -370,11 +312,6 @@ private:
   void ReadInst(Instruction in_inst);
   
   
-  // ---------- Promoter Helper Functions -----------
-  void PromoterTerminate(cAvidaContext& ctx);
-  int  Numberate(int _pos, int _dir, int _num_bits = 0);
-  bool Do_Numberate(cAvidaContext& ctx, int num_bits = 0);
-  
   
   // ---------- Instruction Library -----------
   // Multi-threading
@@ -429,11 +366,9 @@ private:
 
   // I/O and Sensory
   bool Inst_TaskIO(cAvidaContext& ctx);
-  bool Inst_TaskIOExpire(cAvidaContext& ctx);
   bool Inst_TaskInput(cAvidaContext& ctx);
   bool Inst_TaskOutput(cAvidaContext& ctx);
   bool Inst_TaskOutputZero(cAvidaContext& ctx);
-  bool Inst_TaskOutputExpire(cAvidaContext& ctx);
 
   // Head-based Instructions
   bool Inst_HeadAlloc(cAvidaContext& ctx);
@@ -475,18 +410,6 @@ private:
   bool Inst_WaitCondition_Less(cAvidaContext& ctx);
   bool Inst_WaitCondition_Greater(cAvidaContext& ctx);
   
-  // Promoter Model
-  bool Inst_Promoter(cAvidaContext& ctx);
-  bool Inst_Terminate(cAvidaContext& ctx);
-  bool Inst_TerminateConsensus(cAvidaContext& ctx);
-  bool Inst_TerminateConsensus24(cAvidaContext& ctx);
-  bool Inst_Regulate(cAvidaContext& ctx);
-  bool Inst_RegulateSpecificPromoters(cAvidaContext& ctx);
-  bool Inst_SenseRegulate(cAvidaContext& ctx);
-  bool Inst_Numberate(cAvidaContext& ctx) { return Do_Numberate(ctx); };
-  bool Inst_Numberate24(cAvidaContext& ctx) { return Do_Numberate(ctx, 24); };
-  bool Inst_Execurate(cAvidaContext& ctx);
-  bool Inst_Execurate24(cAvidaContext& ctx);  
 
   // Bit Consensus
   bool Inst_BitConsensus(cAvidaContext& ctx);
@@ -522,15 +445,6 @@ private:
   bool Inst_RotateOrgID(cAvidaContext& ctx);
   bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
 
-  // Neural networking 
-  bool Inst_RotateNeuronAVLeft(cAvidaContext& ctx);
-  bool Inst_RotateNeuronAVRight(cAvidaContext& ctx);
-  bool Inst_RotateNeuronAVbyX(cAvidaContext& ctx);
-  bool Inst_MoveNeuronAV(cAvidaContext& ctx);
-  bool Inst_IfNeuronInputHasOutputAV(cAvidaContext& ctx);
-  bool Inst_IfNotNeuronInputHasOutputAV(cAvidaContext& ctx);
-  bool Inst_IfNeuronInputFacedHasOutputAV(cAvidaContext& ctx);
-  bool Inst_IfNotNeuronInputFacedHasOutputAV(cAvidaContext& ctx);
   
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 

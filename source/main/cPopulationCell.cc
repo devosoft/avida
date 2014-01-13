@@ -96,12 +96,6 @@ void cPopulationCell::Rotate(cPopulationCell& new_facing)
 {
   // @CAO Note, this breaks avida if new_facing is not in connection_list
 	
-  //@AWC if this cell contains a migrant then we assume new_facing is not in the connection list and bail out ...
-  if(IsMigrant()){
-    UnsetMigrant(); //@AWC -- unset the migrant flag for the next time this cell is used
-    return;
-  }
-	
 #ifdef DEBUG
   int scan_count = 0;
 #endif
@@ -257,9 +251,3 @@ cOrganism * cPopulationCell::RemoveOrganism(cAvidaContext& ctx)
   m_hardware = NULL;
   return out_organism;
 }
-
-
-
-
-
-

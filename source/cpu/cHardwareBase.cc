@@ -29,7 +29,6 @@
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"
-#include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
@@ -43,7 +42,6 @@ using namespace Avida;
 
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
 : m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
-, m_minitrace(false), m_microtrace(false), m_topnavtrace(false), m_reprotrace(false)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
 , m_has_res_costs(m_inst_set->HasResCosts())
 , m_has_post_costs(inst_set->HasPostCosts()), m_has_bonus_costs(inst_set->HasBonusCosts())
@@ -61,10 +59,6 @@ cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* in
 void cHardwareBase::Reset(cAvidaContext& ctx)
 {
   m_organism->HardwareReset(ctx);
-  m_microtracer.Resize(0);
-  m_navtraceloc.Resize(0);
-  m_navtracefacing.Resize(0);
-  m_navtraceupdate.Resize(0);
   ResizeCostArrays(m_world->GetConfig().MAX_CPU_THREADS.Get());
   
   const int num_inst_cost = m_inst_set->GetSize();
@@ -250,7 +244,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
-  // All slip, translocation, and LGT mutations should happen first, so that there is a chance
+  // All slip and translocation mutations should happen first, so that there is a chance
   // of getting a point mutation within one copy in the same divide.
   
   // Divide Slip Mutations - NOT COUNTED.
@@ -283,21 +277,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   }
 
   
-  // Divide Lateral Gene Transfer Mutations - NOT COUNTED.
-  if (m_organism->TestDivideLGT(ctx)) doLGTMutation(ctx, offspring_genome);
-  
-  // Poisson Lateral Gene Transfer Mutations - NOT COUNTED
-  unsigned int num_poisson_lgt = m_organism->NumDividePoissonLGT(ctx);
-  for (unsigned int i = 0; i < num_poisson_lgt; i++) { doLGTMutation(ctx, offspring_genome);  }
-  
-  // Lateral Gene Transfer Mutations (per site) - NOT COUNTED
-  if (m_organism->GetDivLGTProb() > 0) {
-    int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(),
-                                                  m_organism->GetDivLGTProb() / mut_multiplier);
-    for (int i = 0; i < num_mut; i++) doLGTMutation(ctx, offspring_genome);
-  }
-
-	
   // Divide Mutations
   if (m_organism->TestDivideMut(ctx) && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
@@ -683,63 +662,6 @@ void cHardwareBase::doTransMutation(cAvidaContext& ctx, InstructionSequence& gen
     for (int i = ins_loc; i < genome_copy.GetSize(); i++) genome[i + insertion_length] = genome_copy[i];
   }
 }
-
-
-// Lateral Gene Transfer Mutations
-// Similar to Translocation mutations, except that the source fragments come from other organism genomes
-void cHardwareBase::doLGTMutation(cAvidaContext& ctx, InstructionSequence& genome)
-{
-  
-  // All combinations except beginning to past end allowed
-  int from = ctx.GetRandom().GetInt(genome.GetSize() + 1);
-  int to = (from == 0) ? ctx.GetRandom().GetInt(genome.GetSize()) : ctx.GetRandom().GetInt(genome.GetSize() + 1);
-  
-  // Resize child genome
-  int insertion_length = (from - to);
-
-  if (insertion_length > 0) {
-    InstructionSequence ins_seq;
-    if (m_organism->GetOrgInterface().GetLGTFragment(ctx, m_world->GetConfig().LGT_SOURCE_REGION.Get(), m_organism->GetGenome(), ins_seq)) {
-      InstructionSequence genome_copy(genome);
-      genome.Resize(genome.GetSize() + ins_seq.GetSize());
-      int ins_loc = ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
-      
-      // Insert the transfered fragment
-      switch (m_world->GetConfig().LGT_FILL_MODE.Get()) {
-          // Duplication
-        case 0:
-          for (int i = 0; i < ins_seq.GetSize(); i++) genome[i + ins_loc] = ins_seq[i];
-          break;
-          
-          // Scrambled
-        case 1:
-        {
-          for (int i = 0; i < ins_seq.GetSize(); i++) {
-            int copy_index = ctx.GetRandom().GetInt(ins_seq.GetSize() - i);
-            genome[ins_loc + i] = ins_seq[copy_index];
-            ins_seq[copy_index] = ins_seq[ins_seq.GetSize() - i - 1];
-          }
-        }
-          
-        default:
-          ctx.Driver().Feedback().Error("Unknown LGT_FILL_MODE");
-          ctx.Driver().Abort(Avida::INVALID_CONFIG);
-      }
-      
-      // Copy over the rest of the sequence
-      for (int i = ins_loc; i < genome_copy.GetSize(); i++) genome[i + ins_seq.GetSize()] = genome_copy[i];
-    } else {
-      // Fragment selection failed, mutation fallback to translocation
-      doTransMutation(ctx, genome);
-    }
-  } else if (insertion_length < 0) {
-    // Deletion
-    InstructionSequence genome_copy(genome);
-    genome.Resize(genome.GetSize() + insertion_length);
-    for (int i = 0; (to + i) < genome_copy.GetSize() - to; i++) genome[from + i] = genome_copy[to + i];
-  }
-}
-
 
 
 
@@ -1254,51 +1176,4 @@ void cHardwareBase::SingleProcess_SetPostCPUCosts(cAvidaContext&, const Instruct
   return;
 }
 
-
-void cHardwareBase::SetMiniTrace(const cString& filename)
-{
-  m_tracer = HardwareTracerPtr(new cHardwareStatusPrinter(m_world->GetNewWorld(), (const char*)filename, true));
-  m_minitrace = true;
-}
-
-void cHardwareBase::RecordMicroTrace(const Instruction& cur_inst)
-{
-  m_microtracer.Push(cur_inst.GetSymbol()[0]);
-}
-
-void cHardwareBase::PrintMicroTrace(int gen_id)
-{
-  if (m_microtrace) {
-    m_world->GetStats().PrintMicroTraces(m_microtracer, m_organism->GetPhenotype().GetUpdateBorn(), m_organism->GetID(), m_organism->GetForageTarget(), gen_id);
-    m_microtrace = false;
-  }
-}
-
-void cHardwareBase::RecordNavTrace(bool use_avatar)
-{
-  int loc = m_organism->GetOrgInterface().GetCellID();
-  if (use_avatar) loc = m_organism->GetOrgInterface().GetAVCellID();
-  
-  int facing = m_organism->GetOrgInterface().GetFacedDir();
-  if (use_avatar) facing = m_organism->GetOrgInterface().GetAVFacing();
-
-  m_navtraceloc.Push(loc);
-  m_navtracefacing.Push(facing);
-  m_navtraceupdate.Push(m_world->GetStats().GetUpdate());
-}
-
-void cHardwareBase::DeleteMiniTrace(bool print_reacs)
-{
-  if (m_minitrace) {
-    if (print_reacs) PrintMiniTraceReactions();
-    m_tracer = HardwareTracerPtr(NULL);
-  }
-}
-
-void cHardwareBase::PrintMiniTraceReactions()
-{
-  if (m_minitrace) {
-    m_world->GetStats().PrintMiniTraceReactions(m_organism);    
-  }
-}
 

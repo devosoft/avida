@@ -68,8 +68,6 @@ public:
   int GetCellYPosition();
   
 
-  bool GetLGTFragment(cAvidaContext& ctx, int region, const Genome& dest_genome, InstructionSequence& seq);
-
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
   bool IsNeighborCellOccupied();
@@ -124,7 +122,6 @@ public:
   void IncNumTopPredOrganisms();
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   
-  void TryWriteBirthLocData(int org_idx);
   void InjectPreyClone(cAvidaContext& ctx, int gen_id);
   void KillRandPred(cAvidaContext& ctx, cOrganism* org);
   void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
@@ -148,12 +145,9 @@ private:
   Apto::Array<sIO_avatar, Apto::Smart> m_avatars;
   inline int GetNumAV() { return m_avatars.GetSize(); }
 public:
-  bool HasOutputAV(int av_num = 0);
-  bool FacedHasOutputAV(int av_num = 0);
   bool FacedHasAV(int av_num = 0);
   bool FacedHasPredAV(int av_num = 0);
   bool FacedHasPreyAV(int av_num = 0);
-  void AddIOAV(cAvidaContext& ctx, int av_cell_id, int av_facing, bool input, bool output);
   void AddPredPreyAV(cAvidaContext& ctx, int av_cell_id);
   void SwitchPredPrey(cAvidaContext& ctx, int av_num = 0);
   void RemoveAllAV();
