@@ -571,6 +571,7 @@ private:
   bool Inst_SetRandPFTOnce(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
   bool Inst_ShowForageTarget(cAvidaContext& ctx);
+  bool Inst_ShowForageTargetGenetic(cAvidaContext& ctx);
   bool Inst_GetLocOrgDensity(cAvidaContext& ctx);
   bool Inst_GetFacedOrgDensity(cAvidaContext& ctx);
   

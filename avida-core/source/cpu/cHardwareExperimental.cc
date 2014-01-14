@@ -308,7 +308,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("set-rand-p-ft-once", &cHardwareExperimental::Inst_SetRandPFTOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget, INST_CLASS_ENVIRONMENT),
     tInstLibEntry<tMethod>("show-ft", &cHardwareExperimental::Inst_ShowForageTarget, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("get-loc-org-density", &cHardwareExperimental::Inst_GetLocOrgDensity, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
+    tInstLibEntry<tMethod>("show-ft-genetic", &cHardwareExperimental::Inst_ShowForageTargetGenetic, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-loc-org-density", &cHardwareExperimental::Inst_GetLocOrgDensity, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-faced-org-density", &cHardwareExperimental::Inst_GetFacedOrgDensity, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
 
     tInstLibEntry<tMethod>("collect-edible", &cHardwareExperimental::Inst_CollectEdible, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -4424,6 +4425,24 @@ bool cHardwareExperimental::Inst_ShowForageTarget(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_ShowForageTargetGenetic(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  // return false if not a mimic ft type
+  if (!m_organism->IsMimicFT()) return false;
+  
+  int prop_target = 1;
+  // If followed by a nop, use nop to set displayed ft
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    prop_target = m_inst_set->GetNopMod(getIP().GetNextInst()) % 2;
+    if (prop_target == 1) prop_target = 2;
+    m_organism->SetShowForageTarget(ctx, prop_target);
+  }
+  
+  return true;
+}
+
 bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -5851,8 +5870,10 @@ bool cHardwareExperimental::Inst_AttackPoisonFTPreyGenetic(cAvidaContext& ctx)
   bool accept_any_target = true;
   // If followed by a nop, use nop to set target
   if (m_inst_set->IsNop(getIP().GetNextInst())) {
-    target_org_type = m_inst_set->GetNopMod(getIP().GetNextInst()) % 3;
-    accept_any_target = false;
+    target_org_type = m_inst_set->GetNopMod(getIP().GetNextInst()) % 4;
+    if (target_org_type == 2) target_org_type = -1;
+    if (target_org_type == 3) target_org_type = 2;
+    if (target_org_type != -1) accept_any_target = false;
   }
   cOrganism* target = NULL;
   if (!m_use_avatar) {
