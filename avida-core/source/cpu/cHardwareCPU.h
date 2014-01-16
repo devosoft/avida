@@ -477,6 +477,7 @@ private:
   bool Inst_Kazi5(cAvidaContext& ctx);
   bool Inst_SenseQuorum(cAvidaContext& ctx);
   bool Inst_NoisyQuorum(cAvidaContext& ctx);
+  bool Inst_SenseQuorumLB(cAvidaContext& ctx);
   bool Inst_SmartExplode(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
   bool Inst_Poison(cAvidaContext& ctx);

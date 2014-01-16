@@ -3716,7 +3716,8 @@ void cStats::PrintKaboom(const cString& filename)
 void cStats::PrintQuorum(const cString& filename)
 {
   
-  float ave_thresh = (float)ave_threshold/(float)num_quorum;
+  float ave_thresh_ub = (float)ave_threshold_ub/(float)num_quorum;
+  float ave_thresh_lb = (float)ave_threshold_lb/(float)num_quorum;
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   df->WriteComment("Quorum sensing with threshold.");
   
@@ -3724,12 +3725,14 @@ void cStats::PrintQuorum(const cString& filename)
   df->Write(m_update, "Update [update]");
   
   df->Write(num_stop_explode, "Number of explosions stopped by quorum sensing");
-  df->Write(ave_thresh, "Average quorum sense threshold per qs instruction");
+  df->Write(ave_thresh_ub, "Average quorum sense threshold upper bound per qs instruction");
+  df->Write(ave_thresh_lb, "Average quorum sense threshold lower bound per qs instruction");
   
   df->Endl();
   num_stop_explode = 0;
   num_quorum=0;
-  ave_threshold = 0;
+  ave_threshold_ub = 0;
+  ave_threshold_lb = 0;
   
 }
 
