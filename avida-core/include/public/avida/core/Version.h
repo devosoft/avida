@@ -31,11 +31,11 @@
 
 namespace Avida {
   namespace Version {
-    LIB_EXPORT inline const char* String() { return "2.13.0 (TBD)"; }
+    LIB_EXPORT inline const char* String() { return "2.14.0"; }
     LIB_EXPORT inline int Major() { return 2; }
-    LIB_EXPORT inline int Minor() { return 13; }
+    LIB_EXPORT inline int Minor() { return 14; }
     LIB_EXPORT inline int Patch() { return 0; }
-    LIB_EXPORT inline const char* Tag() { return "TDB"; }
+    LIB_EXPORT inline const char* Tag() { return ""; }
     
     LIB_EXPORT Apto::String Banner();
     

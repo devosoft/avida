@@ -3,7 +3,7 @@
  *  avida-core
  *
  *  Created by David on 4/17/11.
- *  Copyright 2011 Michigan State University. All rights reserved.
+ *  Copyright 2011-2014 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -37,12 +37,11 @@ Apto::String Avida::Version::Banner()
   banner += "Lead Developer: David M. Bryson\n\n";
   
   banner += "Active developers include:\n";
-  banner += "Rose Canino-Koning, Heather J. Goldsby, Anya E. Johnson, Neem Serra,\n";
-  banner += "Aaron P. Wagner, Bess Walker, and Luis Zaman\n\n";
+  banner += "Aaron P. Wagner and Anya E. Johnson\n";
   
   banner += "For a more complete list of contributors, see the AUTHORS file.\n\n";
   
-  banner += "Copyright 1999-2012 Michigan State University.\n";
+  banner += "Copyright 1999-2014 Michigan State University.\n";
   banner += "Copyright 1993-2003 California Institute of Technology.\n\n";
   
   banner += "Avida comes with ABSOLUTELY NO WARRANTY.\n";
