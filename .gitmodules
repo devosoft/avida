@@ -10,3 +10,6 @@
 [submodule "apps/viewer-windows"]
 	path = apps/viewer-windows
 	url = git://avida.devosoft.org/viewer-windows.git
+[submodule "documentation"]
+	path = documentation
+	url = https://github.com/devosoft/avida.wiki.git
