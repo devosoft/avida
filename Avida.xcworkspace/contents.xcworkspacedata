@@ -31,6 +31,9 @@
       </FileRef>
    </Group>
    <FileRef
+      location = "group:documentation">
+   </FileRef>
+   <FileRef
       location = "group:CMakeLists.txt">
    </FileRef>
    <FileRef
