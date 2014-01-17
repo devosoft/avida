@@ -214,7 +214,8 @@ private:
   
   // Quorum threshold stats
   int num_stop_explode;
-  int ave_threshold;
+  int ave_threshold_ub;
+  int ave_threshold_lb;
   int num_quorum;
   
   // ------- Division of Labor Stats ---------
@@ -915,7 +916,8 @@ public:
   
   //Quorum Sensing stats
   void IncDontExplode() {num_stop_explode++;}
-  void IncQuorumThreshold(int thresh) {ave_threshold += thresh;}
+  void IncQuorumThresholdUB(int thresh) {ave_threshold_ub += thresh;}
+  void IncQuorumThresholdLB(int thresh) {ave_threshold_lb += thresh;}
   void IncQuorumNum() {num_quorum++;}
   void PrintQuorum(const cString& filename);
     
