@@ -183,6 +183,10 @@ footer {
   bottom:50px;
 }
 
+.logo { float:left; margin-right:10px; }
+.logo + h1 { margin-top: 30px; }
+  
+
 @media print, screen and (max-width: 960px) {
   
   div.wrapper {
