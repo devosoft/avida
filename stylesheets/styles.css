@@ -234,6 +234,8 @@ footer {
   header ul, header p.view {
     position:static;
   }
+
+  .logo { margin-top: -30px; }
   
   pre, code {
     word-wrap:normal;
@@ -248,6 +250,8 @@ footer {
   header ul {
     display:none;
   }
+
+  .logo { margin-top: -30px; }
 }
 
 @media print {
