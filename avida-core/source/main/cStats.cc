@@ -4040,7 +4040,7 @@ void cStats::PrintTargets(const cString& filename)
   
   bool has_pred = false;
   int offset = 1;
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1 || m_world->GetEnvironment().IsTargetID(-2)) {
     has_pred = true;
     offset = 2;
   }
@@ -4078,7 +4078,7 @@ void cStats::PrintTargets(const cString& filename)
   target_list.SetAll(0);
   
   target_list[0] = -1;
-  if (has_pred) {
+  if (has_pred || m_world->GetEnvironment().IsTargetID(-2)) {
     target_list[0] = -2;
     target_list[1] = -1;
   }

@@ -1343,7 +1343,7 @@ void cOrgSensor::TestConfusion(cAvidaContext& ctx, sLookOut& stuff_seen, cOrgani
     stuff_seen.distance = ctx.GetRandom().GetInt();
     stuff_seen.count = ctx.GetRandom().GetInt();
     stuff_seen.value = ctx.GetRandom().GetInt();
-//    stuff_seen.id_sought = ctx.GetRandom().GetInt();
+    stuff_seen.id_sought = ctx.GetRandom().GetInt();
     stuff_seen.group = ctx.GetRandom().GetInt();  // this is relative facing for nearest individual
     stuff_seen.deviance = ctx.GetRandom().GetInt();
   }
