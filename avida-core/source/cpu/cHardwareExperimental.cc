@@ -5878,7 +5878,9 @@ bool cHardwareExperimental::Inst_AttackPoisonFTPreyGenetic(cAvidaContext& ctx)
   cOrganism* target = NULL;
   if (!m_use_avatar) {
     target = m_organism->GetOrgInterface().GetNeighbor();
-    if (target_org_type != target->GetShowForageTarget() && !accept_any_target) return false;
+    int type = target->GetForageTarget();
+    if (ctx.GetRandom().P(m_world->GetConfig().MIMIC_ODDS.Get())) type = target->GetShowForageTarget();
+    if (target_org_type != type && !accept_any_target) return false;
     // attacking other carnivores is handled differently (e.g. using fights or tolerance)
     if (!target->IsPreyFT())  { results.success = 1; return TestAttackResultsOut(results); }
   }
@@ -5889,14 +5891,18 @@ bool cHardwareExperimental::Inst_AttackPoisonFTPreyGenetic(cAvidaContext& ctx)
     int j = 0;
     for (int i = 0; i < av_neighbors.GetSize(); i++) {
       if (rand_index + i < av_neighbors.GetSize()) {
-        if (av_neighbors[rand_index + i]->GetShowForageTarget() == target_org_type || accept_any_target) {
+        int type = av_neighbors[rand_index + i]->GetForageTarget();
+        if (ctx.GetRandom().P(m_world->GetConfig().MIMIC_ODDS.Get())) type = target->GetShowForageTarget();
+        if (type == target_org_type || accept_any_target) {
           target = av_neighbors[rand_index + i];
           target_match = true;
           break;
         }
       }
       else {
-        if (av_neighbors[j]->GetShowForageTarget() == target_org_type || accept_any_target) {
+        int type = av_neighbors[j]->GetForageTarget();
+        if (ctx.GetRandom().P(m_world->GetConfig().MIMIC_ODDS.Get())) type = target->GetShowForageTarget();
+        if (type == target_org_type || accept_any_target) {
           target = av_neighbors[j];
           target_match = true;
           break;
