@@ -261,6 +261,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("nop-collect", &cHardwareCPU::Inst_NopCollect, INST_CLASS_ENVIRONMENT),
     tInstLibEntry<tMethod>("collect-unit-prob", &cHardwareCPU::Inst_CollectUnitProbabilistic, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect-specific", &cHardwareCPU::Inst_CollectSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("collect-needed", &cHardwareCPU::Inst_CollectSpecificNeeded, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("collect-specific-ratio", &cHardwareCPU::Inst_CollectSpecificRatio, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
 
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -375,6 +377,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("res-mov-head", &cHardwareCPU::Inst_ResMoveHead, INST_CLASS_FLOW_CONTROL, nInstFlag::STALL, "Move head ?IP? to the flow head depending on resource level"),
     tInstLibEntry<tMethod>("res-jmp-head", &cHardwareCPU::Inst_ResJumpHead, INST_CLASS_FLOW_CONTROL, nInstFlag::STALL, "Move head ?IP? by amount in CX register depending on resource level; CX = old pos."),
     
+    tInstLibEntry<tMethod>("h-copy-res", &cHardwareCPU::Inst_HeadCopy_ifResource, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Copy from read-head to write-head if specific resource 1 is available; advance both"),
     tInstLibEntry<tMethod>("h-copy2", &cHardwareCPU::Inst_HeadCopy2),
     tInstLibEntry<tMethod>("h-copy3", &cHardwareCPU::Inst_HeadCopy3),
     tInstLibEntry<tMethod>("h-copy4", &cHardwareCPU::Inst_HeadCopy4),
@@ -4501,8 +4504,10 @@ int cHardwareCPU::FindModifiedResource(cAvidaContext& ctx, int& spec_id)
  *                 the amount of resource in the environment.
  * unit          - specifies whether collection uses the ABSORB_RESOURCE_FRACTION
  *                 configuration or always collects 1 unit of resource.
+ *
+ * nUnits        - the number of units of the resource to collect (if unit true)
  */
-bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add, bool probabilistic, bool unit)
+bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add, bool probabilistic, bool unit, float nUnits)
 {
   int spec_id;
   
@@ -4512,10 +4517,10 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
   // Add this specification
   m_organism->IncCollectSpecCount(spec_id);
   
-  return DoActualCollect(ctx, bin_used, env_remove, internal_add, probabilistic, unit);
+  return DoActualCollect(ctx, bin_used, env_remove, internal_add, probabilistic, unit, nUnits);
 }
 
-bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit)
+bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit, float nUnits)
 {
   // Set up res_change and max total
   const Apto::Array<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
@@ -4539,8 +4544,8 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
   
   // Collect a unit (if possible) or some ABSORB_RESOURCE_FRACTION
   if (unit) {
-    if (res_count[bin_used] >= 1.0) {
-      res_change[bin_used] = -1.0;
+    if (res_count[bin_used] >= nUnits) {
+      res_change[bin_used] = -1*nUnits;
     }
     else {
       return false;
@@ -4568,7 +4573,7 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
  */
 bool cHardwareCPU::Inst_Collect(cAvidaContext& ctx)
 {
-  return DoCollect(ctx, true, true, false, false);
+  return DoCollect(ctx, true, true, false, false, 1);
 }
 
 /* Like Inst_Collect, but the collected resources are not removed from the
@@ -4576,7 +4581,7 @@ bool cHardwareCPU::Inst_Collect(cAvidaContext& ctx)
  */
 bool cHardwareCPU::Inst_CollectNoEnvRemove(cAvidaContext& ctx)
 {
-  return DoCollect(ctx, false, true, false, false);
+  return DoCollect(ctx, false, true, false, false, 1);
 }
 
 /* Collects resource from the environment but does not add it to the organism,
@@ -4584,14 +4589,14 @@ bool cHardwareCPU::Inst_CollectNoEnvRemove(cAvidaContext& ctx)
  */
 bool cHardwareCPU::Inst_Destroy(cAvidaContext& ctx)
 {
-  return DoCollect(ctx, true, false, false, false);
+  return DoCollect(ctx, true, false, false, false, 1);
 }
 
 /* A no-op, nop-modified in the same way as the "collect" instructions:
  * Does not remove resource from environment, does not add resource to organism */
 bool cHardwareCPU::Inst_NopCollect(cAvidaContext& ctx)
 {
-  return DoCollect(ctx, false, false, false, false);
+  return DoCollect(ctx, false, false, false, false, 1);
 }
 
 /* Collects one unit of resource from the environment and adds it to the internal 
@@ -4601,7 +4606,7 @@ bool cHardwareCPU::Inst_NopCollect(cAvidaContext& ctx)
  */
 bool cHardwareCPU::Inst_CollectUnitProbabilistic(cAvidaContext& ctx)
 {
-  return DoCollect(ctx, true, true, true, true);
+  return DoCollect(ctx, true, true, true, true, 1);
 }
 
 /* Takes the resource specified by the COLLECT_RESOURCE_SPECIFIC config option
@@ -4611,9 +4616,89 @@ bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
 {
   const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
   double res_before = m_organism->GetRBin(resource);
-  bool success = DoActualCollect(ctx, resource, true, true, false, false);
+  bool success = DoActualCollect(ctx, resource, true, true, false, false, 1);
   double res_after = m_organism->GetRBin(resource);
   GetRegister(FindModifiedRegister(REG_BX)) = (int)(res_after - res_before);
+  return success;
+}
+// Collects the resource associated with the next instruction to be copied
+// Returns success if resource is collected successfully. - ELD
+bool cHardwareCPU::Inst_CollectSpecificNeeded(cAvidaContext& ctx)
+{
+  cHeadCPU& read_head = getHead(nHardware::HEAD_READ);
+  read_head.Adjust();
+  int resource = read_head.GetInst().GetOp(); //This gives us the ordinal value
+  //of the instruction that is about to be copied, which conveniently 
+  //corresponds to the index of the resource associated with that instruction
+  double res_before = m_organism->GetRBin(resource);
+  bool success = DoActualCollect(ctx, resource, false, true, false, true, 1);
+  double res_after = m_organism->GetRBin(resource);
+  GetRegister(FindModifiedRegister(REG_BX)) = (int)(res_after - res_before);
+  return success;
+}
+
+// Collects all resources in a ratio of 1:1:1:...:1 unless otherwise
+// specified in the NON_1_RESOURCE_RATIOS setting in the config file.
+// Returns success if both resources are collected successfully. - ELD
+bool cHardwareCPU::Inst_CollectSpecificRatio(cAvidaContext& ctx)
+{
+  double res_before = 0;
+  double res_after = 0;
+  bool success = true;
+
+  const char * const_ratios = m_world->GetConfig().NON_1_RESOURCE_RATIOS.Get();
+  char * ratios;
+  try {
+    ratios = new char[strlen(const_ratios) + 1];
+  }
+  catch (std::bad_alloc& ba){
+    std::cerr << "bad_alloc caught in collect-specific-ratio:" << ba.what() << "\n";
+    return 1;
+  }
+  char * savestr;
+  strcpy(ratios, const_ratios);
+  map<int, float> ratioMap;
+  char * ratio_tokens = strtok((char *)ratios, ",:");
+  char * index_token, * value_token;
+
+  while (ratio_tokens != NULL){
+    try{
+      index_token = new char[strlen(ratio_tokens) + 1];
+    }
+    catch (std::bad_alloc& ba){
+      std::cerr << "bad_alloc caught in collect-specific-ratio:" << ba.what() << "\n";
+      return 1;
+    }
+    strcpy(index_token, ratio_tokens);
+
+    ratio_tokens = strtok(NULL, ",:");
+    try{
+      value_token = new char[strlen(ratio_tokens) + 1];
+    }
+    catch (std::bad_alloc& ba){
+      std::cerr << "bad_alloc caught in collect-specific-ratio:" << ba.what() << "\n";
+      return 1;
+    }
+    strcpy(value_token, ratio_tokens);
+
+    ratioMap[atoi(index_token)] = atof(value_token);
+    ratio_tokens = strtok(NULL, ",:");
+    delete [] index_token;
+    delete [] value_token;
+  }
+
+  delete [] ratios;
+
+  for (int i=0; i<m_organism->GetRBins().GetSize(); i++){
+    float collAmnt = 1.0;
+    if (ratioMap.count(i) == 1){
+      collAmnt = ratioMap[i];
+    }
+    res_before = m_organism->GetRBin(i);
+    success = success && DoActualCollect(ctx, i, false, true, false, true, collAmnt);
+    res_after = m_organism->GetRBin(i);
+  }
+
   return success;
 }
 
@@ -6945,6 +7030,31 @@ bool cHardwareCPU::Inst_HeadCopy(cAvidaContext& ctx)
   read_head.Advance();
   write_head.Advance();
   return true;
+}
+
+// This instruction assumes that there is a corresponding resource for
+// every instruction in the instruction set. It checks to see if the organism
+// has the resource required for instruction at the read head. If it does,
+// that organism's supply of the resource is decremented and the copy is performed.
+// If not, the copy is not performed and neither head advances. - ELD
+bool cHardwareCPU::Inst_HeadCopy_ifResource(cAvidaContext& ctx)
+{
+  try{
+      cHeadCPU& read_head = getHead(nHardware::HEAD_READ);
+      read_head.Adjust();
+      int resource = read_head.GetInst().GetOp(); //This gives us the ordinal value
+      //of the instruction that is about to be copied, which conveniently corresponds
+      //to the index of the resource associated with that instruction
+
+      if (resource < 52 && m_organism->GetRBin(resource) >= 1){
+	m_organism->AddToRBin(resource, -1);
+	return Inst_HeadCopy(ctx);
+      }
+
+      return true;
+  } catch(std::bad_alloc& ba){
+      std::cerr << "bad alloc caaught in hcopyres: " << ba.what() << "\n";
+  }
 }
 
 bool cHardwareCPU::HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction)
