@@ -105,9 +105,6 @@ public:
   void Die(cAvidaContext& ctx) { m_interface->Die(ctx); m_is_dead = true; } 
   void UpdateMerit(double new_merit) { m_interface->UpdateMerit(new_merit); }
 
-  void AddLiveOrg() { m_interface->AddLiveOrg(); }
-  void RemoveLiveOrg() { m_interface->RemoveLiveOrg(); } 
-  
   
   // --------  Input and Output Methods  --------
   void DoInput(const int value);
@@ -131,50 +128,7 @@ public:
   bool ActivateDivide(cAvidaContext& ctx);
 
 
-  // -------- Movement ---------
-public:
-  bool Move(cAvidaContext& ctx);
-
-  int GetForageTarget() const { return m_forage_target; }
-  int GetShowForageTarget() const { return m_show_ft; }
-  void SetForageTarget(cAvidaContext& ctx, int forage_target, bool inject = false);
-  void SetPredFT(cAvidaContext& ctx) { SetForageTarget(ctx, -2); }
-  void SetTopPredFT(cAvidaContext& ctx) { SetForageTarget(ctx, -3); }
-  bool IsPreyFT() { return m_forage_target > -2; }
-  bool IsPredFT() { return m_forage_target == -2; }
-  bool IsTopPredFT() { return m_forage_target < -2; }
-  bool IsMimicFT() { return m_forage_target == 1; }
-  void SetShowForageTarget(cAvidaContext& ctx, int forage_target) { m_show_ft = forage_target; }
-  bool HasSetFT() const { return m_has_set_ft; }
-  void RecordFTSet() { m_has_set_ft = true; }
-  bool IsTeacher() const { return m_teach; }
-  void Teach(bool teach) { m_teach = teach; }
-  bool HadParentTeacher() const { return m_parent_teacher; }
-  void SetParentTeacher(bool had_teacher) { m_parent_teacher = had_teacher; }
-  void SetParentFT(int parent_ft) { m_parent_ft = parent_ft; }
-  int GetParentFT() const { return m_parent_ft; } 
-  void CopyParentFT(cAvidaContext& ctx);
-  void SetParentMerit(double parent_merit) { m_p_merit = parent_merit; }
-  double GetParentMerit() { return m_p_merit; }
-  void SetParentMultiThreaded(bool parent_is_mt) { m_p_mthread = parent_is_mt; }
-  bool IsParentMThreaded() { return m_p_mthread; }
   
-  
-protected:
-
-  int m_forage_target;
-  int m_show_ft;
-  bool m_has_set_ft;
-  bool m_teach;
-  bool m_parent_teacher;
-  int m_parent_ft;
-  double m_p_merit;
-  bool m_p_mthread;
-  
-
-	// -------- Avatar support --------
-public:
-  bool MoveAV(cAvidaContext& ctx);
   
   
 	// -------- Internal Support Methods --------

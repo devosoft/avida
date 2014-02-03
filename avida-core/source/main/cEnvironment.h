@@ -38,7 +38,6 @@
 namespace Avida {
   class Feedback;
 };
-class cContextReactionRequisite;
 class cAvidaContext;
 class cReaction;
 class cReactionRequisite;
@@ -151,7 +150,6 @@ private:
   
   bool LoadReactionProcess(cReaction* reaction, cString desc, Feedback& feedback);
   bool LoadReactionRequisite(cReaction* reaction, cString desc, Feedback& feedback);
-  bool LoadContextReactionRequisite(cReaction* reaction, cString desc, Feedback& feedback); 
   bool LoadResource(cString desc, Feedback& feedback);
   bool LoadCell(cString desc, Feedback& feedback);
   bool LoadReaction(cString desc, Feedback& feedback);
@@ -160,8 +158,6 @@ private:
   bool LoadDynamicResource(cString desc, Feedback& feedback);
   
   bool TestRequisites(cTaskContext& taskctx, const cReaction* cur_reaction, int task_count,
-                      const Apto::Array<int>& reaction_count, const bool on_divide = false) const;
-  bool TestContextRequisites(const cReaction* cur_reaction, int task_count, 
                       const Apto::Array<int>& reaction_count, const bool on_divide = false) const;
   void DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list, 
                    const Apto::Array<double>& resource_count, const Apto::Array<double>& rbin_count,

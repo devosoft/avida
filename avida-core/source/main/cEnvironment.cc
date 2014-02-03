@@ -24,7 +24,6 @@
 #include "avida/core/Feedback.h"
 #include "avida/environment/Manager.h"
 
-#include "cContextReactionRequisite.h"
 #include "cEnvReqs.h"
 #include "cInitFile.h"
 #include "cOrganism.h"
@@ -316,74 +315,6 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, Feed
   return true;
 }
 
-
-bool cEnvironment::LoadContextReactionRequisite(cReaction* reaction, cString desc, Feedback& feedback)
-{
-  cContextReactionRequisite* new_requisite = reaction->AddContextRequisite();
-  
-  // Loop through all entries in description.
-  while (desc.GetSize() > 0) {
-    // Entries are divided by colons.
-    cString var_entry = desc.Pop(':');
-    cString var_name;
-    cString var_value;
-    const cString var_type = cStringUtil::Stringf("reaction '%s' requisite", static_cast<const char*>(reaction->GetName()));
-    
-    // Parse this entry.
-    if (!ParseSetting(var_entry, var_name, var_value, var_type, feedback)) return false;
-    
-    // Now that we know we have a variable name and its value, set it!
-    if (var_name == "reaction") {
-      cReaction* test_reaction = reaction_lib.GetReaction(var_value);
-      if (!AssertInputValid(test_reaction, "reaction", var_type, var_value, feedback)) {
-        return false;
-      }
-      new_requisite->AddReaction(test_reaction);
-    }
-    else if (var_name == "noreaction") {
-      cReaction* test_reaction = reaction_lib.GetReaction(var_value);
-      if (!AssertInputValid(test_reaction,"noreaction",var_type, var_value, feedback)) {
-        return false;
-      }
-      new_requisite->AddNoReaction(test_reaction);
-    }
-    else if (var_name == "min_count") {
-      if (!AssertInputInt(var_value, "min_count", var_type, feedback)) return false;
-      new_requisite->SetMinTaskCount(var_value.AsInt());
-    }
-    else if (var_name == "max_count") {
-      if (!AssertInputInt(var_value, "max_count", var_type, feedback)) return false;
-      new_requisite->SetMaxTaskCount(var_value.AsInt());
-    }
-    else if (var_name == "reaction_min_count") {
-      if (!AssertInputInt(var_value, "reaction_min_count", var_type, feedback)) return false;
-      new_requisite->SetMinReactionCount(var_value.AsInt());
-    }
-    else if (var_name == "reaction_max_count") {
-      if (!AssertInputInt(var_value, "reaction_max_count", var_type, feedback)) return false;
-      new_requisite->SetMaxReactionCount(var_value.AsInt());
-    }
-    else if (var_name == "divide_only") {
-      if (!AssertInputInt(var_value, "divide_only", var_type, feedback)) return false;
-      new_requisite->SetDivideOnly(var_value.AsInt());
-    }
-    else if (var_name == "min_tot_count") {
-      if (!AssertInputInt(var_value, "min_tot_count", var_type, feedback)) return false;
-      new_requisite->SetMinTotReactionCount(var_value.AsInt());
-    }
-    else if (var_name == "max_tot_count") {
-      if (!AssertInputInt(var_value, "max_tot_count", var_type, feedback)) return false;
-      new_requisite->SetMaxTotReactionCount(var_value.AsInt());
-    }
-    else {
-      feedback.Error("unknown requisite variable '%s' in reaction '%s'",
-                     (const char*)var_name, (const char*)reaction->GetName());
-      return false;
-    }
-  }
-  
-  return true;
-}
 
 bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
 {
@@ -896,12 +827,6 @@ bool cEnvironment::LoadReaction(cString desc, Feedback& feedback)
         return false;
       }
     }
-    else if (entry_type == "context_requisite") {
-      if (LoadContextReactionRequisite(new_reaction, desc_entry, feedback) == false) {
-        feedback.Error("failed in loading reaction-requisite...");
-        return false;
-      }
-    }
     else {
       feedback.Error("unknown entry type '%s' in reaction '%s'", (const char*)entry_type, (const char*)name);
       return false;
@@ -1207,77 +1132,6 @@ bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_re
   return false;
 }
 
-
-bool cEnvironment::TestContextRequisites(const cReaction* cur_reaction,
-                                         int task_count, const Apto::Array<int>& reaction_count,
-                                         const bool on_divide) const
-{
-  const tList<cContextReactionRequisite>& req_list = cur_reaction->GetContextRequisites();
-  const int num_reqs = req_list.GetSize();
-  
-  // If there are no requisites, there is nothing to meet!
-  // (unless this is a check upon dividing, in which case we want the default to be to not check the task
-  // and only if the requisite has been added to check it
-  if (num_reqs == 0) {
-    return !on_divide;
-  }
-  
-  tLWConstListIterator<cContextReactionRequisite> req_it(req_list);
-  for (int i = 0; i < num_reqs; i++) {
-    // See if this requisite batch can be satisfied.
-    const cContextReactionRequisite* cur_req = req_it.Next();
-    bool satisfied = true;
-    
-    // Have all reactions been met?
-    tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
-    while (reaction_it.Next() != NULL) {
-      int react_id = reaction_it.Get()->GetID();
-      if (reaction_count[react_id] == 0) {
-        satisfied = false;
-        break;
-      }
-    }
-    if (satisfied == false) continue;
-    
-    // Have all no-reactions been met?
-    tLWConstListIterator<cReaction> noreaction_it(cur_req->GetNoReactions());
-    while (noreaction_it.Next() != NULL) {
-      int react_id = noreaction_it.Get()->GetID();
-      if (reaction_count[react_id] != 0) {
-        satisfied = false;
-        break;
-      }
-    }
-    if (satisfied == false) continue;
-    
-    // Have all task counts been met?
-    if (task_count < cur_req->GetMinTaskCount()) continue;
-    if (task_count >= cur_req->GetMaxTaskCount()) continue;
-    
-    // Have all reaction counts been met?
-    if (reaction_count[cur_reaction->GetID()] < cur_req->GetMinReactionCount()) continue;
-    if (reaction_count[cur_reaction->GetID()] >= cur_req->GetMaxReactionCount()) continue;
-    
-    // Have all total reaction counts been met?
-    int tot_reactions = 0;
-    for (int i=0; i<reaction_count.GetSize(); i++) {
-      tot_reactions += reaction_count[i];
-    }
-    if (tot_reactions < cur_req->GetMinTotReactionCount()) continue;
-    if (tot_reactions >= cur_req->GetMaxTotReactionCount()) continue;
-    
-    // Have divide task reqs been met?
-    // If div_type is 0 we only check on IO, if 1 we only check on divide,
-    // if 2 we check always
-    int div_type = cur_req->GetDivideOnly();
-    if (div_type == 1 && !on_divide) continue;
-    if (div_type == 0 && on_divide) continue;
-    
-    return true;
-  }
-  
-  return false;
-}
 
 
 

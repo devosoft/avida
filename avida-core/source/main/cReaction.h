@@ -33,7 +33,6 @@
 class cTaskEntry;
 class cReactionProcess;
 class cReactionRequisite;
-class cContextReactionRequisite;
 
 class cReaction
 {
@@ -43,7 +42,6 @@ private:
   cTaskEntry* task;
   tList<cReactionProcess> process_list;
   tList<cReactionRequisite> requisite_list;
-  tList<cContextReactionRequisite> context_requisite_list;
   bool active;
   bool internal;
 
@@ -62,14 +60,11 @@ public:
   cReactionProcess* GetProcess(int process = 0) { return process_list.GetPos(process); }
   const tList<cReactionRequisite>& GetRequisites() { return requisite_list; }
   const tList<cReactionRequisite>& GetRequisites() const { return requisite_list; }
-  const tList<cContextReactionRequisite>& GetContextRequisites() { return context_requisite_list; }
-  const tList<cContextReactionRequisite>& GetContextRequisites() const { return context_requisite_list; }
   bool GetActive() const { return active; }
 
   void SetTask(cTaskEntry* _task) { task = _task; }
   cReactionProcess* AddProcess();
   cReactionRequisite* AddRequisite();
-  cContextReactionRequisite* AddContextRequisite();
   void SetActive(bool in_active = true) { active = in_active; }
   void SetInternal(bool in_internal = true) { internal = in_internal; }
   // These methods will modify the value of the process listed.

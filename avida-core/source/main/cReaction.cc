@@ -24,7 +24,6 @@
 
 #include "cReactionProcess.h"
 #include "cReactionRequisite.h"
-#include "cContextReactionRequisite.h"
 
 using namespace std;
 
@@ -56,13 +55,6 @@ cReactionRequisite * cReaction::AddRequisite()
   cReactionRequisite * new_requisite = new cReactionRequisite();
   requisite_list.PushRear(new_requisite);
   return new_requisite;
-}
-
-cContextReactionRequisite * cReaction::AddContextRequisite()
-{
-  cContextReactionRequisite * new_context_requisite = new cContextReactionRequisite();
-  context_requisite_list.PushRear(new_context_requisite);
-  return new_context_requisite;
 }
 
 bool cReaction::ModifyValue(double new_value, int process_num)

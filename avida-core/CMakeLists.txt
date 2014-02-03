@@ -132,24 +132,6 @@ LIST(APPEND AVIDA_CORE_SOURCES ${ACTIONS_SOURCES})
 LIST(APPEND ALL_INC_DIRS ${ACTIONS_DIR})
 
 
-# The analyze directory
-SET(ANALYZE_DIR ${PROJECT_SOURCE_DIR}/source/analyze)
-SET(ANALYZE_SOURCES
-  ${ANALYZE_DIR}/cAnalyze.cc
-  ${ANALYZE_DIR}/cAnalyzeGenotype.cc
-  ${ANALYZE_DIR}/cAnalyzeTreeStats_CumulativeStemminess.cc
-  ${ANALYZE_DIR}/cAnalyzeTreeStats_Gamma.cc
-  ${ANALYZE_DIR}/cAnalyzeJobQueue.cc
-  ${ANALYZE_DIR}/cAnalyzeJobWorker.cc
-  ${ANALYZE_DIR}/cGenotypeBatch.cc
-  ${ANALYZE_DIR}/cGenotypeData.cc
-  ${ANALYZE_DIR}/cModularityAnalysis.cc
-  ${ANALYZE_DIR}/cMutationalNeighborhood.cc
-)
-SOURCE_GROUP(analyze FILES ${ANALYZE_SOURCES})
-#LIST(APPEND AVIDA_CORE_SOURCES ${ANALYZE_SOURCES})
-#LIST(APPEND ALL_INC_DIRS ${ANALYZE_DIR})
-
 
 # The core directory
 SET(CORE_DIR ${PROJECT_SOURCE_DIR}/source/core)
@@ -168,25 +150,6 @@ SOURCE_GROUP(core FILES ${CORE_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${CORE_SOURCES})
 
 
-# The cpu directory
-SET(CPU_DIR ${PROJECT_SOURCE_DIR}/source/cpu)
-SET(CPU_SOURCES
-  ${CPU_DIR}/cCPUTestInfo.cc
-  ${CPU_DIR}/cHardwareBase.cc
-  ${CPU_DIR}/cHardwareCPU.cc
-  ${CPU_DIR}/cHardwareExperimental.cc
-  ${CPU_DIR}/cHardwareGP8.cc
-  ${CPU_DIR}/cHardwareManager.cc
-  ${CPU_DIR}/cHardwareStatusPrinter.cc
-  ${CPU_DIR}/cHardwareTransSMT.cc
-  ${CPU_DIR}/cHeadCPU.cc
-  ${CPU_DIR}/cTestCPU.cc
-  ${CPU_DIR}/cTestCPUInterface.cc
-)
-SOURCE_GROUP(cpu FILES ${CPU_SOURCES})
-LIST(APPEND AVIDA_CORE_SOURCES ${CPU_SOURCES})
-LIST(APPEND ALL_INC_DIRS ${CPU_DIR})
-
 
 # The core directory
 SET(DATA_DIR ${PROJECT_SOURCE_DIR}/source/data)
@@ -201,10 +164,6 @@ SOURCE_GROUP(data FILES ${DATA_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${DATA_SOURCES})
 
 
-# The drivers directory
-SET(DRIVERS_DIR ${PROJECT_SOURCE_DIR}/source/drivers)
-LIST(APPEND ALL_INC_DIRS ${DRIVERS_DIR})
-
 
 # The core directory
 SET(ENVIRONMENT_DIR ${PROJECT_SOURCE_DIR}/source/environment)
@@ -213,41 +172,6 @@ SET(ENVIRONMENT_SOURCES
 )
 SOURCE_GROUP(environment FILES ${ENVIRONMENT_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${ENVIRONMENT_SOURCES})
-
-# The main directory
-SET(MAIN_DIR ${PROJECT_SOURCE_DIR}/source/main)
-SET(MAIN_SOURCES
-  ${MAIN_DIR}/cAvidaConfig.cc
-  ${MAIN_DIR}/cBirthChamber.cc
-  ${MAIN_DIR}/cBirthEntry.cc
-  ${MAIN_DIR}/cBirthGenomeSizeHandler.cc
-  ${MAIN_DIR}/cBirthGlobalHandler.cc
-  ${MAIN_DIR}/cBirthGridLocalHandler.cc
-  ${MAIN_DIR}/cBirthMateSelectHandler.cc
-  ${MAIN_DIR}/cBirthNeighborhoodHandler.cc
-  ${MAIN_DIR}/cBirthSelectionHandler.cc
-  ${MAIN_DIR}/cDiffusionRes.cc
-  ${MAIN_DIR}/cDynamicRes.cc
-  ${MAIN_DIR}/cEnvironment.cc
-  ${MAIN_DIR}/cEventList.cc
-  ${MAIN_DIR}/cLandscape.cc
-  ${MAIN_DIR}/cMigrationMatrix.cc
-  ${MAIN_DIR}/cMutationRates.cc
-  ${MAIN_DIR}/cOrganism.cc
-  ${MAIN_DIR}/cPhenotype.cc
-  ${MAIN_DIR}/cPopulation.cc
-  ${MAIN_DIR}/cPopulationCell.cc
-  ${MAIN_DIR}/cPopulationInterface.cc
-  ${MAIN_DIR}/cReaction.cc
-  ${MAIN_DIR}/cReactionLib.cc
-  ${MAIN_DIR}/cReactionResult.cc
-  ${MAIN_DIR}/cStats.cc
-  ${MAIN_DIR}/cTaskLib.cc
-  ${MAIN_DIR}/cWorld.cc
-)
-SOURCE_GROUP(main FILES ${MAIN_SOURCES})
-LIST(APPEND AVIDA_CORE_SOURCES ${MAIN_SOURCES})
-LIST(APPEND ALL_INC_DIRS ${MAIN_DIR})
 
 
 # The output directory
@@ -279,28 +203,7 @@ SOURCE_GROUP(systematics FILES ${SYSTEMATICS_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${SYSTEMATICS_SOURCES})
 
 
-# The tools directory
-SET(TOOLS_DIR ${PROJECT_SOURCE_DIR}/source/tools)
-SET(TOOLS_SOURCES
-  ${TOOLS_DIR}/cArgContainer.cc
-  ${TOOLS_DIR}/cArgSchema.cc
-  ${TOOLS_DIR}/cBitArray.cc
-  ${TOOLS_DIR}/cDataManager_Base.cc
-  ${TOOLS_DIR}/cFile.cc
-  ${TOOLS_DIR}/cInitFile.cc
-  ${TOOLS_DIR}/cMerit.cc
-  ${TOOLS_DIR}/cRunningAverage.cc
-  ${TOOLS_DIR}/cString.cc
-  ${TOOLS_DIR}/cStringIterator.cc
-  ${TOOLS_DIR}/cStringList.cc
-  ${TOOLS_DIR}/cStringUtil.cc
-)
-SOURCE_GROUP(tools FILES ${TOOLS_SOURCES})
-LIST(APPEND AVIDA_CORE_SOURCES ${TOOLS_SOURCES})
-LIST(APPEND ALL_INC_DIRS ${TOOLS_DIR})
-
-
-# The core viewer directory
+# The util directory
 SET(UTIL_DIR ${PROJECT_SOURCE_DIR}/source/util)
 SET(UTIL_SOURCES
   ${UTIL_DIR}/CmdLine.cc
@@ -529,24 +432,6 @@ IF(AVD_GUI_PROTOTYPE_TEXT)
 ENDIF(AVD_GUI_PROTOTYPE_TEXT)
 
 
-
-OPTION(AVD_TASK_EVENT_GEN
-  "Enable building the task_event_gen utility"
-  OFF
-)
-IF(AVD_TASK_EVENT_GEN)
-  SET(UTILS_DIR source/utils)
-  SET(TASK_EVENT_GEN_SOURCES
-    ${TOOLS_DIR}/cFile.cc
-    ${TOOLS_DIR}/cString.cc
-    ${TOOLS_DIR}/cInitFIle.cc
-    ${TOOLS_DIR}/cStringIterator.cc
-    ${TOOLS_DIR}/cStringList.cc
-    ${UTILS_DIR}/task_events/task_event_gen.cc
-  )
-  ADD_EXECUTABLE(task_event_gen ${TASK_EVENT_GEN_SOURCES})
-  INSTALL_TARGETS(/work task_event_gen)
-ENDIF(AVD_TASK_EVENT_GEN)
 
 
 OPTION(AVD_UNIT_TESTS

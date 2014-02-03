@@ -33,7 +33,6 @@
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
-#include "cHeadCPU.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cTestCPU.h"
