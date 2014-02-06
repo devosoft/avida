@@ -4698,6 +4698,7 @@ bool cHardwareCPU::Inst_CollectSpecificRatio(cAvidaContext& ctx)
     success = success && DoActualCollect(ctx, i, false, true, false, true, collAmnt);
     res_after = m_organism->GetRBin(i);
   }
+  GetRegister(FindModifiedRegister(REG_BX)) = (int)(res_after - res_before);
 
   return success;
 }
