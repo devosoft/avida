@@ -27,6 +27,7 @@
 
 #include "avida/core/Universe.h"
 #include "avida/hardware/Types.h"
+#include "avida/util/ArgParser.h"
 
 
 namespace Avida {
@@ -38,12 +39,33 @@ namespace Avida {
     class Manager : public UniverseFacet
     {
     private:
+      struct HTInfo {
+        const InstLib* inst_lib;
+        Util::ArgSchema* schema;
+        
+        LIB_EXPORT inline HTInfo() : inst_lib(NULL), schema(NULL) { ; }
+        LIB_EXPORT ~HTInfo();
+      };
+      
+      static Apto::Map<Apto::String, HTInfo> s_hardware_types;
+      
+    private:
       Universe* m_universe;
+
+      Apto::Map<Apto::String, InstSet*> m_inst_sets;
+
       
     public:
       LIB_EXPORT static ManagerPtr CreateFor(Universe* universe);
       LIB_EXPORT ~Manager();
       
+      LIB_EXPORT InstSet* InstSetWithName(const Apto::String& set_name);
+      
+      LIB_EXPORT bool LoadInstSet(const Apto::File& fileref);
+      LIB_EXPORT bool LoadInstSet(const Apto::String& inst_set_str);
+      
+      
+      LIB_EXPORT static bool RegisterHardwareType(const Apto::String& type_name, const InstLib* inst_lib, Util::ArgSchema* schema);
       
       LIB_EXPORT static ManagerPtr Of(Universe* universe);
       

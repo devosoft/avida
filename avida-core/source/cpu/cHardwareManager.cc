@@ -28,7 +28,6 @@
 #include "cHardwareExperimental.h"
 #include "cHardwareGP8.h"
 #include "cHardwareTransSMT.h"
-#include "cHardwareStatusPrinter.h"
 #include "cInstSet.h"
 #include "cStringList.h"
 #include "cStringUtil.h"

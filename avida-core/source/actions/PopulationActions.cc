@@ -35,7 +35,6 @@
 #include "cActionLibrary.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
-#include "cHardwareStatusPrinter.h"
 #include "cInstSet.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
@@ -87,7 +86,6 @@ public:
     if (largs.GetSize()) m_cell_id = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_trace_filename = largs.PopWord();
   }
   
   static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [double merit=-1] [double neutral_metric=0] [string trace_filename]"; }
@@ -112,10 +110,6 @@ public:
     if (!genome) return;
     m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_neutral_metric, false);
     
-    if (m_trace_filename.GetSize()) {
-      HardwareTracerPtr tracer(new cHardwareStatusPrinter(m_world->GetNewWorld(), (const char*)m_trace_filename));
-      m_world->GetPopulation().GetCell(m_cell_id).GetOrganism()->GetHardware().SetTrace(tracer);
-    }
   }
 };
 
@@ -516,7 +510,6 @@ public:
     if (largs.GetSize()) m_trace = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_trace_filename = largs.PopWord();
   }
   
   static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [int group_id=-1] [int forager_type=-1] [bool trace=false] [double merit=-1] [double neutral_metric=0]"; }
@@ -541,11 +534,6 @@ public:
     }
     if (!genome) return;
     m_world->GetPopulation().InjectGroup(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_neutral_metric, m_group_id, m_forager_type, m_trace);
-  
-    if (m_trace_filename.GetSize()) {
-      HardwareTracerPtr tracer(new cHardwareStatusPrinter(m_world->GetNewWorld(), (const char*)m_trace_filename));
-      m_world->GetPopulation().GetCell(m_cell_id).GetOrganism()->GetHardware().SetTrace(tracer);
-    }
   }
 };
 

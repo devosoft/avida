@@ -25,10 +25,8 @@
 #include "avida/core/Feedback.h"
 #include "avida/core/UniverseDriver.h"
 
-#include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
-#include "cHardwareStatusPrinter.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
