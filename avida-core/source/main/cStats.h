@@ -28,8 +28,6 @@
 
 #include "apto/stat/Accumulator.h"
 
-#include "tDataManager.h"
-
 #include <cassert>
 #include <fstream>
 #include <iostream>
@@ -45,8 +43,6 @@ class cStats : public Data::ArgumentedProvider
 {
 private:
   cWorld* m_world;
-
-  tDataManager<cStats> m_data_manager;
   
   
   // --------  Data Provider Support  ---------

@@ -27,14 +27,39 @@
 
 #include "apto/core.h"
 
+#include <fstream>
+
+
 namespace Avida {
   namespace Util {
     
     class ConfigFile
     {
+    private:
+      std::ifstream m_fp;
+      Apto::String m_filename;
+      bool m_is_open;
+      
+    public:
+      LIB_EXPORT inline ConfigFile() : m_is_open(false) { ; }
+      ConfigFile(const Apto::String& filename) : m_is_open(false) { Open(filename); }
+      ~ConfigFile() { if (m_is_open) m_fp.close(); }
       
       
+      bool Open(const Apto::String& filename);
+      bool Close();
       
+      
+      const Apto::String& Filename() const { return m_filename; }
+      std::ifstream* FileStream() { return &m_fp; }
+
+      bool ReadLine(Apto::String& str_ref);
+      
+      // Tests
+      LIB_EXPORT inline bool IsOpen() const { return m_is_open; }
+      LIB_EXPORT inline bool Fail() const { return (m_fp.fail()); }
+      LIB_EXPORT inline bool Good() const { return (m_fp.good()); }
+      LIB_EXPORT inline bool Eof() const { return (m_fp.eof()); }
     };
     
   };

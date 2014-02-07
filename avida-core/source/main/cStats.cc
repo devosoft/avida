@@ -51,7 +51,6 @@ using namespace Avida;
 
 cStats::cStats(cWorld* world)
 : m_world(world)
-, m_data_manager(this, "population_data")
 , m_update(-1)
 , avida_time(0)
 , max_viable_fitness(0)
@@ -78,77 +77,8 @@ cStats::cStats(cWorld* world)
 , num_modified(0)
 , tot_organisms(0)
 , tot_executed(0)
-, num_resamplings(0)
-, num_failedResamplings(0)
 , last_update(0)
-, sense_size(0)
-, m_spec_total(0)
-, m_spec_num(0)
-, m_spec_waste(0)
 {
-  const cEnvironment& env = m_world->GetEnvironment();
-  const int num_tasks = env.GetNumTasks();
-  
-  task_cur_count.Resize(num_tasks);
-  task_last_count.Resize(num_tasks);
-  task_test_count.Resize(num_tasks);
-  m_collect_env_test_stats = false;
-  
-  task_cur_quality.Resize(num_tasks);
-  task_last_quality.Resize(num_tasks);
-  task_cur_max_quality.Resize(num_tasks);
-  task_last_max_quality.Resize(num_tasks);
-  task_exe_count.Resize(num_tasks);
-  new_task_count.Resize(num_tasks);
-  prev_task_count.Resize(num_tasks);
-  cur_task_count.Resize(num_tasks);
-  new_reaction_count.Resize(env.GetNumReactions());
-  task_cur_count.SetAll(0);
-  task_cur_quality.SetAll(0);
-  task_cur_max_quality.SetAll(0);
-  task_last_max_quality.SetAll(0);
-  task_last_quality.SetAll(0);
-  task_last_count.SetAll(0);
-  task_test_count.SetAll(0);
-  task_cur_max_quality.SetAll(0);
-  task_last_max_quality.SetAll(0);
-  task_exe_count.SetAll(0);
-  new_task_count.SetAll(0);
-  prev_task_count.SetAll(0);
-  cur_task_count.SetAll(0);
-  new_reaction_count.SetAll(0);
-  
-  
-  ZeroFTInst();
-  
-  const int num_reactions = env.GetNumReactions();
-  m_reaction_cur_count.Resize(num_reactions);
-  m_reaction_last_count.Resize(num_reactions);
-  m_reaction_cur_add_reward.Resize(num_reactions);
-  m_reaction_last_add_reward.Resize(num_reactions);
-  m_reaction_exe_count.Resize(num_reactions);
-  m_reaction_cur_count.SetAll(0);
-  m_reaction_last_count.SetAll(0);
-  m_reaction_cur_add_reward.SetAll(0.0);
-  m_reaction_last_add_reward.SetAll(0.0);
-  m_reaction_exe_count.SetAll(0);
-  
-  
-  resource_count.Resize( m_world->GetNumResources() );
-  resource_count.SetAll(0);
-  
-  resource_geometry.Resize( m_world->GetNumResources() );
-  
-  task_names.Resize(num_tasks);
-  for (int i = 0; i < num_tasks; i++) task_names[i] = env.GetTask(i).GetDesc();
-  
-  reaction_names.Resize(num_reactions);
-  for (int i = 0; i < num_reactions; i++) reaction_names[i] = env.GetReactionName(i);
-  
-  resource_names.Resize( m_world->GetNumResources() );
-  
-  
-  
   setupProvidedData();
 }
 
@@ -257,65 +187,13 @@ m_provided_data[name] = ProvidedData(desc, Apto::BindFirst(type ## Stat, &cStats
 mgr->Register(name, activate); \
 }
   
-  // Time Stats
-  m_data_manager.Add("update",      "Update",      &cStats::GetUpdate);
-  m_data_manager.Add("generation",  "Generation",  &cStats::GetGeneration);
-  
   PROVIDE("core.update",                   "Update",                               int,    GetUpdate);
   PROVIDE("core.world.ave_generation",     "Average Generation",                   double, GetGeneration);
-  
-  
-  // Population Level Stats
-  m_data_manager.Add("num_resamplings",  "Total Number of resamplings this time step", &cStats::GetResamplings);
-  m_data_manager.Add("num_failedResamplings",  "Total Number of divide commands that reached the resampling hard-cap this time step", &cStats::GetFailedResamplings);
-  
-  // Current Counts...
-  m_data_manager.Add("num_births",     "Count of Births in Population",          &cStats::GetNumBirths);
-  m_data_manager.Add("cumulative_births", "Total Births over Time",              &cStats::GetCumulativeBirths);
-  m_data_manager.Add("num_deaths",     "Count of Deaths in Population",          &cStats::GetNumDeaths);
-  m_data_manager.Add("breed_in",       "Count of Non-Breed-True Births",         &cStats::GetBreedIn);
-  m_data_manager.Add("breed_true",     "Count of Breed-True Births",             &cStats::GetBreedTrue);
-  m_data_manager.Add("bred_true",      "Count of Organisms that have Bred True", &cStats::GetBreedTrueCreatures);
-  m_data_manager.Add("num_cpus",       "Count of Organisms in Population",       &cStats::GetNumCreatures);
-  m_data_manager.Add("threads",        "Count of Threads in Population",         &cStats::GetNumThreads);
-  m_data_manager.Add("num_no_birth",   "Count of Childless Organisms",           &cStats::GetNumNoBirthCreatures);
-  
   PROVIDE("core.world.organisms",          "Count of Organisms in the World",      int,    GetNumCreatures);
-  
-  
-  // Total Counts...
-  m_data_manager.Add("tot_cpus",      "Total Organisms ever in Population", &cStats::GetTotCreatures);
-  
-  
-  // Some Average Data...
-  m_data_manager.Add("ave_repro_rate", "Average Repro-Rate (1/Gestation)", &cStats::GetAveReproRate);
-  m_data_manager.Add("ave_merit",      "Average Merit",                    &cStats::GetAveMerit);
-  m_data_manager.Add("ave_age",        "Average Age",                      &cStats::GetAveCreatureAge);
-  m_data_manager.Add("ave_memory",     "Average Memory Used",              &cStats::GetAveMemSize);
-  m_data_manager.Add("ave_neutral",    "Average Neutral Metric",           &cStats::GetAveNeutralMetric);
-  m_data_manager.Add("ave_gest",       "Average Gestation Time",           &cStats::GetAveGestation);
-  m_data_manager.Add("ave_fitness",    "Average Fitness",                  &cStats::GetAveFitness);
-  m_data_manager.Add("ave_copy_length","Average Copied Length",            &cStats::GetAveCopySize);
-  m_data_manager.Add("ave_exe_length", "Average Executed Length",          &cStats::GetAveExeSize);
-  
-  m_data_manager.Add("ave_speculative","Averate Speculative Instructions", &cStats::GetAveSpeculative);
-  m_data_manager.Add("speculative_waste", "Speculative Execution Waste",   &cStats::GetSpeculativeWaste);
-  
   PROVIDE("core.world.ave_metabolic_rate", "Average Metabolic Rate",               double, GetAveMerit);
   PROVIDE("core.world.ave_age",            "Average Organism Age (in updates)",    double, GetAveCreatureAge);
   PROVIDE("core.world.ave_gestation_time", "Average Gestation Time",               double, GetAveGestation);
   PROVIDE("core.world.ave_fitness",        "Average Fitness",                      double, GetAveFitness);
-  
-  
-  // Maximums
-  m_data_manager.Add("max_fitness", "Maximum Fitness in Population", &cStats::GetMaxFitness);
-  m_data_manager.Add("max_merit",   "Maximum Merit in Population",   &cStats::GetMaxMerit);
-  
-  
-  // Minimums
-  m_data_manager.Add("min_fitness", "Minimum Fitness in Population", &cStats::GetMinFitness);
-  
-  
   
   const cEnvironment& env = m_world->GetEnvironment();
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<int> > taskLastCount(
@@ -463,11 +341,6 @@ int cStats::GetNumTotalPredCreatures() const
   return m_world->GetPopulation().GetNumTopPredOrganisms() + m_world->GetPopulation().GetNumPredOrganisms();
 }
 
-void cStats::PrintDataFile(const cString& filename, const cString& format, char sep)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  m_data_manager.PrintRow(*df, format, sep);
-}
 
 
 void cStats::PrintAverageData(const cString& filename)
