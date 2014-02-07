@@ -28,6 +28,7 @@
 #include "avida/core/Universe.h"
 #include "avida/hardware/Types.h"
 #include "avida/util/ArgParser.h"
+#include "avida/util/ConfigFile.h"
 
 
 namespace Avida {
@@ -61,7 +62,7 @@ namespace Avida {
       
       LIB_EXPORT InstSet* InstSetWithName(const Apto::String& set_name);
       
-      LIB_EXPORT bool LoadInstSet(const Apto::File& fileref);
+      LIB_EXPORT bool LoadInstSet(const Util::ConfigFile& fileref);
       LIB_EXPORT bool LoadInstSet(const Apto::String& inst_set_str);
       
       
