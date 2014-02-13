@@ -29,7 +29,6 @@
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cPopulationCell.h"
-#include "cStringUtil.h"
 #include "cTaskContext.h"
 #include "cWorld.h"
 #include "cStats.h"
@@ -125,43 +124,13 @@ void cOrganism::doOutput(cAvidaContext& ctx,
 {  
   const Apto::Array<double> & global_resource_count = m_interface->GetResources(ctx);
   
-  tList<tBuffer<int> > other_input_list;
-  tList<tBuffer<int> > other_output_list;
-  
-  // If tasks require us to consider neighbor inputs, collect them...
-  if (m_world->GetEnvironment().UseNeighborInput()) {
-    const int num_neighbors = m_interface->GetNumNeighbors();
-    for (int i = 0; i < num_neighbors; i++) {
-      m_interface->Rotate(ctx);
-      cOrganism * cur_neighbor = m_interface->GetNeighbor();
-      if (cur_neighbor == NULL) continue;
-      
-      other_input_list.Push( &(cur_neighbor->m_input_buf) );
-    }
-  }
-  
-  // If tasks require us to consider neighbor outputs, collect them...
-  if (m_world->GetEnvironment().UseNeighborOutput()) {
-    const int num_neighbors = m_interface->GetNumNeighbors();
-    for (int i = 0; i < num_neighbors; i++) {
-      m_interface->Rotate(ctx);
-      cOrganism * cur_neighbor = m_interface->GetNeighbor();
-      if (cur_neighbor == NULL) continue;
-      
-      other_output_list.Push( &(cur_neighbor->m_output_buf) );
-    }
-  }
-  
   // Do the testing of tasks performed...
-  
-  
   Apto::Array<double> global_res_change(global_resource_count.GetSize());
   global_res_change.SetAll(0.0);
   Apto::Array<cString> insts_triggered;
   
   
-  cTaskContext taskctx(this, input_buffer, output_buffer, other_input_list, other_output_list,
-                       m_hardware->GetExtendedMemory(), on_divide);
+  cTaskContext taskctx(this, input_buffer, output_buffer, m_hardware->GetExtendedMemory(), on_divide);
   
   
   m_phenotype.TestOutput(ctx, taskctx, global_resource_count, m_phenotype.GetCurRBinsAvail(), global_res_change,

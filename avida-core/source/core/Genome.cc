@@ -31,7 +31,6 @@
 
 #include "cHardwareManager.h"
 
-#include "cStringUtil.h"
 
 static Apto::BasicString<Apto::ThreadSafe> s_prop_id_instset("instset");
 static PropertyDescriptionMap s_prop_desc_map;

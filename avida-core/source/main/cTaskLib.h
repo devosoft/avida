@@ -29,7 +29,6 @@
 #include "cStats.h"
 
 class cEnvReqs;
-class cString;
 class cWorld;
 
 
@@ -279,19 +278,6 @@ private:
   void Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
   double Task_Optimize(cTaskContext& ctx) const;
   
-  // Communication Tasks
-  double Task_CommEcho(cTaskContext& ctx) const;
-  double Task_CommNot(cTaskContext& ctx) const;
-  
-  // Movement tasks (temp, rely on hack)
-  double Task_MoveUpGradient(cTaskContext& ctx) const;
-  double Task_MoveNeutralGradient(cTaskContext& ctx) const;
-  double Task_MoveDownGradient(cTaskContext& ctx) const;
-  double Task_MoveNotUpGradient(cTaskContext& ctx) const;
-
-
-	// reputation
-	double Task_CreatePerfectStrings(cTaskContext& ctx) const; 
 	
   // Feed Specific Tasks
   void Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);

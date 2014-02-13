@@ -27,7 +27,6 @@
 #include "avida/core/Types.h"
 
 class cHardwareManager;
-class cString;
 
 
 namespace Avida {

@@ -30,7 +30,6 @@
 #include "cOrganism.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
-#include "cStringUtil.h"
 #include "cWorld.h"
 
 #include <cmath>

@@ -24,8 +24,6 @@
 
 #include "apto/core/Mutex.h"
 
-#include "tList.h"
-
 
 template<typename CtorSignature> class tObjectFactory;
 

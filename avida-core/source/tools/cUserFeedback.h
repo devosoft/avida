@@ -24,8 +24,6 @@
 
 #include "avida/core/Feedback.h"
 
-#include "cString.h"
-
 #include <cstdarg>
 
 using namespace Avida;

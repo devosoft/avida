@@ -23,10 +23,7 @@
 #ifndef tBuffer_h
 #define tBuffer_h
 
-#include "cString.h"
-
 #include <cassert>
-#include <iostream>
 
 
 template <class T> class tBuffer

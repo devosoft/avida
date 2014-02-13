@@ -23,8 +23,6 @@
 #ifndef cReactionResult_h
 #define cReactionResult_h
 
-#include "cString.h"
-
 
 class cReactionResult {
 private:

@@ -29,8 +29,6 @@
 #include "cHardwareGP8.h"
 #include "cHardwareTransSMT.h"
 #include "cInstSet.h"
-#include "cStringList.h"
-#include "cStringUtil.h"
 #include "cWorld.h"
 
 using namespace Avida;

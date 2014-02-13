@@ -25,8 +25,6 @@
 
 #include "avida/util/ArgParser.h"
 
-#include "cString.h"
-
 class cTaskLib;
 class cTaskContext;
 

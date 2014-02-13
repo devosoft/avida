@@ -25,17 +25,13 @@
 
 #include <climits>
 
-#ifndef tList_h
-#include "tList.h"
-#endif
-
 class cReaction;
 
 class cReactionRequisite
 {
 private:
-  tList<cReaction> prior_reaction_list;
-  tList<cReaction> prior_noreaction_list;
+  Apto::List<cReaction*> prior_reaction_list;
+  Apto::List<cReaction*> prior_noreaction_list;
   int min_task_count;
   int max_task_count;
   int min_reaction_count;
@@ -54,8 +50,8 @@ public:
 	  min_tot_reaction_count(0), max_tot_reaction_count(INT_MAX), divide_only(0) { ; }
   ~cReactionRequisite() { ; }
 
-  const tList<cReaction>& GetReactions() const { return prior_reaction_list; }
-  const tList<cReaction>& GetNoReactions() const { return prior_noreaction_list; }
+  const Apto::List<cReaction*>& GetReactions() const { return prior_reaction_list; }
+  const Apto::List<cReaction*>& GetNoReactions() const { return prior_noreaction_list; }
   int GetMinTaskCount() const { return min_task_count; }
   int GetMaxTaskCount() const { return max_task_count; }
   int GetMinReactionCount() const { return min_reaction_count; }

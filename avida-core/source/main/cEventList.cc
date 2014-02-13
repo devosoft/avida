@@ -25,7 +25,6 @@
 #include "cActionLibrary.h"
 #include "cInitFile.h"
 #include "cStats.h"
-#include "cString.h"
 #include "cWorld.h"
 
 #include <cfloat>           // for DBL_MIN
@@ -72,9 +71,6 @@ bool cEventList::AddEvent(eTriggerType trigger, double start, double interval,
     }
     
     SyncEvent(entry);
-		
-		if (trigger == BIRTHS_INTERRUPT)  //Operates outside of usual event processing
-			QueueBirthInterruptEvent(start);
 		
     ++m_num_events;
     return true;
@@ -249,9 +245,6 @@ void cEventList::ProcessInterrupt(cAvidaContext& ctx)
 					((entry->GetStart() > entry->GetStop() && entry->GetInterval() > 0) ||
 					 (entry->GetStart() < entry->GetStop() && entry->GetInterval() < 0))){
 					Delete(entry);
-				} else {
-					// We have to add this entry to the BirthInterrupt queue
-					QueueBirthInterruptEvent(entry->GetStart());
 				}
 			}
 		} 
@@ -352,33 +345,6 @@ void cEventList::PrintEventList(ostream& os)
 }
 
 
-// Dequeue a particular birth interrupt event
-void cEventList::DequeueBirthInterruptEvent(double t_val)
-{
-	double* ptr = m_birth_interrupt_queue.Remove(&t_val);
-	if (ptr != NULL) 
-		delete ptr;
-}
-
-
-// Add a birth event trigger time to avoid unnecessary processing
-void cEventList::QueueBirthInterruptEvent(double t_val)
-{
-	//See if the event is already queued; add if not
-	if (m_birth_interrupt_queue.Find(&t_val) == NULL){
-		double* val_ptr = new double(t_val);
-		m_birth_interrupt_queue.PushRear(val_ptr);
-	}
-}
-
-// Check to see whether or not a particular value is in the asynchronous
-// birth queue.
-bool cEventList::CheckBirthInterruptQueue(double)
-{
-	return false;
-	//Disabled for now...
-	//return (m_birth_interrupt_queue.Find(&t_val) != NULL);
-}
 
 
 //// Parsing Event List File Format ////

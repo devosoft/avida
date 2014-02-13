@@ -43,9 +43,9 @@ protected:
 public:
   cMerit() : bits(0), base(0), offset(0), value(0) { ; }
 
-  explicit cMerit(const int    in_value){ UpdateValue(in_value); }
-  explicit cMerit(const unsigned int   in_value){ UpdateValue(in_value); }
-  explicit cMerit(const double in_value){ UpdateValue(in_value); }
+  explicit cMerit(const int in_value) { UpdateValue(in_value); }
+  explicit cMerit(const unsigned int in_value) { UpdateValue(in_value); }
+  explicit cMerit(const double in_value) { UpdateValue(in_value); }
   cMerit(const cMerit& merit) { *this = merit; }
 
   bool OK() const;

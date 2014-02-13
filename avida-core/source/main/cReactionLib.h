@@ -26,7 +26,6 @@
 #include "avida/core/Types.h"
 
 class cReaction;
-class cString;
 
 
 class cReactionLib

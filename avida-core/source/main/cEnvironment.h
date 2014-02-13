@@ -28,11 +28,7 @@
 
 #include "cMutationRates.h"
 #include "cReactionLib.h"
-#include "cString.h"
 #include "cTaskLib.h"
-#include "tList.h"
-
-#include <set>
 
 
 namespace Avida {

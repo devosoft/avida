@@ -23,9 +23,6 @@
 #ifndef cTestCPU_h
 #define cTestCPU_h
 
-#include <fstream>
-
-#include "cString.h"
 #include "cCPUTestInfo.h"
 #include "cWorld.h"
 

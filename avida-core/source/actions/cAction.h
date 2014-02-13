@@ -22,8 +22,6 @@
 #ifndef cAction_h
 #define cAction_h
 
-#include "cString.h"
-
 class cAvidaContext;
 class cWorld;
 

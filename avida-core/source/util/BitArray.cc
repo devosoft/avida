@@ -1,6 +1,29 @@
-#include "cBitArray.h"
+/*
+ *  util/BitArray.cc
+ *  avida-core
+ *
+ *  Copyright 1999-2014 Michigan State University. All rights reserved.
+ *
+ *
+ *  This file is part of Avida.
+ *
+ *  Avida is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ *  Avida is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License along with Avida.
+ *  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  Authors: Charles Ofria <ofria@msu.edu>, Bess Walker, David M. Bryson <david@programerror.com>
+ *
+ */
 
-void cRawBitArray::Copy(const cRawBitArray & in_array, const int num_bits)
+#include "avida/util/BitArray.h"
+
+
+void Avida::Util::RawBitArray::Copy(const RawBitArray & in_array, const int num_bits)
 {
   const int num_fields = GetNumFields(num_bits);
   if (bit_fields != NULL) {
@@ -13,7 +36,7 @@ void cRawBitArray::Copy(const cRawBitArray & in_array, const int num_bits)
 }
 
 
-bool cRawBitArray::IsEqual(const cRawBitArray & in_array, int num_bits) const
+bool Avida::Util::RawBitArray::IsEqual(const RawBitArray & in_array, int num_bits) const
 {
   const int num_fields = GetNumFields(num_bits);
   for (int i = 0; i < num_fields; i++) {
@@ -23,7 +46,7 @@ bool cRawBitArray::IsEqual(const cRawBitArray & in_array, int num_bits) const
 }
 
 
-void cRawBitArray::Resize(const int old_bits, const int new_bits)
+void Avida::Util::RawBitArray::Resize(const int old_bits, const int new_bits)
 {
   const int num_old_fields = GetNumFields(old_bits);
   const int num_new_fields = GetNumFields(new_bits);
@@ -66,7 +89,7 @@ void cRawBitArray::Resize(const int old_bits, const int new_bits)
 }
 
 
-void cRawBitArray::ResizeSloppy(const int new_bits)
+void Avida::Util::RawBitArray::ResizeSloppy(const int new_bits)
 {
   const int new_fields = GetNumFields(new_bits);
   if (bit_fields != NULL) {
@@ -75,7 +98,7 @@ void cRawBitArray::ResizeSloppy(const int new_bits)
   bit_fields = new unsigned int[ new_fields ];
 }
 
-void cRawBitArray::ResizeClear(const int new_bits)
+void Avida::Util::RawBitArray::ResizeClear(const int new_bits)
 {
   ResizeSloppy(new_bits);
   Zero(new_bits);
@@ -84,7 +107,7 @@ void cRawBitArray::ResizeClear(const int new_bits)
 
 // This technique counts the number of bits; it loops through once for each
 // bit equal to 1.  This is reasonably fast for sparse arrays.
-int cRawBitArray::CountBits(const int num_bits) const
+int Avida::Util::RawBitArray::CountBits(const int num_bits) const
 {
   const int num_fields = GetNumFields(num_bits);
   int bit_count = 0;
@@ -101,7 +124,7 @@ int cRawBitArray::CountBits(const int num_bits) const
 
 // This technique is another way of counting bits; It does a bunch of
 // clever bit tricks to do it in parallel in each int.
-int cRawBitArray::CountBits2(const int num_bits) const
+int Avida::Util::RawBitArray::CountBits2(const int num_bits) const
 {
   const int num_fields = GetNumFields(num_bits);
   int bit_count = 0;
@@ -115,7 +138,7 @@ int cRawBitArray::CountBits2(const int num_bits) const
   return bit_count;
 }
 
-int cRawBitArray::FindBit1(const int num_bits, const int start_pos) const
+int Avida::Util::RawBitArray::FindBit1(const int num_bits, const int start_pos) const
 {
   // @CAO -- There are probably better ways to do this with bit tricks.
   for (int i = start_pos; i < num_bits; i++) {
@@ -125,7 +148,7 @@ int cRawBitArray::FindBit1(const int num_bits, const int start_pos) const
   return -1;
 }
 
-Apto::Array<int> cRawBitArray::GetOnes(const int num_bits) const
+Apto::Array<int> Avida::Util::RawBitArray::GetOnes(const int num_bits) const
 {
   // @CAO -- There are probably better ways to do this with bit tricks.
   Apto::Array<int> out_array(CountBits2(num_bits));
@@ -137,7 +160,7 @@ Apto::Array<int> cRawBitArray::GetOnes(const int num_bits) const
   return out_array;
 }
 
-void cRawBitArray::ShiftLeft(const int num_bits, const int shift_size)
+void Avida::Util::RawBitArray::ShiftLeft(const int num_bits, const int shift_size)
 {
   assert(shift_size > 0);
   int num_fields = GetNumFields(num_bits);
@@ -172,7 +195,7 @@ void cRawBitArray::ShiftLeft(const int num_bits, const int shift_size)
 }
 
 // ALWAYS shifts in zeroes, irrespective of sign bit (since fields are unsigned)
-void cRawBitArray::ShiftRight(const int num_bits, const int shift_size)
+void Avida::Util::RawBitArray::ShiftRight(const int num_bits, const int shift_size)
 {
   assert(shift_size > 0);
   int num_fields = GetNumFields(num_bits);
@@ -199,7 +222,7 @@ void cRawBitArray::ShiftRight(const int num_bits, const int shift_size)
   }
 }
 
-void cRawBitArray::NOT(const int num_bits)
+void Avida::Util::RawBitArray::NOT(const int num_bits)
 {
   const int num_fields = GetNumFields(num_bits);
   for (int i = 0; i < num_fields; i++) {
@@ -212,7 +235,7 @@ void cRawBitArray::NOT(const int num_bits)
   }
 }
 
-void cRawBitArray::AND(const cRawBitArray & array2, const int num_bits)
+void Avida::Util::RawBitArray::AND(const RawBitArray & array2, const int num_bits)
 {
   const int num_fields = GetNumFields(num_bits);
   for (int i = 0; i < num_fields; i++) {
@@ -220,7 +243,7 @@ void cRawBitArray::AND(const cRawBitArray & array2, const int num_bits)
   }
 }
 
-void cRawBitArray::OR(const cRawBitArray & array2, const int num_bits)
+void Avida::Util::RawBitArray::OR(const RawBitArray & array2, const int num_bits)
 {
   const int num_fields = GetNumFields(num_bits);
   for (int i = 0; i < num_fields; i++) {
@@ -228,7 +251,7 @@ void cRawBitArray::OR(const cRawBitArray & array2, const int num_bits)
   }
 }
 
-void cRawBitArray::NAND(const cRawBitArray & array2, const int num_bits)
+void Avida::Util::RawBitArray::NAND(const RawBitArray & array2, const int num_bits)
 {
   const int num_fields = GetNumFields(num_bits);
   for (int i = 0; i < num_fields; i++) {
@@ -241,7 +264,7 @@ void cRawBitArray::NAND(const cRawBitArray & array2, const int num_bits)
   }
 }
 
-void cRawBitArray::NOR(const cRawBitArray & array2, const int num_bits)
+void Avida::Util::RawBitArray::NOR(const RawBitArray & array2, const int num_bits)
 {
   const int num_fields = GetNumFields(num_bits);
   for (int i = 0; i < num_fields; i++) {
@@ -254,7 +277,7 @@ void cRawBitArray::NOR(const cRawBitArray & array2, const int num_bits)
   }
 }
 
-void cRawBitArray::XOR(const cRawBitArray & array2, const int num_bits)
+void Avida::Util::RawBitArray::XOR(const RawBitArray & array2, const int num_bits)
 {
   const int num_fields = GetNumFields(num_bits);
   for (int i = 0; i < num_fields; i++) {
@@ -263,7 +286,7 @@ void cRawBitArray::XOR(const cRawBitArray & array2, const int num_bits)
 
 }
 
-void cRawBitArray::EQU(const cRawBitArray & array2, const int num_bits)
+void Avida::Util::RawBitArray::EQU(const RawBitArray & array2, const int num_bits)
 {
   const int num_fields = GetNumFields(num_bits);
   for (int i = 0; i < num_fields; i++) {
@@ -276,7 +299,7 @@ void cRawBitArray::EQU(const cRawBitArray & array2, const int num_bits)
   }
 }
 
-void cRawBitArray::SHIFT(const int num_bits, const int shift_size)
+void Avida::Util::RawBitArray::SHIFT(const int num_bits, const int shift_size)
 {
   if (shift_size == 0) return;
   if (shift_size > 0) { ShiftLeft(num_bits, shift_size); return; }
@@ -284,7 +307,7 @@ void cRawBitArray::SHIFT(const int num_bits, const int shift_size)
   assert(false); // Should never get here.
 }
 
-void cRawBitArray::INCREMENT(const int num_bits)
+void Avida::Util::RawBitArray::INCREMENT(const int num_bits)
 {
   const int num_fields = GetNumFields(num_bits);
   int i = 0;
@@ -304,7 +327,7 @@ void cRawBitArray::INCREMENT(const int num_bits)
 
 
 
-void cRawBitArray::NOT(const cRawBitArray & array1, const int num_bits)
+void Avida::Util::RawBitArray::NOT(const RawBitArray & array1, const int num_bits)
 {
   ResizeSloppy(num_bits);
 
@@ -319,8 +342,8 @@ void cRawBitArray::NOT(const cRawBitArray & array1, const int num_bits)
   }
 }
 
-void cRawBitArray::AND(const cRawBitArray & array1,
-		       const cRawBitArray & array2, const int num_bits)
+void Avida::Util::RawBitArray::AND(const RawBitArray & array1,
+		       const RawBitArray & array2, const int num_bits)
 {
   ResizeSloppy(num_bits);
 
@@ -330,8 +353,8 @@ void cRawBitArray::AND(const cRawBitArray & array1,
   }
 }
 
-void cRawBitArray::OR(const cRawBitArray & array1,
-		      const cRawBitArray & array2, const int num_bits)
+void Avida::Util::RawBitArray::OR(const RawBitArray & array1,
+		      const RawBitArray & array2, const int num_bits)
 {
   ResizeSloppy(num_bits);
 
@@ -341,8 +364,8 @@ void cRawBitArray::OR(const cRawBitArray & array1,
   }
 }
 
-void cRawBitArray::NAND(const cRawBitArray & array1,
-			const cRawBitArray & array2, const int num_bits)
+void Avida::Util::RawBitArray::NAND(const RawBitArray & array1,
+			const RawBitArray & array2, const int num_bits)
 {
   ResizeSloppy(num_bits);
 
@@ -357,8 +380,8 @@ void cRawBitArray::NAND(const cRawBitArray & array1,
   }
 }
 
-void cRawBitArray::NOR(const cRawBitArray & array1,
-		       const cRawBitArray & array2, const int num_bits)
+void Avida::Util::RawBitArray::NOR(const RawBitArray & array1,
+		       const RawBitArray & array2, const int num_bits)
 {
   ResizeSloppy(num_bits);
 
@@ -373,8 +396,8 @@ void cRawBitArray::NOR(const cRawBitArray & array1,
   }
 }
 
-void cRawBitArray::XOR(const cRawBitArray & array1,
-		       const cRawBitArray & array2, const int num_bits)
+void Avida::Util::RawBitArray::XOR(const RawBitArray & array1,
+		       const RawBitArray & array2, const int num_bits)
 {
   ResizeSloppy(num_bits);
 
@@ -385,7 +408,7 @@ void cRawBitArray::XOR(const cRawBitArray & array1,
 
 }
 
-void cRawBitArray::EQU(const cRawBitArray & array1, const cRawBitArray & array2, const int num_bits)
+void Avida::Util::RawBitArray::EQU(const RawBitArray & array1, const RawBitArray & array2, const int num_bits)
 {
   ResizeSloppy(num_bits);
 
@@ -400,7 +423,7 @@ void cRawBitArray::EQU(const cRawBitArray & array1, const cRawBitArray & array2,
   }
 }
 
-void cRawBitArray::SHIFT(const cRawBitArray & array1, const int num_bits, const int shift_size)
+void Avida::Util::RawBitArray::SHIFT(const RawBitArray & array1, const int num_bits, const int shift_size)
 {
   if (shift_size == 0) return;
   
@@ -409,14 +432,14 @@ void cRawBitArray::SHIFT(const cRawBitArray & array1, const int num_bits, const 
   SHIFT(num_bits, shift_size);
 }
 
-void cRawBitArray::INCREMENT(const cRawBitArray & array1, const int num_bits)
+void Avida::Util::RawBitArray::INCREMENT(const RawBitArray & array1, const int num_bits)
 {
   Copy(array1, num_bits);
   INCREMENT(num_bits);
 }
 
 
-bool cBitArray::operator<(const cBitArray& ar2) const
+bool Avida::Util::BitArray::operator<(const BitArray& ar2) const
 {
   return CountBits2() < ar2.CountBits2();
 }
@@ -424,7 +447,7 @@ bool cBitArray::operator<(const cBitArray& ar2) const
 
 
 
-std::ostream & operator << (std::ostream & out, const cBitArray & bit_array)
+std::ostream& operator << (std::ostream& out, const Avida::Util::BitArray & bit_array)
 {
   bit_array.Print(out);
   return out;
@@ -438,10 +461,10 @@ std::ostream & operator << (std::ostream & out, const cBitArray & bit_array)
 int main()
 {
   int passed = true;
-  // Start by testing the cRawBitArray class.
+  // Start by testing the RawBitArray class.
 
   // Test default constructor.
-  cRawBitArray bit_array1;
+  RawBitArray bit_array1;
   bit_array1.ResizeClear(10);
   for (int i = 0; i < 10; i++) {
     if (bit_array1.GetBit(i) != false) {
@@ -486,7 +509,7 @@ int main()
   }
   
   // Test constructor with initial size < 32.
-  cRawBitArray bit_array2(26);
+  RawBitArray bit_array2(26);
   for (int i = 0; i < 26; i++) {
     if (bit_array2.GetBit(i) != false) {
       passed = false;
@@ -508,7 +531,7 @@ int main()
   
   // Test constructor with initial size > 32.
   const int high_bit_count = 1000;
-  cRawBitArray bit_array3(high_bit_count);
+  RawBitArray bit_array3(high_bit_count);
   int bit_pos = 2;
   while (bit_pos < high_bit_count) {
     bit_array3.SetBit(bit_pos, true);
@@ -516,7 +539,7 @@ int main()
   }
 
   // Test faux copy constructor.
-  cRawBitArray bit_array4(bit_array3, high_bit_count);
+  RawBitArray bit_array4(bit_array3, high_bit_count);
   bit_array4.SetBit(22, true);
   bit_array4.SetBit(24, true);
   int count1 =  bit_array3.CountBits(high_bit_count);
@@ -541,7 +564,7 @@ int main()
 
   if (diff_count != 2) {
     passed = false;
-    cerr << "ERROR in cRawBitArray copy constructor." << endl;
+    cerr << "ERROR in RawBitArray copy constructor." << endl;
   }
 
 
@@ -558,7 +581,7 @@ int main()
     cerr << "ERROR in NOT operation!" << endl;
   }
 
-  cRawBitArray bit_array5(70);
+  RawBitArray bit_array5(70);
   int pos = 1;
   int step = 1;
   while (pos <= 70) {
@@ -566,7 +589,7 @@ int main()
     pos += step++;
   }
 
-  cRawBitArray bit_array6(70);
+  RawBitArray bit_array6(70);
   bit_array6.AND(bit_array4, bit_array5, 70);
   int count_and = bit_array6.CountBits(70);
   if (count_and != 3) {
@@ -611,7 +634,7 @@ int main()
   
   // LEFT AND RIGHT SHIFT
   
-  cRawBitArray bit_array7(32);
+  RawBitArray bit_array7(32);
   bit_array7.SetBit(0, true);
   
   bit_array7.SHIFT(32, 0);
@@ -652,7 +675,7 @@ int main()
     cerr << "ERROR in ShiftRight dropping!" << endl;
   }
   
-  cRawBitArray bit_array8(34);
+  RawBitArray bit_array8(34);
   bit_array8.SetBit(0, true);
 
   bit_array8.SHIFT(34, 33);
@@ -667,7 +690,7 @@ int main()
     cerr << "ERROR in ShiftRight accross bit fields!" << endl;
   }
   
-  cRawBitArray bit_array9(66);
+  RawBitArray bit_array9(66);
   bit_array9.SetBit(0, true);
   bit_array9.SetBit(32, true);
   
@@ -685,7 +708,7 @@ int main()
   
   // INCREMENT
   
-  cRawBitArray bit_array10(1);
+  RawBitArray bit_array10(1);
   
   bit_array10.INCREMENT(1);
   if (bit_array10.GetBit(0) != true || bit_array10.CountBits(1) != 1) {
@@ -699,7 +722,7 @@ int main()
     cerr << "ERROR in INCREMENT overflowing last bit field!" << endl;
   }
   
-  cRawBitArray bit_array11(33);
+  RawBitArray bit_array11(33);
   for (int i = 0; i < 32; i++) { bit_array11.SetBit(i, true); }
   
   bit_array11.INCREMENT(33);
@@ -713,57 +736,57 @@ int main()
 //   bit_array6.Print(70);
 //   cout << bit_array6.CountBits(70) << endl;
 
-  cBitArray ba(74);
+  BitArray ba(74);
   for (int i = 0; i < 74; i++) {  if (i % 5 == 3) ba[i] = true;  }
 
-  cBitArray ba2(74);
+  BitArray ba2(74);
   for (int i = 0; i < 74; i++)  {
     if ((i%2==0 || i%3==0) && i%6 != 0) ba2[i] = true;
   }
 
   if ((ba & ba2).CountBits() != 8) {
     passed = false;
-    cerr << "ERROR: operator& failed for cBitArray" << endl;
+    cerr << "ERROR: operator& failed for BitArray" << endl;
   }
   
   if ((ba | ba2).CountBits() != 43) {
     passed = false;
-    cerr << "ERROR: operator| failed for cBitArray" << endl;
+    cerr << "ERROR: operator| failed for BitArray" << endl;
   }
 
   if ((ba ^ ba2).CountBits() != 35) {
     passed = false;
-    cerr << "ERROR: operator^ failed for cBitArray" << endl;
+    cerr << "ERROR: operator^ failed for BitArray" << endl;
   }
   
   if ((~ba).CountBits() != 59) {
     passed = false;
-    cerr << "ERROR: operator~ failed for cBitArray" << endl;
+    cerr << "ERROR: operator~ failed for BitArray" << endl;
   }
   
   if ((ba << 65).CountBits() != 2) { 
     passed = false;
-    cerr << "ERROR: operator<< (leftshift) failed for cBitArray" << endl;
+    cerr << "ERROR: operator<< (leftshift) failed for BitArray" << endl;
   }
   
   if ((ba >> 65).CountBits() != 2) {
     passed = false;
-    cerr << "ERROR: operator>> (rightshift) failed for cBitArray" << endl;
+    cerr << "ERROR: operator>> (rightshift) failed for BitArray" << endl;
   }
 
   if ((~ba & ~ba2).CountBits() != 31) {
     passed = false;
-    cerr << "ERROR: Chained bitwise operators failed for cBitArray" << endl;
+    cerr << "ERROR: Chained bitwise operators failed for BitArray" << endl;
   }
   
   if ((++(~ba & ~ba2)).CountBits() != 30) {
     passed = false;
-    cerr << "ERROR: prefix ++ failed for cBitArray" << endl;
+    cerr << "ERROR: prefix ++ failed for BitArray" << endl;
   }
 
   if (((~ba & ~ba2)++).CountBits() != 31) {
     passed = false;
-    cerr << "ERROR: postfix ++ failed for cBitArray" << endl;
+    cerr << "ERROR: postfix ++ failed for BitArray" << endl;
   }
   
   cout << ba << "  " << ba.CountBits() << endl;
@@ -771,7 +794,7 @@ int main()
   cout << (~ba & ~ba2) << "  " << (~ba & ~ba2).CountBits() << endl;
 
   if (passed == true) {
-    cout << "cRawBitArray passed Unit Tests." << endl;
+    cout << "RawBitArray passed Unit Tests." << endl;
   }
 }
 

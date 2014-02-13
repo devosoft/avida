@@ -25,8 +25,6 @@
 
 #include "apto/core.h"
 
-#include "cString.h"
-#include "cStringList.h"
 #include "cUserFeedback.h"
 
 #include <iostream>

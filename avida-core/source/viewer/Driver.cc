@@ -41,8 +41,6 @@
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStats.h"
-#include "cString.h"
-#include "cStringList.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
 

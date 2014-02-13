@@ -20,8 +20,6 @@
  */
 
 #include "cBirthEntry.h"
-#include "cString.h"
-#include "cStringUtil.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 

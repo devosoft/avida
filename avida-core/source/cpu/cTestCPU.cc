@@ -30,7 +30,6 @@
 #include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
-#include "cStringUtil.h"
 #include "cTestCPUInterface.h"
 #include "cWorld.h"
 

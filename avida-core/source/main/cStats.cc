@@ -34,17 +34,11 @@
 #include "cHardwareManager.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
-#include "cStringUtil.h"
 #include "cWorld.h"
 #include "tDataEntry.h"
 #include "cReaction.h"
 #include "cEventList.h"
 
-#include <algorithm>
-#include <cfloat>
-#include <numeric>
-#include <cmath>
-#include <sstream>
 
 using namespace Avida;
 
@@ -216,57 +210,10 @@ mgr->Register(name, activate); \
 #undef PROVIDE
 }
 
-void cStats::ZeroTasks()
-{
-  task_cur_count.SetAll(0);
-  task_last_count.SetAll(0);
-  task_test_count.SetAll(0);
-  
-  task_cur_quality.SetAll(0);
-  task_last_quality.SetAll(0);
-  task_last_max_quality.SetAll(0);
-  task_cur_max_quality.SetAll(0);
-}
-
-void cStats::ZeroReactions()
-{
-  m_reaction_cur_count.SetAll(0);
-  m_reaction_last_count.SetAll(0);
-  m_reaction_cur_add_reward.SetAll(0);
-  m_reaction_last_add_reward.SetAll(0);
-}
-
-void cStats::ZeroFTInst()
-{
-  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_prey_exe_inst_map.Values(); it.Next();) {
-    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
-  }
-  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_pred_exe_inst_map.Values(); it.Next();) {
-    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
-  }
-  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_pred_fail_exe_inst_map.Values(); it.Next();) {
-    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
-  }
-  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_tpred_exe_inst_map.Values(); it.Next();) {
-    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
-  }
-  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_prey_from_sensor_inst_map.Values(); it.Next();) {
-    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
-  }
-  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_pred_from_sensor_inst_map.Values(); it.Next();) {
-    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
-  }
-  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_tpred_from_sensor_inst_map.Values(); it.Next();) {
-    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
-  }
-}
 
 
 void cStats::RecordBirth(bool breed_true)
 {
-	if (m_world->GetEventsList()->CheckBirthInterruptQueue(tot_organisms) == true)
-		m_world->GetEventsList()->ProcessInterrupt(m_world->GetDefaultContext());
-  
   tot_organisms++;
   num_births++;
   cumulative_births++;
@@ -278,8 +225,8 @@ void cStats::RecordBirth(bool breed_true)
 void cStats::ProcessUpdate()
 {
   // Increment the "avida_time"
-  if (sum_merit.Count() > 0 && sum_merit.Average() > 0) {
-    double delta = ((double)(m_update-last_update))/sum_merit.Average();
+  if (sum_merit.Count() > 0 && sum_merit.Mean() > 0) {
+    double delta = ((double)(m_update-last_update))/sum_merit.Mean();
     avida_time += delta;
   }
   last_update = m_update;
@@ -293,245 +240,7 @@ void cStats::ProcessUpdate()
   tot_executed += num_executed;
   num_executed = 0;
   
-  task_cur_count.SetAll(0);
-  task_last_count.SetAll(0);
-  task_test_count.SetAll(0);
-  task_cur_quality.SetAll(0);
-  task_last_quality.SetAll(0);
-  task_cur_max_quality.SetAll(0);
-  task_last_max_quality.SetAll(0);
-  task_exe_count.SetAll(0);
-  
-  sense_last_count.SetAll(0);
-  sense_last_exe_count.SetAll(0);
-  
-  m_reaction_cur_count.SetAll(0);
-  m_reaction_last_count.SetAll(0);
-  m_reaction_cur_add_reward.SetAll(0.0);
-  m_reaction_last_add_reward.SetAll(0.0);
-  m_reaction_exe_count.SetAll(0);
   
   max_fitness = 0.0;
-  
-  num_resamplings = 0;
-  num_failedResamplings = 0;
-  
-  m_spec_total = 0;
-  m_spec_num = 0;
-  m_spec_waste = 0;
 }
 
-int cStats::GetNumPreyCreatures() const
-{
-  return m_world->GetPopulation().GetNumPreyOrganisms();
-}
-
-int cStats::GetNumPredCreatures() const
-{
-  return m_world->GetPopulation().GetNumPredOrganisms();
-}
-
-int cStats::GetNumTopPredCreatures() const
-{
-  return m_world->GetPopulation().GetNumTopPredOrganisms();
-}
-
-int cStats::GetNumTotalPredCreatures() const
-{
-  return m_world->GetPopulation().GetNumTopPredOrganisms() + m_world->GetPopulation().GetNumPredOrganisms();
-}
-
-
-
-void cStats::PrintAverageData(const cString& filename)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment("Avida Average Data");
-  df->WriteTimeStamp();
-  
-  df->Write(m_update,                      "Update");
-  df->Write(sum_merit.Average(),           "Merit");
-  df->Write(sum_gestation.Average(),       "Gestation Time");
-  df->Write(sum_fitness.Average(),         "Fitness");
-  df->Write(sum_repro_rate.Average(),      "Repro Rate?");
-  df->Write(0,                             "(deprecated) Size");
-  df->Write(sum_copy_size.Average(),       "Copied Size");
-  df->Write(sum_exe_size.Average(),        "Executed Size");
-  df->Write(0,                             "(deprecated) Abundance");
-  
-  // The following causes births and breed true to default to 0.0 when num_creatures is 0
-  double ave_births = 0.0;
-  double ave_breed_true = 0.0;
-  if (num_creatures > 0) {
-    const double d_num_creatures = static_cast<double>(num_creatures);
-    ave_births = static_cast<double>(num_births) / d_num_creatures;
-    ave_breed_true = static_cast<double>(num_breed_true) / d_num_creatures;
-  }
-  df->Write(ave_births,                    "Proportion of organisms that gave birth in this update");
-  df->Write(ave_breed_true,                "Proportion of Breed True Organisms");
-  
-  df->Write(0,                             "(deprecated) Genotype Depth");
-  df->Write(sum_generation.Average(),      "Generation");
-  df->Write(sum_neutral_metric.Average(),  "Neutral Metric");
-  df->Write(0, "(deprecated) True Replication Rate (based on births/update, time-averaged)");
-  df->Endl();
-}
-
-
-void cStats::PrintErrorData(const cString& filename)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment("Avida Standard Error Data");
-  df->WriteTimeStamp();
-  
-  df->Write(m_update,                 "Update");
-  df->Write(sum_merit.StdError(),           "Merit");
-  df->Write(sum_gestation.StdError(),       "Gestation Time");
-  df->Write(sum_fitness.StdError(),         "Fitness");
-  df->Write(sum_repro_rate.StdError(),      "Repro Rate?");
-  df->Write(0,                              "Size");
-  df->Write(sum_copy_size.StdError(),       "Copied Size");
-  df->Write(sum_exe_size.StdError(),        "Executed Size");
-  df->Write(0,                              "(deprecated) Abundance");
-  df->Write(-1,                             "(deprecated)");
-  df->Write(-1,                             "(deprecated)");
-  df->Write(0,                              "(deprecated) Genotype Depth");
-  df->Write(sum_generation.StdError(),      "Generation");
-  df->Write(sum_neutral_metric.StdError(),  "Neutral Metric");
-  df->Write(0, "(deprecated) True Replication Rate (based on births/update, time-averaged)");
-  df->Endl();
-}
-
-
-void cStats::PrintVarianceData(const cString& filename)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment("Avida Variance Data");
-  df->WriteTimeStamp();
-  
-  df->Write(m_update,                 "Update");
-  df->Write(sum_merit.Variance(),           "Merit");
-  df->Write(sum_gestation.Variance(),       "Gestation Time");
-  df->Write(sum_fitness.Variance(),         "Fitness");
-  df->Write(sum_repro_rate.Variance(),      "Repro Rate?");
-  df->Write(0,                              "(deprecated) Size");
-  df->Write(sum_copy_size.Variance(),       "Copied Size");
-  df->Write(sum_exe_size.Variance(),        "Executed Size");
-  df->Write(0,                              "(deprecated) Abundance");
-  df->Write(-1,                             "(deprecated)");
-  df->Write(-1,                             "(deprecated)");
-  df->Write(0,                              "(deprecated) Genotype Depth");
-  df->Write(sum_generation.Variance(),      "Generation");
-  df->Write(sum_neutral_metric.Variance(),  "Neutral Metric");
-  df->Write(0, "(deprecated) True Replication Rate (based on births/update, time-averaged)");
-  df->Endl();
-}
-
-
-
-void cStats::PrintCountData(const cString& filename)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment("Avida count data");
-  df->WriteTimeStamp();
-  
-  df->Write(m_update,                "update");
-  df->Write(num_executed,            "number of insts executed this update");
-  df->Write(num_creatures,           "number of organisms");
-  df->Write(0,                       "(deprecated) number of different genotypes");
-  df->Write(0,                       "(deprecated) number of different threshold genotypes");
-  df->Write(0,                       "(deprecated) number of different species");
-  df->Write(0,                       "(deprecated) number of different threshold species");
-  df->Write(0,                       "(deprecated) number of different lineages");
-  df->Write(num_births,              "number of births in this update");
-  df->Write(num_deaths,              "number of deaths in this update");
-  df->Write(num_breed_true,          "number of breed true");
-  df->Write(num_breed_true_creatures, "number of breed true organisms?");
-  df->Write(num_no_birth_creatures,   "number of no-birth organisms");
-  df->Write(num_single_thread_creatures, "number of single-threaded organisms");
-  df->Write(num_multi_thread_creatures, "number of multi-threaded organisms");
-  df->Write(num_modified, "number of modified organisms");
-  df->Endl();
-}
-
-
-void cStats::PrintTotalsData(const cString& filename)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  df->Write(m_update, "Update");
-  df->Write((tot_executed+num_executed), "Total Instructions Executed");
-  df->Write(num_executed, "Instructions Executed This Update");
-  df->Write(tot_organisms, "Total Organisms");
-  df->Write(0, "(deprecated) Total Genotypes");
-  df->Write(0, "(deprecated) Total Threshold");
-  df->Write(0, "(deprecated) Total Species");
-  df->Write(0, "(deprecated) Total Lineages");
-  df->Endl();
-}
-
-void cStats::PrintThreadsData(const cString& filename)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  df->Write(m_update, "Update");
-  df->Write(tot_organisms, "Total Organisms");
-  df->Write(m_world->GetPopulation().GetLiveOrgList().GetSize(), "Total Living Organisms");
-  df->Write(m_num_threads, "Total Living Org Threads");
-  df->Endl();
-}
-
-
-
-void cStats::PrintTimeData(const cString& filename)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment("Avida time data");
-  df->WriteTimeStamp();
-  
-  df->Write(m_update,              "update");
-  df->Write(avida_time,               "avida time");
-  df->Write(sum_generation.Average(), "average generation");
-  df->Write(num_executed,             "num_executed?");
-	df->Write(tot_organisms, "num_organisms");
-  df->Endl();
-}
-
-
-
-void cStats::PrintMutationRateData(const cString& filename)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment("Avida copy mutation rate data");
-  df->WriteTimeStamp();
-  
-  df->Write(m_update, "Update");
-  df->Write(sum_copy_mut_rate.Mean(), "Average copy mutation rate");
-  df->Write(sum_copy_mut_rate.Variance(), "Variance in copy mutation rate");
-  
-  df->Write(sum_log_copy_mut_rate.Mean(), "Average log(copy mutation rate)");
-  df->Write(sum_log_copy_mut_rate.Variance(), "Variance in log(copy mutation rate)");
-  df->Endl();
-  
-}
-
-
-void cStats::PrintDivideMutData(const cString& filename)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment("Avida divide mutation rate data");
-  df->WriteTimeStamp();
-  
-  df->Write(m_update, "Update");
-  df->Write(sum_div_mut_rate.Mean(), "Average divide mutation rate");
-  df->Write(sum_div_mut_rate.Variance(), "Variance in divide mutation rate");
-  
-  df->Write(sum_log_div_mut_rate.Mean(), "Average log(divide mutation rate)");
-  df->Write(sum_log_div_mut_rate.Variance(), "Variance in log(divide mutation rate)");
-  df->Endl();
-}

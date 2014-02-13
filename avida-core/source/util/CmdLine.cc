@@ -28,8 +28,6 @@
 
 #include "cActionLibrary.h"
 #include "cAvidaConfig.h"
-#include "cString.h"
-#include "cStringIterator.h"
 #include "cUserFeedback.h"
 
 #include <iostream>

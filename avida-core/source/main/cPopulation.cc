@@ -809,15 +809,15 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   // All remaining methods require us to choose among mulitple local positions.
   
   // Construct a list of equally viable locations to place the child...
-  tList<cPopulationCell> found_list;
+  Apto::List<cPopulationCell*> found_list;
   
   // First, check if there is an empty organism to work with (always preferred)
-  tList<cPopulationCell>& conn_list = parent_cell.ConnectionList();
+  Apto::List<cPopulationCell*>& conn_list = parent_cell.ConnectionList();
   
   const bool prefer_empty = m_world->GetConfig().PREFER_EMPTY.Get();
   
   if (birth_method == POSITION_OFFSPRING_DISPERSAL && conn_list.GetSize() > 0) {
-    tList<cPopulationCell>* disp_list = &conn_list;
+    Apto::List<cPopulationCell*>* disp_list = &conn_list;
     
     // hop through connection lists based on the dispersal rate
     int hops = ctx.GetRandom().GetRandPoisson(m_world->GetConfig().DISPERSAL_RATE.Get());
@@ -868,7 +868,7 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
 }
 
 void cPopulation::PositionAge(cPopulationCell & parent_cell,
-                              tList<cPopulationCell> & found_list,
+                              Apto::List<cPopulationCell*> & found_list,
                               bool parent_ok)
 {
   // Start with the parent organism as the replacement, and see if we can find
@@ -896,7 +896,7 @@ void cPopulation::PositionAge(cPopulationCell & parent_cell,
 }
 
 void cPopulation::PositionMerit(cPopulationCell & parent_cell,
-                                tList<cPopulationCell> & found_list,
+                                Apto::List<cPopulationCell*>& found_list,
                                 bool parent_ok)
 {
   // Start with the parent organism as the replacement, and see if we can find
@@ -1945,8 +1945,8 @@ void cPopulation::BuildTimeSlicer()
 }
 
 
-void cPopulation::FindEmptyCell(tList<cPopulationCell> & cell_list,
-                                tList<cPopulationCell> & found_list)
+void cPopulation::FindEmptyCell(Apto::List<cPopulationCell*> & cell_list,
+                                Apto::List<cPopulationCell*> & found_list)
 {
   tListIterator<cPopulationCell> cell_it(cell_list);
   cPopulationCell * test_cell;

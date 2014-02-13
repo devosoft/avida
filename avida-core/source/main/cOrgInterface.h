@@ -42,7 +42,6 @@ class cAvidaContext;
 class cOrganism;
 class cOrgSinkMessage;
 class cPopulationCell;
-class cString;
 
 using namespace Avida;
 

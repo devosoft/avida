@@ -30,8 +30,6 @@
 #include "avida/private/systematics/GenotypeArbiter.h"
 
 #include "cHardwareManager.h"
-#include "cStringList.h"
-#include "cStringUtil.h"
 
 
 static const Apto::BasicString<Apto::ThreadSafe> s_unit_prop_name_last_copied_size("last_copied_size");
@@ -211,10 +209,10 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, vo
   if (m_src.arguments == "(none)") m_src.arguments = "";
   
   HashPropertyMap prop_map;
-  cString inst_set = (const char*)props.Get("inst_set");
+  Apto::String inst_set = props.Get("inst_set");
   if (inst_set == "") inst_set = "(default)";
   
-  cHardwareManager::SetupPropertyMap(prop_map, (const char*)inst_set);
+  cHardwareManager::SetupPropertyMap(prop_map, inst_set);
   m_genome = Avida::Genome(Apto::StrAs(props.Get("hw_type")), prop_map, GeneticRepresentationPtr(new InstructionSequence((const char*)props.Get("sequence"))));
   
   if (props.Has("gen_born")) {
@@ -233,12 +231,12 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, vo
   m_depth = Apto::StrAs(props.Get("depth"));
   
   if (props.Has("parents")) {
-    m_parent_str = (const char*)props.Get("parents");
+    m_parent_str = props.Get("parents");
   } else if (props.Has("parent_id")) { // Backwards compatible load
-    m_parent_str = (const char*)props.Get("parent_id");
+    m_parent_str = props.Get("parent_id");
   }
   if (m_parent_str == "(none)") m_parent_str = "";
-  cStringList parents((const char*)m_parent_str,',');
+  cStringList parents(m_parent_str,',');
   
   m_parents.Resize(parents.GetSize());
   for (int i = 0; i < m_parents.GetSize(); i++) {

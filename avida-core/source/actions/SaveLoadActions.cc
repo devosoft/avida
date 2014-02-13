@@ -27,7 +27,6 @@
 #include "cActionLibrary.h"
 #include "cPopulation.h"
 #include "cStats.h"
-#include "cStringUtil.h"
 #include "cWorld.h"
 
 #include <iostream>

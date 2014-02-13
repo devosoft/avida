@@ -31,11 +31,6 @@
 
 #include "apto/core/Mutex.h"
 
-#include "cString.h"
-#include "cStringList.h"
-#include "cStringUtil.h"
-#include "tList.h"
-
 #include <iostream>
 
 class cUserFeedback;

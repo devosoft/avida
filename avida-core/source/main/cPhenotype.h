@@ -25,10 +25,7 @@
 
 #include "avida/core/InstructionSequence.h"
 
-#include <fstream>
-
 #include "cMerit.h"
-#include "cString.h"
 #include "cWorld.h"
 
 

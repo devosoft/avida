@@ -24,7 +24,6 @@
 
 #include "cOrgInterface.h"
 #include "tBuffer.h"
-#include "tList.h"
 
 class cTaskEntry;
 class cTaskState;
@@ -36,8 +35,6 @@ private:
   cOrganism* m_organism;
   const tBuffer<int>& m_input_buffer;
   const tBuffer<int>& m_output_buffer;
-  const tList<tBuffer<int> >& m_other_input_buffers;
-  const tList<tBuffer<int> >& m_other_output_buffers;
   const Apto::Array<int, Apto::Smart>& m_ext_mem;
   int m_logic_id;
   bool m_on_divide;
@@ -52,13 +49,10 @@ private:
   
 public:
   cTaskContext(cOrganism* organism, const tBuffer<int>& inputs, const tBuffer<int>& outputs,
-               const tList<tBuffer<int> >& other_inputs, const tList<tBuffer<int> >& other_outputs,
                const Apto::Array<int, Apto::Smart>& ext_mem, bool in_on_divide = false)
     : m_organism(organism)
     , m_input_buffer(inputs)
     , m_output_buffer(outputs)
-    , m_other_input_buffers(other_inputs)
-    , m_other_output_buffers(other_outputs)
     , m_ext_mem(ext_mem)
     , m_logic_id(0)
     , m_on_divide(in_on_divide)
@@ -71,8 +65,6 @@ public:
   inline cOrganism* GetOrganism() { return m_organism; }
   inline const tBuffer<int>& GetInputBuffer() { return m_input_buffer; }
   inline const tBuffer<int>& GetOutputBuffer() { return m_output_buffer; }
-  inline const tList<tBuffer<int> >& GetNeighborhoodInputBuffers() { return m_other_input_buffers; }
-  inline const tList<tBuffer<int> >& GetNeighborhoodOutputBuffers() { return m_other_output_buffers; }
   inline const Apto::Array<int, Apto::Smart>& GetExtendedMemory() const { return m_ext_mem; }
   inline int GetLogicId() const { return m_logic_id; }
   inline void SetLogicId(int v) { m_logic_id = v; }

@@ -34,7 +34,6 @@
 class cAvidaContext;
 class cMutation;
 class cOrganism;
-class cString;
 class cWorld;
 
 using namespace std;

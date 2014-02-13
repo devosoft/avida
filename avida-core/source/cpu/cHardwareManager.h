@@ -32,7 +32,6 @@ class cAvidaContext;
 class cHardwareBase;
 class cInstSet;
 class cOrganism;
-class cStringList;
 class cUserFeedback;
 class cWorld;
 template<typename T> class tList;

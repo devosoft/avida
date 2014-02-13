@@ -23,13 +23,6 @@
 #ifndef cReaction_h
 #define cReaction_h
 
-#ifndef cString_h
-#include "cString.h"
-#endif
-#ifndef tList_h
-#include "tList.h"
-#endif
-
 class cTaskEntry;
 class cReactionProcess;
 class cReactionRequisite;

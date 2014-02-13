@@ -23,11 +23,8 @@
 #ifndef cEventList_h
 #define cEventList_h
 
-#ifndef cAction_h
 #include "cAction.h"
-#endif
 
-#include "tList.h"
 
 
 namespace Avida {
@@ -78,9 +75,6 @@ private:
   
   tList<double> m_birth_interrupt_queue;
   
-  void QueueBirthInterruptEvent(double t_val);
-  void DequeueBirthInterruptEvent(double t_val);
-  
   void SyncEvent(cEventListEntry* event);
   double GetTriggerValue(eTriggerType trigger) const;
   void Delete(cEventListEntry* entry);
@@ -112,14 +106,6 @@ public:
   void Sync(); // Get all events caught up.
   
   void PrintEventList(std::ostream& os = std::cout);
-  
-  /**
-   * Returns true if a particular org_id (or Stats::tot_creature) value is present
-   * in the interrupt queue.
-   *
-   * @param t_value The value being checked.
-   **/
-  bool CheckBirthInterruptQueue(double t_val);
   
   
   /**

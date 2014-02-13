@@ -27,9 +27,7 @@
 #include "avida/systematics/Arbiter.h"
 #include "avida/systematics/Group.h"
 #include "avida/systematics/Manager.h"
-
-
-#include "cBitArray.h"
+#include "avida/util/BitArray.h"
 
 
 const Apto::String Avida::Viewer::ClassificationInfo::MapColor::ObjectKey("Avida::Viewer::ClassificationInfo::MapColor");
@@ -59,7 +57,7 @@ Avida::Viewer::ClassificationInfo::ClassificationInfo(Universe* in_world, const 
 void Avida::Viewer::ClassificationInfo::Update()
 {
   const int num_colors = m_color_chart_id.GetSize();
-  cBitArray free_color(num_colors);   // Keep track of genotypes still using their color.
+  Util::BitArray free_color(num_colors);   // Keep track of genotypes still using their color.
   free_color.SetAll();
 
   // Loop through all genotypes that should be colors to mark those that we can clear out.

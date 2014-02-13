@@ -274,22 +274,6 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   // Optimization Tasks
   if (name == "optimize") Load_Optimize(name, info, envreqs, feedback);
   
-  // Communication Tasks
-  if (name == "comm_echo") {
-    NewTask(name, "Echo of Neighbor's Input", &cTaskLib::Task_CommEcho, REQ_NEIGHBOR_INPUT);
-  } else if (name == "comm_not") {
-    NewTask(name, "Not of Neighbor's Input", &cTaskLib::Task_CommNot, REQ_NEIGHBOR_INPUT);
-  }
-  
-  // Movement Tasks
-  if (name == "move_up_gradient") NewTask(name, "Move up gradient", &cTaskLib::Task_MoveUpGradient);
-  else if (name == "move_neutral_gradient") NewTask(name, "Move neutral gradient", &cTaskLib::Task_MoveNeutralGradient);
-  else if (name == "move_down_gradient") NewTask(name, "Move down gradient", &cTaskLib::Task_MoveDownGradient);
-  else if (name == "move_not_up_gradient") NewTask(name, "Move not up gradient", &cTaskLib::Task_MoveNotUpGradient);
-	
-  // reputation based tasks
-  else if (name == "perfect_strings") NewTask(name, "Produce and store perfect strings", &cTaskLib::Task_CreatePerfectStrings);		
-
   
   // Optimization Tasks
   if (name == "collect-odd-cell") Load_CollectOddCell(name, info, envreqs, feedback);
@@ -2913,109 +2897,7 @@ double cTaskLib::Task_Cosine(cTaskContext& ctx) const
 }
 
 
-double cTaskLib::Task_CommEcho(cTaskContext& ctx) const
-{
-  const int test_output = ctx.GetOutputBuffer()[0];
-  
-  tConstListIterator<tBuffer<int> > buff_it(ctx.GetNeighborhoodInputBuffers());  
-  
-  while (buff_it.Next() != NULL) {
-    const tBuffer<int>& cur_buff = *(buff_it.Get());
-    const int buff_size = cur_buff.GetNumStored();
-    for (int i = 0; i < buff_size; i++) {
-      if (test_output == cur_buff[i]) return 1.0;
-    }
-  }
-  
-  return 0.0;
-}
 
-
-double cTaskLib::Task_CommNot(cTaskContext& ctx) const
-{
-  const int test_output = ctx.GetOutputBuffer()[0];
-  
-  tConstListIterator<tBuffer<int> > buff_it(ctx.GetNeighborhoodInputBuffers());  
-  
-  while (buff_it.Next() != NULL) {
-    const tBuffer<int>& cur_buff = *(buff_it.Get());
-    const int buff_size = cur_buff.GetNumStored();
-    for (int i = 0; i < buff_size; i++) {
-      if (test_output == (0-(cur_buff[i]+1))) return 1.0;
-    }
-  }
-  
-  return 0.0;
-}
-
-
-//TODO: add movement tasks here
-
-double cTaskLib::Task_MoveUpGradient(cTaskContext& ctx) const
-{
-  if (ctx.GetOrganism()->GetGradientMovement() == 1.0) return 1.0;
-  return 0.0;
-}
-
-
-double cTaskLib::Task_MoveNeutralGradient(cTaskContext& ctx) const
-{
-  if (ctx.GetOrganism()->GetGradientMovement() == 0.0) return 1.0;
-  return 0.0;
-}
-
-
-double cTaskLib::Task_MoveDownGradient(cTaskContext& ctx) const
-{
-  if (ctx.GetOrganism()->GetGradientMovement() == -1.0) return 1.0;
-  return 0.0;
-}
-
-
-double cTaskLib::Task_MoveNotUpGradient(cTaskContext& ctx) const
-{
-  if (Task_MoveUpGradient(ctx)) return 0.0;
-  return 1.0;
-}
-
-
-
-
-
-/* This task provides major points for perfect strings and some points for just
-   storing stuff. */
-double cTaskLib::Task_CreatePerfectStrings(cTaskContext& ctx) const
-{
-  double bonus = 0.0;
-  int min = -1;
-  int temp = 0;
-  for (unsigned int i = 0; i<m_strings.size(); i++) {
-    temp = ctx.GetOrganism()->GetNumberStringsOnHand(i); 
-    
-    // Figure out what the minimum amount of a string is.
-    if ((min == -1) || (temp < min)){
-      min = temp;
-    }
-  }
-  
-  // Bonus for creating perfect strings!
-  bonus = min; 
-	
-  // Add in some value for just creating stuff
-  for (unsigned int i = 0; i<m_strings.size(); i++) {
-    temp = ctx.GetOrganism()->GetNumberStringsOnHand(i); 
-    
-    if (temp > min) { 
-      bonus += (temp - min); 
-    }
-  } 
-  
-  // Update stats
-  m_world->GetStats().IncPerfectMatch(min);
-  if (min > 0) m_world->GetStats().IncPerfectMatchOrg();
-  
-  return bonus; 
-}
 
 
 

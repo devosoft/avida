@@ -25,12 +25,6 @@
 #include "avida/core/Genome.h"
 #include "avida/systematics/Types.h"
 
-#include "cMerit.h"
-#include "cString.h"
-
-class cBioGroup;
-class cOrganism;
-
 using namespace Avida;
 
 class cBirthEntry

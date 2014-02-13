@@ -28,9 +28,7 @@
 #include "cBirthChamber.h"
 #include "cOrgInterface.h"
 #include "cPopulationInterface.h"
-#include "cString.h"
 #include "cWorld.h"
-#include "tList.h"
 
 #include <fstream>
 #include <map>
@@ -73,7 +71,7 @@ private:
   
   
   // Data Tracking...
-  tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
+  Apto::List<cPopulationCell*> reaper_queue; // Death order in some mass-action runs
   
   // Default organism setups...
   cEnvironment& environment;          // Physics & Chemistry description
@@ -200,10 +198,10 @@ private:
   
   // Methods to place offspring in the population.
   cPopulationCell& PositionOffspring(cPopulationCell& parent_cell, cAvidaContext& ctx, bool parent_ok = true); 
-  void PositionAge(cPopulationCell& parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
-  void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
+  void PositionAge(cPopulationCell& parent_cell, Apto::List<cPopulationCell*>& found_list, bool parent_ok);
+  void PositionMerit(cPopulationCell & parent_cell, Apto::List<cPopulationCell*>& found_list, bool parent_ok);
   Apto::Array<int>& GetEmptyCellIDArray() { return empty_cell_id_array; }
-  void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
+  void FindEmptyCell(Apto::List<cPopulationCell*>& cell_list, Apto::List<cPopulationCell*>& found_list);
   int FindRandEmptyCell(cAvidaContext& ctx);
   
   // Update statistics collecting...
