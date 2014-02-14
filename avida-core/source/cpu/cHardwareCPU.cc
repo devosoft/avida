@@ -488,7 +488,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("kazi5", &cHardwareCPU::Inst_Kazi5, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-quorum", &cHardwareCPU::Inst_SenseQuorum, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("noisy-quorum", &cHardwareCPU::Inst_NoisyQuorum, INST_CLASS_OTHER, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("sense-quorum-lb", &cHardwareCPU::Inst_SenseQuorumLB, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("smart-explode", &cHardwareCPU::Inst_SmartExplode, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("poison", &cHardwareCPU::Inst_Poison),
@@ -3619,65 +3618,6 @@ bool cHardwareCPU::Inst_NoisyQuorum(cAvidaContext& ctx) {
     GetRegister(FindModifiedRegister(REG_AX)) = true;
   } else GetRegister(FindModifiedRegister(REG_AX)) = false;
   
-  return true;
-  
-  
-}
-
-bool cHardwareCPU::Inst_SenseQuorumLB(cAvidaContext& ctx) {
-  int cellID = m_organism->GetCellID();
-  Apto::String ref_genome = m_organism->GetGenome().Representation()->AsString();
-  int radius = m_world->GetConfig().KABOOM_RADIUS.Get();
-  int distance = m_world->GetConfig().KABOOM_HAMMING.Get();
-  
-  int kincounter = 0;
-  int world_x = m_world->GetConfig().WORLD_X.Get();
-  int world_y = m_world->GetConfig().WORLD_Y.Get();
-  int cell_x = cellID % world_x;
-  int cell_y = (cellID - cell_x)/world_x;
-  int x = cell_x;
-  int y = cell_y;
-
-  for (int i = cell_x - radius; i <= cell_x + radius; i++) {
-    for (int j = cell_y - radius; j <= cell_y + radius; j++) {
-      
-      if (i<0) x = world_x + i;
-      else if (i>= world_x) x = i-world_x;
-      else x = i;
-      
-      if (j<0) y = world_y + j;
-      else if (j >= world_y) y = j-world_y;
-      else y = j;
-      
-      cPopulationCell& neighbor_cell = m_world->GetPopulation().GetCell(y*world_x + x);
-
-      
-      //do we actually have someone in neighborhood?
-      if (neighbor_cell.IsOccupied() == false) continue;
-      
-      cOrganism* org_temp = neighbor_cell.GetOrganism();
-      
-      if (org_temp != NULL) {
-        Apto::String genome_temp = org_temp->GetGenome().Representation()->AsString();
-        int diff = 0;
-        for (int i = 0; i < genome_temp.GetSize(); i++) if (genome_temp[i] != ref_genome[i]) diff++;
-        if (diff <= distance) kincounter++;
-      }
-      
-    }
-  }
-  
-  float ratio = ((float)kincounter/(float)((2*radius +1)*(2*radius+1) -1));
-  int org_ratio_upper = GetRegister(FindModifiedRegister(REG_BX))%100;
-  int org_ratio_lower = GetRegister(FindModifiedRegister(REG_AX))%100;
-  
-  m_world->GetStats().IncQuorumThresholdUB(org_ratio_upper);
-  m_world->GetStats().IncQuorumThresholdLB(org_ratio_lower);
-  m_world->GetStats().IncQuorumNum();
-  if ((int)(ratio*100) <=org_ratio_upper && (int)(ratio*100) >=org_ratio_lower){
-    //trying out with a register instead
-    GetRegister(FindModifiedRegister(REG_AX)) = true;
-  }else GetRegister(FindModifiedRegister(REG_AX)) = false;
   return true;
   
   
