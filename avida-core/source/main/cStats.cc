@@ -3717,7 +3717,6 @@ void cStats::PrintQuorum(const cString& filename)
 {
   
   float ave_thresh_ub = (float)ave_threshold_ub/(float)num_quorum;
-  float ave_thresh_lb = (float)ave_threshold_lb/(float)num_quorum;
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   df->WriteComment("Quorum sensing with threshold.");
   
@@ -3726,13 +3725,11 @@ void cStats::PrintQuorum(const cString& filename)
   
   df->Write(num_stop_explode, "Number of explosions stopped by quorum sensing");
   df->Write(ave_thresh_ub, "Average quorum sense threshold upper bound per qs instruction");
-  df->Write(ave_thresh_lb, "Average quorum sense threshold lower bound per qs instruction");
   
   df->Endl();
   num_stop_explode = 0;
   num_quorum=0;
   ave_threshold_ub = 0;
-  ave_threshold_lb = 0;
   
 }
 
@@ -4040,7 +4037,7 @@ void cStats::PrintTargets(const cString& filename)
   
   bool has_pred = false;
   int offset = 1;
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1 || m_world->GetEnvironment().IsTargetID(-2)) {
     has_pred = true;
     offset = 2;
   }
@@ -4078,7 +4075,7 @@ void cStats::PrintTargets(const cString& filename)
   target_list.SetAll(0);
   
   target_list[0] = -1;
-  if (has_pred) {
+  if (has_pred || m_world->GetEnvironment().IsTargetID(-2)) {
     target_list[0] = -2;
     target_list[1] = -1;
   }
