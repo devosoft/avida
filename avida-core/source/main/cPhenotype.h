@@ -217,7 +217,6 @@ public:
   void SetupClone(const cPhenotype & clone_phenotype);
 
   // Input and Output Reaction Tests
-  bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
   bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                   const Apto::Array<double>& res_in, const Apto::Array<double>& rbins_in, Apto::Array<double>& res_change,
                   Apto::Array<cString>& insts_triggered);

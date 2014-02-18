@@ -665,39 +665,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
 }
 
 
-void cPopulation::SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx)
-{
-  // Sanity checks: Don't process if the cells are the same
-  if (cell_id1 == cell_id2) return;
-  
-  cPopulationCell& cell1 = GetCell(cell_id1);
-  cPopulationCell& cell2 = GetCell(cell_id2);
-  
-  // Clear current contents of cells
-  cOrganism* org1 = cell1.RemoveOrganism(ctx); 
-  cOrganism* org2 = cell2.RemoveOrganism(ctx); 
-  
-  if (org2 != NULL) {
-    cell1.InsertOrganism(org2, ctx); 
-    AdjustSchedule(cell1, org2->GetPhenotype().GetMerit());
-  } else {
-    AdjustSchedule(cell1, cMerit(0));
-  }
-  
-  if (org1 != NULL) {
-    cell2.InsertOrganism(org1, ctx); 
-    cell2.IncVisits();  // Increment visit count
-    AdjustSchedule(cell2, org1->GetPhenotype().GetMerit());
-  } else {
-    AdjustSchedule(cell2, cMerit(0));
-  }
-  
-  //LHZ: Take organism imputs from the PopulationCell along with the organisms
-  environment.SwapInputs(ctx, cell1.m_inputs, cell2.m_inputs);
-  
-}
-
-
 
 
 

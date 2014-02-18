@@ -779,13 +779,6 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
 
 
 
-bool cPhenotype::TestInput(tBuffer<int>&, tBuffer<int>&)
-{
-  assert(initialized == true);
-  // For the moment, lets not worry about inputs...
-  return false; // Nothing happened...
-}
-
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                             const Apto::Array<double>& res_in, const Apto::Array<double>& rbins_in,
                             Apto::Array<double>& res_change, Apto::Array<cString>& insts_triggered)

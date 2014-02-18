@@ -39,7 +39,8 @@ namespace Avida {
     private:
       Apto::Array<int> m_input_buffer;
       Apto::Array<int> m_output_buffer;
-      int m_output_buffer_offset;
+      int m_input_pointer;
+      int m_output_offset;
       
       
     public:
@@ -58,12 +59,20 @@ namespace Avida {
         if (m_buffer_offset < 0) m_buffer_offset += m_input_buffer.GetSize();
       }
       
-      LIB_EXPORT inline int operator[](Apto::SizeType i) const
+      LIB_EXPORT inline int InputAt(Apto::SizeType idx) const
       {
-        int index = m_buffer_offset - i - 1;
+        int index = m_input_pointer - idx - 1;
         if (index < 0)  index += m_input_buffer.GetSize();
         assert(index >= 0 && index < m_input_buffer.GetSize());
         return m_input_buffer[index];
+      }
+
+      LIB_EXPORT inline int OutputAt(Apto::SizeType idx) const
+      {
+        int index = m_output_buffer_offset - idx - 1;
+        if (index < 0)  index += m_output_buffer.GetSize();
+        assert(index >= 0 && index < m_output_buffer.GetSize());
+        return m_output_buffer[index];
       }
     };
 

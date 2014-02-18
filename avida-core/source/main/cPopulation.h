@@ -126,10 +126,6 @@ public:
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
   void KillOrganism(cAvidaContext& ctx, int in_cell) { KillOrganism(cell_array[in_cell], ctx); } 
   
-  // Specialized functionality
-  void SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx); 
-
-  
   // Process a single organism one instruction...
   int ScheduleOrganism();          // Determine next organism to be processed.
   void ProcessStep(cAvidaContext& ctx, double step_size, int cell_id);

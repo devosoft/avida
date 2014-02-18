@@ -1506,42 +1506,6 @@ public:
 
 
 
-class cActionSwapCells : public cAction
-{
-private:
-  int id1;
-  int id2;
-  
-public:
-  cActionSwapCells(cWorld* world, const cString& args, Feedback&) : cAction(world, args), id1(-1), id2(-1)
-  {
-    cString largs(args);
-    if (largs.GetSize()) id1 = largs.PopWord().AsInt();
-    if (largs.GetSize()) id2 = largs.PopWord().AsInt();
-  }
-  
-  static const cString GetDescription() { return "Arguments: <int cell_id1> <int cell_id2>"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    const int num_cells = m_world->GetPopulation().GetSize();
-    if (id1 < 0 || id1 >= num_cells ||
-        id2 < 0 || id2 >= num_cells) {
-      ctx.Driver().Feedback().Warning("SwapCells cell ID out of range");
-      return;
-    }
-    if (id1 == id2) {
-      ctx.Driver().Feedback().Warning("SwapCells cell IDs identical");
-    }
-    
-    m_world->GetPopulation().SwapCells(id1, id2, ctx); 
-  }
-};
-
-
-
-
-
 
 
 
@@ -1634,10 +1598,6 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionModMutProb>("ModMutProb");
 	
   action_lib->Register<cActionSetRedundancy>("SetRedundancy");
-	
-	
-  action_lib->Register<cActionSwapCells>("SwapCells");
-	
 	
   action_lib->Register<cActionRemovePredators>("RemovePredators");
 }

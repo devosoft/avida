@@ -68,9 +68,6 @@ public:
   void SetupTests(cTaskContext& ctx) const;
   inline double TestOutput(cTaskContext& ctx) const { return (this->*(ctx.GetTaskEntry()->GetTestFun()))(ctx); }
 
-  bool UseNeighborInput() const { return use_neighbor_input; }
-  bool UseNeighborOutput() const { return use_neighbor_output; }
-	
 private:
   
   void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0, Avida::Util::Args* args = NULL);

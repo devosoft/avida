@@ -984,22 +984,6 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, Apto::Array<int>& input_array
 }
 
 
-void cEnvironment::SwapInputs(cAvidaContext&, Apto::Array<int>& src_input_array, Apto::Array<int>& dest_input_array) const
-{
-  Apto::Array<int> tmp_input_array = dest_input_array;
-  
-  dest_input_array = src_input_array;
-  src_input_array = tmp_input_array;
-}
-
-
-bool cEnvironment::TestInput(cReactionResult&, const tBuffer<int>&, const tBuffer<int>&, const Apto::Array<double>&) const
-{
-  // @CAO nothing for the moment...
-  return false;
-}
-
-
 bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
                               cTaskContext& taskctx, const Apto::Array<int>& task_count,
                               Apto::Array<int>& reaction_count,

@@ -92,7 +92,6 @@ void cOrganism::DoInput(const int value)
 void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
 {
   input_buffer.Add(value);
-  m_phenotype.TestInput(input_buffer, output_buffer);
 }
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide)

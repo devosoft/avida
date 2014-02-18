@@ -67,10 +67,6 @@ private:
   std::set<int> possible_target_ids;
   std::set<int> possible_habitats;
   Apto::Array<int> pp_fts;
-  
-  cEnvironment(); // @not_implemented
-  cEnvironment(const cEnvironment&); // @not_implemented
-  cEnvironment& operator=(const cEnvironment&); // @not_implemented
 
 public:
   cEnvironment(cWorld* world);
@@ -83,11 +79,7 @@ public:
   void SetupInputs(cAvidaContext& ctx, Apto::Array<int>& input_array, bool random = true) const;
   void SetSpecificInputs(const Apto::Array<int> in_input_array) { m_use_specific_inputs = true; m_specific_inputs = in_input_array; }
   void SetSpecificRandomMask(unsigned int mask) { m_mask = mask; }
-  void SwapInputs(cAvidaContext& ctx, Apto::Array<int>& src_input_array, Apto::Array<int>& dest_input_array) const;
 
-
-  bool TestInput(cReactionResult& result, const tBuffer<int>& inputs,
-                 const tBuffer<int>& outputs, const Apto::Array<double>& resource_count) const;
 
   bool TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
                   const Apto::Array<int>& task_count, Apto::Array<int>& reaction_count,
@@ -96,8 +88,6 @@ public:
   // Accessors
   int GetNumTasks() const { return m_tasklib.GetSize(); }
   const cTaskEntry& GetTask(int id) const { return m_tasklib.GetTask(id); }
-  bool UseNeighborInput() const { return m_tasklib.UseNeighborInput(); }
-  bool UseNeighborOutput() const { return m_tasklib.UseNeighborOutput(); }
 
   
   int GetNumReactions() const { return reaction_lib.GetSize(); }
@@ -136,8 +126,8 @@ public:
   bool IsHabitat(int test_habitat);
   std::set<int> GetHabitats() { return possible_habitats; }
 
-private:
   
+private:
   bool ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type, Feedback& feedback);
   bool AssertInputInt(const cString& input, const cString& name, const cString& type, Feedback& feedback);
   bool AssertInputDouble(const cString& input, const cString& name, const cString& type, Feedback& feedback);
