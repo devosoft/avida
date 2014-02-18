@@ -702,21 +702,7 @@ void cOrgSensor::WalkTorus(cAvidaContext& ctx, sLookInit& in_defs, const int fac
         
         if (habitat_used != -2 && habitat_used != 3 && !TestBounds(center_cell, tot_bounds)) {
           // on diagonals...if any side cell is beyond specific parts of res bounds, we can exclude this side for this and any larger distances
-          if (diagonal) {
-            const int tcx = this_cell.X();
-            const int tcy = this_cell.Y();
-            if (direction == left) {
-              if ( (facing == 1 && tcy < tot_bounds.min_y) || (facing == 3 && tcx > tot_bounds.max_x) ||
-                  (facing == 5 && tcy > tot_bounds.max_y) || (facing == 7 && tcx < tot_bounds.min_x) ) {
-              }
-            }
-            else if (direction == right) {
-              if ( (facing == 1 && tcx > tot_bounds.max_x) || (facing == 3 && tcy > tot_bounds.max_y) ||
-                  (facing == 5 && tcx < tot_bounds.min_x) || (facing == 7 && tcy < tot_bounds.min_y) ) {
-              }
-            }
-            break;      // if not !do_left or !do_right, any cells on this side closer than this to center will be too at this distance, but not greater dist
-          }
+          if (diagonal) break;      // if not !do_left or !do_right, any cells on this side closer than this to center will be too at this distance, but not greater dist
           else if (!diagonal) valid_cell = false;        // when not on diagonal, center cell and cells close(r) to center can still be valid even if this side cell is not
         }
         else any_valid_side_cells = true;
@@ -926,6 +912,10 @@ void cOrgSensor::SetWalkLimits(cAvidaContext& ctx, sLookInit& in_defs, sWalkLimi
     else limits.end = GetMaxDist(worldx, cell, in_defs.distance, tot_bounds);
     center_cell += (ahead_dir * limits.start);
     if (m_world->GetConfig().WORLD_GEOMETRY.Get() == 2) CorrectTorusEdge(center_cell, worldBounds);
+    else if (!TestBounds(center_cell, worldBounds)) { // start cell extended beyond world bounds (can occur on diagonals if dist from world edge < dist to closest edge of resource)
+      limits.visible = false;
+      return;
+    }
     assert(TestBounds(center_cell, worldBounds));
     
     if (has_global && global_only) {
@@ -1154,52 +1144,6 @@ int cOrgSensor::GetMinDist(const int worldx, sBounds& bounds, const int cell_id,
   
   // still going?
   return 0;
-  /*  the following is not implemented because it is not quite correct (e.g. for non-geometric shapes
-   // check the distance when we consider offset from center sight line (is it within sight cone?)
-   // this requires checks using the farthest distance
-   int max_sidex = max(abs(org_x - min_x), abs(org_x - max_x));
-   int max_sidey = max(abs(org_y - min_y), abs(org_y - max_y));
-   max_sidex = (max_sidex % 2) ? (int) ((max_sidex - 1) * 0.5) : (int) (max_sidex * 0.5);
-   max_sidey = (max_sidey % 2) ? (int) ((max_sidey - 1) * 0.5) : (int) (max_sidey * 0.5);
-   
-   if ((facing == 0 || facing == 4) && (min_x > org_x + max_sidex || max_x < org_x - max_sidex)) return -1;
-   else if ((facing == 2 || facing == 6) && (min_y > org_y + max_sidey || max_y < org_y - max_sidey)) return -1;
-   
-   int center_res_x = (int) ((max_x - min_x)  * 0.5);
-   int center_res_y = (int) ((max_y - min_y)  * 0.5);
-   int center_cell_x = 0;
-   int center_cell_y = 0;
-   
-   // the following only good for diagonals (with slope = 1)
-   if (facing == 1) {
-   center_cell_x = org_y + center_res_y;
-   center_cell_y = org_x - center_res_x;
-   max_sidex = org_y + center_res_y;
-   max_sidey = org_x - center_res_x;
-   if ((max_x < center_cell_x - max_sidex) || (min_y > center_cell_y + max_sidey)) return -1;
-   }
-   else if (facing == 3) {
-   center_cell_x = org_y + center_res_y;
-   center_cell_y = org_x + center_res_x;
-   max_sidex = org_y + center_res_y;
-   max_sidey = org_x + center_res_x;
-   if ((max_x < center_cell_x - max_sidex) || (max_y < center_cell_y - max_sidey)) return -1;
-   }
-   else if (facing == 5) {
-   center_cell_x = org_y - center_res_y;
-   center_cell_y = org_x + center_res_x;
-   max_sidex = org_y - center_res_y;
-   max_sidey = org_x + center_res_x;
-   if ((min_x > center_cell_x + max_sidex) || (max_y < center_cell_y - max_sidey)) return -1;
-   }
-   else if (facing == 7) {
-   center_cell_x = org_y - center_res_y;
-   center_cell_y = org_x - center_res_x;
-   max_sidex = org_y - center_res_y;
-   max_sidey = org_x - center_res_x;
-   if ((min_x > center_cell_x + max_sidex) || (min_y > center_cell_y + max_sidey)) return -1;
-   }
-   return distance_sought; */
 }
 
 int cOrgSensor::GetMaxDist(const int worldx, const int cell_id, const int distance_sought, sBounds& bounds)
