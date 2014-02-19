@@ -25,8 +25,6 @@
 #include "avida/core/UniverseDriver.h"
 #include "avida/util/ArgParser.h"
 
-#include "cStringUtil.h"
-#include "cUserFeedback.h"
 #include "cWorld.h"
 
 #include <iostream>
@@ -145,7 +143,7 @@ bool cInstSet::InstInSet(const cString& in_name) const
   return false;
 }
 
-bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback)
+bool cInstSet::LoadWithStringList(const cStringList& sl, Feedback* feedback)
 {
   Util::ArgSchema schema;
   

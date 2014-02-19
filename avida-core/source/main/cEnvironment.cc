@@ -903,18 +903,6 @@ bool cEnvironment::Load(const cString& filename, const cString& working_dir, Fee
 {
   cInitFile infile(filename, working_dir, NULL, defs);
   if (!infile.WasOpened()) {
-    for (int i = 0; i < infile.GetFeedback().GetNumMessages(); i++) {
-      switch (infile.GetFeedback().GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:
-          feedback.Error(infile.GetFeedback().GetMessage(i));
-          break;
-        case cUserFeedback::UF_WARNING:
-          feedback.Warning(infile.GetFeedback().GetMessage(i));
-          break;
-        default:
-          feedback.Notify(infile.GetFeedback().GetMessage(i));
-      }
-    }
     feedback.Error("failed to load environment '%s'", (const char*)filename);
     return false;
   }

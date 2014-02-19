@@ -28,7 +28,6 @@
 
 #include "cActionLibrary.h"
 #include "cAvidaConfig.h"
-#include "cUserFeedback.h"
 
 #include <iostream>
 #include <cstdio>
@@ -164,17 +163,7 @@ static void processArgs(cStringList &argv, cAvidaConfig* cfg, Apto::Map<Apto::St
   delete [] args;
   
   // Load configuration file
-  cUserFeedback feedback;
   cfg->Load(config_filename, cString(Apto::FileSystem::GetCWD()), &feedback, &defs, flag_warn_default);
-  for (int i = 0; i < feedback.GetNumMessages(); i++) {
-    switch (feedback.GetMessageType(i)) {
-      case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-      case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
-      default: break;
-    };
-    cerr << feedback.GetMessage(i) << endl;
-  }
-  if (feedback.GetNumErrors()) exit(-1);
   
   
   // Process Command Line Flags

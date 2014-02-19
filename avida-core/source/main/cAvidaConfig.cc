@@ -28,7 +28,6 @@
 
 #include "cActionLibrary.h"
 #include "cInitFile.h"
-#include "cUserFeedback.h"
 
 #include <fstream>
 
@@ -56,7 +55,7 @@ cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString& _name,
   }
 }
 
-bool cAvidaConfig::Load(const cString& filename, const cString& working_dir, cUserFeedback* feedback,
+bool cAvidaConfig::Load(const cString& filename, const cString& working_dir, Feedback* feedback,
                         const Apto::Map<Apto::String, Apto::String>* mappings, bool warn_default)
 {
   Apto::Map<Apto::String, Apto::String> lmap;

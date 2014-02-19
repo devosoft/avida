@@ -62,7 +62,7 @@ public:
   // Handle manipulations & tests of genome.  Return false if divide process
   // should halt.  Place offspring in child_array.
   bool SubmitOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent,
-                       Apto::Array<cOrganism*>& child_array, Apto::Array<cMerit>& merit_array);
+                       Apto::Array<cOrganism*>& child_array, Apto::Array<double>& merit_array);
 
   bool ValidBirthEntry(const cBirthEntry& entry) const;
   bool ValidateBirthEntry(cBirthEntry& entry); //@CHC: Same as ValidBirthEntry() but may modify the entry if it has died due to old age
@@ -79,9 +79,9 @@ private:
   void GenomeSwap(InstructionSequence& genome0, InstructionSequence& genome1, double& merit0, double& merit1);
   
   bool DoAsexBirth(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism& parent,
-                   Apto::Array<cOrganism*>& child_array, Apto::Array<cMerit>& merit_array);
+                   Apto::Array<cOrganism*>& child_array, Apto::Array<double>& merit_array);
   bool DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_entry, const Genome& new_genome, cOrganism& parent,
-                       Apto::Array<cOrganism*>& child_array, Apto::Array<cMerit>& merit_array);
+                       Apto::Array<cOrganism*>& child_array, Apto::Array<double>& merit_array);
   
 
   void DoBasicRecombination(cAvidaContext& ctx, InstructionSequence& genome0, InstructionSequence& genome1, double& merit0, double& merit1);

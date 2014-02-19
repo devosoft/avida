@@ -42,7 +42,6 @@
 #include "cWorld.h"
 #include "cOrganism.h"
 #include "cEnvironment.h"
-#include "cUserFeedback.h"
 
 #include <algorithm>
 #include <iterator>
@@ -97,16 +96,7 @@ public:
       return;
     }
     GenomePtr genome;
-    cUserFeedback feedback;
     genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
-    for (int i = 0; i < feedback.GetNumMessages(); i++) {
-      switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
-        default: break;
-      };
-      cerr << feedback.GetMessage(i) << endl;
-    }
     if (!genome) return;
     m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_neutral_metric, false);
     
@@ -277,16 +267,7 @@ public:
       return;
     }
     GenomePtr genome;
-    cUserFeedback feedback;
     genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback, m_instset);
-    for (int i = 0; i < feedback.GetNumMessages(); i++) {
-      switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
-        default: break;
-      };
-      cerr << feedback.GetMessage(i) << endl;
-    }
     if (!genome) return;
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
       m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_neutral_metric);
@@ -345,16 +326,7 @@ public:
       ctx.Driver().Feedback().Warning("InjectRange has invalid range!");
     } else {
       GenomePtr genome;
-      cUserFeedback feedback;
       genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
-      for (int i = 0; i < feedback.GetNumMessages(); i++) {
-        switch (feedback.GetMessageType(i)) {
-          case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-          case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
-          default: break;
-        };
-        cerr << feedback.GetMessage(i) << endl;
-      }
       if (!genome) return;
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_neutral_metric);
@@ -522,16 +494,7 @@ public:
     }
     
     GenomePtr genome;
-    cUserFeedback feedback;
     genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
-    for (int i = 0; i < feedback.GetNumMessages(); i++) {
-      switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
-        default: break;
-      };
-      cerr << feedback.GetMessage(i) << endl;
-    }
     if (!genome) return;
     m_world->GetPopulation().InjectGroup(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_neutral_metric, m_group_id, m_forager_type, m_trace);
   }

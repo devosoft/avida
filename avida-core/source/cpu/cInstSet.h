@@ -41,7 +41,6 @@ using namespace Avida;
 
 class cAvidaContext;
 class cStringList;
-class cUserFeedback;
 class cWorld;
 
 const int MAX_INSTSET_SIZE = 255;
@@ -178,7 +177,7 @@ public:
   Instruction GetInstDefault() const { return Instruction(m_inst_lib->InstDefault()); }
   Instruction GetInstError() const { return Instruction(255); }
   
-  bool LoadWithStringList(const cStringList& sl, cUserFeedback* errors = NULL);
+  bool LoadWithStringList(const cStringList& sl, Feedback* errors = NULL);
   
   void SaveInstructionSequence(ofstream& of, const InstructionSequence& seq) const;
 };

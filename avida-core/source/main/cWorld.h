@@ -34,15 +34,11 @@
 class cEnvironment;
 class cEventList;
 class cHardwareManager;
-class cMigrationMatrix; 
 class cOrganism;
 class cPopulation;
-class cMerit;
 class cPopulationCell;
 class cStats;
 class cTestCPU;
-class cUserFeedback;
-template<class T> class tDataEntry;
 
 using namespace Avida;
 
@@ -70,7 +66,7 @@ protected:
   
   
 public:
-  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, Universe* new_world, cUserFeedback* feedback = NULL, const Apto::Map<Apto::String, Apto::String>* mappings = NULL);
+  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, Universe* new_world, Feedback* feedback = NULL, const Apto::Map<Apto::String, Apto::String>* mappings = NULL);
   virtual ~cWorld();
   
   void SetDriver(UniverseDriver* driver, bool take_ownership = false);
@@ -99,7 +95,7 @@ public:
   
 protected:
   // Internal Methods
-  bool setup(Universe* new_world, cUserFeedback* errors,  const Apto::Map<Apto::String, Apto::String>* mappings);
+  bool setup(Universe* new_world, Feedback* errors,  const Apto::Map<Apto::String, Apto::String>* mappings);
 
 };
 

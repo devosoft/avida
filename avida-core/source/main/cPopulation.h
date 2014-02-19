@@ -215,7 +215,7 @@ private:
   
   int PlaceAvatar(cAvidaContext& ctx, cOrganism* parent);
   
-  inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
+  inline void AdjustSchedule(const cPopulationCell& cell, double merit);
 };
 
 #endif

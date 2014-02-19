@@ -25,8 +25,6 @@
 
 #include "apto/core.h"
 
-#include "cUserFeedback.h"
-
 #include <iostream>
 
 
@@ -37,7 +35,6 @@ private:
   cString m_filename;
   bool m_found;
   bool m_opened;
-  mutable cUserFeedback m_feedback;
   
   struct sLine {
     cString line;
@@ -71,7 +68,6 @@ public:
   
   bool WasFound() const { return m_found; }
   bool WasOpened() const { return m_opened; }
-  const cUserFeedback& GetFeedback() const { return m_feedback; }
   const Apto::Map<Apto::String, Apto::String>& GetCustomDirectives() const { return m_custom_directives; }
   
   void Save(const cString& in_filename = "");

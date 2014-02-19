@@ -32,7 +32,6 @@
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStats.h"
-#include "cUserFeedback.h"
 #include "cWorld.h"
 
 class cActionInjectResource : public cAction
@@ -244,17 +243,8 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cUserFeedback feedback;
     m_world->GetEnvironment().LoadLine(env_string, feedback);
     
-    for (int i = 0; i < feedback.GetNumMessages(); i++) {
-      switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
-        default: break;
-      };
-      cerr << feedback.GetMessage(i) << endl;
-    }
         
     m_world->GetPopulation().GetResources().UpdateDynamicRes(ctx, m_world, m_res_name);
   } 
@@ -558,17 +548,7 @@ public:
   
   void Process(cAvidaContext&)
   {
-    cUserFeedback feedback;
     m_world->GetEnvironment().LoadLine(env_string, feedback);
-
-    for (int i = 0; i < feedback.GetNumMessages(); i++) {
-      switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
-        default: break;
-      };
-      cerr << feedback.GetMessage(i) << endl;
-    }
 
     m_world->GetPopulation().GetResources().UpdateResource(m_world->GetVerbosity(), m_world);          
   }

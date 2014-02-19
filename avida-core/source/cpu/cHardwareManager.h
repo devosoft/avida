@@ -32,7 +32,6 @@ class cAvidaContext;
 class cHardwareBase;
 class cInstSet;
 class cOrganism;
-class cUserFeedback;
 class cWorld;
 template<typename T> class tList;
 
@@ -60,7 +59,7 @@ public:
   static void SetupPropertyMap(PropertyMap& props, const Apto::String& inst_set);
   
   
-  bool LoadInstSets(cUserFeedback* feedback = NULL);
+  bool LoadInstSets(Feedback* feedback = NULL);
   
   cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const Genome& mg);
   inline cTestCPU* CreateTestCPU(cAvidaContext& ctx) { return new cTestCPU(ctx, m_world); }
@@ -78,7 +77,7 @@ public:
   bool RegisterInstSet(const Apto::String& name, cInstSet* inst_set);
     
 private:
-  bool loadInstSet(int hw_type, const Apto::String& name, int stack_size, int uops_per_cycle, cStringList& sl, cUserFeedback* feedback);
+  bool loadInstSet(int hw_type, const Apto::String& name, int stack_size, int uops_per_cycle, cStringList& sl, Feedback* feedback);
 };
 
 

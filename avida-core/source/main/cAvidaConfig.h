@@ -33,9 +33,6 @@
 
 #include <iostream>
 
-class cUserFeedback;
-
-using namespace std;
 
 // The following macro will create all of the code needed to include an
 // entry for a new setting in the configuration.
@@ -553,7 +550,7 @@ public:
 
 #endif
   
-  bool Load(const cString& filename, const cString& working_dir, cUserFeedback* feedback = NULL,
+  bool Load(const cString& filename, const cString& working_dir, Feedback* feedback = NULL,
             const Apto::Map<Apto::String, Apto::String>* mappings = NULL, bool warn_default = true);
   void Print(const cString& filename);
   void Status();

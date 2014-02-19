@@ -41,7 +41,6 @@
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStats.h"
-#include "cUserFeedback.h"
 #include "cWorld.h"
 
 #include <iostream>
@@ -73,31 +72,13 @@ Avida::Viewer::Driver* Avida::Viewer::Driver::InitWithDirectory(const Apto::Stri
 {
   cAvidaConfig* cfg = new cAvidaConfig;
   
-  cUserFeedback feedback;
   if (!cfg->Load("avida.cfg", static_cast<const char*>(config_path), &feedback, NULL, false)) {
-    for (int i = 0; i < feedback.GetNumMessages(); i++) {
-      switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
-        default: break;
-      };
-      cerr << feedback.GetMessage(i) << endl;
-    }
-    
     return NULL;
   }
   
   World* new_world = new World;
   cWorld* world = cWorld::Initialize(cfg, static_cast<const char*>(config_path), new_world, &feedback);
   
-  for (int i = 0; i < feedback.GetNumMessages(); i++) {
-    switch (feedback.GetMessageType(i)) {
-      case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-      case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
-      default: break;
-    };
-    cerr << feedback.GetMessage(i) << endl;
-  }
   
   Apto::String path = Apto::FileSystem::PathAppend(config_path, "update");
   if (Apto::FileSystem::IsFile(path)) {

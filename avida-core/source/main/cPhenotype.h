@@ -25,7 +25,6 @@
 
 #include "avida/core/InstructionSequence.h"
 
-#include "cMerit.h"
 #include "cWorld.h"
 
 
@@ -74,7 +73,7 @@ private:
   bool initialized;
 
   // 1. These are values calculated at the last divide (of self or offspring)
-  cMerit merit;             // Relative speed of CPU
+  double merit;             // Relative speed of CPU
   double executionRatio;    //  ratio of current execution merit over base execution merit
   int genome_length;        // Number of instructions in genome.
   int bonus_instruction_count; // Number of times MERIT_BONUS_INT is in genome.
@@ -243,7 +242,7 @@ public:
   }
 
   /////////////////////  Accessors -- Retrieving  ////////////////////
-  const cMerit & GetMerit() const { assert(initialized == true); return merit; }
+  double GetMerit() const { assert(initialized == true); return merit; }
   int GetGenomeLength() const { assert(initialized == true); return genome_length; }
   int GetCopiedSize() const { assert(initialized == true); return copied_size; }
   int GetExecutedSize() const { assert(initialized == true); return executed_size; }
@@ -345,7 +344,7 @@ public:
 
 
   ////////////////////  Accessors -- Modifying  ///////////////////
-  void SetMerit(const cMerit& in_merit) { merit = in_merit; }
+  void SetMerit(double in_merit) { merit = in_merit; }
   void SetFitness(const double in_fit) { fitness = in_fit; }
   void SetGestationTime(int in_time) { gestation_time = in_time; }
   void SetTimeUsed(int in_time) { time_used = in_time; }

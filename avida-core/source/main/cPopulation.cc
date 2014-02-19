@@ -318,9 +318,9 @@ cPopulation::~cPopulation()
 }
 
 
-inline void cPopulation::AdjustSchedule(const cPopulationCell& cell, const cMerit& merit)
+inline void cPopulation::AdjustSchedule(const cPopulationCell& cell, double merit)
 {
-  m_scheduler->AdjustPriority(cell.GetID(), merit.GetDouble());
+  m_scheduler->AdjustPriority(cell.GetID(), merit);
 }
 
 
@@ -333,7 +333,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   bool is_doomed = false;
   int doomed_cell = (world_x * world_y) - 1; //Also at the end of cPopulation::ActivateOrganism
   Apto::Array<cOrganism*> offspring_array;
-  Apto::Array<cMerit> merit_array;
+  Apto::Array<double> merit_array;
   
   
   // Update the parent's phenotype.
@@ -661,7 +661,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   else organism->GetPhenotype().SetToDelete();
   
   // Alert the scheduler that this cell has a 0 merit.
-  AdjustSchedule(in_cell, cMerit(0));
+  AdjustSchedule(in_cell, 0.0);
 }
 
 
@@ -1011,13 +1011,13 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   int num_modified = 0;
   
   // Maximums...
-  cMerit max_merit(0);
-  double max_fitness = 0;
+  double max_merit = 0.0;
+  double max_fitness = 0.0;
   int max_gestation_time = 0;
   int max_genome_length = 0;
   
   // Minimums...
-  cMerit min_merit(FLT_MAX);
+  double min_merit = FLT_MAX;
   double min_fitness = FLT_MAX;
   int min_gestation_time = INT_MAX;
   int min_genome_length = INT_MAX;
@@ -1030,7 +1030,7 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     }
     
     const cPhenotype& phenotype = organism->GetPhenotype();
-    const cMerit cur_merit = phenotype.GetMerit();
+    const double cur_merit = phenotype.GetMerit();
     const double cur_fitness = phenotype.GetFitness();
     const int cur_gestation_time = phenotype.GetGestationTime();
     const int cur_genome_length = phenotype.GetGenomeLength();
@@ -1718,7 +1718,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       }
       
       if (merit > 0) {
-        phenotype.SetMerit(cMerit(merit));
+        phenotype.SetMerit(merit);
       } else {
         // Set the phenotype merit from the save file
         assert(tmp.props->Has("merit"));
@@ -1728,9 +1728,9 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         }
         
         if (merit > 0) {
-          phenotype.SetMerit(cMerit(merit));
+          phenotype.SetMerit(merit);
         } else {
-          phenotype.SetMerit(cMerit(new_organism->GetTestMerit(ctx)));
+          phenotype.SetMerit(new_organism->GetTestMerit(ctx));
         }
         
         if (tmp.offsets.GetSize() > cell_i && !load_rebirth) {
@@ -1741,7 +1741,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           double gest_remain = gest_time - (double)tmp.offsets[cell_i];
           if (gest_remain > 0.0 && gest_time > 0.0) {
             double new_merit = phenotype.GetMerit().GetDouble() * (gest_time / gest_remain);
-            phenotype.SetMerit(cMerit(new_merit));
+            phenotype.SetMerit(new_merit);
           }
         }
       }
@@ -1851,7 +1851,7 @@ void cPopulation::Inject(const Genome& genome, Systematics::Source src, cAvidaCo
   cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
   phenotype.SetNeutralMetric(neutral);
   
-  if (merit > 0) phenotype.SetMerit(cMerit(merit));
+  if (merit > 0) phenotype.SetMerit(merit);
   AdjustSchedule(GetCell(cell_id), phenotype.GetMerit());
   
   if (inject_group) {
@@ -2056,7 +2056,7 @@ void cPopulation::InjectGenome(int cell_id, Systematics::Source src, const Genom
   
   Systematics::GenomeTestMetricsPtr metrics = Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, new_organism->SystematicsGroup("genotype"));
   
-  phenotype.SetMerit(cMerit(metrics->GetMerit()));
+  phenotype.SetMerit(metrics->GetMerit());
   
   phenotype.SetLinesCopied(metrics->GetLinesCopied());
   phenotype.SetLinesExecuted(metrics->GetLinesExecuted());
@@ -2100,7 +2100,7 @@ bool cPopulation::UpdateMerit(int cell_id, double new_merit)
   cPhenotype & phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
   double old_merit = phenotype.GetMerit().GetDouble();
   
-  phenotype.SetMerit( cMerit(new_merit) );
+  phenotype.SetMerit(new_merit);
   phenotype.SetLifeFitness(new_merit/phenotype.GetGestationTime());
   AdjustSchedule(GetCell(cell_id), phenotype.GetMerit());
   

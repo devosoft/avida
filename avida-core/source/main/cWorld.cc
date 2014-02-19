@@ -35,7 +35,6 @@
 #include "cPopulation.h"
 #include "cStats.h"
 #include "cTestCPU.h"
-#include "cUserFeedback.h"
 
 #include <cassert>
 
@@ -46,7 +45,7 @@ cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)
 {
 }
 
-cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, Universe* new_world, cUserFeedback* feedback, const Apto::Map<Apto::String, Apto::String>* mappings)
+cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, Universe* new_world, Feedback* feedback, const Apto::Map<Apto::String, Apto::String>* mappings)
 {
   cWorld* world = new cWorld(cfg, working_dir);
   if (!world->setup(new_world, feedback, mappings)) {
@@ -75,7 +74,7 @@ cWorld::~cWorld()
 }
 
 
-bool cWorld::setup(Universe* new_world, cUserFeedback* feedback, const Apto::Map<Apto::String, Apto::String>* defs)
+bool cWorld::setup(Universe* new_world, Feedback* feedback, const Apto::Map<Apto::String, Apto::String>* defs)
 {
   bool success = true;
   

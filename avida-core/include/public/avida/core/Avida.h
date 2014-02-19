@@ -29,7 +29,16 @@
 
 
 namespace Avida {
-  void Initialize();
+  LIB_EXPORT void Initialize();
+  
+  
+  LIB_EXPORT inline double CalcFitness(double metabolic_rate, double gestation_time)
+  {
+    assert(metabolic_rate >= 0.0);
+    assert(gestation_time >= 0.0);
+    
+    return (gestation_time != 0.0 ) ? (metabolic_rate / gestation_time) : 0.0;
+  }
 };
 
 

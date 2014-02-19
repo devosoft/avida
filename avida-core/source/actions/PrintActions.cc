@@ -48,7 +48,6 @@
 #include "cPopulationCell.h"
 #include "cStats.h"
 #include "cWorld.h"
-#include "cUserFeedback.h"
 #include "cBirthEntry.h"
 
 #include <cmath>
@@ -887,7 +886,7 @@ public:
       // We calculate the fitness based on the current merit,
       // but with the true gestation time. Also, we set the fitness
       // to zero if the creature is not viable.
-      const double f = (test_info.IsViable()) ? organism->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestPhenotype().GetGestationTime()) : 0;
+      const double f = (test_info.IsViable()) ? CalcFitness(organism->GetPhenotype().GetMerit(), test_info.GetTestPhenotype().GetGestationTime()) : 0;
       const double f_testCPU = test_info.GetColonyFitness();
       
       // Get the maximum fitness in the population
@@ -1080,7 +1079,7 @@ public:
       }
       else if (mode == "ACTUAL"){
         fitness = (test_info.IsViable()) ?
-        orgs[i]->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestPhenotype().GetGestationTime()) : 0.0;
+        CalcFitness(orgs[i]->GetPhenotype().GetMerit(), test_info.GetTestPhenotype().GetGestationTime()) : 0.0;
       } else {
         ctx.Driver().Feedback().Error("PrintLogFitnessHistogram::MakeHistogram: Invalid fitness mode requested.");
         ctx.Driver().Abort(Avida::INVALID_CONFIG);
@@ -1263,7 +1262,7 @@ public:
       }
       else if (mode == "ACTUAL"){
         fitness = (test_info.IsViable()) ?
-        orgs[i]->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestPhenotype().GetGestationTime()) : 0.0;
+        CalcFitness(orgs[i]->GetPhenotype().GetMerit(), test_info.GetTestPhenotype().GetGestationTime()) : 0.0;
       } else {
         ctx.Driver().Feedback().Error("MakeHistogram: Invalid fitness mode requested.");
         ctx.Driver().Abort(Avida::INVALID_CONFIG);
@@ -1449,16 +1448,7 @@ public:
     
     // load the reference genome
     GenomePtr reference_genome;
-    cUserFeedback feedback;
     reference_genome = Util::LoadGenomeDetailFile(m_creature, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
-    for (int i = 0; i < feedback.GetNumMessages(); i++) {
-      switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
-        default: break;
-      };
-      cerr << feedback.GetMessage(i) << endl;
-    }
     if (!reference_genome) return;
     
     InstructionSequencePtr r_seq;

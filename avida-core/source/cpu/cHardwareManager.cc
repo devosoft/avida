@@ -49,7 +49,7 @@ cHardwareManager::~cHardwareManager()
 }
 
 
-bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
+bool cHardwareManager::LoadInstSets(Feedback* feedback)
 {
   const cStringList& cfg_list = m_world->GetConfig().INSTSETS.Get();
   cStringList* cur_list = NULL;
@@ -114,7 +114,7 @@ bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
   return success;
 }
 
-bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, int stack_size, int uops_per_cycle, cStringList& sl, cUserFeedback* feedback)
+bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, int stack_size, int uops_per_cycle, cStringList& sl, Feedback* feedback)
 {
   // Current list in progress, create actual cInstSet instance and process it
   cInstSet* inst_set = NULL;
