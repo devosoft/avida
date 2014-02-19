@@ -35,13 +35,10 @@
 
 namespace Avida {
   class Genome;
-  class InstructionSequence;
 };
 
 class cAvidaContext;
-class cOrganism;
-class cOrgSinkMessage;
-class cPopulationCell;
+
 
 using namespace Avida;
 
@@ -56,15 +53,8 @@ public:
   
   virtual void KillOrganism(cAvidaContext& ctx, int cell_id) = 0;
   
- 
-  virtual int GetInputAt(int& input_pointer) = 0;
-  virtual void ResetInputs(cAvidaContext& ctx) = 0;
-  virtual const Apto::Array<int>& GetInputs() const = 0;
-
   virtual void Die(cAvidaContext& ctx) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;
-
-  virtual bool Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;
 
 };
 

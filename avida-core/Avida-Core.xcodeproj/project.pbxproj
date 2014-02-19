@@ -139,7 +139,6 @@
 		70D5B4EC14F4009000D15FFD /* cBirthSelectionHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447BFD0F83B47900E1BF72 /* cBirthSelectionHandler.cc */; };
 		70D5B4EE14F4009000D15FFD /* cWorld.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BC6309059A970028A785 /* cWorld.cc */; };
 		70D5B4EF14F4009000D15FFD /* cBirthMateSelectHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447CA60F83DB5600E1BF72 /* cBirthMateSelectHandler.cc */; };
-		70D5B4F014F4009000D15FFD /* cBirthGridLocalHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447C870F83D4C500E1BF72 /* cBirthGridLocalHandler.cc */; };
 		70D5B4F314F4009000D15FFD /* InstructionSequence.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB811358BD6F0000B036 /* InstructionSequence.cc */; };
 		70D5B4FA14F4009000D15FFD /* cBirthGlobalHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447C940F83D72600E1BF72 /* cBirthGlobalHandler.cc */; };
 		70D5B4FB14F4009000D15FFD /* Avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A53BC3135B704C00C3E661 /* Avida.cc */; };
@@ -248,8 +247,6 @@
 		70447C300F83B7F400E1BF72 /* cBirthEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBirthEntry.h; sourceTree = "<group>"; };
 		70447C4C0F83C55300E1BF72 /* cBirthNeighborhoodHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBirthNeighborhoodHandler.h; sourceTree = "<group>"; };
 		70447C4D0F83C55300E1BF72 /* cBirthNeighborhoodHandler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBirthNeighborhoodHandler.cc; sourceTree = "<group>"; };
-		70447C860F83D4C500E1BF72 /* cBirthGridLocalHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBirthGridLocalHandler.h; sourceTree = "<group>"; };
-		70447C870F83D4C500E1BF72 /* cBirthGridLocalHandler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBirthGridLocalHandler.cc; sourceTree = "<group>"; };
 		70447C930F83D72600E1BF72 /* cBirthGlobalHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBirthGlobalHandler.h; sourceTree = "<group>"; };
 		70447C940F83D72600E1BF72 /* cBirthGlobalHandler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBirthGlobalHandler.cc; sourceTree = "<group>"; };
 		70447CA10F83DB2900E1BF72 /* cBirthGenomeSizeHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBirthGenomeSizeHandler.h; sourceTree = "<group>"; };
@@ -414,8 +411,6 @@
 		70B0869C08F49F4800FC65FE /* cPhenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cPhenotype.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		70B0870E08F5E81000FC65FE /* cReaction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cReaction.h; sourceTree = "<group>"; };
 		70B0870F08F5E81000FC65FE /* cReactionLib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cReactionLib.h; sourceTree = "<group>"; };
-		70B0871008F5E81000FC65FE /* cReactionProcess.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cReactionProcess.h; sourceTree = "<group>"; };
-		70B0871108F5E81000FC65FE /* cReactionRequisite.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cReactionRequisite.h; sourceTree = "<group>"; };
 		70B0871208F5E81000FC65FE /* cReactionResult.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cReactionResult.h; sourceTree = "<group>"; };
 		70B0871B08F5E81000FC65FE /* cStats.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cStats.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		70B0871C08F5E81000FC65FE /* cTaskEntry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTaskEntry.h; sourceTree = "<group>"; };
@@ -1146,8 +1141,6 @@
 				70447CA20F83DB2900E1BF72 /* cBirthGenomeSizeHandler.cc */,
 				70447C930F83D72600E1BF72 /* cBirthGlobalHandler.h */,
 				70447C940F83D72600E1BF72 /* cBirthGlobalHandler.cc */,
-				70447C860F83D4C500E1BF72 /* cBirthGridLocalHandler.h */,
-				70447C870F83D4C500E1BF72 /* cBirthGridLocalHandler.cc */,
 				70447CA50F83DB5600E1BF72 /* cBirthMateSelectHandler.h */,
 				70447CA60F83DB5600E1BF72 /* cBirthMateSelectHandler.cc */,
 				70447C4C0F83C55300E1BF72 /* cBirthNeighborhoodHandler.h */,
@@ -1176,8 +1169,6 @@
 				70B0871E08F5E82D00FC65FE /* cReaction.cc */,
 				70B0870F08F5E81000FC65FE /* cReactionLib.h */,
 				70B0871F08F5E82D00FC65FE /* cReactionLib.cc */,
-				70B0871008F5E81000FC65FE /* cReactionProcess.h */,
-				70B0871108F5E81000FC65FE /* cReactionRequisite.h */,
 				70B0871208F5E81000FC65FE /* cReactionResult.h */,
 				70B0872208F5E82D00FC65FE /* cReactionResult.cc */,
 				70B0872B08F5E82D00FC65FE /* cStats.cc */,
@@ -1411,7 +1402,6 @@
 				70D5B50314F4009000D15FFD /* cBirthGenomeSizeHandler.cc in Sources */,
 				70D5B4FA14F4009000D15FFD /* cBirthGlobalHandler.cc in Sources */,
 				703EEEA218A548E80059C07B /* ConfigFile.cc in Sources */,
-				70D5B4F014F4009000D15FFD /* cBirthGridLocalHandler.cc in Sources */,
 				70D5B4EF14F4009000D15FFD /* cBirthMateSelectHandler.cc in Sources */,
 				70D5B4DE14F4009000D15FFD /* cBirthNeighborhoodHandler.cc in Sources */,
 				70D5B4EC14F4009000D15FFD /* cBirthSelectionHandler.cc in Sources */,

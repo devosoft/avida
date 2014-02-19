@@ -45,28 +45,16 @@ cBirthSelectionHandler* cBirthChamber::getSelectionHandler(int hw_type)
     
     if (birth_method < NUM_LOCAL_POSITION_OFFSPRING || birth_method == POSITION_OFFSPRING_PARENT_FACING) { 
       // ... else check if the birth method is one of the local ones... 
-      if (m_world->GetConfig().LEGACY_GRID_LOCAL_SELECTION.Get()) {
-        handler = new cBirthGridLocalHandler(m_world, this);
-      } else {
-        handler = new cBirthNeighborhoodHandler(m_world, this);
-      }
+      handler = new cBirthNeighborhoodHandler(m_world, this);
     } else if (m_world->GetConfig().SAME_LENGTH_SEX.Get() != 0) {
       // ... else check if recombination must be with organisms of the same length
       handler = new cBirthGenomeSizeHandler(this);
     } else if (m_world->GetConfig().ALLOW_MATE_SELECTION.Get()) {
       // ... else check if we have mate selection
       handler = new cBirthMateSelectHandler(this);
-    } else {
-      
+    } else {      
       // If everything failed until this point, use default global.
-      // LZ - UNLESS FORCE_LOCAL_REPRODUCTION is set to true, then we
-      // need to override a potential global neighborhood with only the local
-      // organisms. 
-      if (m_world->GetConfig().LEGACY_GRID_LOCAL_SELECTION.Get()) {
-        handler = new cBirthGridLocalHandler(m_world, this);
-      } else {
-        handler = new cBirthGlobalHandler(this);
-      }
+      handler = new cBirthGlobalHandler(this);
     }
     
     m_handler_map.Set(hw_type, handler);

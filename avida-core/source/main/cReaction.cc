@@ -25,9 +25,6 @@
 #include "cReactionProcess.h"
 #include "cReactionRequisite.h"
 
-using namespace std;
-
-
 cReaction::cReaction(const cString & _name, int _id)
   : name(_name)
   , id(_id)

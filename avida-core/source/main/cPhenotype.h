@@ -56,8 +56,6 @@
 
 class cAvidaContext;
 class cEnvironment;
-template <class T> class tBuffer;
-template <class T> class tList;
 class cTaskContext;
 class cTaskState;
 class cReactionResult;

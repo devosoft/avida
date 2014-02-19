@@ -25,16 +25,11 @@
 
 #include "avida/core/InstructionSequence.h"
 
-#include <fstream>
-#include <set>
-#include <deque>
-
 #include "cMutationRates.h"
 
 class cHardwareBase;
 class cPopulation;
 class cOrganism;
-class cPopulationCell;
 class cWorld;
 
 using namespace Avida;
@@ -47,11 +42,10 @@ class cPopulationCell
 private:
   cWorld* m_world;
 
-  cOrganism* m_organism;                    // The occupent of this cell.
+  cOrganism* m_organism;
   cHardwareBase* m_hardware;
 
   cMutationRates* m_mut_rates;           // Mutation rates at this cell.
-  Apto::Array<int> m_inputs;                 // Environmental Inputs...
 
   int m_cell_id;           // Unique id for position of cell in population.
 
@@ -75,22 +69,9 @@ public:
   inline const cMutationRates& MutationRates() const { assert(m_mut_rates); return *m_mut_rates; }
   inline cMutationRates& MutationRates() { assert(m_mut_rates); return *m_mut_rates; }
 
-  inline int GetInput(int input_cell) const { return m_inputs[input_cell]; }
-  inline const Apto::Array<int>& GetInputs() const { return m_inputs; }
-  inline int GetInputAt(int& input_pointer);
-  inline int GetInputSize() { return m_inputs.GetSize(); }
-  void ResetInputs(cAvidaContext& ctx);
-
   inline int GetID() const { return m_cell_id; }
 
   inline bool IsOccupied() const { return m_organism != NULL; }
-
 };
-
-inline int cPopulationCell::GetInputAt(int& input_pointer)
-{
-  input_pointer %= m_inputs.GetSize();
-  return m_inputs[input_pointer++];
-}
 
 #endif

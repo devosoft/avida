@@ -36,7 +36,6 @@ class cMutation;
 class cOrganism;
 class cWorld;
 
-using namespace std;
 using namespace Avida;
 
 

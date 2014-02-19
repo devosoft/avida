@@ -50,10 +50,6 @@ public:
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
 
-  int GetInputAt(int& input_pointer);
-  void ResetInputs(cAvidaContext& ctx);
-  const Apto::Array<int>& GetInputs() const;
-
   void Die(cAvidaContext& ctx);
 
   bool UpdateMerit(double new_merit);

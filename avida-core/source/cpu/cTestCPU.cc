@@ -35,8 +35,6 @@
 
 #include <iomanip>
 
-using namespace std;
-
 
 cTestCPU::cTestCPU(cAvidaContext& ctx, cWorld* world)
   :   m_resource_count(this, 0)

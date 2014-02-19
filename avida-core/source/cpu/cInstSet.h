@@ -28,7 +28,6 @@
 #include "avida/hardware/InstLib.h"
 
 
-using namespace std;
 using namespace Avida;
 
 /**

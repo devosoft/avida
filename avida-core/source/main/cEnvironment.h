@@ -66,7 +66,6 @@ private:
   
   std::set<int> possible_target_ids;
   std::set<int> possible_habitats;
-  Apto::Array<int> pp_fts;
 
 public:
   cEnvironment(cWorld* world);
@@ -119,8 +118,6 @@ public:
   void AddTargetID(int new_id) { possible_target_ids.insert(new_id); SetAttackPreyFTList(); }
   bool IsTargetID(int test_id);
   std::set<int> GetTargetIDs() { return possible_target_ids; }
-  void SetAttackPreyFTList();
-  Apto::Array<int> GetAttackPreyFTList() { return pp_fts; }
 
   void AddHabitat(int new_habitat) { possible_habitats.insert(new_habitat); }
   bool IsHabitat(int test_habitat);

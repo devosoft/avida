@@ -64,8 +64,6 @@
 #include <climits>
 #include <limits>
 
-using namespace std;
-
 
 static const PropertyID s_prop_id_instset("instset");
 
@@ -370,7 +368,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     // If we replaced the parent, make a note of this.    
     if (target_cells[i] == parent_cell.GetID()) {
       parent_alive = false;
-      if (m_world->GetConfig().USE_AVATARS.Get()) parent_organism->GetOrgInterface().RemoveAllAV();
     }
     const int mut_source = m_world->GetConfig().MUT_RATE_SOURCE.Get();
     if (mut_source == 1) {
@@ -393,38 +390,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     offspring_array[i]->GetPhenotype().SetupOffspring(parent_phenotype, genome);
     offspring_array[i]->GetPhenotype().SetMerit(merit_array[i]);
     
-    if (m_world->GetConfig().SET_FT_AT_BIRTH.Get()) {
-      int prop_target = 2;
-      if (ctx.GetRandom().P(0.5)) {
-        prop_target = 0;
-        if (ctx.GetRandom().P(0.5)) prop_target = 1;
-      }
-      if (m_world->GetConfig().MAX_PREY_BT.Get()) {
-        int in_use = 0;
-        Apto::Array<cOrganism*> orgs;
-        const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_world->GetPopulation().GetLiveOrgList();
-        for (int i = 0; i < live_orgs.GetSize(); i++) {
-          cOrganism* org = live_orgs[i];
-          int this_target = org->GetForageTarget();
-          if (this_target == prop_target) {
-            in_use++;
-            orgs.Push(org);
-          }
-        }
-        if (in_use >= m_world->GetConfig().MAX_PREY_BT.Get()) {
-          cOrganism* org = orgs[ctx.GetRandom().GetUInt(0, in_use)];
-          if (org == parent_organism) {
-            parent_alive = false;
-          }
-          org->Die(ctx);
-        }
-      }
-      offspring_array[i]->SetForageTarget(ctx, prop_target);
-      offspring_array[i]->RecordFTSet();
-    }
-    // if parent org has executed teach_offspring intruction, allow the offspring to learn parent's foraging/targeting behavior
-    if (parent_organism->IsTeacher()) offspring_array[i]->SetParentTeacher(true);
-    offspring_array[i]->SetParentFT(parent_organism->GetForageTarget());
     // and some rebirth stuff
     offspring_array[i]->SetParentMerit(parent_organism->GetPhenotype().GetMerit().GetDouble());
     offspring_array[i]->SetParentMultiThreaded(parent_organism->GetPhenotype().IsMultiThread());    
@@ -511,12 +476,6 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   
   // Keep track of statistics for organism counts...
   num_organisms++;
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
-    // ft should be nearly always -1 so long as it is not being inherited
-    if (in_organism->IsPreyFT()) num_prey_organisms++;
-    else if (in_organism->IsTopPredFT()) num_top_pred_organisms++;
-    else num_pred_organisms++;
-  }
   
   // Statistics...
   m_world->GetStats().RecordBirth(in_organism->GetPhenotype().ParentTrue());
@@ -559,15 +518,6 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // kill that org. @JJB
   int doomed_cell = (world_x * world_y) - 1;
 
-  // Kill org born on deadly world boundaries
-  if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1 && target_cell.GetID() >= 0) {
-    int dest_x = target_cell.GetID() % m_world->GetConfig().WORLD_X.Get();  
-    int dest_y = target_cell.GetID() / m_world->GetConfig().WORLD_X.Get();
-    if (dest_x == 0 || dest_y == 0 || dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) {
-      KillOrganism(target_cell, ctx);
-      org_survived = false;
-    }
-  } 
   // don't kill our test org, just it's offspring
   if ((m_world->GetConfig().BIRTH_METHOD.Get() == 12 || m_world->GetConfig().BIRTH_METHOD.Get() == 13) && !is_inject) {
       KillOrganism(target_cell, ctx); 
@@ -647,11 +597,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   
   // Update count statistics...
   num_organisms--;
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
-    if (ft > -2) num_prey_organisms--;
-    else if (ft == -2) num_pred_organisms--;
-    else num_top_pred_organisms--;
-  }
   
   
   
@@ -729,11 +674,6 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
       KillOrganism(cell_array[cell_id], ctx);
       num_kills--;
     }
-  }
-  
-  // for juvs with non-predatory parents...
-  if (m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get() && parent_cell.GetOrganism()->IsPreyFT()) {
-    KillRandPrey(ctx, parent_cell.GetOrganism());
   }
   
 
@@ -1834,15 +1774,6 @@ void cPopulation::Inject(const Genome& genome, Systematics::Source src, cAvidaCo
   if(m_world->IsWorldBoundary(GetCell(cell_id))) {
     cell_id += world_x + 1;
   }
-  // Can't inject onto deadly world edges either
-  if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1) {
-    const int dest_x = cell_id % m_world->GetConfig().WORLD_X.Get();  
-    if (dest_x == 0) cell_id += 1;
-    else if (dest_x == m_world->GetConfig().WORLD_X.Get() - 1) cell_id -= 1;
-    const int dest_y = cell_id / m_world->GetConfig().WORLD_X.Get();
-    if (dest_y == 0) cell_id += m_world->GetConfig().WORLD_X.Get();
-    else if (dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) cell_id -= m_world->GetConfig().WORLD_X.Get();
-  }
   
   // if the injected org already has a group we will assign it to, do not assign group id in activate organism
   if (!inject_group) InjectGenome(cell_id, src, genome, ctx, true);
@@ -2161,14 +2092,6 @@ int cPopulation::PlaceAvatar(cAvidaContext& ctx, cOrganism* parent)
     default:
       avatar_target_cell = parent->GetOrgInterface().GetAVCellID();
       break;
-  }
-  
-  if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1 && avatar_target_cell >= 0) {
-    int dest_x = avatar_target_cell % m_world->GetConfig().WORLD_X.Get();
-    int dest_y = avatar_target_cell / m_world->GetConfig().WORLD_X.Get();
-    if (dest_x == 0 || dest_y == 0 || dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) {
-      return -1;
-    }
   }
   
   return avatar_target_cell;

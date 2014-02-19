@@ -30,8 +30,6 @@
 #include <cfloat>           // for DBL_MIN
 #include <iostream>
 
-using namespace std;
-
 
 const double cEventList::TRIGGER_BEGIN = DBL_MIN;
 const double cEventList::TRIGGER_END = DBL_MAX;

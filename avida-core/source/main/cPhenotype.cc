@@ -30,8 +30,6 @@
 
 #include <fstream>
 
-using namespace std;
-
 
 cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 : m_world(world)
@@ -945,13 +943,6 @@ int cPhenotype::CalcSizeMerit() const
       out_size = (int) sqrt((double) out_size);
       break;
     case BASE_MERIT_NUM_BONUS_INST:
-      if (m_world->GetConfig().FITNESS_VALLEY.Get()){
-        if (bonus_instruction_count >= m_world->GetConfig().FITNESS_VALLEY_START.Get() && 
-            bonus_instruction_count <= m_world->GetConfig().FITNESS_VALLEY_STOP.Get()){
-          out_size = 1;
-          break;
-        }            
-      }
       if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()>0) {
         out_size = 1 + bonus_instruction_count;
       }

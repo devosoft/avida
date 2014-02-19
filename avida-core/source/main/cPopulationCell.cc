@@ -31,8 +31,6 @@
 #include <cmath>
 #include <iterator>
 
-using namespace std;
-
 
 cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
 : m_world(in_cell.m_world)

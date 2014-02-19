@@ -288,7 +288,6 @@ public:
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Other configuration Files");
   CONFIG_ADD_VAR(DATA_DIR, cString, "data", "Directory in which config files are found");
   CONFIG_ADD_VAR(EVENT_FILE, cString, "events.cfg", "File containing list of events during run");
-  CONFIG_ADD_VAR(ANALYZE_FILE, cString, "analyze.cfg", "File used for analysis mode");
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
   
   
@@ -386,11 +385,7 @@ public:
   CONFIG_ADD_VAR(REQUIRE_EXACT_COPY, int, 0, "Require offspring to be an exact copy (checked before divide mutations)");
   CONFIG_ADD_VAR(REQUIRED_RESOURCE, int, -1, "ID of resource required in organism's internal bins for successful\n  divide (resource not consumed)");
   CONFIG_ADD_VAR(REQUIRED_RESOURCE_LEVEL, double, 0.0, "Level of resource needed for REQUIRED_RESOURCE");  
-  CONFIG_ADD_VAR(REQUIRED_PRED_HABITAT, int, -1, "Required resource habitat type in cell for predators to reproduce");  
-  CONFIG_ADD_VAR(REQUIRED_PRED_HABITAT_VALUE, double, 0, "Level of resource needed for REQUIRED_PRED_HABITAT");  
-  CONFIG_ADD_VAR(REQUIRED_PREY_HABITAT, int, -1, "Required resource habitat type in cell for prey to reproduce");  
-  CONFIG_ADD_VAR(REQUIRED_PREY_HABITAT_VALUE, double, 0, "Level of resource needed for REQUIRED_PREY_HABITAT");  
-  CONFIG_ADD_VAR(IMPLICIT_REPRO_BONUS, int, 0, "Call Inst_Repro to divide upon achieving this bonus. 0 = OFF");  
+  CONFIG_ADD_VAR(IMPLICIT_REPRO_BONUS, int, 0, "Call Inst_Repro to divide upon achieving this bonus. 0 = OFF");
   CONFIG_ADD_VAR(IMPLICIT_REPRO_CPU_CYCLES, int, 0, "Call Inst_Repro after this many cpu cycles. 0 = OFF");  
   CONFIG_ADD_VAR(IMPLICIT_REPRO_TIME, int, 0, "Call Inst_Repro after this time used. 0 = OFF");  
   CONFIG_ADD_VAR(IMPLICIT_REPRO_END, int, 0, "Call Inst_Repro after executing the last instruction in the genome.");  
@@ -435,9 +430,6 @@ public:
   CONFIG_ADD_VAR(BASE_CONST_MERIT, int, 100, "Base merit valse for BASE_MERIT_METHOD 0");
   CONFIG_ADD_VAR(MERIT_BONUS_INST, int, 0, "Instruction ID to count for BASE_MERIT_METHOD 6"); 
   CONFIG_ADD_VAR(MERIT_BONUS_EFFECT, int, 0, "Amount of merit earn per instruction for BASE_MERIT_METHOD 6 (-1 = penalty, 0 = no effect)"); 
-  CONFIG_ADD_VAR(FITNESS_VALLEY, int, 0, "in BASE_MERIT_METHOD 6, this creates valleys from\nFITNESS_VALLEY_START to FITNESS_VALLEY_STOP\n(0 = off, 1 = on)"); 
-  CONFIG_ADD_VAR(FITNESS_VALLEY_START, int, 0, "if FITNESS_VALLEY = 1, orgs with num_key_instructions\nfrom FITNESS_VALLEY_START to FITNESS_VALLEY_STOP\nget fitness 1 (lowest)"); 
-  CONFIG_ADD_VAR(FITNESS_VALLEY_STOP, int, 0, "if FITNESS_VALLEY = 1, orgs with num_key_instructions\nfrom FITNESS_VALLEY_START to FITNESS_VALLEY_STOP\nget fitness 1 (lowest)"); 
   CONFIG_ADD_VAR(DEFAULT_BONUS, double, 1.0, "Initial bonus before any tasks");
   CONFIG_ADD_VAR(MERIT_DEFAULT_BONUS, int, 0, "Instead of inheriting bonus from parent, use this value instead (0 = off)"); 
   CONFIG_ADD_VAR(MERIT_INC_APPLY_IMMEDIATE, bool, 0, "Should merit increases (above current) be applied immediately, or delayed until divide?");
@@ -449,12 +441,6 @@ public:
   CONFIG_ADD_VAR(THREAD_SLICING_METHOD, int, 0, "Formula for allocating CPU cycles across threads in an organism\n  (num_threads-1) * THREAD_SLICING_METHOD + 1\n0 = One thread executed per time slice.\n1 = All threads executed each time slice.\n");
   CONFIG_ADD_VAR(NO_CPU_CYCLE_TIME, int, 0, "Don't count each CPU cycle as part of gestation time\n");
   CONFIG_ADD_VAR(MAX_LABEL_EXE_SIZE, int, 1, "Max nops marked as executed when labels are used");
-  
-
-  // -------- Geneology config options --------
-  CONFIG_ADD_GROUP(GENEOLOGY_GROUP, "Geneology");
-  CONFIG_ADD_VAR(THRESHOLD, int, 3, "Number of organisms in a genotype needed for it\n  to be considered viable.");
-  CONFIG_ADD_VAR(TEST_CPU_TIME_MOD, int, 20, "Time allocated in test CPUs (multiple of length)");
   
 
   // -------- Resource Hoarding (Collect) config options --------
@@ -472,82 +458,6 @@ public:
   CONFIG_ADD_VAR(RESOURCE_GIVEN_AT_BIRTH, double, 0.0, "Units of collect-specific resources given to offspring upon birth (will be added to SPLIT_ON_DIVIDE amount for collect-specific resource if both enabled.");  
   CONFIG_ADD_VAR(COLLECT_PROB_DIVISOR, int, 1, "Divisor for probabilistic collect instructions.");
   
-  
-  // -------- Analyze config options --------
-  CONFIG_ADD_GROUP(ANALYZE_GROUP, "Analysis Settings");
-  CONFIG_ADD_VAR(MAX_CONCURRENCY, int, -1, "Maximum number of analyze threads, -1 == use all available.");
-  CONFIG_ADD_VAR(INJECT_RESETS_TASKS, int, 0, "Executing INJECT (semi-succesfully) will trigger last_task_count to be writen from current_task_count");
-  CONFIG_ADD_VAR(ANALYZE_OPTION_1, cString, "", "String variable accessible from analysis scripts");
-  CONFIG_ADD_VAR(ANALYZE_OPTION_2, cString, "", "String variable accessible from analysis scripts");
-  
-
-  
-
-  // -------- Output Colors config options --------
-  CONFIG_ADD_GROUP(COLORS_GROUP, "Output colors for when data files are printed in HTML mode.\nThere are two sets of these; the first are for lineages,\nand the second are for mutation tests.");
-  CONFIG_ADD_VAR(COLOR_DIFF, cString, "CCCCFF", "Color to flag stat that has changed since parent.");
-  CONFIG_ADD_VAR(COLOR_SAME, cString, "FFFFFF", "Color to flag stat that has NOT changed since parent.");
-  CONFIG_ADD_VAR(COLOR_NEG2, cString, "FF0000", "Color to flag stat that is significantly worse than parent.");
-  CONFIG_ADD_VAR(COLOR_NEG1, cString, "FFCCCC", "Color to flag stat that is minorly worse than parent.");
-  CONFIG_ADD_VAR(COLOR_POS1, cString, "CCFFCC", "Color to flag stat that is minorly better than parent.");
-  CONFIG_ADD_VAR(COLOR_POS2, cString, "00FF00", "Color to flag stat that is significantly better than parent.");
-  
-  CONFIG_ADD_VAR(COLOR_MUT_POS,    cString, "00FF00", "Color to flag stat that has changed since parent.");
-  CONFIG_ADD_VAR(COLOR_MUT_NEUT,   cString, "FFFFFF", "Color to flag stat that has changed since parent.");
-  CONFIG_ADD_VAR(COLOR_MUT_NEG,    cString, "FFFF00", "Color to flag stat that has changed since parent.");
-  CONFIG_ADD_VAR(COLOR_MUT_LETHAL, cString, "FF0000", "Color to flag stat that has changed since parent.");
-  
-  
-  // -------- Movement config options --------
-  CONFIG_ADD_GROUP(MOVEMENT_GROUP, "Movement Features Settings");
-  CONFIG_ADD_VAR(DEADLY_BOUNDARIES, int, 0, "Are bounded grid border cell deadly? If == 1, orgs stepping onto boundary cells will disappear into oblivion (aka die)");
-  CONFIG_ADD_VAR(STEP_COUNTING_ERROR, int, 0, "% chance a step is not counted as part of easterly/northerly travel.");
-
-  // -------- Sensing config options --------
-  CONFIG_ADD_VAR(LOOK_DIST, int, -1, "-1: use limits set inside look instructions \n >-1: limit sight distance of look instructions to this number of cells");
-  CONFIG_ADD_VAR(LOOK_DISABLE, int, 0, "0: none \n 1: input habitat register \n 2: input sight dist sought \n 3: input type of search (e.g. closest vs count vs total) \n 4: input resource/org id sought \n 5: output habitat used \n 6: output distance used\n 7: output search type used\n 8: output resource/org id used \n 9: output count (edible)\n 10: outptu amount/value seen\n 11: output id seen \n 12: output org forage target seen");
-  CONFIG_ADD_VAR(LOOK_DISABLE_TYPE, int, 0, "0: predators \n 1: prey \n 2: both predators and prey");
-  CONFIG_ADD_VAR(LOOK_DISABLE_COMBO, int, 0, "# 0: none \n # 1: return 'not found' for any food resource query \n # 2: return 'not found' for any looking-for-predator query \n # 3: return 'not found' for any looking-for-prey query");
-  CONFIG_ADD_VAR(TRACK_LOOK_SETTINGS, int, 0, "# track (final) settings for look sensor use");
-  CONFIG_ADD_VAR(TRACK_LOOK_OUTPUT, int, 0, "# track (final) output from sensor use");
-  CONFIG_ADD_VAR(USE_DISPLAY, int, 0, "If 1, org display data is always 'on' (visible). If 2, org display is on and sensor does not set potential data.");
-  CONFIG_ADD_VAR(USE_MIMICS, int, 0, "If 1, org's with forage target of 1 can show a deceptive ft number (as seen by other orgs via sensor)");
-  CONFIG_ADD_VAR(MIMIC_ODDS, double, 1.0, "Odds that a mimic will appear to other organisms as the thing it is mimicing.");
-  CONFIG_ADD_VAR(SET_FT_AT_BIRTH, int, 0, "Should offspring set forage target at birth? 0: No 1: Yes");
-
-  
-
-  // -------- Instruction Set Definition --------
-  // Setup technique to define the instruction set in avida.cfg file.
-  CONFIG_ADD_CUSTOM_FORMAT(INSTSETS, "Instruction Set Definition");
-  CONFIG_ADD_FORMAT_VAR(INSTSET, "Define an instruction set (must supply name:hw_type=$hardware_type)");
-  CONFIG_ADD_FORMAT_VAR(INST, "Instruction entry in the instruction set");
-	
-	
-  // -------- Grouping config options --------
-  CONFIG_ADD_GROUP(GROUP_FORMATION_GROUP, "Group Formation Settings");
-  CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, " -2: no predators, but track prey stats \n -1: no predators in experiment \n 0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n 1: allow predators to switch to being prey \n 2: don't allow a predator to switch to being a prey & don't allow prey to switch via set-forage-target (via attack allowed) )");
-  CONFIG_ADD_VAR(PRED_EFFICIENCY, double, 1.0, "Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value\n and add to current predator values (for bonus, merit, and bin consumption instructions).");
-  CONFIG_ADD_VAR(PRED_EFFICIENCY_POISON, double, 1.0, "Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value\n and subtract from current predator values if this prey is poisonous (ft == 2).");
-  CONFIG_ADD_VAR(PRED_ODDS, double, 1.0, "Probability of success for predator 'attack' instructions.");
-  CONFIG_ADD_VAR(PRED_INJURY, double, 0.0, "If an attack fails, target's bonus, merit, and internal resources are reduced by this fraction.");
-  CONFIG_ADD_VAR(MIN_PREY, int, 0, "If positive (recommended for prey studies), predator attacks fail if num prey falls below this (0 = off).\nIf negative (recommended for predator studies), random prey of genotype other than target will be cloned (using birth placement methods).");
-  CONFIG_ADD_VAR(MAX_PRED, int, 0, "Population cap on number of predators (random predator will be removed when cap is exceeded).");
-  CONFIG_ADD_VAR(MAX_PREY, int, 0, "Population cap on number of prey (random prey will be removed when cap is exceeded). For births, classification as prey is based on parent.");
-  CONFIG_ADD_VAR(MAX_PREY_BT, int, 0, "Population cap on number of prey (random prey will be removed when cap is exceeded) based on FT.");
-  CONFIG_ADD_VAR(TRACK_GROUP_ATTACK_DETAILS, int, 0, "Track details around execution of EVERY group attack instructions for every update. \n  1 = as string in one file. \n  2 = as bits in new file for every update that this is on!");
-  CONFIG_ADD_VAR(MARKING_EXPIRE_DATE, int, -1, " Number of updates markings in cells will remain effective on territory move.");
-  CONFIG_ADD_VAR(PREY_MUT_OFF, int, 0, "Turn off prey mutations in the exp hardware repro inst.");
-		
-
-
-  // -------- DEPRECATED ---------
-  CONFIG_ADD_GROUP(DEPRECATED_GROUP, "DEPRECATED (New functionality listed in comments)");
-  CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive\nDEPRECATED: use command line options -a[nalyze] or -i[nteractive])");
-  CONFIG_ADD_VAR(LEGACY_GRID_LOCAL_SELECTION, bool, 0, "Enable legacy grid local mate selection.\nDEPRECATED: Birth chameber now uses population structure)");
-  CONFIG_ADD_VAR(INST_SET, cString, "-", "Instruction set file ('-' = use default for hardware type)");
-
-
 #endif
   
   bool Load(const cString& filename, const cString& working_dir, Feedback* feedback = NULL,

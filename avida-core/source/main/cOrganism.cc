@@ -33,7 +33,6 @@
 #include "cWorld.h"
 #include "cStats.h"
 
-using namespace std;
 using namespace Avida;
 
 
@@ -223,34 +222,6 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   // Make sure required task (if any) has been performed...
   const int required_task = m_world->GetConfig().REQUIRED_TASK.Get();
   const int immunity_task = m_world->GetConfig().IMMUNITY_TASK.Get();
-  if (m_world->GetConfig().REQUIRED_PRED_HABITAT.Get() != -1 || m_world->GetConfig().REQUIRED_PREY_HABITAT.Get() != -1) {
-    int habitat_required = -1;
-    double required_value = 0;
-    if (m_forage_target <= -2) {
-      habitat_required = m_world->GetConfig().REQUIRED_PRED_HABITAT.Get();
-      required_value = m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get();
-    }
-    else {
-      habitat_required = m_world->GetConfig().REQUIRED_PREY_HABITAT.Get();
-      required_value = m_world->GetConfig().REQUIRED_PREY_HABITAT_VALUE.Get();
-    }
-    if (habitat_required != -1) {
-      bool has_req_res = false;
-      const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
-      double resource_count = 0;
-      for (int i = 0; i < resource_lib.GetSize(); i ++) {
-        if (resource_lib.GetResDef(i)->GetHabitat() == habitat_required) {
-          if (!m_world->GetConfig().USE_AVATARS.Get()) resource_count = m_interface->GetResourceVal(ctx, i);
-          else resource_count = m_interface->GetAVResourceVal(ctx, i);
-          if (resource_count >= required_value) {
-            has_req_res = true;
-            break;
-          }
-        }
-      }
-      if (!has_req_res) return false;
-    }
-  }
   
   if (required_task != -1 && m_phenotype.GetCurTaskCount()[required_task] == 0) { 
     if (immunity_task ==-1 || m_phenotype.GetCurTaskCount()[immunity_task] == 0) {

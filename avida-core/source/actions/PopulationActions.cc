@@ -986,30 +986,6 @@ public:
   }
 };
 
-/*
- In avida.cfg, when BASE_MERIT_METHOD is set to 6 (Merit prop. to num times MERIT_BONUS_INST is in genome), 
- the merit is incremented by MERIT_BONUS_EFFECT if MERIT_BONUS_EFFECT is positive and decremented by
- MERIT_BONUS_EFFECT if it is negative. For positive values the counting starts at 1, for negative values it starts
- at genome length. This event addes fitness valleys to this extremely simple counting-ones type of dynamic environment.
- Orgs that have #_merit_bonus_inst_in_genome >=FITNESS_VALLEY_START && <= FITNESS_VALLEY_STOP will have a fitness of one (the lowest).
- Example.   FITNESS_VALLEY_START = 5, FITNESS_VALLEY_STOP = 7. orgs with 5, 6, or 7 MERIT_BONUS_INST in their genome have fitness = 1.
- Specifically, this event creates these valleys or takes them away. 
- */
-
-class cActionToggleFitnessValley : public cAction
-{
-private:
-public:
-  cActionToggleFitnessValley(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {}
-  
-  static const cString GetDescription() { return "No Arguments"; }
-  
-  void Process(cAvidaContext&)
-  {
-    if(m_world->GetConfig().FITNESS_VALLEY.Get()) {m_world->GetConfig().FITNESS_VALLEY.Set(0);}
-    else{m_world->GetConfig().FITNESS_VALLEY.Set(1);}
-  }
-};
 
 
 /*
