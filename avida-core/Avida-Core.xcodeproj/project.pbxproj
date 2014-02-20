@@ -422,7 +422,6 @@
 		70B0872B08F5E82D00FC65FE /* cStats.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cStats.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		70B088FF08F762EA00FC65FE /* cInitFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInitFile.h; sourceTree = "<group>"; };
 		70B0891A08F7630100FC65FE /* cInitFile.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInitFile.cc; sourceTree = "<group>"; };
-		70B08B8508FB2E5500FC65FE /* tBuffer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tBuffer.h; sourceTree = "<group>"; };
 		70B1B1D913F43016005DDF90 /* Properties.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Properties.cc; sourceTree = "<group>"; };
 		70B6514C0BEA6FAD002472ED /* unit-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "unit-tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70B9DC4B13BA53BD00C833BB /* ResourceListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResourceListener.h; sourceTree = "<group>"; };
@@ -1195,7 +1194,6 @@
 			children = (
 				70B088FF08F762EA00FC65FE /* cInitFile.h */,
 				70B0891A08F7630100FC65FE /* cInitFile.cc */,
-				70B08B8508FB2E5500FC65FE /* tBuffer.h */,
 				700E28CF0859FFD700CF158A /* tObjectFactory.h */,
 			);
 			path = tools;
