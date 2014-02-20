@@ -28,20 +28,13 @@
 
 #include "cMutationRates.h"
 #include "cReactionLib.h"
-#include "cTaskLib.h"
 
 
-namespace Avida {
-  class Feedback;
-};
 class cAvidaContext;
 class cReaction;
-class cReactionRequisite;
-class cReactionProcess;
 class cReactionResult;
 class cTaskContext;
 class cWorld;
-template <class T> class tBuffer;
 
 using namespace Avida;
 
@@ -53,7 +46,6 @@ private:
   
   cMutationRates mut_rates;
   cReactionLib reaction_lib;
-  cTaskLib m_tasklib;
 
   int m_input_size;
   int m_output_size;

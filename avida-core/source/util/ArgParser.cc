@@ -26,11 +26,67 @@
 #include "avida/core/Feedback.h"
 
 
+Avida::Util::ArgSchema::ArgSchema(const ArgSchema& schema)
+: m_ints(schema.m_ints.GetSize()), m_doubles(schema.m_doubles.GetSize()), m_strings(schema.m_strings.GetSize())
+{
+  // Handle copying over the int entries
+  for (int i = 0; i < m_ints.GetSize(); i++) {
+    m_ints[i] = new Entry(*schema.m_ints[i]);
+    m_entries.Set(m_ints[i]->name, m_ints[i]);
+  }
+  
+  // Handle copying over the double entries
+  for (int i = 0; i < m_doubles.GetSize(); i++) {
+    m_doubles[i] = new Entry(*schema.m_doubles[i]);
+    m_entries.Set(m_doubles[i]->name, m_doubles[i]);
+  }
+  
+  // Handle copying over the string entries
+  for (int i = 0; i < m_strings.GetSize(); i++) {
+    m_strings[i] = new Entry(*schema.m_strings[i]);
+    m_entries.Set(m_strings[i]->name, m_strings[i]);
+  }
+}
+
+
 Avida::Util::ArgSchema::~ArgSchema()
 {
   for (int i = 0; i < m_ints.GetSize(); i++) delete m_ints[i];
   for (int i = 0; i < m_doubles.GetSize(); i++) delete m_doubles[i];
   for (int i = 0; i < m_strings.GetSize(); i++) delete m_strings[i];
+}
+
+
+Avida::Util::ArgSchema& Avida::Util::ArgSchema::operator=(const ArgSchema& schema)
+{
+  // Delete any existing entries
+  m_entries.Clear();
+  for (int i = 0; i < m_ints.GetSize(); i++) delete m_ints[i];
+  for (int i = 0; i < m_doubles.GetSize(); i++) delete m_doubles[i];
+  for (int i = 0; i < m_strings.GetSize(); i++) delete m_strings[i];
+
+  // Handle copying over the int entries
+  m_ints.Resize(schema.m_ints.GetSize());
+  for (int i = 0; i < m_ints.GetSize(); i++) {
+    m_ints[i] = new Entry(*schema.m_ints[i]);
+    m_entries.Set(m_ints[i]->name, m_ints[i]);
+  }
+  
+  // Handle copying over the double entries
+  m_doubles.Resize(schema.m_doubles.GetSize());
+  for (int i = 0; i < m_doubles.GetSize(); i++) {
+    m_doubles[i] = new Entry(*schema.m_doubles[i]);
+    m_entries.Set(m_doubles[i]->name, m_doubles[i]);
+  }
+
+  // Handle copying over the string entries
+  m_strings.Resize(schema.m_strings.GetSize());
+  for (int i = 0; i < m_strings.GetSize(); i++) {
+    m_strings[i] = new Entry(*schema.m_strings[i]);
+    m_entries.Set(m_strings[i]->name, m_strings[i]);
+  }
+  
+  return *this;
 }
 
 
@@ -300,4 +356,55 @@ Avida::Util::Args* Avida::Util::Args::Load(Apto::String args, const ArgSchema& s
   }
   
   return ret;
+}
+
+
+Avida::Util::ArgSchema::Entry& Avida::Util::ArgSchema::Entry::operator=(const Entry& rhs)
+{
+  // Clean up
+  if (type == STRING) {
+    delete def_string;
+    delete vocab;
+  }
+
+  // Copy general fields
+  name = rhs.name;
+  type = rhs.type;
+  index = rhs.index;
+  optional = rhs.optional;
+  has_range_limits = rhs.has_range_limits;
+  
+  // Handle type specific unioned fields
+  switch (type) {
+    case INT:
+      def_int = rhs.def_int;
+      r_l_int = rhs.r_l_int;
+      r_u_int = rhs.r_u_int;
+      break;
+      
+    case DOUBLE:
+      def_double = rhs.def_double;
+      r_l_double = rhs.r_l_double;
+      r_u_double = rhs.r_u_double;
+      break;
+      
+    case STRING:
+      if (rhs.def_string != NULL) {
+        def_string = new Apto::String(*rhs.def_string);
+      } else {
+        def_string = NULL;
+      }
+      if (rhs.vocab != NULL) {
+        vocab = new Apto::Set<Apto::String>(*rhs.vocab);
+      } else {
+        vocab = NULL;
+      }
+      break;
+      
+    default:
+      break;
+  }
+  
+  
+  return (*this);
 }

@@ -45,9 +45,19 @@ namespace Avida {
     {
       friend Apto::CreateWithNew<Library>;
     public:
+      struct ActionType
+      {
+        Util::ArgSchema schema;
+        ActionSetup setup;
+        ActionTest test;
+        
+        LIB_LOCAL inline ActionType(Util::ArgSchema& in_schema, ActionSetup in_setup, ActionTest in_test)
+        : schema(in_schema), setup(in_setup), test(in_test) { ; }
+      };
+
       struct ResourceType
       {
-        Util::ArgSchema& schema;
+        Util::ArgSchema schema;
         ResourceCreateFunctor create;
         
         LIB_LOCAL inline ResourceType(Util::ArgSchema& in_schema, ResourceCreateFunctor in_create)
@@ -56,26 +66,46 @@ namespace Avida {
       
     private:
       mutable Apto::Mutex m_mutex;
+      Apto::Map<Apto::String, ActionType*> m_action_types;
       Apto::Map<Apto::String, ResourceType*> m_resource_types;
 
     public:
       LIB_EXPORT static inline Library& Instance() { return LibrarySingleton::Instance(); }
       
       
-      LIB_EXPORT inline const ResourceType* ResourceTypeOf(const Apto::String& res_type_name) const
+      LIB_EXPORT inline const ActionType* ActionTypeOf(const Apto::String& type_name) const
       {
         Apto::MutexAutoLock lock(m_mutex);
-        return m_resource_types.GetWithDefault(res_type_name, NULL);
+        return m_action_types.GetWithDefault(type_name, NULL);
       }
       
-      LIB_EXPORT inline bool IsResourceType(const Apto::String& res_type_name) const
+      LIB_EXPORT inline bool IsActionType(const Apto::String& type_name) const
       {
         Apto::MutexAutoLock lock(m_mutex);
-        return m_resource_types.Has(res_type_name);
+        return m_resource_types.Has(type_name);
       }
       
       
-      LIB_EXPORT bool RegisterResourceType(const Apto::String& res_type_name, Util::ArgSchema& arg_schema,
+      LIB_EXPORT bool RegisterActionType(const Apto::String& type_name, Util::ArgSchema& arg_schema, ActionSetup in_setup,
+                                         ActionTest in_test);
+      
+
+      
+      
+      LIB_EXPORT inline const ResourceType* ResourceTypeOf(const Apto::String& type_name) const
+      {
+        Apto::MutexAutoLock lock(m_mutex);
+        return m_resource_types.GetWithDefault(type_name, NULL);
+      }
+      
+      LIB_EXPORT inline bool IsResourceType(const Apto::String& type_name) const
+      {
+        Apto::MutexAutoLock lock(m_mutex);
+        return m_resource_types.Has(type_name);
+      }
+      
+      
+      LIB_EXPORT bool RegisterResourceType(const Apto::String& type_name, Util::ArgSchema& arg_schema,
                                            ResourceCreateFunctor res_create);
       
     private:

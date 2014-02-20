@@ -47,7 +47,7 @@ Avida::Environment::Resources::Global::~Global() { ; }
 
 void Avida::Environment::Resources::Global::Initialize()
 {
-  static Util::ArgSchema schema;
+  Util::ArgSchema schema;
   
   schema.Define("initial", 0.0);
   schema.Define("inflow", 0.0);

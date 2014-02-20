@@ -25,8 +25,6 @@
 #include "avida/core/UniverseDriver.h"
 #include "avida/util/ArgParser.h"
 
-#include "cWorld.h"
-
 #include <iostream>
 
 using namespace Avida;

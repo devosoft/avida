@@ -30,7 +30,6 @@
 
 #include "cMutationRates.h"
 #include "cPhenotype.h"
-#include "tBuffer.h"
 
 
 class cAvidaContext;
@@ -53,12 +52,7 @@ private:
 
   int m_org_list_index;
   
-  // Input and Output with the environment
-  int m_input_pointer;
-  tBuffer<int> m_input_buf;
-  tBuffer<int> m_output_buf;
-
-  int m_max_executed;      // Max number of instruction executed before death.  
+  int m_max_executed;      // Max number of instruction executed before death.
 
 public:
   cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, Systematics::Source src);
@@ -97,12 +91,7 @@ public:
   int GetID() { return m_id; }
 
 
-  int GetInputAt(int i) { return m_interface->GetInputAt(i); }
-  int GetNextInput() { return m_interface->GetInputAt(m_input_pointer); }
-  int GetNextInput(int& in_input_pointer) { return m_interface->GetInputAt(in_input_pointer); }
-  tBuffer<int>& GetInputBuf() { return m_input_buf; }
-  tBuffer<int>& GetOutputBuf() { return m_output_buf; }
-  void Die(cAvidaContext& ctx) { m_interface->Die(ctx); m_is_dead = true; } 
+  void Die(cAvidaContext& ctx) { m_interface->Die(ctx); m_is_dead = true; }
   void UpdateMerit(double new_merit) { m_interface->UpdateMerit(new_merit); }
 
   

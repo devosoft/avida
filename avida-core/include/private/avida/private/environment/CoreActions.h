@@ -1,9 +1,10 @@
 /*
- *  cTaskState.h
- *  Avida
+ *  environment/CoreActions.h
+ *  avida-core
  *
- *  Created by David Bryson on 1/7/07.
- *  Copyright 1999-2011 Michigan State University. All rights reserved.
+ *  Created by David on 2/20/14.
+ *  Copyright 2014 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,19 +18,23 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
-#ifndef cTaskState_h
-#define cTaskState_h
+#ifndef AvidaEnvironmentCoreActions_h
+#define AvidaEnvironmentCoreActions_h
+
+#include "avida/core/Types.h"
 
 
-class cTaskState
-{
-protected:
-  cTaskState() { ; }
-  
-public:
-  virtual ~cTaskState() { ; }
+namespace Avida {
+  namespace Environment {
+    
+    LIB_LOCAL bool RegisterLogicActions(Feedback& feedback);
+    LIB_LOCAL bool RegisterSequenceActions(Feedback& feedback);
+    
+  };
 };
 
 #endif

@@ -26,6 +26,10 @@
 #define AvidaEnvironmentActionTrigger_h
 
 #include "avida/environment/Types.h"
+#include "avida/util/ArgParser.h"
+
+#include <cassert>
+
 
 namespace Avida {
   namespace Environment {
@@ -39,17 +43,37 @@ namespace Avida {
     private:
       const ActionTriggerID m_id;
       const Apto::String m_desc;
+      ActionTest m_action_test;
       int m_tmp_order;
+      Util::Args* m_args;
+
+      Apto::String m_prop_id_ave;
+      Apto::String m_prop_id_count;
+
       
       LIB_LOCAL inline ActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc,
-                                     int tmp_order = -1)
-        : m_id(trigger_id), m_desc(desc), m_tmp_order(tmp_order) { ; }
+                                     ActionTest test, int tmp_order = -1, Util::Args* args = NULL)
+        : m_id(trigger_id), m_desc(desc), m_action_test(test), m_tmp_order(tmp_order), m_args(args)
+      {
+        m_prop_id_ave = Apto::FormatStr("environment.triggers.%s.average", (const char*)trigger_id);
+        m_prop_id_count = Apto::FormatStr("environment.triggers.%s.count", (const char*)trigger_id);
+      }
 
     public:
       LIB_EXPORT inline ~ActionTrigger() { ; }
       
-      LIB_EXPORT inline const ActionTriggerID& GetID() const { return m_id; }
-      LIB_EXPORT inline const Apto::String& GetDescription() const { return m_desc; }
+      LIB_EXPORT inline const ActionTriggerID& ID() const { return m_id; }
+      LIB_EXPORT inline const Apto::String& Description() const { return m_desc; }
+      
+      LIB_EXPORT inline double Test(/* test arguments*/) { return m_action_test(/* test_arguments */); }
+      
+      
+      LIB_EXPORT inline const Apto::String& AveragePropertyID() const { return m_prop_id_ave; }
+      LIB_EXPORT inline const Apto::String& CountPropertyID() const { return m_prop_id_count; }
+
+      bool HasArguments() const { return (m_args != NULL); }
+      Avida::Util::Args& Arguments() const { assert(m_args); return *m_args; }
+
 
       // Transitionary methods
       LIB_EXPORT inline int TempOrdering() const { return m_tmp_order; }

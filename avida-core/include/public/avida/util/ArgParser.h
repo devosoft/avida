@@ -57,7 +57,11 @@ namespace Avida {
       
     public:
       LIB_EXPORT ArgSchema(bool case_sensitive = false) : m_case_sensitive(case_sensitive) { ; }
+      LIB_EXPORT ArgSchema(const ArgSchema& schema);
       LIB_EXPORT ~ArgSchema();
+
+      LIB_EXPORT ArgSchema& operator=(const ArgSchema& schema);
+
       
       LIB_EXPORT inline void AdjustArgName(Apto::String& in_name) const;
       
@@ -129,13 +133,17 @@ namespace Avida {
         LIB_EXPORT Entry(const Apto::String& in_name, int in_idx, Apto::String* def)     // Optional String Argument
           : name(in_name), type(STRING), index(in_idx), optional(true), def_string(def), has_range_limits(false) { ; }
         
-        ~Entry()
+        LIB_EXPORT inline Entry(const Entry& entry) { (*this) = entry; }
+        
+        LIB_EXPORT inline ~Entry()
         {
           if (type == STRING) {
             delete def_string;
             delete vocab;
           }          
         }
+
+        LIB_EXPORT Entry& operator=(const Entry& rhs);
       };
     };
     

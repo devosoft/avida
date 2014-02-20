@@ -34,8 +34,6 @@
 #include "avida/systematics/Types.h"
 #include "avida/viewer/Types.h"
 
-class cWorld;
-
 
 namespace Avida {
   namespace Viewer {
@@ -50,7 +48,6 @@ namespace Avida {
       
     private:
       Universe* m_universe;
-      cWorld* m_world;
       
       mutable Apto::Mutex m_mutex;
       Apto::ConditionVariable m_pause_cv;

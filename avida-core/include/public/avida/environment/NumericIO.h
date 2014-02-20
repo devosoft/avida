@@ -38,42 +38,73 @@ namespace Avida {
     {
     private:
       Apto::Array<int> m_input_buffer;
-      Apto::Array<int> m_output_buffer;
       int m_input_pointer;
+
+      Apto::Array<int> m_output_buffer;
       int m_output_offset;
+      int m_output_total;
       
+      bool m_logic_valid;
+      int m_logic_id;
       
     public:
+      NumericIO() : Hardware::Feature() { ; }
       
-      void AddInput(const T& in_value)
-      {
-        data[offset] = in_value;
-        total++;
-        offset++;
-        offset %= data.GetSize();
-      }
       
-      LIB_EXPORT inline void PopInput()
-      {
-        m_buffer_offset--;
-        if (m_buffer_offset < 0) m_buffer_offset += m_input_buffer.GetSize();
-      }
       
-      LIB_EXPORT inline int InputAt(Apto::SizeType idx) const
+      // ---------- Input Buffer ----------
+      LIB_EXPORT inline int NextInput()
       {
-        int index = m_input_pointer - idx - 1;
-        if (index < 0)  index += m_input_buffer.GetSize();
-        assert(index >= 0 && index < m_input_buffer.GetSize());
-        return m_input_buffer[index];
-      }
+        // Increment the input pointer
+        m_input_pointer++;
 
+        // if we reach the end of the buffer, wrap to index 0
+        if (m_input_pointer == m_input_buffer.GetSize()) m_input_pointer = 0;
+
+        return m_input_buffer[m_input_pointer];
+      }
+      
+      LIB_EXPORT inline Apto::Array<int>& InputBuffer() { return m_input_buffer; }
+
+      
+      // ---------- Output Buffer ----------
+      LIB_EXPORT inline void AddOutput(int value)
+      {
+        m_output_buffer[m_output_offset] = value;
+        m_output_total++;
+        m_output_offset++;
+        
+        // if we reach the end of the buffer, wrap to index 0
+        if (m_output_offset == m_output_buffer.GetSize()) m_output_offset = 0;
+        
+        // Outputs should invalidate calculation of logic actions
+        m_logic_valid = false;
+      }
+      
       LIB_EXPORT inline int OutputAt(Apto::SizeType idx) const
       {
-        int index = m_output_buffer_offset - idx - 1;
+        int index = m_output_offset - idx - 1;
         if (index < 0)  index += m_output_buffer.GetSize();
         assert(index >= 0 && index < m_output_buffer.GetSize());
         return m_output_buffer[index];
       }
+      
+      LIB_EXPORT inline int OutputCapacity() const { return m_output_buffer.GetSize(); }
+      LIB_EXPORT inline int OutputTotal() const { return m_output_total; }
+      LIB_EXPORT inline int OutputsStored() const
+      {
+        return (m_output_total <= m_output_buffer.GetSize()) ? m_output_total : m_output_buffer.GetSize();
+      }
+
+      LIB_EXPORT inline void ClearOutputBuffer() { m_output_offset = 0; m_output_total = 0; }
+
+      
+      // ---------- Logic Action Handling ----------
+      LIB_EXPORT inline int LogicActionID() { if (!m_logic_valid) setupLogicID(); return m_logic_id; }
+      
+
+    private:
+      void setupLogicID();
     };
 
   };

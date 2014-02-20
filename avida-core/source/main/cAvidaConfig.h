@@ -269,26 +269,9 @@ public:
     cGlobalListLockAcquire() { global_list_mutex.Lock(); }
   } __ListLock;
   
-  // -------- General config options --------
-  CONFIG_ADD_GROUP(GENERAL_GROUP, "General Settings");
-  CONFIG_ADD_VAR(VERBOSITY, int, 1, "0 = No output at all\n1 = Normal output\n2 = Verbose output, detailing progress\n3 = High level of details, as available\n4 = Print Debug Information, as applicable");
-  CONFIG_ADD_VAR(RANDOM_SEED, int, 0, "Random number seed (0 for based on time)");
-  CONFIG_ADD_VAR(SPECULATIVE, bool, 1, "Enable speculative execution\n(pre-execute instructions that don't affect other organisms)");
-  CONFIG_ADD_VAR(POPULATION_CAP, int, 0, "Carrying capacity in number of organisms (use 0 for no cap)");
-  CONFIG_ADD_VAR(POP_CAP_ELDEST, int, 0, "Carrying capacity in number of organisms (use 0 for no cap). Will kill oldest organism in population, but still use birth method to place new offspring."); 
-  
-  
-  // -------- Topology config options --------
-  CONFIG_ADD_GROUP(TOPOLOGY_GROUP, "World topology");
-  CONFIG_ADD_VAR(WORLD_X, int, 60, "Width of the Avida world");
-  CONFIG_ADD_VAR(WORLD_Y, int, 60, "Height of the Avida world");
-  CONFIG_ADD_VAR(WORLD_GEOMETRY, int, 2, "1 = Bounded Grid (WOLRD_X x WORLD_Y)\n2 = Toroidal Grid (WOLRD_X x WORLD_Y; wraps at edges\n3 = Clique (all population cells are connected)\n4 = Hexagonal grid\n5 = Partial\n6 = 3D Lattice (under development)\n7 = Random connected\n8 = Scale-free (detailed below)");
-    
   // -------- Configuration File config options --------
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Other configuration Files");
   CONFIG_ADD_VAR(DATA_DIR, cString, "data", "Directory in which config files are found");
-  CONFIG_ADD_VAR(EVENT_FILE, cString, "events.cfg", "File containing list of events during run");
-  CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
   
   
   // -------- Mutation config options --------

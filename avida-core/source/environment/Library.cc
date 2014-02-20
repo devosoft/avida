@@ -25,15 +25,29 @@
 #include "avida/environment/Library.h"
 
 
-bool Avida::Environment::Library::RegisterResourceType(const Apto::String& res_type_name, Util::ArgSchema& arg_schema,
+bool Avida::Environment::Library::RegisterActionType(const Apto::String& type_name, Util::ArgSchema& arg_schema,
+                                                     ActionSetup in_setup, ActionTest in_test)
+{
+  Apto::MutexAutoLock lock(m_mutex);
+  
+  if (m_action_types.Has(type_name)) return false;
+  
+  ActionType* action_type = new ActionType(arg_schema, in_setup, in_test);
+  m_action_types.Set(type_name, action_type);
+  
+  return true;
+}
+
+
+bool Avida::Environment::Library::RegisterResourceType(const Apto::String& type_name, Util::ArgSchema& arg_schema,
                                                        ResourceCreateFunctor res_create)
 {
   Apto::MutexAutoLock lock(m_mutex);
 
-  if (m_resource_types.Has(res_type_name)) return false;
+  if (m_resource_types.Has(type_name)) return false;
   
   ResourceType* res_type = new ResourceType(arg_schema, res_create);
-  m_resource_types.Set(res_type_name, res_type);
+  m_resource_types.Set(type_name, res_type);
   
   return true;
 }

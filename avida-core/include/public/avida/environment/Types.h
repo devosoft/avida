@@ -58,6 +58,8 @@ namespace Avida {
     typedef Apto::SmartPtr<ActionTriggerIDSet, Apto::ThreadSafeRefCount> ActionTriggerIDSetPtr;
     typedef Apto::SmartPtr<const ActionTriggerIDSet, Apto::ThreadSafeRefCount> ConstActionTriggerIDSetPtr;    
     typedef Apto::Set<ActionTriggerID>::ConstIterator ConstActionTriggerIDSetIterator;
+    typedef Apto::Functor<bool, Apto::TL::Create</* setup arguments */> > ActionSetup;
+    typedef Apto::Functor<double, Apto::TL::Create</* test arguments */> > ActionTest;
     
     typedef Apto::String ReactionID;
     typedef Apto::SmartPtr<Reaction, Apto::ThreadSafeRefCount> ReactionPtr;
