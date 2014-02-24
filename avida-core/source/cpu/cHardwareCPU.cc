@@ -480,12 +480,12 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("spawn-deme", &cHardwareCPU::Inst_SpawnDeme, INST_CLASS_LIFECYCLE, nInstFlag::STALL),
     
     // Suicide
-    tInstLibEntry<tMethod>("kazi",	&cHardwareCPU::Inst_Kazi, INST_CLASS_OTHER, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("kazi1", &cHardwareCPU::Inst_Kazi1, INST_CLASS_OTHER, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("kazi2", &cHardwareCPU::Inst_Kazi2, INST_CLASS_OTHER, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("kazi3", &cHardwareCPU::Inst_Kazi3, INST_CLASS_OTHER, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("kazi4", &cHardwareCPU::Inst_Kazi4, INST_CLASS_OTHER, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("kazi5", &cHardwareCPU::Inst_Kazi5, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("explode",	&cHardwareCPU::Inst_Kazi, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("explode1", &cHardwareCPU::Inst_Kazi1, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("explode2", &cHardwareCPU::Inst_Kazi2, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("explode3", &cHardwareCPU::Inst_Kazi3, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("explode4", &cHardwareCPU::Inst_Kazi4, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("explode5", &cHardwareCPU::Inst_Kazi5, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-quorum", &cHardwareCPU::Inst_SenseQuorum, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("noisy-quorum", &cHardwareCPU::Inst_NoisyQuorum, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("smart-explode", &cHardwareCPU::Inst_SmartExplode, INST_CLASS_OTHER, nInstFlag::STALL),
@@ -1061,7 +1061,7 @@ bool cHardwareCPU::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instructi
   // And execute it.
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
   
-  // NOTE: Organism may be dead now if instruction executed killed it (such as some divides, "die", or "kazi")
+  // NOTE: Organism may be dead now if instruction executed killed it (such as some divides, "die", or "explode")
   
   // Add in a cycle cost for switching which task is performed
   if (m_world->GetConfig().TASK_SWITCH_PENALTY_TYPE.Get()) {
@@ -3859,7 +3859,7 @@ bool cHardwareCPU::Inst_Poison(cAvidaContext&)
   return true;
 }
 
-/* Similar to Kazi, this instructon probabilistically causes
+/* Similar to Explode, this instructon probabilistically causes
  the organism to die. However, in this case it does so in 
  order to win points for its deme and it does not take out
  any other organims. */

@@ -3688,7 +3688,7 @@ void cStats::PrintShadedAltruists(const cString& filename) {
 }
 
 /*
- Print data regarding explosions (kazi) and the hamming distances associated with them.
+ Print data regarding explosions (explode instruction) and the hamming distances associated with them.
  */
 void cStats::PrintKaboom(const cString& filename)
 {

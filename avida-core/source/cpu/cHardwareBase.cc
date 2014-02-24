@@ -598,7 +598,7 @@ bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, InstructionSequence& g
 void cHardwareBase::doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head)
 {
   int mut = ctx.GetRandom().GetUInt((m_inst_set->GetSize() * 2) + 1);
-  //Anya added code for Head to Head kazi experiment
+  //@AEJ added code for kin cheaters, useful for others
   bool in_List = false;
   Apto::String test_inst = head.GetInst().GetSymbol();
   cString no_mut_list = m_world->GetConfig().NO_MUT_INSTS.Get();
