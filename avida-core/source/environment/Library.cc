@@ -39,6 +39,20 @@ bool Avida::Environment::Library::RegisterActionType(const Apto::String& type_na
 }
 
 
+bool Avida::Environment::Library::RegisterProcessType(const Apto::String& type_name, Util::ArgSchema& arg_schema,
+                                                      ProcessCreate in_create)
+{
+  Apto::MutexAutoLock lock(m_mutex);
+  
+  if (m_process_types.Has(type_name)) return false;
+  
+  ProcessType* process_type = new ProcessType(arg_schema, in_create);
+  m_process_types.Set(type_name, process_type);
+  
+  return true;
+}
+
+
 bool Avida::Environment::Library::RegisterResourceType(const Apto::String& type_name, Util::ArgSchema& arg_schema,
                                                        ResourceCreateFunctor res_create)
 {
@@ -61,6 +75,12 @@ Avida::Environment::Library::Library()
 
 Avida::Environment::Library::~Library()
 {
+  for (Apto::Map<Apto::String, ActionType*>::ValueIterator it = m_action_types.Values(); it.Next();) {
+    delete (*it.Get());
+  }
+  for (Apto::Map<Apto::String, ProcessType*>::ValueIterator it = m_process_types.Values(); it.Next();) {
+    delete (*it.Get());
+  }
   for (Apto::Map<Apto::String, ResourceType*>::ValueIterator it = m_resource_types.Values(); it.Next();) {
     delete (*it.Get());
   }

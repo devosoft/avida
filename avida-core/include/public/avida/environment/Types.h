@@ -27,6 +27,7 @@
 
 #include "avida/core/Types.h"
 #include "avida/structure/Types.h"
+#include "avida/util/ArgParser.h"
 
 
 namespace Avida {
@@ -40,6 +41,8 @@ namespace Avida {
     class Library;
     class Manager;
     class Reaction;
+    class ReactionProcess;
+    class ReactionRequisite;
     class Resource;
     class ResourceDefinition;
     class ResourceListener;
@@ -60,7 +63,9 @@ namespace Avida {
     typedef Apto::Set<ActionTriggerID>::ConstIterator ConstActionTriggerIDSetIterator;
     typedef Apto::Functor<bool, Apto::TL::Create</* setup arguments */> > ActionSetup;
     typedef Apto::Functor<double, Apto::TL::Create</* test arguments */> > ActionTest;
-    
+
+    typedef Apto::Functor<ReactionProcess*, Apto::TL::Create<Util::Args* /* setup arguments */> > ProcessCreate;
+
     typedef Apto::String ReactionID;
     typedef Apto::SmartPtr<Reaction, Apto::ThreadSafeRefCount> ReactionPtr;
     typedef Apto::SmartPtr<const Reaction, Apto::ThreadSafeRefCount> ConstReactionPtr;

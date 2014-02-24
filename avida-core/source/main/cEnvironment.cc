@@ -1263,10 +1263,6 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
         result.Produce(product_id, product_size, false);
     }
     
-    // Determine what instructions should be run...
-    const cString& inst = cur_process->GetInst();
-    if (inst != "") result.AddInst(inst);
-    
     double prob_lethal = cur_process->GetLethal();
     bool lethal = false;
     

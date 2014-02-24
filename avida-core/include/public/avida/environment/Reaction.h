@@ -61,89 +61,14 @@ namespace Avida {
     
     class ReactionProcess
     {
-    public:
-      enum Type {
-        PROCTYPE_ADD = 0,
-        PROCTYPE_MULT,
-        PROCTYPE_POW,
-        PROCTYPE_LIN,
-        PROCTYPE_ENZYME,
-        PROCTYPE_EXP
-      };
-      
-    private:
-      cResourceDef* resource;  // Resource consumed.
-      
-      double m_value;          // Efficiency.
-      int m_type;              // Method of applying bonuses.
-      double m_max_number;     // Max quantity of resource usable.
-      double m_min_number;     // Minimum quantity of resource needed (otherwise 0)
-      double m_max_fraction;   // Max fraction of avaiable resources useable.
-      double m_k_sub_m;        // k sub m variable needed for enzyme reaction
-      cResourceDef* m_product;    // Output resource.
-      double m_conversion;     // Conversion factor.
-      double m_lethal;		 // Lethality of reaction
-      bool m_sterilize; //!< Whether performance of this reaction sterilizes the organism.
-      bool m_depletable;       // Does completing consume resource?
-      
-      // Resource detection
-      cResourceDef* detect;    // Resource Measured
-      double m_detection_threshold; // Min quantity of resource to register present
-      double m_detection_error; // Var of Detection Event (as % of resource present)
-      
+    protected:
+      Util::Args* m_args;
       
     public:
-      ReactionProcess()
-        : resource(NULL)
-        , m_value(1.0)
-        , m_type(PROCTYPE_ADD)
-        , m_max_number(1.0)
-        , m_min_number(0.0)
-        , m_max_fraction(1.0)
-        , m_k_sub_m(0.0)
-        , m_product(NULL)
-        , m_conversion(1.0)
-        , m_lethal(0)
-        , m_sterilize(false)
-        , m_depletable(true)
-        , m_detect(NULL)
-        , m_detection_threshold(0.0)
-        , m_detection_error(0.0)
-      {
-      }
-      ~ReactionProcess() { ; }
+      LIB_EXPORT inline ReactionProcess(Util::Args* args) : m_args(args) { ; }
+      LIB_EXPORT virtual ~ReactionProcess() = 0;
       
-      cResourceDef* GetResDef() const { return m_resource; }
-      double Value() const { return m_value; }
-      Type ProcessType() const { return m_type; }
-      double MaxNumber() const { return m_max_number; }
-      double MinNumber() const { return m_min_number; }
-      double MaxFraction() const { return m_max_fraction; }
-      double KsubM() const { return m_k_sub_m; }
-      cResourceDef* Product() const { return m_product; }
-      double Conversion() const { return m_conversion; }
-      bool Depletable() const { return m_depletable; }
-      double Lethal() const { return m_lethal; }
-      bool Sterilize() const { return m_sterilize; }
-      cResourceDef* Detect() const { return m_detect; }
-      double DetectionThreshold() const { return m_detection_threshold; }
-      double DetectionError() const { return m_detection_error; }
-      
-      void SetResourceDef(cResourceDef* _in) { m_resource = _in; }
-      void SetValue(double _in) { m_value = _in; }
-      void SetType(Type _in) { m_type = _in; }
-      void SetMaxNumber(double _in) { m_max_number = _in; }
-      void SetMinNumber(double _in) { m_min_number = _in; }
-      void SetMaxFraction(double _in) { m_max_fraction = _in; }
-      void SetKsubM(double _in) { m_k_sub_m = _in; }
-      void SetProductDef(cResourceDef* _in) { m_product = _in; }
-      void SetConversion(double _in) { m_conversion = _in; }
-      void SetDepletable(bool _in) { m_depletable = _in; }
-      void SetLethal(double _in) { m_lethal = _in; }
-      void SetSterile(int _in) { m_sterilize = _in; }
-      void SetDetect(cResourceDef* _in) { m_detect = _in; }
-      void SetDetectionThreshold(double _in) { m_detection_threshold = _in; }
-      void SetDetectionError(double _in) { m_detection_error = _in; }
+      LIB_EXPORT virtual void DoProcess(/* arguments */) = 0;
     };
     
     
@@ -153,8 +78,8 @@ namespace Avida {
     class ReactionRequisite
     {
     private:
-      Apto::List<cReaction*> m_prior_reaction_list;
-      Apto::List<cReaction*> m_prior_noreaction_list;
+      Apto::List<Reaction*> m_prior_reaction_list;
+      Apto::List<Reaction*> m_prior_noreaction_list;
       int m_min_task_count;
       int m_max_task_count;
       int m_min_reaction_count;
@@ -176,8 +101,8 @@ namespace Avida {
       }
       ~ReactionRequisite() { ; }
       
-      const Apto::List<cReaction*>& Reactions() const { return m_prior_reaction_list; }
-      const Apto::List<cReaction*>& NoReactions() const { return m_prior_noreaction_list; }
+      const Apto::List<Reaction*>& Reactions() const { return m_prior_reaction_list; }
+      const Apto::List<Reaction*>& NoReactions() const { return m_prior_noreaction_list; }
       int MinTaskCount() const { return m_min_task_count; }
       int MaxTaskCount() const { return m_max_task_count; }
       int MinReactionCount() const { return m_min_reaction_count; }

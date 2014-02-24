@@ -39,17 +39,12 @@ private:
   Apto::Array<double> task_plasticity;
   double bonus_add;
   double bonus_mult;
-  Apto::Array<cString> insts_triggered;
   bool lethal;
   bool sterilize;
   bool active_reaction;
   bool used_env_resource;
 
   inline void ActivateReaction();
-
-  cReactionResult(); // @not_implemented
-  cReactionResult(const cReactionResult&); // @not_implemented
-  cReactionResult& operator=(const cReactionResult&); // @not_implemented
 
 public:
   cReactionResult(const int num_resources, const int num_tasks, const int num_reactions);
@@ -70,8 +65,6 @@ public:
   void AddBonus(double value, int id);
   void MultBonus(double value);
 
-  void AddInst(const cString& inst);
-
   double GetConsumed(int id);
   double GetProduced(int id);
   double GetDetected(int id);
@@ -86,7 +79,6 @@ public:
   double GetAddBonus() { return bonus_add; }
   double GetReactionAddBonus(const int i) { return reaction_add_bonus[i]; }
   double GetMultBonus() { return bonus_mult; }
-  Apto::Array<cString>& GetInstArray() { return insts_triggered; }
   bool UsedEnvResource() { return used_env_resource; }
   bool IsEnvResource() { return used_env_resource; }
 };

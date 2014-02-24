@@ -141,11 +141,6 @@ void cReactionResult::MultBonus(double value)
 }
 
 
-void cReactionResult::AddInst(const cString& inst)
-{
-  insts_triggered.Push(inst);
-}
-
 double cReactionResult::GetConsumed(int id)
 {
   if (GetActive() == false) return 0.0;
