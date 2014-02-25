@@ -27,8 +27,8 @@
 # 25: get-head
 # 26: if-label
 # 27: set-flow
-# 28: kazi
-# 29: kazi5
+# 28: explode
+# 29: explode5
 # 30: nop-X
 
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 

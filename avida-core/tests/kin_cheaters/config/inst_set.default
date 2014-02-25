@@ -25,8 +25,8 @@ jmp-head   1   # w   Move ?IP? head by fixed amount in CX.  Set old pos in CX.
 get-head   1   # x   Get position of specified head in CX.
 if-label   1   # y
 set-flow   1   # z   Move flow-head to address in ?CX? 
-kazi	     1   # A   commit suicide killing all non-kin around
-kazi5	     1   # A   commit suicide killing all non-kin around
+explode	     1   # A   commit suicide killing all non-kin around
+explode5	     1   # A   commit suicide killing all non-kin around
 nop-X	     0   # B   nop that doesn't modify reg or head
 
 #adv-head   1
