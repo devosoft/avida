@@ -575,10 +575,10 @@ void cGradientCount::confirmHaloPeak()
 {
   // this function corrects for situations where a change in orbit and direction and changling at the same time caused the halo to jump out of it's orbital bounds
   if (m_changling == 1) {
-    int l_y_min = m_halo_anchor_y - m_halo_inner_radius - m_halo_width + m_height + 1;
-    int l_y_max = m_halo_anchor_y - m_halo_inner_radius - m_height - 1;
-    int r_y_min = m_halo_anchor_y + m_halo_inner_radius + m_height + 1;
-    int r_y_max = m_halo_anchor_y + m_halo_inner_radius + m_halo_width - m_height - 1;
+    int l_y_min = m_halo_anchor_y - m_halo_inner_radius - m_halo_width + m_height - 1;
+    int l_y_max = m_halo_anchor_y - m_halo_inner_radius - m_height + 1;
+    int r_y_min = m_halo_anchor_y + m_halo_inner_radius + m_height - 1;
+    int r_y_max = m_halo_anchor_y + m_halo_inner_radius + m_halo_width - m_height + 1;
     // top
     if (m_peaky < m_halo_anchor_y) {
       if (m_peaky < l_y_min) m_peaky = l_y_min;
@@ -590,10 +590,10 @@ void cGradientCount::confirmHaloPeak()
     }
   }
   else {
-    int l_x_min = m_halo_anchor_x - m_halo_inner_radius - m_halo_width + m_height + 1;
-    int l_x_max = m_halo_anchor_x - m_halo_inner_radius - m_height - 1;
-    int r_x_min = m_halo_anchor_x + m_halo_inner_radius + m_height + 1;
-    int r_x_max = m_halo_anchor_x + m_halo_inner_radius + m_halo_width - m_height - 1;
+    int l_x_min = m_halo_anchor_x - m_halo_inner_radius - m_halo_width + m_height - 1;
+    int l_x_max = m_halo_anchor_x - m_halo_inner_radius - m_height + 1;
+    int r_x_min = m_halo_anchor_x + m_halo_inner_radius + m_height - 1;
+    int r_x_max = m_halo_anchor_x + m_halo_inner_radius + m_halo_width - m_height + 1;
     // left
     if (m_peakx < m_halo_anchor_x) {
       if (m_peakx < l_x_min) m_peakx = l_x_min;

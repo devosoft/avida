@@ -330,7 +330,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "move-ft") Load_MoveFT(name, info, envreqs, feedback);
   
   //Explosions
-  if (name == "exploded") Load_Exploded(name, info, envreqs, feedback);
+  if (name == "exploded") NewTask(name, "Organism exploded", &cTaskLib::Task_Exploded);
 
   // String matching
   if (name == "all-ones") Load_AllOnes(name, info, envreqs, feedback);
@@ -3991,16 +3991,6 @@ double cTaskLib::Task_MoveFT(cTaskContext& ctx) const
 }
 
 /* Reward organisms for executing the explode command*/
-void cTaskLib::Load_Exploded(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
-{
-  cArgSchema schema;
-  
-  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
-  if (args) NewTask(name, "Exploded", &cTaskLib::Task_Exploded, 0, args);
-  
-  // Add this target id to the list in the instructions file.
-  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
-}
 
 double cTaskLib::Task_Exploded(cTaskContext& ctx) const
 {

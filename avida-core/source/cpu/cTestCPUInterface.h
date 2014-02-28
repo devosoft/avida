@@ -63,7 +63,6 @@ public:
   void SetAvatarFacing(int) { ; }
   void SetAvatarFacedCell(int) { ; }
   int GetAVFacedCellID() { return -1; }
-  int GetAVFacedDir() { return 0; }
 
   int GetCellXPosition() { return -1; }
   int GetCellYPosition() { return -1; }
