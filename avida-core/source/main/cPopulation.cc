@@ -1913,6 +1913,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     }
   }
   // if any of the resources in current cells are hills, find the id of the most resistant resource
+  /*
   int steepest_hill = 0;
   double curr_resistance = 1.0;
   for (int i = 0; i < resource_lib.GetSize(); i++) {
@@ -1933,7 +1934,8 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
       if (ctx.GetRandom().GetInt(0,101) > chance_move_success) return false;
     }
   }
-  
+    */
+
   // effects not applied to avatars:
   if (true_cell == -1) {
     if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() && dest_cell.IsOccupied()) {
@@ -2724,7 +2726,7 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness, cA
  4: 'birth-count' ...demes that have had a certain number of births.
  5: 'sat-mov-pred'...demes whose movement predicate was previously satisfied
  6: 'events-killed' ...demes that have killed a certian number of events
- 7: 'sat-msg-pred'...demes whose movement predicate was previously satisfied
+ 7: 'sat-msg-pred'...demes whose message predicate was previously satisfied
  8: 'sat-deme-predicate'...demes whose predicate has been satisfied; does not include movement or message predicates as those are organisms-level
  9: 'perf-reactions' ...demes that have performed X number of each task are replicated
  10:'consume-res' ...demes that have consumed a sufficienct amount of resources

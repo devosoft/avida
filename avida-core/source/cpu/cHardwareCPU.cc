@@ -6993,9 +6993,12 @@ bool cHardwareCPU::Inst_HeadCopy_ifResource(cAvidaContext& ctx)
       }
 
       return true;
-  } catch(std::bad_alloc& ba){
+  }
+  catch(std::bad_alloc& ba){
       std::cerr << "bad alloc caaught in hcopyres: " << ba.what() << "\n";
   }
+
+  return false;
 }
 
 bool cHardwareCPU::HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction)
@@ -8198,10 +8201,13 @@ bool cHardwareCPU::Inst_PheroToggle(cAvidaContext&)
 // BDC: same as DoSense, but uses senses from cell that org is facing
 bool cHardwareCPU::DoSenseFacing(cAvidaContext& ctx, int conversion_method, double base)
 {
-  cPopulationCell& mycell = m_world->GetPopulation().GetCell(m_organism->GetCellID());
+  int faced_id = m_organism->GetFacedCellID();
   
-  int faced_id = mycell.GetCellFaced().GetID();
-  
+  // If we are in the test CPU, stop here.
+  // @CAO Note, this may skew things by not reading NOPs -- should fix properly!
+  if (faced_id < 0) return true;
+
+
   // Returns the amount of a resource or resources 
   // specified by modifying NOPs into register BX
   const Apto::Array<double> & res_count = m_world->GetPopulation().GetCellResources(faced_id, ctx);

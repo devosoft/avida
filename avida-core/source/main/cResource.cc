@@ -132,25 +132,26 @@ bool cResource::SetGeometry(cString _geometry)
 /* Set the geometry for the resource */
 
 {
-     _geometry.ToLower();
-     if (_geometry == "global") {
-          geometry = nGeometry::GLOBAL;
-          return true;
-     } else if (_geometry == "grid") {
-          geometry = nGeometry::GRID;
-          return true;
-     } else if (_geometry == "torus") {
-          geometry = nGeometry::TORUS;
-          return true;
-     }
-	 else if (_geometry == "partial") {
-          geometry = nGeometry::PARTIAL;
-          return true;
-	 }
-	 else {
-          return false;
-     }
+  _geometry.ToLower();
+  if (_geometry == "global") {
+    geometry = nGeometry::GLOBAL;
+    return true;
+  } else if (_geometry == "grid") {
+    geometry = nGeometry::GRID;
+    return true;
+  } else if (_geometry == "torus") {
+    geometry = nGeometry::TORUS;
+    return true;
+  }
+  else if (_geometry == "partial") {
+    geometry = nGeometry::PARTIAL;
+    return true;
+  }
+  else {
+    return false;
+  }
 }
+
 void cResource::SetCellIdList(Apto::Array<int>& id_list) {
 	cell_id_list.ResizeClear(id_list.GetSize());
 	cell_id_list=id_list;

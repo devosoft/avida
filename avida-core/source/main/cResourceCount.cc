@@ -205,29 +205,29 @@ void cResourceCount::SetCellResources(int cell_id, const Apto::Array<double> & r
 }
 
 void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& name, const double& initial, const double& inflow, const double& decay,                  
-				const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
-				const double& in_ydiffuse, const double& in_ygravity,
-				const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
-				const int& in_outflowX1, const int& in_outflowX2, const int& in_outflowY1, 
-				const int& in_outflowY2, Apto::Array<cCellResource> *in_cell_list_ptr,
-				Apto::Array<int> *in_cell_id_list_ptr, const int& verbosity_level,
-				const int&,
-				const double&, const double&, const double&,
-				const double&, const double&,
-				const double&, const double&,
-				const double&, const double&,
-				const double&, const double&,
-				const double&, const double&,
-				const double&, const double&,
-				const int&, const int& in_peakx, const int& in_peaky,
-				const int& in_height, const int& in_spread, const double& in_plateau, const int& in_decay,
-        const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
-        const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
-        const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed, const int& in_move_resistance,
-        const double& in_plateau_inflow, const double& in_plateau_outflow, const double& in_cone_inflow, const double& in_cone_outflow,
-        const double& in_gradient_inflow, const int& in_is_plateau_common, const double& in_floor, const int& in_habitat, 
-        const int& in_min_size, const int& in_max_size, const int& in_config, const int& in_count, const double& in_resistance,
-        const double& in_damage, const double& in_init_plat, const double& in_threshold, const int& in_refuge, const bool& isgradient)
+                           const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
+                           const double& in_ydiffuse, const double& in_ygravity,
+                           const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
+                           const int& in_outflowX1, const int& in_outflowX2, const int& in_outflowY1, 
+                           const int& in_outflowY2, Apto::Array<cCellResource> *in_cell_list_ptr,
+                           Apto::Array<int> *in_cell_id_list_ptr, const int& verbosity_level,
+                           const int&,
+                           const double&, const double&, const double&,
+                           const double&, const double&,
+                           const double&, const double&,
+                           const double&, const double&,
+                           const double&, const double&,
+                           const double&, const double&,
+                           const double&, const double&,
+                           const int&, const int& in_peakx, const int& in_peaky,
+                           const int& in_height, const int& in_spread, const double& in_plateau, const int& in_decay,
+                           const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
+                           const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
+                           const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed, const int& in_move_resistance,
+                           const double& in_plateau_inflow, const double& in_plateau_outflow, const double& in_cone_inflow, const double& in_cone_outflow,
+                           const double& in_gradient_inflow, const int& in_is_plateau_common, const double& in_floor, const int& in_habitat, 
+                           const int& in_min_size, const int& in_max_size, const int& in_config, const int& in_count, const double& in_resistance,
+                           const double& in_damage, const double& in_init_plat, const double& in_threshold, const int& in_refuge, const bool& isgradient)
 {
   (void)in_threshold;
   (void)in_refuge;
@@ -248,9 +248,8 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
     geo_name = "GRID";
   } else if (in_geometry == nGeometry::TORUS) {
     geo_name = "TORUS";
-  } 
-	else if (in_geometry == nGeometry::PARTIAL) {
-	geo_name = "PARTIAL";
+  } else if (in_geometry == nGeometry::PARTIAL) {
+    geo_name = "PARTIAL";
   }
   else {
     cerr << "[cResourceCount::Setup] Unknown resource geometry " << in_geometry << ".  Exiting.";
@@ -293,30 +292,30 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
   resource_initial[res_index] = initial;
   if (in_geometry == nGeometry::GLOBAL) {
     resource_count[res_index] = initial;
-	spatial_resource_count[res_index]->RateAll(0);
+    spatial_resource_count[res_index]->RateAll(0);
   } 
   else if (in_geometry == nGeometry::PARTIAL) {
-	  resource_count[res_index]=initial;
-
-	  spatial_resource_count[res_index]->RateAll(0);
-	  // want to set list of cell ids here
-	   cell_lists[res_index].Resize(in_cell_id_list_ptr->GetSize());
-	  for (int i = 0; i < in_cell_id_list_ptr->GetSize(); i++)
-		  cell_lists[res_index][i] = (*in_cell_id_list_ptr)[i];
-
+    resource_count[res_index]=initial;
+    
+    spatial_resource_count[res_index]->RateAll(0);
+    // want to set list of cell ids here
+    cell_lists[res_index].Resize(in_cell_id_list_ptr->GetSize());
+    for (int i = 0; i < in_cell_id_list_ptr->GetSize(); i++) {
+      cell_lists[res_index][i] = (*in_cell_id_list_ptr)[i]; 
+    }
   }
   else {
     resource_count[res_index] = 0; 
-    if(isgradient){
+    if (isgradient) {
       delete spatial_resource_count[res_index];
       spatial_resource_count[res_index] = new cGradientCount(world, in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay,                                
-                                                      in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
-                                                      tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, 
-                                                      in_halo_width, in_halo_anchor_x, in_halo_anchor_y, in_move_speed, in_move_resistance,
-                                                      in_plateau_inflow, in_plateau_outflow, in_cone_inflow, in_cone_outflow,
-                                                      in_gradient_inflow, in_is_plateau_common, in_floor, in_habitat, 
-                                                      in_min_size, in_max_size, in_config, in_count, in_init_plat, in_threshold,
-                                                      in_damage);
+                                                             in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
+                                                             tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, 
+                                                             in_halo_width, in_halo_anchor_x, in_halo_anchor_y, in_move_speed, in_move_resistance,
+                                                             in_plateau_inflow, in_plateau_outflow, in_cone_inflow, in_cone_outflow,
+                                                             in_gradient_inflow, in_is_plateau_common, in_floor, in_habitat, 
+                                                             in_min_size, in_max_size, in_config, in_count, in_init_plat, in_threshold,
+                                                             in_damage);
       spatial_resource_count[res_index]->RateAll(0);
     }
     

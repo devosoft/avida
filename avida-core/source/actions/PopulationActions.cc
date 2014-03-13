@@ -1239,7 +1239,7 @@ private:
   int m_res_id;
   double m_units_per;
 public:
-  cActionRaidDen(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_loss(0.0), m_res_id(0), m_units_per(1.0)
+  cActionRaidDen(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_loss(0.0), m_res_id(0), m_units_per(1.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_loss = largs.PopWord().AsDouble();
@@ -3639,7 +3639,7 @@ class cActionReplicateDemes : public cAction
 private:
   int m_rep_trigger;
 public:
-  cActionReplicateDemes(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_rep_trigger(-1)
+  cActionReplicateDemes(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_rep_trigger(-1)
   {
     cString largs(args);
     cString in_trigger("full_deme");
@@ -3660,8 +3660,7 @@ public:
       cString err("Unknown replication trigger '");
       err += in_trigger;
       err += "' in ReplicatDemes action.";
-      m_world->GetDriver().Feedback().Error(err);
-      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
+      feedback.Error(err);
       m_rep_trigger = DEME_TRIGGER_UNKNOWN;
       return;
     }
@@ -5074,30 +5073,29 @@ public:
  */
 class cActionAvidianConjugation : public cAction {
 public:
-	static const cString GetDescription() { return "Arguments: (prob. of donation)"; }
+  static const cString GetDescription() { return "Arguments: (prob. of donation)"; }
   
-	//! Constructor.
-  cActionAvidianConjugation(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_donation_p(-1.0) {
-		cString largs(args);
-		if(largs.GetSize()) {
-			m_donation_p = largs.PopWord().AsDouble();
-		} 
-		
-		if((m_donation_p < 0.0) || (m_donation_p > 1.0)) {
-			world->GetDriver().Feedback().Error("Conjugate event must include probability of donation [0..1].");
-      world->GetDriver().Abort(Avida::INVALID_CONFIG);
-		}
+  //! Constructor.
+  cActionAvidianConjugation(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_donation_p(-1.0) {
+    cString largs(args);
+    if(largs.GetSize()) {
+      m_donation_p = largs.PopWord().AsDouble();
+    } 
+    
+    if((m_donation_p < 0.0) || (m_donation_p > 1.0)) {
+      feedback.Error("Conjugate event must include probability of donation [0..1].");
+    }
   }
   
-	//! Process this event.
+  //! Process this event.
   void Process(cAvidaContext& ctx) {
-		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
-			cOrganism* org = m_world->GetPopulation().GetCell(i).GetOrganism();			
-			if(org && (m_donation_p > 0.0) && ctx.GetRandom().P(m_donation_p)) {
-				org->GetOrgInterface().DoHGTDonation(ctx);
-			}
-		}
-	}
+    for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+      cOrganism* org = m_world->GetPopulation().GetCell(i).GetOrganism();			
+      if(org && (m_donation_p > 0.0) && ctx.GetRandom().P(m_donation_p)) {
+        org->GetOrgInterface().DoHGTDonation(ctx);
+      }
+    }
+  }
   
 private:
 	double m_donation_p; //!< Per-individual probability of being a conjugate donor.
