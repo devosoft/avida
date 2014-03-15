@@ -1833,7 +1833,7 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
 /*
  Almost the same as Divide_Main, but resamples reverted offspring.
  
- RESAMPLING ONLY WORKS CORRECTLY WHEN ALL MUTIONS OCCUR ON DIVIDE!!
+ RESAMPLING ONLY WORKS CORRECTLY WHEN ALL MUTATIONS OCCUR ON DIVIDE!!
  
  AWC - 06/29/06
  */
@@ -4225,29 +4225,27 @@ bool cHardwareCPU::Inst_SenseResource2(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SenseFacedResource0(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 0, ctx);
+  return DoSenseResourceX(REG_BX, m_organism->GetOrgInterface().GetFacedCellID(), 0, ctx);
 }
 
 bool cHardwareCPU::Inst_SenseFacedResource1(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 1, ctx);
+  return DoSenseResourceX(REG_BX, m_organism->GetOrgInterface().GetFacedCellID(), 1, ctx);
 }
 
 bool cHardwareCPU::Inst_SenseFacedResource2(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 2, ctx);
+  return DoSenseResourceX(REG_BX, m_organism->GetOrgInterface().GetFacedCellID(), 2, ctx);
 }
 
 
 bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid, cAvidaContext& ctx) 
 {
   assert(resid >= 0);
-  
-  cPopulation& pop = m_world->GetPopulation();
-  
-  const Apto::Array<double> & res_count = pop.GetCellResources(cell_id, ctx) +
-  pop.GetDemeCellResources(pop.GetCell(cell_id).GetDemeID(), cell_id, ctx); 
-  
+
+  const Apto::Array<double> res_count = m_organism->GetOrgInterface().GetResources(ctx) +
+  m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID(), ctx); 
+
   // Make sure we have the resource requested
   if (resid >= res_count.GetSize()) return false;
   

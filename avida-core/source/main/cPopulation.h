@@ -300,7 +300,7 @@ public:
   int GetNumDemes() const { return deme_array.GetSize(); }
   cDeme& GetDeme(int i) { return deme_array[i]; }
 
-  cPopulationCell& GetCell(int in_num) { return cell_array[in_num]; }
+  cPopulationCell& GetCell(int in_num) { assert(in_num >=0); assert(in_num < cell_array.GetSize()); return cell_array[in_num]; }
   const Apto::Array<double>& GetResources(cAvidaContext& ctx) const { return resource_count.GetResources(ctx); }
   const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const { return resource_count.GetCellResources(cell_id, ctx); } 
   const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const { return resource_count.GetFrozenResources(ctx, cell_id); }
