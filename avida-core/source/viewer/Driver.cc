@@ -214,6 +214,10 @@ void Avida::Viewer::Driver::SetRandomSeed(int seed)
 {
   m_world->GetConfig().RANDOM_SEED.Set(seed);
   m_world->GetRandom().ResetSeed(seed);
+  
+  // When resetting the random seed, the timeslicer also needs to be rebuilt, since it may use the RNG
+  // Resizing the cell grid triggers the reconstruction of the timeslicer, so...
+  m_world->GetPopulation().ResizeCellGrid(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get());
 }
 
 

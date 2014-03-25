@@ -6683,7 +6683,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     
     genotypes[i].bg = bgm->LegacyLoad(&genotypes[i].props);
   }  
-  if (some_missing) m_world->GetDriver().Feedback().Warning("Some parents not found in loaded pop file. Defaulting to parent ID of '(none)' for those genomes.");
+//  if (some_missing) m_world->GetDriver().Feedback().Warning("Some parents not found in loaded pop file. Defaulting to parent ID of '(none)' for those genomes.");
   
   // Process genotypes, inject into organisms as necessary
   int u_cell_id = 0;
