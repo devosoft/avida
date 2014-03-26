@@ -46,6 +46,14 @@ Additional Requirements for Specific Targets
 II. GETTING STARTED
 --------------------------------------------------------------------------------
 
+Avida depends on some other libraries for compilation, so before proceeding, be
+sure you've downloaded them with the following commands:
+
+$ cd avida
+$ git submodule init
+$ git submodule update
+
+
 Building Avida on Linux/Unix Platforms (including Mac OS X):
 
   To compile and install Avida, using default settings run:
