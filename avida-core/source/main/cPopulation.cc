@@ -8284,7 +8284,7 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
 
 void cPopulation::ExecuteDamagingResource(cAvidaContext& ctx, const int cell_id, const double damage)
 {
-  cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell& cell = GetCell(cell_id);
   
   if (m_world->GetConfig().USE_AVATARS.Get() && cell.HasAV()) {
     Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();

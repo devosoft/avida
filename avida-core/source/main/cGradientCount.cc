@@ -968,7 +968,7 @@ void cGradientCount::UpdateDamagingRes(cAvidaContext& ctx)
   if (m_damage) {
     for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
       if (Element(m_plateau_cell_IDs[i]).GetAmount() >= m_threshold) {
-        m_world->GetPopulation().ExecuteDamagingResource(ctx, m_plateau_cell_IDs[i], m_damage);
+        if (&ctx.Driver() != NULL) m_world->GetPopulation().ExecuteDamagingResource(ctx, m_plateau_cell_IDs[i], m_damage);
       }
     }
   }
