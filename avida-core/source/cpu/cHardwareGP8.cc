@@ -172,6 +172,7 @@ cHardwareGP8::GP8InstLib* cHardwareGP8::initInstLib(void)
 
     // Rotation
     INST("rotate-x", Inst_RotateX, ENVIRONMENT, nInstFlag::STALL, 0, ""),
+    INST("rotate-home", Inst_RotateHome, ENVIRONMENT, nInstFlag::STALL, 0, ""),
     INST("rotate-org-id", Inst_RotateOrgID, ENVIRONMENT, nInstFlag::STALL, 0, ""),
     INST("rotate-away-org-id", Inst_RotateAwayOrgID, ENVIRONMENT, nInstFlag::STALL, 0, ""),
     
@@ -466,6 +467,14 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
       // Print the short form status of this CPU at each step... 
       if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true);
     
+/*      if (m_organism->GetID() == 0 && m_world->GetStats().GetUpdate() >= 0) cout << " org: " << m_organism->GetID()
+       << " thread: " << m_cur_thread << " ip_position: " << ip.Position() << " inst: "
+       << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName()
+       << " write head: " << m_threads[m_cur_thread].heads[nHardware::HEAD_WRITE].Position()
+       << " flow head: " << m_threads[m_cur_thread].heads[nHardware::HEAD_WRITE].Position()
+       <<  " cell: " << m_organism->GetOrgInterface().GetAVCellID() << " facing: " << m_organism->GetOrgInterface().GetAVFacing() << endl;
+*/
+      
       bool exec = true;
       int exec_success = 0;
 
@@ -2131,7 +2140,16 @@ bool cHardwareGP8::Inst_Repro(cAvidaContext& ctx)
   
   cCPUMemory& memory = m_mem_array[0];
   
-  if (m_organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
+  if (m_organism->Divide_CheckViable(ctx) == false)
+  {
+    if (m_world->GetConfig().DIVIDE_FAILURE_RESETS.Get())
+    {
+      internalResetOnFailedDivide();
+    }
+    return false; // (divide fails)
+  }
+
+  if (m_organism->GetPhenotype().GetTimeUsed() < m_world->GetConfig().MIN_CYCLES.Get()) return false;
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
@@ -2263,6 +2281,34 @@ bool cHardwareGP8::Inst_RotateX(cAvidaContext& ctx)
     m_hw_queue_rotate = true;
   }
   
+  return true;
+}
+
+bool cHardwareGP8::Inst_RotateHome(cAvidaContext& ctx)
+{
+  // Will rotate organism to face birth cell if org never used zero-easterly or zero-northerly. Otherwise will rotate org
+  // to face the 'marked' spot where those instructions were executed.
+  int easterly = m_organism->GetEasterly();
+  int northerly = m_organism->GetNortherly();
+  
+  if (northerly == 0 && easterly == 0) return true;
+  int correct_facing = 0;
+  if (northerly > 0 && easterly == 0) correct_facing = 0; // rotate N
+  else if (northerly > 0 && easterly < 0) correct_facing = 1; // rotate NE
+  else if (northerly == 0 && easterly < 0) correct_facing = 2; // rotate E
+  else if (northerly < 0 && easterly < 0) correct_facing = 3; // rotate SE
+  else if (northerly < 0 && easterly == 0) correct_facing = 4; // rotate S
+  else if (northerly < 0 && easterly > 0) correct_facing = 5; // rotate SW
+  else if (northerly == 0 && easterly > 0) correct_facing = 6; // rotate W
+  else if (northerly > 0 && easterly > 0) correct_facing = 7; // rotate NW
+  
+  int rotates = m_organism->GetNeighborhoodSize();
+  if (m_use_avatar) rotates = m_organism->GetOrgInterface().GetAVNumNeighbors();
+  for (int i = 0; i < rotates; i++) {
+    m_organism->Rotate(ctx, 1);
+    if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
+    else if (m_use_avatar && m_organism->GetOrgInterface().GetAVFacing() == correct_facing) break;
+  }
   return true;
 }
 

@@ -779,6 +779,8 @@ void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated)
 
 bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
 {
+  if (GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
+  
   // Make sure required task (if any) has been performed...
   const int required_task = m_world->GetConfig().REQUIRED_TASK.Get();
   const int immunity_task = m_world->GetConfig().IMMUNITY_TASK.Get();
@@ -818,8 +820,6 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
       return false; //  (divide fails)
     } 
   }
-  
-  if (GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
   
   const int required_reaction = m_world->GetConfig().REQUIRED_REACTION.Get();
   const int immunity_reaction = m_world->GetConfig().IMMUNITY_REACTION.Get();
