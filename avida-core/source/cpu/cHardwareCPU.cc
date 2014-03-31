@@ -4593,7 +4593,6 @@ bool cHardwareCPU::Inst_CollectSpecificRatio(cAvidaContext& ctx)
     std::cerr << "bad_alloc caught in collect-specific-ratio:" << ba.what() << "\n";
     return 1;
   }
-  char * savestr;
   strcpy(ratios, const_ratios);
   map<int, float> ratioMap;
   char * ratio_tokens = strtok((char *)ratios, ",:");

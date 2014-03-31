@@ -467,13 +467,14 @@ bool cHardwareGP8::SingleProcess(cAvidaContext& ctx, bool speculative)
       // Print the short form status of this CPU at each step... 
       if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true);
     
-/*      if (m_organism->GetID() == 0 && m_world->GetStats().GetUpdate() >= 0) cout << " org: " << m_organism->GetID()
+/*      if (m_organism->GetID() == 0 && m_world->GetStats().GetUpdate() >= 0) {        
+      cout << " org: " << m_organism->GetID()
        << " thread: " << m_cur_thread << " ip_position: " << ip.Position() << " inst: "
        << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName()
        << " write head: " << m_threads[m_cur_thread].heads[nHardware::HEAD_WRITE].Position()
        << " flow head: " << m_threads[m_cur_thread].heads[nHardware::HEAD_WRITE].Position()
        <<  " cell: " << m_organism->GetOrgInterface().GetAVCellID() << " facing: " << m_organism->GetOrgInterface().GetAVFacing() << endl;
-*/
+    } */
       
       bool exec = true;
       int exec_success = 0;

@@ -236,7 +236,6 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
     }
     return false; // (divide fails)
   }
-
   
   // Save the information we collected here...
   cPhenotype& phenotype = m_organism->GetPhenotype();

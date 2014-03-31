@@ -135,6 +135,8 @@ private:
   Apto::Array<int> cell_id_list;
   double m_predator_odds;
   bool m_predator;
+  double m_death_odds;
+  bool m_deadly;
   double m_guard_juvs_per;
   double m_damage;
   double m_prob_detect;
@@ -227,7 +229,9 @@ public:
   Apto::Array<cCellResource>* GetCellListPtr() { return &cell_list; }
   Apto::Array<int>* GetCellIdListPtr() { return &cell_id_list; }
   bool IsPredatory() { return m_predator; }
+  bool IsDeadly() { return m_deadly; }
   double GetPredatorResOdds() { return m_predator_odds; }
+  double GetDeathOdds() { return m_death_odds; }
   double GetJuvAdultGuardRatio() { return m_guard_juvs_per; }
   double GetDetectionProb() { return m_prob_detect; }
 	bool GetHGTMetabolize() const { return hgt_metabolize; }
@@ -307,7 +311,8 @@ public:
   void SetCount(int _count) { m_count = _count; }
   void SetResistance(double _resistance) { m_resistance = _resistance; }
   void SetDamage(double _damage) { m_damage = _damage; }
-  void SetThreshold(double _threshold) { m_threshold = _threshold; } 
+  void SetDeadly(double _death_odds) { m_death_odds = _death_odds; m_deadly = (m_death_odds != 0); }
+  void SetThreshold(double _threshold) { m_threshold = _threshold; }
   void SetRefuge(int _refuge) { m_refuge = _refuge; }
   void SetGradient(bool _gradient) { isgradient = _gradient; }
   void SetPredatoryResource(double _odds, int _juvsper, double _prob) { m_predator = true; m_predator_odds = _odds; m_guard_juvs_per = _juvsper; m_prob_detect = _prob; } 

@@ -389,8 +389,9 @@ public:
   void SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow, 
                                 const double outflow, const double lambda, const double theta, const int x, const int y, const int count);
   void UpdateInflow(const cString& res_name, const double change);
+
   void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
- 
+  void ExecuteDeadlyResource(cAvidaContext& ctx, const int cell_id, const double odds);
   void ExecuteDamagingResource(cAvidaContext& ctx, const int cell_id, const double damage);
 
   // Add an org to live org list

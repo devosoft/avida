@@ -101,8 +101,10 @@ private:
   double m_mean_plat_inflow;
   double m_var_plat_inflow;
   
-  bool m_predator;
   double m_pred_odds;
+  bool m_predator;
+  double m_death_odds;
+  bool m_deadly;
   int m_guarded_juvs_per_adult;
   
   bool m_probabilistic;
@@ -120,7 +122,7 @@ public:
                  int halo_anchor_x, int halo_anchor_y, int move_speed, int move_resistance, double plateau_inflow, double plateau_outflow,
                  double cone_inflow, double cone_outflow, double gradient_inflow, int is_plateau_common, 
                  double floor, int habitat, int min_size, int max_size, int config, int count, 
-                 double init_plat, double threshold, double damage);
+                 double init_plat, double threshold, double damage, double death_odds);
   ~cGradientCount();
 
   void UpdateCount(cAvidaContext& ctx);
@@ -165,6 +167,8 @@ public:
   void UpdatePredatoryRes(cAvidaContext& ctx);
 
   void UpdateDamagingRes(cAvidaContext& ctx);
+  void SetDeadlyRes(double odds) { m_death_odds = odds; m_deadly = (m_death_odds != 0); }
+  void UpdateDeadlyRes(cAvidaContext& ctx);
   
   void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells);
   void BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells);
