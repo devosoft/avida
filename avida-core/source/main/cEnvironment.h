@@ -80,6 +80,9 @@ private:
   std::set<int> possible_habitats;
   Apto::Array<int> pp_fts;
   
+  bool m_hammers;
+  bool m_paths;
+  
   cEnvironment(); // @not_implemented
   cEnvironment(const cEnvironment&); // @not_implemented
   cEnvironment& operator=(const cEnvironment&); // @not_implemented
@@ -158,6 +161,8 @@ public:
 
   void AddHabitat(int new_habitat) { possible_habitats.insert(new_habitat); }
   bool IsHabitat(int test_habitat);
+  bool HasHammer() { return m_hammers; }
+  bool HasPath() { return m_paths; }
   std::set<int> GetHabitats() { return possible_habitats; }
 
 private:

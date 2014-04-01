@@ -390,9 +390,9 @@ public:
                                 const double outflow, const double lambda, const double theta, const int x, const int y, const int count);
   void UpdateInflow(const cString& res_name, const double change);
 
-  void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
-  void ExecuteDeadlyResource(cAvidaContext& ctx, const int cell_id, const double odds);
-  void ExecuteDamagingResource(cAvidaContext& ctx, const int cell_id, const double damage);
+  void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per, const bool hammer);
+  void ExecuteDeadlyResource(cAvidaContext& ctx, const int cell_id, const double odds, const bool hammer);
+  void ExecuteDamagingResource(cAvidaContext& ctx, const int cell_id, const double damage, const bool hammer);
 
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  

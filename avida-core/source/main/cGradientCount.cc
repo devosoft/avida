@@ -73,7 +73,8 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
                                int halo_anchor_x, int halo_anchor_y, int move_speed, int move_resistance,
                                double plateau_inflow, double plateau_outflow, double cone_inflow, double cone_outflow,
                                double gradient_inflow, int is_plateau_common, double floor, int habitat, int min_size, 
-                               int max_size, int config, int count, double init_plat, double threshold, double damage, double death_odds)
+                               int max_size, int config, int count, double init_plat, double threshold,
+                               double damage, double death_odds, int is_path, int is_hammer)
   : m_world(world)
   , m_peakx(peakx), m_peaky(peaky)
   , m_height(height), m_spread(spread), m_plateau(plateau), m_decay(decay)
@@ -110,6 +111,8 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_predator(false)
   , m_death_odds(death_odds)
   , m_deadly(death_odds)
+  , m_path(is_path)
+  , m_hammer(is_hammer)
   , m_guarded_juvs_per_adult(0)
   , m_probabilistic(false)
   , m_min_usedx(-1)
@@ -164,7 +167,6 @@ void cGradientCount::updatePeakRes(cAvidaContext& ctx)
   // refreshed (carcass rots for only so long before disappearing)
   if (has_edible && GetModified() && m_decay > 1) m_counter++;
 
-  // only update resource values at declared update timesteps if there is resource left in the cone
   if (has_edible && m_counter < m_decay && GetModified()) {
     if (m_predator) UpdatePredatoryRes(ctx);
     if (m_damage) UpdateDamagingRes(ctx);
@@ -172,7 +174,9 @@ void cGradientCount::updatePeakRes(cAvidaContext& ctx)
     return;
   } 
                    
-  // before we move anything, if we have a depletable resource, we need to get the current plateau cell values 
+  // only update resource values at declared update timesteps if there is resource left in the cone
+
+  // before we move anything, if we have a depletable resource, we need to get the current plateau cell values
   if (m_decay == 1) getCurrentPlatValues();
 
   // When the counter matches decay, regenerate resource peak
@@ -614,7 +618,7 @@ void cGradientCount::confirmHaloPeak()
 
 void cGradientCount::movePeak()
 {
-  // for non-halo peaks keep cones inside their bounding boxes, bouncing them if they hit the edge 
+  // for non-halo peaks keep cones inside their bounding boxes, bouncing them if they hit the edge
   int temp_height = 0;
   if (m_plateau < 0) temp_height = 1;
   else temp_height = m_height;
@@ -624,16 +628,27 @@ void cGradientCount::movePeak()
     int temp_peakx = m_peakx + (int)(m_move_y_scaler + 0.5) * m_movesignx;
     int temp_peaky = m_peaky + (int)(m_move_y_scaler + 0.5) * m_movesigny;
     
-    if (temp_peakx > (m_max_x - temp_height)) m_movesignx = -1;
-    if (temp_peakx < (m_min_x + temp_height + 1)) m_movesignx = 1; 
+    if ((temp_height * 2) < abs(m_max_x - m_min_x)) {
+      if (temp_peakx > (m_max_x - temp_height)) m_movesignx = -1;
+      if (temp_peakx < (m_min_x + temp_height + 1)) m_movesignx = 1;
+    }
+    else {
+      m_movesignx = 0;
+      temp_peakx = m_peakx;
+    }
     
-    if (temp_peaky > (m_max_y - temp_height)) m_movesigny = -1;
-    if (temp_peaky < (m_min_y + temp_height + 1)) m_movesigny = 1;
-    
-    m_peakx = (int) (m_peakx + (m_movesignx * m_move_y_scaler) + .5);
-    m_peaky = (int) (m_peaky + (m_movesigny * m_move_y_scaler) + .5);
+    if ((temp_height * 2) < abs(m_max_y - m_min_y)) {
+      if (temp_peaky > (m_max_y - temp_height)) m_movesigny = -1;
+      if (temp_peaky < (m_min_y + temp_height + 1)) m_movesigny = 1;
+    }
+    else {
+      m_movesigny = 0;
+      temp_peaky = m_peaky;
+    }
+    if ((temp_height * 2) < abs(m_max_x - m_min_x)) m_peakx = (int) (m_peakx + (m_movesignx * m_move_y_scaler) + .5);
+    if ((temp_height * 2) < abs(m_max_y - m_min_y)) m_peaky = (int) (m_peaky + (m_movesigny * m_move_y_scaler) + .5);
   }
-}  
+}
 
 void cGradientCount::generateBarrier(cAvidaContext& ctx)
 // If habitat == 2 we are creating barriers to movement (walls)
@@ -952,7 +967,7 @@ void cGradientCount::UpdatePredatoryRes(cAvidaContext& ctx)
   if (m_predator) {
     for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
       if (Element(m_plateau_cell_IDs[i]).GetAmount() >= 1) {
-        m_world->GetPopulation().ExecutePredatoryResource(ctx, m_plateau_cell_IDs[i], m_pred_odds, m_guarded_juvs_per_adult);        
+        m_world->GetPopulation().ExecutePredatoryResource(ctx, m_plateau_cell_IDs[i], m_pred_odds, m_guarded_juvs_per_adult, m_hammer);
       }
     }
   }
@@ -972,7 +987,7 @@ void cGradientCount::UpdateDamagingRes(cAvidaContext& ctx)
     for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
       if (Element(m_plateau_cell_IDs[i]).GetAmount() >= m_threshold) {
         // skip if initiating world and resources (cells don't exist yet)
-        if (ctx.HasDriver()) m_world->GetPopulation().ExecuteDamagingResource(ctx, m_plateau_cell_IDs[i], m_damage);
+        if (ctx.HasDriver()) m_world->GetPopulation().ExecuteDamagingResource(ctx, m_plateau_cell_IDs[i], m_damage, m_hammer);
       }
     }
   }
@@ -985,7 +1000,7 @@ void cGradientCount::UpdateDeadlyRes(cAvidaContext& ctx)
     for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
       if (Element(m_plateau_cell_IDs[i]).GetAmount() >= m_threshold) {
         // skip if initiating world and resources (cells don't exist yet)
-        if (ctx.HasDriver()) m_world->GetPopulation().ExecuteDeadlyResource(ctx, m_plateau_cell_IDs[i], m_death_odds);
+        if (ctx.HasDriver()) m_world->GetPopulation().ExecuteDeadlyResource(ctx, m_plateau_cell_IDs[i], m_death_odds, m_hammer);
       }
     }
   }
