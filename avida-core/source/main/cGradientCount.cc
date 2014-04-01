@@ -509,16 +509,15 @@ int cGradientCount::setHaloOrbit(cAvidaContext& ctx, int current_orbit)
 
 inline void cGradientCount::setHaloDirection(cAvidaContext& ctx)
 {
-  if (m_move_resistance > 0) {
-    // Move resistance adds a bias for remaining in place and makes directional adjustment random
-    switch (ctx.GetRandom().GetUInt(2 + m_move_resistance)) {
-      case 0: m_halo_dir = -1; break;
-      case 1: m_halo_dir = 1; break;
-      default: m_halo_dir = 0; break;
-    }
-  } else {
-    // No resitance (default) simply toggles direction at timeout
-    m_halo_dir *= -1;
+  int move_rand = 0;
+  // Move resistance adds a bias for remaining in place and makes directional adjustment random
+  if (m_move_resistance > 0) move_rand = ctx.GetRandom().GetUInt(2 + m_move_resistance);
+  else move_rand = ctx.GetRandom().GetUInt(3);
+  
+  switch (move_rand) {
+    case 0: m_halo_dir = -1; break;
+    case 1: m_halo_dir = 1; break;
+    default: m_halo_dir = 0; break;
   }
 }
 
@@ -637,7 +636,7 @@ void cGradientCount::movePeak()
 }  
 
 void cGradientCount::generateBarrier(cAvidaContext& ctx)
-// If habitat == 2 we are creating barriers to movement (walls), not really gradient resources
+// If habitat == 2 we are creating barriers to movement (walls)
 { 
   // generate/regenerate walls when counter == config updatestep
   if (m_topo_counter == m_updatestep) { 
