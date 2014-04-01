@@ -954,6 +954,10 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
         if (!AssertInputDouble(var_value, "damage", var_type, feedback)) return false;
         new_resource->SetDamage( var_value.AsDouble() );
       } 
+      else if (var_name == "deadly") {
+        if (!AssertInputDouble(var_value, "deadly", var_type, feedback)) return false;
+        new_resource->SetDeadly( var_value.AsDouble() );
+      }
       else if (var_name == "threshold") {
         if (!AssertInputDouble(var_value, "threshold", var_type, feedback)) return false;
         new_resource->SetThreshold( var_value.AsDouble() );

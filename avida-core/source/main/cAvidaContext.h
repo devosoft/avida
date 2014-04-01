@@ -47,6 +47,7 @@ public:
   ~cAvidaContext() { ; }
   
   Avida::WorldDriver& Driver() { return *m_driver; }
+  bool HasDriver() const { return (m_driver != NULL); }
   
   void SetRandom(Apto::Random& rng) { m_rng = &rng; }
   void SetRandom(Apto::Random* rng) { m_rng = rng; }

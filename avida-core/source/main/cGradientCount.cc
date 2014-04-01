@@ -73,7 +73,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
                                int halo_anchor_x, int halo_anchor_y, int move_speed, int move_resistance,
                                double plateau_inflow, double plateau_outflow, double cone_inflow, double cone_outflow,
                                double gradient_inflow, int is_plateau_common, double floor, int habitat, int min_size, 
-                               int max_size, int config, int count, double init_plat, double threshold, double damage)
+                               int max_size, int config, int count, double init_plat, double threshold, double damage, double death_odds)
   : m_world(world)
   , m_peakx(peakx), m_peaky(peaky)
   , m_height(height), m_spread(spread), m_plateau(plateau), m_decay(decay)
@@ -106,8 +106,10 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_skip_counter(0)
   , m_mean_plat_inflow(plateau_inflow)
   , m_var_plat_inflow(0)
-  , m_predator(false)
   , m_pred_odds(0.0)
+  , m_predator(false)
+  , m_death_odds(death_odds)
+  , m_deadly(death_odds)
   , m_guarded_juvs_per_adult(0)
   , m_probabilistic(false)
   , m_min_usedx(-1)
@@ -166,6 +168,7 @@ void cGradientCount::updatePeakRes(cAvidaContext& ctx)
   if (has_edible && m_counter < m_decay && GetModified()) {
     if (m_predator) UpdatePredatoryRes(ctx);
     if (m_damage) UpdateDamagingRes(ctx);
+    if (m_deadly) UpdateDeadlyRes(ctx);
     return;
   } 
                    
@@ -190,6 +193,7 @@ void cGradientCount::updatePeakRes(cAvidaContext& ctx)
 
   if (m_predator) UpdatePredatoryRes(ctx);
   if (m_damage) UpdateDamagingRes(ctx);
+  if (m_deadly) UpdateDeadlyRes(ctx);
 }
 
 void cGradientCount::generatePeak(cAvidaContext& ctx)
@@ -505,16 +509,15 @@ int cGradientCount::setHaloOrbit(cAvidaContext& ctx, int current_orbit)
 
 inline void cGradientCount::setHaloDirection(cAvidaContext& ctx)
 {
-  if (m_move_resistance > 0) {
-    // Move resistance adds a bias for remaining in place and makes directional adjustment random
-    switch (ctx.GetRandom().GetUInt(2 + m_move_resistance)) {
-      case 0: m_halo_dir = -1; break;
-      case 1: m_halo_dir = 1; break;
-      default: m_halo_dir = 0; break;
-    }
-  } else {
-    // No resitance (default) simply toggles direction at timeout
-    m_halo_dir *= -1;
+  int move_rand = 0;
+  // Move resistance adds a bias for remaining in place and makes directional adjustment random
+  if (m_move_resistance > 0) move_rand = ctx.GetRandom().GetUInt(2 + m_move_resistance);
+  else move_rand = ctx.GetRandom().GetUInt(3);
+  
+  switch (move_rand) {
+    case 0: m_halo_dir = -1; break;
+    case 1: m_halo_dir = 1; break;
+    default: m_halo_dir = 0; break;
   }
 }
 
@@ -633,7 +636,7 @@ void cGradientCount::movePeak()
 }  
 
 void cGradientCount::generateBarrier(cAvidaContext& ctx)
-// If habitat == 2 we are creating barriers to movement (walls), not really gradient resources
+// If habitat == 2 we are creating barriers to movement (walls)
 { 
   // generate/regenerate walls when counter == config updatestep
   if (m_topo_counter == m_updatestep) { 
@@ -968,7 +971,21 @@ void cGradientCount::UpdateDamagingRes(cAvidaContext& ctx)
   if (m_damage) {
     for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
       if (Element(m_plateau_cell_IDs[i]).GetAmount() >= m_threshold) {
-        m_world->GetPopulation().ExecuteDamagingResource(ctx, m_plateau_cell_IDs[i], m_damage);
+        // skip if initiating world and resources (cells don't exist yet)
+        if (ctx.HasDriver()) m_world->GetPopulation().ExecuteDamagingResource(ctx, m_plateau_cell_IDs[i], m_damage);
+      }
+    }
+  }
+}
+
+void cGradientCount::UpdateDeadlyRes(cAvidaContext& ctx)
+{
+  // we don't call this for walls and hills because they never move
+  if (m_deadly) {
+    for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
+      if (Element(m_plateau_cell_IDs[i]).GetAmount() >= m_threshold) {
+        // skip if initiating world and resources (cells don't exist yet)
+        if (ctx.HasDriver()) m_world->GetPopulation().ExecuteDeadlyResource(ctx, m_plateau_cell_IDs[i], m_death_odds);
       }
     }
   }

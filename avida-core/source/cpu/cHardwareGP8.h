@@ -558,6 +558,7 @@ private:
   
   // Rotation
   bool Inst_RotateX(cAvidaContext& ctx);
+  bool Inst_RotateHome(cAvidaContext& ctx);
   bool Inst_RotateOrgID(cAvidaContext& ctx);
   bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
 

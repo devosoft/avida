@@ -1424,7 +1424,7 @@ public:
   , m_x2(-1)
   , m_y2(-1)
   , m_delay(-1)
-  , m_duration(-1)
+  , m_duration(0)
   , m_total_events(1)
   , m_static_position(true)
   {
