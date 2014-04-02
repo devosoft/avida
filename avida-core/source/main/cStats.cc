@@ -1596,7 +1596,7 @@ void cStats::PrintResWallLocData(const cString& filename, cAvidaContext& ctx)
       for (int i = 0; i < cells.GetSize() - 1; i++) {
         fp << cells[i] << ",";
       }
-      fp << cells[cells.GetSize() - 1] << " ";
+      if (cells.GetSize()) fp << cells[cells.GetSize() - 1] << " ";
     }
   }
   fp << endl;

@@ -686,7 +686,8 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
         start_randy = ctx.GetRandom().GetUInt(0, GetY());  
       }
       Element(start_randy * GetX() + start_randx).SetAmount(m_plateau);
-      if (m_plateau > 0) updateBounds(start_randx, start_randy);
+      // if (m_plateau > 0) updateBounds(start_randx, start_randy);
+      updateBounds(start_randx, start_randy);
       m_wall_cells.Push(start_randy * GetX() + start_randx);
 
       int randx = start_randx;
@@ -920,15 +921,18 @@ void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
   m_initial = true;
   ResizeClear(worldx, worldy, m_geometry);
   if (m_habitat == 2) {
+    m_topo_counter = m_updatestep;
     generateBarrier(ctx);
   }
   else if (m_habitat == 1) {
+    m_topo_counter = m_updatestep;
     generateHills(ctx);
   }
   else {
     generatePeak(ctx);
     UpdateCount(ctx);
   }
+  
   // set m_initial to false now that we have reset the resource
   m_initial = false;
 }
