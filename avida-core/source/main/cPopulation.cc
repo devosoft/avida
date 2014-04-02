@@ -1897,7 +1897,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
       if (resource_lib.GetResource(i)->GetDamage()) {
         double dest_cell_resources = GetCellResVal(ctx, dest_cell_id, i);
         if (dest_cell_resources > resource_lib.GetResource(i)->GetThreshold()) {
-          InjureOrg(GetCell(true_cell), resource_lib.GetResource(i)->GetDamage());
+          InjureOrg(GetCell(true_cell), resource_lib.GetResource(i)->GetDamage(), false);
         }
       }
     }
@@ -2185,7 +2185,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   AdjustSchedule(in_cell, cMerit(0));
 }
 
-void cPopulation::InjureOrg(cPopulationCell& in_cell, double injury)
+void cPopulation::InjureOrg(cPopulationCell& in_cell, double injury, bool ding_reacs)
 {
   if (injury == 0) return;
   cOrganism* target = in_cell.GetOrganism();
@@ -2194,9 +2194,11 @@ void cPopulation::InjureOrg(cPopulationCell& in_cell, double injury)
     target_merit -= target_merit * injury;
     target->UpdateMerit(target_merit);
   }
-  Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
-  for (int i = 0; i < target_reactions.GetSize(); i++) {
-    target->GetPhenotype().SetReactionCount(i, target_reactions[i] - (int)((target_reactions[i] * injury)));
+  if (ding_reacs) {
+    Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
+    for (int i = 0; i < target_reactions.GetSize(); i++) {
+      target->GetPhenotype().SetReactionCount(i, target_reactions[i] - (int)((target_reactions[i] * injury)));
+    }
   }
   const double target_bonus = target->GetPhenotype().GetCurBonus();
   target->GetPhenotype().SetCurBonus(target_bonus - (target_bonus * injury));
@@ -8317,10 +8319,10 @@ void cPopulation::ExecuteDamagingResource(cAvidaContext& ctx, const int cell_id,
   if (m_world->GetConfig().USE_AVATARS.Get() && cell.HasAV()) {
     Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();
     for (int i = 0; i < cell_avs.GetSize(); i++) {
-      InjureOrg(GetCell(cell_avs[i]->GetCellID()), damage);
+      InjureOrg(GetCell(cell_avs[i]->GetCellID()), damage, false);
     }
   }
-  else if (!m_world->GetConfig().USE_AVATARS.Get() && cell.IsOccupied()) InjureOrg(GetCell(cell_id), damage);
+  else if (!m_world->GetConfig().USE_AVATARS.Get() && cell.IsOccupied()) InjureOrg(GetCell(cell_id), damage, false);
 }
 
 void cPopulation::ExecuteDeadlyResource(cAvidaContext& ctx, const int cell_id, const double odds, const bool hammer)
