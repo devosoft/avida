@@ -189,7 +189,6 @@
 		700D9BD90F1A5D33002CC711 /* tAnalyzeJobBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tAnalyzeJobBatch.h; sourceTree = "<group>"; };
 		700D9C440F1A8F34002CC711 /* cModularityAnalysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cModularityAnalysis.h; sourceTree = "<group>"; };
 		700D9C450F1A8F34002CC711 /* cModularityAnalysis.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cModularityAnalysis.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
 		7010D0E613841BFB00989C16 /* Recorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Recorder.h; sourceTree = "<group>"; };
 		7010D0E8138425A800989C16 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		701269C0151A452B004865C2 /* Color.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
@@ -1192,7 +1191,6 @@
 			children = (
 				70B088FF08F762EA00FC65FE /* cInitFile.h */,
 				70B0891A08F7630100FC65FE /* cInitFile.cc */,
-				700E28CF0859FFD700CF158A /* tObjectFactory.h */,
 			);
 			path = tools;
 			sourceTree = "<group>";
