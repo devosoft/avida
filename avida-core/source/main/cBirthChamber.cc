@@ -214,11 +214,11 @@ bool cBirthChamber::RegionSwap(InstructionSequence& genome0, InstructionSequence
 void cBirthChamber::GenomeSwap(InstructionSequence& genome0, InstructionSequence& genome1, double& merit0, double& merit1)
 {
   InstructionSequence genome0_tmp = genome0;
-  genome0 = genome1; 
-  genome1 = genome0_tmp; 
+  genome0 = genome1;
+  genome1 = genome0_tmp;
 
-  double merit0_tmp = merit0; 
-  merit0 = merit1; 
+  double merit0_tmp = merit0;
+  merit0 = merit1;
   merit1 = merit0_tmp;
 }
 

@@ -261,7 +261,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [txtCfgWorldX setIntValue:worldsize.width];
   [txtCfgWorldY setIntValue:worldsize.height];
   [matCfgPlacement selectCellWithTag:([currentRun placementMode] == 0) ? 0 : 1];
-  [matCfgRepeatability selectCellWithTag:([currentRun randomSeed] == 0) ? 0 : 1];
+  [matCfgRepeatability selectCellWithTag:([currentRun randomSeed] == -1) ? 0 : 1];
   [matCfgPauseAt selectCellWithTag:0];
   [[matCfgEnv cellWithTag:0] setState:([currentRun reactionValueOf:"NOT"]  > 0.0) ? NSOnState : NSOffState];
   [[matCfgEnv cellWithTag:1] setState:([currentRun reactionValueOf:"NAND"] > 0.0) ? NSOnState : NSOffState];
