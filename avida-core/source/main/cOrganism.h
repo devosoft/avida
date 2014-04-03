@@ -255,7 +255,7 @@ public:
   void SendValue(int value) { m_sent_active = true; m_sent_value = value; }
   int RetrieveSentValue() { m_sent_active = false; return m_sent_value; }
   int ReceiveValue();
-  void UpdateMerit(double new_merit) { m_interface->UpdateMerit(new_merit); }
+  void UpdateMerit(cAvidaContext& ctx, double new_merit) { m_interface->UpdateMerit(ctx, new_merit); }
 
   int GetPrevSeenCellID() const { return m_interface->GetPrevSeenCellID(); }
   int GetPrevTaskCellID() const { return m_interface->GetPrevTaskCellID(); }

@@ -702,7 +702,7 @@ private:
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   void LookResults(cAvidaContext& ctx, sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
   
-  void InjureOrg(cOrganism* target);
+  void InjureOrg(cAvidaContext& ctx, cOrganism* target);
   void MakePred(cAvidaContext& ctx);
   void MakeTopPred(cAvidaContext& ctx);
   bool TestAttack(cAvidaContext& ctx);
@@ -717,12 +717,12 @@ private:
   
   bool TestAttackResultsOut(sAttackResult& results);
   bool TestAttackChance(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds = -1);
-  void ApplyKilledPreyMerit(cOrganism* target, double effic);
+  void ApplyKilledPreyMerit(cAvidaContext& ctx, cOrganism* target, double effic);
   void ApplyKilledPreyReactions(cOrganism* target);
   void ApplyKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic);
   void ApplyKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic);
 
-  void ApplySharedKilledPreyMerit(cOrganism* target, double effic, cOrganism* org, double share);
+  void ApplySharedKilledPreyMerit(cAvidaContext& ctx, cOrganism* target, double effic, cOrganism* org, double share);
   void ApplySharedKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic, cOrganism* org, double share);
   void ApplySharedKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic, cOrganism* org, double share);
 

@@ -171,7 +171,7 @@ public:
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
   void KillOrganism(cAvidaContext& ctx, int in_cell) { KillOrganism(cell_array[in_cell], ctx); } 
-  void InjureOrg(cPopulationCell& in_cell, double injury, bool ding_reacs = true);
+  void InjureOrg(cAvidaContext& ctx, cPopulationCell& in_cell, double injury, bool ding_reacs = true);
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
@@ -363,7 +363,7 @@ public:
   void PrintParasitePhenotypeData(const cString& filename);
   void PrintPhenotypeStatus(const cString& filename);
 
-  bool UpdateMerit(int cell_id, double new_merit);
+  bool UpdateMerit(cAvidaContext& ctx, int cell_id, double new_merit);
 
   void AddBeginSleep(int cellID, int start_time);
   void AddEndSleep(int cellID, int end_time);

@@ -3824,7 +3824,7 @@ bool cHardwareBCR::executeAttack(cAvidaContext& ctx, cOrganism* target, sAttackR
   if (!testAttackChance(ctx, target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
   if (m_organism->IsTopPredFT()) effic *= effic;
-  applyKilledPreyMerit(target, effic);
+  applyKilledPreyMerit(ctx, target, effic);
   applyKilledPreyReactions(target);
 
   // keep returns in same order as legacy code (important if reg assignments are shared)
@@ -3880,7 +3880,7 @@ bool cHardwareBCR::testAttackChance(cAvidaContext& ctx, cOrganism* target, sAtta
   if (odds == -1) odds = m_world->GetConfig().PRED_ODDS.Get();
   if (ctx.GetRandom().GetDouble() >= odds ||
       (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    injureOrg(target);
+    injureOrg(ctx, target);
     setRegister(reg.success_reg, -1, true);
     setRegister(reg.bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setRegister(reg.bin_reg, -1, true);
@@ -3889,14 +3889,14 @@ bool cHardwareBCR::testAttackChance(cAvidaContext& ctx, cOrganism* target, sAtta
   return success;
 }
 
-void cHardwareBCR::applyKilledPreyMerit(cOrganism* target, double effic)
+void cHardwareBCR::applyKilledPreyMerit(cAvidaContext& ctx, cOrganism* target, double effic)
 {
   // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
     double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
     attacker_merit += target_merit * effic;
-    m_organism->UpdateMerit(attacker_merit);
+    m_organism->UpdateMerit(ctx, attacker_merit);
   }
 }
 
@@ -3942,14 +3942,14 @@ void cHardwareBCR::tryPreyClone(cAvidaContext& ctx)
   }
 }
 
-void cHardwareBCR::injureOrg(cOrganism* target)
+void cHardwareBCR::injureOrg(cAvidaContext& ctx, cOrganism* target)
 {
   double injury = m_world->GetConfig().PRED_INJURY.Get();
   if (injury == 0) return;
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double target_merit = target->GetPhenotype().GetMerit().GetDouble();
     target_merit -= target_merit * injury;
-    target->UpdateMerit(target_merit);
+    target->UpdateMerit(ctx, target_merit);
   }
   Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
   for (int i = 0; i < target_reactions.GetSize(); i++) {

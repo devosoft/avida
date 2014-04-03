@@ -4669,7 +4669,7 @@ bool cHardwareCPU::Inst_IfResources(cAvidaContext& ctx)
   return true;
 }
 
-void cHardwareCPU::DoDonate(cOrganism* to_org)
+void cHardwareCPU::DoDonate(cAvidaContext& ctx, cOrganism* to_org)
 {
   assert(to_org != NULL);
   
@@ -4681,18 +4681,18 @@ void cHardwareCPU::DoDonate(cOrganism* to_org)
   if (cur_merit < 0) cur_merit=0; 
   
   // Plug the current merit back into this organism and notify the scheduler.
-  m_organism->UpdateMerit(cur_merit);
+  m_organism->UpdateMerit(ctx, cur_merit);
   m_organism->GetPhenotype().SetIsEnergyDonor();
   
   // Update the merit of the organism being donated to...
   double other_merit = to_org->GetPhenotype().GetMerit().GetDouble();
   other_merit += merit_received;
-  to_org->UpdateMerit(other_merit);
+  to_org->UpdateMerit(ctx, other_merit);
   to_org->GetPhenotype().SetIsEnergyReceiver();
   
 }
 
-void cHardwareCPU::DoEnergyDonate(cOrganism* to_org)
+void cHardwareCPU::DoEnergyDonate(cAvidaContext& ctx, cOrganism* to_org)
 {
   assert(to_org != NULL);
   
@@ -4707,25 +4707,25 @@ void cHardwareCPU::DoEnergyDonate(cOrganism* to_org)
   phenotype.ReduceEnergy(energy_given);
   phenotype.IncreaseEnergyDonated(energy_given);
   double senderMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
-  m_organism->UpdateMerit(senderMerit);
+  m_organism->UpdateMerit(ctx, senderMerit);
   phenotype.SetIsEnergyDonor();
   
   // update energy store and merit of donee
   to_org->GetPhenotype().ReduceEnergy(-1.0*energy_given);
   to_org->GetPhenotype().IncreaseEnergyReceived(energy_given);
   double receiverMerit = to_org->GetPhenotype().ConvertEnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio());
-  to_org->UpdateMerit(receiverMerit);
+  to_org->UpdateMerit(ctx, receiverMerit);
   to_org->GetPhenotype().SetIsEnergyReceiver();
 }
 
 
-void cHardwareCPU::DoEnergyDonatePercent(cOrganism* to_org, const double frac_energy_given)
+void cHardwareCPU::DoEnergyDonatePercent(cAvidaContext& ctx, cOrganism* to_org, const double frac_energy_given)
 {  
   assert(to_org != NULL);
   assert(frac_energy_given >= 0);
   assert(frac_energy_given <= 1);
   
-  DoEnergyDonateAmount(to_org, m_organism->GetPhenotype().GetStoredEnergy() * frac_energy_given);
+  DoEnergyDonateAmount(ctx, to_org, m_organism->GetPhenotype().GetStoredEnergy() * frac_energy_given);
   
 } //End DoEnergyDonatePercent()
 
@@ -4733,7 +4733,7 @@ void cHardwareCPU::DoEnergyDonatePercent(cOrganism* to_org, const double frac_en
 // The difference between this version and the previous is that this one allows energy to be placed
 // into the recipient's incoming energy buffer and not be applied immediately.  Also, some of the
 // energy may be lost in transfer
-void cHardwareCPU::DoEnergyDonateAmount(cOrganism* to_org, const double amount)
+void cHardwareCPU::DoEnergyDonateAmount(cAvidaContext& ctx, cOrganism* to_org, const double amount)
 {
   double losspct = m_world->GetConfig().RESOURCE_SHARING_LOSS.Get();
   
@@ -4758,7 +4758,7 @@ void cHardwareCPU::DoEnergyDonateAmount(cOrganism* to_org, const double amount)
   
   if (update_metabolic == 1) {
     double senderMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
-    m_organism->UpdateMerit(senderMerit);
+    m_organism->UpdateMerit(ctx, senderMerit);
   }
   
   //apply loss in transfer
@@ -4774,14 +4774,14 @@ void cHardwareCPU::DoEnergyDonateAmount(cOrganism* to_org, const double amount)
 	  
     if (update_metabolic == 1) {
       double receiverMerit = to_org->GetPhenotype().ConvertEnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio());
-      to_org->UpdateMerit(receiverMerit);
+      to_org->UpdateMerit(ctx, receiverMerit);
     }
   }
   
 } //End DoEnergyDonateAmount()
 
 
-bool cHardwareCPU::Inst_DonateFacing(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateFacing(cAvidaContext& ctx)
 {
   if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
@@ -4794,7 +4794,7 @@ bool cHardwareCPU::Inst_DonateFacing(cAvidaContext&)
   
   // Donate only if we have found a neighbor.
   if (neighbor != NULL) {
-    DoEnergyDonate(neighbor);
+    DoEnergyDonate(ctx, neighbor);
     
     neighbor->GetPhenotype().SetIsReceiver();
   }
@@ -4819,7 +4819,7 @@ bool cHardwareCPU::Inst_DonateRandom(cAvidaContext& ctx)
   
   // Donate only if we have found a neighbor.
   if (neighbor != NULL) {
-    DoDonate(neighbor);
+    DoDonate(ctx, neighbor);
     
     neighbor->GetPhenotype().SetIsReceiverRand();
   }
@@ -4881,7 +4881,7 @@ bool cHardwareCPU::Inst_DonateKin(cAvidaContext& ctx)
   
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL){
-    DoDonate(neighbor);
+    DoDonate(ctx, neighbor);
     neighbor->GetPhenotype().SetIsReceiverKin();
   }
   return true;
@@ -4975,7 +4975,7 @@ bool cHardwareCPU::Inst_DonateEditDist(cAvidaContext& ctx)
   
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL){
-    DoDonate(neighbor);
+    DoDonate(ctx, neighbor);
     neighbor->GetPhenotype().SetIsReceiverEdit();
   }
   return true;
@@ -5073,7 +5073,7 @@ bool cHardwareCPU::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
 	
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
-    DoDonate(neighbor);
+    DoDonate(ctx, neighbor);
     neighbor->GetPhenotype().SetIsReceiverGbg();
   }
   
@@ -5201,7 +5201,7 @@ bool cHardwareCPU::Inst_DonateShadedGreenBeard(cAvidaContext& ctx)
 	
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
-    DoDonate(neighbor);
+    DoDonate(ctx, neighbor);
     neighbor->GetPhenotype().SetIsReceiverShadedGb();
   }
 	
@@ -5275,7 +5275,7 @@ bool cHardwareCPU::Inst_DonateTrueGreenBeard(cAvidaContext& ctx)
 	
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
-    DoDonate(neighbor);
+    DoDonate(ctx, neighbor);
     neighbor->GetPhenotype().SetIsReceiverTrueGb();
   }
 	
@@ -5405,7 +5405,7 @@ bool cHardwareCPU::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
 	
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
-    DoDonate(neighbor);
+    DoDonate(ctx, neighbor);
     neighbor->GetPhenotype().SetIsReceiverThreshGb();
     // cout << "************ neighbor->GetPhenotype().GetNumThreshGbDonationsLast() is " << neighbor->GetPhenotype().GetNumThreshGbDonationsLast() << endl;
     
@@ -5504,7 +5504,7 @@ bool cHardwareCPU::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
 	
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
-    DoDonate(neighbor);
+    DoDonate(ctx, neighbor);
     neighbor->GetPhenotype().SetIsReceiverQuantaThreshGb();
     //cout << " ************ neighbor->GetPhenotype().GetNumQuantaThreshGbDonationsLast() is " << neighbor->GetPhenotype().GetNumQuantaThreshGbDonationsLast();
     
@@ -5574,7 +5574,7 @@ bool cHardwareCPU::Inst_DonateGreenBeardSameLocus(cAvidaContext& ctx)
 	
   // Donate only if we have found a valid receiver
   if (neighbor != NULL) {
-    DoDonate(neighbor);
+    DoDonate(ctx, neighbor);
     neighbor->GetPhenotype().SetIsReceiverGBSameLocus();
   }
 	
@@ -5583,7 +5583,7 @@ bool cHardwareCPU::Inst_DonateGreenBeardSameLocus(cAvidaContext& ctx)
 }
 
 
-bool cHardwareCPU::Inst_DonateNULL(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateNULL(cAvidaContext& ctx)
 {
   if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
@@ -5600,14 +5600,14 @@ bool cHardwareCPU::Inst_DonateNULL(cAvidaContext&)
   cur_merit -= merit_given;
   
   // Plug the current merit back into this organism and notify the scheduler.
-  m_organism->UpdateMerit(cur_merit);
+  m_organism->UpdateMerit(ctx, cur_merit);
   
   return true;
 }
 
 
 //Move energy from an organism's received energy buffer into their energy store, recalculate merit
-bool cHardwareCPU::Inst_ReceiveDonatedEnergy(cAvidaContext&)
+bool cHardwareCPU::Inst_ReceiveDonatedEnergy(cAvidaContext& ctx)
 {
   if (m_organism->GetCellID() < 0) {
     return false;
@@ -5619,7 +5619,7 @@ bool cHardwareCPU::Inst_ReceiveDonatedEnergy(cAvidaContext&)
     
     if (m_world->GetConfig().ENERGY_SHARING_UPDATE_METABOLIC.Get() == 1) {
       double receiverMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio());
-      m_organism->UpdateMerit(receiverMerit);
+      m_organism->UpdateMerit(ctx, receiverMerit);
     }
   }
   
@@ -5629,7 +5629,7 @@ bool cHardwareCPU::Inst_ReceiveDonatedEnergy(cAvidaContext&)
 
 
 //Donate a fraction of organism's energy to the organism that last requested it.
-bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
 {
   if (m_organism->GetCellID() < 0) {
     return false;
@@ -5656,7 +5656,7 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext&)
     return false;
   }
   
-  DoEnergyDonatePercent(energyReceiver, m_organism->GetFracEnergyDonating());
+  DoEnergyDonatePercent(ctx, energyReceiver, m_organism->GetFracEnergyDonating());
   
   return true;
   
@@ -5664,18 +5664,18 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext&)
 
 
 //Update the organism's metabolic rate
-bool cHardwareCPU::Inst_UpdateMetabolicRate(cAvidaContext&)
+bool cHardwareCPU::Inst_UpdateMetabolicRate(cAvidaContext& ctx)
 {
   cPhenotype& phenotype = m_organism->GetPhenotype();
   double newmerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
-  m_organism->UpdateMerit(newmerit);
+  m_organism->UpdateMerit(ctx, newmerit);
   
   return true;
 } //End Inst_UpdateMetabolocRate()
 
 
 //Donate a fraction of organism's energy to faced organism.
-bool cHardwareCPU::Inst_DonateEnergyFaced(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateEnergyFaced(cAvidaContext& ctx)
 {
   if (m_organism->GetCellID() < 0) {
     return false;
@@ -5687,7 +5687,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced(cAvidaContext&)
     
     // If the neighbor has requested energy or if we're allowing push sharing, share energy
     if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) ) {
-      DoEnergyDonatePercent(neighbor, m_organism->GetFracEnergyDonating());
+      DoEnergyDonatePercent(ctx, neighbor, m_organism->GetFracEnergyDonating());
     }
   }  
   
@@ -5696,7 +5696,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced(cAvidaContext&)
 } //End Inst_DonateEnergyFaced()
 
 
-bool cHardwareCPU::Inst_DonateEnergyFaced1(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateEnergyFaced1(cAvidaContext& ctx)
 {
   if (m_organism->GetCellID() < 0) {
     return false;
@@ -5708,7 +5708,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced1(cAvidaContext&)
     
     // If the neighbor has requested energy or if we're allowing push sharing, share energy
     if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) ) {
-      DoEnergyDonateAmount(neighbor, 1);
+      DoEnergyDonateAmount(ctx, neighbor, 1);
     }
   }  
   
@@ -5717,7 +5717,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced1(cAvidaContext&)
 } //End Inst_DonateEnergyFaced1()
 
 
-bool cHardwareCPU::Inst_DonateEnergyFaced2(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateEnergyFaced2(cAvidaContext& ctx)
 {
   if (m_organism->GetCellID() < 0) {
     return false;
@@ -5729,7 +5729,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced2(cAvidaContext&)
     
     // If the neighbor has requested energy or if we're allowing push sharing, share energy
     if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) ) {
-      DoEnergyDonateAmount(neighbor, 2);
+      DoEnergyDonateAmount(ctx, neighbor, 2);
     }
   }  
   
@@ -5738,7 +5738,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced2(cAvidaContext&)
 } //End Inst_DonateEnergyFaced2()
 
 
-bool cHardwareCPU::Inst_DonateEnergyFaced5(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateEnergyFaced5(cAvidaContext& ctx)
 {
   if (m_organism->GetCellID() < 0) {
     return false;
@@ -5750,7 +5750,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced5(cAvidaContext&)
     
     // If the neighbor has requested energy or if we're allowing push sharing, share energy
     if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) ) {
-      DoEnergyDonateAmount(neighbor, 5);
+      DoEnergyDonateAmount(ctx, neighbor, 5);
     }
   }  
   
@@ -5759,7 +5759,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced5(cAvidaContext&)
 } //End Inst_DonateEnergyFaced5()
 
 
-bool cHardwareCPU::Inst_DonateEnergyFaced10(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateEnergyFaced10(cAvidaContext& ctx)
 {
   if (m_organism->GetCellID() < 0) {
     return false;
@@ -5771,7 +5771,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced10(cAvidaContext&)
     
     // If the neighbor has requested energy or if we're allowing push sharing, share energy
     if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) ) {
-      DoEnergyDonateAmount(neighbor, 10);
+      DoEnergyDonateAmount(ctx, neighbor, 10);
     }
   }  
   
@@ -5780,7 +5780,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced10(cAvidaContext&)
 } //End Inst_DonateEnergyFaced10()
 
 
-bool cHardwareCPU::Inst_DonateEnergyFaced20(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateEnergyFaced20(cAvidaContext& ctx)
 {
   if (m_organism->GetCellID() < 0) {
     return false;
@@ -5792,7 +5792,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced20(cAvidaContext&)
     
     // If the neighbor has requested energy or if we're allowing push sharing, share energy
     if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) ) {
-      DoEnergyDonateAmount(neighbor, 20);
+      DoEnergyDonateAmount(ctx, neighbor, 20);
     }
   }  
   
@@ -5801,7 +5801,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced20(cAvidaContext&)
 } //End Inst_DonateEnergyFaced20()
 
 
-bool cHardwareCPU::Inst_DonateEnergyFaced50(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateEnergyFaced50(cAvidaContext& ctx)
 {
   if (m_organism->GetCellID() < 0) {
     return false;
@@ -5813,7 +5813,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced50(cAvidaContext&)
     
     // If the neighbor has requested energy or if we're allowing push sharing, share energy
     if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) ) {
-      DoEnergyDonateAmount(neighbor, 50);
+      DoEnergyDonateAmount(ctx, neighbor, 50);
     }
   }  
   
@@ -5822,7 +5822,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced50(cAvidaContext&)
 } //End Inst_DonateEnergyFaced50()
 
 
-bool cHardwareCPU::Inst_DonateEnergyFaced100(cAvidaContext&)
+bool cHardwareCPU::Inst_DonateEnergyFaced100(cAvidaContext& ctx)
 {
   if (m_organism->GetCellID() < 0) {
     return false;
@@ -5834,7 +5834,7 @@ bool cHardwareCPU::Inst_DonateEnergyFaced100(cAvidaContext&)
     
     // If the neighbor has requested energy or if we're allowing push sharing, share energy
     if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) ) {
-      DoEnergyDonateAmount(neighbor, 100);
+      DoEnergyDonateAmount(ctx, neighbor, 100);
     }
   }  
   
@@ -7471,7 +7471,7 @@ bool cHardwareCPU::Inst_GetFacedEnergyRequestStatus(cAvidaContext&)
 } //End Inst_GetFacedEnergyRequestStatus()
 
 
-bool cHardwareCPU::Inst_Sleep(cAvidaContext&)
+bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx)
 {
   m_organism->SetSleeping(false);  //this instruction get executed at the end of a sleep cycle
   
@@ -7480,7 +7480,7 @@ bool cHardwareCPU::Inst_Sleep(cAvidaContext&)
     phenotype.RefreshEnergy();
     phenotype.ApplyToEnergyStore();
     double newMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio());
-    m_organism->UpdateMerit(newMerit);
+    m_organism->UpdateMerit(ctx, newMerit);
   }
   
   return true;

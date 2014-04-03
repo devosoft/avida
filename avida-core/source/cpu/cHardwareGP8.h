@@ -451,7 +451,7 @@ private:
   
   
   // ---------- Predator-Prey Support Functions -----------
-  void injureOrg(cOrganism* target);
+  void injureOrg(cAvidaContext& ctx, cOrganism* target);
   void makePred(cAvidaContext& ctx);
   void makeTopPred(cAvidaContext& ctx);
   bool testAttack(cAvidaContext& ctx);
@@ -462,7 +462,7 @@ private:
   bool executeAttack(cAvidaContext& ctx, cOrganism* target, AttackRegisters& reg, double odds = -1);
   
   bool testAttackChance(cAvidaContext& ctx, cOrganism* target, AttackRegisters& reg, double odds = -1);
-  void applyKilledPreyMerit(cOrganism* target, double effic);
+  void applyKilledPreyMerit(cAvidaContext& ctx, cOrganism* target, double effic);
   void applyKilledPreyReactions(cOrganism* target);
   void applyKilledPreyBonus(cOrganism* target, AttackRegisters& reg, double effic);
   void applyKilledPreyResBins(cOrganism* target, AttackRegisters& reg, double effic);

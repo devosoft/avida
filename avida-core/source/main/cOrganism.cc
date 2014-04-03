@@ -487,7 +487,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double cur_merit = m_phenotype.CalcCurrentMerit();
-    if (m_phenotype.GetMerit().GetDouble() < cur_merit) m_interface->UpdateMerit(cur_merit);
+    if (m_phenotype.GetMerit().GetDouble() < cur_merit) m_interface->UpdateMerit(ctx, cur_merit);
   }
   
   //disassemble global and deme resource counts 
@@ -498,7 +498,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
     m_phenotype.RefreshEnergy();
     m_phenotype.ApplyToEnergyStore();
     double newMerit = m_phenotype.ConvertEnergyToMerit(m_phenotype.GetStoredEnergy() * m_phenotype.GetEnergyUsageRatio());
-    m_interface->UpdateMerit(newMerit);
+    m_interface->UpdateMerit(ctx, newMerit);
     if(GetPhenotype().GetMerit().GetDouble() == 0.0) {
       GetPhenotype().SetToDie();
     }
@@ -600,7 +600,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double cur_merit = m_phenotype.CalcCurrentMerit();
-    if (m_phenotype.GetMerit().GetDouble() < cur_merit) m_interface->UpdateMerit(cur_merit);
+    if (m_phenotype.GetMerit().GetDouble() < cur_merit) m_interface->UpdateMerit(ctx, cur_merit);
   }
   
   //disassemble avatar and deme resource counts
@@ -611,7 +611,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
     m_phenotype.RefreshEnergy();
     m_phenotype.ApplyToEnergyStore();
     double newMerit = m_phenotype.ConvertEnergyToMerit(m_phenotype.GetStoredEnergy() * m_phenotype.GetEnergyUsageRatio());
-		m_interface->UpdateMerit(newMerit);
+		m_interface->UpdateMerit(ctx, newMerit);
 		if(GetPhenotype().GetMerit().GetDouble() == 0.0) {
 			GetPhenotype().SetToDie();
 		}
@@ -872,6 +872,20 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, "Infertile organism");
     return false; //  (divide fails)
   }
+  
+  // No zero merit offspring!
+  int cur_merit_base = GetPhenotype().CalcSizeMerit();
+  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
+  int cur_bonus = GetPhenotype().GetCurBonus();
+  if (merit_default_bonus) {
+    cur_bonus = merit_default_bonus;
+  }
+  double off_merit = cur_merit_base * cur_bonus;
+  
+  if (m_world->GetConfig().INHERIT_MERIT.Get() == 0) {
+    off_merit = cur_merit_base;
+  }
+  if (off_merit == 0) return false;
   
   return true;  // Organism has no problem with divide...
 }

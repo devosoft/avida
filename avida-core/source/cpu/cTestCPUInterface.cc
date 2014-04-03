@@ -126,7 +126,7 @@ int cTestCPUInterface::BuyValue(const int label, const int buy_price)
 	return m_testcpu->GetReceiveValue();
 }
 
-bool cTestCPUInterface::UpdateMerit(double new_merit)
+bool cTestCPUInterface::UpdateMerit(cAvidaContext& ctx, double new_merit)
 {
   m_test_info.GetTestPhenotype(m_cur_depth).SetMerit(cMerit(new_merit));
   return true;

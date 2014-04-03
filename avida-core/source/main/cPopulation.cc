@@ -1897,7 +1897,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
       if (resource_lib.GetResource(i)->GetDamage()) {
         double dest_cell_resources = GetCellResVal(ctx, dest_cell_id, i);
         if (dest_cell_resources > resource_lib.GetResource(i)->GetThreshold()) {
-          InjureOrg(GetCell(true_cell), resource_lib.GetResource(i)->GetDamage(), false);
+          InjureOrg(ctx, GetCell(true_cell), resource_lib.GetResource(i)->GetDamage(), false);
         }
       }
     }
@@ -2185,14 +2185,14 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   AdjustSchedule(in_cell, cMerit(0));
 }
 
-void cPopulation::InjureOrg(cPopulationCell& in_cell, double injury, bool ding_reacs)
+void cPopulation::InjureOrg(cAvidaContext& ctx, cPopulationCell& in_cell, double injury, bool ding_reacs)
 {
   if (injury == 0) return;
   cOrganism* target = in_cell.GetOrganism();
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double target_merit = target->GetPhenotype().GetMerit().GetDouble();
     target_merit -= target_merit * injury;
-    target->UpdateMerit(target_merit);
+    target->UpdateMerit(ctx, target_merit);
   }
   if (ding_reacs) {
     Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
@@ -4083,8 +4083,8 @@ void cPopulation::DivideDemes(cAvidaContext& ctx)
     
     // Setup the merit of both old and new individuals.
     for (int pos = 0; pos < deme_size; pos += 2) {
-      cell_array[source_deme.GetCellID(pos)].GetOrganism()->UpdateMerit(merit);
-      cell_array[target_deme.GetCellID(pos)].GetOrganism()->UpdateMerit(merit);
+      cell_array[source_deme.GetCellID(pos)].GetOrganism()->UpdateMerit(ctx, merit);
+      cell_array[target_deme.GetCellID(pos)].GetOrganism()->UpdateMerit(ctx, merit);
     }
     
   }
@@ -7677,10 +7677,11 @@ void cPopulation::PrintParasitePhenotypeData(const cString& filename)
   df->Endl();
 }
 
-bool cPopulation::UpdateMerit(int cell_id, double new_merit)
+bool cPopulation::UpdateMerit(cAvidaContext& ctx, int cell_id, double new_merit)
 {
   assert( GetCell(cell_id).IsOccupied() == true);
-  assert( new_merit >= 0.0 );
+  
+  if (new_merit <= 0) KillOrganism(ctx, cell_id);
   
   cPhenotype & phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
   double old_merit = phenotype.GetMerit().GetDouble();
@@ -8319,10 +8320,10 @@ void cPopulation::ExecuteDamagingResource(cAvidaContext& ctx, const int cell_id,
   if (m_world->GetConfig().USE_AVATARS.Get() && cell.HasAV()) {
     Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();
     for (int i = 0; i < cell_avs.GetSize(); i++) {
-      InjureOrg(GetCell(cell_avs[i]->GetCellID()), damage, false);
+      InjureOrg(ctx, GetCell(cell_avs[i]->GetCellID()), damage, false);
     }
   }
-  else if (!m_world->GetConfig().USE_AVATARS.Get() && cell.IsOccupied()) InjureOrg(GetCell(cell_id), damage, false);
+  else if (!m_world->GetConfig().USE_AVATARS.Get() && cell.IsOccupied()) InjureOrg(ctx, GetCell(cell_id), damage, false);
 }
 
 void cPopulation::ExecuteDeadlyResource(cAvidaContext& ctx, const int cell_id, const double odds, const bool hammer)

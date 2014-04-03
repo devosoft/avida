@@ -133,7 +133,7 @@ public:
   void SellValue(const int data, const int label, const int sell_price, const int org_id) { ; }
   int BuyValue(const int label, const int buy_price);
   bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code) { return false; }
-  bool UpdateMerit(double new_merit);
+  bool UpdateMerit(cAvidaContext& ctx, double new_merit);
   bool TestOnDivide() { return false; }
   int GetFacing() { return 0; }
   int GetFacedCellID() { return -1; }

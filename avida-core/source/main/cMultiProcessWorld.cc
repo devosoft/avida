@@ -70,7 +70,7 @@ struct migration_message {
 
 	//! Finish unpacking an organism from this message.
 	void unpack(cOrganism* org) {
-		org->UpdateMerit(_merit);
+		org->UpdateMerit(cAvidaContext& ctx, _merit);
 		org->GetPhenotype().SetGeneration(_generation);
 	}	
 	

@@ -489,9 +489,9 @@ bool cPopulationInterface::InjectParasite(cOrganism* host, Systematics::UnitPtr 
   return m_world->GetPopulation().ActivateParasite(host, parent, label, injected_code);
 }
 
-bool cPopulationInterface::UpdateMerit(double new_merit)
+bool cPopulationInterface::UpdateMerit(cAvidaContext& ctx, double new_merit)
 {
-  return m_world->GetPopulation().UpdateMerit(m_cell_id, new_merit);
+  return m_world->GetPopulation().UpdateMerit(ctx, m_cell_id, new_merit);
 }
 
 bool cPopulationInterface::TestOnDivide()

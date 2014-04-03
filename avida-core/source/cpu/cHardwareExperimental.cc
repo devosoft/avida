@@ -6210,7 +6210,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
       const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
       double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
       attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
-      m_organism->UpdateMerit(attacker_merit);
+      m_organism->UpdateMerit(ctx, attacker_merit);
     }
     
     Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
@@ -7004,7 +7004,7 @@ bool cHardwareExperimental::ExecuteAttack(cAvidaContext& ctx, cOrganism* target,
   if (!TestAttackChance(ctx, target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
   if (m_organism->IsTopPredFT()) effic *= effic;
-  ApplyKilledPreyMerit(target, effic);
+  ApplyKilledPreyMerit(ctx, target, effic);
   ApplyKilledPreyReactions(target);
 
   // keep returns in same order as legacy code (important if reg assignments are shared)
@@ -7026,7 +7026,7 @@ bool cHardwareExperimental::ExecuteShareAttack(cAvidaContext& ctx, cOrganism* ta
   ApplyKilledPreyReactions(target);           // reactions can't be shared
   double share = 1.0 / (double) pack.GetSize();
   for (int i = 0; i < pack.GetSize(); i++) {
-    ApplySharedKilledPreyMerit(target, effic, pack[i], share);
+    ApplySharedKilledPreyMerit(ctx, target, effic, pack[i], share);
     ApplySharedKilledPreyBonus(target, reg, effic, pack[i], share);
     ApplySharedKilledPreyResBins(target, reg, effic, pack[i], share);
   }
@@ -7044,7 +7044,7 @@ bool cHardwareExperimental::ExecuteFakeShareAttack(cAvidaContext& ctx, cOrganism
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
   if (m_organism->IsTopPredFT()) effic *= effic;
   ApplyKilledPreyReactions(target);           // reactions can't be shared
-  ApplySharedKilledPreyMerit(target, effic, m_organism, share);
+  ApplySharedKilledPreyMerit(ctx, target, effic, m_organism, share);
   ApplySharedKilledPreyBonus(target, reg, effic, m_organism, share);
   ApplySharedKilledPreyResBins(target, reg, effic, m_organism, share);
   
@@ -7069,10 +7069,10 @@ bool cHardwareExperimental::ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganis
     const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
     double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
     attacker_merit -= target_merit * effic;
-    m_organism->UpdateMerit(attacker_merit);
+    m_organism->UpdateMerit(ctx, attacker_merit);
     to_die = (m_organism->GetPhenotype().GetMerit().GetDouble() <= 0);
   }
-  else ApplyKilledPreyMerit(target, effic);
+  else ApplyKilledPreyMerit(ctx, target, effic);
   
   if (target->GetForageTarget() != 2) ApplyKilledPreyReactions(target);
   if (target->GetForageTarget() == 2) effic *= -1;
@@ -7092,7 +7092,7 @@ bool cHardwareExperimental::TestAttackChance(cAvidaContext& ctx, cOrganism* targ
   if (odds == -1) odds = m_world->GetConfig().PRED_ODDS.Get();
   if (ctx.GetRandom().GetDouble() >= odds ||
       (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    InjureOrg(target);
+    InjureOrg(ctx, target);
     setInternalValue(reg.success_reg, -1, true);
     setInternalValue(reg.bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(reg.bin_reg, -1, true);
@@ -7101,14 +7101,14 @@ bool cHardwareExperimental::TestAttackChance(cAvidaContext& ctx, cOrganism* targ
   return success;
 }
 
-void cHardwareExperimental::ApplyKilledPreyMerit(cOrganism* target, double effic)
+void cHardwareExperimental::ApplyKilledPreyMerit(cAvidaContext& ctx, cOrganism* target, double effic)
 {
   // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
     double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
     attacker_merit += target_merit * effic;
-    m_organism->UpdateMerit(attacker_merit);
+    m_organism->UpdateMerit(ctx, attacker_merit);
   }
 }
 
@@ -7144,13 +7144,13 @@ void cHardwareExperimental::ApplyKilledPreyResBins(cOrganism* target, sAttackReg
   }
 }
 
-void cHardwareExperimental::ApplySharedKilledPreyMerit(cOrganism* target, double effic, cOrganism* org, double share)
+void cHardwareExperimental::ApplySharedKilledPreyMerit(cAvidaContext& ctx, cOrganism* target, double effic, cOrganism* org, double share)
 {
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     const double target_merit = target->GetPhenotype().GetMerit().GetDouble() * share;
     double attacker_merit = org->GetPhenotype().GetMerit().GetDouble();
     attacker_merit += target_merit * effic;
-    org->UpdateMerit(attacker_merit);
+    org->UpdateMerit(ctx, attacker_merit);
   }
 }
 
@@ -7186,14 +7186,14 @@ void cHardwareExperimental::TryPreyClone(cAvidaContext& ctx)
   }
 }
 
-void cHardwareExperimental::InjureOrg(cOrganism* target)
+void cHardwareExperimental::InjureOrg(cAvidaContext& ctx, cOrganism* target)
 {
   double injury = m_world->GetConfig().PRED_INJURY.Get();
   if (injury == 0) return;
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double target_merit = target->GetPhenotype().GetMerit().GetDouble();
     target_merit -= target_merit * injury;
-    target->UpdateMerit(target_merit);
+    target->UpdateMerit(ctx, target_merit);
   }
   Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
   for (int i = 0; i < target_reactions.GetSize(); i++) {

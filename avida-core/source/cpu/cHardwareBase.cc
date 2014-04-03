@@ -153,7 +153,6 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   
   const int genome_size = seq.GetSize();
 
-  
   const int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
   const int parent_age = m_organism->GetPhenotype().GetTimeUsed();
   if (parent_age < juv_age) {
@@ -1207,30 +1206,30 @@ bool cHardwareBase::Inst_Repro(cAvidaContext&)
 }
 
 
-bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext&)
+bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext& ctx)
 {
   cPhenotype& phenotype = m_organism->GetPhenotype();
   phenotype.DoubleEnergyUsage();
   double newOrgMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
-  m_organism->UpdateMerit(newOrgMerit);
+  m_organism->UpdateMerit(ctx, newOrgMerit);
   return true;
 }
 
-bool cHardwareBase::Inst_HalveEnergyUsage(cAvidaContext&)
+bool cHardwareBase::Inst_HalveEnergyUsage(cAvidaContext& ctx)
 {
   cPhenotype& phenotype = m_organism->GetPhenotype();
   phenotype.HalveEnergyUsage();
   double newOrgMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
-  m_organism->UpdateMerit(newOrgMerit);
+  m_organism->UpdateMerit(ctx, newOrgMerit);
   return true;
 }
 
-bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext&)
+bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
 {
   cPhenotype& phenotype = m_organism->GetPhenotype();
   phenotype.DefaultEnergyUsage();
   double newOrgMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
-  m_organism->UpdateMerit(newOrgMerit);
+  m_organism->UpdateMerit(ctx, newOrgMerit);
   return true;
 }
 

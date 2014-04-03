@@ -133,7 +133,7 @@ public:
   virtual void SpawnDeme(cAvidaContext& ctx) = 0; 
   virtual int ReceiveValue() = 0;
   virtual bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code) = 0;
-  virtual bool UpdateMerit(double new_merit) = 0;
+  virtual bool UpdateMerit(cAvidaContext& ctx, double new_merit) = 0;
   virtual bool TestOnDivide() = 0;
   virtual bool SendMessage(cOrgMessage& msg) = 0;
   virtual bool BroadcastMessage(cOrgMessage& msg, int depth) = 0;

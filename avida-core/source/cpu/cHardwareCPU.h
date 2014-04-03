@@ -533,10 +533,10 @@ private:
   bool Inst_IfResources(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
 
   // Donation
-  void DoDonate(cOrganism * to_org);
-  void DoEnergyDonate(cOrganism* to_org);
-  void DoEnergyDonatePercent(cOrganism* to_org, const double frac_energy_given);
-  void DoEnergyDonateAmount(cOrganism* to_org, const double amount);
+  void DoDonate(cAvidaContext& ctx, cOrganism * to_org);
+  void DoEnergyDonate(cAvidaContext& ctx, cOrganism* to_org);
+  void DoEnergyDonatePercent(cAvidaContext& ctx, cOrganism* to_org, const double frac_energy_given);
+  void DoEnergyDonateAmount(cAvidaContext& ctx, cOrganism* to_org, const double amount);
   bool Inst_DonateRandom(cAvidaContext& ctx);
   bool Inst_DonateKin(cAvidaContext& ctx);
   bool Inst_DonateEditDist(cAvidaContext& ctx);
