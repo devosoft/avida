@@ -97,7 +97,8 @@ public:
      const double& in_plateau_inflow, const double& in_plateau_outflow, const double& in_cone_inflow, const double& in_cone_outflow,
      const double& in_gradient_inflow, const int& in_is_plateau_common, const double& in_floor, const int& in_habitat, 
      const int& in_min_size, const int& in_max_size, const int& in_config, const int& in_count, const double& in_resistance, 
-     const double& in_damage, const double& in_death_odds, const double& in_init_plat, const double& in_threshold, const int& in_refuge, const bool& isgradient
+     const double& in_damage, const double& in_death_odds, const int& in_path, const int& in_hammer,
+     const double& in_init_plat, const double& in_threshold, const int& in_refuge, const bool& isgradient
 	   ); 
   
   void SetGradientCount(cAvidaContext& ctx, cWorld* world, const int& res_id, const int& peakx, const int& peaky,
@@ -108,7 +109,7 @@ public:
     const double& plateau_inflow, const double& plateau_outflow, const double& cone_inflow, const double& cone_outflow, 
     const double& gradient_inflow, const int& is_plateau_common, const double& floor, const int& habitat, 
     const int& min_size, const int& max_size, const int& config, const int& count, const double& resistance, const double& damage,
-    const double& death_odds, const double& plat_val, const double& threshold, const int& refuge);
+    const double& death_odds, const int& in_path, const int& in_hammer, const double& plat_val, const double& threshold, const int& refuge);
   void SetGradientPlatInflow(const int& res_id, const double& inflow);
   void SetGradientPlatOutflow(const int& res_id, const double& outflow);
   void SetGradientConeInflow(const int& res_id, const double& inflow);

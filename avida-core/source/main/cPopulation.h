@@ -171,7 +171,7 @@ public:
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
   void KillOrganism(cAvidaContext& ctx, int in_cell) { KillOrganism(cell_array[in_cell], ctx); } 
-  void InjureOrg(cPopulationCell& in_cell, double injury);
+  void InjureOrg(cPopulationCell& in_cell, double injury, bool ding_reacs = true);
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
@@ -390,9 +390,9 @@ public:
                                 const double outflow, const double lambda, const double theta, const int x, const int y, const int count);
   void UpdateInflow(const cString& res_name, const double change);
 
-  void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
-  void ExecuteDeadlyResource(cAvidaContext& ctx, const int cell_id, const double odds);
-  void ExecuteDamagingResource(cAvidaContext& ctx, const int cell_id, const double damage);
+  void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per, const bool hammer);
+  void ExecuteDeadlyResource(cAvidaContext& ctx, const int cell_id, const double odds, const bool hammer);
+  void ExecuteDamagingResource(cAvidaContext& ctx, const int cell_id, const double damage, const bool hammer);
 
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  

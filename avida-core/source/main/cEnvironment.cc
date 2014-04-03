@@ -53,7 +53,7 @@ using namespace Avida;
 
 cEnvironment::cEnvironment(cWorld* world) : m_world(world) , m_tasklib(world),
 m_input_size(INPUT_SIZE_DEFAULT), m_output_size(OUTPUT_SIZE_DEFAULT), m_true_rand(false),
-m_use_specific_inputs(false), m_specific_inputs(), m_mask(0)
+m_use_specific_inputs(false), m_specific_inputs(), m_mask(0), m_hammers(false), m_paths(false)
 {
   mut_rates.Setup(world);
   if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) possible_group_ids.insert(m_world->GetConfig().DEFAULT_GROUP.Get());
@@ -957,6 +957,16 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
       else if (var_name == "deadly") {
         if (!AssertInputDouble(var_value, "deadly", var_type, feedback)) return false;
         new_resource->SetDeadly( var_value.AsDouble() );
+      }
+      else if (var_name == "path") {
+        if (!AssertInputInt(var_value, "path", var_type, feedback)) return false;
+        new_resource->SetPath( var_value.AsInt() );
+        m_paths = true;
+      }
+      else if (var_name == "hammer") {
+        if (!AssertInputInt(var_value, "hammer", var_type, feedback)) return false;
+        new_resource->SetHammer( var_value.AsInt() );
+        m_hammers = true;
       }
       else if (var_name == "threshold") {
         if (!AssertInputDouble(var_value, "threshold", var_type, feedback)) return false;

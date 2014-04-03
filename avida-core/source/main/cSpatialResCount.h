@@ -138,6 +138,8 @@ public:
   virtual void SetGradRefuge(int) { ; }
   virtual void SetGradDamage(double) { ; }
   virtual void SetGradDeathOdds(double) { ; }
+  virtual void SetGradIsPath(bool) { ; }
+  virtual void SetGradIsHammer(bool) { ; }
 
   virtual void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy) { (void)ctx, (void)worldx, (void)worldy; }
   
