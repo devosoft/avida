@@ -36,17 +36,25 @@ void cHardwareStatusPrinter::TraceHardware(cAvidaContext& ctx, cHardwareBase& ha
 
   if (!organism) return;
   
+  bool in_setup = false;
   if (m_minitracer && minitrace && !m_file->HeaderDone()) {
     Apto::String genotype_name = organism->SystematicsGroup("genotype")->Properties().Get("genotype").StringValue();
     hardware.SetupMiniTraceFileHeader(*m_file, organism->SystematicsGroup("genotype")->ID(), genotype_name);
+    in_setup = true;
   }
     
-  if (exec_success == -2) {
+  if (exec_success == -2 || in_setup) {
     if (!m_minitracer && !minitrace) organism->PrintStatus(m_file->OFStream());
-    else if (m_minitracer && minitrace && exec_success == -2) organism->PrintMiniTraceStatus(ctx, m_file->OFStream());
-  } else if (m_minitracer && minitrace && exec_success != -2) {
+    else if (m_minitracer && minitrace) organism->PrintMiniTraceStatus(ctx, m_file->OFStream());
+  }
+  if (exec_success != -2 && (in_setup || (m_minitracer && minitrace))) {
     organism->PrintMiniTraceSuccess(m_file->OFStream(), exec_success);
   }
+}
+
+void cHardwareStatusPrinter::PrintSuccess(cOrganism* organism, const int exec_success)
+{
+  organism->PrintMiniTraceSuccess(m_file->OFStream(), exec_success);
 }
 
 void cHardwareStatusPrinter::TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism)

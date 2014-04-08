@@ -159,7 +159,7 @@ public:
   Apto::Array<int, Apto::Smart>& GetNavTraceLoc() { return m_navtraceloc; }
   Apto::Array<int, Apto::Smart>& GetNavTraceFacing() { return m_navtracefacing; }
   Apto::Array<int, Apto::Smart>& GetNavTraceUpdate() { return m_navtraceupdate; }
-  void DeleteMiniTrace(bool print_reacs);
+  void DeleteMiniTrace(bool print_reacs, bool repro_split = false);
   virtual void SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype) = 0;
   void SetupExtendedMemory(const Apto::Array<int, Apto::Smart>& ext_mem) { m_ext_mem = ext_mem; }
   void PrintMiniTraceReactions();

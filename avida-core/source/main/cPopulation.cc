@@ -898,6 +898,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       delete offspring_array[i];
     }
   }
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT && parent_alive && m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) TestForMiniTrace(parent_organism);
   return parent_alive;
 }
 
@@ -908,7 +909,7 @@ void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
   
   if (!reproduced || (reproduced && split)) {
     org->GetHardware().PrintMicroTrace(org->SystematicsGroup("genotype")->ID());
-    org->GetHardware().DeleteMiniTrace(print_mini_trace_reacs);
+    org->GetHardware().DeleteMiniTrace(print_mini_trace_reacs, (reproduced && split));
   }
   
   if (org->GetHardware().IsReproTrace() && repro_q.GetSize()) {
@@ -1216,8 +1217,6 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   assert(in_organism != NULL);
   
   in_organism->SetOrgInterface(ctx, new cPopulationInterface(m_world));
-  
-  
   
   // Update the contents of the target cell.
   KillOrganism(target_cell, ctx); 

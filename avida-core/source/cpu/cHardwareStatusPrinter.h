@@ -41,6 +41,7 @@ public:
     : m_file(Avida::Output::File::CreateWithPath(world, filename)), m_minitracer(minitracer) { ; }
 
   virtual void TraceHardware(cAvidaContext& ctx, cHardwareBase& hardware, bool bonus, bool mini, int exec_success);
+  virtual void PrintSuccess(cOrganism* organism, int exec_success);
   virtual void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism);
 };
 

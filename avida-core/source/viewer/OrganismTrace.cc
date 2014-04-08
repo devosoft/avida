@@ -163,6 +163,7 @@ public:
   
   // cHardwareTracer
   LIB_LOCAL void TraceHardware(cAvidaContext& ctx, cHardwareBase&, bool bonus = false, bool mini = false, int exec_success = -2);
+  LIB_LOCAL void PrintSuccess(cOrganism* org, int exec_success = -2);
   LIB_LOCAL void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism);
   
   

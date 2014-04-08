@@ -726,6 +726,9 @@ void cHardwareGP8::SetupMiniTraceFileHeader(Avida::Output::File& df, const int g
   df.WriteComment("CPU Cycle");
   df.WriteComment("MicroOp");
   df.WriteComment("Current Update");
+  df.WriteComment("Queued Eat");
+  df.WriteComment("Queued Move");
+  df.WriteComment("Queued Rotate (Number)");
   df.WriteComment("Register Contents (CPU Cycle Origin of Contents)");
   df.WriteComment("Current Thread");
   df.WriteComment("IP Position");
@@ -754,9 +757,12 @@ void cHardwareGP8::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
   // basic status info
   fp << m_cycle_count << " ";
   fp << m_cur_uop << " ";
-  fp << m_hw_queue_eat << " " << m_hw_queue_move << " ";
-  fp << m_hw_queue_rotate << (m_hw_queue_rotate_reverse ? "(-" : "(") << m_hw_queue_rotate_num << ") ";
   fp << m_world->GetStats().GetUpdate() << " ";
+  fp << m_hw_queue_eat << " ";
+  fp << m_hw_queue_move << " ";
+  fp << m_hw_queue_rotate;
+  fp << (m_hw_queue_rotate_reverse ? " (-" : " (");
+  fp << m_hw_queue_rotate_num << ") ";
   for (int i = 0; i < NUM_REGISTERS; i++) {
     DataValue& reg = m_threads[m_cur_thread].reg[i];
     fp << getRegister(ctx, i) << " ";

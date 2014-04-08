@@ -1456,10 +1456,13 @@ void cHardwareBase::RecordNavTrace(bool use_avatar)
   m_navtraceupdate.Push(m_world->GetStats().GetUpdate());
 }
 
-void cHardwareBase::DeleteMiniTrace(bool print_reacs)
+void cHardwareBase::DeleteMiniTrace(bool print_reacs, bool repro_split)
 {
   if (m_minitrace) {
     if (print_reacs) PrintMiniTraceReactions();
+
+    if (repro_split) m_tracer->PrintSuccess(GetOrganism(), 1);
+    
     m_tracer = HardwareTracerPtr(NULL);
   }
 }

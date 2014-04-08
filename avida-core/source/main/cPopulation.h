@@ -483,7 +483,8 @@ private:
   void TestForMiniTrace(cOrganism* in_organism);
   void SetupMiniTrace(cOrganism* in_organism);
   void PrintMiniTraceGenome(cOrganism* in_organism, cString& filename);
-  
+  void PrintMiniTraceSuccess(const int exec_success);
+
   int PlaceAvatar(cAvidaContext& ctx, cOrganism* parent);
   
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
