@@ -898,14 +898,14 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       delete offspring_array[i];
     }
   }
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT && parent_alive && m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) TestForMiniTrace(parent_organism);
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT && parent_alive && m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get()) TestForMiniTrace(parent_organism);
   return parent_alive;
 }
 
 void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
 {
   // yank the org out of any current trace queues, as appropriate (i.e. if dead (==!reproduced) or if reproduced and splitting on divide)
-  bool split = m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT;
+  bool split = (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT && m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get());
   
   if (!reproduced || (reproduced && split)) {
     org->GetHardware().PrintMicroTrace(org->SystematicsGroup("genotype")->ID());
