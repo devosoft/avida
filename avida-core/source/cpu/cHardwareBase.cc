@@ -1464,6 +1464,7 @@ void cHardwareBase::DeleteMiniTrace(bool print_reacs, bool repro_split)
     if (repro_split) m_tracer->PrintSuccess(GetOrganism(), 1);
     
     m_tracer = HardwareTracerPtr(NULL);
+    m_minitrace = false;
   }
 }
 
