@@ -1904,7 +1904,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     int steepest_hill = 0;
     double curr_resistance = 1.0;
     for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetResistance() > curr_resistance) {
+      if (!resource_lib.GetResource(i)->IsPath() && resource_lib.GetResource(i)->GetResistance() > curr_resistance) {
         if (GetCellResVal(ctx, src_cell_id, i) != 0) {
           curr_resistance = resource_lib.GetResource(i)->GetResistance();
           steepest_hill = i;
@@ -1925,7 +1925,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     bool curr_is_barrier = false;
     for (int i = 0; i < resource_lib.GetSize(); i++) {
       // get the current cell resource levels
-      if (resource_lib.GetResource(i)->GetHabitat() == 2 ) {
+      if (resource_lib.GetResource(i)->GetHabitat() == 2 && !resource_lib.GetResource(i)->IsPath()) {
         if (GetCellResVal(ctx, src_cell_id, i) > 0) {
           curr_is_barrier = true;
           break;
@@ -1934,10 +1934,10 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     }
     if (!curr_is_barrier) {
       for (int i = 0; i < resource_lib.GetSize(); i++) {
-        if (resource_lib.GetResource(i)->GetHabitat() == 2 && resource_lib.GetResource(i)->GetResistance() != 0) {
+        if (!resource_lib.GetResource(i)->IsPath() && resource_lib.GetResource(i)->GetHabitat() == 2 && resource_lib.GetResource(i)->GetResistance() != 0) {
           // fail if faced cell has this wall resource
           if (GetCellResVal(ctx, dest_cell_id, i) > 0) return false;
-        }    
+        }
       }
     }
   }
