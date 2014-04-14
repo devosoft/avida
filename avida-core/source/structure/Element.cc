@@ -23,3 +23,6 @@
  */
 
 #include "avida/structure/Element.h"
+
+
+Avida::Structure::ElementIteratorBase::~ElementIteratorBase() { ; }

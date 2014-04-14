@@ -36,7 +36,15 @@ namespace Avida {
     class Controller
     {
     public:
-      virtual ~Controller() = 0;
+      LIB_EXPORT virtual ~Controller() = 0;
+      
+      LIB_EXPORT virtual bool InsertElementAt(ElementPtr element, Coord location) = 0;
+      LIB_EXPORT virtual void RemoveElement(ElementID element_id) = 0;
+      LIB_EXPORT virtual void RemoveElement(ElementPtr element) = 0;
+
+      LIB_EXPORT virtual void ProcessTimeStep(Context& ctx, Update current_update) = 0;
+      
+      LIB_EXPORT virtual ElementIterator Elements() = 0;
     };
     
   };

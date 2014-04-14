@@ -52,6 +52,46 @@ namespace Avida {
       LIB_EXPORT inline void SetStructureController(Controller* structure) { m_structure = structure; }
     };
     
+
+  
+    // ElementIteratorBase
+    // --------------------------------------------------------------------------------------------------------------
+
+    class ElementIteratorBase
+    {
+    public:
+      LIB_EXPORT virtual ~ElementIteratorBase() = 0;
+      
+      LIB_EXPORT virtual ElementPtr Next() = 0;
+      LIB_EXPORT virtual ElementPtr Get() = 0;
+      
+      LIB_EXPORT virtual ElementIteratorBase* Clone() const = 0;
+    };
+    
+    
+    
+    // ElementIterator
+    // --------------------------------------------------------------------------------------------------------------
+    
+    class ElementIterator
+    {
+    private:
+      ElementIteratorBase* m_it;
+      
+    public:
+      LIB_EXPORT inline ElementIterator(ElementIteratorBase* it) : m_it(it) { ; }
+      LIB_EXPORT inline ElementIterator(const ElementIterator& it) : m_it(it.m_it->Clone()) { ; }
+      LIB_EXPORT inline ~ElementIterator() { delete m_it; }
+      
+      LIB_EXPORT inline ElementIterator& operator=(const ElementIterator& rhs)
+      {
+        delete m_it; m_it = rhs.m_it->Clone(); return *this;
+      }
+      
+      LIB_EXPORT inline ElementPtr Next() { return m_it->Next(); }
+      LIB_EXPORT inline ElementPtr Get() { return m_it->Get(); }
+    };
+    
   };
 };
 
