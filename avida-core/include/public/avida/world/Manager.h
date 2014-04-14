@@ -43,7 +43,7 @@ namespace Avida {
       ContainerPtr m_top_level;
       
     public:
-      LIB_EXPORT static ManagerPtr CreateWithTopLevelStructure(Universe* universe, Structure::Controller* structure);
+      LIB_EXPORT static ManagerPtr CreateWithStructure(Universe* universe, Structure::Controller* structure);
       LIB_EXPORT ~Manager();
       
       

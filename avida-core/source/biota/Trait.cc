@@ -1,9 +1,9 @@
 /*
- *  hardware/Feature.h
+ *  biota/Trait.cc
  *  avida-core
  *
- *  Created by David on 1/31/13.
- *  Copyright 2013 Michigan State University. All rights reserved.
+ *  Created by David on 4/9/14.
+ *  Copyright 2014 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,33 +22,24 @@
  *
  */
 
-#ifndef AvidaHardwareFeature_h
-#define AvidaHardwareFeature_h
+#include "avida/biota/Trait.h"
 
-#include "avida/hardware/Base.h"
+Avida::Biota::Trait::~Trait() { ; }
 
 
-namespace Avida {
-  namespace Hardware {
-    
-    // Hardware::Feature
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class Feature
-    {
-    protected:
-      Base* m_hw;
-      
-    public:
-      LIB_EXPORT inline Feature(Base* hw) : m_hw(hw) { ; }
-      LIB_EXPORT virtual ~Feature() = 0;
-      
-      
-    protected:
-      static Feature* featureOf(int feature, Base* hw) { return hw->m_features[feature]; }
-    };
-    
-  };
-};
+bool Avida::Biota::Trait::ValidateReproduction(Context& ctx, const Genome& proposed_genome)
+{
+  (void)ctx;
+  (void)proposed_genome;
+  return true;
+}
 
-#endif
+void Avida::Biota::Trait::SetupOffspringGenome(Genome& genome)
+{
+  (void)genome;
+}
+
+void Avida::Biota::Trait::NotifyEvent(OrganismEvent event_type)
+{
+  (void)event_type;
+}

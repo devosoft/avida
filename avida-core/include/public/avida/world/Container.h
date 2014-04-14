@@ -26,10 +26,14 @@
 #define AvidaWorldContainer_h
 
 #include "avida/biota/Types.h"
+#include "avida/data/Provider.h"
 #include "avida/environment/Types.h"
 #include "avida/hardware/Types.h"
 #include "avida/structure/Element.h"
 #include "avida/world/Types.h"
+
+#include "apto/stat/Accumulator.h"
+
 
 
 namespace Avida {
@@ -38,7 +42,7 @@ namespace Avida {
     // Container
     // --------------------------------------------------------------------------------------------------------------
     
-    class Container : public virtual Apto::RefCountObject<Apto::ThreadSafe>
+    class Container : public Data::ArgumentedProvider
     {
       friend class Manager;
     protected:
@@ -48,13 +52,67 @@ namespace Avida {
       Apto::Array<Hardware::InstancePtr, Apto::Smart> m_hardware;
       Structure::Controller* m_structure;
       Environment::ResourceManager* m_resources;
+      Apto::PriorityScheduler* m_scheduler;                // Handles allocation of CPU cycles
+      
+      
+      Apto::Array<EventListener*> m_event_listeners;
+      Apto::Array<OrganismDataProviderPtr> m_org_data_providers;
+      Apto::Map<Biota::PlacementStrategyKey, Biota::PlacementStrategyPtr> m_placement_strategies;
+      
+      
+      Apto::Stat::Accumulator<double> m_stat_org_fitness;
+      Apto::Stat::Accumulator<double> m_stat_org_gestation;
+      Apto::Stat::Accumulator<double> m_stat_org_metabolic_rate;
+      Apto::Stat::Accumulator<double> m_stat_org_generation;
+      Apto::Stat::Accumulator<double> m_stat_org_age;
+      
+      int m_stat_num_births;
+      int m_stat_num_deaths;
+      int m_stat_num_breed_true;
+      int m_stat_num_breed_in;
+      int m_stat_tot_organisms;
+      int m_stat_tot_births;
+      
+      
       
     public:
       LIB_EXPORT ~Container();
 
+      LIB_EXPORT void PerformUpdate(Context& ctx, Update current_update);
+      
+      LIB_EXPORT inline void AttachOrganismDataProvider(OrganismDataProviderPtr provider) { m_org_data_providers.Push(provider); }
+
+      // Data::Provider
+      LIB_EXPORT Data::ConstDataSetPtr Provides() const;
+      LIB_EXPORT void UpdateProvidedValues(Update current_update);
+      LIB_EXPORT Apto::String DescribeProvidedValue(const Apto::String& data_id) const;
+
+      LIB_EXPORT bool SupportsConcurrentUpdate() const;
+
+      // Data::ArgumentedProvider
+      LIB_EXPORT void SetActiveArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args);
+      LIB_EXPORT Data::ConstArgumentSetPtr GetValidArguments(const Data::DataID& data_id) const;
+      LIB_EXPORT bool IsValidArgument(const Data::DataID& data_id, Data::Argument arg) const;
+      
+      LIB_EXPORT Data::PackagePtr GetProvidedValueForArgument(const Data::DataID& data_id, const Data::Argument& arg) const;
+
+      
+      
+    protected:
+      LIB_EXPORT void recordBirth(bool breed_true);
+      
       
     protected:
       LIB_EXPORT Container(Universe* universe, Structure::Controller* structure);
+
+    
+    private:
+      // Initialization
+      void setupProvidedData();
+      
+      // Helper Methods
+      template <class T> Data::PackagePtr packageData(T (cStats::*)() const) const;
+      template <class T, class U> Data::PackagePtr packageArgData(T (cStats::*)(U arg) const, U arg) const;
     };
     
   };

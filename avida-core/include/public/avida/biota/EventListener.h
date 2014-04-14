@@ -1,9 +1,9 @@
 /*
- *  world/Types.h
+ *  biota/EventListener.h
  *  avida-core
  *
- *  Created by David on 1/25/13.
- *  Copyright 2013 Michigan State University. All rights reserved.
+ *  Created by David on 4/10/14.
+ *  Copyright 2014 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,31 +22,26 @@
  *
  */
 
-#ifndef AvidaWorldTypes_h
-#define AvidaWorldTypes_h
+#ifndef AvidaBiotaEventListener_h
+#define AvidaBiotaEventListener_h
 
-#include "avida/core/Types.h"
+#include "avida/biota/Types.h"
 
 
 namespace Avida {
-  namespace World {
-    
-    // Class Declarations
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class Container;
-    class EventListener;
-    class Manager;
-    class OrganismDataProvider;
-    
+  namespace Biota {
 
-    // Type Declarations
+    // Biota::OrganismListener - Object that wishes to be notifed of organism events
     // --------------------------------------------------------------------------------------------------------------
     
-    typedef Apto::SmartPtr<Container, Apto::InternalRCObject> ContainerPtr;
-    typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
-    typedef Apto::SmartPtr<OrganismDataProvider, Apto::InternalRCObject> OrganismDataProviderPtr;
-    
+    class EventListener
+    {
+    public:
+      LIB_EXPORT virtual ~EventListener() = 0;
+      
+      LIB_EXPORT virtual void NotifyEvent(OrganismEvent event_type) = 0;
+    };
+
   };
 };
 

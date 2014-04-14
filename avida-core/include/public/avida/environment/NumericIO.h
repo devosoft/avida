@@ -37,8 +37,12 @@ namespace Avida {
     class NumericIO : public Hardware::Feature
     {
     private:
+      Apto::Array<int> m_env_inputs;
+      int m_env_input_pointer;
+
       Apto::Array<int> m_input_buffer;
-      int m_input_pointer;
+      int m_input_offset;
+      int m_input_total;
 
       Apto::Array<int> m_output_buffer;
       int m_output_offset;
@@ -47,8 +51,9 @@ namespace Avida {
       bool m_logic_valid;
       int m_logic_id;
       
+      
     public:
-      NumericIO() : Hardware::Feature() { ; }
+      NumericIO(Hardware::Base* hw) : Hardware::Feature(hw) { ; }
       
       
       
@@ -56,15 +61,43 @@ namespace Avida {
       LIB_EXPORT inline int NextInput()
       {
         // Increment the input pointer
-        m_input_pointer++;
+        m_env_input_pointer++;
 
         // if we reach the end of the buffer, wrap to index 0
-        if (m_input_pointer == m_input_buffer.GetSize()) m_input_pointer = 0;
+        if (m_env_input_pointer == m_env_inputs.GetSize()) m_env_input_pointer = 0;
 
-        return m_input_buffer[m_input_pointer];
+        int value = m_env_inputs[m_env_input_pointer];
+        
+        // Store in the input buffer
+        m_input_buffer[m_input_offset] = value;
+        m_input_total++;
+        m_input_offset++;
+
+        // if we reach the end of the buffer, wrap to index 0
+        if (m_input_offset == m_input_buffer.GetSize()) m_input_offset = 0;
+
+        return value;
       }
       
       LIB_EXPORT inline Apto::Array<int>& InputBuffer() { return m_input_buffer; }
+      
+      
+      LIB_EXPORT inline int InputAt(Apto::SizeType idx) const
+      {
+        int index = m_input_offset - idx - 1;
+        if (index < 0)  index += m_input_buffer.GetSize();
+        assert(index >= 0 && index < m_input_buffer.GetSize());
+        return m_input_buffer[index];
+      }
+      
+      LIB_EXPORT inline int InputCapacity() const { return m_input_buffer.GetSize(); }
+      LIB_EXPORT inline int InputTotal() const { return m_input_total; }
+      LIB_EXPORT inline int InputsStored() const
+      {
+        return (m_input_total <= m_input_buffer.GetSize()) ? m_input_total : m_input_buffer.GetSize();
+      }
+      
+      LIB_EXPORT inline void ClearInputBuffer() { m_input_offset = 0; m_input_total = 0; }
 
       
       // ---------- Output Buffer ----------

@@ -1,5 +1,5 @@
 /*
- *  hardware/Feature.h
+ *  biota/Trait.h
  *  avida-core
  *
  *  Created by David on 1/31/13.
@@ -27,6 +27,8 @@
 
 #include "avida/Biota/Organism.h"
 
+#include "avida/Biota/OrganismEventListener.h"
+
 
 namespace Avida {
   namespace Biota {
@@ -34,14 +36,23 @@ namespace Avida {
     // Biota::Trait
     // --------------------------------------------------------------------------------------------------------------
     
-    class Trait
+    class Trait : public OrganismEventListener
     {
+      friend class Organism;
     protected:
       Organism* m_organism;
       
     public:
       LIB_EXPORT inline Trait(Organism* organism) : m_organism(organism) { ; }
       LIB_EXPORT virtual ~Trait() = 0;
+      
+      
+    protected:
+      LIB_EXPORT virtual bool ValidateReproduction(Context& ctx, const Genome& proposed_genome);
+      LIB_EXPORT virtual void SetupOffspringGenome(Genome& genome);
+
+      // OrganismEventListener
+      LIB_EXPORT virtual void NotifyEvent(OrganismEvent event_type);
       
     protected:
       static Trait* traitOf(int trait, Organism* organism) { return organism->m_traits[trait]; }

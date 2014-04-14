@@ -29,6 +29,7 @@
 
 static const int WORLD_ARCHIVE_VERSION = 1;
 
+const Avida::UniverseFacetID Avida::Reserved::BiotaManagerFacetID("biotamanager");
 const Avida::UniverseFacetID Avida::Reserved::DataManagerFacetID("datamanager");
 const Avida::UniverseFacetID Avida::Reserved::EnvironmentFacetID("environment");
 const Avida::UniverseFacetID Avida::Reserved::HardwareManagerFacetID("hardwaremanager");
@@ -85,7 +86,8 @@ bool Avida::Universe::AttachFacet(UniverseFacetID facet_id, UniverseFacetPtr fac
   m_facet_order.Push(facet);
   for (int i = m_facet_order.GetSize() - 1; i > insert_at; i--) m_facet_order.Swap(i, i - 1);
   
-  if (facet_id == Reserved::DataManagerFacetID) m_data_manager = facet;
+  if (facet_id == Reserved::BiotaManagerFacetID) m_biota_manager = facet;
+  else if (facet_id == Reserved::DataManagerFacetID) m_data_manager = facet;
   else if (facet_id == Reserved::EnvironmentFacetID) m_environment = facet;
   else if (facet_id == Reserved::HardwareManagerFacetID) m_hardware_manager = facet;
   else if (facet_id == Reserved::OutputManagerFacetID) m_output_manager = facet;

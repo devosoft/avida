@@ -1,9 +1,9 @@
 /*
- *  world/Types.h
+ *  biota/PlacementStrategy.h
  *  avida-core
  *
- *  Created by David on 1/25/13.
- *  Copyright 2013 Michigan State University. All rights reserved.
+ *  Created by David on 4/14/14.
+ *  Copyright 2014 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,30 +22,24 @@
  *
  */
 
-#ifndef AvidaWorldTypes_h
-#define AvidaWorldTypes_h
+#ifndef AvidaBiotaPlacementStrategy_h
+#define AvidaBiotaPlacementStrategy_h
 
-#include "avida/core/Types.h"
+#include "avida/biota/Types.h"
 
 
 namespace Avida {
-  namespace World {
+  namespace Biota {
     
-    // Class Declarations
+    // Biota::PlacementStrategy - Object that handles placing new/offspring organisms
     // --------------------------------------------------------------------------------------------------------------
     
-    class Container;
-    class EventListener;
-    class Manager;
-    class OrganismDataProvider;
-    
-
-    // Type Declarations
-    // --------------------------------------------------------------------------------------------------------------
-    
-    typedef Apto::SmartPtr<Container, Apto::InternalRCObject> ContainerPtr;
-    typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
-    typedef Apto::SmartPtr<OrganismDataProvider, Apto::InternalRCObject> OrganismDataProviderPtr;
+    class PlacementStrategy : public virtual Apto::RefCountObject<Apto::ThreadSafe>
+    {
+    public:
+      LIB_EXPORT virtual ~PlacementStrategy() = 0;
+      
+    };
     
   };
 };

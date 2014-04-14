@@ -1,9 +1,9 @@
 /*
- *  hardware/Feature.h
+ *  world/OrganismDataProvider.cc
  *  avida-core
  *
- *  Created by David on 1/31/13.
- *  Copyright 2013 Michigan State University. All rights reserved.
+ *  Created by David on 4/11/14.
+ *  Copyright 2014 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,33 +22,6 @@
  *
  */
 
-#ifndef AvidaHardwareFeature_h
-#define AvidaHardwareFeature_h
+#include "avida/world/OrganismDataProvider.h"
 
-#include "avida/hardware/Base.h"
-
-
-namespace Avida {
-  namespace Hardware {
-    
-    // Hardware::Feature
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class Feature
-    {
-    protected:
-      Base* m_hw;
-      
-    public:
-      LIB_EXPORT inline Feature(Base* hw) : m_hw(hw) { ; }
-      LIB_EXPORT virtual ~Feature() = 0;
-      
-      
-    protected:
-      static Feature* featureOf(int feature, Base* hw) { return hw->m_features[feature]; }
-    };
-    
-  };
-};
-
-#endif
+Avida::World::OrganismDataProvider::~OrganismDataProvider() { ; }

@@ -56,10 +56,10 @@ namespace Avida {
       Universe* universe;
       
       Apto::Array<Trait*> m_traits;
+      Apto::Set<EventListener*> m_listeners;
 
       Systematics::Source m_src;
       const Genome m_initial_genome;
-      Genome m_offspring_genome;
       Internal::OrgPropertyMap* m_prop_map;
       
       Update m_update_born;     // When was the organism created
@@ -84,8 +84,14 @@ namespace Avida {
       
       
       // Reproduction
-      LIB_EXPORT Genome& OffspringGenome() { return m_offspring_genome; }
-      LIB_EXPORT const Genome& OffspringGenome() const { return m_offspring_genome; }
+      LIB_EXPORT bool ValidateReproduction(Context& ctx);
+      LIB_EXPORT void SetupOffspringGenome(Genome& genome);
+      
+      
+      // Event Handling
+      LIB_EXPORT void NotifyEvent(OrganismEvent event_type);
+      LIB_EXPORT void AttachListener(EventListener* listener);
+      LIB_EXPORT void DetachListener(EventListener* listener);
       
       
       // Organism Status
@@ -100,13 +106,7 @@ namespace Avida {
     private:
       LIB_LOCAL Apto::String getGenomeString() const;
       LIB_LOCAL int getSrcTransmissionType() const;
-      LIB_LOCAL double getAge() const;
-      
-      LIB_LOCAL int getLastCopied();
-      LIB_LOCAL int getLastExecuted();
-      LIB_LOCAL int getLastGestation();
-      LIB_LOCAL double getLastMetabolicRate();
-      LIB_LOCAL double getLastFitness();
+      LIB_LOCAL double getAge() const;      
     };
     
   };

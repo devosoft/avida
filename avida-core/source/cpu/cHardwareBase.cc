@@ -97,130 +97,6 @@ void cHardwareBase::ResizeCostArrays(int new_size)
   m_active_thread_post_costs.SetAll(0);
 }
 
-int cHardwareBase::calcExecutedSize(const int parent_size)
-{
-  int executed_size = 0;
-  const InstMemSpace& memory = GetMemory();
-  for (int i = 0; i < parent_size; i++) {
-    if (memory.FlagExecuted(i)) executed_size++;
-  }  
-  return executed_size;
-}
-
-bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size, bool using_repro)
-{
-  // Make sure the organism is okay with dividing now...
-  // Moved to end of function @LZ
-
-  // Make sure that neither parent nor child will be below the minimum size.
-  const Genome& genome = m_organism->GetGenome();
-  ConstInstructionSequencePtr seq_p;
-  ConstGeneticRepresentationPtr rep_p = genome.Representation();
-  seq_p.DynamicCastFrom(rep_p);
-  const InstructionSequence& seq = *seq_p;
-  
-  const int genome_size = seq.GetSize();
-
-  
-  const int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
-  const int parent_age = m_organism->GetPhenotype().GetTimeUsed();
-  if (parent_age < juv_age) return false;
-  
-  const int min_age = m_world->GetConfig().MIN_CYCLES.Get();
-  if (parent_age < min_age) return false;
-
-  // Make sure that neither parent nor child will be below the minimum size.  
-  const double size_range = m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get();
-  const int min_size = Apto::Max(MIN_GENOME_LENGTH, static_cast<int>(genome_size / size_range));
-  const int max_size = Apto::Min(MAX_GENOME_LENGTH, static_cast<int>(genome_size * size_range));
-  
-  if (child_size < min_size || child_size > max_size) return false; // (divide fails)
-  if (parent_size < min_size || parent_size > max_size) return false; // (divide fails)
-  
-  // Absolute minimum and maximum child/parent size limits -- @JEB
-  const int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
-  const int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
-  if ( (min_genome_size && (child_size < min_genome_size)) || (max_genome_size && (child_size > max_genome_size)) ) return false; // (divide fails)
-  
-  if ( (min_genome_size && (parent_size < min_genome_size)) || (max_genome_size && (parent_size > max_genome_size)) ) return false; // (divide fails)
-  
-  // Count the number of lines executed in the parent, and make sure the
-  // specified fraction has been reached.
-  
-  const int executed_size = calcExecutedSize(parent_size);
-  const int min_exe_lines = static_cast<int>(parent_size * m_world->GetConfig().MIN_EXE_LINES.Get());
-  if (executed_size < min_exe_lines) return false; // (divide fails)
-  
-  // Repro organisms mark their entire genomes as copied
-  int copied_size = parent_size;
-  if (!using_repro) {
-    // Normal organisms check to see how much was copied
-    copied_size = calcCopiedSize(parent_size, child_size); // Fails for REPRO organisms
-    const int min_copied = static_cast<int>(child_size * m_world->GetConfig().MIN_COPIED_LINES.Get());
-    
-    if (copied_size < min_copied) return false; // (divide fails)
-  }
-
-  if (m_organism->Divide_CheckViable(ctx) == false) 
-  {
-    if (m_world->GetConfig().DIVIDE_FAILURE_RESETS.Get())
-    {
-      internalResetOnFailedDivide();
-    }
-    return false; // (divide fails)
-  }
-
-  
-  // Save the information we collected here...
-  cPhenotype& phenotype = m_organism->GetPhenotype();
-  phenotype.SetLinesExecuted(executed_size);
-  phenotype.SetLinesCopied(copied_size);
-  
-  // Determine the fitness of this organism as compared to its parent...
-  if (m_world->GetTestSterilize() && !phenotype.IsInjected()) {
-    const int merit_base = phenotype.CalcSizeMerit();
-    const double cur_fitness = merit_base * phenotype.GetCurBonus() / phenotype.GetTimeUsed();
-    const double fitness_ratio = cur_fitness / phenotype.GetLastFitness();
-    const Apto::Array<int>& childtasks = phenotype.GetCurTaskCount();
-    const Apto::Array<int>& parenttasks = phenotype.GetLastTaskCount();
-    
-    bool sterilize = false;
-    
-    if (fitness_ratio < 1.0) {
-      if (ctx.GetRandom().P(m_organism->GetSterilizeNeg())) sterilize = true;
-    } else if (fitness_ratio == 1.0) {
-      if (ctx.GetRandom().P(m_organism->GetSterilizeNeut())) sterilize = true;
-    } else {
-      if (ctx.GetRandom().P(m_organism->GetSterilizePos())) sterilize = true;
-    }
-    
-    // for sterilize task loss *SLG
-    if (ctx.GetRandom().P(m_organism->GetSterilizeTaskLoss()))
-    {
-      bool del = false;
-      bool added = false;
-      for (int i=0; i<childtasks.GetSize(); i++)
-      {
-        if (childtasks[i] > parenttasks[i]) {
-          added = true;
-          break;
-        }
-        else if (childtasks[i] < parenttasks[i])
-          del = true;
-      }
-      sterilize = (del & !added);
-    }
-    
-    if (sterilize) {
-      // Don't let this organism have this or any more children!
-      phenotype.IsFertile() = false;
-      return false;
-    }    
-  }
-  
-  return true; // (divide succeeds!)
-}
-
 
 /*
  Return the number of mutations that occur on divide.  AWC 06/29/06
@@ -1012,10 +888,6 @@ int cHardwareBase::PointMutate(cAvidaContext& ctx, double override_mut_rate)
 
 
 
-bool cHardwareBase::Inst_Nop(cAvidaContext&)          // Do Nothing.
-{
-  return true;
-}
 
 
 // @JEB Check implicit repro conditions -- meant to be called at the end of SingleProcess
@@ -1031,14 +903,6 @@ void cHardwareBase::checkImplicitRepro(cAvidaContext& ctx, bool exec_last_inst)
   {
     Inst_Repro(ctx);
   }
-}
-
-//This must be overridden by the specific CPU to function properly
-bool cHardwareBase::Inst_Repro(cAvidaContext&) 
-{
-  cout << "This hardware type does not have a =repro= instruction. IMPLICIT_REPRO conditions cannot be used!" << endl;
-  exit(1);
-  return false;
 }
 
 

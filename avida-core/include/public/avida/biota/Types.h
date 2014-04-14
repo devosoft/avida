@@ -34,14 +34,26 @@ namespace Avida {
     // Class Declarations
     // --------------------------------------------------------------------------------------------------------------
     
+    class ActionHandler;
+    class EventListener;
+    class Manager;
     class Organism;
+    class PlacementStrategy;
     class Trait;
     
     
     // Type Declarations
     // --------------------------------------------------------------------------------------------------------------
     
+    typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
     typedef Apto::SmartPtr<Organism, Apto::InternalRCObject> OrganismPtr;
+    typedef int OrganismEvent;
+    typedef Apto::String PlacementStrategyKey;
+    typedef Apto::SmartPtr<PlacementStrategy, Apto::InternalRCObject> PlacementStrategyPtr;
+    
+    
+    extern const OrganismEvent OrganismDeath;
+    extern const OrganismEvent OrganismReproduction;
     
   };
 };

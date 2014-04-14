@@ -45,7 +45,7 @@ namespace Avida {
       
       LIB_EXPORT inline Coord() : x(0.0f), y(0.0f), z(0.0f) { ; }
       LIB_EXPORT inline Coord(float in_x, float in_y, float in_z = 0.0f) : x(in_x), y(in_y), z(in_z) { ; }
-      LIB_EXPORT inline explicit Coord(int in_index) : x(0.0f), index(in_index), y(0.0f), z(0.0f) { ; }
+      LIB_EXPORT inline explicit Coord(int in_index) : index(in_index), y(0.0f), z(0.0f) { ; }
     };
     
   };

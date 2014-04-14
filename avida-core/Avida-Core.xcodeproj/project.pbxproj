@@ -23,14 +23,9 @@
 		7023EC6B0C0A431B00362B9C /* cInitFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891A08F7630100FC65FE /* cInitFile.cc */; };
 		7023EC700C0A431B00362B9C /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C6FFE0B83F265003174C1 /* cInstSet.cc */; };
 		7023EC7A0C0A431B00362B9C /* cMutationRates.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865708F4974300FC65FE /* cMutationRates.cc */; };
-		7023EC7C0C0A431B00362B9C /* cOrganism.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868708F49EA800FC65FE /* cOrganism.cc */; };
-		7023EC7D0C0A431B00362B9C /* cPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0869C08F49F4800FC65FE /* cPhenotype.cc */; };
-		7023EC7E0C0A431B00362B9C /* cPopulation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868908F49EA800FC65FE /* cPopulation.cc */; };
-		7023EC7F0C0A431B00362B9C /* cPopulationCell.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868A08F49EA800FC65FE /* cPopulationCell.cc */; };
 		7023EC800C0A431B00362B9C /* cPopulationInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFD08DA5341007BA469 /* cPopulationInterface.cc */; };
 		7023EC830C0A431B00362B9C /* cReaction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0871E08F5E82D00FC65FE /* cReaction.cc */; };
 		7023EC850C0A431B00362B9C /* cReactionResult.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872208F5E82D00FC65FE /* cReactionResult.cc */; };
-		7023EC900C0A431B00362B9C /* cStats.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872B08F5E82D00FC65FE /* cStats.cc */; };
 		7023EC960C0A431B00362B9C /* cTestCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02808C3C71300F50912 /* cTestCPU.cc */; };
 		7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		7029D7BD1491AF7800C3B8AA /* GeneticRepresentation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7029D7BC1491AF7800C3B8AA /* GeneticRepresentation.cc */; };
@@ -122,6 +117,13 @@
 		709CDECA149EEF6A00995644 /* SexualAncestry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709CDEC9149EEF6A00995644 /* SexualAncestry.cc */; };
 		709CDECD149EFD4A00995644 /* Genotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709CDECB149EFD4A00995644 /* Genotype.cc */; };
 		709CDECE149EFD4A00995644 /* GenotypeArbiter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709CDECC149EFD4A00995644 /* GenotypeArbiter.cc */; };
+		70A27CC918F5A0F500A5AA75 /* Trait.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A27CC818F5A0F500A5AA75 /* Trait.cc */; };
+		70A27CCC18F5DB2100A5AA75 /* Manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A27CCB18F5DB2100A5AA75 /* Manager.cc */; };
+		70A27CCF18F7320C00A5AA75 /* EventListener.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A27CCE18F7320C00A5AA75 /* EventListener.cc */; };
+		70A27CD418F8453500A5AA75 /* EventListener.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A27CD218F8453500A5AA75 /* EventListener.cc */; };
+		70A27CD518F8453500A5AA75 /* OrganismDataProvider.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A27CD318F8453500A5AA75 /* OrganismDataProvider.cc */; };
+		70A27CD818FC29B800A5AA75 /* ActionHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A27CD718FC29B800A5AA75 /* ActionHandler.cc */; };
+		70A27CDB18FC2BA200A5AA75 /* PlacementStrategy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A27CDA18FC2BA200A5AA75 /* PlacementStrategy.cc */; };
 		70A9478917A0258A007C639E /* InstMemSpace.h in Headers */ = {isa = PBXBuildFile; fileRef = 70A9478817A0258A007C639E /* InstMemSpace.h */; };
 		70A9478B17A025A4007C639E /* InstMemSpace.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A9478A17A025A4007C639E /* InstMemSpace.cc */; };
 		70A9478E17A03133007C639E /* VisualSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = 70A9478D17A03133007C639E /* VisualSensor.h */; };
@@ -139,7 +141,6 @@
 		70D5B4E614F4009000D15FFD /* TimeSeriesRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4E831386C16300D8F6F0 /* TimeSeriesRecorder.cc */; };
 		70D5B4E714F4009000D15FFD /* DriverActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704ADBC40A6EEFC300666970 /* DriverActions.cc */; };
 		70D5B4EC14F4009000D15FFD /* cBirthSelectionHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447BFD0F83B47900E1BF72 /* cBirthSelectionHandler.cc */; };
-		70D5B4EE14F4009000D15FFD /* cWorld.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BC6309059A970028A785 /* cWorld.cc */; };
 		70D5B4EF14F4009000D15FFD /* cBirthMateSelectHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447CA60F83DB5600E1BF72 /* cBirthMateSelectHandler.cc */; };
 		70D5B4F314F4009000D15FFD /* InstructionSequence.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB811358BD6F0000B036 /* InstructionSequence.cc */; };
 		70D5B4FA14F4009000D15FFD /* cBirthGlobalHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447C940F83D72600E1BF72 /* cBirthGlobalHandler.cc */; };
@@ -185,7 +186,6 @@
 		7000B64A15C6E8F900EE3F14 /* CladeArbiter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CladeArbiter.h; sourceTree = "<group>"; };
 		7000B64C15C6E90D00EE3F14 /* Clade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Clade.cc; sourceTree = "<group>"; };
 		7000B64D15C6E90D00EE3F14 /* CladeArbiter.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CladeArbiter.cc; sourceTree = "<group>"; };
-		7005A70909BA0FBE0007E16E /* cOrgInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cOrgInterface.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		700D9BD90F1A5D33002CC711 /* tAnalyzeJobBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tAnalyzeJobBatch.h; sourceTree = "<group>"; };
 		700D9C440F1A8F34002CC711 /* cModularityAnalysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cModularityAnalysis.h; sourceTree = "<group>"; };
 		700D9C450F1A8F34002CC711 /* cModularityAnalysis.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cModularityAnalysis.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -386,6 +386,19 @@
 		709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		70A1E325125CDF2B00D56AC4 /* ClassificationInfo.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClassificationInfo.cc; sourceTree = "<group>"; };
 		70A1E327125CDF2B00D56AC4 /* Map.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Map.cc; sourceTree = "<group>"; };
+		70A27CC818F5A0F500A5AA75 /* Trait.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Trait.cc; sourceTree = "<group>"; };
+		70A27CCA18F5DAB700A5AA75 /* Manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
+		70A27CCB18F5DB2100A5AA75 /* Manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Manager.cc; sourceTree = "<group>"; };
+		70A27CCD18F7319000A5AA75 /* EventListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EventListener.h; sourceTree = "<group>"; };
+		70A27CCE18F7320C00A5AA75 /* EventListener.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EventListener.cc; sourceTree = "<group>"; };
+		70A27CD018F8442700A5AA75 /* EventListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EventListener.h; sourceTree = "<group>"; };
+		70A27CD118F8442700A5AA75 /* OrganismDataProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OrganismDataProvider.h; sourceTree = "<group>"; };
+		70A27CD218F8453500A5AA75 /* EventListener.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EventListener.cc; sourceTree = "<group>"; };
+		70A27CD318F8453500A5AA75 /* OrganismDataProvider.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OrganismDataProvider.cc; sourceTree = "<group>"; };
+		70A27CD618FC297600A5AA75 /* ActionHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActionHandler.h; sourceTree = "<group>"; };
+		70A27CD718FC29B800A5AA75 /* ActionHandler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionHandler.cc; sourceTree = "<group>"; };
+		70A27CD918FC2B2200A5AA75 /* PlacementStrategy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlacementStrategy.h; sourceTree = "<group>"; };
+		70A27CDA18FC2BA200A5AA75 /* PlacementStrategy.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlacementStrategy.cc; sourceTree = "<group>"; };
 		70A53BA7135A299100C3E661 /* GlobalObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalObject.h; sourceTree = "<group>"; };
 		70A53BA9135A29AA00C3E661 /* GlobalObject.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalObject.cc; sourceTree = "<group>"; };
 		70A53BBC135B5C7000C3E661 /* Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Version.h; sourceTree = "<group>"; };
@@ -404,20 +417,10 @@
 		70ADB20A133A7995000B9C40 /* Feedback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Feedback.h; sourceTree = "<group>"; };
 		70B0864E08F4972600FC65FE /* cMutationRates.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationRates.h; sourceTree = "<group>"; };
 		70B0865708F4974300FC65FE /* cMutationRates.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationRates.cc; sourceTree = "<group>"; };
-		70B0868308F49E9700FC65FE /* cOrganism.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOrganism.h; sourceTree = "<group>"; };
-		70B0868508F49E9700FC65FE /* cPopulation.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cPopulation.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		70B0868608F49E9700FC65FE /* cPopulationCell.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPopulationCell.h; sourceTree = "<group>"; };
-		70B0868708F49EA800FC65FE /* cOrganism.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cOrganism.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		70B0868908F49EA800FC65FE /* cPopulation.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cPopulation.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		70B0868A08F49EA800FC65FE /* cPopulationCell.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPopulationCell.cc; sourceTree = "<group>"; };
-		70B0869B08F49F3900FC65FE /* cPhenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPhenotype.h; sourceTree = "<group>"; };
-		70B0869C08F49F4800FC65FE /* cPhenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cPhenotype.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		70B0870E08F5E81000FC65FE /* cReaction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cReaction.h; sourceTree = "<group>"; };
 		70B0871208F5E81000FC65FE /* cReactionResult.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cReactionResult.h; sourceTree = "<group>"; };
-		70B0871B08F5E81000FC65FE /* cStats.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cStats.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		70B0871E08F5E82D00FC65FE /* cReaction.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cReaction.cc; sourceTree = "<group>"; };
 		70B0872208F5E82D00FC65FE /* cReactionResult.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cReactionResult.cc; sourceTree = "<group>"; };
-		70B0872B08F5E82D00FC65FE /* cStats.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cStats.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		70B088FF08F762EA00FC65FE /* cInitFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInitFile.h; sourceTree = "<group>"; };
 		70B0891A08F7630100FC65FE /* cInitFile.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInitFile.cc; sourceTree = "<group>"; };
 		70B1B1D913F43016005DDF90 /* Properties.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Properties.cc; sourceTree = "<group>"; };
@@ -430,8 +433,6 @@
 		70C1EFA308C39F2100F50912 /* cHardwareBase.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cHardwareBase.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		70C1F01F08C3C6FC00F50912 /* cTestCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTestCPU.h; sourceTree = "<group>"; };
 		70C1F02808C3C71300F50912 /* cTestCPU.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cTestCPU.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		70C5BC6209059A970028A785 /* cWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cWorld.h; sourceTree = "<group>"; };
-		70C5BC6309059A970028A785 /* cWorld.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cWorld.cc; sourceTree = "<group>"; };
 		70C5BD690905CE5F0028A785 /* cHardwareManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareManager.cc; sourceTree = "<group>"; };
 		70C5BD6A0905CE5F0028A785 /* cHardwareManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareManager.h; sourceTree = "<group>"; };
 		70D3AD091455DFB4000FAB0F /* Package.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Package.cc; sourceTree = "<group>"; };
@@ -712,7 +713,9 @@
 			isa = PBXGroup;
 			children = (
 				705E546E16B1E0C200392BA7 /* Container.h */,
+				70A27CD018F8442700A5AA75 /* EventListener.h */,
 				705E547016B1E0C200392BA7 /* Manager.h */,
+				70A27CD118F8442700A5AA75 /* OrganismDataProvider.h */,
 				705E54AD16B2FDAB00392BA7 /* Types.h */,
 			);
 			path = world;
@@ -722,7 +725,9 @@
 			isa = PBXGroup;
 			children = (
 				705E547F16B1E10600392BA7 /* Container.cc */,
+				70A27CD218F8453500A5AA75 /* EventListener.cc */,
 				705E548116B1E10600392BA7 /* Manager.cc */,
+				70A27CD318F8453500A5AA75 /* OrganismDataProvider.cc */,
 			);
 			path = world;
 			sourceTree = "<group>";
@@ -775,7 +780,11 @@
 		705E54CA16B319BC00392BA7 /* biota */ = {
 			isa = PBXGroup;
 			children = (
+				70A27CD618FC297600A5AA75 /* ActionHandler.h */,
+				70A27CCD18F7319000A5AA75 /* EventListener.h */,
+				70A27CCA18F5DAB700A5AA75 /* Manager.h */,
 				705E54CB16B319C000392BA7 /* Organism.h */,
+				70A27CD918FC2B2200A5AA75 /* PlacementStrategy.h */,
 				701640451822E21800D74F28 /* Trait.h */,
 				705E54CC16B319C000392BA7 /* Types.h */,
 			);
@@ -785,7 +794,12 @@
 		705E54CF16B31A6E00392BA7 /* biota */ = {
 			isa = PBXGroup;
 			children = (
+				70A27CD718FC29B800A5AA75 /* ActionHandler.cc */,
+				70A27CCE18F7320C00A5AA75 /* EventListener.cc */,
+				70A27CCB18F5DB2100A5AA75 /* Manager.cc */,
 				705E54D016B31A7100392BA7 /* Organism.cc */,
+				70A27CDA18FC2BA200A5AA75 /* PlacementStrategy.cc */,
+				70A27CC818F5A0F500A5AA75 /* Trait.cc */,
 			);
 			path = biota;
 			sourceTree = "<group>";
@@ -1163,25 +1177,12 @@
 				708BF2FD0AB65DC700A923BF /* cEventList.cc */,
 				70B0864E08F4972600FC65FE /* cMutationRates.h */,
 				70B0865708F4974300FC65FE /* cMutationRates.cc */,
-				70B0868308F49E9700FC65FE /* cOrganism.h */,
-				70B0868708F49EA800FC65FE /* cOrganism.cc */,
-				7005A70909BA0FBE0007E16E /* cOrgInterface.h */,
-				70B0869B08F49F3900FC65FE /* cPhenotype.h */,
-				70B0869C08F49F4800FC65FE /* cPhenotype.cc */,
-				70B0868508F49E9700FC65FE /* cPopulation.h */,
-				70B0868908F49EA800FC65FE /* cPopulation.cc */,
-				70B0868608F49E9700FC65FE /* cPopulationCell.h */,
-				70B0868A08F49EA800FC65FE /* cPopulationCell.cc */,
 				702D4EF608DA5328007BA469 /* cPopulationInterface.h */,
 				702D4EFD08DA5341007BA469 /* cPopulationInterface.cc */,
 				70B0870E08F5E81000FC65FE /* cReaction.h */,
 				70B0871E08F5E82D00FC65FE /* cReaction.cc */,
 				70B0871208F5E81000FC65FE /* cReactionResult.h */,
 				70B0872208F5E82D00FC65FE /* cReactionResult.cc */,
-				70B0872B08F5E82D00FC65FE /* cStats.cc */,
-				70B0871B08F5E81000FC65FE /* cStats.h */,
-				70C5BC6209059A970028A785 /* cWorld.h */,
-				70C5BC6309059A970028A785 /* cWorld.cc */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -1372,6 +1373,7 @@
 				70D5B4FE14F4009000D15FFD /* GlobalObject.cc in Sources */,
 				70D5B4F314F4009000D15FFD /* InstructionSequence.cc in Sources */,
 				70B1B1DA13F43016005DDF90 /* Properties.cc in Sources */,
+				70A27CCC18F5DB2100A5AA75 /* Manager.cc in Sources */,
 				70D5B4E314F4009000D15FFD /* Version.cc in Sources */,
 				70DF729013BE20130085F85E /* Universe.cc in Sources */,
 				70D5B4FC14F4009000D15FFD /* Manager.cc in Sources */,
@@ -1394,13 +1396,16 @@
 				70D5B4DD14F4009000D15FFD /* PopulationActions.cc in Sources */,
 				70D5B4DC14F4009000D15FFD /* PrintActions.cc in Sources */,
 				70D5B4E014F4009000D15FFD /* SaveLoadActions.cc in Sources */,
+				70A27CC918F5A0F500A5AA75 /* Trait.cc in Sources */,
 				7023EC5E0C0A431B00362B9C /* cHardwareBase.cc in Sources */,
 				7023EC620C0A431B00362B9C /* cHardwareManager.cc in Sources */,
+				70A27CCF18F7320C00A5AA75 /* EventListener.cc in Sources */,
 				7023EC960C0A431B00362B9C /* cTestCPU.cc in Sources */,
 				7023EC420C0A431B00362B9C /* cAvidaConfig.cc in Sources */,
 				7023EC430C0A431B00362B9C /* cBirthChamber.cc in Sources */,
 				70D5B50314F4009000D15FFD /* cBirthGenomeSizeHandler.cc in Sources */,
 				70D5B4FA14F4009000D15FFD /* cBirthGlobalHandler.cc in Sources */,
+				70A27CD818FC29B800A5AA75 /* ActionHandler.cc in Sources */,
 				703EEEA218A548E80059C07B /* ConfigFile.cc in Sources */,
 				70D5B4EF14F4009000D15FFD /* cBirthMateSelectHandler.cc in Sources */,
 				70D5B4DE14F4009000D15FFD /* cBirthNeighborhoodHandler.cc in Sources */,
@@ -1408,27 +1413,23 @@
 				7023EC540C0A431B00362B9C /* cEnvironment.cc in Sources */,
 				7023EC550C0A431B00362B9C /* cEventList.cc in Sources */,
 				7023EC7A0C0A431B00362B9C /* cMutationRates.cc in Sources */,
-				7023EC7C0C0A431B00362B9C /* cOrganism.cc in Sources */,
 				70DC275B178F526E00A93DA4 /* InstArchCPU.cc in Sources */,
-				7023EC7D0C0A431B00362B9C /* cPhenotype.cc in Sources */,
-				7023EC7E0C0A431B00362B9C /* cPopulation.cc in Sources */,
-				7023EC7F0C0A431B00362B9C /* cPopulationCell.cc in Sources */,
 				7023EC800C0A431B00362B9C /* cPopulationInterface.cc in Sources */,
 				7023EC830C0A431B00362B9C /* cReaction.cc in Sources */,
 				7092603918B661C5001624AC /* SequenceActions.cc in Sources */,
 				7023EC850C0A431B00362B9C /* cReactionResult.cc in Sources */,
-				7023EC900C0A431B00362B9C /* cStats.cc in Sources */,
-				70D5B4EE14F4009000D15FFD /* cWorld.cc in Sources */,
 				7023EC6B0C0A431B00362B9C /* cInitFile.cc in Sources */,
 				70A9478B17A025A4007C639E /* InstMemSpace.cc in Sources */,
 				7023EC700C0A431B00362B9C /* cInstSet.cc in Sources */,
 				7070E6BF12109C1D0056BE1E /* (null) in Sources */,
 				7092603B18B6A460001624AC /* Reaction.cc in Sources */,
+				70A27CD418F8453500A5AA75 /* EventListener.cc in Sources */,
 				7073ADEF14609BF600FECC56 /* cBirthEntry.cc in Sources */,
 				4AAF523B153DE7B100C66840 /* (null) in Sources */,
 				7092603818B661C5001624AC /* LogicActions.cc in Sources */,
 				4A9B676515404DD1005AE9B9 /* Types.cc in Sources */,
 				703EEEA518A5819A0059C07B /* BitArray.cc in Sources */,
+				70A27CD518F8453500A5AA75 /* OrganismDataProvider.cc in Sources */,
 				4A9B676615404DFC005AE9B9 /* GenomeLoader.cc in Sources */,
 				707FD8B71541B7890012A090 /* Recorder.cc in Sources */,
 				7000B64E15C6E90D00EE3F14 /* Clade.cc in Sources */,
@@ -1452,6 +1453,7 @@
 				70556A1216BB648900EAAA9B /* Feature.cc in Sources */,
 				70556A1316BB648900EAAA9B /* Manager.cc in Sources */,
 				70556A3516BC325D00EAAA9B /* Config.cc in Sources */,
+				70A27CDB18FC2BA200A5AA75 /* PlacementStrategy.cc in Sources */,
 				70556A3616BC325D00EAAA9B /* InstLib.cc in Sources */,
 				70556A3716BC325D00EAAA9B /* InstSet.cc in Sources */,
 				70556A3816BC325D00EAAA9B /* Library.cc in Sources */,

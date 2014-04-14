@@ -1,9 +1,9 @@
 /*
- *  world/Types.h
+ *  world/EventListener.h
  *  avida-core
  *
- *  Created by David on 1/25/13.
- *  Copyright 2013 Michigan State University. All rights reserved.
+ *  Created by David on 4/11/14.
+ *  Copyright 2014 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,10 +22,10 @@
  *
  */
 
-#ifndef AvidaWorldTypes_h
-#define AvidaWorldTypes_h
+#ifndef AvidaWorldEventListener_h
+#define AvidaWorldEventListener_h
 
-#include "avida/core/Types.h"
+#include "avida/world/Types.h"
 
 
 namespace Avida {
@@ -34,18 +34,13 @@ namespace Avida {
     // Class Declarations
     // --------------------------------------------------------------------------------------------------------------
     
-    class Container;
-    class EventListener;
-    class Manager;
-    class OrganismDataProvider;
+    class EventListener
+    {
+    public:
+      virtual ~EventListener() = 0;
+      
+    };
     
-
-    // Type Declarations
-    // --------------------------------------------------------------------------------------------------------------
-    
-    typedef Apto::SmartPtr<Container, Apto::InternalRCObject> ContainerPtr;
-    typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
-    typedef Apto::SmartPtr<OrganismDataProvider, Apto::InternalRCObject> OrganismDataProviderPtr;
     
   };
 };

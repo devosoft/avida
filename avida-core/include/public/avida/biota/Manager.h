@@ -1,9 +1,9 @@
 /*
- *  world/Types.h
+ *  biota/Manager.h
  *  avida-core
  *
- *  Created by David on 1/25/13.
- *  Copyright 2013 Michigan State University. All rights reserved.
+ *  Created by David on 4/9/14.
+ *  Copyright 2014 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,30 +22,43 @@
  *
  */
 
-#ifndef AvidaWorldTypes_h
-#define AvidaWorldTypes_h
+#ifndef AvidaBiotaManager_h
+#define AvidaBiotaManager_h
 
-#include "avida/core/Types.h"
+#include "avida/biota/Types.h"
+#include "avida/core/Universe.h"
+#include "avida/util/ArgParser.h"
+#include "avida/util/ConfigFile.h"
 
 
 namespace Avida {
-  namespace World {
+  namespace Biota {
     
-    // Class Declarations
+    // Biota::Manager
     // --------------------------------------------------------------------------------------------------------------
     
-    class Container;
-    class EventListener;
-    class Manager;
-    class OrganismDataProvider;
-    
-
-    // Type Declarations
-    // --------------------------------------------------------------------------------------------------------------
-    
-    typedef Apto::SmartPtr<Container, Apto::InternalRCObject> ContainerPtr;
-    typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
-    typedef Apto::SmartPtr<OrganismDataProvider, Apto::InternalRCObject> OrganismDataProviderPtr;
+    class Manager : public UniverseFacet
+    {
+    private:
+      Universe* m_universe;
+      
+      
+    public:
+      LIB_EXPORT static ManagerPtr CreateFor(Universe* universe);
+      LIB_EXPORT ~Manager();
+      
+      LIB_EXPORT static ManagerPtr Of(Universe* universe);
+      
+    public:
+      LIB_EXPORT bool Serialize(ArchivePtr ar) const;
+      
+    public:
+      LIB_LOCAL UniverseFacetID UpdateBefore() const;
+      LIB_LOCAL UniverseFacetID UpdateAfter() const;
+      
+    private:
+      LIB_EXPORT Manager(Universe* universe);
+    };
     
   };
 };

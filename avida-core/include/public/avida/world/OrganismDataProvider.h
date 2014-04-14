@@ -1,9 +1,9 @@
 /*
- *  world/Types.h
+ *  world/OrganismDataProvider.h
  *  avida-core
  *
- *  Created by David on 1/25/13.
- *  Copyright 2013 Michigan State University. All rights reserved.
+ *  Created by David on 4/11/14.
+ *  Copyright 2014 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,10 +22,12 @@
  *
  */
 
-#ifndef AvidaWorldTypes_h
-#define AvidaWorldTypes_h
+#ifndef AvidaWorldOrganismDataProvider_h
+#define AvidaWorldOrganismDataProvider_h
 
-#include "avida/core/Types.h"
+#include "avida/biota/Types.h"
+#include "avida/data/Provider.h"
+#include "avida/world/Types.h"
 
 
 namespace Avida {
@@ -34,20 +36,18 @@ namespace Avida {
     // Class Declarations
     // --------------------------------------------------------------------------------------------------------------
     
-    class Container;
-    class EventListener;
-    class Manager;
-    class OrganismDataProvider;
+    class OrganismDataProvider: public Data::ArgumentedProvider
+    {
+    public:
+      ~OrganismDataProvider() = 0;
+      
+      virtual void UpdateReset() = 0;
+      virtual void HandleOrganism(Biota::Organism* org) = 0;
+    };
     
-
-    // Type Declarations
-    // --------------------------------------------------------------------------------------------------------------
-    
-    typedef Apto::SmartPtr<Container, Apto::InternalRCObject> ContainerPtr;
-    typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
-    typedef Apto::SmartPtr<OrganismDataProvider, Apto::InternalRCObject> OrganismDataProviderPtr;
     
   };
 };
+
 
 #endif

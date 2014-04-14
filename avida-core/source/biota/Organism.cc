@@ -24,6 +24,7 @@
 
 #include "avida/biota/Organism.h"
 
+#include "avida/biota/OrganismEventListener.h"
 #include "avida/biota/Trait.h"
 #include "avida/systematics/Group.h"
 
@@ -50,11 +51,6 @@ namespace Avida {
       static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_src_transmission_type("src_transmission_type");
       static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_age("age");
       static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_generation("generation");
-      static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_copied_size("last_copied_size");
-      static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_executed_size("last_exectuted_size");
-      static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_gestation_time("last_gestation_time");
-      static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_metabolic_rate("last_metabolic_rate");
-      static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_fitness("last_fitness");
       
       
       
@@ -198,11 +194,6 @@ void Avida::Biota::Organism::Initialize()
   DEFINE_PROP(src_transmission_type, int, getSrcTransmissionType, "Source Transmission Type");
   DEFINE_PROP(age, double, getAge, "Age");
   DEFINE_PROP(generation, int, Generation, "Generation");
-  DEFINE_PROP(last_copied_size, int, getLastCopied, "Last Copied Size");
-  DEFINE_PROP(last_executed_size, int, getLastExecuted, "Last Exectuted Size");
-  DEFINE_PROP(last_gestation_time, int, getLastGestation, "Last Gestation Time");
-  DEFINE_PROP(last_metabolic_rate, double, getLastMetabolicRate, "Last Metabolic Rage");
-  DEFINE_PROP(last_fitness, double, getLastFitness, "Last Fitness");
   
 #undef DEFINE_PROP
 }
@@ -229,6 +220,33 @@ Avida::Systematics::Source Avida::Biota::Organism::UnitSource() const { return m
 const Avida::Genome& Avida::Biota::Organism::UnitGenome() const { return m_initial_genome; }
 
 const Avida::PropertyMap& Avida::Biota::Organism::Properties() const { return *m_prop_map; }
+
+
+void Avida::Biota::Organism::NotifyEvent(OrganismEvent event_type)
+{
+  // Notify all (active) traits of the event
+  for (int i = 0; i < m_traits.GetSize(); i++) {
+    if (m_traits[i]) m_traits[i]->NotifyEvent(event_type);
+  }
+  
+  // Notify all attached listeners of the event
+  for (Apto::Set<OrganismEventListener*>::Iterator it = m_listeners.Begin(); it.Next();) {
+    (*it.Get())->NotifyEvent(event_type);
+  }
+}
+
+
+
+void Avida::Biota::Organism::AttachListener(OrganismEventListener* listener)
+{
+  m_listeners.Insert(listener);
+}
+
+void Avida::Biota::Organism::DetachListener(OrganismEventListener* listener)
+{
+  m_listeners.Remove(listener);
+}
+
 
 
 // Internal::OrgPropertyMap implementation
@@ -322,9 +340,4 @@ Apto::String Avida::Biota::Organism::getGenomeString() const { return m_initial_
 int Avida::Biota::Organism::getSrcTransmissionType() const { return m_src.transmission_type; }
 double Avida::Biota::Organism::getAge() const { return Age();  }
 
-int Avida::Biota::Organism::getLastCopied() { assert(false); return 0; /*return m_phenotype.GetCopiedSize();*/ }
-int Avida::Biota::Organism::getLastExecuted() { assert(false); return 0; /*return m_phenotype.GetExecutedSize();*/ }
-int Avida::Biota::Organism::getLastGestation() { assert(false); return 0; /*return m_phenotype.GetGestationTime();*/ }
-double Avida::Biota::Organism::getLastMetabolicRate() { assert(false); return 0; /*return m_phenotype.GetLastMerit();*/ }
-double Avida::Biota::Organism::getLastFitness() { assert(false); return 0; /*return m_phenotype.GetFitness();*/ }
 

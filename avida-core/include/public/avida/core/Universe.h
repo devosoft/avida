@@ -45,6 +45,7 @@ namespace Avida {
   class Universe
   {
   private:
+    UniverseFacetPtr m_biota_manager;
     UniverseFacetPtr m_data_manager;
     UniverseFacetPtr m_environment;
     UniverseFacetPtr m_hardware_manager;
@@ -64,6 +65,7 @@ namespace Avida {
     LIB_EXPORT inline UniverseFacetPtr Facet(const UniverseFacetID& facet_id) const;
 
     // Specific built-in facet accessors
+    LIB_EXPORT inline UniverseFacetPtr BiotaManager() const { return m_biota_manager; }
     LIB_EXPORT inline UniverseFacetPtr DataManager() const { return m_data_manager; }
     LIB_EXPORT inline UniverseFacetPtr Environment() const { return m_environment; }
     LIB_EXPORT inline UniverseFacetPtr HardwareManager() const { return m_hardware_manager; }
@@ -113,6 +115,7 @@ namespace Avida {
   // --------------------------------------------------------------------------------------------------------------
 
   namespace Reserved {
+    LIB_EXPORT extern const UniverseFacetID BiotaManagerFacetID;
     LIB_EXPORT extern const UniverseFacetID DataManagerFacetID;
     LIB_EXPORT extern const UniverseFacetID EnvironmentFacetID;
     LIB_EXPORT extern const UniverseFacetID HardwareManagerFacetID;
