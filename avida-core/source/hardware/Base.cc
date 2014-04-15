@@ -32,6 +32,11 @@ Avida::Hardware::Base::~Base()
   for (int idx = 0; idx < m_features.GetSize(); idx++) delete m_features[idx];
 }
 
+void Avida::Hardware::Base::Reset(Context& ctx)
+{
+  for (int idx = 0; idx < m_features.GetSize(); idx++) m_features[idx]->Reset(ctx);
+}
+
 
 void Avida::Hardware::Base::doCycleListenerNotification()
 {

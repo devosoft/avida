@@ -53,31 +53,61 @@ namespace Avida {
         LIB_LOCAL inline HardwareType(Util::ArgSchema& in_schema, HardwareCreateFunctor in_create)
         : schema(in_schema), create(in_create) { ; }
       };
-      
+
+      struct FeatureType
+      {
+        Util::ArgSchema& schema;
+        FeatureCreateFunctor create;
+        FeatureItemConfigFunctor config;
+        
+        
+        LIB_LOCAL inline FeatureType(Util::ArgSchema& in_schema, FeatureCreateFunctor in_create,
+                                     FeatureItemConfigFunctor in_config)
+        : schema(in_schema), create(in_create), config(in_config) { ; }
+      };
+
     private:
       mutable Apto::Mutex m_mutex;
       Apto::Map<Apto::String, HardwareType*> m_hardware_types;
+      Apto::Map<Apto::String, FeatureType*> m_feature_types;
       
     public:
       LIB_EXPORT static inline Library& Instance() { return LibrarySingleton::Instance(); }
       
       
-      LIB_EXPORT inline const HardwareType* HardwareTypeOf(const Apto::String& hw_type_name) const
+      LIB_EXPORT inline const HardwareType* HardwareTypeOf(const Apto::String& type_name) const
       {
         Apto::MutexAutoLock lock(m_mutex);
-        return m_hardware_types.GetWithDefault(hw_type_name, NULL);
+        return m_hardware_types.GetWithDefault(type_name, NULL);
       }
       
-      LIB_EXPORT inline bool IsHardwareType(const Apto::String& hw_type_name) const
+      LIB_EXPORT inline bool IsHardwareType(const Apto::String& type_name) const
       {
         Apto::MutexAutoLock lock(m_mutex);
-        return m_hardware_types.Has(hw_type_name);
+        return m_hardware_types.Has(type_name);
       }
       
       
-      LIB_EXPORT bool RegisterHardwareType(const Apto::String& hw_type_name, Util::ArgSchema& arg_schema,
+      LIB_EXPORT bool RegisterHardwareType(const Apto::String& type_name, Util::ArgSchema& arg_schema,
                                            HardwareCreateFunctor hw_create);
+
       
+      LIB_EXPORT inline const FeatureType* FeatureTypeOf(const Apto::String& type_name) const
+      {
+        Apto::MutexAutoLock lock(m_mutex);
+        return m_feature_types.GetWithDefault(type_name, NULL);
+      }
+      
+      LIB_EXPORT inline bool IsFeatureType(const Apto::String& type_name) const
+      {
+        Apto::MutexAutoLock lock(m_mutex);
+        return m_feature_types.Has(type_name);
+      }
+      
+      
+      LIB_EXPORT int RegisterFeatureType(const Apto::String& type_name, Util::ArgSchema& arg_schema,
+                                         FeatureCreateFunctor feat_create, FeatureItemConfigFunctor feat_conf);
+
     private:
       LIB_LOCAL Library();
       LIB_LOCAL ~Library();

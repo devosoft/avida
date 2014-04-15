@@ -33,6 +33,19 @@
 namespace Avida {
   namespace Hardware {
     
+    // Hardware::InstructionHook
+    // --------------------------------------------------------------------------------------------------------------
+    
+    class InstructionHook
+    {
+    public:
+      LIB_EXPORT virtual ~InstructionHook() = 0;
+      
+      LIB_EXPORT virtual bool PreInstruction(Context& ctx, Instruction cur_inst, int hw_context);
+      LIB_EXPORT virtual void PostInstruction(Context& ctx, Instruction cur_inst, int hw_context);
+    };
+    
+    
     // Hardware::InstArchCPU
     // --------------------------------------------------------------------------------------------------------------
     
@@ -43,16 +56,21 @@ namespace Avida {
      
       
     private:
-      struct {
-        bool m_has_pre_hooks:1;
-        bool m_has_post_hooks:1;
-      };
+      Apto::Array<InstructionHook*> m_pre_hooks;
+      Apto::Array<InstructionHook*> m_post_hooks;
       
       
     public:
       LIB_EXPORT InstArchCPU(Context& ctx, ConfigPtr cfg, Biota::OrganismPtr owner);
       LIB_EXPORT virtual ~InstArchCPU() = 0;
       
+      LIB_EXPORT void Reset(Context& ctx);
+      
+      
+      LIB_EXPORT void AttachPreInstructionHook(InstructionHook* hook);
+      LIB_EXPORT void DetachPreInstructionHook(InstructionHook* hook);
+      LIB_EXPORT void AttachPostInstructionHook(InstructionHook* hook);
+      LIB_EXPORT void DetachPostInstructionHook(InstructionHook* hook);
       
     protected:
       LIB_EXPORT inline bool PreInstructionHook(Context& ctx, Instruction cur_inst, int hw_context);
@@ -66,12 +84,12 @@ namespace Avida {
     
     inline bool InstArchCPU::PreInstructionHook(Context& ctx, Instruction cur_inst, int hw_context)
     {
-      return (m_has_pre_hooks) ? preInstHook(ctx, cur_inst, hw_context) : true;
+      return (m_pre_hooks.GetSize()) ? preInstHook(ctx, cur_inst, hw_context) : true;
     }
     
     inline void InstArchCPU::PostInstructionHook(Context& ctx, Instruction cur_inst, int hw_context)
     {
-      if (m_has_post_hooks) postInstHook(ctx, cur_inst, hw_context);
+      if (m_post_hooks.GetSize()) postInstHook(ctx, cur_inst, hw_context);
     }
 
   };

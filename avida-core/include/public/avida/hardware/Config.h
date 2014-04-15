@@ -34,13 +34,17 @@ namespace Avida {
     // Hardware::Config
     // --------------------------------------------------------------------------------------------------------------
     
-    class Config
+    class Config : Apto::RefCountObject<Apto::ThreadSafe>
     {
     private:
-      Util::Args* m_arguments;
+      Util::Args* m_args;
       
     public:
+      LIB_EXPORT inline Config(Util::Args* args) : m_args(args) { ; }
       LIB_EXPORT virtual ~Config() = 0;
+
+      LIB_EXPORT inline Util::Args& Arguments() { return *m_args; }
+      LIB_EXPORT inline const Util::Args& Arguments() const { return *m_args; }
     };
     
   };

@@ -39,6 +39,9 @@ namespace Avida {
     public:
       LIB_EXPORT virtual ~ActionHandler() = 0;
       
+      LIB_EXPORT virtual bool RemoveOrganism(Context& ctx, OrganismID key) = 0;
+      LIB_EXPORT virtual bool UpdateMetabolicRateForOrganism(Context& ctx, OrganismID key) = 0;
+      
       LIB_EXPORT virtual PlacementStrategy& PlacementStrategyForKey(const PlacementStrategyKey& key) = 0;
     };
     

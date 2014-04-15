@@ -25,6 +25,7 @@
 #ifndef AvidaHardwareManager_h
 #define AvidaHardwareManager_h
 
+#include "avida/biota/Types.h"
 #include "avida/core/Universe.h"
 #include "avida/hardware/Types.h"
 #include "avida/util/ArgParser.h"
@@ -64,6 +65,8 @@ namespace Avida {
       
       LIB_EXPORT bool LoadInstSet(const Util::ConfigFile& fileref);
       LIB_EXPORT bool LoadInstSet(const Apto::String& inst_set_str);
+      
+      LIB_EXPORT Hardware::InstancePtr CreateHardwareFor(Context& ctx, Biota::OrganismPtr organism);
       
       
       LIB_EXPORT static bool RegisterHardwareType(const Apto::String& type_name, const InstLib* inst_lib, Util::ArgSchema* schema);

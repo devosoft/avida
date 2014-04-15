@@ -43,9 +43,14 @@ namespace Avida {
       LIB_EXPORT inline Feature(Base* hw) : m_hw(hw) { ; }
       LIB_EXPORT virtual ~Feature() = 0;
       
+      LIB_EXPORT virtual void Initialize(Base* hw);
+      LIB_EXPORT virtual void Initialize(InstArchCPU* hw);
+      
+      LIB_EXPORT virtual void Reset(Context& ctx);
+      
       
     protected:
-      static Feature* featureOf(int feature, Base* hw) { return hw->m_features[feature]; }
+      LIB_EXPORT static inline Feature* featureOf(int feature, Base* hw) { return hw->m_features[feature]; }
     };
     
   };

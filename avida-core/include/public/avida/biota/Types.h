@@ -48,6 +48,7 @@ namespace Avida {
     typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
     typedef Apto::SmartPtr<Organism, Apto::InternalRCObject> OrganismPtr;
     typedef int OrganismEvent;
+    typedef int OrganismID;
     typedef Apto::String PlacementStrategyKey;
     typedef Apto::SmartPtr<PlacementStrategy, Apto::InternalRCObject> PlacementStrategyPtr;
     

@@ -22,7 +22,6 @@
 
 #include "cMutationRates.h"
 
-#include "cWorld.h"
 #include "cAvidaConfig.h"
 
 

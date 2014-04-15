@@ -26,6 +26,7 @@
 #define AvidaHardwareTypes_h
 
 #include "avida/core/Types.h"
+#include "avida/util/ArgParser.h"
 
 
 namespace Avida {
@@ -54,6 +55,8 @@ namespace Avida {
     typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
     
     typedef Apto::Functor<InstancePtr, Apto::TL::Create<> > HardwareCreateFunctor;
+    typedef Apto::Functor<Feature*, Apto::TL::Create<> > FeatureCreateFunctor;
+    typedef Apto::Functor<void, Apto::TL::Create<const Apto::String&, Util::ArgSchema&> > FeatureItemConfigFunctor;
     
     
     // Constant Declarations

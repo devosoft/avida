@@ -39,6 +39,21 @@ bool Avida::Hardware::Library::RegisterHardwareType(const Apto::String& hw_type_
 }
 
 
+int Avida::Hardware::Library::RegisterFeatureType(const Apto::String& type_name, Util::ArgSchema& arg_schema,
+                                                   FeatureCreateFunctor feat_create, FeatureItemConfigFunctor feat_conf)
+{
+  Apto::MutexAutoLock lock(m_mutex);
+  
+  if (m_feature_types.Has(type_name)) return -1;
+  
+  int feature_idx = m_feature_types.GetSize();
+  FeatureType* feat_type = new FeatureType(arg_schema, feat_create, feat_conf);
+  m_feature_types.Set(type_name, feat_type);
+  
+  return feature_idx;
+}
+
+
 Avida::Hardware::Library::Library()
 {
   ;
@@ -48,6 +63,9 @@ Avida::Hardware::Library::Library()
 Avida::Hardware::Library::~Library()
 {
   for (Apto::Map<Apto::String, HardwareType*>::ValueIterator it = m_hardware_types.Values(); it.Next();) {
+    delete (*it.Get());
+  }
+  for (Apto::Map<Apto::String, FeatureType*>::ValueIterator it = m_feature_types.Values(); it.Next();) {
     delete (*it.Get());
   }
 }

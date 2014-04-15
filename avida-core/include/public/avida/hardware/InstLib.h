@@ -40,10 +40,10 @@ namespace Avida {
       const unsigned int NOP = 0x2;
       const unsigned int LABEL = 0x4;
       const unsigned int STALL = 0x8;
-      const unsigned int SLEEP = 0x10;
-      const unsigned int PROMOTER = 0x20;
-      const unsigned int TERMINATOR = 0x40;
-      const unsigned int IMMEDIATE_VALUE = 0x80;
+      const unsigned int PROMOTER = 0x10;
+      const unsigned int TERMINATOR = 0x20;
+      const unsigned int IMMEDIATE_VALUE = 0x40;
+      const unsigned int RESERVED_0 = 0x80;
       const unsigned int RESERVED_1 = 0x100;
       const unsigned int RESERVED_2 = 0x200;
       const unsigned int RESERVED_3 = 0x400;
@@ -118,7 +118,6 @@ namespace Avida {
         LIB_EXPORT inline bool IsPromoter() const { return (m_flags & InstructionFlags::PROMOTER) != 0; }
         LIB_EXPORT inline bool IsTerminator() const { return (m_flags & InstructionFlags::TERMINATOR) != 0; }
         LIB_EXPORT inline bool ShouldStall() const { return (m_flags & InstructionFlags::STALL) != 0; }
-        LIB_EXPORT inline bool ShouldSleep() const { return (m_flags & InstructionFlags::SLEEP) != 0; }
         LIB_EXPORT inline bool IsImmediateValue() const { return (m_flags & InstructionFlags::IMMEDIATE_VALUE) != 0; }
       };
       
@@ -127,8 +126,8 @@ namespace Avida {
       const int m_size;
       Apto::Map<Apto::String, int> m_namemap;
       
-      int m_inst_default;
-      int m_inst_null;
+      Instruction m_inst_default;
+      Instruction m_inst_null;
       
       
     public:
@@ -137,8 +136,8 @@ namespace Avida {
       LIB_EXPORT virtual ~InstLib() = 0;
       
       LIB_EXPORT inline int Size() const { return m_size; }
-      LIB_EXPORT inline int InstDefault() const { return m_inst_default; }
-      LIB_EXPORT inline int InstNull() const { return m_inst_null; }
+      LIB_EXPORT inline Instruction InstDefault() const { return m_inst_default; }
+      LIB_EXPORT inline Instruction InstNull() const { return m_inst_null; }
       
 
       // Subclass Methods

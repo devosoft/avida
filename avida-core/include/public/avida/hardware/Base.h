@@ -64,6 +64,8 @@ namespace Avida {
       LIB_EXPORT Base(Context& ctx, ConfigPtr cfg, Biota::OrganismPtr owner);
       LIB_EXPORT virtual ~Base() = 0;
       
+      LIB_EXPORT virtual void Reset(Context& ctx);
+      
       LIB_EXPORT virtual bool ProcessCycleStep(Context& ctx, Update current_update, bool speculative) = 0;
       
       LIB_EXPORT virtual bool AcceptSymbiont(Context& ctx, Biota::OrganismPtr symbiont) = 0;

@@ -26,3 +26,60 @@
 
 
 Avida::Hardware::InstArchCPU::~InstArchCPU() { ; }
+
+
+void Avida::Hardware::InstArchCPU::Reset(Context& ctx)
+{
+  Base::Reset(ctx);
+}
+
+
+void Avida::Hardware::InstArchCPU::AttachPreInstructionHook(InstructionHook* hook)
+{
+  // Just pushes onto the array for now... should this verify it has not already been attached?
+  m_pre_hooks.Push(hook);
+}
+
+void Avida::Hardware::InstArchCPU::DetachPreInstructionHook(InstructionHook* hook)
+{
+  for (int i = 0; i < m_pre_hooks.GetSize(); i++) {
+    if (m_pre_hooks[i] == hook) {
+      if (m_pre_hooks.GetSize() > 1) m_pre_hooks[i] = m_pre_hooks[m_pre_hooks.GetSize() - 1];
+      m_pre_hooks.Resize(m_pre_hooks.GetSize() - 1);
+    }
+  }
+}
+
+void Avida::Hardware::InstArchCPU::AttachPostInstructionHook(InstructionHook* hook)
+{
+  // Just pushes onto the array for now... should this verify it has not already been attached?
+  m_post_hooks.Push(hook);
+}
+
+void Avida::Hardware::InstArchCPU::DetachPostInstructionHook(InstructionHook* hook)
+{
+  for (int i = 0; i < m_post_hooks.GetSize(); i++) {
+    if (m_post_hooks[i] == hook) {
+      if (m_post_hooks.GetSize() > 1) m_post_hooks[i] = m_post_hooks[m_post_hooks.GetSize() - 1];
+      m_post_hooks.Resize(m_post_hooks.GetSize() - 1);
+    }
+  }
+}
+
+
+bool Avida::Hardware::InstArchCPU::preInstHook(Context& ctx, Instruction cur_inst, int hw_context)
+{
+  bool success = true;
+  for (int i = 0; i < m_pre_hooks.GetSize(); i++) {
+    if (!m_pre_hooks[i]->PreInstruction(ctx, cur_inst, hw_context)) success = false;
+  }
+  
+  return success;
+}
+
+
+void Avida::Hardware::InstArchCPU::postInstHook(Context& ctx, Instruction cur_inst, int hw_context)
+{
+  for (int i = 0; i < m_pre_hooks.GetSize(); i++) m_post_hooks[i]->PostInstruction(ctx, cur_inst, hw_context);
+}
+

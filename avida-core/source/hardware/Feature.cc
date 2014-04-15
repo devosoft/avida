@@ -27,3 +27,19 @@
 
 Avida::Hardware::Feature::~Feature() { ; }
 
+
+void Avida::Hardware::Feature::Initialize(Base* hw)
+{
+  (void)hw;
+}
+
+
+void Avida::Hardware::Feature::Initialize(InstArchCPU* hw)
+{
+  (void)hw;
+}
+
+void Avida::Hardware::Feature::Reset(Context& ctx)
+{
+  (void)ctx;
+}
