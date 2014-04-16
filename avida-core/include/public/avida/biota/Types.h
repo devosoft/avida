@@ -51,6 +51,7 @@ namespace Avida {
     typedef int OrganismID;
     typedef Apto::String PlacementStrategyKey;
     typedef Apto::SmartPtr<PlacementStrategy, Apto::InternalRCObject> PlacementStrategyPtr;
+    typedef Apto::Functor<Trait*, Apto::TL::Create<Organism*> > TraitCreateFunctor;
     
     
     extern const OrganismEvent OrganismDeath;

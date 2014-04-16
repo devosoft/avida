@@ -26,3 +26,5 @@
 
 
 Avida::Update Avida::UPDATE_CONCURRENT = -2;
+
+Avida::HardwareConfigID Avida::INVALID_HARDWARE_CONFIG_ID("");

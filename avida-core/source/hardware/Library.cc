@@ -40,14 +40,15 @@ bool Avida::Hardware::Library::RegisterHardwareType(const Apto::String& hw_type_
 
 
 int Avida::Hardware::Library::RegisterFeatureType(const Apto::String& type_name, Util::ArgSchema& arg_schema,
-                                                   FeatureCreateFunctor feat_create, FeatureItemConfigFunctor feat_conf)
+                                                  FeatureCreateFunctor feat_create, FeatureItemConfigFunctor feat_conf,
+                                                  Apto::Set<Apto::String> feat_hw_compat)
 {
   Apto::MutexAutoLock lock(m_mutex);
   
   if (m_feature_types.Has(type_name)) return -1;
   
   int feature_idx = m_feature_types.GetSize();
-  FeatureType* feat_type = new FeatureType(arg_schema, feat_create, feat_conf);
+  FeatureType* feat_type = new FeatureType(arg_schema, feat_create, feat_conf, feat_hw_compat);
   m_feature_types.Set(type_name, feat_type);
   
   return feature_idx;

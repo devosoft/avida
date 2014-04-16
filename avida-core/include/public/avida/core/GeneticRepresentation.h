@@ -38,6 +38,8 @@ namespace Avida {
   public:
     LIB_EXPORT virtual ~GeneticRepresentation() = 0;
     
+    LIB_EXPORT virtual GeneticRepresentationType Type() = 0;
+    
     LIB_EXPORT virtual bool Process(GeneticRepresentationDispatchTable tbl, GeneticRepresentationPtr ptr);
     LIB_EXPORT virtual bool Process(ConstGeneticRepresentationDispatchTable tbl, ConstGeneticRepresentationPtr ptr) const;
     

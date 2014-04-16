@@ -48,12 +48,14 @@ namespace Avida {
   
   class Archive;
   class Context;
+  class EpigeneticObject;
   class Feedback;
   class GeneticRepresentation;
   class Genome;
   class GlobalObject;
   class Instruction;
   class InstructionSequence;
+  class Library;
   class Property;
   class PropertyMap;
   template <typename T> struct PropertyTraits;
@@ -94,13 +96,19 @@ namespace Avida {
   typedef Apto::SmartPtr<ArchiveObjectIDSet> ArchiveObjectIDSetPtr;
   typedef Apto::SmartPtr<const ArchiveObjectIDSet> ConstArchiveObjectIDSetPtr;
   
+  typedef Apto::String BiotaTraitID;
+  typedef Apto::Set<BiotaTraitID> BiotaTraitSet;
+  
+  typedef Apto::Functor<EpigeneticObject*, Apto::TL::Create<> > EpigeneticObjectCreateFunctor;
+    
   typedef Apto::SmartPtr<GeneticRepresentation> GeneticRepresentationPtr;
   typedef Apto::SmartPtr<const GeneticRepresentation> ConstGeneticRepresentationPtr;
   
+  typedef Apto::String GeneticRepresentationType;
   typedef Apto::Functor<bool, Apto::TL::Create<GeneticRepresentationPtr>, SmallObjectMalloc> GeneticRepresentationProcessFunctor;
   typedef Apto::Functor<bool, Apto::TL::Create<ConstGeneticRepresentationPtr>, SmallObjectMalloc> ConstGeneticRepresentationProcessFunctor;
-  typedef Apto::Map<Apto::String, GeneticRepresentationProcessFunctor> GeneticRepresentationDispatchTable;
-  typedef Apto::Map<Apto::String, ConstGeneticRepresentationProcessFunctor> ConstGeneticRepresentationDispatchTable;
+  typedef Apto::Map<GeneticRepresentationType, GeneticRepresentationProcessFunctor> GeneticRepresentationDispatchTable;
+  typedef Apto::Map<GeneticRepresentationType, ConstGeneticRepresentationProcessFunctor> ConstGeneticRepresentationDispatchTable;
   
   typedef Apto::SmartPtr<InstructionSequence> InstructionSequencePtr;
   typedef Apto::SmartPtr<const InstructionSequence> ConstInstructionSequencePtr;
@@ -108,7 +116,7 @@ namespace Avida {
   typedef Apto::SmartPtr<Genome> GenomePtr;
   typedef Apto::SmartPtr<const Genome> ConstGenomePtr;
   
-  typedef int HardwareTypeID;
+  typedef Apto::String HardwareConfigID;
   
   typedef Apto::SmartPtr<InstructionSequence> InstructionSequencePtr;
   typedef Apto::SmartPtr<const InstructionSequence> ConstInstructionSequencePtr;
@@ -134,6 +142,8 @@ namespace Avida {
   // --------------------------------------------------------------------------------------------------------------  
   
   extern Update UPDATE_CONCURRENT;
+  
+  extern HardwareConfigID INVALID_HARDWARE_CONFIG_ID;
   
   
   

@@ -39,7 +39,7 @@ void Avida::Biota::Trait::SetupOffspringGenome(Genome& genome)
   (void)genome;
 }
 
-void Avida::Biota::Trait::NotifyEvent(OrganismEvent event_type)
+void Avida::Biota::Trait::NotifyOrganismEvent(OrganismEvent event_type)
 {
   (void)event_type;
 }

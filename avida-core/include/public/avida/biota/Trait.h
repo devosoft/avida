@@ -27,7 +27,7 @@
 
 #include "avida/Biota/Organism.h"
 
-#include "avida/Biota/OrganismEventListener.h"
+#include "avida/Biota/EventListener.h"
 
 
 namespace Avida {
@@ -36,7 +36,7 @@ namespace Avida {
     // Biota::Trait
     // --------------------------------------------------------------------------------------------------------------
     
-    class Trait : public OrganismEventListener
+    class Trait : public EventListener
     {
       friend class Organism;
     protected:
@@ -51,8 +51,8 @@ namespace Avida {
       LIB_EXPORT virtual bool ValidateReproduction(Context& ctx, const Genome& proposed_genome);
       LIB_EXPORT virtual void SetupOffspringGenome(Genome& genome);
 
-      // OrganismEventListener
-      LIB_EXPORT virtual void NotifyEvent(OrganismEvent event_type);
+      // EventListener
+      LIB_EXPORT virtual void NotifyOrganismEvent(OrganismEvent event_type);
       
     protected:
       static Trait* traitOf(int trait, Organism* organism) { return organism->m_traits[trait]; }

@@ -39,10 +39,16 @@ namespace Avida {
   
   class EpigeneticObject
   {
+    friend class Genome;
   public:
     LIB_EXPORT virtual ~EpigeneticObject() = 0;
     
+    LIB_EXPORT virtual EpigeneticObject* Clone() = 0;
+    
     LIB_EXPORT virtual bool Serialize(ArchivePtr ar) const = 0;
+
+  private:
+    LIB_EXPORT virtual void AttachTo(Genome& genome) = 0;
   };
   
   
@@ -52,43 +58,38 @@ namespace Avida {
   class Genome
   {
   private:
-    class InstSetPropertyMap;
-    
-  private:
-    HardwareTypeID m_hw_type;
+    HardwareConfigID m_hw_config;
+    BiotaTraitSet m_traits;
     GeneticRepresentationPtr m_representation;
-    Apto::Map<Apto::String, Apto::SmartPtr<EpigeneticObject> > m_epigenetic_objs;
+    Apto::Map<Apto::String, EpigeneticObject*> m_epigenetic_objs;
     
   public:
     LIB_EXPORT Genome();
-    LIB_EXPORT Genome(HardwareTypeID hw, const PropertyMap& props, GeneticRepresentationPtr rep);
+    LIB_EXPORT Genome(HardwareConfigID hw, const BiotaTraitSet& traits, const PropertyMap& props, GeneticRepresentationPtr rep);
     LIB_EXPORT explicit Genome(const Apto::String& genome_str);
     LIB_EXPORT Genome(const Genome& genome);
     
     
     // Accessors
-    LIB_EXPORT inline HardwareTypeID HardwareType() const { return m_hw_type; }
-    
-    LIB_EXPORT inline PropertyMap& Properties() { assert(m_props.GetSize() > 0); return m_props; }
-    LIB_EXPORT inline const PropertyMap& Properties() const { assert(m_props.GetSize() > 0); return m_props; }
+    LIB_EXPORT inline HardwareConfigID HardwareConfig() const { return m_hw_config; }
+    LIB_EXPORT inline const BiotaTraitSet& Traits() const { return m_traits; }
     
     LIB_EXPORT inline GeneticRepresentationPtr Representation() { return m_representation; }
     LIB_EXPORT inline ConstGeneticRepresentationPtr Representation() const { return const_cast<GeneticRepresentationPtr&>(m_representation); }
     
     
     // Epigenetic Objects
-    template <typename T> bool AttachEpigeneticObject(Apto::SmartPtr<T> obj)
+    template <typename T> bool AttachEpigeneticObject(T obj)
     {
       if (m_epigenetic_objs.Has(T::ObjectKey)) return false;
       m_epigenetic_objs.Set(T::ObjectKey, obj);
+      obj->AttachTo(*this);
       return true;
     }
     
-    template <typename T> Apto::SmartPtr<T> GetEpigeneticObject()
+    template <typename T> T* GetEpigeneticObject()
     {
-      Apto::SmartPtr<T> rtn;
-      rtn.DynamicCastFrom(m_epigenetic_objs.Get(T::ObjectKey));
-      return rtn;
+      return dynamic_cast<T>(m_epigenetic_objs.Get(T::ObjectKey));
     }
     
     
@@ -103,40 +104,6 @@ namespace Avida {
     LIB_EXPORT bool Serialize(ArchivePtr ar) const;
     LIB_EXPORT static GenomePtr Deserialize(ArchivePtr ar);
     LIB_EXPORT bool LegacySave(void* df) const;
-    
-  private:
-    class InstSetPropertyMap : public PropertyMap
-    {
-    private:
-      StringProperty m_inst_set;
-      
-    public:
-      LIB_LOCAL InstSetPropertyMap();
-      LIB_LOCAL ~InstSetPropertyMap();
-      
-      LIB_LOCAL int GetSize() const;
-      
-      LIB_LOCAL bool operator==(const PropertyMap& p) const;
-      
-      LIB_LOCAL bool Has(const PropertyID& p_id) const;
-      
-      LIB_LOCAL const Property& Get(const PropertyID& p_id) const;
-      
-      LIB_LOCAL bool SetValue(const PropertyID& p_id, const Apto::String& prop_value);
-      LIB_LOCAL bool SetValue(const PropertyID& p_id, const int prop_value);
-      LIB_LOCAL bool SetValue(const PropertyID& p_id, const double prop_value);
-      
-      
-      LIB_LOCAL void Define(PropertyPtr p);
-      LIB_LOCAL bool Remove(const PropertyID& p_id);
-      
-      LIB_LOCAL ConstPropertyIDSetPtr PropertyIDs() const;
-      
-      LIB_LOCAL bool Serialize(ArchivePtr ar) const;
-    };
-    
-  private:
-    InstSetPropertyMap m_props;
   };
 };
 

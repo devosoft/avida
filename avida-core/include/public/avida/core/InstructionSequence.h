@@ -67,6 +67,8 @@ namespace Avida {
 
   class InstructionSequence : public GeneticRepresentation
   {
+  public:
+    static GeneticRepresentationType TypeID;
   protected:
     Apto::Array<Instruction> m_seq;
     int m_active_size;
@@ -78,6 +80,7 @@ namespace Avida {
     LIB_EXPORT explicit InstructionSequence(const Apto::String& str);
     LIB_EXPORT virtual ~InstructionSequence();
     
+    LIB_EXPORT GeneticRepresentationType Type();
 
     // Accessors
     LIB_EXPORT inline int GetSize() const { return m_active_size; }

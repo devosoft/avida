@@ -89,7 +89,7 @@ namespace Avida {
       
       
       // Event Handling
-      LIB_EXPORT void NotifyEvent(OrganismEvent event_type);
+      LIB_EXPORT void NotifyOrganismEvent(OrganismEvent event_type);
       LIB_EXPORT void AttachListener(EventListener* listener);
       LIB_EXPORT void DetachListener(EventListener* listener);
       

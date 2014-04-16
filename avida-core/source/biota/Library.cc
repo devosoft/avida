@@ -1,8 +1,8 @@
 /*
- *  biota/EventListener.h
+ *  biota/Library.cc
  *  avida-core
  *
- *  Created by David on 4/10/14.
+ *  Created by David on 4/16/14.
  *  Copyright 2014 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,27 +22,32 @@
  *
  */
 
-#ifndef AvidaBiotaEventListener_h
-#define AvidaBiotaEventListener_h
-
-#include "avida/biota/Types.h"
+#include "avida/biota/Library.h"
 
 
-namespace Avida {
-  namespace Biota {
+bool Avida::Biota::Library::RegisterTraitType(const Apto::String& type_name, TraitCreateFunctor create)
+{
+  Apto::MutexAutoLock lock(m_mutex);
+  
+  if (m_trait_types.Has(type_name)) return false;
+  
+  TraitType* hw_type = new TraitType(create);
+  m_trait_types.Set(type_name, hw_type);
+  
+  return true;
+}
 
-    // Biota::OrganismListener - Object that wishes to be notifed of organism events
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class EventListener
-    {
-    public:
-      LIB_EXPORT virtual ~EventListener() = 0;
-      
-      LIB_EXPORT virtual void NotifyOrganismEvent(OrganismEvent event_type) = 0;
-    };
 
-  };
-};
+Avida::Biota::Library::Library()
+{
+  ;
+}
 
-#endif
+
+Avida::Biota::Library::~Library()
+{
+  for (Apto::Map<Apto::String, TraitType*>::ValueIterator it = m_trait_types.Values(); it.Next();) {
+    delete (*it.Get());
+  }
+}
+

@@ -59,11 +59,12 @@ namespace Avida {
         Util::ArgSchema& schema;
         FeatureCreateFunctor create;
         FeatureItemConfigFunctor config;
+        Apto::Set<Apto::String> hw_compatibility;
         
         
         LIB_LOCAL inline FeatureType(Util::ArgSchema& in_schema, FeatureCreateFunctor in_create,
-                                     FeatureItemConfigFunctor in_config)
-        : schema(in_schema), create(in_create), config(in_config) { ; }
+                                     FeatureItemConfigFunctor in_config, Apto::Set<Apto::String> in_compat)
+        : schema(in_schema), create(in_create), config(in_config), hw_compatibility(in_compat) { ; }
       };
 
     private:
@@ -106,7 +107,8 @@ namespace Avida {
       
       
       LIB_EXPORT int RegisterFeatureType(const Apto::String& type_name, Util::ArgSchema& arg_schema,
-                                         FeatureCreateFunctor feat_create, FeatureItemConfigFunctor feat_conf);
+                                         FeatureCreateFunctor feat_create, FeatureItemConfigFunctor feat_conf,
+                                         Apto::Set<Apto::String> feat_hw_compat);
 
     private:
       LIB_LOCAL Library();

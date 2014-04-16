@@ -1,8 +1,8 @@
 /*
- *  biota/EventListener.h
+ *  core/Library.cc
  *  avida-core
  *
- *  Created by David on 4/10/14.
+ *  Created by David on 4/16/14.
  *  Copyright 2014 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,27 +22,32 @@
  *
  */
 
-#ifndef AvidaBiotaEventListener_h
-#define AvidaBiotaEventListener_h
-
-#include "avida/biota/Types.h"
+#include "avida/core/Library.h"
 
 
-namespace Avida {
-  namespace Biota {
+bool Avida::Library::RegisterEpigeneticObjectType(const Apto::String& type_name, EpigeneticObjectCreateFunctor create)
+{
+  Apto::MutexAutoLock lock(m_mutex);
+  
+  if (m_epi_types.Has(type_name)) return false;
+  
+  EpigeneticObjectType* epi_type = new EpigeneticObjectType(create);
+  m_epi_types.Set(type_name, epi_type);
+  
+  return true;
+}
 
-    // Biota::OrganismListener - Object that wishes to be notifed of organism events
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class EventListener
-    {
-    public:
-      LIB_EXPORT virtual ~EventListener() = 0;
-      
-      LIB_EXPORT virtual void NotifyOrganismEvent(OrganismEvent event_type) = 0;
-    };
 
-  };
-};
+Avida::Library::Library()
+{
+  ;
+}
 
-#endif
+
+Avida::Library::~Library()
+{
+  for (Apto::Map<Apto::String, EpigeneticObjectType*>::ValueIterator it = m_epi_types.Values(); it.Next();) {
+    delete (*it.Get());
+  }
+}
+

@@ -222,11 +222,11 @@ const Avida::Genome& Avida::Biota::Organism::UnitGenome() const { return m_initi
 const Avida::PropertyMap& Avida::Biota::Organism::Properties() const { return *m_prop_map; }
 
 
-void Avida::Biota::Organism::NotifyEvent(OrganismEvent event_type)
+void Avida::Biota::Organism::NotifyOrganismEvent(OrganismEvent event_type)
 {
   // Notify all (active) traits of the event
   for (int i = 0; i < m_traits.GetSize(); i++) {
-    if (m_traits[i]) m_traits[i]->NotifyEvent(event_type);
+    if (m_traits[i]) m_traits[i]->NotifyOrganismEvent(event_type);
   }
   
   // Notify all attached listeners of the event

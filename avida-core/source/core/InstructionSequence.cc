@@ -25,9 +25,11 @@
 #include "avida/core/InstructionSequence.h"
 
 
-const int MEMORY_INCREASE_MINIMUM = 5;
-const double MEMORY_INCREASE_FACTOR = 1.5;
-const double MEMORY_SHRINK_TEST_FACTOR = 4.0;
+static const int MEMORY_INCREASE_MINIMUM = 5;
+static const double MEMORY_INCREASE_FACTOR = 1.5;
+static const double MEMORY_SHRINK_TEST_FACTOR = 4.0;
+
+Avida::GeneticRepresentationType Avida::InstructionSequence::TypeID("InstructionSequence");
 
 
 Avida::InstructionSequence::InstructionSequence(const InstructionSequence& seq)
@@ -61,6 +63,10 @@ Avida::InstructionSequence::InstructionSequence(const Apto::String& str)
 
 Avida::InstructionSequence::~InstructionSequence() { ; }
 
+Avida::GeneticRepresentationType Avida::InstructionSequence::Type()
+{
+  return TypeID;
+}
 
 Apto::String Avida::Instruction::GetSymbol() const
 {
