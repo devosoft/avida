@@ -42,6 +42,7 @@ namespace Avida {
       Apto::RWLock m_rwlock;
       
       Apto::Map<ActionTriggerID, ActionTriggerPtr> m_action_triggers;
+      NumericIOActionTriggerList m_num_io_triggers;
 
       Apto::Array<ResourceDefinition*> m_res_defs;
       Apto::Map<Apto::String, int> m_res_name_map;
@@ -59,8 +60,11 @@ namespace Avida {
       LIB_EXPORT ConstActionTriggerIDSetPtr GetActionTriggerIDs() const;
       LIB_EXPORT ConstActionTriggerPtr GetActionTrigger(const ActionTriggerID& trigger_id) const;
       
+      LIB_EXPORT void AddNumericIOActionTrigger(ActionTrigger* trigger, NumericIOAction action);
+      LIB_EXPORT inline const NumericIOActionTriggerList NumericIOActionTriggers() const { return m_num_io_triggers; }
+      
       LIB_EXPORT ResourceManager* CreateResourceManagerForStructure(Structure::Controller* structure);
-      LIB_EXPORT ResourceManager* CreateLocalResourceManager();
+      LIB_EXPORT LocalResourceManager* CreateLocalResourceManager();
       
       
       LIB_EXPORT bool AttachTo(Universe* universe);

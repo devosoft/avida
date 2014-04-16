@@ -1,8 +1,10 @@
 /*
- *  primitive.cc
- *  Avida
+ *  main.cc
+ *  avida3
  *
- *  Copyright 1999-2011 Michigan State University. All rights reserved.
+ *  Created by David on 4/16/14.
+ *  Copyright 2013-2014 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -15,6 +17,8 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  Authors: David M. Bryson <david@programerror.com
  *
  */
 
@@ -31,8 +35,6 @@
 #include "avida/world/Manager.h"
 
 #include "avida/private/structure/types/TwoDimensionalGrid.h"
-
-#include "cAvidaConfig.h"
 
 #include "Avida3Driver.h"
 
@@ -52,7 +54,7 @@ int main(int argc, char * argv[])
   Avida::Initialize();
   
   std::cout << Avida::Version::Banner() << std::endl;
-
+  
   // Initialize the configuration data...
   Apto::Map<Apto::String, Apto::String> defs;
   cAvidaConfig* cfg = new cAvidaConfig();

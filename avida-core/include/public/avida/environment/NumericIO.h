@@ -30,7 +30,7 @@
 
 namespace Avida {
   namespace Environment {
-    
+
     // Environment::NumericIO - holds numeric inputs and outputs that may be used to perform environment actions
     // --------------------------------------------------------------------------------------------------------------
     
@@ -139,7 +139,7 @@ namespace Avida {
     private:
       void setupLogicID();
     };
-
+  
   };
 };
 

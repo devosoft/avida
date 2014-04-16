@@ -26,3 +26,17 @@
 
 
 Avida::Environment::ReactionProcess::~ReactionProcess() { ; }
+
+Avida::Environment::ReactionProcess* Avida::Environment::Reaction::AddProcess()
+{
+  ReactionProcess* new_process = new ReactionProcess();
+  m_process_list.PushRear(new_process);
+  return new_process;
+}
+
+Avida::Environment::ReactionRequisite* Avida::Environment::Reaction::AddRequisite()
+{
+  ReactionRequisite* new_requisite = new ReactionRequisite();
+  m_requisite_list.PushRear(new_requisite);
+  return new_requisite;
+}

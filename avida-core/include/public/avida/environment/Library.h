@@ -49,10 +49,9 @@ namespace Avida {
       {
         Util::ArgSchema schema;
         ActionSetup setup;
-        ActionTest test;
         
-        LIB_LOCAL inline ActionType(Util::ArgSchema& in_schema, ActionSetup in_setup, ActionTest in_test)
-        : schema(in_schema), setup(in_setup), test(in_test) { ; }
+        LIB_LOCAL inline ActionType(Util::ArgSchema& in_schema, ActionSetup in_setup)
+        : schema(in_schema), setup(in_setup) { ; }
       };
 
       struct ProcessType
@@ -96,8 +95,7 @@ namespace Avida {
       }
       
 
-      LIB_EXPORT bool RegisterActionType(const Apto::String& type_name, Util::ArgSchema& arg_schema, ActionSetup in_setup,
-                                         ActionTest in_test);
+      LIB_EXPORT bool RegisterActionType(const Apto::String& type_name, Util::ArgSchema& arg_schema, ActionSetup in_setup);
       
       
       // ---------- Process Type Handling ----------

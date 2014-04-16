@@ -39,7 +39,10 @@ namespace Avida {
     class ActionTrigger;
     class Context;
     class Library;
+    class LocalResourceManager;
     class Manager;
+    class NumericIO;
+    class NumericIOActionTrigger;
     class Reaction;
     class ReactionProcess;
     class ReactionRequisite;
@@ -62,7 +65,9 @@ namespace Avida {
     typedef Apto::SmartPtr<const ActionTriggerIDSet, Apto::ThreadSafeRefCount> ConstActionTriggerIDSetPtr;    
     typedef Apto::Set<ActionTriggerID>::ConstIterator ConstActionTriggerIDSetIterator;
     typedef Apto::Functor<bool, Apto::TL::Create</* setup arguments */> > ActionSetup;
-    typedef Apto::Functor<double, Apto::TL::Create</* test arguments */> > ActionTest;
+
+    typedef Apto::Functor<double, Apto::TL::Create<Avida::Context&, NumericIO&, Util::Args&> > NumericIOAction;
+    typedef Apto::List<NumericIOActionTrigger*> NumericIOActionTriggerList;
 
     typedef Apto::Functor<ReactionProcess*, Apto::TL::Create<Util::Args* /* setup arguments */> > ProcessCreate;
 

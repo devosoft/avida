@@ -26,7 +26,6 @@
 #define AvidaEnvironmentActionTrigger_h
 
 #include "avida/environment/Types.h"
-#include "avida/util/ArgParser.h"
 
 #include <cassert>
 
@@ -43,7 +42,6 @@ namespace Avida {
     private:
       const ActionTriggerID m_id;
       const Apto::String m_desc;
-      ActionTest m_action_test;
       int m_tmp_order;
       Util::Args* m_args;
 
@@ -52,31 +50,48 @@ namespace Avida {
 
       
       LIB_LOCAL inline ActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc,
-                                     ActionTest test, int tmp_order = -1, Util::Args* args = NULL)
-        : m_id(trigger_id), m_desc(desc), m_action_test(test), m_tmp_order(tmp_order), m_args(args)
+                                     int tmp_order = -1, Util::Args* args = NULL)
+        : m_id(trigger_id), m_desc(desc), m_tmp_order(tmp_order), m_args(args)
       {
         m_prop_id_ave = Apto::FormatStr("environment.triggers.%s.average", (const char*)trigger_id);
         m_prop_id_count = Apto::FormatStr("environment.triggers.%s.count", (const char*)trigger_id);
       }
 
     public:
-      LIB_EXPORT inline ~ActionTrigger() { ; }
+      LIB_EXPORT virtual ~ActionTrigger();
       
       LIB_EXPORT inline const ActionTriggerID& ID() const { return m_id; }
       LIB_EXPORT inline const Apto::String& Description() const { return m_desc; }
-      
-      LIB_EXPORT inline double Test(/* test arguments*/) { return m_action_test(/* test_arguments */); }
       
       
       LIB_EXPORT inline const Apto::String& AveragePropertyID() const { return m_prop_id_ave; }
       LIB_EXPORT inline const Apto::String& CountPropertyID() const { return m_prop_id_count; }
 
-      bool HasArguments() const { return (m_args != NULL); }
-      Avida::Util::Args& Arguments() const { assert(m_args); return *m_args; }
+      LIB_EXPORT inline bool HasArguments() const { return (m_args != NULL); }
+      LIB_EXPORT inline Avida::Util::Args& Arguments() const { assert(m_args); return *m_args; }
+      
+      LIB_EXPORT void Trigger(Avida::Context& ctx, Context& envctx, ResourceManager* resmgr, LocalResourceManager* lresmgr);
 
 
       // Transitionary methods
       LIB_EXPORT inline int TempOrdering() const { return m_tmp_order; }
+    };
+    
+
+    // Environment::NumericIOActionTrigger
+    // --------------------------------------------------------------------------------------------------------------
+    
+    class NumericIOActionTrigger
+    {
+    private:
+      ActionTrigger* m_trigger;
+      NumericIOAction m_action;
+      
+    public:
+      LIB_EXPORT inline NumericIOActionTrigger(ActionTrigger* trigger, NumericIOAction action)
+        : m_trigger(trigger), m_action(action) { ; }
+      
+      LIB_EXPORT void Evaluate(Avida::Context& ctx, Context& envctx, ResourceManager* resmgr, LocalResourceManager* lresmgr);
     };
     
   };

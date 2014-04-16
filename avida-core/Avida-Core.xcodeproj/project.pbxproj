@@ -7,19 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4A9B676315404DBD005AE9B9 /* Avida3Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7038918C13BBA88800606079 /* Avida3Driver.cc */; };
 		4A9B676515404DD1005AE9B9 /* Types.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C0588314CF106200AB38C5 /* Types.cc */; };
 		4A9B676615404DFC005AE9B9 /* GenomeLoader.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708D3E3214A429DF00204169 /* GenomeLoader.cc */; };
 		4AAF523B153DE7B100C66840 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		7000B64E15C6E90D00EE3F14 /* Clade.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7000B64C15C6E90D00EE3F14 /* Clade.cc */; };
 		7000B64F15C6E90D00EE3F14 /* CladeArbiter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7000B64D15C6E90D00EE3F14 /* CladeArbiter.cc */; };
 		7023EC3B0C0A431B00362B9C /* cActionLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */; };
-		7023EC540C0A431B00362B9C /* cEnvironment.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFC08DA5341007BA469 /* cEnvironment.cc */; };
 		7023EC550C0A431B00362B9C /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BF2FD0AB65DC700A923BF /* cEventList.cc */; };
 		7023EC6B0C0A431B00362B9C /* cInitFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891A08F7630100FC65FE /* cInitFile.cc */; };
-		7023EC830C0A431B00362B9C /* cReaction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0871E08F5E82D00FC65FE /* cReaction.cc */; };
-		7023EC850C0A431B00362B9C /* cReactionResult.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872208F5E82D00FC65FE /* cReactionResult.cc */; };
-		7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		7029D7BD1491AF7800C3B8AA /* GeneticRepresentation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7029D7BC1491AF7800C3B8AA /* GeneticRepresentation.cc */; };
 		70392027178DE091009BBCC5 /* NopSequence.h in Headers */ = {isa = PBXBuildFile; fileRef = 70392026178DE091009BBCC5 /* NopSequence.h */; };
 		70392029178DE0AA009BBCC5 /* NopSequence.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70392028178DE0AA009BBCC5 /* NopSequence.cc */; };
@@ -28,8 +23,6 @@
 		703EEEA518A5819A0059C07B /* BitArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 703EEEA418A5819A0059C07B /* BitArray.cc */; };
 		7042DF15128C90240062501F /* Listener.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7042DF13128C90240062501F /* Listener.cc */; };
 		704349DE16B9ACCC00759960 /* Library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704349DD16B9ACCC00759960 /* Library.cc */; };
-		704C629A160CA668004E9B25 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
-		704C629D160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 704C629C160CA6CC004E9B25 /* libtcmalloc-1.4.a */; };
 		704C629E160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 704C629C160CA6CC004E9B25 /* libtcmalloc-1.4.a */; };
 		704C62A0160CA6D9004E9B25 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
 		70556A0916BB647100EAAA9B /* Base.h in Headers */ = {isa = PBXBuildFile; fileRef = 70556A0516BB647100EAAA9B /* Base.h */; };
@@ -92,7 +85,6 @@
 		70821D8816B8657900B90333 /* Global.h in Headers */ = {isa = PBXBuildFile; fileRef = 70821D8416B8657900B90333 /* Global.h */; };
 		70821D8916B8657900B90333 /* Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 70821D8516B8657900B90333 /* Internal.h */; };
 		70821D8B16B868C300B90333 /* ResourceManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70821D8A16B868C300B90333 /* ResourceManager.cc */; };
-		7092601B18B65E41001624AC /* NumericIO.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7092601A18B65E41001624AC /* NumericIO.cc */; };
 		7092603818B661C5001624AC /* LogicActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7092603618B661C5001624AC /* LogicActions.cc */; };
 		7092603918B661C5001624AC /* SequenceActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7092603718B661C5001624AC /* SequenceActions.cc */; };
 		7092603B18B6A460001624AC /* Reaction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7092603A18B6A460001624AC /* Reaction.cc */; };
@@ -137,7 +129,6 @@
 		70D5B50214F4009000D15FFD /* EnvironmentActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705ABB180A8A6A6000A6A80E /* EnvironmentActions.cc */; };
 		70DC2759178F514E00A93DA4 /* InstArchCPU.h in Headers */ = {isa = PBXBuildFile; fileRef = 70DC2758178F514E00A93DA4 /* InstArchCPU.h */; };
 		70DC275B178F526E00A93DA4 /* InstArchCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DC275A178F526E00A93DA4 /* InstArchCPU.cc */; };
-		70DCAC9C097AF7C0002F8733 /* avida3.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* avida3.cc */; };
 		70DF729013BE20130085F85E /* Universe.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DF728F13BE20130085F85E /* Universe.cc */; };
 		70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* Driver.cc */; };
 		70FA7AC8138C308000DC70D4 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
@@ -145,16 +136,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		70486B9508267145009328F0 /* Create work dir */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
-			dstPath = /usr/local/share/avida/config;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			name = "Create work dir";
-			runOnlyForDeploymentPostprocessing = 1;
-		};
 		70B651B50BEA9AC2002472ED /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -183,8 +164,6 @@
 		701640451822E21800D74F28 /* Trait.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Trait.h; sourceTree = "<group>"; };
 		7023EC330C0A426900362B9C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7029D7BC1491AF7800C3B8AA /* GeneticRepresentation.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeneticRepresentation.cc; sourceTree = "<group>"; };
-		702D4EF508DA5328007BA469 /* cEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEnvironment.h; sourceTree = "<group>"; };
-		702D4EFC08DA5341007BA469 /* cEnvironment.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cEnvironment.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		702E1A4814EC18DE009E751C /* OrganismTrace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OrganismTrace.h; sourceTree = "<group>"; };
 		702E1A4A14EC1971009E751C /* OrganismTrace.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OrganismTrace.cc; sourceTree = "<group>"; };
 		702FF6CE149078A100C60FF0 /* Properties.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Properties.h; sourceTree = "<group>"; };
@@ -194,8 +173,6 @@
 		703549281333E36800D3865C /* Listener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Listener.h; sourceTree = "<group>"; };
 		703549291333E36800D3865C /* Map.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
 		703549CE1337BB6D00D3865C /* UniverseDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UniverseDriver.h; sourceTree = "<group>"; };
-		7038918C13BBA88800606079 /* Avida3Driver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Avida3Driver.cc; sourceTree = "<group>"; };
-		7038918D13BBA88800606079 /* Avida3Driver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Avida3Driver.h; sourceTree = "<group>"; };
 		7038918F13BBB2A900606079 /* Context.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Context.h; sourceTree = "<group>"; };
 		7038919013BBB6D000606079 /* Universe.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Universe.h; sourceTree = "<group>"; };
 		70392026178DE091009BBCC5 /* NopSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NopSequence.h; sourceTree = "<group>"; };
@@ -348,10 +325,6 @@
 		70A9478D17A03133007C639E /* VisualSensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualSensor.h; sourceTree = "<group>"; };
 		70A9479017A03178007C639E /* VisualSensor.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VisualSensor.cc; sourceTree = "<group>"; };
 		70ADB20A133A7995000B9C40 /* Feedback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Feedback.h; sourceTree = "<group>"; };
-		70B0870E08F5E81000FC65FE /* cReaction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cReaction.h; sourceTree = "<group>"; };
-		70B0871208F5E81000FC65FE /* cReactionResult.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cReactionResult.h; sourceTree = "<group>"; };
-		70B0871E08F5E82D00FC65FE /* cReaction.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cReaction.cc; sourceTree = "<group>"; };
-		70B0872208F5E82D00FC65FE /* cReactionResult.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cReactionResult.cc; sourceTree = "<group>"; };
 		70B088FF08F762EA00FC65FE /* cInitFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInitFile.h; sourceTree = "<group>"; };
 		70B0891A08F7630100FC65FE /* cInitFile.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInitFile.cc; sourceTree = "<group>"; };
 		70B1B1D913F43016005DDF90 /* Properties.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Properties.cc; sourceTree = "<group>"; };
@@ -371,8 +344,6 @@
 		70DAE8E314B4B01900FE5A6A /* Freezer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Freezer.cc; sourceTree = "<group>"; };
 		70DC2758178F514E00A93DA4 /* InstArchCPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InstArchCPU.h; sourceTree = "<group>"; };
 		70DC275A178F526E00A93DA4 /* InstArchCPU.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InstArchCPU.cc; sourceTree = "<group>"; };
-		70DCAC57097AF730002F8733 /* main.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
-		70DCAC9B097AF7C0002F8733 /* avida3.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = avida3.cc; sourceTree = "<group>"; };
 		70DF728F13BE20130085F85E /* Universe.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Universe.cc; sourceTree = "<group>"; };
 		70E14D4B1279FA5B0059FB9D /* Driver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Driver.cc; sourceTree = "<group>"; };
 		70F27F0C13B4E59F008A88A7 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
@@ -390,7 +361,6 @@
 		70FEF6371381CAB900A9D082 /* Manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
 		70FEF6381381CAB900A9D082 /* Provider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Provider.h; sourceTree = "<group>"; };
 		70FEF65D1382C48900A9D082 /* Manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Manager.cc; sourceTree = "<group>"; };
-		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -416,16 +386,6 @@
 				70FA7AC9138C308500DC70D4 /* libviewer-core.a in Frameworks */,
 				704C629E160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */,
 				704C62A0160CA6D9004E9B25 /* libapto.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DCC3164B07626CF3008F7A48 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */,
-				704C629A160CA668004E9B25 /* libapto.a in Frameworks */,
-				704C629D160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -923,33 +883,6 @@
 			path = features;
 			sourceTree = "<group>";
 		};
-		70DCAC54097AF730002F8733 /* targets */ = {
-			isa = PBXGroup;
-			children = (
-				70DCAC55097AF730002F8733 /* avida */,
-				70DCAC56097AF730002F8733 /* avida-s */,
-			);
-			path = targets;
-			sourceTree = "<group>";
-		};
-		70DCAC55097AF730002F8733 /* avida */ = {
-			isa = PBXGroup;
-			children = (
-				7038918D13BBA88800606079 /* Avida3Driver.h */,
-				7038918C13BBA88800606079 /* Avida3Driver.cc */,
-				70DCAC9B097AF7C0002F8733 /* avida3.cc */,
-			);
-			path = avida;
-			sourceTree = "<group>";
-		};
-		70DCAC56097AF730002F8733 /* avida-s */ = {
-			isa = PBXGroup;
-			children = (
-				70DCAC57097AF730002F8733 /* main.cc */,
-			);
-			path = "avida-s";
-			sourceTree = "<group>";
-		};
 		70F962BD135AA2E7008EDD1C /* unittests */ = {
 			isa = PBXGroup;
 			children = (
@@ -1019,7 +952,6 @@
 				705E53D216A7103600392BA7 /* output */,
 				705E54BE16B309E200392BA7 /* structure */,
 				709CDEA4149BF69000995644 /* systematics */,
-				70DCAC54097AF730002F8733 /* targets */,
 				DCC314D8076253A2008F7A48 /* tools */,
 				70A53BC7135B740000C3E661 /* util */,
 				70A1E324125CDF2B00D56AC4 /* viewer */,
@@ -1031,14 +963,8 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
-				702D4EF508DA5328007BA469 /* cEnvironment.h */,
-				702D4EFC08DA5341007BA469 /* cEnvironment.cc */,
 				708BF3010AB65DD300A923BF /* cEventList.h */,
 				708BF2FD0AB65DC700A923BF /* cEventList.cc */,
-				70B0870E08F5E81000FC65FE /* cReaction.h */,
-				70B0871E08F5E82D00FC65FE /* cReaction.cc */,
-				70B0871208F5E81000FC65FE /* cReactionResult.h */,
-				70B0872208F5E82D00FC65FE /* cReactionResult.cc */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -1055,7 +981,6 @@
 		DCC3164E07626CF3008F7A48 /* products */ = {
 			isa = PBXGroup;
 			children = (
-				DCC3164D07626CF3008F7A48 /* avida */,
 				70B6514C0BEA6FAD002472ED /* unit-tests */,
 				7023EC330C0A426900362B9C /* libavida-core.a */,
 				706C7B64125F64B000EDB4B9 /* libviewer-core.a */,
@@ -1168,23 +1093,6 @@
 			productReference = 70B6514C0BEA6FAD002472ED /* unit-tests */;
 			productType = "com.apple.product-type.tool";
 		};
-		DCC3164C07626CF3008F7A48 /* avida */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 702442D20859E0B00059BD9B /* Build configuration list for PBXNativeTarget "avida" */;
-			buildPhases = (
-				DCC3164A07626CF3008F7A48 /* Sources */,
-				DCC3164B07626CF3008F7A48 /* Frameworks */,
-				70486B9508267145009328F0 /* Create work dir */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = avida;
-			productName = primitive;
-			productReference = DCC3164D07626CF3008F7A48 /* avida */;
-			productType = "com.apple.product-type.tool";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1208,7 +1116,6 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DCC3164C07626CF3008F7A48 /* avida */,
 				70B6514B0BEA6FAD002472ED /* avida-tests */,
 				7023EC320C0A426900362B9C /* avida-core (static) */,
 				706C7B63125F64B000EDB4B9 /* avida-viewer (static) */,
@@ -1255,12 +1162,9 @@
 				70A27CCF18F7320C00A5AA75 /* EventListener.cc in Sources */,
 				70A27CD818FC29B800A5AA75 /* ActionHandler.cc in Sources */,
 				703EEEA218A548E80059C07B /* ConfigFile.cc in Sources */,
-				7023EC540C0A431B00362B9C /* cEnvironment.cc in Sources */,
 				7023EC550C0A431B00362B9C /* cEventList.cc in Sources */,
 				70DC275B178F526E00A93DA4 /* InstArchCPU.cc in Sources */,
-				7023EC830C0A431B00362B9C /* cReaction.cc in Sources */,
 				7092603918B661C5001624AC /* SequenceActions.cc in Sources */,
-				7023EC850C0A431B00362B9C /* cReactionResult.cc in Sources */,
 				7023EC6B0C0A431B00362B9C /* cInitFile.cc in Sources */,
 				70A9478B17A025A4007C639E /* InstMemSpace.cc in Sources */,
 				7070E6BF12109C1D0056BE1E /* (null) in Sources */,
@@ -1328,16 +1232,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DCC3164A07626CF3008F7A48 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				70DCAC9C097AF7C0002F8733 /* avida3.cc in Sources */,
-				4A9B676315404DBD005AE9B9 /* Avida3Driver.cc in Sources */,
-				7092601B18B65E41001624AC /* NumericIO.cc in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
@@ -1354,24 +1248,6 @@
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				PRODUCT_NAME = "avida-core";
-			};
-			name = Release;
-		};
-		702442D30859E0B00059BD9B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				PRODUCT_NAME = avida;
-			};
-			name = Debug;
-		};
-		702442D40859E0B00059BD9B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				PRODUCT_NAME = avida;
 			};
 			name = Release;
 		};
@@ -1480,15 +1356,6 @@
 			buildConfigurations = (
 				7023EC350C0A42BC00362B9C /* Debug */,
 				7023EC360C0A42BC00362B9C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		702442D20859E0B00059BD9B /* Build configuration list for PBXNativeTarget "avida" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				702442D30859E0B00059BD9B /* Debug */,
-				702442D40859E0B00059BD9B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -26,13 +26,13 @@
 
 
 bool Avida::Environment::Library::RegisterActionType(const Apto::String& type_name, Util::ArgSchema& arg_schema,
-                                                     ActionSetup in_setup, ActionTest in_test)
+                                                     ActionSetup in_setup)
 {
   Apto::MutexAutoLock lock(m_mutex);
   
   if (m_action_types.Has(type_name)) return false;
   
-  ActionType* action_type = new ActionType(arg_schema, in_setup, in_test);
+  ActionType* action_type = new ActionType(arg_schema, in_setup);
   m_action_types.Set(type_name, action_type);
   
   return true;

@@ -48,10 +48,25 @@ namespace Avida {
     private:
       const ReactionID m_id;
       
-    public:
-      Reaction(const ReactionID& reaction_id);
+      Apto::List<ReactionProcess*> m_process_list;
+      Apto::List<ReactionRequisite*> m_requisite_list;
+      bool m_active;
       
-      const ReactionID& GetID() const { return m_id; }
+    public:
+      LIB_EXPORT Reaction(const ReactionID& reaction_id);
+      
+      LIB_EXPORT inline const ReactionID& ID() const { return m_id; }
+      LIB_EXPORT inline bool IsActive() const { return m_active; }
+      
+      LIB_EXPORT inline const Apto::List<ReactionProcess*>& Processes() { return m_process_list; }
+      LIB_EXPORT inline const Apto::List<ReactionRequisite*>& Requisites() { return m_requisite_list; }
+      
+      LIB_EXPORT ReactionProcess* AddProcess();
+      LIB_EXPORT ReactionRequisite* AddRequisite();
+      
+      LIB_EXPORT inline void SetActive(bool value = true) { m_active = value; }
+      
+      
     };
     
     
