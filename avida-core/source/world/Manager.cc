@@ -38,7 +38,7 @@ Avida::World::Manager::~Manager()
 }
 
 
-Avida::World::ManagerPtr Avida::World::Manager::CreateWithTopLevelStructure(Universe* universe, Structure::Controller* structure)
+Avida::World::ManagerPtr Avida::World::Manager::CreateWithStructure(Universe* universe, Structure::Controller* structure)
 {
   ManagerPtr mgr(new Manager(universe, structure));
   

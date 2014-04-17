@@ -38,9 +38,8 @@ const Avida::UniverseFacetID Avida::Reserved::SystematicsFacetID("systematics");
 const Avida::UniverseFacetID Avida::Reserved::WorldManagerFacetID("worldmanager");
 
 
-Avida::Universe::Universe()
+Avida::Universe::Universe() : m_eventlist(this)
 {
-  
   
 }
 
@@ -102,6 +101,7 @@ bool Avida::Universe::AttachFacet(UniverseFacetID facet_id, UniverseFacetPtr fac
 
 void Avida::Universe::PerformUpdate(Context& ctx, Update current_update)
 {
+  m_eventlist.Process(ctx, current_update);
   for (int i = 0; i < m_facet_order.GetSize(); i++) {
     m_facet_order[i]->PerformUpdate(ctx, current_update);
   }
@@ -123,8 +123,10 @@ bool Avida::Universe::Serialize(ArchivePtr ar) const
 }
 
 
-void Avida::UniverseFacet::PerformUpdate(Context&, Update)
+void Avida::UniverseFacet::PerformUpdate(Context& ctx, Update current_update)
 {
+  (void)ctx;
+  (void)current_update;
 }
 
 

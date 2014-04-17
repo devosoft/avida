@@ -26,9 +26,6 @@
 
 #include "apto/core/FileSystem.h"
 
-#include "cActionLibrary.h"
-#include "cAvidaConfig.h"
-
 #include <iostream>
 #include <cstdio>
 

@@ -25,10 +25,6 @@
 
 #include "avida/core/Genome.h"
 
-#include "cHardwareManager.h"
-#include "cPhenotype.h"
-#include "cTestCPU.h"
-#include "cWorld.h"
 
 const Apto::String Avida::Systematics::GenomeTestMetrics::ObjectKey("Avida::Systematics::GenomeTestMetrics");
 

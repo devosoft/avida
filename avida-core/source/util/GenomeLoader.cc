@@ -25,9 +25,6 @@
 
 #include "avida/core/Genome.h"
 
-#include "cHardwareManager.h"
-#include "cInitFile.h"
-#include "cInstSet.h"
 
 
 Avida::GenomePtr Avida::Util::LoadGenomeDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm,

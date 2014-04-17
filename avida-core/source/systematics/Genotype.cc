@@ -29,8 +29,6 @@
 
 #include "avida/private/systematics/GenotypeArbiter.h"
 
-#include "cHardwareManager.h"
-
 
 static const Apto::BasicString<Apto::ThreadSafe> s_unit_prop_name_last_copied_size("last_copied_size");
 static const Apto::BasicString<Apto::ThreadSafe> s_unit_prop_name_last_executed_size("last_executed_size");

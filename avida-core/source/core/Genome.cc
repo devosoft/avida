@@ -120,7 +120,7 @@ Avida::GenomePtr Avida::Genome::Deserialize(ArchivePtr)
 bool Avida::Genome::LegacySave(void* dfp) const
 {
   Avida::Output::File& df = *static_cast<Avida::Output::File*>(dfp);
-  df.Write(m_hw_type, "Hardware Type ID", "hw_type");
+//  df.Write(m_hw_type, "Hardware Type ID", "hw_type");
   df.Write(m_representation->AsString(), "Genome Sequence", "sequence");
   return false;
 }

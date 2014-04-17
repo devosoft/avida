@@ -25,7 +25,7 @@
 #include "avida/core/Library.h"
 
 
-bool Avida::Library::RegisterEpigeneticObjectType(const Apto::String& type_name, EpigeneticObjectCreateFunctor create)
+bool Avida::Core::Library::RegisterEpigeneticObjectType(const Apto::String& type_name, EpigeneticObjectCreateFunctor create)
 {
   Apto::MutexAutoLock lock(m_mutex);
   
@@ -38,15 +38,47 @@ bool Avida::Library::RegisterEpigeneticObjectType(const Apto::String& type_name,
 }
 
 
-Avida::Library::Library()
+bool Avida::Core::Library::RegisterEventType(const Apto::String& type_name, Util::ArgSchema& schema, EventCreateFunctor create)
+{
+  Apto::MutexAutoLock lock(m_mutex);
+  
+  if (m_event_types.Has(type_name)) return false;
+  
+  EventType* event_type = new EventType(schema, create);
+  m_event_types.Set(type_name, event_type);
+  
+  return true;
+}
+
+
+bool Avida::Core::Library::RegisterEventTriggerType(const Apto::String& type_name, EventTriggerFunctor create)
+{
+  Apto::MutexAutoLock lock(m_mutex);
+  
+  if (m_event_trigger_types.Has(type_name)) return false;
+  
+  EventTriggerType* trigger_type = new EventTriggerType(create);
+  m_event_trigger_types.Set(type_name, trigger_type);
+  
+  return true;
+}
+
+
+Avida::Core::Library::Library()
 {
   ;
 }
 
 
-Avida::Library::~Library()
+Avida::Core::Library::~Library()
 {
   for (Apto::Map<Apto::String, EpigeneticObjectType*>::ValueIterator it = m_epi_types.Values(); it.Next();) {
+    delete (*it.Get());
+  }
+  for (Apto::Map<Apto::String, EventType*>::ValueIterator it = m_event_types.Values(); it.Next();) {
+    delete (*it.Get());
+  }
+  for (Apto::Map<Apto::String, EventTriggerType*>::ValueIterator it = m_event_trigger_types.Values(); it.Next();) {
     delete (*it.Get());
   }
 }

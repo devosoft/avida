@@ -36,6 +36,7 @@ namespace Avida {
     
     class ActionHandler;
     class EventListener;
+    class Library;
     class Manager;
     class Organism;
     class PlacementStrategy;

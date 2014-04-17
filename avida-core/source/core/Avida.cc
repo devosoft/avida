@@ -30,8 +30,6 @@
 #include "avida/private/environment/resources/Global.h"
 #include "avida/private/systematics/Genotype.h"
 
-#include "cActionLibrary.h"
-
 #include <csignal>
 
 
@@ -49,8 +47,6 @@ void Avida::Initialize()
   signal(SIGINT, exitAvida);
   
   GlobalObjectManager::Initialize();
-  
-  cActionLibrary::Initialize();
   
   Environment::Resources::Global::Initialize();
   Biota::Organism::Initialize();

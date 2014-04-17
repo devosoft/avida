@@ -99,7 +99,7 @@ namespace Avida {
       
     private:
       LIB_LOCAL InstSet(const Apto::String& name, const Apto::String& hardware_type, InstLib* inst_lib, Util::Args* args)
-        : m_name(name), m_hw_type(hardware_type), m_inst_lib(inst_lib), m_args(args) { ; }
+        : Config(args), m_name(name), m_hw_type(hardware_type), m_inst_lib(inst_lib) { ; }
       
       
     private:

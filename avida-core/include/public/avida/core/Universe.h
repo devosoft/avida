@@ -26,7 +26,7 @@
 #define AvidaCoreUniverse_h
 
 #include "apto/platform.h"
-#include "avida/core/Types.h"
+#include "avida/core/EventList.h"
 
 
 namespace Avida {
@@ -45,6 +45,8 @@ namespace Avida {
   class Universe
   {
   private:
+    EventList m_eventlist;
+    
     UniverseFacetPtr m_biota_manager;
     UniverseFacetPtr m_data_manager;
     UniverseFacetPtr m_environment;
@@ -59,6 +61,8 @@ namespace Avida {
   public:
     LIB_EXPORT Universe();
     LIB_EXPORT Universe(ConstArchivePtr ar);
+    
+    LIB_EXPORT inline EventList& Events() { return m_eventlist; }
     
     // General facet methods
     LIB_EXPORT bool AttachFacet(UniverseFacetID facet_id, UniverseFacetPtr facet);

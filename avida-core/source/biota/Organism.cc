@@ -24,7 +24,7 @@
 
 #include "avida/biota/Organism.h"
 
-#include "avida/biota/OrganismEventListener.h"
+#include "avida/biota/EventListener.h"
 #include "avida/biota/Trait.h"
 #include "avida/systematics/Group.h"
 
@@ -230,19 +230,19 @@ void Avida::Biota::Organism::NotifyOrganismEvent(OrganismEvent event_type)
   }
   
   // Notify all attached listeners of the event
-  for (Apto::Set<OrganismEventListener*>::Iterator it = m_listeners.Begin(); it.Next();) {
-    (*it.Get())->NotifyEvent(event_type);
+  for (Apto::Set<EventListener*>::Iterator it = m_listeners.Begin(); it.Next();) {
+    (*it.Get())->NotifyOrganismEvent(event_type);
   }
 }
 
 
 
-void Avida::Biota::Organism::AttachListener(OrganismEventListener* listener)
+void Avida::Biota::Organism::AttachListener(EventListener* listener)
 {
   m_listeners.Insert(listener);
 }
 
-void Avida::Biota::Organism::DetachListener(OrganismEventListener* listener)
+void Avida::Biota::Organism::DetachListener(EventListener* listener)
 {
   m_listeners.Remove(listener);
 }

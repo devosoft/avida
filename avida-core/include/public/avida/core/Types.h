@@ -49,13 +49,14 @@ namespace Avida {
   class Archive;
   class Context;
   class EpigeneticObject;
+  class EventAction;
+  class EventList;
   class Feedback;
   class GeneticRepresentation;
   class Genome;
   class GlobalObject;
   class Instruction;
   class InstructionSequence;
-  class Library;
   class Property;
   class PropertyMap;
   template <typename T> struct PropertyTraits;
@@ -65,6 +66,14 @@ namespace Avida {
   class UniverseDriver;
   class UniverseFacet;
   struct Update;
+  
+  namespace Core {
+    class Library;    
+  }
+  
+  namespace Util {
+    class Args;
+  };
 
   
   // Enumeration Declarations
@@ -100,7 +109,10 @@ namespace Avida {
   typedef Apto::Set<BiotaTraitID> BiotaTraitSet;
   
   typedef Apto::Functor<EpigeneticObject*, Apto::TL::Create<> > EpigeneticObjectCreateFunctor;
-    
+  
+  typedef Apto::Functor<EventAction*, Apto::TL::Create<Universe*, Context&, Util::Args*> > EventCreateFunctor;
+  typedef Apto::Functor<double, Apto::TL::Create<Universe*, Context&, Update> > EventTriggerFunctor;
+  
   typedef Apto::SmartPtr<GeneticRepresentation> GeneticRepresentationPtr;
   typedef Apto::SmartPtr<const GeneticRepresentation> ConstGeneticRepresentationPtr;
   

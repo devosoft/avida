@@ -28,7 +28,6 @@
 
 Avida::Hardware::InstSet::~InstSet()
 {
-  delete m_args;
 }
 
 
