@@ -91,7 +91,6 @@
 		709CDEAA149BF69000995644 /* Group.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709CDEA6149BF69000995644 /* Group.cc */; };
 		709CDEAB149BF69000995644 /* Manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709CDEA7149BF69000995644 /* Manager.cc */; };
 		709CDEAC149BF69000995644 /* Unit.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709CDEA8149BF69000995644 /* Unit.cc */; };
-		709CDEC8149EE54900995644 /* GenomeTestMetrics.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709CDEC7149EE54900995644 /* GenomeTestMetrics.cc */; };
 		709CDECA149EEF6A00995644 /* SexualAncestry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709CDEC9149EEF6A00995644 /* SexualAncestry.cc */; };
 		709CDECD149EFD4A00995644 /* Genotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709CDECB149EFD4A00995644 /* Genotype.cc */; };
 		709CDECE149EFD4A00995644 /* GenotypeArbiter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709CDECC149EFD4A00995644 /* GenotypeArbiter.cc */; };
@@ -282,11 +281,9 @@
 		709CDEA6149BF69000995644 /* Group.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Group.cc; sourceTree = "<group>"; };
 		709CDEA7149BF69000995644 /* Manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Manager.cc; sourceTree = "<group>"; };
 		709CDEA8149BF69000995644 /* Unit.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Unit.cc; sourceTree = "<group>"; };
-		709CDEC3149EE2C000995644 /* GenomeTestMetrics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GenomeTestMetrics.h; sourceTree = "<group>"; };
 		709CDEC4149EE2C000995644 /* Genotype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Genotype.h; sourceTree = "<group>"; };
 		709CDEC5149EE2C000995644 /* GenotypeArbiter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GenotypeArbiter.h; sourceTree = "<group>"; };
 		709CDEC6149EE2C000995644 /* SexualAncestry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SexualAncestry.h; sourceTree = "<group>"; };
-		709CDEC7149EE54900995644 /* GenomeTestMetrics.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GenomeTestMetrics.cc; sourceTree = "<group>"; };
 		709CDEC9149EEF6A00995644 /* SexualAncestry.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SexualAncestry.cc; sourceTree = "<group>"; };
 		709CDECB149EFD4A00995644 /* Genotype.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Genotype.cc; sourceTree = "<group>"; };
 		709CDECC149EFD4A00995644 /* GenotypeArbiter.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GenotypeArbiter.cc; sourceTree = "<group>"; };
@@ -788,7 +785,6 @@
 				709CDEA5149BF69000995644 /* Arbiter.cc */,
 				7000B64C15C6E90D00EE3F14 /* Clade.cc */,
 				7000B64D15C6E90D00EE3F14 /* CladeArbiter.cc */,
-				709CDEC7149EE54900995644 /* GenomeTestMetrics.cc */,
 				709CDECB149EFD4A00995644 /* Genotype.cc */,
 				709CDECC149EFD4A00995644 /* GenotypeArbiter.cc */,
 				709CDEA6149BF69000995644 /* Group.cc */,
@@ -804,7 +800,6 @@
 			children = (
 				7000B64915C6E8F900EE3F14 /* Clade.h */,
 				7000B64A15C6E8F900EE3F14 /* CladeArbiter.h */,
-				709CDEC3149EE2C000995644 /* GenomeTestMetrics.h */,
 				709CDEC4149EE2C000995644 /* Genotype.h */,
 				709CDEC5149EE2C000995644 /* GenotypeArbiter.h */,
 				709CDEC6149EE2C000995644 /* SexualAncestry.h */,
@@ -1129,7 +1124,6 @@
 				70B9DC4913B91F6B00C833BB /* Manager.cc in Sources */,
 				709CDEA9149BF69000995644 /* Arbiter.cc in Sources */,
 				709CDEAA149BF69000995644 /* Group.cc in Sources */,
-				709CDEC8149EE54900995644 /* GenomeTestMetrics.cc in Sources */,
 				70CA03DE18FED43D00C1F917 /* Library.cc in Sources */,
 				709CDECD149EFD4A00995644 /* Genotype.cc in Sources */,
 				709CDECE149EFD4A00995644 /* GenotypeArbiter.cc in Sources */,

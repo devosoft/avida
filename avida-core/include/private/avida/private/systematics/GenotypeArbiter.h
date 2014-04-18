@@ -129,7 +129,6 @@ namespace Avida {
       
       bool Serialize(ArchivePtr ar) const;
       bool LegacySave(void* df) const;
-      GroupPtr LegacyLoad(void* props);
       
       IteratorPtr Begin();
       

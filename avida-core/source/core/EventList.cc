@@ -170,7 +170,7 @@ bool Avida::EventList::LoadEventLine(Context& ctx, Update current_update, const 
     return false;
   }
   
-  return AddEvent(ctx, current_update, trigger, start, interval, stop, action);
+  return AddEvent(ctx, current_update, trigger_type->trigger, start, interval, stop, action);
 }
 
 

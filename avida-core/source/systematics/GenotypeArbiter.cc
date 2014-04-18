@@ -126,14 +126,6 @@ bool Avida::Systematics::GenotypeArbiter::LegacySave(void* dfp) const
   return true;
 }
 
-Avida::Systematics::GroupPtr Avida::Systematics::GenotypeArbiter::LegacyLoad(void* props)
-{
-  GenotypePtr g(new Genotype(thisPtr(), m_next_id++, props));
-  m_historic.Push(g, &g->m_handle);
-  return g;
-}
-
-
 
 Avida::Systematics::GroupPtr Avida::Systematics::GenotypeArbiter::Group(GroupID g_id)
 {

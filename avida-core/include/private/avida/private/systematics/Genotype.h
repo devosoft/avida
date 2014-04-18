@@ -161,7 +161,6 @@ namespace Avida {
     private:
       // Methods called by GenotypeArbiter
       Genotype(GenotypeArbiterPtr mgr, GroupID in_id, UnitPtr founder, Update update, ConstGroupMembershipPtr parents);
-      Genotype(GenotypeArbiterPtr mgr, GroupID in_id, void* props);
 
       void NotifyNewUnit(UnitPtr u);
       void UpdateReset();

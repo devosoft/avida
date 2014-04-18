@@ -179,72 +179,6 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, Un
 }
 
 
-Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, void* prop_p)
-: Group(in_id)
-, m_mgr(mgr)
-, m_handle(NULL)
-, m_name("001-no_name")
-, m_threshold(false)
-, m_active(false)
-, m_update_born(-1)
-, m_update_deactivated(-1)
-, m_depth(0)
-, m_active_offspring_genotypes(0)
-, m_num_organisms(0)
-, m_last_num_organisms(0)
-, m_total_organisms(0)
-, m_last_birth_cell(0)
-, m_last_group_id(-1)
-, m_last_forager_type(-1)
-, m_task_counts(mgr->NumEnvironmentActionTriggers())
-, m_prop_map(NULL)
-{
-  Apto::Map<Apto::String, Apto::String>& props = *(*static_cast<Apto::SmartPtr<Apto::Map<Apto::String, Apto::String> >*>(prop_p));
-  
-  m_src.transmission_type = DIVISION;
-  m_src.external = true;
-  m_src.arguments = props.Get("src_args");
-  if (m_src.arguments == "(none)") m_src.arguments = "";
-  
-  HashPropertyMap prop_map;
-  Apto::String inst_set = props.Get("inst_set");
-  if (inst_set == "") inst_set = "(default)";
-  
-  cHardwareManager::SetupPropertyMap(prop_map, inst_set);
-  m_genome = Avida::Genome(Apto::StrAs(props.Get("hw_type")), prop_map, GeneticRepresentationPtr(new InstructionSequence((const char*)props.Get("sequence"))));
-  
-  if (props.Has("gen_born")) {
-    m_generation_born = Apto::StrAs(props.Get("gen_born"));
-  } else {
-    m_generation_born = -1;
-  }
-  assert(props.Has("update_born"));
-  m_update_born = Apto::StrAs(props.Get("update_born"));
-  if (props.Has("update_deactivated")) {
-    m_update_deactivated = Apto::StrAs(props.Get("update_deactivated"));
-  } else {
-    m_update_deactivated = -1;
-  }
-  assert(props.Has("depth"));
-  m_depth = Apto::StrAs(props.Get("depth"));
-  
-  if (props.Has("parents")) {
-    m_parent_str = props.Get("parents");
-  } else if (props.Has("parent_id")) { // Backwards compatible load
-    m_parent_str = props.Get("parent_id");
-  }
-  if (m_parent_str == "(none)") m_parent_str = "";
-  cStringList parents(m_parent_str,',');
-  
-  m_parents.Resize(parents.GetSize());
-  for (int i = 0; i < m_parents.GetSize(); i++) {
-    GenotypePtr g;
-    g.DynamicCastFrom(m_mgr->Group(parents.Pop().AsInt()));
-    m_parents[i] = g;
-    assert(m_parents[i]);
-    m_parents[i]->AddPassiveReference();
-  }
-}
 
 
 Avida::Systematics::Genotype::~Genotype()
@@ -346,11 +280,11 @@ bool Avida::Systematics::Genotype::LegacySave(void* dfp) const
   
   df.Write(m_src.arguments.GetSize() ? (const char*)m_src.arguments : "(none)", "Source Args", "src_args");
   
-  cString str("");
+  Apto::String str("");
   if (m_parents.GetSize()) {
-    str += cStringUtil::Stringf("%d", m_parents[0]->ID());
+    str += Apto::FormatStr("%d", m_parents[0]->ID());
     for (int i = 1; i < m_parents.GetSize(); i++) {
-      str += cStringUtil::Stringf(",%d", m_parents[i]->ID());
+      str += Apto::FormatStr(",%d", m_parents[i]->ID());
     }
   }
   df.Write((str.GetSize()) ? str : "(none)", "Parent ID(s)", "parents");

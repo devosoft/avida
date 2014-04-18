@@ -22,8 +22,6 @@
 #ifndef DriverActions_h
 #define DriverActions_h
 
-class cActionLibrary;
-
-void RegisterDriverActions(cActionLibrary* action_lib);
+void RegisterDriverActions();
 
 #endif

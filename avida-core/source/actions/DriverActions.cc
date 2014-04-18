@@ -21,48 +21,30 @@
 
 #include "DriverActions.h"
 
+#include "avida/core/EventList.h"
 #include "avida/core/Feedback.h"
 #include "avida/core/UniverseDriver.h"
 
-#include "cAction.h"
-#include "cActionLibrary.h"
-#include "cStats.h"
-#include "cWorld.h"
-#include "cPopulation.h"
-
 #include <ctime>
 
-using namespace Avida;
 
-
-class cActionExit : public cAction
+class ActionExit : public Avida::EventAction
 {
 public:
-  cActionExit(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
+  ActionExit(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
   static const cString GetDescription() { return "No Arguments"; }
   void Process(cAvidaContext&) { m_world->GetDriver().Finish(); }
 };
 
-class cActionPause : public cAction
+
+// Exit Avida when the average generation is greater than or equal to a threshold value.
+class ActionExitAveGeneration : public Avida::EventAction
 {
+private:
+  double m_tgt_gen; // Target generation above which Avida should exit.
+
 public:
-  cActionPause(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext&) { m_world->GetDriver().Pause(); }
-};
-
-
-
-
-/*! Exit Avida when the average generation is greater than or equal to a
-threshold value.
-
-*/
-class cActionExitAveGeneration : public cAction {
-public:
-  /*! Constructor; parse out the targeted generation.
-  */
-  cActionExitAveGeneration(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
+  ActionExitAveGeneration(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
     cString largs(args);
     if(largs.GetSize()) {
       m_tgt_gen = largs.PopWord().AsDouble();
@@ -81,19 +63,18 @@ public:
       }
   }
   
-protected:
-  double m_tgt_gen; //!< Target generation above which Avida should exit.
 };
 
 
-/*! Exit Avida when the elapsed wallclock time has exceeded a threshold number
-of seconds, beginning from the construction of this object.
-*/
-class cActionExitElapsedTime : public cAction {
+// Exit when the elapsed wallclock time has exceeded a threshold number of seconds, beginning from the construction of this object.
+class ActionExitElapsedTime : public Avida::EventAction
+{
+private:
+  time_t m_time; // Number of seconds after which Avida should exit.
+  time_t m_then; // Time at which this object was constructed (the 'start' of Avida).
+
 public:
-  /*! Constructor; parse out the threshold time.
-  */
-  cActionExitElapsedTime(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
+  ActionExitElapsedTime(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
     cString largs(args);
     if(largs.GetSize()) {
       m_time = largs.PopWord().AsInt();
@@ -109,27 +90,21 @@ public:
   
   static const cString GetDescription() { return "Arguments: <int elapsed time [seconds]>"; }
   
-  /*! Check to see if we should exit Avida based on the elapsed time since construction
-  of this object.  This method is called based on the events file.
-  */
   void Process(cAvidaContext&) {
     if((time(0) - m_then) >= m_time) {
       m_world->GetDriver().Finish();
     }
   }
   
-protected:
-  time_t m_time; //!< Number of seconds after which Avida should exit.
-  time_t m_then; //!< Time at which this object was constructed (the 'start' of Avida).
 };
 
 
 
 
-void RegisterDriverActions(cActionLibrary* action_lib)
+void RegisterDriverActions()
 {
-  action_lib->Register<cActionExit>("Exit");
-  action_lib->Register<cActionExitAveGeneration>("ExitAveGeneration");
-  action_lib->Register<cActionExitElapsedTime>("ExitElapsedTime");
-  action_lib->Register<cActionPause>("Pause");
+  action_lib->Register<ActionExit>("Exit");
+  action_lib->Register<ActionExitAveGeneration>("ExitAveGeneration");
+  action_lib->Register<ActionExitElapsedTime>("ExitElapsedTime");
+  action_lib->Register<ActionPause>("Pause");
 }

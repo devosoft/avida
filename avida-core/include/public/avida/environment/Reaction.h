@@ -61,11 +61,10 @@ namespace Avida {
       LIB_EXPORT inline const Apto::List<ReactionProcess*>& Processes() { return m_process_list; }
       LIB_EXPORT inline const Apto::List<ReactionRequisite*>& Requisites() { return m_requisite_list; }
       
-      LIB_EXPORT ReactionProcess* AddProcess();
-      LIB_EXPORT ReactionRequisite* AddRequisite();
+      LIB_EXPORT void AddProcess(ReactionProcess* process);
+      LIB_EXPORT void AddRequisite(ReactionRequisite* requisite);
       
       LIB_EXPORT inline void SetActive(bool value = true) { m_active = value; }
-      
       
     };
     
