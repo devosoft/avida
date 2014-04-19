@@ -115,7 +115,6 @@
 		70D5B4D914F4009000D15FFD /* Genome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB801358BD6F0000B036 /* Genome.cc */; };
 		70D5B4DC14F4009000D15FFD /* PrintActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705ACD4D0A13FED4002D5BA0 /* PrintActions.cc */; };
 		70D5B4DD14F4009000D15FFD /* PopulationActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C054C90A4F6E19002703C1 /* PopulationActions.cc */; };
-		70D5B4E014F4009000D15FFD /* SaveLoadActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */; };
 		70D5B4E314F4009000D15FFD /* Version.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A53BBE135B5F2200C3E661 /* Version.cc */; };
 		70D5B4E414F4009000D15FFD /* CmdLine.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A53BC8135B740100C3E661 /* CmdLine.cc */; };
 		70D5B4E614F4009000D15FFD /* TimeSeriesRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4E831386C16300D8F6F0 /* TimeSeriesRecorder.cc */; };
@@ -124,7 +123,6 @@
 		70D5B4FB14F4009000D15FFD /* Avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A53BC3135B704C00C3E661 /* Avida.cc */; };
 		70D5B4FC14F4009000D15FFD /* Manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FEF65D1382C48900A9D082 /* Manager.cc */; };
 		70D5B4FE14F4009000D15FFD /* GlobalObject.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A53BA9135A29AA00C3E661 /* GlobalObject.cc */; };
-		70D5B50214F4009000D15FFD /* EnvironmentActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705ABB180A8A6A6000A6A80E /* EnvironmentActions.cc */; };
 		70DC2759178F514E00A93DA4 /* InstArchCPU.h in Headers */ = {isa = PBXBuildFile; fileRef = 70DC2758178F514E00A93DA4 /* InstArchCPU.h */; };
 		70DC275B178F526E00A93DA4 /* InstArchCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DC275A178F526E00A93DA4 /* InstArchCPU.cc */; };
 		70DF729013BE20130085F85E /* Universe.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DF728F13BE20130085F85E /* Universe.cc */; };
@@ -205,8 +203,6 @@
 		70556A2F16BC325D00EAAA9B /* GP8.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GP8.cc; sourceTree = "<group>"; };
 		70556A3016BC325D00EAAA9B /* Heads.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heads.cc; sourceTree = "<group>"; };
 		70556A3116BC325D00EAAA9B /* HeadsEx.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeadsEx.cc; sourceTree = "<group>"; };
-		705ABB170A8A6A6000A6A80E /* EnvironmentActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnvironmentActions.h; sourceTree = "<group>"; };
-		705ABB180A8A6A6000A6A80E /* EnvironmentActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = EnvironmentActions.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		705ACD4C0A13FED4002D5BA0 /* PrintActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrintActions.h; sourceTree = "<group>"; };
 		705ACD4D0A13FED4002D5BA0 /* PrintActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = PrintActions.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		705E53CE16A7102100392BA7 /* File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
@@ -246,10 +242,6 @@
 		706EA25F149950390021E441 /* Manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
 		706EA260149950390021E441 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		706EA261149950390021E441 /* Unit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unit.h; sourceTree = "<group>"; };
-		707AF04409EAB529001AEA89 /* LandscapeActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeActions.h; sourceTree = "<group>"; };
-		707AF04509EAB529001AEA89 /* LandscapeActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = LandscapeActions.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		708051A70A1F65FE00CBB8B6 /* SaveLoadActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveLoadActions.h; sourceTree = "<group>"; };
-		708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SaveLoadActions.cc; sourceTree = "<group>"; };
 		7081844614B37EDB009A9AFE /* Freezer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Freezer.h; sourceTree = "<group>"; };
 		7081844814B38147009A9AFE /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		70821D7816B8656D00B90333 /* Dynamic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dynamic.cc; sourceTree = "<group>"; };
@@ -686,16 +678,10 @@
 			children = (
 				704ADBC30A6EEFC300666970 /* DriverActions.h */,
 				704ADBC40A6EEFC300666970 /* DriverActions.cc */,
-				705ABB170A8A6A6000A6A80E /* EnvironmentActions.h */,
-				705ABB180A8A6A6000A6A80E /* EnvironmentActions.cc */,
-				707AF04409EAB529001AEA89 /* LandscapeActions.h */,
-				707AF04509EAB529001AEA89 /* LandscapeActions.cc */,
 				70C054C80A4F6E19002703C1 /* PopulationActions.h */,
 				70C054C90A4F6E19002703C1 /* PopulationActions.cc */,
 				705ACD4C0A13FED4002D5BA0 /* PrintActions.h */,
 				705ACD4D0A13FED4002D5BA0 /* PrintActions.cc */,
-				708051A70A1F65FE00CBB8B6 /* SaveLoadActions.h */,
-				708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */,
 			);
 			path = actions;
 			sourceTree = "<group>";
@@ -1132,10 +1118,8 @@
 				709CDEAC149BF69000995644 /* Unit.cc in Sources */,
 				70D5B4E414F4009000D15FFD /* CmdLine.cc in Sources */,
 				70D5B4E714F4009000D15FFD /* DriverActions.cc in Sources */,
-				70D5B50214F4009000D15FFD /* EnvironmentActions.cc in Sources */,
 				70D5B4DD14F4009000D15FFD /* PopulationActions.cc in Sources */,
 				70D5B4DC14F4009000D15FFD /* PrintActions.cc in Sources */,
-				70D5B4E014F4009000D15FFD /* SaveLoadActions.cc in Sources */,
 				70A27CC918F5A0F500A5AA75 /* Trait.cc in Sources */,
 				70A27CCF18F7320C00A5AA75 /* EventListener.cc in Sources */,
 				70A27CD818FC29B800A5AA75 /* ActionHandler.cc in Sources */,

@@ -40,7 +40,7 @@ namespace Avida {
   public:
     LIB_EXPORT virtual ~EventAction() = 0;
     
-    LIB_EXPORT virtual void Process(Context& ctx) = 0;
+    LIB_EXPORT virtual void Process(Context& ctx, Update current_update) = 0;
   };
   
   

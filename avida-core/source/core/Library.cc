@@ -38,7 +38,7 @@ bool Avida::Core::Library::RegisterEpigeneticObjectType(const Apto::String& type
 }
 
 
-bool Avida::Core::Library::RegisterEventType(const Apto::String& type_name, Util::ArgSchema& schema, EventCreateFunctor create)
+bool Avida::Core::Library::RegisterEventType(const Apto::String& type_name, const Util::ArgSchema& schema, EventCreateFunctor create)
 {
   Apto::MutexAutoLock lock(m_mutex);
   

@@ -192,7 +192,7 @@ void Avida::EventList::Process(Context& ctx, Update current_update)
         (t_val <= entry->StopValue() || entry->StopValue() == TRIGGER_END)) {
       
       // Process the Action
-      entry->Action().Process(ctx);
+      entry->Action().Process(ctx, current_update);
       
       // Handle Interval Adjustment
       if (entry->Interval() == TRIGGER_ALL) {

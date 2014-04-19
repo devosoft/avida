@@ -27,12 +27,10 @@
 
 #include "apto/core.h"
 
-class cAvidaConfig;
-
 
 namespace Avida {
   namespace Util {
-    void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg, Apto::Map<Apto::String, Apto::String>& defs);
+    void ProcessCmdLineArgs(int argc, char* argv[], int& seed, Apto::Map<Apto::String, Apto::String>& defs);
   };
 };
 

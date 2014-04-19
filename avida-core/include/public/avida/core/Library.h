@@ -59,7 +59,7 @@ namespace Avida {
         Util::ArgSchema schema;
         EventCreateFunctor create;
         
-        LIB_LOCAL inline EventType(Util::ArgSchema& in_schema, EventCreateFunctor in_create)
+        LIB_LOCAL inline EventType(const Util::ArgSchema& in_schema, EventCreateFunctor in_create)
           : schema(in_schema), create(in_create) { ; }
       };
 
@@ -109,7 +109,7 @@ namespace Avida {
         return m_event_types.Has(type_name);
       }
       
-      LIB_EXPORT bool RegisterEventType(const Apto::String& type_name, Util::ArgSchema& schema, EventCreateFunctor create);
+      LIB_EXPORT bool RegisterEventType(const Apto::String& type_name, const Util::ArgSchema& schema, EventCreateFunctor create);
 
       
 

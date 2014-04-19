@@ -39,10 +39,6 @@ namespace Avida {
     
     class Manager : public UniverseFacet
     {
-    private:
-      Universe* m_universe;
-      
-      
     public:
       LIB_EXPORT static ManagerPtr CreateFor(Universe* universe);
       LIB_EXPORT ~Manager();

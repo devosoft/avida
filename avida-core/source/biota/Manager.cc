@@ -25,9 +25,9 @@
 #include "avida/biota/Manager.h"
 
 
-Avida::Biota::Manager::Manager(Universe* universe) : m_universe(universe)
+Avida::Biota::Manager::Manager(Universe* universe)
 {
-  ;
+  (void)universe;
 }
 
 Avida::Biota::Manager::~Manager()

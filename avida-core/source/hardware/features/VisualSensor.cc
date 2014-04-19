@@ -33,6 +33,12 @@ VisualSensor::~VisualSensor()
   
 }
 
+void VisualSensor::Reset(Context& ctx)
+{
+  (void)ctx;
+  resetOrgSensor();
+}
+
 
 void VisualSensor::resetOrgSensor()
 {

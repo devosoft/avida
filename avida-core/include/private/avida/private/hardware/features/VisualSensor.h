@@ -116,7 +116,7 @@ namespace Avida {
         
         LIB_EXPORT static inline VisualSensor& Of(Base* hw);
 
-        LIB_EXPORT inline void Reset() { resetOrgSensor(); }
+        LIB_EXPORT void Reset(Context& ctx);
         
         
         LIB_EXPORT LookResults PerformLook(Context& ctx, LookSettings& in_defs, int facing, int cell_id, bool use_ft);
