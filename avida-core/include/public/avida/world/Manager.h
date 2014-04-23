@@ -26,6 +26,7 @@
 #define AvidaWorldManager_h
 
 #include "avida/core/Universe.h"
+#include "avida/data/Provider.h"
 #include "avida/structure/Types.h"
 #include "avida/world/Types.h"
 
@@ -36,23 +37,39 @@ namespace Avida {
     // Manager
     // --------------------------------------------------------------------------------------------------------------
     
-    class Manager : public UniverseFacet
+    class Manager : public UniverseFacet, public Data::ArgumentedProvider
     {
+    public:
+      struct ProvidedData
+      {
+        Apto::String description;
+        Apto::Functor<Data::PackagePtr, Apto::NullType> GetData;
+        
+        ProvidedData() { ; }
+        ProvidedData(const Apto::String& desc, Apto::Functor<Data::PackagePtr, Apto::NullType> func)
+        : description(desc), GetData(func) { ; }
+      };
+
     private:
       Universe* m_universe;
       ContainerPtr m_top_level;
+      
+      // --------  Data Provider Support  ---------
+      Apto::Map<Apto::String, ProvidedData> m_provided_data;
+      mutable Data::ConstDataSetPtr m_provides;
+      
       
     public:
       LIB_EXPORT static ManagerPtr CreateWithStructure(Universe* universe, Structure::Controller* structure);
       LIB_EXPORT ~Manager();
       
+      LIB_EXPORT static ManagerPtr Of(Universe* universe);
+      
       
       LIB_EXPORT inline Container& TopLevelContainer() { return *m_top_level; }
       LIB_EXPORT inline const Container& TopLevelContainer() const { return *m_top_level; }
       
-      
-      LIB_EXPORT static ManagerPtr Of(Universe* universe);
-      
+
     public:
       LIB_EXPORT bool Serialize(ArchivePtr ar) const;
       
@@ -61,8 +78,23 @@ namespace Avida {
       LIB_LOCAL UniverseFacetID UpdateAfter() const;
       
       
+    public:
+      // Data::Provider
+      LIB_EXPORT Data::ConstDataSetPtr Provides() const;
+      LIB_EXPORT void UpdateProvidedValues(Update current_update);
+      LIB_EXPORT Apto::String DescribeProvidedValue(const Apto::String& data_id) const;
+      
+      // Data::ArgumentedProvider
+      LIB_EXPORT void SetActiveArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args);
+      LIB_EXPORT Data::ConstArgumentSetPtr GetValidArguments(const Data::DataID& data_id) const;
+      LIB_EXPORT bool IsValidArgument(const Data::DataID& data_id, Data::Argument arg) const;
+      
+      LIB_EXPORT Data::PackagePtr GetProvidedValueForArgument(const Data::DataID& data_id, const Data::Argument& arg) const;
+
     private:
       LIB_EXPORT Manager(Universe* universe, Structure::Controller* structure);
+
+      LIB_LOCAL void setupProvidedData();
     };
     
   };

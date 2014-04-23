@@ -25,12 +25,11 @@
 #ifndef AvidaWorldContainer_h
 #define AvidaWorldContainer_h
 
-#include "avida/biota/Types.h"
-#include "avida/data/Provider.h"
+#include "avida/biota/Organism.h"
 #include "avida/environment/Types.h"
-#include "avida/hardware/Types.h"
+#include "avida/hardware/Base.h"
 #include "avida/structure/Element.h"
-#include "avida/world/Types.h"
+#include "avida/world/OrganismDataProvider.h"
 
 #include "apto/stat/Accumulator.h"
 
@@ -42,7 +41,7 @@ namespace Avida {
     // Container
     // --------------------------------------------------------------------------------------------------------------
     
-    class Container : public Data::ArgumentedProvider
+    class Container : public Apto::RefCountObject<Apto::ThreadSafe>
     {
       friend class Manager;
     protected:
@@ -60,6 +59,8 @@ namespace Avida {
       Apto::Map<Biota::PlacementStrategyKey, Biota::PlacementStrategyPtr> m_placement_strategies;
       
       
+      // --------  Data Provider Support  ---------
+
       Apto::Stat::Accumulator<double> m_stat_org_fitness;
       Apto::Stat::Accumulator<double> m_stat_org_gestation;
       Apto::Stat::Accumulator<double> m_stat_org_metabolic_rate;
@@ -73,30 +74,15 @@ namespace Avida {
       int m_stat_tot_organisms;
       int m_stat_tot_births;
       
-      
-      
+
     public:
       LIB_EXPORT ~Container();
 
       LIB_EXPORT void PerformUpdate(Context& ctx, Update current_update);
       
       LIB_EXPORT inline void AttachOrganismDataProvider(OrganismDataProviderPtr provider) { m_org_data_providers.Push(provider); }
-
-      // Data::Provider
-      LIB_EXPORT Data::ConstDataSetPtr Provides() const;
-      LIB_EXPORT void UpdateProvidedValues(Update current_update);
-      LIB_EXPORT Apto::String DescribeProvidedValue(const Apto::String& data_id) const;
-
-      LIB_EXPORT bool SupportsConcurrentUpdate() const;
-
-      // Data::ArgumentedProvider
-      LIB_EXPORT void SetActiveArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args);
-      LIB_EXPORT Data::ConstArgumentSetPtr GetValidArguments(const Data::DataID& data_id) const;
-      LIB_EXPORT bool IsValidArgument(const Data::DataID& data_id, Data::Argument arg) const;
       
-      LIB_EXPORT Data::PackagePtr GetProvidedValueForArgument(const Data::DataID& data_id, const Data::Argument& arg) const;
-
-      
+      LIB_EXPORT inline int NumOrganisms() const { return m_organisms.GetSize(); }
       
     protected:
       LIB_EXPORT void recordBirth(bool breed_true);
@@ -104,15 +90,6 @@ namespace Avida {
       
     protected:
       LIB_EXPORT Container(Universe* universe, Structure::Controller* structure);
-
-    
-    private:
-      // Initialization
-      void setupProvidedData();
-      
-      // Helper Methods
-      template <class T> Data::PackagePtr packageData(T (cStats::*)() const) const;
-      template <class T, class U> Data::PackagePtr packageArgData(T (cStats::*)(U arg) const, U arg) const;
     };
     
   };
