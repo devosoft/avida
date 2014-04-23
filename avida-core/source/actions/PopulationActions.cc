@@ -27,8 +27,6 @@
 #include "avida/systematics/Group.h"
 #include "avida/systematics/Manager.h"
 
-#include "avida/private/util/GenomeLoader.h"
-
 
 using namespace Avida;
 

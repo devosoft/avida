@@ -375,6 +375,9 @@ namespace Avida {
         
         
         // ---------- Instruction Library -----------
+        
+        bool Inst_Nop(Context& ctx);
+        
         // Multi-threading
         bool Inst_RegulatePause(Context& ctx);
         bool Inst_RegulateResume(Context& ctx);

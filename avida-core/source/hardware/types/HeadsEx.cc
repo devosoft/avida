@@ -41,7 +41,7 @@ using namespace Avida::Util;
 static const unsigned int CONSENSUS = (sizeof(int) * 8) / 2;
 static const unsigned int CONSENSUS24 = 12;
 
-inline unsigned int cHardwareExperimental::BitCount(unsigned int value) const
+inline unsigned int Hardware::Types::HeadsEX::BitCount(unsigned int value) const
 {
   const unsigned int w = value - ((value >> 1) & 0x55555555);
   const unsigned int x = (w & 0x33333333) + ((w >> 2) & 0x33333333);
@@ -50,9 +50,9 @@ inline unsigned int cHardwareExperimental::BitCount(unsigned int value) const
 }
 
 
-StaticTableInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::s_inst_slib = cHardwareExperimental::initInstLib();
+StaticTableInstLib<Hardware::Types::HeadsEX::tMethod>* Hardware::Types::HeadsEX::s_inst_slib = Hardware::Types::HeadsEX::initInstLib();
 
-StaticTableInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(void)
+StaticTableInstLib<Hardware::Types::HeadsEX::tMethod>* Hardware::Types::HeadsEX::initInstLib(void)
 {
   struct NOPEntry {
     Apto::String name;
@@ -86,240 +86,240 @@ StaticTableInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initI
      in the same order in StaticTableInstLib<tMethod>::MethodEntry s_f_array, and these entries must
      be the first elements of s_f_array.
      */
-    StaticTableInstLib<tMethod>::MethodEntry("nop-A", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-B", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-C", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-D", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-E", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-F", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-G", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-H", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-A", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-B", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-C", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-D", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-E", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-F", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-G", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-H", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
     
-    StaticTableInstLib<tMethod>::MethodEntry("nop-I", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-J", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-K", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-L", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-M", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-N", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-O", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-P", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-I", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-J", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-K", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-L", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-M", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-N", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-O", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-P", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, NOP, "No-operation; modifies other instructions"),
     
-    StaticTableInstLib<tMethod>::MethodEntry("NULL", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-X", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
+    StaticTableInstLib<tMethod>::MethodEntry("NULL", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-X", &Hardware::Types::HeadsEX::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
     
     
     // Threading
-    StaticTableInstLib<tMethod>::MethodEntry("fork-thread", &cHardwareExperimental::Inst_ForkThread),
-    StaticTableInstLib<tMethod>::MethodEntry("thread-create", &cHardwareExperimental::Inst_ThreadCreate),
-    StaticTableInstLib<tMethod>::MethodEntry("exit-thread", &cHardwareExperimental::Inst_ExitThread),
-    StaticTableInstLib<tMethod>::MethodEntry("id-thread", &cHardwareExperimental::Inst_IdThread),
+    StaticTableInstLib<tMethod>::MethodEntry("fork-thread", &Hardware::Types::HeadsEX::Inst_ForkThread),
+    StaticTableInstLib<tMethod>::MethodEntry("thread-create", &Hardware::Types::HeadsEX::Inst_ThreadCreate),
+    StaticTableInstLib<tMethod>::MethodEntry("exit-thread", &Hardware::Types::HeadsEX::Inst_ExitThread),
+    StaticTableInstLib<tMethod>::MethodEntry("id-thread", &Hardware::Types::HeadsEX::Inst_IdThread),
     
     
     // Standard Conditionals
-    StaticTableInstLib<tMethod>::MethodEntry("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX?!=?CX?, else skip it"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-less", &cHardwareExperimental::Inst_IfLess, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? < ?CX?, else skip it"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-not-0", &cHardwareExperimental::Inst_IfNotZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? != 0, else skip it"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-equ-0", &cHardwareExperimental::Inst_IfEqualZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? == 0, else skip it"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-gtr-0", &cHardwareExperimental::Inst_IfGreaterThanZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? > 0, else skip it"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-less-0", &cHardwareExperimental::Inst_IfLessThanZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? < 0, else skip it"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-gtr-x", &cHardwareExperimental::Inst_IfGtrX, INST_CLASS_CONDITIONAL),
-    StaticTableInstLib<tMethod>::MethodEntry("if-equ-x", &cHardwareExperimental::Inst_IfEquX, INST_CLASS_CONDITIONAL),
+    StaticTableInstLib<tMethod>::MethodEntry("if-n-equ", &Hardware::Types::HeadsEX::Inst_IfNEqu, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX?!=?CX?, else skip it"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-less", &Hardware::Types::HeadsEX::Inst_IfLess, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? < ?CX?, else skip it"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-not-0", &Hardware::Types::HeadsEX::Inst_IfNotZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? != 0, else skip it"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-equ-0", &Hardware::Types::HeadsEX::Inst_IfEqualZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? == 0, else skip it"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-gtr-0", &Hardware::Types::HeadsEX::Inst_IfGreaterThanZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? > 0, else skip it"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-less-0", &Hardware::Types::HeadsEX::Inst_IfLessThanZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? < 0, else skip it"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-gtr-x", &Hardware::Types::HeadsEX::Inst_IfGtrX, INST_CLASS_CONDITIONAL),
+    StaticTableInstLib<tMethod>::MethodEntry("if-equ-x", &Hardware::Types::HeadsEX::Inst_IfEquX, INST_CLASS_CONDITIONAL),
     
-    StaticTableInstLib<tMethod>::MethodEntry("if-cons", &cHardwareExperimental::Inst_IfConsensus, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? in consensus, else skip it"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-cons-24", &cHardwareExperimental::Inst_IfConsensus24, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX[0:23]? in consensus , else skip it"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-less-cons", &cHardwareExperimental::Inst_IfLessConsensus, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if Count(?BX?) < Count(?CX?), else skip it"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-less-cons-24", &cHardwareExperimental::Inst_IfLessConsensus24, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if Count(?BX[0:23]?) < Count(?CX[0:23]?), else skip it"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-cons", &Hardware::Types::HeadsEX::Inst_IfConsensus, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? in consensus, else skip it"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-cons-24", &Hardware::Types::HeadsEX::Inst_IfConsensus24, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX[0:23]? in consensus , else skip it"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-less-cons", &Hardware::Types::HeadsEX::Inst_IfLessConsensus, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if Count(?BX?) < Count(?CX?), else skip it"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-less-cons-24", &Hardware::Types::HeadsEX::Inst_IfLessConsensus24, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if Count(?BX[0:23]?) < Count(?CX[0:23]?), else skip it"),
     
-    StaticTableInstLib<tMethod>::MethodEntry("if-stk-gtr", &cHardwareExperimental::Inst_IfStackGreater, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if the top of the current stack > inactive stack, else skip it"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-nest", &cHardwareExperimental::Inst_IfNest, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if the organism is on the nest/den, else skip it"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-stk-gtr", &Hardware::Types::HeadsEX::Inst_IfStackGreater, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if the top of the current stack > inactive stack, else skip it"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-nest", &Hardware::Types::HeadsEX::Inst_IfNest, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if the organism is on the nest/den, else skip it"),
     
     // Core ALU Operations
-    StaticTableInstLib<tMethod>::MethodEntry("pop", &cHardwareExperimental::Inst_Pop, INST_CLASS_DATA, 0, "Remove top number from stack and place into ?BX?"),
-    StaticTableInstLib<tMethod>::MethodEntry("push", &cHardwareExperimental::Inst_Push, INST_CLASS_DATA, 0, "Copy number from ?BX? and place it into the stack"),
-    StaticTableInstLib<tMethod>::MethodEntry("pop-all", &cHardwareExperimental::Inst_PopAll, INST_CLASS_DATA, 0, "Remove top numbers from stack and place into ?BX?"),
-    StaticTableInstLib<tMethod>::MethodEntry("push-all", &cHardwareExperimental::Inst_PushAll, INST_CLASS_DATA, 0, "Copy number from all registers and place into the stack"),
-    StaticTableInstLib<tMethod>::MethodEntry("swap-stk", &cHardwareExperimental::Inst_SwitchStack, INST_CLASS_DATA, 0, "Toggle which stack is currently being used"),
-    StaticTableInstLib<tMethod>::MethodEntry("swap-stk-top", &cHardwareExperimental::Inst_SwapStackTop, INST_CLASS_DATA, 0, "Swap the values at the top of both stacks"),
-    StaticTableInstLib<tMethod>::MethodEntry("swap", &cHardwareExperimental::Inst_Swap, INST_CLASS_DATA, 0, "Swap the contents of ?BX? with ?CX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("pop", &Hardware::Types::HeadsEX::Inst_Pop, INST_CLASS_DATA, 0, "Remove top number from stack and place into ?BX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("push", &Hardware::Types::HeadsEX::Inst_Push, INST_CLASS_DATA, 0, "Copy number from ?BX? and place it into the stack"),
+    StaticTableInstLib<tMethod>::MethodEntry("pop-all", &Hardware::Types::HeadsEX::Inst_PopAll, INST_CLASS_DATA, 0, "Remove top numbers from stack and place into ?BX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("push-all", &Hardware::Types::HeadsEX::Inst_PushAll, INST_CLASS_DATA, 0, "Copy number from all registers and place into the stack"),
+    StaticTableInstLib<tMethod>::MethodEntry("swap-stk", &Hardware::Types::HeadsEX::Inst_SwitchStack, INST_CLASS_DATA, 0, "Toggle which stack is currently being used"),
+    StaticTableInstLib<tMethod>::MethodEntry("swap-stk-top", &Hardware::Types::HeadsEX::Inst_SwapStackTop, INST_CLASS_DATA, 0, "Swap the values at the top of both stacks"),
+    StaticTableInstLib<tMethod>::MethodEntry("swap", &Hardware::Types::HeadsEX::Inst_Swap, INST_CLASS_DATA, 0, "Swap the contents of ?BX? with ?CX?"),
     
-    StaticTableInstLib<tMethod>::MethodEntry("shift-r", &cHardwareExperimental::Inst_ShiftR, INST_CLASS_ARITHMETIC_LOGIC, 0, "Shift bits in ?BX? right by one (divide by two)"),
-    StaticTableInstLib<tMethod>::MethodEntry("shift-l", &cHardwareExperimental::Inst_ShiftL, INST_CLASS_ARITHMETIC_LOGIC, 0, "Shift bits in ?BX? left by one (multiply by two)"),
-    StaticTableInstLib<tMethod>::MethodEntry("inc", &cHardwareExperimental::Inst_Inc, INST_CLASS_ARITHMETIC_LOGIC, 0, "Increment ?BX? by one"),
-    StaticTableInstLib<tMethod>::MethodEntry("dec", &cHardwareExperimental::Inst_Dec, INST_CLASS_ARITHMETIC_LOGIC, 0, "Decrement ?BX? by one"),
-    StaticTableInstLib<tMethod>::MethodEntry("zero", &cHardwareExperimental::Inst_Zero, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to 0"),
-    StaticTableInstLib<tMethod>::MethodEntry("one", &cHardwareExperimental::Inst_One, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to 1"),
-    StaticTableInstLib<tMethod>::MethodEntry("rand", &cHardwareExperimental::Inst_Rand, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to random number (without triggering IO"),
-    StaticTableInstLib<tMethod>::MethodEntry("mult100", &cHardwareExperimental::Inst_Mult100, INST_CLASS_ARITHMETIC_LOGIC, 0, "Mult ?BX? by 100"),
+    StaticTableInstLib<tMethod>::MethodEntry("shift-r", &Hardware::Types::HeadsEX::Inst_ShiftR, INST_CLASS_ARITHMETIC_LOGIC, 0, "Shift bits in ?BX? right by one (divide by two)"),
+    StaticTableInstLib<tMethod>::MethodEntry("shift-l", &Hardware::Types::HeadsEX::Inst_ShiftL, INST_CLASS_ARITHMETIC_LOGIC, 0, "Shift bits in ?BX? left by one (multiply by two)"),
+    StaticTableInstLib<tMethod>::MethodEntry("inc", &Hardware::Types::HeadsEX::Inst_Inc, INST_CLASS_ARITHMETIC_LOGIC, 0, "Increment ?BX? by one"),
+    StaticTableInstLib<tMethod>::MethodEntry("dec", &Hardware::Types::HeadsEX::Inst_Dec, INST_CLASS_ARITHMETIC_LOGIC, 0, "Decrement ?BX? by one"),
+    StaticTableInstLib<tMethod>::MethodEntry("zero", &Hardware::Types::HeadsEX::Inst_Zero, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to 0"),
+    StaticTableInstLib<tMethod>::MethodEntry("one", &Hardware::Types::HeadsEX::Inst_One, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to 1"),
+    StaticTableInstLib<tMethod>::MethodEntry("rand", &Hardware::Types::HeadsEX::Inst_Rand, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to random number (without triggering IO"),
+    StaticTableInstLib<tMethod>::MethodEntry("mult100", &Hardware::Types::HeadsEX::Inst_Mult100, INST_CLASS_ARITHMETIC_LOGIC, 0, "Mult ?BX? by 100"),
     
-    StaticTableInstLib<tMethod>::MethodEntry("add", &cHardwareExperimental::Inst_Add, INST_CLASS_ARITHMETIC_LOGIC, 0, "Add BX to CX and place the result in ?BX?"),
-    StaticTableInstLib<tMethod>::MethodEntry("sub", &cHardwareExperimental::Inst_Sub, INST_CLASS_ARITHMETIC_LOGIC, 0, "Subtract CX from BX and place the result in ?BX?"),
-    StaticTableInstLib<tMethod>::MethodEntry("nand", &cHardwareExperimental::Inst_Nand, INST_CLASS_ARITHMETIC_LOGIC, 0, "Nand BX by CX and place the result in ?BX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("add", &Hardware::Types::HeadsEX::Inst_Add, INST_CLASS_ARITHMETIC_LOGIC, 0, "Add BX to CX and place the result in ?BX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("sub", &Hardware::Types::HeadsEX::Inst_Sub, INST_CLASS_ARITHMETIC_LOGIC, 0, "Subtract CX from BX and place the result in ?BX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("nand", &Hardware::Types::HeadsEX::Inst_Nand, INST_CLASS_ARITHMETIC_LOGIC, 0, "Nand BX by CX and place the result in ?BX?"),
     
-    StaticTableInstLib<tMethod>::MethodEntry("IO", &cHardwareExperimental::Inst_TaskIO, INST_CLASS_ENVIRONMENT, STALL, "Output ?BX?, and input new number back into ?BX?"),
-    StaticTableInstLib<tMethod>::MethodEntry("input", &cHardwareExperimental::Inst_TaskInput, INST_CLASS_ENVIRONMENT, STALL, "Input new number into ?BX?"),
-    StaticTableInstLib<tMethod>::MethodEntry("output", &cHardwareExperimental::Inst_TaskOutput, INST_CLASS_ENVIRONMENT, STALL, "Output ?BX?"),
-    StaticTableInstLib<tMethod>::MethodEntry("output-zero", &cHardwareExperimental::Inst_TaskOutputZero, INST_CLASS_ENVIRONMENT, STALL, "Output ?BX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("IO", &Hardware::Types::HeadsEX::Inst_TaskIO, INST_CLASS_ENVIRONMENT, STALL, "Output ?BX?, and input new number back into ?BX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("input", &Hardware::Types::HeadsEX::Inst_TaskInput, INST_CLASS_ENVIRONMENT, STALL, "Input new number into ?BX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("output", &Hardware::Types::HeadsEX::Inst_TaskOutput, INST_CLASS_ENVIRONMENT, STALL, "Output ?BX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("output-zero", &Hardware::Types::HeadsEX::Inst_TaskOutputZero, INST_CLASS_ENVIRONMENT, STALL, "Output ?BX?"),
     
-    StaticTableInstLib<tMethod>::MethodEntry("mult", &cHardwareExperimental::Inst_Mult, INST_CLASS_ARITHMETIC_LOGIC, 0, "Multiple BX by CX and place the result in ?BX?"),
-    StaticTableInstLib<tMethod>::MethodEntry("div", &cHardwareExperimental::Inst_Div, INST_CLASS_ARITHMETIC_LOGIC, 0, "Divide BX by CX and place the result in ?BX?"),
-    StaticTableInstLib<tMethod>::MethodEntry("mod", &cHardwareExperimental::Inst_Mod, INST_CLASS_ARITHMETIC_LOGIC),
+    StaticTableInstLib<tMethod>::MethodEntry("mult", &Hardware::Types::HeadsEX::Inst_Mult, INST_CLASS_ARITHMETIC_LOGIC, 0, "Multiple BX by CX and place the result in ?BX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("div", &Hardware::Types::HeadsEX::Inst_Div, INST_CLASS_ARITHMETIC_LOGIC, 0, "Divide BX by CX and place the result in ?BX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("mod", &Hardware::Types::HeadsEX::Inst_Mod, INST_CLASS_ARITHMETIC_LOGIC),
     
     
     // Flow Control Instructions
-    StaticTableInstLib<tMethod>::MethodEntry("label", &cHardwareExperimental::Inst_Label, INST_CLASS_FLOW_CONTROL, LABEL),
+    StaticTableInstLib<tMethod>::MethodEntry("label", &Hardware::Types::HeadsEX::Inst_Label, INST_CLASS_FLOW_CONTROL, LABEL),
     
-    StaticTableInstLib<tMethod>::MethodEntry("search-lbl-comp-s", &cHardwareExperimental::Inst_Search_Label_Comp_S, INST_CLASS_FLOW_CONTROL, 0, "Find complement label from genome start and move the flow head"),
-    StaticTableInstLib<tMethod>::MethodEntry("search-lbl-comp-f", &cHardwareExperimental::Inst_Search_Label_Comp_F, INST_CLASS_FLOW_CONTROL, 0, "Find complement label forward and move the flow head"),
-    StaticTableInstLib<tMethod>::MethodEntry("search-lbl-comp-b", &cHardwareExperimental::Inst_Search_Label_Comp_B, INST_CLASS_FLOW_CONTROL, 0, "Find complement label backward and move the flow head"),
-    StaticTableInstLib<tMethod>::MethodEntry("search-lbl-direct-s", &cHardwareExperimental::Inst_Search_Label_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct label from genome start and move the flow head"),
-    StaticTableInstLib<tMethod>::MethodEntry("search-lbl-direct-f", &cHardwareExperimental::Inst_Search_Label_Direct_F, INST_CLASS_FLOW_CONTROL, 0, "Find direct label forward and move the flow head"),
-    StaticTableInstLib<tMethod>::MethodEntry("search-lbl-direct-b", &cHardwareExperimental::Inst_Search_Label_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct label backward and move the flow head"),
-    StaticTableInstLib<tMethod>::MethodEntry("search-seq-comp-s", &cHardwareExperimental::Inst_Search_Seq_Comp_S, INST_CLASS_FLOW_CONTROL, 0, "Find complement template from genome start and move the flow head"),
-    StaticTableInstLib<tMethod>::MethodEntry("search-seq-comp-f", &cHardwareExperimental::Inst_Search_Seq_Comp_F, INST_CLASS_FLOW_CONTROL, 0, "Find complement template forward and move the flow head"),
-    StaticTableInstLib<tMethod>::MethodEntry("search-seq-comp-b", &cHardwareExperimental::Inst_Search_Seq_Comp_B, INST_CLASS_FLOW_CONTROL, 0, "Find complement template backward and move the flow head"),
-    StaticTableInstLib<tMethod>::MethodEntry("search-seq-direct-s", &cHardwareExperimental::Inst_Search_Seq_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct template from genome start and move the flow head"),
-    StaticTableInstLib<tMethod>::MethodEntry("search-seq-direct-f", &cHardwareExperimental::Inst_Search_Seq_Direct_F, INST_CLASS_FLOW_CONTROL, 0, "Find direct template forward and move the flow head"),
-    StaticTableInstLib<tMethod>::MethodEntry("search-seq-direct-b", &cHardwareExperimental::Inst_Search_Seq_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct template backward and move the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("search-lbl-comp-s", &Hardware::Types::HeadsEX::Inst_Search_Label_Comp_S, INST_CLASS_FLOW_CONTROL, 0, "Find complement label from genome start and move the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("search-lbl-comp-f", &Hardware::Types::HeadsEX::Inst_Search_Label_Comp_F, INST_CLASS_FLOW_CONTROL, 0, "Find complement label forward and move the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("search-lbl-comp-b", &Hardware::Types::HeadsEX::Inst_Search_Label_Comp_B, INST_CLASS_FLOW_CONTROL, 0, "Find complement label backward and move the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("search-lbl-direct-s", &Hardware::Types::HeadsEX::Inst_Search_Label_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct label from genome start and move the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("search-lbl-direct-f", &Hardware::Types::HeadsEX::Inst_Search_Label_Direct_F, INST_CLASS_FLOW_CONTROL, 0, "Find direct label forward and move the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("search-lbl-direct-b", &Hardware::Types::HeadsEX::Inst_Search_Label_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct label backward and move the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("search-seq-comp-s", &Hardware::Types::HeadsEX::Inst_Search_Seq_Comp_S, INST_CLASS_FLOW_CONTROL, 0, "Find complement template from genome start and move the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("search-seq-comp-f", &Hardware::Types::HeadsEX::Inst_Search_Seq_Comp_F, INST_CLASS_FLOW_CONTROL, 0, "Find complement template forward and move the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("search-seq-comp-b", &Hardware::Types::HeadsEX::Inst_Search_Seq_Comp_B, INST_CLASS_FLOW_CONTROL, 0, "Find complement template backward and move the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("search-seq-direct-s", &Hardware::Types::HeadsEX::Inst_Search_Seq_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct template from genome start and move the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("search-seq-direct-f", &Hardware::Types::HeadsEX::Inst_Search_Seq_Direct_F, INST_CLASS_FLOW_CONTROL, 0, "Find direct template forward and move the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("search-seq-direct-b", &Hardware::Types::HeadsEX::Inst_Search_Seq_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct template backward and move the flow head"),
     
-    StaticTableInstLib<tMethod>::MethodEntry("mov-head", &cHardwareExperimental::Inst_MoveHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head"),
-    StaticTableInstLib<tMethod>::MethodEntry("mov-head-if-n-equ", &cHardwareExperimental::Inst_MoveHeadIfNEqu, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
-    StaticTableInstLib<tMethod>::MethodEntry("mov-head-if-less", &cHardwareExperimental::Inst_MoveHeadIfLess, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("mov-head", &Hardware::Types::HeadsEX::Inst_MoveHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head"),
+    StaticTableInstLib<tMethod>::MethodEntry("mov-head-if-n-equ", &Hardware::Types::HeadsEX::Inst_MoveHeadIfNEqu, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("mov-head-if-less", &Hardware::Types::HeadsEX::Inst_MoveHeadIfLess, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
     
-    StaticTableInstLib<tMethod>::MethodEntry("goto", &cHardwareExperimental::Inst_Goto, INST_CLASS_FLOW_CONTROL, 0, "Move IP to labeled position matching the label that follows"),
-    StaticTableInstLib<tMethod>::MethodEntry("goto-if-n-equ", &cHardwareExperimental::Inst_GotoIfNEqu, INST_CLASS_FLOW_CONTROL, 0, "Move IP to labeled position if BX != CX"),
-    StaticTableInstLib<tMethod>::MethodEntry("goto-if-less", &cHardwareExperimental::Inst_GotoIfLess, INST_CLASS_FLOW_CONTROL, 0, "Move IP to labeled position if BX < CX"),
-    StaticTableInstLib<tMethod>::MethodEntry("goto-if-cons", &cHardwareExperimental::Inst_GotoConsensus, INST_CLASS_FLOW_CONTROL, 0, "Move IP to the labeled position if BX consensus"),
-    StaticTableInstLib<tMethod>::MethodEntry("goto-if-cons-24", &cHardwareExperimental::Inst_GotoConsensus24, INST_CLASS_FLOW_CONTROL, 0, "Move IP to the labeled position if BX consensus"),
+    StaticTableInstLib<tMethod>::MethodEntry("goto", &Hardware::Types::HeadsEX::Inst_Goto, INST_CLASS_FLOW_CONTROL, 0, "Move IP to labeled position matching the label that follows"),
+    StaticTableInstLib<tMethod>::MethodEntry("goto-if-n-equ", &Hardware::Types::HeadsEX::Inst_GotoIfNEqu, INST_CLASS_FLOW_CONTROL, 0, "Move IP to labeled position if BX != CX"),
+    StaticTableInstLib<tMethod>::MethodEntry("goto-if-less", &Hardware::Types::HeadsEX::Inst_GotoIfLess, INST_CLASS_FLOW_CONTROL, 0, "Move IP to labeled position if BX < CX"),
+    StaticTableInstLib<tMethod>::MethodEntry("goto-if-cons", &Hardware::Types::HeadsEX::Inst_GotoConsensus, INST_CLASS_FLOW_CONTROL, 0, "Move IP to the labeled position if BX consensus"),
+    StaticTableInstLib<tMethod>::MethodEntry("goto-if-cons-24", &Hardware::Types::HeadsEX::Inst_GotoConsensus24, INST_CLASS_FLOW_CONTROL, 0, "Move IP to the labeled position if BX consensus"),
     
-    StaticTableInstLib<tMethod>::MethodEntry("jmp-head", &cHardwareExperimental::Inst_JumpHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?Flow? by amount in ?CX? register"),
-    StaticTableInstLib<tMethod>::MethodEntry("get-head", &cHardwareExperimental::Inst_GetHead, INST_CLASS_FLOW_CONTROL, 0, "Copy the position of the ?IP? head into ?CX?"),
+    StaticTableInstLib<tMethod>::MethodEntry("jmp-head", &Hardware::Types::HeadsEX::Inst_JumpHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?Flow? by amount in ?CX? register"),
+    StaticTableInstLib<tMethod>::MethodEntry("get-head", &Hardware::Types::HeadsEX::Inst_GetHead, INST_CLASS_FLOW_CONTROL, 0, "Copy the position of the ?IP? head into ?CX?"),
     
     
     // Replication Instructions
-    StaticTableInstLib<tMethod>::MethodEntry("h-alloc", &cHardwareExperimental::Inst_HeadAlloc, INST_CLASS_LIFECYCLE, 0, "Allocate maximum allowed space"),
-    StaticTableInstLib<tMethod>::MethodEntry("h-divide", &cHardwareExperimental::Inst_HeadDivide, INST_CLASS_LIFECYCLE, STALL, "Divide code between read and write heads."),
-    StaticTableInstLib<tMethod>::MethodEntry("h-divide-sex", &cHardwareExperimental::Inst_HeadDivideSex, INST_CLASS_LIFECYCLE, STALL, "Divide code between read and write heads."),
-    StaticTableInstLib<tMethod>::MethodEntry("h-copy", &cHardwareExperimental::Inst_HeadCopy, INST_CLASS_LIFECYCLE, 0, "Copy from read-head to write-head; advance both"),
-    StaticTableInstLib<tMethod>::MethodEntry("h-reqd", &cHardwareExperimental::Inst_HeadRead, INST_CLASS_LIFECYCLE, 0, "Read instruction from ?read-head? to ?AX?; advance the head."),
-    StaticTableInstLib<tMethod>::MethodEntry("h-write", &cHardwareExperimental::Inst_HeadWrite, INST_CLASS_LIFECYCLE, 0, "Write to ?write-head? instruction from ?AX?; advance the head."),
-    StaticTableInstLib<tMethod>::MethodEntry("if-copied-lbl-comp", &cHardwareExperimental::Inst_IfCopiedCompLabel, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied complement of attached label"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-copied-lbl-direct", &cHardwareExperimental::Inst_IfCopiedDirectLabel, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied direct match of the attached label"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-copied-seq-comp", &cHardwareExperimental::Inst_IfCopiedCompSeq, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied complement of attached sequence"),
-    StaticTableInstLib<tMethod>::MethodEntry("if-copied-seq-direct", &cHardwareExperimental::Inst_IfCopiedDirectSeq, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied direct match of the attached sequence"),
+    StaticTableInstLib<tMethod>::MethodEntry("h-alloc", &Hardware::Types::HeadsEX::Inst_HeadAlloc, INST_CLASS_LIFECYCLE, 0, "Allocate maximum allowed space"),
+    StaticTableInstLib<tMethod>::MethodEntry("h-divide", &Hardware::Types::HeadsEX::Inst_HeadDivide, INST_CLASS_LIFECYCLE, STALL, "Divide code between read and write heads."),
+    StaticTableInstLib<tMethod>::MethodEntry("h-divide-sex", &Hardware::Types::HeadsEX::Inst_HeadDivideSex, INST_CLASS_LIFECYCLE, STALL, "Divide code between read and write heads."),
+    StaticTableInstLib<tMethod>::MethodEntry("h-copy", &Hardware::Types::HeadsEX::Inst_HeadCopy, INST_CLASS_LIFECYCLE, 0, "Copy from read-head to write-head; advance both"),
+    StaticTableInstLib<tMethod>::MethodEntry("h-reqd", &Hardware::Types::HeadsEX::Inst_HeadRead, INST_CLASS_LIFECYCLE, 0, "Read instruction from ?read-head? to ?AX?; advance the head."),
+    StaticTableInstLib<tMethod>::MethodEntry("h-write", &Hardware::Types::HeadsEX::Inst_HeadWrite, INST_CLASS_LIFECYCLE, 0, "Write to ?write-head? instruction from ?AX?; advance the head."),
+    StaticTableInstLib<tMethod>::MethodEntry("if-copied-lbl-comp", &Hardware::Types::HeadsEX::Inst_IfCopiedCompLabel, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied complement of attached label"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-copied-lbl-direct", &Hardware::Types::HeadsEX::Inst_IfCopiedDirectLabel, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied direct match of the attached label"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-copied-seq-comp", &Hardware::Types::HeadsEX::Inst_IfCopiedCompSeq, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied complement of attached sequence"),
+    StaticTableInstLib<tMethod>::MethodEntry("if-copied-seq-direct", &Hardware::Types::HeadsEX::Inst_IfCopiedDirectSeq, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied direct match of the attached sequence"),
     
-    StaticTableInstLib<tMethod>::MethodEntry("repro", &cHardwareExperimental::Inst_Repro, INST_CLASS_LIFECYCLE, STALL, "Instantly reproduces the organism"),
+    StaticTableInstLib<tMethod>::MethodEntry("repro", &Hardware::Types::HeadsEX::Inst_Repro, INST_CLASS_LIFECYCLE, STALL, "Instantly reproduces the organism"),
     
-    StaticTableInstLib<tMethod>::MethodEntry("die", &cHardwareExperimental::Inst_Die, INST_CLASS_LIFECYCLE, STALL, "Instantly kills the organism"),
+    StaticTableInstLib<tMethod>::MethodEntry("die", &Hardware::Types::HeadsEX::Inst_Die, INST_CLASS_LIFECYCLE, STALL, "Instantly kills the organism"),
     
     // Thread Execution Control
-    StaticTableInstLib<tMethod>::MethodEntry("wait-cond-equ", &cHardwareExperimental::Inst_WaitCondition_Equal, INST_CLASS_OTHER, STALL, ""),
-    StaticTableInstLib<tMethod>::MethodEntry("wait-cond-less", &cHardwareExperimental::Inst_WaitCondition_Less, INST_CLASS_OTHER, STALL, ""),
-    StaticTableInstLib<tMethod>::MethodEntry("wait-cond-gtr", &cHardwareExperimental::Inst_WaitCondition_Greater, INST_CLASS_OTHER, STALL, ""),
+    StaticTableInstLib<tMethod>::MethodEntry("wait-cond-equ", &Hardware::Types::HeadsEX::Inst_WaitCondition_Equal, INST_CLASS_OTHER, STALL, ""),
+    StaticTableInstLib<tMethod>::MethodEntry("wait-cond-less", &Hardware::Types::HeadsEX::Inst_WaitCondition_Less, INST_CLASS_OTHER, STALL, ""),
+    StaticTableInstLib<tMethod>::MethodEntry("wait-cond-gtr", &Hardware::Types::HeadsEX::Inst_WaitCondition_Greater, INST_CLASS_OTHER, STALL, ""),
     
     // Movement and Navigation instructions
-    StaticTableInstLib<tMethod>::MethodEntry("move", &cHardwareExperimental::Inst_Move, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("juv-move", &cHardwareExperimental::Inst_JuvMove, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-cell-xy", &cHardwareExperimental::Inst_GetCellPosition, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("get-cell-x", &cHardwareExperimental::Inst_GetCellPositionX, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("get-cell-y", &cHardwareExperimental::Inst_GetCellPositionY, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("get-north-offset", &cHardwareExperimental::Inst_GetNorthOffset, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("get-position-offset", &cHardwareExperimental::Inst_GetPositionOffset, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("get-northerly", &cHardwareExperimental::Inst_GetNortherly, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("get-easterly", &cHardwareExperimental::Inst_GetEasterly, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("zero-easterly", &cHardwareExperimental::Inst_ZeroEasterly, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("zero-northerly", &cHardwareExperimental::Inst_ZeroNortherly, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("zero-position-offset", &cHardwareExperimental::Inst_ZeroPosOffset, INST_CLASS_ENVIRONMENT),
+    StaticTableInstLib<tMethod>::MethodEntry("move", &Hardware::Types::HeadsEX::Inst_Move, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("juv-move", &Hardware::Types::HeadsEX::Inst_JuvMove, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("get-cell-xy", &Hardware::Types::HeadsEX::Inst_GetCellPosition, INST_CLASS_ENVIRONMENT),
+    StaticTableInstLib<tMethod>::MethodEntry("get-cell-x", &Hardware::Types::HeadsEX::Inst_GetCellPositionX, INST_CLASS_ENVIRONMENT),
+    StaticTableInstLib<tMethod>::MethodEntry("get-cell-y", &Hardware::Types::HeadsEX::Inst_GetCellPositionY, INST_CLASS_ENVIRONMENT),
+    StaticTableInstLib<tMethod>::MethodEntry("get-north-offset", &Hardware::Types::HeadsEX::Inst_GetNorthOffset, INST_CLASS_ENVIRONMENT),
+    StaticTableInstLib<tMethod>::MethodEntry("get-position-offset", &Hardware::Types::HeadsEX::Inst_GetPositionOffset, INST_CLASS_ENVIRONMENT),
+    StaticTableInstLib<tMethod>::MethodEntry("get-northerly", &Hardware::Types::HeadsEX::Inst_GetNortherly, INST_CLASS_ENVIRONMENT),
+    StaticTableInstLib<tMethod>::MethodEntry("get-easterly", &Hardware::Types::HeadsEX::Inst_GetEasterly, INST_CLASS_ENVIRONMENT),
+    StaticTableInstLib<tMethod>::MethodEntry("zero-easterly", &Hardware::Types::HeadsEX::Inst_ZeroEasterly, INST_CLASS_ENVIRONMENT),
+    StaticTableInstLib<tMethod>::MethodEntry("zero-northerly", &Hardware::Types::HeadsEX::Inst_ZeroNortherly, INST_CLASS_ENVIRONMENT),
+    StaticTableInstLib<tMethod>::MethodEntry("zero-position-offset", &Hardware::Types::HeadsEX::Inst_ZeroPosOffset, INST_CLASS_ENVIRONMENT),
     
     // Rotation
-    StaticTableInstLib<tMethod>::MethodEntry("rotate-left-one", &cHardwareExperimental::Inst_RotateLeftOne, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("rotate-right-one", &cHardwareExperimental::Inst_RotateRightOne, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("rotate-uphill", &cHardwareExperimental::Inst_RotateUphill, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("rotate-up-ft-hill", &cHardwareExperimental::Inst_RotateUpFtHill, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("rotate-home", &cHardwareExperimental::Inst_RotateHome, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("rotate-to-unoccupied-cell", &cHardwareExperimental::Inst_RotateUnoccupiedCell, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("rotate-x", &cHardwareExperimental::Inst_RotateX, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("rotate-org-id", &cHardwareExperimental::Inst_RotateOrgID, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("rotate-away-org-id", &cHardwareExperimental::Inst_RotateAwayOrgID, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("rotate-left-one", &Hardware::Types::HeadsEX::Inst_RotateLeftOne, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("rotate-right-one", &Hardware::Types::HeadsEX::Inst_RotateRightOne, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("rotate-uphill", &Hardware::Types::HeadsEX::Inst_RotateUphill, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("rotate-up-ft-hill", &Hardware::Types::HeadsEX::Inst_RotateUpFtHill, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("rotate-home", &Hardware::Types::HeadsEX::Inst_RotateHome, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("rotate-to-unoccupied-cell", &Hardware::Types::HeadsEX::Inst_RotateUnoccupiedCell, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("rotate-x", &Hardware::Types::HeadsEX::Inst_RotateX, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("rotate-org-id", &Hardware::Types::HeadsEX::Inst_RotateOrgID, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("rotate-away-org-id", &Hardware::Types::HeadsEX::Inst_RotateAwayOrgID, INST_CLASS_ENVIRONMENT, STALL),
     
     // Resource and Topography Sensing
-    StaticTableInstLib<tMethod>::MethodEntry("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("sense-res-quant", &cHardwareExperimental::Inst_SenseResQuant, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("sense-nest", &cHardwareExperimental::Inst_SenseNest, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("sense-res-diff", &cHardwareExperimental::Inst_SenseResDiff, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("look-ahead", &cHardwareExperimental::Inst_LookAhead, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("look-ahead-intercept", &cHardwareExperimental::Inst_LookAheadIntercept, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("look-around", &cHardwareExperimental::Inst_LookAround, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("look-around-intercept", &cHardwareExperimental::Inst_LookAroundIntercept, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("look-ft", &cHardwareExperimental::Inst_LookFT, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("look-around-ft", &cHardwareExperimental::Inst_LookAroundFT, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("set-ft-once", &cHardwareExperimental::Inst_SetForageTargetOnce, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("set-rand-ft-once", &cHardwareExperimental::Inst_SetRandForageTargetOnce, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("set-rand-p-ft-once", &cHardwareExperimental::Inst_SetRandPFTOnce, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget, INST_CLASS_ENVIRONMENT),
-    StaticTableInstLib<tMethod>::MethodEntry("show-ft", &cHardwareExperimental::Inst_ShowForageTarget, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-loc-org-density", &cHardwareExperimental::Inst_GetLocOrgDensity, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-faced-org-density", &cHardwareExperimental::Inst_GetFacedOrgDensity, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("sense-resource-id", &Hardware::Types::HeadsEX::Inst_SenseResourceID, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("sense-res-quant", &Hardware::Types::HeadsEX::Inst_SenseResQuant, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("sense-nest", &Hardware::Types::HeadsEX::Inst_SenseNest, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("sense-res-diff", &Hardware::Types::HeadsEX::Inst_SenseResDiff, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("sense-faced-habitat", &Hardware::Types::HeadsEX::Inst_SenseFacedHabitat, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("look-ahead", &Hardware::Types::HeadsEX::Inst_LookAhead, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("look-ahead-intercept", &Hardware::Types::HeadsEX::Inst_LookAheadIntercept, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("look-around", &Hardware::Types::HeadsEX::Inst_LookAround, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("look-around-intercept", &Hardware::Types::HeadsEX::Inst_LookAroundIntercept, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("look-ft", &Hardware::Types::HeadsEX::Inst_LookFT, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("look-around-ft", &Hardware::Types::HeadsEX::Inst_LookAroundFT, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("set-forage-target", &Hardware::Types::HeadsEX::Inst_SetForageTarget, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("set-ft-once", &Hardware::Types::HeadsEX::Inst_SetForageTargetOnce, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("set-rand-ft-once", &Hardware::Types::HeadsEX::Inst_SetRandForageTargetOnce, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("set-rand-p-ft-once", &Hardware::Types::HeadsEX::Inst_SetRandPFTOnce, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("get-forage-target", &Hardware::Types::HeadsEX::Inst_GetForageTarget, INST_CLASS_ENVIRONMENT),
+    StaticTableInstLib<tMethod>::MethodEntry("show-ft", &Hardware::Types::HeadsEX::Inst_ShowForageTarget, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("get-loc-org-density", &Hardware::Types::HeadsEX::Inst_GetLocOrgDensity, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("get-faced-org-density", &Hardware::Types::HeadsEX::Inst_GetFacedOrgDensity, INST_CLASS_ENVIRONMENT, STALL),
     
-    StaticTableInstLib<tMethod>::MethodEntry("collect-edible", &cHardwareExperimental::Inst_CollectEdible, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("collect-specific", &cHardwareExperimental::Inst_CollectSpecific, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("deposit-resource", &cHardwareExperimental::Inst_DepositResource, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("deposit-specific", &cHardwareExperimental::Inst_DepositSpecific, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("deposit-all-as-specific", &cHardwareExperimental::Inst_DepositAllAsSpecific, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-deposit-specific", &cHardwareExperimental::Inst_NopDepositSpecific, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-deposit-resource", &cHardwareExperimental::Inst_NopDepositResource, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-deposit-all-as-specific", &cHardwareExperimental::Inst_NopDepositAllAsSpecific, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("nop2-deposit-all-as-specific", &cHardwareExperimental::Inst_Nop2DepositAllAsSpecific, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("nop-collect-edible", &cHardwareExperimental::Inst_NopCollectEdible, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("nop2-collect-edible", &cHardwareExperimental::Inst_Nop2CollectEdible, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-res-stored", &cHardwareExperimental::Inst_GetResStored, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-specific-stored", &cHardwareExperimental::Inst_GetSpecificStored, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("collect-edible", &Hardware::Types::HeadsEX::Inst_CollectEdible, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("collect-specific", &Hardware::Types::HeadsEX::Inst_CollectSpecific, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("deposit-resource", &Hardware::Types::HeadsEX::Inst_DepositResource, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("deposit-specific", &Hardware::Types::HeadsEX::Inst_DepositSpecific, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("deposit-all-as-specific", &Hardware::Types::HeadsEX::Inst_DepositAllAsSpecific, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-deposit-specific", &Hardware::Types::HeadsEX::Inst_NopDepositSpecific, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-deposit-resource", &Hardware::Types::HeadsEX::Inst_NopDepositResource, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-deposit-all-as-specific", &Hardware::Types::HeadsEX::Inst_NopDepositAllAsSpecific, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("nop2-deposit-all-as-specific", &Hardware::Types::HeadsEX::Inst_Nop2DepositAllAsSpecific, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("nop-collect-edible", &Hardware::Types::HeadsEX::Inst_NopCollectEdible, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("nop2-collect-edible", &Hardware::Types::HeadsEX::Inst_Nop2CollectEdible, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("get-res-stored", &Hardware::Types::HeadsEX::Inst_GetResStored, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("get-specific-stored", &Hardware::Types::HeadsEX::Inst_GetSpecificStored, INST_CLASS_ENVIRONMENT, STALL),
     
     // Org Interaction instructions
-    StaticTableInstLib<tMethod>::MethodEntry("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-prey", &cHardwareExperimental::Inst_AttackPrey, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-ft-prey", &cHardwareExperimental::Inst_AttackFTPrey, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-poison-prey", &cHardwareExperimental::Inst_AttackPoisonPrey, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-poison-ft-prey", &cHardwareExperimental::Inst_AttackPoisonFTPrey, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-poison-ft-prey-genetic", &cHardwareExperimental::Inst_AttackPoisonFTPreyGenetic, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-poison-ft-mixed-prey", &cHardwareExperimental::Inst_AttackPoisonFTMixedPrey, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-prey-share", &cHardwareExperimental::Inst_AttackPreyShare, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-prey-no-share", &cHardwareExperimental::Inst_AttackPreyNoShare, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-prey-fake-share", &cHardwareExperimental::Inst_AttackPreyFakeShare, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-spec-prey", &cHardwareExperimental::Inst_AttackSpecPrey, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-prey-area", &cHardwareExperimental::Inst_AttackPreyArea, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("fight-bonus-org", &cHardwareExperimental::Inst_FightBonusOrg, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-merit-fight-odds", &cHardwareExperimental::Inst_GetMeritFightOdds, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("fight-org", &cHardwareExperimental::Inst_FightOrg, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("attack-pred", &cHardwareExperimental::Inst_AttackPred, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("kill-pred", &cHardwareExperimental::Inst_KillPred, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("fight-pred", &cHardwareExperimental::Inst_FightPred, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("learn-parent", &cHardwareExperimental::Inst_LearnParent, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("get-faced-org-id", &Hardware::Types::HeadsEX::Inst_GetFacedOrgID, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("attack-prey", &Hardware::Types::HeadsEX::Inst_AttackPrey, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("attack-ft-prey", &Hardware::Types::HeadsEX::Inst_AttackFTPrey, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("attack-poison-prey", &Hardware::Types::HeadsEX::Inst_AttackPoisonPrey, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("attack-poison-ft-prey", &Hardware::Types::HeadsEX::Inst_AttackPoisonFTPrey, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("attack-poison-ft-prey-genetic", &Hardware::Types::HeadsEX::Inst_AttackPoisonFTPreyGenetic, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("attack-poison-ft-mixed-prey", &Hardware::Types::HeadsEX::Inst_AttackPoisonFTMixedPrey, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("attack-prey-share", &Hardware::Types::HeadsEX::Inst_AttackPreyShare, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("attack-prey-no-share", &Hardware::Types::HeadsEX::Inst_AttackPreyNoShare, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("attack-prey-fake-share", &Hardware::Types::HeadsEX::Inst_AttackPreyFakeShare, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("attack-spec-prey", &Hardware::Types::HeadsEX::Inst_AttackSpecPrey, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("attack-prey-area", &Hardware::Types::HeadsEX::Inst_AttackPreyArea, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("fight-merit-org", &Hardware::Types::HeadsEX::Inst_FightMeritOrg, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("fight-bonus-org", &Hardware::Types::HeadsEX::Inst_FightBonusOrg, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("get-merit-fight-odds", &Hardware::Types::HeadsEX::Inst_GetMeritFightOdds, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("fight-org", &Hardware::Types::HeadsEX::Inst_FightOrg, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("attack-pred", &Hardware::Types::HeadsEX::Inst_AttackPred, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("kill-pred", &Hardware::Types::HeadsEX::Inst_KillPred, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("fight-pred", &Hardware::Types::HeadsEX::Inst_FightPred, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("teach-offspring", &Hardware::Types::HeadsEX::Inst_TeachOffspring, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("learn-parent", &Hardware::Types::HeadsEX::Inst_LearnParent, INST_CLASS_ENVIRONMENT, STALL),
     
     
-    StaticTableInstLib<tMethod>::MethodEntry("set-guard", &cHardwareExperimental::Inst_SetGuard, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("set-guard-once", &cHardwareExperimental::Inst_SetGuardOnce, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-num-guards", &cHardwareExperimental::Inst_GetNumGuards, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("get-num-juvs", &cHardwareExperimental::Inst_GetNumJuvs, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("set-guard", &Hardware::Types::HeadsEX::Inst_SetGuard, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("set-guard-once", &Hardware::Types::HeadsEX::Inst_SetGuardOnce, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("get-num-guards", &Hardware::Types::HeadsEX::Inst_GetNumGuards, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("get-num-juvs", &Hardware::Types::HeadsEX::Inst_GetNumJuvs, INST_CLASS_ENVIRONMENT, STALL),
     
-    StaticTableInstLib<tMethod>::MethodEntry("activate-display", &cHardwareExperimental::Inst_ActivateDisplay, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("update-display", &cHardwareExperimental::Inst_UpdateDisplay, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("modify-display", &cHardwareExperimental::Inst_ModifyDisplay, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("read-last-seen-display", &cHardwareExperimental::Inst_ReadLastSeenDisplay, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("kill-display", &cHardwareExperimental::Inst_KillDisplay, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("modify-simp-display", &cHardwareExperimental::Inst_ModifySimpDisplay, INST_CLASS_ENVIRONMENT, STALL),
-    StaticTableInstLib<tMethod>::MethodEntry("read-simp-display", &cHardwareExperimental::Inst_ReadLastSimpDisplay, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("activate-display", &Hardware::Types::HeadsEX::Inst_ActivateDisplay, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("update-display", &Hardware::Types::HeadsEX::Inst_UpdateDisplay, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("modify-display", &Hardware::Types::HeadsEX::Inst_ModifyDisplay, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("read-last-seen-display", &Hardware::Types::HeadsEX::Inst_ReadLastSeenDisplay, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("kill-display", &Hardware::Types::HeadsEX::Inst_KillDisplay, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("modify-simp-display", &Hardware::Types::HeadsEX::Inst_ModifySimpDisplay, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("read-simp-display", &Hardware::Types::HeadsEX::Inst_ReadLastSimpDisplay, INST_CLASS_ENVIRONMENT, STALL),
     
     // Control-type Instructions
-    StaticTableInstLib<tMethod>::MethodEntry("scramble-registers", &cHardwareExperimental::Inst_ScrambleReg, INST_CLASS_DATA, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("scramble-registers", &Hardware::Types::HeadsEX::Inst_ScrambleReg, INST_CLASS_DATA, STALL),
     
-    StaticTableInstLib<tMethod>::MethodEntry("get-faced-edit-dist", &cHardwareExperimental::Inst_GetFacedEditDistance, INST_CLASS_ENVIRONMENT, STALL),
+    StaticTableInstLib<tMethod>::MethodEntry("get-faced-edit-dist", &Hardware::Types::HeadsEX::Inst_GetFacedEditDistance, INST_CLASS_ENVIRONMENT, STALL),
     
     // DEPRECATED Instructions
-    StaticTableInstLib<tMethod>::MethodEntry("set-flow", &cHardwareExperimental::Inst_SetFlow, INST_CLASS_FLOW_CONTROL, 0, "Set flow-head to position in ?CX?")
+    StaticTableInstLib<tMethod>::MethodEntry("set-flow", &Hardware::Types::HeadsEX::Inst_SetFlow, INST_CLASS_FLOW_CONTROL, 0, "Set flow-head to position in ?CX?")
     
   };
   
@@ -341,7 +341,7 @@ StaticTableInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initI
   return new StaticTableInstLib<tMethod>(f_size, s_f_array, nop_mods, functions, def, null_inst);
 }
 
-cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
+Hardware::Types::HeadsEX::cHardwareExperimental(Context& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
 : cHardwareBase(world, in_organism, in_inst_set), m_sensor(world, in_organism)
 {
   m_functions = s_inst_slib->GetFunctions();
@@ -364,7 +364,7 @@ cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, 
 }
 
 
-void cHardwareExperimental::internalReset()
+void Hardware::Types::HeadsEX::internalReset()
 {
   m_cycle_count = 0;
   m_last_output = 0;
@@ -388,12 +388,12 @@ void cHardwareExperimental::internalReset()
 }
 
 
-void cHardwareExperimental::internalResetOnFailedDivide()
+void Hardware::Types::HeadsEX::internalResetOnFailedDivide()
 {
 	internalReset();
 }
 
-void cHardwareExperimental::cLocalThread::operator=(const cLocalThread& in_thread)
+void Hardware::Types::HeadsEX::cLocalThread::operator=(const cLocalThread& in_thread)
 {
   m_id = in_thread.m_id;
   
@@ -417,7 +417,7 @@ void cHardwareExperimental::cLocalThread::operator=(const cLocalThread& in_threa
   next_label = in_thread.next_label;
 }
 
-void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardware, int in_id)
+void Hardware::Types::HeadsEX::cLocalThread::Reset(cHardwareExperimental* in_hardware, int in_id)
 {
   m_id = in_id;
   
@@ -440,7 +440,7 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardwa
 // This function processes the very next command in the genome, and is made
 // to be as optimized as possible.  This is the heart of avida.
 
-bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
+bool Hardware::Types::HeadsEX::SingleProcess(Context& ctx, bool speculative)
 {
   assert(!speculative || (speculative && !m_thread_slicing_parallel));
   
@@ -586,7 +586,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
 
 // This method will handle the actuall execution of an instruction
 // within single process, once that function has been finalized.
-bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst)
+bool Hardware::Types::HeadsEX::SingleProcess_ExecuteInst(Context& ctx, const Instruction& cur_inst)
 {
   // Copy Instruction locally to handle stochastic effects
   Instruction actual_inst = cur_inst;
@@ -614,7 +614,7 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
 }
 
 
-void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
+void Hardware::Types::HeadsEX::ProcessBonusInst(Context& ctx, const Instruction& inst)
 {
   // Mark this organism as running...
   bool prev_run_state = m_organism->IsRunning();
@@ -628,7 +628,7 @@ void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const Instructi
 }
 
 
-void cHardwareExperimental::PrintStatus(ostream& fp)
+void Hardware::Types::HeadsEX::PrintStatus(ostream& fp)
 {
   fp << "CPU CYCLE:" << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
   fp << "THREAD:" << m_cur_thread << "  ";
@@ -673,7 +673,7 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
 }
 
 
-cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
+cHeadCPU Hardware::Types::HeadsEX::FindLabelStart(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const NopSequence& search_label = GetLabel();
@@ -719,7 +719,7 @@ cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
   return ip;
 }
 
-cHeadCPU cHardwareExperimental::FindNopSequenceStart(bool mark_executed)
+cHeadCPU Hardware::Types::HeadsEX::FindNopSequenceStart(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const NopSequence& search_label = GetLabel();
@@ -762,7 +762,7 @@ cHeadCPU cHardwareExperimental::FindNopSequenceStart(bool mark_executed)
 }
 
 
-cHeadCPU cHardwareExperimental::FindLabelForward(bool mark_executed)
+cHeadCPU Hardware::Types::HeadsEX::FindLabelForward(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const NopSequence& search_label = GetLabel();
@@ -812,7 +812,7 @@ cHeadCPU cHardwareExperimental::FindLabelForward(bool mark_executed)
   return ip;
 }
 
-cHeadCPU cHardwareExperimental::FindLabelBackward(bool mark_executed)
+cHeadCPU Hardware::Types::HeadsEX::FindLabelBackward(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const NopSequence& search_label = GetLabel();
@@ -863,7 +863,7 @@ cHeadCPU cHardwareExperimental::FindLabelBackward(bool mark_executed)
 
 
 
-cHeadCPU cHardwareExperimental::FindNopSequenceForward(bool mark_executed)
+cHeadCPU Hardware::Types::HeadsEX::FindNopSequenceForward(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const NopSequence& search_label = GetLabel();
@@ -913,7 +913,7 @@ cHeadCPU cHardwareExperimental::FindNopSequenceForward(bool mark_executed)
 }
 
 
-cHeadCPU cHardwareExperimental::FindNopSequenceBackward(bool mark_executed)
+cHeadCPU Hardware::Types::HeadsEX::FindNopSequenceBackward(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const NopSequence& search_label = GetLabel();
@@ -962,7 +962,7 @@ cHeadCPU cHardwareExperimental::FindNopSequenceBackward(bool mark_executed)
   return ip;
 }
 
-void cHardwareExperimental::ReadInst(Instruction in_inst)
+void Hardware::Types::HeadsEX::ReadInst(Instruction in_inst)
 {
   bool is_nop = m_inst_set->IsNop(in_inst);
   
@@ -987,7 +987,7 @@ void cHardwareExperimental::ReadInst(Instruction in_inst)
   }
 }
 
-void cHardwareExperimental::AdjustHeads()
+void Hardware::Types::HeadsEX::AdjustHeads()
 {
   for (int i = 0; i < m_threads.GetSize(); i++) {
     for (int j = 0; j < NUM_HEADS; j++) {
@@ -1001,7 +1001,7 @@ void cHardwareExperimental::AdjustHeads()
 // and sets the next_label to be the sequence of nops which follows.  The
 // instruction pointer is left on the last line of the label found.
 
-void cHardwareExperimental::ReadLabel()
+void Hardware::Types::HeadsEX::ReadLabel()
 {
   int count = 0;
   cHeadCPU * inst_ptr = &( getIP() );
@@ -1020,7 +1020,7 @@ void cHardwareExperimental::ReadLabel()
   }
 }
 
-bool cHardwareExperimental::ForkThread()
+bool Hardware::Types::HeadsEX::ForkThread()
 {
   const int num_threads = m_threads.GetSize();
   if (num_threads == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
@@ -1042,7 +1042,7 @@ bool cHardwareExperimental::ForkThread()
   return true;
 }
 
-bool cHardwareExperimental::ThreadCreate(const cHeadCPU& start_pos)
+bool Hardware::Types::HeadsEX::ThreadCreate(const cHeadCPU& start_pos)
 {
   const int thread_id = m_threads.GetSize();
   if (thread_id == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
@@ -1063,7 +1063,7 @@ bool cHardwareExperimental::ThreadCreate(const cHeadCPU& start_pos)
 }
 
 
-bool cHardwareExperimental::ExitThread()
+bool Hardware::Types::HeadsEX::ExitThread()
 {
   // Make sure that there is always at least one thread awake...
   if ((m_threads.GetSize() == 1) || (int(m_waiting_threads) == (m_threads.GetSize() - 1))) return false;
@@ -1089,7 +1089,7 @@ bool cHardwareExperimental::ExitThread()
   return true;
 }
 
-bool cHardwareExperimental::Inst_IdThread(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_IdThread(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setInternalValue(reg_used, m_threads[m_cur_thread].GetID(), false);
@@ -1100,7 +1100,7 @@ bool cHardwareExperimental::Inst_IdThread(cAvidaContext&)
 //  Instruction Helpers...
 ////////////////////////////
 
-inline int cHardwareExperimental::FindModifiedRegister(int default_register)
+inline int Hardware::Types::HeadsEX::FindModifiedRegister(int default_register)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   
@@ -1112,7 +1112,7 @@ inline int cHardwareExperimental::FindModifiedRegister(int default_register)
   return default_register;
 }
 
-inline int cHardwareExperimental::FindModifiedNextRegister(int default_register)
+inline int Hardware::Types::HeadsEX::FindModifiedNextRegister(int default_register)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   
@@ -1126,7 +1126,7 @@ inline int cHardwareExperimental::FindModifiedNextRegister(int default_register)
   return default_register;
 }
 
-inline int cHardwareExperimental::FindModifiedPreviousRegister(int default_register)
+inline int Hardware::Types::HeadsEX::FindModifiedPreviousRegister(int default_register)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   
@@ -1141,7 +1141,7 @@ inline int cHardwareExperimental::FindModifiedPreviousRegister(int default_regis
 }
 
 
-inline int cHardwareExperimental::FindModifiedHead(int default_head)
+inline int Hardware::Types::HeadsEX::FindModifiedHead(int default_head)
 {
   assert(default_head < NUM_HEADS); // Head ID too high.
   
@@ -1154,19 +1154,19 @@ inline int cHardwareExperimental::FindModifiedHead(int default_head)
 }
 
 
-inline int cHardwareExperimental::FindNextRegister(int base_reg)
+inline int Hardware::Types::HeadsEX::FindNextRegister(int base_reg)
 {
   return (base_reg + 1) % NUM_REGISTERS;
 }
 
 
-bool cHardwareExperimental::Allocate_Necro(const int new_size)
+bool Hardware::Types::HeadsEX::Allocate_Necro(const int new_size)
 {
   m_memory.ResizeOld(new_size);
   return true;
 }
 
-bool cHardwareExperimental::Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size)
+bool Hardware::Types::HeadsEX::Allocate_Random(Context& ctx, const int old_size, const int new_size)
 {
   m_memory.Resize(new_size);
   
@@ -1176,7 +1176,7 @@ bool cHardwareExperimental::Allocate_Random(cAvidaContext& ctx, const int old_si
   return true;
 }
 
-bool cHardwareExperimental::Allocate_Default(const int new_size)
+bool Hardware::Types::HeadsEX::Allocate_Default(const int new_size)
 {
   m_memory.Resize(new_size);
   
@@ -1185,7 +1185,7 @@ bool cHardwareExperimental::Allocate_Default(const int new_size)
   return true;
 }
 
-bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
+bool Hardware::Types::HeadsEX::Allocate_Main(Context& ctx, const int allocated_size)
 {
   // must do divide before second allocate & must allocate positive amount...
   if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && m_mal_active == true) return false;
@@ -1220,7 +1220,7 @@ bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocate
   return true;
 }
 
-int cHardwareExperimental::calcCopiedSize(const int parent_size, const int child_size)
+int Hardware::Types::HeadsEX::calcCopiedSize(const int parent_size, const int child_size)
 {
   int copied_size = 0;
   for (int i = parent_size; i < parent_size + child_size; i++) {
@@ -1229,7 +1229,7 @@ int cHardwareExperimental::calcCopiedSize(const int parent_size, const int child
   return copied_size;
 }
 
-bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point, const int extra_lines, double mut_multiplier)
+bool Hardware::Types::HeadsEX::Divide_Main(Context& ctx, const int div_point, const int extra_lines, double mut_multiplier)
 {
   const int child_size = m_memory.GetSize() - div_point - extra_lines;
   
@@ -1278,7 +1278,7 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   return true;
 }
 
-void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
+void Hardware::Types::HeadsEX::checkWaitingThreads(int cur_thread, int reg_num)
 {
   for (int i = 0; i < m_threads.GetSize(); i++) {
     if (i != cur_thread && !m_threads[i].active && int(m_threads[i].wait_reg) == reg_num) {
@@ -1311,8 +1311,16 @@ void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
 // And the instructions...
 //////////////////////////
 
+bool Hardware::Types::HeadsEX::Inst_Nop(Context& ctx)
+{
+  (void)ctx;
+  return true;
+}
+
+
+
 // Multi-threading.
-bool cHardwareExperimental::Inst_ForkThread(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_ForkThread(Context&)
 {
   getIP().Advance();
   ForkThread();
@@ -1320,7 +1328,7 @@ bool cHardwareExperimental::Inst_ForkThread(cAvidaContext&)
 }
 
 // Multi-threading.
-bool cHardwareExperimental::Inst_ThreadCreate(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_ThreadCreate(Context&)
 {
   int head_used = FindModifiedHead(HEAD_FLOW);
   
@@ -1332,13 +1340,13 @@ bool cHardwareExperimental::Inst_ThreadCreate(cAvidaContext&)
 }
 
 
-bool cHardwareExperimental::Inst_ExitThread(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_ExitThread(Context& ctx)
 {
   if (ExitThread()) m_advance_ip = false;
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfNEqu(cAvidaContext&) // Execute next if bx != ?cx?
+bool Hardware::Types::HeadsEX::Inst_IfNEqu(Context&) // Execute next if bx != ?cx?
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1347,7 +1355,7 @@ bool cHardwareExperimental::Inst_IfNEqu(cAvidaContext&) // Execute next if bx !=
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfLess(cAvidaContext&) // Execute next if ?bx? < ?cx?
+bool Hardware::Types::HeadsEX::Inst_IfLess(Context&) // Execute next if ?bx? < ?cx?
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1356,21 +1364,21 @@ bool cHardwareExperimental::Inst_IfLess(cAvidaContext&) // Execute next if ?bx? 
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfNotZero(cAvidaContext&)  // Execute next if ?bx? != 0
+bool Hardware::Types::HeadsEX::Inst_IfNotZero(Context&)  // Execute next if ?bx? != 0
 {
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegister(op1) == 0) getIP().Advance();
   m_from_sensor = FromSensor(op1);
   return true;
 }
-bool cHardwareExperimental::Inst_IfEqualZero(cAvidaContext&)  // Execute next if ?bx? == 0
+bool Hardware::Types::HeadsEX::Inst_IfEqualZero(Context&)  // Execute next if ?bx? == 0
 {
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegister(op1) != 0) getIP().Advance();
   m_from_sensor = FromSensor(op1);
   return true;
 }
-bool cHardwareExperimental::Inst_IfGreaterThanZero(cAvidaContext&)  // Execute next if ?bx? > 0
+bool Hardware::Types::HeadsEX::Inst_IfGreaterThanZero(Context&)  // Execute next if ?bx? > 0
 {
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegister(op1) <= 0) getIP().Advance();
@@ -1378,7 +1386,7 @@ bool cHardwareExperimental::Inst_IfGreaterThanZero(cAvidaContext&)  // Execute n
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfLessThanZero(cAvidaContext&)  // Execute next if ?bx? < 0
+bool Hardware::Types::HeadsEX::Inst_IfLessThanZero(Context&)  // Execute next if ?bx? < 0
 {
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegister(op1) >= 0) getIP().Advance();
@@ -1387,7 +1395,7 @@ bool cHardwareExperimental::Inst_IfLessThanZero(cAvidaContext&)  // Execute next
 }
 
 
-bool cHardwareExperimental::Inst_IfGtrX(cAvidaContext&)       // Execute next if BX > X; X value set according to NOP label
+bool Hardware::Types::HeadsEX::Inst_IfGtrX(Context&)       // Execute next if BX > X; X value set according to NOP label
 {
   // Compares value in BX to a specific value.  The value to compare to is determined by the nop label as follows:
   //    no nop label (default): valueToCompare = 1;
@@ -1413,7 +1421,7 @@ bool cHardwareExperimental::Inst_IfGtrX(cAvidaContext&)       // Execute next if
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfEquX(cAvidaContext&)       // Execute next if BX == X; X value set according to NOP label
+bool Hardware::Types::HeadsEX::Inst_IfEquX(Context&)       // Execute next if BX == X; X value set according to NOP label
 {
   // Compares value in BX to a specific value.  The value to compare to is determined by the nop label as follows:
   //    no nop label (default): valueToCompare = 1;
@@ -1441,21 +1449,21 @@ bool cHardwareExperimental::Inst_IfEquX(cAvidaContext&)       // Execute next if
 
 
 
-bool cHardwareExperimental::Inst_IfConsensus(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_IfConsensus(Context&)
 {
   const int op1 = FindModifiedRegister(rBX);
   if (BitCount(GetRegister(op1)) <  CONSENSUS) getIP().Advance();
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfConsensus24(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_IfConsensus24(Context&)
 {
   const int op1 = FindModifiedRegister(rBX);
   if (BitCount(GetRegister(op1) & MASK_LOW24) <  CONSENSUS24) getIP().Advance();
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfLessConsensus(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_IfLessConsensus(Context&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1463,7 +1471,7 @@ bool cHardwareExperimental::Inst_IfLessConsensus(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfLessConsensus24(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_IfLessConsensus24(Context&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1471,14 +1479,14 @@ bool cHardwareExperimental::Inst_IfLessConsensus24(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfStackGreater(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_IfStackGreater(Context&)
 {
   int cur_stack = m_threads[m_cur_thread].cur_stack;
   if (getStack(cur_stack).Peek().value <=  getStack(!cur_stack).Peek().value) getIP().Advance();
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfNest(cAvidaContext& ctx) // Execute next if org on nest
+bool Hardware::Types::HeadsEX::Inst_IfNest(Context& ctx) // Execute next if org on nest
 {
   bool set_ok = false;
   
@@ -1497,13 +1505,13 @@ bool cHardwareExperimental::Inst_IfNest(cAvidaContext& ctx) // Execute next if o
 }
 
 
-bool cHardwareExperimental::Inst_Label(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Label(Context&)
 {
   ReadLabel();
   return true;
 }
 
-bool cHardwareExperimental::Inst_Pop(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Pop(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
@@ -1512,7 +1520,7 @@ bool cHardwareExperimental::Inst_Pop(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Push(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Push(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
@@ -1520,7 +1528,7 @@ bool cHardwareExperimental::Inst_Push(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_PopAll(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_PopAll(Context&)
 {
   int reg_used = FindModifiedRegister(rBX);
   bool any_from_sensor = false;
@@ -1535,7 +1543,7 @@ bool cHardwareExperimental::Inst_PopAll(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_PushAll(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_PushAll(Context&)
 {
   int reg_used = FindModifiedRegister(rBX);
   bool any_from_sensor = false;
@@ -1549,9 +1557,9 @@ bool cHardwareExperimental::Inst_PushAll(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SwitchStack(cAvidaContext&) { switchStack(); return true; }
+bool Hardware::Types::HeadsEX::Inst_SwitchStack(Context&) { switchStack(); return true; }
 
-bool cHardwareExperimental::Inst_SwapStackTop(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_SwapStackTop(Context&)
 {
   DataValue v0 = getStack(0).Pop();
   DataValue v1 = getStack(1).Pop();
@@ -1560,7 +1568,7 @@ bool cHardwareExperimental::Inst_SwapStackTop(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Swap(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Swap(Context&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1570,7 +1578,7 @@ bool cHardwareExperimental::Inst_Swap(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_ShiftR(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_ShiftR(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
@@ -1578,7 +1586,7 @@ bool cHardwareExperimental::Inst_ShiftR(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_ShiftL(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_ShiftL(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
@@ -1587,7 +1595,7 @@ bool cHardwareExperimental::Inst_ShiftL(cAvidaContext&)
 }
 
 
-bool cHardwareExperimental::Inst_Inc(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Inc(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
@@ -1595,7 +1603,7 @@ bool cHardwareExperimental::Inst_Inc(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Dec(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Dec(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
@@ -1603,21 +1611,21 @@ bool cHardwareExperimental::Inst_Dec(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Zero(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Zero(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setInternalValue(reg_used, 0, false);
   return true;
 }
 
-bool cHardwareExperimental::Inst_One(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_One(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setInternalValue(reg_used, 1, false);
   return true;
 }
 
-bool cHardwareExperimental::Inst_Rand(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_Rand(Context& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
   int randsign = ctx.GetRandom().GetUInt(0,2) ? -1 : 1;
@@ -1625,7 +1633,7 @@ bool cHardwareExperimental::Inst_Rand(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Mult100(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_Mult100(Context& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
@@ -1633,7 +1641,7 @@ bool cHardwareExperimental::Inst_Mult100(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Add(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Add(Context&)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
@@ -1645,7 +1653,7 @@ bool cHardwareExperimental::Inst_Add(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Sub(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Sub(Context&)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
@@ -1657,7 +1665,7 @@ bool cHardwareExperimental::Inst_Sub(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Mult(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Mult(Context&)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
@@ -1669,7 +1677,7 @@ bool cHardwareExperimental::Inst_Mult(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Div(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Div(Context&)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
@@ -1685,7 +1693,7 @@ bool cHardwareExperimental::Inst_Div(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Mod(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Mod(Context&)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
@@ -1702,7 +1710,7 @@ bool cHardwareExperimental::Inst_Mod(cAvidaContext&)
 }
 
 
-bool cHardwareExperimental::Inst_Nand(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Nand(Context&)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
@@ -1714,7 +1722,7 @@ bool cHardwareExperimental::Inst_Nand(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadAlloc(cAvidaContext& ctx)   // Allocate maximal more
+bool Hardware::Types::HeadsEX::Inst_HeadAlloc(Context& ctx)   // Allocate maximal more
 {
   const int dst = FindModifiedRegister(rAX);
   const int cur_size = m_memory.GetSize();
@@ -1725,7 +1733,7 @@ bool cHardwareExperimental::Inst_HeadAlloc(cAvidaContext& ctx)   // Allocate max
   } else return false;
 }
 
-bool cHardwareExperimental::Inst_TaskIO(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_TaskIO(Context& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
   DataValue& reg = m_threads[m_cur_thread].reg[reg_used];
@@ -1742,7 +1750,7 @@ bool cHardwareExperimental::Inst_TaskIO(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_TaskInput(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_TaskInput(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   
@@ -1754,7 +1762,7 @@ bool cHardwareExperimental::Inst_TaskInput(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_TaskOutput(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_TaskOutput(Context& ctx)
 {
   //Testing with juveniles not able to move HACK
   //  if (m_organism->GetPhenotype().GetTimeUsed() < m_world->GetConfig().JUV_PERIOD.Get()) return false;
@@ -1770,7 +1778,7 @@ bool cHardwareExperimental::Inst_TaskOutput(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_TaskOutputZero(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_TaskOutputZero(Context& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
   m_from_sensor = FromSensor(reg_used);
@@ -1785,7 +1793,7 @@ bool cHardwareExperimental::Inst_TaskOutputZero(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_MoveHead(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_MoveHead(Context&)
 {
   const int head_used = FindModifiedHead(HEAD_IP);
   const int target = FindModifiedHead(HEAD_FLOW);
@@ -1794,7 +1802,7 @@ bool cHardwareExperimental::Inst_MoveHead(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_MoveHeadIfNEqu(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_MoveHeadIfNEqu(Context&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1807,7 +1815,7 @@ bool cHardwareExperimental::Inst_MoveHeadIfNEqu(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_MoveHeadIfLess(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_MoveHeadIfLess(Context&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1821,7 +1829,7 @@ bool cHardwareExperimental::Inst_MoveHeadIfLess(cAvidaContext&)
 }
 
 
-bool cHardwareExperimental::Inst_Goto(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Goto(Context&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindLabelForward(true);
@@ -1829,7 +1837,7 @@ bool cHardwareExperimental::Inst_Goto(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GotoIfNEqu(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_GotoIfNEqu(Context&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1841,7 +1849,7 @@ bool cHardwareExperimental::Inst_GotoIfNEqu(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GotoIfLess(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_GotoIfLess(Context&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1854,7 +1862,7 @@ bool cHardwareExperimental::Inst_GotoIfLess(cAvidaContext&)
 }
 
 
-bool cHardwareExperimental::Inst_GotoConsensus(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_GotoConsensus(Context&)
 {
   if (BitCount(GetRegister(rBX)) < CONSENSUS) return true;
   
@@ -1865,7 +1873,7 @@ bool cHardwareExperimental::Inst_GotoConsensus(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GotoConsensus24(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_GotoConsensus24(Context&)
 {
   if (BitCount(GetRegister(rBX) & MASK_LOW24) < CONSENSUS24) return true;
   
@@ -1877,7 +1885,7 @@ bool cHardwareExperimental::Inst_GotoConsensus24(cAvidaContext&)
 }
 
 
-bool cHardwareExperimental::Inst_JumpHead(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_JumpHead(Context&)
 {
   const int head_used = FindModifiedHead(HEAD_IP);
   const int reg = FindModifiedRegister(rCX);
@@ -1887,7 +1895,7 @@ bool cHardwareExperimental::Inst_JumpHead(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetHead(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_GetHead(Context&)
 {
   const int head_used = FindModifiedHead(HEAD_IP);
   const int reg = FindModifiedRegister(rCX);
@@ -1895,7 +1903,7 @@ bool cHardwareExperimental::Inst_GetHead(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfCopiedCompLabel(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_IfCopiedCompLabel(Context&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -1903,14 +1911,14 @@ bool cHardwareExperimental::Inst_IfCopiedCompLabel(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfCopiedDirectLabel(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_IfCopiedDirectLabel(Context&)
 {
   ReadLabel();
   if (GetLabel() != GetReadLabel())  getIP().Advance();
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfCopiedCompSeq(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_IfCopiedCompSeq(Context&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -1918,14 +1926,14 @@ bool cHardwareExperimental::Inst_IfCopiedCompSeq(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfCopiedDirectSeq(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_IfCopiedDirectSeq(Context&)
 {
   ReadLabel();
   if (GetLabel() != GetReadSequence())  getIP().Advance();
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadDivide(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_HeadDivide(Context& ctx)
 {
   m_organism->GetPhenotype().SetDivideSex(false);
   m_organism->GetPhenotype().SetCrossNum(0);
@@ -1941,7 +1949,7 @@ bool cHardwareExperimental::Inst_HeadDivide(cAvidaContext& ctx)
   return ret_val;
 }
 
-bool cHardwareExperimental::Inst_HeadDivideSex(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_HeadDivideSex(Context& ctx)
 {
   m_organism->GetPhenotype().SetDivideSex(true);
   m_organism->GetPhenotype().SetCrossNum(1);
@@ -1957,7 +1965,7 @@ bool cHardwareExperimental::Inst_HeadDivideSex(cAvidaContext& ctx)
   return ret_val;
 }
 
-bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_HeadRead(Context& ctx)
 {
   const int head_id = FindModifiedHead(HEAD_READ);
   const int dst = FindModifiedRegister(rAX);
@@ -1980,7 +1988,7 @@ bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadWrite(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_HeadWrite(Context& ctx)
 {
   const int head_id = FindModifiedHead(HEAD_WRITE);
   const int src = FindModifiedRegister(rAX);
@@ -2005,7 +2013,7 @@ bool cHardwareExperimental::Inst_HeadWrite(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_HeadCopy(Context& ctx)
 {
   // For the moment, this cannot be nop-modified.
   cHeadCPU& read_head = getHead(HEAD_READ);
@@ -2041,7 +2049,7 @@ bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Label_Comp_S(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Search_Label_Comp_S(Context&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2051,7 +2059,7 @@ bool cHardwareExperimental::Inst_Search_Label_Comp_S(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Label_Comp_F(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Search_Label_Comp_F(Context&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2061,7 +2069,7 @@ bool cHardwareExperimental::Inst_Search_Label_Comp_F(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Label_Comp_B(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Search_Label_Comp_B(Context&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2071,7 +2079,7 @@ bool cHardwareExperimental::Inst_Search_Label_Comp_B(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Label_Direct_S(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Search_Label_Direct_S(Context&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindLabelStart(true);
@@ -2080,7 +2088,7 @@ bool cHardwareExperimental::Inst_Search_Label_Direct_S(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Label_Direct_F(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Search_Label_Direct_F(Context&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindLabelForward(true);
@@ -2089,7 +2097,7 @@ bool cHardwareExperimental::Inst_Search_Label_Direct_F(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Label_Direct_B(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Search_Label_Direct_B(Context&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindLabelBackward(true);
@@ -2098,7 +2106,7 @@ bool cHardwareExperimental::Inst_Search_Label_Direct_B(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Seq_Comp_S(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Search_Seq_Comp_S(Context&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2108,7 +2116,7 @@ bool cHardwareExperimental::Inst_Search_Seq_Comp_S(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Seq_Comp_F(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Search_Seq_Comp_F(Context&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2118,7 +2126,7 @@ bool cHardwareExperimental::Inst_Search_Seq_Comp_F(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Seq_Comp_B(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Search_Seq_Comp_B(Context&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2128,7 +2136,7 @@ bool cHardwareExperimental::Inst_Search_Seq_Comp_B(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Seq_Direct_S(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Search_Seq_Direct_S(Context&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceStart(true);
@@ -2137,7 +2145,7 @@ bool cHardwareExperimental::Inst_Search_Seq_Direct_S(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Seq_Direct_F(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Search_Seq_Direct_F(Context&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceForward(true);
@@ -2146,7 +2154,7 @@ bool cHardwareExperimental::Inst_Search_Seq_Direct_F(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Seq_Direct_B(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_Search_Seq_Direct_B(Context&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceBackward(true);
@@ -2156,7 +2164,7 @@ bool cHardwareExperimental::Inst_Search_Seq_Direct_B(cAvidaContext&)
 }
 
 
-bool cHardwareExperimental::Inst_SetFlow(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_SetFlow(Context&)
 {
   const int reg_used = FindModifiedRegister(rCX);
   m_from_sensor = FromSensor(reg_used);
@@ -2166,7 +2174,7 @@ bool cHardwareExperimental::Inst_SetFlow(cAvidaContext&)
 
 
 
-bool cHardwareExperimental::Inst_WaitCondition_Equal(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_WaitCondition_Equal(Context&)
 {
   const int wait_value = FindModifiedRegister(rBX);
   const int check_reg = FindModifiedRegister(rDX);
@@ -2197,7 +2205,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Equal(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_WaitCondition_Less(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_WaitCondition_Less(Context&)
 {
   const int wait_value = FindModifiedRegister(rBX);
   const int check_reg = FindModifiedRegister(rDX);
@@ -2229,7 +2237,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Less(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_WaitCondition_Greater(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_WaitCondition_Greater(Context&)
 {
   const int wait_value = FindModifiedRegister(rBX);
   const int check_reg = FindModifiedRegister(rDX);
@@ -2269,7 +2277,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Greater(cAvidaContext&)
  are 1's and zero otherwise.
  */
 
-bool cHardwareExperimental::Inst_BitConsensus(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_BitConsensus(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   const int op1 = FindModifiedNextRegister(reg_used);
@@ -2280,7 +2288,7 @@ bool cHardwareExperimental::Inst_BitConsensus(cAvidaContext&)
 }
 
 // Looks at only the lower 24 bits
-bool cHardwareExperimental::Inst_BitConsensus24(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_BitConsensus24(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   const int op1 = FindModifiedNextRegister(reg_used);
@@ -2290,7 +2298,7 @@ bool cHardwareExperimental::Inst_BitConsensus24(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_Repro(Context& ctx)
 {
   // these checks should be done, but currently they make some assumptions
   // that crash when evaluating this kind of organism -- JEB
@@ -2361,7 +2369,7 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Die(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_Die(Context& ctx)
 {
   m_organism->Die(ctx);
   
@@ -2370,7 +2378,7 @@ bool cHardwareExperimental::Inst_Die(cAvidaContext& ctx)
 
 
 
-bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_Move(Context& ctx)
 {
   // In TestCPU, movement fails...
   if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
@@ -2383,7 +2391,7 @@ bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_JuvMove(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_JuvMove(Context& ctx)
 {
   // In TestCPU, movement fails...
   if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
@@ -2401,7 +2409,7 @@ bool cHardwareExperimental::Inst_JuvMove(cAvidaContext& ctx)
 }
 
 
-bool cHardwareExperimental::Inst_GetCellPosition(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_GetCellPosition(Context& ctx)
 {
   int x = m_organism->GetOrgInterface().GetCellXPosition();
   int y = m_organism->GetOrgInterface().GetCellYPosition();
@@ -2416,7 +2424,7 @@ bool cHardwareExperimental::Inst_GetCellPosition(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetCellPositionX(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_GetCellPositionX(Context& ctx)
 {
   int x = m_organism->GetOrgInterface().GetCellXPosition();
   // Fail if we're running in the test CPU
@@ -2428,7 +2436,7 @@ bool cHardwareExperimental::Inst_GetCellPositionX(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetCellPositionY(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_GetCellPositionY(Context& ctx)
 {
   int y = m_organism->GetOrgInterface().GetCellYPosition();
   // Fail if we're running in the test CPU
@@ -2440,7 +2448,7 @@ bool cHardwareExperimental::Inst_GetCellPositionY(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
+bool Hardware::Types::HeadsEX::Inst_GetNorthOffset(Context& ctx) {
   const int out_reg = FindModifiedRegister(rBX);
   int compass_dir = m_organism->GetOrgInterface().GetFacedDir();
   if (m_use_avatar) compass_dir = m_organism->GetOrgInterface().GetAVFacing();
@@ -2448,36 +2456,36 @@ bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetPositionOffset(cAvidaContext&) {
+bool Hardware::Types::HeadsEX::Inst_GetPositionOffset(Context&) {
   const int out_reg = FindModifiedRegister(rBX);
   setInternalValue(out_reg, m_organism->GetNortherly(), true);
   setInternalValue(FindModifiedNextRegister(out_reg), m_organism->GetEasterly(), true);
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetNortherly(cAvidaContext&) {
+bool Hardware::Types::HeadsEX::Inst_GetNortherly(Context&) {
   const int out_reg = FindModifiedRegister(rBX);
   setInternalValue(out_reg, m_organism->GetNortherly(), true);
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetEasterly(cAvidaContext&) {
+bool Hardware::Types::HeadsEX::Inst_GetEasterly(Context&) {
   const int out_reg = FindModifiedRegister(rBX);
   setInternalValue(out_reg, m_organism->GetEasterly(), true);
   return true;
 }
 
-bool cHardwareExperimental::Inst_ZeroEasterly(cAvidaContext&) {
+bool Hardware::Types::HeadsEX::Inst_ZeroEasterly(Context&) {
   m_organism->ClearEasterly();
   return true;
 }
 
-bool cHardwareExperimental::Inst_ZeroNortherly(cAvidaContext&) {
+bool Hardware::Types::HeadsEX::Inst_ZeroNortherly(Context&) {
   m_organism->ClearNortherly();
   return true;
 }
 
-bool cHardwareExperimental::Inst_ZeroPosOffset(cAvidaContext&) {
+bool Hardware::Types::HeadsEX::Inst_ZeroPosOffset(Context&) {
   const int offset = GetRegister(FindModifiedRegister(rBX)) % 3;
   if (offset == 0) {
     m_organism->ClearEasterly();
@@ -2488,20 +2496,20 @@ bool cHardwareExperimental::Inst_ZeroPosOffset(cAvidaContext&) {
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateLeftOne(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_RotateLeftOne(Context& ctx)
 {
   m_organism->Rotate(ctx, 1);
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateRightOne(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_RotateRightOne(Context& ctx)
 {
   m_organism->Rotate(ctx, -1);
   return true;
 }
 
 
-bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_RotateUpFtHill(Context& ctx)
 {
   int ft = m_organism->GetForageTarget();
   double current_res = 0.0;
@@ -2536,7 +2544,7 @@ bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_RotateHome(Context& ctx)
 {
   // Will rotate organism to face birth cell if org never used zero-easterly or zero-northerly. Otherwise will rotate org
   // to face the 'marked' spot where those instructions were executed.
@@ -2562,7 +2570,7 @@ bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_RotateUnoccupiedCell(Context& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   const int reg_used = FindModifiedRegister(rBX);
@@ -2580,7 +2588,7 @@ bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_RotateX(Context& ctx)
 {
   int num_neighbors = m_organism->GetNeighborhoodSize();
   if (m_use_avatar) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
@@ -2600,7 +2608,7 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_RotateDir(Context& ctx)
 {
   int num_neighbors = m_organism->GetNeighborhoodSize();
   if (m_use_avatar) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
@@ -2626,7 +2634,7 @@ bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
 }
 
 // Will rotate organism to face a specified other org
-bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_RotateOrgID(Context& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   // Will rotate organism to face a specificied other org
@@ -2717,7 +2725,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
 }
 
 // Will rotate organism to face away from a specificied other org
-bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_RotateAwayOrgID(Context& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   // Will rotate organism to face a specificied other org
@@ -2809,7 +2817,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
 
 
 
-bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_SenseResourceID(Context& ctx)
 {
   Apto::Array<double> cell_res;
   if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
@@ -2826,7 +2834,7 @@ bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_SenseResQuant(Context& ctx)
 {
   const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
   
@@ -2867,7 +2875,7 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_SenseNest(Context& ctx)
 {
   const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
   const int reg_used = FindModifiedRegister(rBX);
@@ -2900,7 +2908,7 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_SenseResDiff(Context& ctx)
 {
   const int req_reg = FindModifiedRegister(rBX);
   int res_sought = -1;
@@ -2943,7 +2951,7 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_LookAhead(Context& ctx)
 {
   int cell = m_organism->GetOrgInterface().GetCellID();
   int facing = m_organism->GetOrgInterface().GetFacedDir();
@@ -2955,13 +2963,13 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
 }
 
 // Will return relative org facing (rotations to intercept) rather than group info for sighted org
-bool cHardwareExperimental::Inst_LookAheadIntercept(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_LookAheadIntercept(Context& ctx)
 {
   m_sensor.SetReturnRelativeFacing(true);
   return Inst_LookAhead(ctx);
 }
 
-bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_LookAround(Context& ctx)
 {
   // dir register is 5th mod (will be count reg)
   int hab_reg = FindModifiedRegister(rBX);
@@ -3000,13 +3008,13 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   return GoLook(ctx, facing, cell);
 }
 
-bool cHardwareExperimental::Inst_LookAroundIntercept(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_LookAroundIntercept(Context& ctx)
 {
   m_sensor.SetReturnRelativeFacing(true);
   return Inst_LookAround(ctx);
 }
 
-bool cHardwareExperimental::Inst_LookFT(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_LookFT(Context& ctx)
 {
   // override any org inputs and just let this org see the food resource that matches it's forage target (not designed for predators)
   int cell = m_organism->GetOrgInterface().GetCellID();
@@ -3018,7 +3026,7 @@ bool cHardwareExperimental::Inst_LookFT(cAvidaContext& ctx)
   return GoLook(ctx, facing, cell, true);
 }
 
-bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_LookAroundFT(Context& ctx)
 {
   // dir register is 5th mod (will be count reg)
   int hab_reg = FindModifiedRegister(rBX);
@@ -3057,7 +3065,7 @@ bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
   return GoLook(ctx, facing, cell, true);
 }
 
-bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft)
+bool Hardware::Types::HeadsEX::GoLook(Context& ctx, const int look_dir, const int cell_id, bool use_ft)
 {
   // temp check on world geometry until code can handle other geometries
   /*if (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) {
@@ -3096,7 +3104,7 @@ bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const
   return true;
 }
 
-Hardware::Features::VisualSensor::LookResults cHardwareExperimental::InitLooking(cAvidaContext& ctx, sLookRegAssign& in_defs, int facing, int cell_id, bool use_ft)
+Hardware::Features::VisualSensor::LookResults Hardware::Types::HeadsEX::InitLooking(Context& ctx, sLookRegAssign& in_defs, int facing, int cell_id, bool use_ft)
 {
   const int habitat_reg = in_defs.habitat;
   const int distance_reg = in_defs.distance;
@@ -3114,7 +3122,7 @@ Hardware::Features::VisualSensor::LookResults cHardwareExperimental::InitLooking
   return m_sensor.SetLooking(ctx, reg_init, facing, cell_id, use_ft);
 }
 
-void cHardwareExperimental::LookResults(cAvidaContext& ctx, sLookRegAssign& regs, Features::VisualSensor::LookResults& results)
+void Hardware::Types::HeadsEX::LookResults(Context& ctx, sLookRegAssign& regs, Features::VisualSensor::LookResults& results)
 {
   // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
   // return defaults for failed to find
@@ -3222,7 +3230,7 @@ void cHardwareExperimental::LookResults(cAvidaContext& ctx, sLookRegAssign& regs
   return;
 }
 
-bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_SenseFacedHabitat(Context& ctx)
 {
   int reg_to_set = FindModifiedRegister(rBX);
   
@@ -3261,7 +3269,7 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_SetForageTarget(Context& ctx)
 {
   //Testing with juveniles not able to eat deposits HACK
   //  if (m_organism->GetPhenotype().GetTimeUsed() < m_world->GetConfig().JUV_PERIOD.Get()) return false;
@@ -3321,14 +3329,14 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_SetForageTargetOnce(Context& ctx)
 {
   assert(m_organism != 0);
   if (m_organism->HasSetFT()) return false;
   else return Inst_SetForageTarget(ctx);
 }
 
-bool cHardwareExperimental::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_SetRandForageTargetOnce(Context& ctx)
 {
   assert(m_organism != 0);
   int cap = 0;
@@ -3363,7 +3371,7 @@ bool cHardwareExperimental::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
 }
 
 // this inst is a terrible hack that makes assumptions about the fts available and is specific to one experiment
-bool cHardwareExperimental::Inst_SetRandPFTOnce(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_SetRandPFTOnce(Context& ctx)
 {
   assert(m_organism != 0);
   if (m_organism->HasSetFT()) return false;
@@ -3397,7 +3405,7 @@ bool cHardwareExperimental::Inst_SetRandPFTOnce(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_ShowForageTarget(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_ShowForageTarget(Context& ctx)
 {
   assert(m_organism != 0);
   const int reg = FindModifiedRegister(rBX);
@@ -3425,7 +3433,7 @@ bool cHardwareExperimental::Inst_ShowForageTarget(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_GetForageTarget(Context& ctx)
 {
   assert(m_organism != 0);
   const int target_reg = FindModifiedRegister(rBX);
@@ -3433,7 +3441,7 @@ bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_GetLocOrgDensity(Context& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   const int worldx = m_world->GetConfig().WORLD_X.Get();
@@ -3493,7 +3501,7 @@ bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_GetFacedOrgDensity(Context&)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   const int worldx = m_world->GetConfig().WORLD_X.Get();
@@ -3581,7 +3589,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit)
+bool Hardware::Types::HeadsEX::DoActualCollect(Context& ctx, int bin_used, bool unit)
 {
   // Set up res_change and max total
   double cell_res = 0.0;
@@ -3625,7 +3633,7 @@ bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bo
   return false;
 }
 
-bool cHardwareExperimental::FakeActualCollect(cAvidaContext& ctx, int bin_used, bool unit)
+bool Hardware::Types::HeadsEX::FakeActualCollect(Context& ctx, int bin_used, bool unit)
 {
   // Set up res_change and max total
   double cell_res = 0.0;
@@ -3670,7 +3678,7 @@ bool cHardwareExperimental::FakeActualCollect(cAvidaContext& ctx, int bin_used, 
 }
 
 
-bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_CollectEdible(Context& ctx)
 {
   int absorb_type = m_world->GetConfig().MULTI_ABSORB_TYPE.Get();
   
@@ -3707,7 +3715,7 @@ bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_CollectSpecific(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_CollectSpecific(Context& ctx)
 {
   const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
   double res_before = m_organism->GetRBin(resource);
@@ -3719,7 +3727,7 @@ bool cHardwareExperimental::Inst_CollectSpecific(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_DepositResource(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_DepositResource(Context& ctx)
 {
   int resource_amount = abs(GetRegister(FindModifiedNextRegister(rBX)));
   int resource_id = GetRegister(FindModifiedRegister(rBX));
@@ -3756,7 +3764,7 @@ bool cHardwareExperimental::Inst_DepositResource(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_DepositSpecific(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_DepositSpecific(Context& ctx)
 {
   int resource_amount = GetRegister(FindModifiedRegister(rBX));
   const int spec_res = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
@@ -3792,7 +3800,7 @@ bool cHardwareExperimental::Inst_DepositSpecific(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_DepositAllAsSpecific(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_DepositAllAsSpecific(Context& ctx)
 {
   const int spec_res = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
   bool success = false;
@@ -3830,7 +3838,7 @@ bool cHardwareExperimental::Inst_DepositAllAsSpecific(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_NopDepositSpecific(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_NopDepositSpecific(Context& ctx)
 {
   int resource_amount = GetRegister(FindModifiedRegister(rBX));
   const int spec_res = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
@@ -3856,7 +3864,7 @@ bool cHardwareExperimental::Inst_NopDepositSpecific(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_NopDepositResource(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_NopDepositResource(Context& ctx)
 {
   int resource_amount = abs(GetRegister(FindModifiedNextRegister(rBX)));
   int resource_id = GetRegister(FindModifiedRegister(rBX));
@@ -3883,7 +3891,7 @@ bool cHardwareExperimental::Inst_NopDepositResource(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_NopDepositAllAsSpecific(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_NopDepositAllAsSpecific(Context& ctx)
 {
   bool success = false;
   const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
@@ -3909,7 +3917,7 @@ bool cHardwareExperimental::Inst_NopDepositAllAsSpecific(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_Nop2DepositAllAsSpecific(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_Nop2DepositAllAsSpecific(Context& ctx)
 {
   const int spec_res = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
   bool success = false;
@@ -3947,7 +3955,7 @@ bool cHardwareExperimental::Inst_Nop2DepositAllAsSpecific(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_Nop2CollectEdible(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_Nop2CollectEdible(Context& ctx)
 {
   int absorb_type = m_world->GetConfig().MULTI_ABSORB_TYPE.Get();
   
@@ -3985,7 +3993,7 @@ bool cHardwareExperimental::Inst_Nop2CollectEdible(cAvidaContext& ctx)
 }
 
 
-bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_NopCollectEdible(Context& ctx)
 {
   int absorb_type = m_world->GetConfig().MULTI_ABSORB_TYPE.Get();
   int res_id = -1;
@@ -4035,7 +4043,7 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
 
 
 
-bool cHardwareExperimental::Inst_GetResStored(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_GetResStored(Context& ctx)
 {
   int resource_id = abs(GetRegister(FindModifiedRegister(rBX)));
   Apto::Array<double> bins = m_organism->GetRBins();
@@ -4045,7 +4053,7 @@ bool cHardwareExperimental::Inst_GetResStored(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetSpecificStored(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_GetSpecificStored(Context& ctx)
 {
   Apto::Array<double> bins = m_organism->GetRBins();
   int out_reg = FindModifiedRegister(rBX);
@@ -4057,7 +4065,7 @@ bool cHardwareExperimental::Inst_GetSpecificStored(cAvidaContext& ctx)
 
 
 
-bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_GetFacedOrgID(Context& ctx)
 //Get ID of organism faced by this one, if there is an organism in front.
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -4075,7 +4083,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
 }
 
 //Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions.
-bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_AttackPrey(Context& ctx)
 {
   sAttackResult results;
   results.inst = 0;
@@ -4093,7 +4101,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   return TestAttackResultsOut(results);
 }
 
-bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_AttackPreyArea(Context& ctx)
 {
   sAttackResult results;
   results.inst = 0;
@@ -4136,7 +4144,7 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
 
 
 
-bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_AttackPreyShare(Context& ctx)
 {
   sAttackResult results;
   results.inst = 1;
@@ -4165,7 +4173,7 @@ bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
   return TestAttackResultsOut(results);
 }
 
-bool cHardwareExperimental::Inst_AttackPreyNoShare(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_AttackPreyNoShare(Context& ctx)
 {
   sAttackResult results;
   results.inst = 1;
@@ -4193,7 +4201,7 @@ bool cHardwareExperimental::Inst_AttackPreyNoShare(cAvidaContext& ctx)
   return TestAttackResultsOut(results);
 }
 
-bool cHardwareExperimental::Inst_AttackPreyFakeShare(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_AttackPreyFakeShare(Context& ctx)
 {
   sAttackResult results;
   results.inst = 1;
@@ -4224,7 +4232,7 @@ bool cHardwareExperimental::Inst_AttackPreyFakeShare(cAvidaContext& ctx)
 
 
 
-bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_AttackSpecPrey(Context& ctx)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -4261,7 +4269,7 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_AttackFTPrey(Context& ctx)
 {
   sAttackResult results;
   results.inst = 0;
@@ -4316,7 +4324,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   return TestAttackResultsOut(results);
 }
 
-bool cHardwareExperimental::Inst_AttackPoisonPrey(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_AttackPoisonPrey(Context& ctx)
 {
   if (!TestAttack(ctx)) return false;
   
@@ -4332,7 +4340,7 @@ bool cHardwareExperimental::Inst_AttackPoisonPrey(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_AttackPoisonFTPrey(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_AttackPoisonFTPrey(Context& ctx)
 {
   sAttackResult results;
   results.inst = 0;
@@ -4384,7 +4392,7 @@ bool cHardwareExperimental::Inst_AttackPoisonFTPrey(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_AttackPoisonFTPreyGenetic(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_AttackPoisonFTPreyGenetic(Context& ctx)
 {
   sAttackResult results;
   results.inst = 0;
@@ -4441,7 +4449,7 @@ bool cHardwareExperimental::Inst_AttackPoisonFTPreyGenetic(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_AttackPoisonFTMixedPrey(Context& ctx)
 {
   sAttackResult results;
   results.inst = 0;
@@ -4504,7 +4512,7 @@ bool cHardwareExperimental::Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx)
 }
 
 //Attack organism faced by this one if you are both predators or both prey.
-bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_FightMeritOrg(Context& ctx)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -4564,7 +4572,7 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
 }
 
 //Attack organism faced by this one if you are both predators or both prey.
-bool cHardwareExperimental::Inst_FightBonusOrg(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_FightBonusOrg(Context& ctx)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -4624,7 +4632,7 @@ bool cHardwareExperimental::Inst_FightBonusOrg(cAvidaContext& ctx)
 }
 
 //Get odds of winning or tieing in a fight.
-bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_GetMeritFightOdds(Context&)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -4669,7 +4677,7 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext&)
 }
 
 //Attack organism faced by this one if you are both predators or both prey.
-bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_FightOrg(Context& ctx)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -4707,7 +4715,7 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_AttackPred(Context& ctx)
 {
   assert(m_organism != 0);
   if (!TestAttackPred(ctx)) return false;
@@ -4760,7 +4768,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
 }
 
 //Kill (don't consume) organism faced by this one if you are both predators.
-bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_KillPred(Context& ctx)
 {
   assert(m_organism != 0);
   if (!TestAttackPred(ctx)) return false;
@@ -4784,7 +4792,7 @@ bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
 }
 
 //Attack organism faced by this one if you are both predators or both prey.
-bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_FightPred(Context& ctx)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -4831,14 +4839,14 @@ bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
 
 
 //Teach offspring learned targeting/foraging behavior
-bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext&)
+bool Hardware::Types::HeadsEX::Inst_TeachOffspring(Context&)
 {
   assert(m_organism != 0);
   m_organism->Teach(true);
   return true;
 }
 
-bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_LearnParent(Context& ctx)
 {
   assert(m_organism != 0);
   bool halt = false;
@@ -4861,7 +4869,7 @@ bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
   return !halt;
 }
 
-bool cHardwareExperimental::Inst_SetGuard(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_SetGuard(Context& ctx)
 {
   bool set_ok = false;
   if (m_organism->GetPhenotype().GetTimeUsed() >= m_world->GetConfig().JUV_PERIOD.Get()) {
@@ -4883,7 +4891,7 @@ bool cHardwareExperimental::Inst_SetGuard(cAvidaContext& ctx)
   return set_ok;
 }
 
-bool cHardwareExperimental::Inst_SetGuardOnce(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_SetGuardOnce(Context& ctx)
 {
   bool set_ok = false;
   if (!m_organism->IsGuard()) set_ok = Inst_SetGuard(ctx);
@@ -4892,7 +4900,7 @@ bool cHardwareExperimental::Inst_SetGuardOnce(cAvidaContext& ctx)
   return set_ok;
 }
 
-bool cHardwareExperimental::Inst_GetNumGuards(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_GetNumGuards(Context& ctx)
 {
   int num_guards = 0;
   bool on_den = false;
@@ -4920,7 +4928,7 @@ bool cHardwareExperimental::Inst_GetNumGuards(cAvidaContext& ctx)
   return on_den;
 }
 
-bool cHardwareExperimental::Inst_GetNumJuvs(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_GetNumJuvs(Context& ctx)
 {
   int num_juvs = 0;
   int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
@@ -4950,19 +4958,19 @@ bool cHardwareExperimental::Inst_GetNumJuvs(cAvidaContext& ctx)
   return on_den;
 }
 
-bool cHardwareExperimental::Inst_ActivateDisplay(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_ActivateDisplay(Context& ctx)
 {
   if (m_organism->GetOrgDisplayData() == NULL) return false;
   m_organism->ActivateDisplay();
   return true;
 }
 
-bool cHardwareExperimental::Inst_UpdateDisplay(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_UpdateDisplay(Context& ctx)
 {
   return m_organism->UpdateOrgDisplay();
 }
 
-bool cHardwareExperimental::Inst_ModifyDisplay(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_ModifyDisplay(Context& ctx)
 {
   sOrgDisplay* this_display = m_organism->GetOrgDisplayData();
   if (this_display == NULL) return false;
@@ -4994,7 +5002,7 @@ bool cHardwareExperimental::Inst_ModifyDisplay(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_ReadLastSeenDisplay(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_ReadLastSeenDisplay(Context& ctx)
 {
   if (!m_sensor.HasSeenDisplay()) return false;
   sOrgDisplay& last_seen = m_sensor.GetLastSeenDisplay();
@@ -5025,7 +5033,7 @@ bool cHardwareExperimental::Inst_ReadLastSeenDisplay(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_ModifySimpDisplay(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_ModifySimpDisplay(Context& ctx)
 {
   InstMemSpace& memory = m_memory;
   int pos = getIP().GetPosition();
@@ -5052,7 +5060,7 @@ bool cHardwareExperimental::Inst_ModifySimpDisplay(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_ReadLastSimpDisplay(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_ReadLastSimpDisplay(Context& ctx)
 {
   if (!m_sensor.HasSeenDisplay()) return false;
   sOrgDisplay& last_seen = m_sensor.GetLastSeenDisplay();
@@ -5088,7 +5096,7 @@ bool cHardwareExperimental::Inst_ReadLastSimpDisplay(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_KillDisplay(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_KillDisplay(Context& ctx)
 {
   if (!m_organism->IsDisplaying()) return false;
   m_organism->KillDisplay();
@@ -5098,7 +5106,7 @@ bool cHardwareExperimental::Inst_KillDisplay(cAvidaContext& ctx)
 
 
 
-bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_ScrambleReg(Context& ctx)
 {
   for (int i = 0; i < NUM_REGISTERS; i++) {
     setInternalValue(rAX + i, (int) (ctx.GetRandom().GetDouble()), true);
@@ -5107,7 +5115,7 @@ bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
 }
 
 
-bool cHardwareExperimental::Inst_GetFacedEditDistance(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::Inst_GetFacedEditDistance(Context& ctx)
 {
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
@@ -5129,7 +5137,7 @@ bool cHardwareExperimental::Inst_GetFacedEditDistance(cAvidaContext& ctx)
   return true;
 }
 
-void cHardwareExperimental::MakePred(cAvidaContext& ctx)
+void Hardware::Types::HeadsEX::MakePred(Context& ctx)
 {
   if (m_organism->IsPreyFT()) {
     if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
@@ -5142,7 +5150,7 @@ void cHardwareExperimental::MakePred(cAvidaContext& ctx)
   }
 }
 
-void cHardwareExperimental::MakeTopPred(cAvidaContext& ctx)
+void Hardware::Types::HeadsEX::MakeTopPred(Context& ctx)
 {
   if (m_organism->IsPreyFT()) {
     if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
@@ -5156,7 +5164,7 @@ void cHardwareExperimental::MakeTopPred(cAvidaContext& ctx)
   else if (m_organism->IsPredFT()) m_organism->SetTopPredFT(ctx);
 }
 
-bool cHardwareExperimental::TestAttack(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::TestAttack(Context& ctx)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -5182,7 +5190,7 @@ bool cHardwareExperimental::TestAttack(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::TestAttackPred(cAvidaContext& ctx)
+bool Hardware::Types::HeadsEX::TestAttackPred(Context& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   
@@ -5194,7 +5202,7 @@ bool cHardwareExperimental::TestAttackPred(cAvidaContext& ctx)
   return true;
 }
 
-cOrganism* cHardwareExperimental::GetPreyTarget(cAvidaContext& ctx)
+cOrganism* Hardware::Types::HeadsEX::GetPreyTarget(Context& ctx)
 {
   cOrganism* target = NULL;
   if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
@@ -5202,7 +5210,7 @@ cOrganism* cHardwareExperimental::GetPreyTarget(cAvidaContext& ctx)
   return target;
 }
 
-bool cHardwareExperimental::TestPreyTarget(cOrganism* target)
+bool Hardware::Types::HeadsEX::TestPreyTarget(cOrganism* target)
 {
   // attacking other carnivores is handled differently (e.g. using fights or tolerance)
   bool success = true;
@@ -5210,14 +5218,14 @@ bool cHardwareExperimental::TestPreyTarget(cOrganism* target)
   return success;
 }
 
-void cHardwareExperimental::SetAttackReg(sAttackReg& reg)
+void Hardware::Types::HeadsEX::SetAttackReg(sAttackReg& reg)
 {
   reg.success_reg = FindModifiedRegister(rBX);
   reg.bonus_reg = FindModifiedNextRegister(reg.success_reg);
   reg.bin_reg = FindModifiedNextRegister(reg.bonus_reg);
 }
 
-bool cHardwareExperimental::ExecuteAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds)
+bool Hardware::Types::HeadsEX::ExecuteAttack(Context& ctx, cOrganism* target, sAttackReg& reg, double odds)
 {
   if (!TestAttackChance(ctx, target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
@@ -5236,7 +5244,7 @@ bool cHardwareExperimental::ExecuteAttack(cAvidaContext& ctx, cOrganism* target,
   return true;
 }
 
-bool cHardwareExperimental::ExecuteShareAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, Apto::Array<cOrganism*>& pack, double odds)
+bool Hardware::Types::HeadsEX::ExecuteShareAttack(Context& ctx, cOrganism* target, sAttackReg& reg, Apto::Array<cOrganism*>& pack, double odds)
 {
   if (!TestAttackChance(ctx, target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
@@ -5256,7 +5264,7 @@ bool cHardwareExperimental::ExecuteShareAttack(cAvidaContext& ctx, cOrganism* ta
   return true;
 }
 
-bool cHardwareExperimental::ExecuteFakeShareAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double share, double odds)
+bool Hardware::Types::HeadsEX::ExecuteFakeShareAttack(Context& ctx, cOrganism* target, sAttackReg& reg, double share, double odds)
 {
   if (!TestAttackChance(ctx, target, reg, odds)) return false;
   double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
@@ -5273,7 +5281,7 @@ bool cHardwareExperimental::ExecuteFakeShareAttack(cAvidaContext& ctx, cOrganism
   return true;
 }
 
-bool cHardwareExperimental::ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds)
+bool Hardware::Types::HeadsEX::ExecutePoisonPreyAttack(Context& ctx, cOrganism* target, sAttackReg& reg, double odds)
 {
   // poison affects merit
   if (!TestAttackChance(ctx, target, reg, odds)) return false;
@@ -5304,7 +5312,7 @@ bool cHardwareExperimental::ExecutePoisonPreyAttack(cAvidaContext& ctx, cOrganis
   return true;
 }
 
-bool cHardwareExperimental::TestAttackChance(cAvidaContext& ctx, cOrganism* target, sAttackReg& reg, double odds)
+bool Hardware::Types::HeadsEX::TestAttackChance(Context& ctx, cOrganism* target, sAttackReg& reg, double odds)
 {
   bool success = true;
   if (odds == -1) odds = m_world->GetConfig().PRED_ODDS.Get();
@@ -5320,7 +5328,7 @@ bool cHardwareExperimental::TestAttackChance(cAvidaContext& ctx, cOrganism* targ
   return success;
 }
 
-void cHardwareExperimental::ApplyKilledPreyMerit(cOrganism* target, double effic)
+void Hardware::Types::HeadsEX::ApplyKilledPreyMerit(cOrganism* target, double effic)
 {
   // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -5331,7 +5339,7 @@ void cHardwareExperimental::ApplyKilledPreyMerit(cOrganism* target, double effic
   }
 }
 
-void cHardwareExperimental::ApplyKilledPreyReactions(cOrganism* target)
+void Hardware::Types::HeadsEX::ApplyKilledPreyReactions(cOrganism* target)
 {
   // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
   Apto::Array<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
@@ -5341,7 +5349,7 @@ void cHardwareExperimental::ApplyKilledPreyReactions(cOrganism* target)
   }
 }
 
-void cHardwareExperimental::ApplyKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic)
+void Hardware::Types::HeadsEX::ApplyKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic)
 {
   // and add current merit bonus after adjusting for conversion efficiency
   const double target_bonus = target->GetPhenotype().GetCurBonus();
@@ -5349,7 +5357,7 @@ void cHardwareExperimental::ApplyKilledPreyBonus(cOrganism* target, sAttackReg& 
   setInternalValue(reg.bonus_reg, (int) (target_bonus), true);
 }
 
-void cHardwareExperimental::ApplyKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic)
+void Hardware::Types::HeadsEX::ApplyKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic)
 {
   // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
@@ -5363,7 +5371,7 @@ void cHardwareExperimental::ApplyKilledPreyResBins(cOrganism* target, sAttackReg
   }
 }
 
-void cHardwareExperimental::ApplySharedKilledPreyMerit(cOrganism* target, double effic, cOrganism* org, double share)
+void Hardware::Types::HeadsEX::ApplySharedKilledPreyMerit(cOrganism* target, double effic, cOrganism* org, double share)
 {
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     const double target_merit = target->GetPhenotype().GetMerit().GetDouble() * share;
@@ -5373,7 +5381,7 @@ void cHardwareExperimental::ApplySharedKilledPreyMerit(cOrganism* target, double
   }
 }
 
-void cHardwareExperimental::ApplySharedKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic, cOrganism* org, double share)
+void Hardware::Types::HeadsEX::ApplySharedKilledPreyBonus(cOrganism* target, sAttackReg& reg, double effic, cOrganism* org, double share)
 {
   const double target_bonus = target->GetPhenotype().GetCurBonus() * share;
   double bonus = org->GetPhenotype().GetCurBonus() + (target_bonus * effic);
@@ -5381,7 +5389,7 @@ void cHardwareExperimental::ApplySharedKilledPreyBonus(cOrganism* target, sAttac
   setInternalValue(reg.bonus_reg, (int) (target_bonus), true);
 }
 
-void cHardwareExperimental::ApplySharedKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic, cOrganism* org, double share)
+void Hardware::Types::HeadsEX::ApplySharedKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic, cOrganism* org, double share)
 {
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
     Apto::Array<double> target_bins = target->GetRBins();
@@ -5395,7 +5403,7 @@ void cHardwareExperimental::ApplySharedKilledPreyResBins(cOrganism* target, sAtt
   }
 }
 
-void cHardwareExperimental::TryPreyClone(cAvidaContext& ctx)
+void Hardware::Types::HeadsEX::TryPreyClone(Context& ctx)
 {
   if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
     // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
@@ -5405,7 +5413,7 @@ void cHardwareExperimental::TryPreyClone(cAvidaContext& ctx)
   }
 }
 
-void cHardwareExperimental::InjureOrg(cOrganism* target)
+void Hardware::Types::HeadsEX::InjureOrg(cOrganism* target)
 {
   double injury = m_world->GetConfig().PRED_INJURY.Get();
   if (injury == 0) return;
@@ -5429,7 +5437,7 @@ void cHardwareExperimental::InjureOrg(cOrganism* target)
   }
 }
 
-Apto::Array<cOrganism*> cHardwareExperimental::GetPredGroupAttackNeighbors()
+Apto::Array<cOrganism*> Hardware::Types::HeadsEX::GetPredGroupAttackNeighbors()
 {
   Apto::Array<int> neighborhood;
   Apto::Array<cOrganism*> pack;
@@ -5462,7 +5470,7 @@ Apto::Array<cOrganism*> cHardwareExperimental::GetPredGroupAttackNeighbors()
 
 
 
-bool cHardwareExperimental::TestAttackResultsOut(sAttackResult& results)
+bool Hardware::Types::HeadsEX::TestAttackResultsOut(sAttackResult& results)
 {
   if (m_world->GetConfig().TRACK_GROUP_ATTACK_DETAILS.Get() == 1) {
     cString attack_string = "";

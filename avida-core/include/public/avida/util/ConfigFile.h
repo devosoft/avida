@@ -26,6 +26,7 @@
 #define AvidaUtilConfigFile_h
 
 #include "apto/core.h"
+#include "avida/core/Types.h"
 
 #include <fstream>
 
@@ -35,31 +36,61 @@ namespace Avida {
     
     class ConfigFile
     {
+    public:
+      typedef Apto::Map<Apto::String, Apto::String> VariableMap;
+      static char PREPROCESSOR_PREFIX_CHAR;
+      static char COMMENT_PREFIX_CHAR;
+      
     private:
-      std::ifstream m_fp;
+      struct fs_entry {
+        std::ifstream fp;
+        fs_entry* next;
+        
+        LIB_LOCAL inline fs_entry() : next(NULL) { ; }
+      };
+      
+    private:
+      fs_entry* m_basefile;
+      fs_entry* m_currfile;
       Apto::String m_filename;
-      bool m_is_open;
+      VariableMap m_variables;
       
     public:
-      LIB_EXPORT inline ConfigFile() : m_is_open(false) { ; }
-      ConfigFile(const Apto::String& filename) : m_is_open(false) { Open(filename); }
-      ~ConfigFile() { if (m_is_open) m_fp.close(); }
+      LIB_EXPORT inline ConfigFile()
+        : m_basefile(NULL), m_currfile(NULL) { ; }
+      LIB_EXPORT inline ConfigFile(const VariableMap& mappings)
+        : m_basefile(NULL), m_currfile(NULL), m_variables(mappings) { ; }
+      LIB_EXPORT inline ConfigFile(const Apto::String& filename, Feedback& feedback)
+        : m_basefile(NULL), m_currfile(NULL)
+      {
+        Open(filename, feedback);
+      }
+      LIB_EXPORT inline ConfigFile(const Apto::String& filename, Feedback& feedback, const VariableMap& mappings)
+        : m_basefile(NULL), m_currfile(NULL), m_variables(mappings)
+      {
+        Open(filename, feedback);
+      }
+      LIB_EXPORT inline ~ConfigFile() { Close(); }
       
       
-      bool Open(const Apto::String& filename);
+      bool Open(const Apto::String& filename, Feedback& feedback);
       bool Close();
       
+      VariableMap& Variables() { return m_variables; }
       
       const Apto::String& Filename() const { return m_filename; }
-      std::ifstream* FileStream() { return &m_fp; }
+      std::ifstream* FileStream() { return (m_basefile) ? &m_basefile->fp : NULL; }
 
-      bool ReadLine(Apto::String& str_ref);
+      bool ReadLine(Apto::String& str_ref, Feedback* feedback = NULL);
       
       // Tests
-      LIB_EXPORT inline bool IsOpen() const { return m_is_open; }
-      LIB_EXPORT inline bool Fail() const { return (m_fp.fail()); }
-      LIB_EXPORT inline bool Good() const { return (m_fp.good()); }
-      LIB_EXPORT inline bool Eof() const { return (m_fp.eof()); }
+      LIB_EXPORT inline bool IsOpen() const { return (m_currfile); }
+      LIB_EXPORT inline bool Fail() const { return (m_basefile == NULL || m_basefile->fp.fail()); }
+      LIB_EXPORT inline bool Good() const { return (m_basefile && m_basefile->fp.good()); }
+      LIB_EXPORT inline bool Eof() const { return (m_basefile == NULL || m_basefile->fp.eof()); }
+      
+    private:
+      LIB_LOCAL void performVariableSubstitution(std::string& str);
     };
     
   };

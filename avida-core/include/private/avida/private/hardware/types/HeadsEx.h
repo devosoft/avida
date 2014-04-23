@@ -289,9 +289,9 @@ namespace Avida {
         int FindNextRegister(int base_reg);
         
         bool Allocate_Necro(const int new_size);
-        bool Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size);
+        bool Allocate_Random(Context& ctx, const int old_size, const int new_size);
         bool Allocate_Default(const int new_size);
-        bool Allocate_Main(cAvidaContext& ctx, const int allocated_size);
+        bool Allocate_Main(Context& ctx, const int allocated_size);
         
         int calcCopiedSize(const int parent_size, const int child_size);
 
@@ -299,7 +299,7 @@ namespace Avida {
         inline Head& getIP() { return m_threads[m_cur_thread].heads[hIP]; }
 
         // --------  Division Support  -------
-        bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
+        bool Divide_Main(Context& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
         
         
         // ---------- Utility Functions -----------
@@ -311,224 +311,227 @@ namespace Avida {
         void ReadInst(Instruction in_inst);
 
         // ---------- Instruction Library -----------
+        
+        bool Inst_Nop(Context& ctx);
+        
         // Multi-threading
-        bool Inst_ForkThread(cAvidaContext& ctx);
-        bool Inst_ThreadCreate(cAvidaContext& ctx);
-        bool Inst_ExitThread(cAvidaContext& ctx);
-        bool Inst_IdThread(cAvidaContext& ctx);
+        bool Inst_ForkThread(Context& ctx);
+        bool Inst_ThreadCreate(Context& ctx);
+        bool Inst_ExitThread(Context& ctx);
+        bool Inst_IdThread(Context& ctx);
         
         // Flow Control
-        bool Inst_IfNEqu(cAvidaContext& ctx);
-        bool Inst_IfLess(cAvidaContext& ctx);
-        bool Inst_IfNotZero(cAvidaContext& ctx);
-        bool Inst_IfEqualZero(cAvidaContext& ctx);
-        bool Inst_IfGreaterThanZero(cAvidaContext& ctx);
-        bool Inst_IfLessThanZero(cAvidaContext& ctx);
-        bool Inst_IfGtrX(cAvidaContext& ctx);
-        bool Inst_IfEquX(cAvidaContext& ctx);
-        bool Inst_IfConsensus(cAvidaContext& ctx);
-        bool Inst_IfConsensus24(cAvidaContext& ctx);
-        bool Inst_IfLessConsensus(cAvidaContext& ctx);
-        bool Inst_IfLessConsensus24(cAvidaContext& ctx);
-        bool Inst_IfStackGreater(cAvidaContext& ctx);
-        bool Inst_IfNest(cAvidaContext& ctx);
-        bool Inst_Label(cAvidaContext& ctx);
+        bool Inst_IfNEqu(Context& ctx);
+        bool Inst_IfLess(Context& ctx);
+        bool Inst_IfNotZero(Context& ctx);
+        bool Inst_IfEqualZero(Context& ctx);
+        bool Inst_IfGreaterThanZero(Context& ctx);
+        bool Inst_IfLessThanZero(Context& ctx);
+        bool Inst_IfGtrX(Context& ctx);
+        bool Inst_IfEquX(Context& ctx);
+        bool Inst_IfConsensus(Context& ctx);
+        bool Inst_IfConsensus24(Context& ctx);
+        bool Inst_IfLessConsensus(Context& ctx);
+        bool Inst_IfLessConsensus24(Context& ctx);
+        bool Inst_IfStackGreater(Context& ctx);
+        bool Inst_IfNest(Context& ctx);
+        bool Inst_Label(Context& ctx);
         
         // Stack and Register Operations
-        bool Inst_Pop(cAvidaContext& ctx);
-        bool Inst_Push(cAvidaContext& ctx);
-        bool Inst_PopAll(cAvidaContext& ctx);
-        bool Inst_PushAll(cAvidaContext& ctx);
-        bool Inst_SwitchStack(cAvidaContext& ctx);
-        bool Inst_SwapStackTop(cAvidaContext& ctx);
-        bool Inst_Swap(cAvidaContext& ctx);
+        bool Inst_Pop(Context& ctx);
+        bool Inst_Push(Context& ctx);
+        bool Inst_PopAll(Context& ctx);
+        bool Inst_PushAll(Context& ctx);
+        bool Inst_SwitchStack(Context& ctx);
+        bool Inst_SwapStackTop(Context& ctx);
+        bool Inst_Swap(Context& ctx);
         
         // Single-Argument Math
-        bool Inst_ShiftR(cAvidaContext& ctx);
-        bool Inst_ShiftL(cAvidaContext& ctx);
-        bool Inst_Inc(cAvidaContext& ctx);
-        bool Inst_Dec(cAvidaContext& ctx);
-        bool Inst_Zero(cAvidaContext& ctx);
-        bool Inst_One(cAvidaContext& ctx);
-        bool Inst_Rand(cAvidaContext& ctx);
-        bool Inst_Mult100(cAvidaContext& ctx);
+        bool Inst_ShiftR(Context& ctx);
+        bool Inst_ShiftL(Context& ctx);
+        bool Inst_Inc(Context& ctx);
+        bool Inst_Dec(Context& ctx);
+        bool Inst_Zero(Context& ctx);
+        bool Inst_One(Context& ctx);
+        bool Inst_Rand(Context& ctx);
+        bool Inst_Mult100(Context& ctx);
         
         // Double Argument Math
-        bool Inst_Add(cAvidaContext& ctx);
-        bool Inst_Sub(cAvidaContext& ctx);
-        bool Inst_Mult(cAvidaContext& ctx);
-        bool Inst_Div(cAvidaContext& ctx);
-        bool Inst_Mod(cAvidaContext& ctx);
-        bool Inst_Nand(cAvidaContext& ctx);
+        bool Inst_Add(Context& ctx);
+        bool Inst_Sub(Context& ctx);
+        bool Inst_Mult(Context& ctx);
+        bool Inst_Div(Context& ctx);
+        bool Inst_Mod(Context& ctx);
+        bool Inst_Nand(Context& ctx);
         
         // I/O and Sensory
-        bool Inst_TaskIO(cAvidaContext& ctx);
-        bool Inst_TaskInput(cAvidaContext& ctx);
-        bool Inst_TaskOutput(cAvidaContext& ctx);
-        bool Inst_TaskOutputZero(cAvidaContext& ctx);
+        bool Inst_TaskIO(Context& ctx);
+        bool Inst_TaskInput(Context& ctx);
+        bool Inst_TaskOutput(Context& ctx);
+        bool Inst_TaskOutputZero(Context& ctx);
         
         // Head-based Instructions
-        bool Inst_HeadAlloc(cAvidaContext& ctx);
-        bool Inst_MoveHead(cAvidaContext& ctx);
-        bool Inst_MoveHeadIfNEqu(cAvidaContext& ctx);
-        bool Inst_MoveHeadIfLess(cAvidaContext& ctx);
-        bool Inst_Goto(cAvidaContext& ctx);
-        bool Inst_GotoIfNEqu(cAvidaContext& ctx);
-        bool Inst_GotoIfLess(cAvidaContext& ctx);
-        bool Inst_GotoConsensus(cAvidaContext& ctx);
-        bool Inst_GotoConsensus24(cAvidaContext& ctx);
-        bool Inst_JumpHead(cAvidaContext& ctx);
-        bool Inst_GetHead(cAvidaContext& ctx);
-        bool Inst_IfCopiedCompLabel(cAvidaContext& ctx);
-        bool Inst_IfCopiedDirectLabel(cAvidaContext& ctx);
-        bool Inst_IfCopiedCompSeq(cAvidaContext& ctx);
-        bool Inst_IfCopiedDirectSeq(cAvidaContext& ctx);
-        bool Inst_HeadDivide(cAvidaContext& ctx);
-        bool Inst_HeadDivideSex(cAvidaContext& ctx);
-        bool Inst_HeadRead(cAvidaContext& ctx);
-        bool Inst_HeadWrite(cAvidaContext& ctx);
-        bool Inst_HeadCopy(cAvidaContext& ctx);
-        bool Inst_Search_Label_Comp_S(cAvidaContext& ctx);
-        bool Inst_Search_Label_Comp_F(cAvidaContext& ctx);
-        bool Inst_Search_Label_Comp_B(cAvidaContext& ctx);
-        bool Inst_Search_Label_Direct_S(cAvidaContext& ctx);
-        bool Inst_Search_Label_Direct_F(cAvidaContext& ctx);
-        bool Inst_Search_Label_Direct_B(cAvidaContext& ctx);
-        bool Inst_Search_Seq_Comp_S(cAvidaContext& ctx);
-        bool Inst_Search_Seq_Comp_F(cAvidaContext& ctx);
-        bool Inst_Search_Seq_Comp_B(cAvidaContext& ctx);
-        bool Inst_Search_Seq_Direct_S(cAvidaContext& ctx);
-        bool Inst_Search_Seq_Direct_F(cAvidaContext& ctx);
-        bool Inst_Search_Seq_Direct_B(cAvidaContext& ctx);
-        bool Inst_SetFlow(cAvidaContext& ctx);
+        bool Inst_HeadAlloc(Context& ctx);
+        bool Inst_MoveHead(Context& ctx);
+        bool Inst_MoveHeadIfNEqu(Context& ctx);
+        bool Inst_MoveHeadIfLess(Context& ctx);
+        bool Inst_Goto(Context& ctx);
+        bool Inst_GotoIfNEqu(Context& ctx);
+        bool Inst_GotoIfLess(Context& ctx);
+        bool Inst_GotoConsensus(Context& ctx);
+        bool Inst_GotoConsensus24(Context& ctx);
+        bool Inst_JumpHead(Context& ctx);
+        bool Inst_GetHead(Context& ctx);
+        bool Inst_IfCopiedCompLabel(Context& ctx);
+        bool Inst_IfCopiedDirectLabel(Context& ctx);
+        bool Inst_IfCopiedCompSeq(Context& ctx);
+        bool Inst_IfCopiedDirectSeq(Context& ctx);
+        bool Inst_HeadDivide(Context& ctx);
+        bool Inst_HeadDivideSex(Context& ctx);
+        bool Inst_HeadRead(Context& ctx);
+        bool Inst_HeadWrite(Context& ctx);
+        bool Inst_HeadCopy(Context& ctx);
+        bool Inst_Search_Label_Comp_S(Context& ctx);
+        bool Inst_Search_Label_Comp_F(Context& ctx);
+        bool Inst_Search_Label_Comp_B(Context& ctx);
+        bool Inst_Search_Label_Direct_S(Context& ctx);
+        bool Inst_Search_Label_Direct_F(Context& ctx);
+        bool Inst_Search_Label_Direct_B(Context& ctx);
+        bool Inst_Search_Seq_Comp_S(Context& ctx);
+        bool Inst_Search_Seq_Comp_F(Context& ctx);
+        bool Inst_Search_Seq_Comp_B(Context& ctx);
+        bool Inst_Search_Seq_Direct_S(Context& ctx);
+        bool Inst_Search_Seq_Direct_F(Context& ctx);
+        bool Inst_Search_Seq_Direct_B(Context& ctx);
+        bool Inst_SetFlow(Context& ctx);
         
         // Thread Execution Control
-        bool Inst_WaitCondition_Equal(cAvidaContext& ctx);
-        bool Inst_WaitCondition_Less(cAvidaContext& ctx);
-        bool Inst_WaitCondition_Greater(cAvidaContext& ctx);
+        bool Inst_WaitCondition_Equal(Context& ctx);
+        bool Inst_WaitCondition_Less(Context& ctx);
+        bool Inst_WaitCondition_Greater(Context& ctx);
         
         
         // Bit Consensus
-        bool Inst_BitConsensus(cAvidaContext& ctx);
-        bool Inst_BitConsensus24(cAvidaContext& ctx);
+        bool Inst_BitConsensus(Context& ctx);
+        bool Inst_BitConsensus24(Context& ctx);
         
         // Replication
-        bool Inst_Repro(cAvidaContext& ctx);
-        bool Inst_Die(cAvidaContext& ctx);
+        bool Inst_Repro(Context& ctx);
+        bool Inst_Die(Context& ctx);
         
         // Movement and Navigation
-        bool Inst_Move(cAvidaContext& ctx);
-        bool Inst_JuvMove(cAvidaContext& ctx);
-        bool Inst_GetCellPosition(cAvidaContext& ctx);
-        bool Inst_GetCellPositionX(cAvidaContext& ctx);
-        bool Inst_GetCellPositionY(cAvidaContext& ctx);
-        bool Inst_GetNorthOffset(cAvidaContext& ctx);
-        bool Inst_GetPositionOffset(cAvidaContext& ctx);
-        bool Inst_GetNortherly(cAvidaContext& ctx);
-        bool Inst_GetEasterly(cAvidaContext& ctx);
-        bool Inst_ZeroEasterly(cAvidaContext& ctx);
-        bool Inst_ZeroNortherly(cAvidaContext& ctx);
-        bool Inst_ZeroPosOffset(cAvidaContext& ctx);
+        bool Inst_Move(Context& ctx);
+        bool Inst_JuvMove(Context& ctx);
+        bool Inst_GetCellPosition(Context& ctx);
+        bool Inst_GetCellPositionX(Context& ctx);
+        bool Inst_GetCellPositionY(Context& ctx);
+        bool Inst_GetNorthOffset(Context& ctx);
+        bool Inst_GetPositionOffset(Context& ctx);
+        bool Inst_GetNortherly(Context& ctx);
+        bool Inst_GetEasterly(Context& ctx);
+        bool Inst_ZeroEasterly(Context& ctx);
+        bool Inst_ZeroNortherly(Context& ctx);
+        bool Inst_ZeroPosOffset(Context& ctx);
         
         // Rotation
-        bool Inst_RotateLeftOne(cAvidaContext& ctx);
-        bool Inst_RotateRightOne(cAvidaContext& ctx);
-        bool Inst_RotateUphill(cAvidaContext& ctx);
-        bool Inst_RotateUpFtHill(cAvidaContext& ctx);
-        bool Inst_RotateHome(cAvidaContext& ctx);
-        bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
-        bool Inst_RotateX(cAvidaContext& ctx);
-        bool Inst_RotateDir(cAvidaContext& ctx);
-        bool Inst_RotateOrgID(cAvidaContext& ctx);
-        bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
+        bool Inst_RotateLeftOne(Context& ctx);
+        bool Inst_RotateRightOne(Context& ctx);
+        bool Inst_RotateUphill(Context& ctx);
+        bool Inst_RotateUpFtHill(Context& ctx);
+        bool Inst_RotateHome(Context& ctx);
+        bool Inst_RotateUnoccupiedCell(Context& ctx);
+        bool Inst_RotateX(Context& ctx);
+        bool Inst_RotateDir(Context& ctx);
+        bool Inst_RotateOrgID(Context& ctx);
+        bool Inst_RotateAwayOrgID(Context& ctx);
         
         
         // Resource and Topography Sensing
-        bool Inst_SenseResourceID(cAvidaContext& ctx);
-        bool Inst_SenseResQuant(cAvidaContext& ctx);
-        bool Inst_SenseNest(cAvidaContext& ctx);
-        bool Inst_SenseResDiff(cAvidaContext& ctx);
-        bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
-        bool Inst_LookAhead(cAvidaContext& ctx);
-        bool Inst_LookAheadIntercept(cAvidaContext& ctx);
-        bool Inst_LookAround(cAvidaContext& ctx);
-        bool Inst_LookAroundIntercept(cAvidaContext& ctx);
-        bool Inst_LookFT(cAvidaContext& ctx);
-        bool Inst_LookAroundFT(cAvidaContext& ctx);
-        bool Inst_SetForageTarget(cAvidaContext& ctx);
-        bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
-        bool Inst_SetRandForageTargetOnce(cAvidaContext& ctx);
-        bool Inst_SetRandPFTOnce(cAvidaContext& ctx);
-        bool Inst_GetForageTarget(cAvidaContext& ctx);
-        bool Inst_ShowForageTarget(cAvidaContext& ctx);
-        bool Inst_GetLocOrgDensity(cAvidaContext& ctx);
-        bool Inst_GetFacedOrgDensity(cAvidaContext& ctx);
+        bool Inst_SenseResourceID(Context& ctx);
+        bool Inst_SenseResQuant(Context& ctx);
+        bool Inst_SenseNest(Context& ctx);
+        bool Inst_SenseResDiff(Context& ctx);
+        bool Inst_SenseFacedHabitat(Context& ctx);
+        bool Inst_LookAhead(Context& ctx);
+        bool Inst_LookAheadIntercept(Context& ctx);
+        bool Inst_LookAround(Context& ctx);
+        bool Inst_LookAroundIntercept(Context& ctx);
+        bool Inst_LookFT(Context& ctx);
+        bool Inst_LookAroundFT(Context& ctx);
+        bool Inst_SetForageTarget(Context& ctx);
+        bool Inst_SetForageTargetOnce(Context& ctx);
+        bool Inst_SetRandForageTargetOnce(Context& ctx);
+        bool Inst_SetRandPFTOnce(Context& ctx);
+        bool Inst_GetForageTarget(Context& ctx);
+        bool Inst_ShowForageTarget(Context& ctx);
+        bool Inst_GetLocOrgDensity(Context& ctx);
+        bool Inst_GetFacedOrgDensity(Context& ctx);
         
-        bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit);
-        bool FakeActualCollect(cAvidaContext& ctx, int bin_used, bool unit);
-        bool Inst_CollectEdible(cAvidaContext& ctx);
-        bool Inst_CollectSpecific(cAvidaContext& ctx);
-        bool Inst_DepositResource(cAvidaContext& ctx);
-        bool Inst_DepositSpecific(cAvidaContext& ctx);
-        bool Inst_DepositAllAsSpecific(cAvidaContext& ctx);
-        bool Inst_NopDepositResource(cAvidaContext& ctx);
-        bool Inst_NopDepositSpecific(cAvidaContext& ctx);
-        bool Inst_NopDepositAllAsSpecific(cAvidaContext& ctx);
-        bool Inst_Nop2DepositAllAsSpecific(cAvidaContext& ctx);
-        bool Inst_NopCollectEdible(cAvidaContext& ctx);
-        bool Inst_Nop2CollectEdible(cAvidaContext& ctx);
-        bool Inst_GetResStored(cAvidaContext& ctx);
-        bool Inst_GetSpecificStored(cAvidaContext& ctx);
+        bool DoActualCollect(Context& ctx, int bin_used, bool unit);
+        bool FakeActualCollect(Context& ctx, int bin_used, bool unit);
+        bool Inst_CollectEdible(Context& ctx);
+        bool Inst_CollectSpecific(Context& ctx);
+        bool Inst_DepositResource(Context& ctx);
+        bool Inst_DepositSpecific(Context& ctx);
+        bool Inst_DepositAllAsSpecific(Context& ctx);
+        bool Inst_NopDepositResource(Context& ctx);
+        bool Inst_NopDepositSpecific(Context& ctx);
+        bool Inst_NopDepositAllAsSpecific(Context& ctx);
+        bool Inst_Nop2DepositAllAsSpecific(Context& ctx);
+        bool Inst_NopCollectEdible(Context& ctx);
+        bool Inst_Nop2CollectEdible(Context& ctx);
+        bool Inst_GetResStored(Context& ctx);
+        bool Inst_GetSpecificStored(Context& ctx);
         
         // Org Interactions
-        bool Inst_GetFacedOrgID(cAvidaContext& ctx);
-        bool Inst_AttackPrey(cAvidaContext& ctx);
-        bool Inst_AttackPreyGroup(cAvidaContext& ctx);
-        bool Inst_AttackPreyShare(cAvidaContext& ctx);
-        bool Inst_AttackPreyNoShare(cAvidaContext& ctx);
-        bool Inst_AttackPreyFakeShare(cAvidaContext& ctx);
-        bool Inst_AttackPreyFakeGroupShare(cAvidaContext& ctx);
-        bool Inst_AttackPreyGroupShare(cAvidaContext& ctx);
-        bool Inst_AttackSpecPrey(cAvidaContext& ctx);
-        bool Inst_AttackPreyArea(cAvidaContext& ctx);
-        bool Inst_AttackFTPrey(cAvidaContext& ctx);
-        bool Inst_AttackPoisonPrey(cAvidaContext& ctx);
-        bool Inst_AttackPoisonFTPrey(cAvidaContext& ctx);
-        bool Inst_AttackPoisonFTPreyGenetic(cAvidaContext& ctx);
-        bool Inst_AttackPoisonFTMixedPrey(cAvidaContext& ctx);
-        bool Inst_FightMeritOrg(cAvidaContext& ctx);
-        bool Inst_FightBonusOrg(cAvidaContext& ctx);
-        bool Inst_GetMeritFightOdds(cAvidaContext& ctx);
-        bool Inst_FightOrg(cAvidaContext& ctx); 
-        bool Inst_AttackPred(cAvidaContext& ctx); 
-        bool Inst_KillPred(cAvidaContext& ctx); 
-        bool Inst_FightPred(cAvidaContext& ctx); 
-        bool Inst_MarkCell(cAvidaContext& ctx); 
-        bool Inst_MarkGroupCell(cAvidaContext& ctx); 
-        bool Inst_MarkPredCell(cAvidaContext& ctx); 
-        bool Inst_ReadFacedCell(cAvidaContext& ctx); 
-        bool Inst_ReadFacedPredCell(cAvidaContext& ctx); 
-        bool Inst_TeachOffspring(cAvidaContext& ctx);
-        bool Inst_LearnParent(cAvidaContext& ctx);
+        bool Inst_GetFacedOrgID(Context& ctx);
+        bool Inst_AttackPrey(Context& ctx);
+        bool Inst_AttackPreyGroup(Context& ctx);
+        bool Inst_AttackPreyShare(Context& ctx);
+        bool Inst_AttackPreyNoShare(Context& ctx);
+        bool Inst_AttackPreyFakeShare(Context& ctx);
+        bool Inst_AttackPreyFakeGroupShare(Context& ctx);
+        bool Inst_AttackPreyGroupShare(Context& ctx);
+        bool Inst_AttackSpecPrey(Context& ctx);
+        bool Inst_AttackPreyArea(Context& ctx);
+        bool Inst_AttackFTPrey(Context& ctx);
+        bool Inst_AttackPoisonPrey(Context& ctx);
+        bool Inst_AttackPoisonFTPrey(Context& ctx);
+        bool Inst_AttackPoisonFTPreyGenetic(Context& ctx);
+        bool Inst_AttackPoisonFTMixedPrey(Context& ctx);
+        bool Inst_FightMeritOrg(Context& ctx);
+        bool Inst_FightBonusOrg(Context& ctx);
+        bool Inst_GetMeritFightOdds(Context& ctx);
+        bool Inst_FightOrg(Context& ctx); 
+        bool Inst_AttackPred(Context& ctx); 
+        bool Inst_KillPred(Context& ctx); 
+        bool Inst_FightPred(Context& ctx); 
+        bool Inst_MarkCell(Context& ctx); 
+        bool Inst_MarkGroupCell(Context& ctx); 
+        bool Inst_MarkPredCell(Context& ctx); 
+        bool Inst_ReadFacedCell(Context& ctx); 
+        bool Inst_ReadFacedPredCell(Context& ctx); 
+        bool Inst_TeachOffspring(Context& ctx);
+        bool Inst_LearnParent(Context& ctx);
         
-        bool Inst_SetGuard(cAvidaContext& ctx);
-        bool Inst_SetGuardOnce(cAvidaContext& ctx);
-        bool Inst_GetNumGuards(cAvidaContext& ctx);
-        bool Inst_GetNumJuvs(cAvidaContext& ctx);
+        bool Inst_SetGuard(Context& ctx);
+        bool Inst_SetGuardOnce(Context& ctx);
+        bool Inst_GetNumGuards(Context& ctx);
+        bool Inst_GetNumJuvs(Context& ctx);
         
-        bool Inst_ActivateDisplay(cAvidaContext& ctx);
-        bool Inst_UpdateDisplay(cAvidaContext& ctx);
-        bool Inst_ModifyDisplay(cAvidaContext& ctx);
-        bool Inst_ReadLastSeenDisplay(cAvidaContext& ctx);
-        bool Inst_KillDisplay(cAvidaContext& ctx);
+        bool Inst_ActivateDisplay(Context& ctx);
+        bool Inst_UpdateDisplay(Context& ctx);
+        bool Inst_ModifyDisplay(Context& ctx);
+        bool Inst_ReadLastSeenDisplay(Context& ctx);
+        bool Inst_KillDisplay(Context& ctx);
         
-        bool Inst_ModifySimpDisplay(cAvidaContext& ctx);
-        bool Inst_ReadLastSimpDisplay(cAvidaContext& ctx);
+        bool Inst_ModifySimpDisplay(Context& ctx);
+        bool Inst_ReadLastSimpDisplay(Context& ctx);
         
         // Control-type Instructions
-        bool Inst_ScrambleReg(cAvidaContext& ctx);
+        bool Inst_ScrambleReg(Context& ctx);
 
-        bool Inst_GetFacedEditDistance(cAvidaContext& ctx);
+        bool Inst_GetFacedEditDistance(Context& ctx);
         
         
       private:

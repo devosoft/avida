@@ -21,79 +21,111 @@
 
 #include "DriverActions.h"
 
+#include "avida/core/Context.h"
 #include "avida/core/EventList.h"
-#include "avida/core/Feedback.h"
+#include "avida/core/Library.h"
 #include "avida/core/UniverseDriver.h"
+#include "avida/util/ArgParser.h"
 
 #include <ctime>
 
+using namespace Avida;
 
-class ActionExit : public Avida::EventAction
+
+class ActionExit : public EventAction
 {
 public:
-  ActionExit(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-  static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext&) { m_world->GetDriver().Finish(); }
+  ActionExit() { ; }
+
+  static Util::ArgSchema Schema()
+  {
+    return Util::ArgSchema();
+  }
+  
+  static EventAction* Create(Universe* universe, Context& ctx, Util::Args* args)
+  {
+    (void)universe;
+    (void)ctx;
+    delete args;
+    return new ActionExit();
+  }
+  
+  void Process(Context& ctx, Update current_update)
+  {
+    (void)current_update;
+    ctx.Driver().Finish();
+  }
 };
 
 
 // Exit Avida when the average generation is greater than or equal to a threshold value.
-class ActionExitAveGeneration : public Avida::EventAction
+class ActionExitAveGeneration : public EventAction
 {
 private:
-  double m_tgt_gen; // Target generation above which Avida should exit.
+  Universe* m_universe;
+  Util::Args* m_args;
 
 public:
-  ActionExitAveGeneration(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
-    cString largs(args);
-    if(largs.GetSize()) {
-      m_tgt_gen = largs.PopWord().AsDouble();
-    } else {
-      // error; no default value for targeted generation.
-      m_world->GetDriver().Feedback().Error("ExitAveGeneration event requires generation.");
-      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
-    }
+  ActionExitAveGeneration(Universe* universe, Util::Args* args) : m_universe(universe), m_args(args) { (void)m_universe; }
+
+  static Util::ArgSchema Schema()
+  {
+    Util::ArgSchema schema;
+    schema.Define("target", Util::DOUBLE);
+    
+    return schema;
+  }
+  
+  static EventAction* Create(Universe* universe, Context& ctx, Util::Args* args)
+  {
+    (void)ctx;
+    return new ActionExitAveGeneration(universe, args);
   }
 
-  static const cString GetDescription() { return "Arguments: <double generation>"; }
-
-  void Process(cAvidaContext&) {
-      if(m_world->GetStats().GetGeneration() > m_tgt_gen) {
-        m_world->GetDriver().Finish();
-      }
+  void Process(Context& ctx, Update current_update)
+  {
+    (void)current_update;
+    
+    // double ave_generation = m_world->GetStats().GetGeneration();
+    double ave_generation = -1.0; assert(false);
+    if (ave_generation > m_args->Double(0)) ctx.Driver().Finish();
   }
   
 };
 
 
 // Exit when the elapsed wallclock time has exceeded a threshold number of seconds, beginning from the construction of this object.
-class ActionExitElapsedTime : public Avida::EventAction
+class ActionExitElapsedTime : public EventAction
 {
 private:
-  time_t m_time; // Number of seconds after which Avida should exit.
-  time_t m_then; // Time at which this object was constructed (the 'start' of Avida).
+  Util::Args* m_args;
+  time_t m_start_time; // Time at which this object was constructed (the 'start' of Avida).
 
 public:
-  ActionExitElapsedTime(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
-    cString largs(args);
-    if(largs.GetSize()) {
-      m_time = largs.PopWord().AsInt();
-    } else {
-      // error; no default value for elapsed time.
-      m_world->GetDriver().Feedback().Error("ExitElapsedTime event requires elapsed time.");
-      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
-    }
-    
-    // When did we start?
-    m_then = time(0);
+  ActionExitElapsedTime(Util::Args* args) : m_args(args)
+  {
+    m_start_time = time(0);
   }
   
-  static const cString GetDescription() { return "Arguments: <int elapsed time [seconds]>"; }
+  static Util::ArgSchema Schema()
+  {
+    Util::ArgSchema schema;
+    schema.Define("target", Util::INT);
+    
+    return schema;
+  }
   
-  void Process(cAvidaContext&) {
-    if((time(0) - m_then) >= m_time) {
-      m_world->GetDriver().Finish();
-    }
+  static EventAction* Create(Universe* universe, Context& ctx, Util::Args* args)
+  {
+    (void)universe;
+    (void)ctx;
+    return new ActionExitElapsedTime(args);
+  }
+  
+  
+  void Process(Context& ctx, Update current_update)
+  {
+    if ((time(0) - m_start_time) >= m_args->Int(0)) ctx.Driver().Finish();
   }
   
 };
@@ -103,8 +135,9 @@ public:
 
 void RegisterDriverActions()
 {
-  action_lib->Register<ActionExit>("Exit");
-  action_lib->Register<ActionExitAveGeneration>("ExitAveGeneration");
-  action_lib->Register<ActionExitElapsedTime>("ExitElapsedTime");
-  action_lib->Register<ActionPause>("Pause");
+#define REGISTER_ACTION(ACT) Core::Library::Instance().RegisterEventType(#ACT, Action ## ACT ::Schema(), &Action ## ACT ::Create)
+  REGISTER_ACTION(Exit);
+  REGISTER_ACTION(ExitAveGeneration);
+  REGISTER_ACTION(ExitElapsedTime);
+#undef REGISTER_ACTION
 }

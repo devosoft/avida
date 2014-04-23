@@ -214,7 +214,7 @@ Hardware::Types::GP8::GP8InstLib* Hardware::Types::GP8::initInstLib(void)
   return new GP8InstLib(f_size, s_f_array, n_names, nop_mods, functions, hw_units, imm_methods, def, null_inst);
 }
 
-Hardware::Types::GP8::cHardwareGP8(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
+Hardware::Types::GP8::cHardwareGP8(Context& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
 : cHardwareBase(world, in_organism, in_inst_set), m_genes(0), m_mem_array(1), m_sensor_sessions(NUM_NOPS)
 {
   m_functions = s_inst_slib->Functions();
@@ -367,7 +367,7 @@ void Hardware::Types::GP8::Thread::Reset(cHardwareGP8* in_hardware, const Head& 
 }
 
 
-bool Hardware::Types::GP8::SingleProcess(cAvidaContext& ctx, bool speculative)
+bool Hardware::Types::GP8::SingleProcess(Context& ctx, bool speculative)
 {
   // If speculatively stalled, stay that way until a real instruction comes
   if (speculative && m_spec_stall) return false;
@@ -573,7 +573,7 @@ bool Hardware::Types::GP8::SingleProcess(cAvidaContext& ctx, bool speculative)
 }
 
 
-bool Hardware::Types::GP8::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst)
+bool Hardware::Types::GP8::SingleProcess_ExecuteInst(Context& ctx, const Instruction& cur_inst)
 {
   // Copy Instruction locally to handle stochastic effects
   Instruction actual_inst = cur_inst;
@@ -598,7 +598,7 @@ bool Hardware::Types::GP8::SingleProcess_ExecuteInst(cAvidaContext& ctx, const I
 }
 
 
-void Hardware::Types::GP8::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
+void Hardware::Types::GP8::ProcessBonusInst(Context& ctx, const Instruction& inst)
 {
   // Mark this organism as running...
   bool prev_run_state = m_organism->IsRunning();
@@ -1165,7 +1165,7 @@ int Hardware::Types::GP8::calcCopiedSize(const int parent_size, const int child_
 }
 
 
-bool Hardware::Types::GP8::Divide_Main(cAvidaContext& ctx, int mem_space_used, int write_head_pos, double mut_multiplier)
+bool Hardware::Types::GP8::Divide_Main(Context& ctx, int mem_space_used, int write_head_pos, double mut_multiplier)
 {
   // Make sure the memory space we're using exists
   if (m_mem_array.GetSize() <= mem_space_used) return false;
@@ -1264,8 +1264,14 @@ void Hardware::Types::GP8::checkWaitingThreads(int cur_thread, int reg_num)
 // Instructions
 // --------------------------------------------------------------------------------------------------------------
 
+bool Hardware::Types::GP8::Inst_Nop(Context& ctx)
+{
+  (void)ctx;
+  return true;
+}
+
 // Multi-threading.
-bool Hardware::Types::GP8::Inst_Yield(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Yield(Context&)
 {
   m_threads[m_cur_thread].active = false;
   m_threads[m_cur_thread].wait_reg = -1;
@@ -1273,7 +1279,7 @@ bool Hardware::Types::GP8::Inst_Yield(cAvidaContext&)
 }
 
 
-bool Hardware::Types::GP8::Inst_RegulatePause(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_RegulatePause(Context&)
 {
   readLabel(getIP(), m_threads[m_cur_thread].next_label);
   if (m_threads[m_cur_thread].next_label.GetSize() == 0) return false;
@@ -1284,7 +1290,7 @@ bool Hardware::Types::GP8::Inst_RegulatePause(cAvidaContext&)
 }
 
 
-bool Hardware::Types::GP8::Inst_RegulateResume(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_RegulateResume(Context&)
 {
   readLabel(getIP(), m_threads[m_cur_thread].next_label);
   if (m_threads[m_cur_thread].next_label.GetSize() == 0) return false;
@@ -1295,7 +1301,7 @@ bool Hardware::Types::GP8::Inst_RegulateResume(cAvidaContext&)
 }
 
 
-bool Hardware::Types::GP8::Inst_RegulateReset(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_RegulateReset(Context&)
 {
   readLabel(getIP(), m_threads[m_cur_thread].next_label);
   if (m_threads[m_cur_thread].next_label.GetSize() == 0) return false;
@@ -1309,13 +1315,13 @@ bool Hardware::Types::GP8::Inst_RegulateReset(cAvidaContext&)
 
 
 
-bool Hardware::Types::GP8::Inst_Label(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Label(Context&)
 {
   readLabel(getIP(), GetLabel());
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_IfNEqu(cAvidaContext& ctx) // Execute next if bx != ?cx?
+bool Hardware::Types::GP8::Inst_IfNEqu(Context& ctx) // Execute next if bx != ?cx?
 {
   const int op1 = FindModifiedRegister(rBX, true);
   const int op2 = FindModifiedNextRegister((op1 < NUM_REGISTERS) ? op1 : rBX, true);
@@ -1323,7 +1329,7 @@ bool Hardware::Types::GP8::Inst_IfNEqu(cAvidaContext& ctx) // Execute next if bx
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_IfLess(cAvidaContext& ctx) // Execute next if ?bx? < ?cx?
+bool Hardware::Types::GP8::Inst_IfLess(Context& ctx) // Execute next if ?bx? < ?cx?
 {
   const int op1 = FindModifiedRegister(rBX, true);
   const int op2 = FindModifiedNextRegister((op1 < NUM_REGISTERS) ? op1 : rBX, true);
@@ -1331,26 +1337,26 @@ bool Hardware::Types::GP8::Inst_IfLess(cAvidaContext& ctx) // Execute next if ?b
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_IfNotZero(cAvidaContext& ctx)  // Execute next if ?bx? != 0
+bool Hardware::Types::GP8::Inst_IfNotZero(Context& ctx)  // Execute next if ?bx? != 0
 {
   const int op1 = FindModifiedRegister(rBX, true);
   if (getRegister(ctx, op1) == 0)  getIP().Advance();
   return true;
 }
-bool Hardware::Types::GP8::Inst_IfEqualZero(cAvidaContext& ctx)  // Execute next if ?bx? == 0
+bool Hardware::Types::GP8::Inst_IfEqualZero(Context& ctx)  // Execute next if ?bx? == 0
 {
   const int op1 = FindModifiedRegister(rBX, true);
   if (getRegister(ctx, op1) != 0)  getIP().Advance();
   return true;
 }
-bool Hardware::Types::GP8::Inst_IfGreaterThanZero(cAvidaContext& ctx)  // Execute next if ?bx? > 0
+bool Hardware::Types::GP8::Inst_IfGreaterThanZero(Context& ctx)  // Execute next if ?bx? > 0
 {
   const int op1 = FindModifiedRegister(rBX, true);
   if (getRegister(ctx, op1) <= 0)  getIP().Advance();
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_IfLessThanZero(cAvidaContext& ctx)  // Execute next if ?bx? < 0
+bool Hardware::Types::GP8::Inst_IfLessThanZero(Context& ctx)  // Execute next if ?bx? < 0
 {
   const int op1 = FindModifiedRegister(rBX, true);
   if (getRegister(ctx, op1) >= 0)  getIP().Advance();
@@ -1358,7 +1364,7 @@ bool Hardware::Types::GP8::Inst_IfLessThanZero(cAvidaContext& ctx)  // Execute n
 }
 
 
-bool Hardware::Types::GP8::Inst_Pop(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Pop(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX, true);
   DataValue pop = stackPop();
@@ -1366,14 +1372,14 @@ bool Hardware::Types::GP8::Inst_Pop(cAvidaContext&)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Push(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Push(Context& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX, true);
   getStack(m_threads[m_cur_thread].cur_stack).Push(getRegisterData(ctx, reg_used));
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_PopAll(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_PopAll(Context&)
 {
   int reg_used = FindModifiedRegister(rBX);
   for (int i = 0; i < NUM_REGISTERS; i++) {
@@ -1385,7 +1391,7 @@ bool Hardware::Types::GP8::Inst_PopAll(cAvidaContext&)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_PushAll(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_PushAll(Context&)
 {
   int reg_used = FindModifiedRegister(rBX);
   for (int i = 0; i < NUM_REGISTERS; i++) {
@@ -1396,9 +1402,9 @@ bool Hardware::Types::GP8::Inst_PushAll(cAvidaContext&)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_SwitchStack(cAvidaContext&) { switchStack(); return true; }
+bool Hardware::Types::GP8::Inst_SwitchStack(Context&) { switchStack(); return true; }
 
-bool Hardware::Types::GP8::Inst_Swap(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Swap(Context&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1408,7 +1414,7 @@ bool Hardware::Types::GP8::Inst_Swap(cAvidaContext&)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_ShiftR(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_ShiftR(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, m_threads[m_cur_thread].reg[reg_used].value >> 1,
@@ -1416,7 +1422,7 @@ bool Hardware::Types::GP8::Inst_ShiftR(cAvidaContext&)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_ShiftL(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_ShiftL(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, m_threads[m_cur_thread].reg[reg_used].value << 1,
@@ -1425,7 +1431,7 @@ bool Hardware::Types::GP8::Inst_ShiftL(cAvidaContext&)
 }
 
 
-bool Hardware::Types::GP8::Inst_Inc(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Inc(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, m_threads[m_cur_thread].reg[reg_used].value + 1,
@@ -1433,7 +1439,7 @@ bool Hardware::Types::GP8::Inst_Inc(cAvidaContext&)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Dec(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Dec(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, m_threads[m_cur_thread].reg[reg_used].value - 1,
@@ -1441,28 +1447,28 @@ bool Hardware::Types::GP8::Inst_Dec(cAvidaContext&)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Zero(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Zero(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, 0, false);
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_One(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_One(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, 1, false);
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_MaxInt(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_MaxInt(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setRegister(reg_used, std::numeric_limits<int>::max(), false);
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Rand(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Rand(Context& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
   int randsign = ctx.GetRandom().GetUInt(0,2) ? -1 : 1;
@@ -1472,29 +1478,29 @@ bool Hardware::Types::GP8::Inst_Rand(cAvidaContext& ctx)
 
 
 
-int Hardware::Types::GP8::Val_Zero(cAvidaContext&)
+int Hardware::Types::GP8::Val_Zero(Context&)
 {
   return 0;
 }
 
-int Hardware::Types::GP8::Val_One(cAvidaContext&)
+int Hardware::Types::GP8::Val_One(Context&)
 {
   return 1;
 }
 
-int Hardware::Types::GP8::Val_MaxInt(cAvidaContext&)
+int Hardware::Types::GP8::Val_MaxInt(Context&)
 {
   return std::numeric_limits<int>::max();
 }
 
-int Hardware::Types::GP8::Val_Rand(cAvidaContext& ctx)
+int Hardware::Types::GP8::Val_Rand(Context& ctx)
 {
   int randsign = ctx.GetRandom().GetUInt(0,2) ? -1 : 1;
   return ctx.GetRandom().GetInt(std::numeric_limits<int>::max()) * randsign;
 }
 
 
-bool Hardware::Types::GP8::Inst_Add(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Add(Context& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst, true);
@@ -1505,7 +1511,7 @@ bool Hardware::Types::GP8::Inst_Add(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Sub(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Sub(Context& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst, true);
@@ -1516,7 +1522,7 @@ bool Hardware::Types::GP8::Inst_Sub(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Mult(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Mult(Context& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst, true);
@@ -1527,7 +1533,7 @@ bool Hardware::Types::GP8::Inst_Mult(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Div(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Div(Context& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst, true);
@@ -1542,7 +1548,7 @@ bool Hardware::Types::GP8::Inst_Div(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Mod(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Mod(Context& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst, true);
@@ -1558,7 +1564,7 @@ bool Hardware::Types::GP8::Inst_Mod(cAvidaContext& ctx)
 }
 
 
-bool Hardware::Types::GP8::Inst_Nand(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Nand(Context& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst, true);
@@ -1569,7 +1575,7 @@ bool Hardware::Types::GP8::Inst_Nand(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_SetMemory(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SetMemory(Context& ctx)
 {
   int mem_label = FindModifiedRegister(rBX);
   
@@ -1587,7 +1593,7 @@ bool Hardware::Types::GP8::Inst_SetMemory(cAvidaContext& ctx)
 }
 
 
-bool Hardware::Types::GP8::Inst_TaskInput(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_TaskInput(Context&)
 {
   const int reg_used = FindModifiedRegister(rBX, true);
   
@@ -1599,7 +1605,7 @@ bool Hardware::Types::GP8::Inst_TaskInput(cAvidaContext&)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_TaskOutput(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_TaskOutput(Context& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX, true);
   DataValue reg = getRegisterData(ctx, reg_used);
@@ -1613,7 +1619,7 @@ bool Hardware::Types::GP8::Inst_TaskOutput(cAvidaContext& ctx)
 
 
 
-bool Hardware::Types::GP8::Inst_MoveHead(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_MoveHead(Context&)
 {
   const int head_used = FindModifiedHead(hIP);
   int target = FindModifiedHead(hFLOW);
@@ -1627,7 +1633,7 @@ bool Hardware::Types::GP8::Inst_MoveHead(cAvidaContext&)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_JumpHead(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_JumpHead(Context& ctx)
 {
   const int head_used = FindModifiedHead(hIP);
   const int reg = FindModifiedRegister(rCX, true);
@@ -1636,7 +1642,7 @@ bool Hardware::Types::GP8::Inst_JumpHead(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_GetHead(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_GetHead(Context&)
 {
   const int head_used = FindModifiedHead(hIP);
   const int reg = FindModifiedRegister(rCX);
@@ -1644,14 +1650,14 @@ bool Hardware::Types::GP8::Inst_GetHead(cAvidaContext&)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_DidCopyLabel(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_DidCopyLabel(Context&)
 {
   readLabel(getIP(), GetLabel());
   setRegister(rBX, (GetLabel() == GetReadLabel()), false);
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_DivideMemory(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_DivideMemory(Context& ctx)
 {
   int mem_space_used = FindModifiedRegister(rBX);
   
@@ -1663,7 +1669,7 @@ bool Hardware::Types::GP8::Inst_DivideMemory(cAvidaContext& ctx)
   return Divide_Main(ctx, mem_space_used, end_of_memory, 1.0);
 }
 
-bool Hardware::Types::GP8::Inst_HeadRead(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_HeadRead(Context& ctx)
 {
   const int head_id = FindModifiedHead(hREAD);
   const int dst = FindModifiedRegister(rAX);
@@ -1686,7 +1692,7 @@ bool Hardware::Types::GP8::Inst_HeadRead(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_HeadWrite(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_HeadWrite(Context& ctx)
 {
   const int head_id = FindModifiedHead(hWRITE);
   const int src = FindModifiedRegister(rAX);
@@ -1718,7 +1724,7 @@ bool Hardware::Types::GP8::Inst_HeadWrite(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_HeadCopy(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_HeadCopy(Context& ctx)
 {
   // For the moment, this cannot be nop-modified.
   Head& read_head = getHead(hREAD);
@@ -1762,7 +1768,7 @@ bool Hardware::Types::GP8::Inst_HeadCopy(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Search_Label_S(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_Search_Label_S(Context&)
 {
   readLabel(getIP(), GetLabel());
   FindLabelStart(getHead(hFLOW), getIP(), true);
@@ -1770,7 +1776,7 @@ bool Hardware::Types::GP8::Inst_Search_Label_S(cAvidaContext&)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Search_Label_D(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Search_Label_D(Context& ctx)
 {
   readLabel(getIP(), GetLabel());
   int direction = getRegister(ctx, rBX);
@@ -1785,7 +1791,7 @@ bool Hardware::Types::GP8::Inst_Search_Label_D(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Search_Seq_D(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Search_Seq_D(Context& ctx)
 {
   readLabel(getIP(), GetLabel());
   GetLabel().Rotate(1, NUM_NOPS);
@@ -1802,7 +1808,7 @@ bool Hardware::Types::GP8::Inst_Search_Seq_D(cAvidaContext& ctx)
 }
 
 
-bool Hardware::Types::GP8::Inst_WaitCondition_Equal(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_WaitCondition_Equal(Context& ctx)
 {
   const int wait_value_reg = FindModifiedRegister(rBX, true);
   const int check_reg = FindModifiedRegister(rHX);
@@ -1834,7 +1840,7 @@ bool Hardware::Types::GP8::Inst_WaitCondition_Equal(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_WaitCondition_Less(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_WaitCondition_Less(Context& ctx)
 {
   const int wait_value_reg = FindModifiedRegister(rBX, true);
   const int check_reg = FindModifiedRegister(rHX);
@@ -1866,7 +1872,7 @@ bool Hardware::Types::GP8::Inst_WaitCondition_Less(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_WaitCondition_Greater(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_WaitCondition_Greater(Context& ctx)
 {
   const int wait_value_reg = FindModifiedRegister(rBX, true);
   const int check_reg = FindModifiedRegister(rHX);
@@ -1898,7 +1904,7 @@ bool Hardware::Types::GP8::Inst_WaitCondition_Greater(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Repro(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Repro(Context& ctx)
 {
   // these checks should be done, but currently they make some assumptions
   // that crash when evaluating this kind of organism -- JEB
@@ -1970,14 +1976,14 @@ bool Hardware::Types::GP8::Inst_Repro(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Die(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Die(Context& ctx)
 {
   m_organism->Die(ctx);
   
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_Move(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Move(Context& ctx)
 {
   // In TestCPU, movement fails...
   if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
@@ -1991,7 +1997,7 @@ bool Hardware::Types::GP8::Inst_Move(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_GetNorthOffset(cAvidaContext& ctx) {
+bool Hardware::Types::GP8::Inst_GetNorthOffset(Context& ctx) {
   const int out_reg = FindModifiedRegister(rBX);
   int compass_dir = m_organism->GetOrgInterface().GetFacedDir();
   if (m_use_avatar) compass_dir = m_organism->GetOrgInterface().GetAVFacing();
@@ -2000,7 +2006,7 @@ bool Hardware::Types::GP8::Inst_GetNorthOffset(cAvidaContext& ctx) {
 }
 
 
-bool Hardware::Types::GP8::Inst_Eat(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_Eat(Context& ctx)
 {
   if (!m_hw_queue_eat) {
     m_hw_queue[m_hw_queued++] = aEAT;
@@ -2015,7 +2021,7 @@ bool Hardware::Types::GP8::Inst_Eat(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_RotateX(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_RotateX(Context& ctx)
 {
   int num_neighbors = m_organism->GetNeighborhoodSize();
   if (m_use_avatar) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
@@ -2041,7 +2047,7 @@ bool Hardware::Types::GP8::Inst_RotateX(cAvidaContext& ctx)
 }
 
 // Will rotate organism to face a specified other org
-bool Hardware::Types::GP8::Inst_RotateOrgID(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_RotateOrgID(Context& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   // Will rotate organism to face a specificied other org
@@ -2131,7 +2137,7 @@ bool Hardware::Types::GP8::Inst_RotateOrgID(cAvidaContext& ctx)
 }
 
 // Will rotate organism to face away from a specificied other org
-bool Hardware::Types::GP8::Inst_RotateAwayOrgID(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_RotateAwayOrgID(Context& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   // Will rotate organism to face a specificied other org
@@ -2220,7 +2226,7 @@ bool Hardware::Types::GP8::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   }
 }
 
-bool Hardware::Types::GP8::Inst_SenseResourceID(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SenseResourceID(Context& ctx)
 {
   Apto::Array<double> cell_res;
   if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
@@ -2237,7 +2243,7 @@ bool Hardware::Types::GP8::Inst_SenseResourceID(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_SenseNest(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SenseNest(Context& ctx)
 {
   Apto::Array<double> cell_res;
   if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
@@ -2267,18 +2273,18 @@ bool Hardware::Types::GP8::Inst_SenseNest(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_LookAheadEX(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_LookAheadEX(Context& ctx)
 {
   return DoLookAheadEX(ctx);
 }
 
-bool Hardware::Types::GP8::Inst_LookAgainEX(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_LookAgainEX(Context& ctx)
 {
   return DoLookAgainEX(ctx);
 }
 
 
-bool Hardware::Types::GP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
+bool Hardware::Types::GP8::DoLookAheadEX(Context& ctx, bool use_ft)
 {
   int cell_id = m_organism->GetOrgInterface().GetCellID();
   int facing = m_organism->GetOrgInterface().GetFacedDir();
@@ -2322,17 +2328,6 @@ bool Hardware::Types::GP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
   look_results.value = 0;
   
   look_results = Features::VisualSensor::Of(this).PeformLook(ctx, look_init, facing, cell_id, use_ft);
-  
-  if (m_world->GetConfig().TRACK_LOOK_SETTINGS.Get()) {
-    cString look_string = "";
-    look_string += cStringUtil::Stringf("%d", m_organism->GetForageTarget());
-    look_string += cStringUtil::Stringf(",%d", look_results.report_type);
-    look_string += cStringUtil::Stringf(",%d", look_results.habitat);
-    look_string += cStringUtil::Stringf(",%d", look_results.distance);
-    look_string += cStringUtil::Stringf(",%d", look_results.search_type);
-    look_string += cStringUtil::Stringf(",%d", look_results.id_sought);
-    m_organism->GetOrgInterface().TryWriteLookData(look_string);
-  }
   
   // Update Sessions
   m_threads[m_cur_thread].sensor_session.habitat = look_results.habitat;
@@ -2403,7 +2398,7 @@ bool Hardware::Types::GP8::DoLookAheadEX(cAvidaContext& ctx, bool use_ft)
   return true;
 }
 
-bool Hardware::Types::GP8::DoLookAgainEX(cAvidaContext& ctx, bool use_ft)
+bool Hardware::Types::GP8::DoLookAgainEX(Context& ctx, bool use_ft)
 {
   int cell_id = m_organism->GetOrgInterface().GetCellID();
   int facing = m_organism->GetOrgInterface().GetFacedDir();
@@ -2501,7 +2496,7 @@ bool Hardware::Types::GP8::DoLookAgainEX(cAvidaContext& ctx, bool use_ft)
 
 
 
-bool Hardware::Types::GP8::Inst_SenseFacedHabitat(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SenseFacedHabitat(Context& ctx)
 {
   int reg_to_set = FindModifiedRegister(rBX);
   
@@ -2540,7 +2535,7 @@ bool Hardware::Types::GP8::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_SetForageTarget(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SetForageTarget(Context& ctx)
 {
   assert(m_organism != 0);
   int prop_target = getRegister(ctx, FindModifiedRegister(rBX, true));
@@ -2592,14 +2587,14 @@ bool Hardware::Types::GP8::Inst_SetForageTarget(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_SetForageTargetOnce(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SetForageTargetOnce(Context& ctx)
 {
   assert(m_organism != 0);
   if (m_organism->HasSetFT()) return false;
   else return Inst_SetForageTarget(ctx);
 }
 
-bool Hardware::Types::GP8::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_SetRandForageTargetOnce(Context& ctx)
 {
   assert(m_organism != 0);
   int cap = 0;
@@ -2631,7 +2626,7 @@ bool Hardware::Types::GP8::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
   else return Inst_SetForageTargetOnce(ctx);
 }
 
-bool Hardware::Types::GP8::Inst_GetForageTarget(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_GetForageTarget(Context& ctx)
 {
   assert(m_organism != 0);
   const int target_reg = FindModifiedRegister(rBX);
@@ -2639,7 +2634,7 @@ bool Hardware::Types::GP8::Inst_GetForageTarget(cAvidaContext& ctx)
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_CollectSpecific(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_CollectSpecific(Context& ctx)
 {
   const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
   double res_before = m_organism->GetRBin(resource);
@@ -2651,7 +2646,7 @@ bool Hardware::Types::GP8::Inst_CollectSpecific(cAvidaContext& ctx)
   return success;
 }
 
-bool Hardware::Types::GP8::Inst_GetResStored(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_GetResStored(Context& ctx)
 {
   int resource_id = abs(getRegister(ctx, FindModifiedRegister(rBX, true)));
   Apto::Array<double> bins = m_organism->GetRBins();
@@ -2662,7 +2657,7 @@ bool Hardware::Types::GP8::Inst_GetResStored(cAvidaContext& ctx)
 }
 
 
-bool Hardware::Types::GP8::Inst_GetFacedOrgID(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_GetFacedOrgID(Context& ctx)
 //Get ID of organism faced by this one, if there is an organism in front.
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -2680,14 +2675,14 @@ bool Hardware::Types::GP8::Inst_GetFacedOrgID(cAvidaContext& ctx)
 }
 
 //Teach offspring learned targeting/foraging behavior
-bool Hardware::Types::GP8::Inst_TeachOffspring(cAvidaContext&)
+bool Hardware::Types::GP8::Inst_TeachOffspring(Context&)
 {
   assert(m_organism != 0);
   m_organism->Teach(true);
   return true;
 }
 
-bool Hardware::Types::GP8::Inst_LearnParent(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_LearnParent(Context& ctx)
 {
   assert(m_organism != 0);
   bool halt = false;
@@ -2711,7 +2706,7 @@ bool Hardware::Types::GP8::Inst_LearnParent(cAvidaContext& ctx)
 
 
 //Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions.
-bool Hardware::Types::GP8::Inst_AttackPrey(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_AttackPrey(Context& ctx)
 {
   if (!testAttack(ctx)) return false;
   cOrganism* target = getPreyTarget(ctx);
@@ -2726,7 +2721,7 @@ bool Hardware::Types::GP8::Inst_AttackPrey(cAvidaContext& ctx)
 }
 
 
-bool Hardware::Types::GP8::Inst_ScrambleReg(cAvidaContext& ctx)
+bool Hardware::Types::GP8::Inst_ScrambleReg(Context& ctx)
 {
   for (int i = 0; i < NUM_REGISTERS; i++) setRegister(rAX + i, ctx.GetRandom().GetInt(), true);
   return true;

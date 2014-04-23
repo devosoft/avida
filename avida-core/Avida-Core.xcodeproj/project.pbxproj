@@ -8,11 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		4A9B676515404DD1005AE9B9 /* Types.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C0588314CF106200AB38C5 /* Types.cc */; };
-		4A9B676615404DFC005AE9B9 /* GenomeLoader.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708D3E3214A429DF00204169 /* GenomeLoader.cc */; };
 		4AAF523B153DE7B100C66840 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		7000B64E15C6E90D00EE3F14 /* Clade.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7000B64C15C6E90D00EE3F14 /* Clade.cc */; };
 		7000B64F15C6E90D00EE3F14 /* CladeArbiter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7000B64D15C6E90D00EE3F14 /* CladeArbiter.cc */; };
-		7023EC6B0C0A431B00362B9C /* cInitFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891A08F7630100FC65FE /* cInitFile.cc */; };
 		7029D7BD1491AF7800C3B8AA /* GeneticRepresentation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7029D7BC1491AF7800C3B8AA /* GeneticRepresentation.cc */; };
 		70392027178DE091009BBCC5 /* NopSequence.h in Headers */ = {isa = PBXBuildFile; fileRef = 70392026178DE091009BBCC5 /* NopSequence.h */; };
 		70392029178DE0AA009BBCC5 /* NopSequence.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70392028178DE0AA009BBCC5 /* NopSequence.cc */; };
@@ -260,8 +258,6 @@
 		708BEC9B13B3C98E004CB59D /* ResourceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResourceManager.h; sourceTree = "<group>"; };
 		708BEC9C13B3C98E004CB59D /* Resource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = Resource.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		708BEC9E13B3C9C2004CB59D /* Manager.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = Manager.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		708D3E3214A429DF00204169 /* GenomeLoader.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GenomeLoader.cc; sourceTree = "<group>"; };
-		708D3E3514A42AA500204169 /* GenomeLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenomeLoader.h; sourceTree = "<group>"; };
 		7092601A18B65E41001624AC /* NumericIO.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NumericIO.cc; sourceTree = "<group>"; };
 		7092601C18B6611A001624AC /* CoreActions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreActions.h; sourceTree = "<group>"; };
 		7092603618B661C5001624AC /* LogicActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogicActions.cc; sourceTree = "<group>"; };
@@ -308,8 +304,6 @@
 		70A9478D17A03133007C639E /* VisualSensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualSensor.h; sourceTree = "<group>"; };
 		70A9479017A03178007C639E /* VisualSensor.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VisualSensor.cc; sourceTree = "<group>"; };
 		70ADB20A133A7995000B9C40 /* Feedback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Feedback.h; sourceTree = "<group>"; };
-		70B088FF08F762EA00FC65FE /* cInitFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInitFile.h; sourceTree = "<group>"; };
-		70B0891A08F7630100FC65FE /* cInitFile.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInitFile.cc; sourceTree = "<group>"; };
 		70B1B1D913F43016005DDF90 /* Properties.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Properties.cc; sourceTree = "<group>"; };
 		70B6514C0BEA6FAD002472ED /* unit-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "unit-tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70B9DC4B13BA53BD00C833BB /* ResourceListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResourceListener.h; sourceTree = "<group>"; };
@@ -414,7 +408,6 @@
 				70821D8016B8657900B90333 /* environment */,
 				705E54B816B309C700392BA7 /* structure */,
 				709CDEC2149EE2C000995644 /* systematics */,
-				708D3E3414A42AA500204169 /* util */,
 			);
 			name = private;
 			path = include/private/avida/private;
@@ -748,14 +741,6 @@
 			path = environment;
 			sourceTree = "<group>";
 		};
-		708D3E3414A42AA500204169 /* util */ = {
-			isa = PBXGroup;
-			children = (
-				708D3E3514A42AA500204169 /* GenomeLoader.h */,
-			);
-			path = util;
-			sourceTree = "<group>";
-		};
 		7092603518B661C5001624AC /* actions */ = {
 			isa = PBXGroup;
 			children = (
@@ -837,7 +822,6 @@
 				705E54A816B2D9C700392BA7 /* ArgParser.cc */,
 				70A53BC8135B740100C3E661 /* CmdLine.cc */,
 				703EEEA118A548E80059C07B /* ConfigFile.cc */,
-				708D3E3214A429DF00204169 /* GenomeLoader.cc */,
 				70392028178DE0AA009BBCC5 /* NopSequence.cc */,
 			);
 			path = util;
@@ -927,21 +911,11 @@
 				705E53D216A7103600392BA7 /* output */,
 				705E54BE16B309E200392BA7 /* structure */,
 				709CDEA4149BF69000995644 /* systematics */,
-				DCC314D8076253A2008F7A48 /* tools */,
 				70A53BC7135B740000C3E661 /* util */,
 				70A1E324125CDF2B00D56AC4 /* viewer */,
 				705E547E16B1E0FE00392BA7 /* world */,
 			);
 			path = source;
-			sourceTree = "<group>";
-		};
-		DCC314D8076253A2008F7A48 /* tools */ = {
-			isa = PBXGroup;
-			children = (
-				70B088FF08F762EA00FC65FE /* cInitFile.h */,
-				70B0891A08F7630100FC65FE /* cInitFile.cc */,
-			);
-			path = tools;
 			sourceTree = "<group>";
 		};
 		DCC3164E07626CF3008F7A48 /* products */ = {
@@ -1126,7 +1100,6 @@
 				703EEEA218A548E80059C07B /* ConfigFile.cc in Sources */,
 				70DC275B178F526E00A93DA4 /* InstArchCPU.cc in Sources */,
 				7092603918B661C5001624AC /* SequenceActions.cc in Sources */,
-				7023EC6B0C0A431B00362B9C /* cInitFile.cc in Sources */,
 				70A9478B17A025A4007C639E /* InstMemSpace.cc in Sources */,
 				7070E6BF12109C1D0056BE1E /* (null) in Sources */,
 				7092603B18B6A460001624AC /* Reaction.cc in Sources */,
@@ -1136,7 +1109,6 @@
 				4A9B676515404DD1005AE9B9 /* Types.cc in Sources */,
 				703EEEA518A5819A0059C07B /* BitArray.cc in Sources */,
 				70A27CD518F8453500A5AA75 /* OrganismDataProvider.cc in Sources */,
-				4A9B676615404DFC005AE9B9 /* GenomeLoader.cc in Sources */,
 				707FD8B71541B7890012A090 /* Recorder.cc in Sources */,
 				70CA03DB18FDD2E100C1F917 /* Config.cc in Sources */,
 				70CA03E118FEE6C500C1F917 /* Library.cc in Sources */,

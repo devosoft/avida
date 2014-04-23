@@ -32,10 +32,12 @@
 
 Avida::Genome::Genome() : m_hw_config(INVALID_HARDWARE_CONFIG_ID) { ; }
 
-Avida::Genome::Genome(HardwareConfigID hw, const BiotaTraitSet& traits, GeneticRepresentationPtr rep)
+Avida::Genome::Genome(HardwareConfigID hw, const BiotaTraitSet& traits, const PropertyMap& props, GeneticRepresentationPtr rep)
   : m_hw_config(hw), m_traits(traits), m_representation(rep)
 {
   assert(rep);
+  // Load traits...
+  assert(false);
 }
 
 Avida::Genome::Genome(const Apto::String& genome_str)

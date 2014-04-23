@@ -22,7 +22,6 @@
 #include "PrintActions.h"
 
 #include "avida/core/EventList.h"
-#include "avida/core/Feedback.h"
 #include "avida/core/InstructionSequence.h"
 #include "avida/core/Library.h"
 #include "avida/core/Properties.h"
