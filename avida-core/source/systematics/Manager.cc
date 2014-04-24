@@ -31,11 +31,15 @@
 
 bool Avida::Systematics::Manager::RegisterArbiter(ArbiterPtr arbiter)
 {
+  // Only accept arbiters if already attached to a universe
+  if (!m_universe) return false;
+  
   for (int i = 0; i < m_arbiters.GetSize(); i++) {
     if (m_arbiters[i]->Role() == arbiter->Role()) return (m_arbiters[i] == arbiter);
   }
   
   m_arbiters.Push(arbiter);
+  arbiter->RegistrationCallback(m_universe);
   return true;
 }
 
@@ -61,6 +65,7 @@ bool Avida::Systematics::Manager::AttachTo(Universe* universe)
   AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
   
   if (universe->AttachFacet(Reserved::SystematicsFacetID, ptr)) {
+    m_universe = universe;
     return true;
   }
   return false;
