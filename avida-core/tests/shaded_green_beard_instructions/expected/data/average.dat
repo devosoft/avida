@@ -1,5 +1,5 @@
 # Avida Average Data
-# Thu Apr 19 10:23:31 2012
+# Thu Apr 24 15:27:11 2014
 #  1: Update
 #  2: Merit
 #  3: Gestation Time
@@ -18,4 +18,4 @@
 # 16: True Replication Rate (based on births/update, time-averaged)
 
 0 277 389 0.249357 0 0 100 97 0 1 1 0 0 0 0 0 
-100 206.826 395.86 0.245226 0 0 100 96.64 0 0.02 0.02 0 7.52 -0.681048 0 0 
+100 207.937 396.6 0.244605 0 0 100 96.12 0 0.04 0.02 0 7.55 -0.0473413 0 0 

@@ -1,7 +1,7 @@
 #filetype genotype_data
 #format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
 # Structured Population Save
-# Thu Apr 19 10:19:25 2012
+# Thu Apr 24 15:26:36 2014
 #  1: ID
 #  2: Source
 #  3: Source Args
@@ -23,51 +23,66 @@
 # 19: Gestation (CPU) Cycle Offsets
 # 20: Lineage Label
 
-368 div:int (none) 327,332 1 1 41 0 0 0 158 100 -1 8 0 instset-heads.cfg babbababbbabbabbbbaabbaabbaaaabbabaaaaaac 83 12 0 
-276 div:int (none) 226,263 2 46 41 2.49008e+30 41 6.07337e+28 91 51 -1 5 0 instset-heads.cfg babbababaaabbaabbaaabbaabbaaaaababaaaaaac 96,116 1,1 0,0 
+276 div:int (none) 263,245 2 14 41 6.72493e+29 41 1.64023e+28 89 49 -1 6 0 instset-heads.cfg babbababababaabbbababbaabbaaaaababaaaaaac 94,115 25,25 0,0 
+368 div:int (none) 330,364 1 1 41 0 0 0 150 93 -1 10 0 instset-heads.cfg babbababbbabaabbbbbabbabbbabaaababaaaaaac 179 12 0 
 1 div:ext random (none) 1 107 41 4.20777e+25 41 1.02629e+24 0 -1 -1 0 0 instset-heads.cfg babbababababbaabbaaabbbabbaabaababaababac 3 19 0 
-323 div:int (none) 229,258 1 1 41 0 0 0 93 72 -1 7 0 instset-heads.cfg babbbbabababbabbbaaabbaabbaaaaababaabaaac 99 25 0 
-369 div:int (none) 324,312 1 1 41 0 0 0 148 100 -1 10 0 instset-heads.cfg babbababbbabaabbbbbabbaabbbaaaababaaaaaac 137 5 0 
-324 div:int (none) 269,311 21 49 41 2.71434e+30 41 6.62034e+28 128 72 -1 9 0 instset-heads.cfg babbababbbabaabbbababbaabbaaaaababaaaaaac 18,19,100,119,120,134,138,139,153,154,155,156,157,158,160,175,176,177,178,198,199 31,10,38,19,21,20,4,22,15,20,12,9,12,23,29,12,8,11,30,26,22 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+346 div:int (none) 338,338 43 157 41 1.92619e+31 41 4.69804e+29 146 79 -1 10 0 instset-heads.cfg babaababbbabbaabaaaabbaabbaaaaabaaaaaaaac 6,9,10,11,27,29,30,32,33,46,47,48,49,50,51,64,66,67,69,70,85,86,87,88,90,91,104,107,109,110,113,122,126,127,128,129,130,131,147,148,167,188,191 32,7,9,39,33,35,30,17,33,23,7,33,22,35,35,23,5,1,20,8,6,7,6,10,36,38,35,23,34,33,3,33,39,22,28,23,21,23,22,37,10,24,25 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+369 div:int (none) 346,346 4 11 41 7.19723e+30 41 1.75542e+29 172 94 -1 11 0 instset-heads.cfg babaababbbabbaabaaaabbaabbaaaaabaaabaaaac 7,8,28,187 8,33,28,9 0,0,0,0 
 25 div:ext random (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg bbbbabbbababaabaabaababaaaababbbabbbaabbc 24 40 0 
-370 div:int (none) 340,340 1 1 41 0 0 0 182 100 -1 11 0 instset-heads.cfg babaababbbaabaabaaaabbaabbaaaaabaaaaaaaac 68 2 0 
 256 div:int (none) 245,245 6 153 41 1.63395e+30 41 3.98523e+28 94 39 -1 6 0 instset-heads.cfg babbababbbabbabbbbbabbaabbaaaaababaaaaaac 17,38,56,59,77,181 35,15,33,36,30,38 0,0,0,0,0,0 
 26 div:ext random (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg ababaabbbababbaaabbbabbbabaabaaaaaababaac 25 40 0 
-348 div:int (none) 340,332 2 2 41 3.49026e+27 41 8.51284e+25 150 83 -1 11 0 instset-heads.cfg babaababbbabbaabaaaabbabbbaaaaababaaaaaac 149,150 11,18 0,0 
+371 div:int (none) 346,346 2 3 41 1.93467e+30 41 4.71871e+28 178 96 -1 11 0 instset-heads.cfg babaababababbaabaaaabbaabbaaaaabaaaaaaaac 89,111 37,32 0,0 
+279 div:int (none) 226,263 2 46 41 2.49008e+30 41 6.07337e+28 91 51 -1 5 0 instset-heads.cfg babbababaaabbaabbaaabbaabbaaaaababaaaaaac 96,116 1,1 0,0 
 27 div:ext random (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg aabaaabbaaabbbbabbbbabbabaaabbabaabbaabac 26 40 0 
-327 div:int (none) 256,256 14 33 41 1.7884e+30 41 4.36196e+28 135 73 -1 7 0 instset-heads.cfg babbababbbabbabbbbbabbabbbaaaaababaaaaaac 0,1,20,21,22,23,39,40,41,42,43,60,61,62 37,21,25,16,22,21,40,19,31,17,35,22,19,17 0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+372 div:int (none) 346 1 1 41 6.07993e+29 41 1.48291e+28 179 97 -1 11 0 instset-heads.cfg babaababbbabbaabaaaabbaabaaaaaabaaaaaaaac 71 2 0 
 5 div:ext random (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg aababaaaaaaaaaababbababbabbabaaaabbbabaac 4 40 0 
 258 div:int (none) 226 4 33 41 1.16932e+30 41 2.85199e+28 79 41 -1 5 0 instset-heads.cfg babaababababbaabbaaabbaabbaaaaababaaaaaac 79,80,97,118 1,1,2,1 0,0,0,0 
+327 div:int (none) 322,291 2 2 41 3.56472e+27 41 8.69443e+25 108 72 -1 8 0 instset-heads.cfg babaababababbaabbaaabbaabbbaaaabbbaaaaaac 170,171 4,4 0,0 
 6 div:ext random (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg baababbaabaabbaabaaaaaabbabababbaabaaaaac 5 40 0 
-284 div:int (none) 267,267 31 207 41 9.69057e+29 41 2.36355e+28 107 53 -1 8 0 instset-heads.cfg babaababbbabbaabaababbaabbaaaaababaaaaaac 73,92,93,101,112,123,124,125,132,133,141,142,143,144,145,146,151,152,163,164,165,169,173,174,183,184,185,186,189,190,193 11,13,19,8,40,34,9,18,38,33,33,8,7,23,17,25,14,5,20,30,28,28,33,12,8,12,24,32,16,28,31 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+374 div:int (none) 333,338 1 1 41 0 0 0 158 100 -1 8 0 instset-heads.cfg babbababbbabbabbbbaabbaabbaaaabbabaaaaaac 83 12 0 
+329 div:int (none) 229,258 1 1 41 0 0 0 93 72 -1 7 0 instset-heads.cfg babbbbabababbabbbaaabbaabbaaaaababaabaaac 99 25 0 
+375 div:int (none) 330,317 1 1 41 0 0 0 148 100 -1 10 0 instset-heads.cfg babbababbbabaabbbbbabbaabbbaaaababaaaaaac 137 5 0 
+330 div:int (none) 271,316 21 49 41 2.71434e+30 41 6.62034e+28 128 72 -1 9 0 instset-heads.cfg babbababbbabaabbbababbaabbaaaaababaaaaaac 18,19,100,119,120,134,138,139,153,154,155,156,157,158,160,175,176,177,178,198,199 31,10,38,19,21,20,4,22,15,20,12,9,12,23,29,12,8,11,30,26,22 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+376 div:int (none) 346,346 1 1 41 0 0 0 182 100 -1 11 0 instset-heads.cfg babaababbbaabaabaaaabbaabbaaaaabaaaaaaaac 68 2 0 
+354 div:int (none) 346,338 2 2 41 3.49026e+27 41 8.51284e+25 150 83 -1 11 0 instset-heads.cfg babaababbbabbaabaaaabbabbbaaaaababaaaaaac 149,150 11,18 0,0 
 217 div:int (none) 211,215 2 263 41 2.70448e+28 41 6.59629e+26 32 11 -1 3 0 instset-heads.cfg babbababababbaabbaaabbaabbaaaaababaabaaac 2,102 25,32 0,0 
-332 div:int (none) 284,284 11 118 41 7.25036e+32 41 1.76838e+31 128 75 -1 9 0 instset-heads.cfg babaababbbabbaabaaaabbaabbaaaaababaaaaaac 31,45,52,63,72,103,105,106,108,166,168 15,11,6,5,38,2,35,5,3,38,5 0,0,0,0,0,0,0,0,0,0,0 
-287 div:int (none) 276,264 9 62 41 1.0433e+30 41 2.54463e+28 96 54 -1 6 0 instset-heads.cfg babaababaaabbaabbaaabbaabbaaaaabbbaaaaaac 12,13,14,34,53,76,114,192,195 1,7,1,6,2,1,2,2,5 0,0,0,0,0,0,0,0,0 
-310 div:int (none) 287,287 1 3 41 4.78849e+29 41 1.16792e+28 119 70 -1 7 0 instset-heads.cfg baaaababaaabbaabbaaabbaabbaaaaabbbaaaaaac 74 1 0 
-356 div:int (none) 269,312 1 1 41 0 0 0 111 87 -1 9 0 instset-heads.cfg babbababbbabbaabbababbaabbbaaaababaaaaaac 196 26 0 
-357 div:int (none) 327,327 1 3 41 1.95145e+30 41 4.75964e+28 147 89 -1 8 0 instset-heads.cfg babbababbbabbabbbbbabbabbbbaaaababaaaaaac 180 36 0 
-312 div:int (none) 256,269 9 26 41 3.99652e+30 41 9.74762e+28 123 70 -1 7 0 instset-heads.cfg babbababbbabbabbbbbabbaabbbaaaababaaaaaac 15,16,35,36,54,55,75,159,197 34,29,12,34,36,5,8,4,37 0,0,0,0,0,0,0,0,0 
-358 div:int (none) 324,357 2 3 41 1.0639e+29 41 2.59489e+27 148 90 -1 10 0 instset-heads.cfg babbababbbabaabbbbbabbabbbbaaaababaaaaaac 140,162 3,2 0,0 
-359 div:int (none) 312,312 1 1 41 5.71831e+27 41 1.39471e+26 110 90 -1 8 0 instset-heads.cfg babbababbbabbabbbbbabbaabbbaaaababaaaaabc 37 2 0 
-313 div:int (none) 276,287 4 11 41 7.77158e+29 41 1.89551e+28 108 70 -1 6 0 instset-heads.cfg babbababaaabbaabbaaabbaabbaaaaabbbaaaaaac 57,58,78,95 4,23,17,1 0,0,0,0 
-290 div:int (none) 267,267 1 1 41 0 0 0 109 55 -1 8 0 instset-heads.cfg babaababbbabbaabbababaaabbaaaaababaaaaaac 172 19 0 
-338 div:int (none) 332,332 2 11 41 7.35367e+31 41 1.79358e+30 142 77 -1 10 0 instset-heads.cfg babaababbbabbaabaaaaabaabbaaaaababaaaaaac 82,84 11,5 0,0 
-315 div:int (none) 276,287 1 3 41 9.17668e+27 41 2.23821e+26 119 71 -1 6 0 instset-heads.cfg babaababaaabbaabbaaabbaabbaaaaababaaaaaac 117 2 0 
-269 div:int (none) 267,260 1 50 41 4.59044e+30 41 1.11962e+29 96 46 -1 8 0 instset-heads.cfg babbababbbabbaabbababbaabbaaaaababaaaaaac 136 35 0 
-361 div:int (none) 312,284 1 1 41 3.35061e+29 41 8.17222e+27 135 91 -1 8 0 instset-heads.cfg babbababbbabbaabaababbaabbaaaaababaaaaaac 194 10 0 
-316 div:int (none) 287,311 1 2 41 7.42803e+27 41 1.81171e+26 121 71 -1 7 0 instset-heads.cfg babaababaaabbaabbababbaabbaaaaabbbaaaaaac 135 29 0 
-362 div:int (none) 324,358 1 1 41 0 0 0 150 93 -1 10 0 instset-heads.cfg babbababbbabaabbbbbabbabbbabaaababaaaaaac 179 12 0 
-340 div:int (none) 332,332 43 157 41 1.92619e+31 41 4.69804e+29 146 79 -1 10 0 instset-heads.cfg babaababbbabbaabaaaabbaabbaaaaabaaaaaaaac 6,9,10,11,27,29,30,32,33,46,47,48,49,50,51,64,66,67,69,70,85,86,87,88,90,91,104,107,109,110,113,122,126,127,128,129,130,131,147,148,167,188,191 32,7,9,39,33,35,30,17,33,23,7,33,22,35,35,23,5,1,20,8,6,7,6,10,36,38,35,23,34,33,3,33,39,22,28,23,21,23,22,37,10,24,25 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
-363 div:int (none) 340,340 4 11 41 7.19723e+30 41 1.75542e+29 172 94 -1 11 0 instset-heads.cfg babaababbbabbaabaaaabbaabbaaaaabaaabaaaac 7,8,28,187 8,33,28,9 0,0,0,0 
+333 div:int (none) 256,256 14 33 41 1.7884e+30 41 4.36196e+28 135 73 -1 7 0 instset-heads.cfg babbababbbabbabbbbbabbabbbaaaaababaaaaaac 0,1,20,21,22,23,39,40,41,42,43,60,61,62 37,21,25,16,22,21,40,19,31,17,35,22,19,17 0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+288 div:int (none) 268,268 31 207 41 9.69057e+29 41 2.36355e+28 107 53 -1 8 0 instset-heads.cfg babaababbbabbaabaababbaabbaaaaababaaaaaac 73,92,93,101,112,123,124,125,132,133,141,142,143,144,145,146,151,152,163,164,165,169,173,174,183,184,185,186,189,190,193 11,13,19,8,40,34,9,18,38,33,33,8,7,23,17,25,14,5,20,30,28,28,33,12,8,12,24,32,16,28,31 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+291 div:int (none) 279,264 9 62 41 1.0433e+30 41 2.54463e+28 96 54 -1 6 0 instset-heads.cfg babaababaaabbaabbaaabbaabbaaaaabbbaaaaaac 12,13,14,34,53,76,114,192,195 1,7,1,6,2,1,2,2,5 0,0,0,0,0,0,0,0,0 
+338 div:int (none) 288,288 11 118 41 7.25036e+32 41 1.76838e+31 128 75 -1 9 0 instset-heads.cfg babaababbbabbaabaaaabbaabbaaaaababaaaaaac 31,45,52,63,72,103,105,106,108,166,168 15,11,6,5,38,2,35,5,3,38,5 0,0,0,0,0,0,0,0,0,0,0 
+315 div:int (none) 291,291 1 3 41 4.78849e+29 41 1.16792e+28 119 70 -1 7 0 instset-heads.cfg baaaababaaabbaabbaaabbaabbaaaaabbbaaaaaac 74 1 0 
+362 div:int (none) 271,317 1 1 41 0 0 0 111 87 -1 9 0 instset-heads.cfg babbababbbabbaabbababbaabbbaaaababaaaaaac 196 26 0 
+317 div:int (none) 256,271 9 26 41 3.99652e+30 41 9.74762e+28 123 70 -1 7 0 instset-heads.cfg babbababbbabbabbbbbabbaabbbaaaababaaaaaac 15,16,35,36,54,55,75,159,197 34,29,12,34,36,5,8,4,37 0,0,0,0,0,0,0,0,0 
+271 div:int (none) 268,260 1 50 41 4.59044e+30 41 1.11962e+29 96 46 -1 8 0 instset-heads.cfg babbababbbabbaabbababbaabbaaaaababaaaaaac 136 35 0 
+363 div:int (none) 333,333 1 3 41 1.95145e+30 41 4.75964e+28 147 89 -1 8 0 instset-heads.cfg babbababbbabbabbbbbabbabbbbaaaababaaaaaac 180 36 0 
+318 div:int (none) 279,291 4 11 41 7.77158e+29 41 1.89551e+28 108 70 -1 6 0 instset-heads.cfg babbababaaabbaabbaaabbaabbaaaaabbbaaaaaac 57,58,78,95 4,23,17,1 0,0,0,0 
+364 div:int (none) 330,363 2 3 41 1.0639e+29 41 2.59489e+27 148 90 -1 10 0 instset-heads.cfg babbababbbabaabbbbbabbabbbbaaaababaaaaaac 140,162 3,2 0,0 
+295 div:int (none) 268,268 1 1 41 0 0 0 109 55 -1 8 0 instset-heads.cfg babaababbbabbaabbababaaabbaaaaababaaaaaac 172 19 0 
+365 div:int (none) 317,317 1 1 41 5.71831e+27 41 1.39471e+26 110 90 -1 8 0 instset-heads.cfg babbababbbabbabbbbbabbaabbbaaaababaaaaabc 37 2 0 
 66 div:ext random (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg aabaabababbaabaaaabbaabaabbabbababbbbaabc 65 40 0 
-365 div:int (none) 340,340 2 3 41 1.93467e+30 41 4.71871e+28 178 96 -1 11 0 instset-heads.cfg babaababababbaabaaaabbaabbaaaaabaaaaaaaac 89,111 37,32 0,0 
-273 div:int (none) 263,245 2 14 41 6.72493e+29 41 1.64023e+28 89 49 -1 6 0 instset-heads.cfg babbababababaabbbababbaabbaaaaababaaaaaac 94,115 25,25 0,0 
-366 div:int (none) 340 1 1 41 6.07993e+29 41 1.48291e+28 179 97 -1 11 0 instset-heads.cfg babaababbbabbaabaaaabbaabaaaaaabaaaaaaaac 71 2 0 
+320 div:int (none) 279,291 1 3 41 9.17668e+27 41 2.23821e+26 119 71 -1 6 0 instset-heads.cfg babaababaaabbaabbaaabbaabbaaaaababaaaaaac 117 2 0 
 45 div:ext random (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg aabbbaabababaaaabbaababbaaaabababababbaac 44 40 0 
 229 div:int (none) 228,225 5 98 41 8.61892e+29 41 2.10217e+28 64 26 -1 6 0 instset-heads.cfg babbbbabababbabbbababbaabbaaaaababaabaaac 81,98,121,161,182 1,35,13,9,10 0,0,0,0,0 
-321 div:int (none) 317,287 2 2 41 3.56472e+27 41 8.69443e+25 108 72 -1 8 0 instset-heads.cfg babaababababbaabbaaabbaabbbaaaabbbaaaaaac 170,171 4,4 0,0 
-309 div:int (none) 273,273 0 3 41 8.90521e+29 41 2.172e+28 95 69 74 7 0 instset-heads.cfg babbababababaabbbababbbabbaaaaababaaaaaac 
-296 div:int (none) 284,284 0 1 41 7.29081e+29 41 1.77825e+28 119 58 59 9 0 instset-heads.cfg babaababbbbbbaabaabaabaabbaaaaababaaaaaac 
-266 div:int (none) 256,262 0 1 41 3.05659e+29 41 7.4551e+27 87 44 47 7 0 instset-heads.cfg babaababbbabbabbbbbabbaabbaaaaababaaaaaac 
+344 div:int (none) 338,338 2 11 41 7.35367e+31 41 1.79358e+30 142 77 -1 10 0 instset-heads.cfg babaababbbabbaabaaaaabaabbaaaaababaaaaaac 82,84 11,5 0,0 
+321 div:int (none) 291,316 1 2 41 7.42803e+27 41 1.81171e+26 121 71 -1 7 0 instset-heads.cfg babaababaaabbaabbababbaabbaaaaabbbaaaaaac 135 29 0 
+367 div:int (none) 317,288 1 1 41 3.35061e+29 41 8.17222e+27 135 91 -1 8 0 instset-heads.cfg babbababbbabbaabaababbaabbaaaaababaaaaaac 194 10 0 
+245 div:int (none) 226,239 0 63 41 5.22968e+29 41 1.27553e+28 77 35 89 5 0 instset-heads.cfg babbababbbabbabbbababbaabbaaaaababaaaaaac 
+322 div:int (none) 291,291 0 1 41 5.79595e+27 41 1.41365e+26 107 71 83 7 0 instset-heads.cfg babaababaaabbaabbaaabbaabbbaaaabbbaaaaaac 
+316 div:int (none) 276,314 0 2 41 1.59007e+30 41 3.87823e+28 96 70 82 7 0 instset-heads.cfg babbaaabababaabbbababbaabbaaaaababaaaaaac 
+268 div:int (none) 262,267 0 67 41 5.34413e+30 41 1.30345e+29 88 45 74 7 0 instset-heads.cfg babaababbbabbaabbababbaabbaaaaababaaaaaac 
+314 div:int (none) 276,276 0 3 41 8.90521e+29 41 2.172e+28 95 69 74 7 0 instset-heads.cfg babbababababaabbbababbbabbaaaaababaaaaaac 
+226 div:int (none) 217,217 0 139 41 1.51581e+30 41 3.6971e+28 59 23 70 4 0 instset-heads.cfg babbababababbaabbaaabbaabbaaaaababaaaaaac 
+264 div:int (none) 226,258 0 42 41 1.42981e+30 41 3.48735e+28 84 43 69 5 0 instset-heads.cfg babaabababbbbaabbaaabbaabbaaaaababaaaaaac 
+225 div:int (none) 217,221 0 69 41 1.15128e+29 41 2.80799e+27 55 22 53 4 0 instset-heads.cfg babbababababbabbbaaabbaabbaaaaababaabaaac 
+263 div:int (none) 226 0 6 41 1.75537e+30 41 4.28139e+28 80 43 52 5 0 instset-heads.cfg babbababababaaabbaaabbaabbaaaaababaaaaaac 
+260 div:int (none) 226,245 0 5 41 2.41359e+30 41 5.88681e+28 94 41 47 5 0 instset-heads.cfg babbababbbabbaabbaaabbaabbaaaaababaaaaaac 
+267 div:int (none) 256,262 0 1 41 3.05659e+29 41 7.4551e+27 87 44 47 7 0 instset-heads.cfg babaababbbabbabbbbbabbaabbaaaaababaaaaaac 
+262 div:int (none) 258,256 0 4 41 2.31353e+30 41 5.64275e+28 83 43 46 6 0 instset-heads.cfg babaababbbabbaabbaaabbaabbaaaaababaaaaaac 
+208 div:int (none) 1,1 0 6 41 2.13749e+26 41 5.2134e+24 20 8 38 1 0 instset-heads.cfg babbababababbaabbaaabbaabbaabaababaababac 
+239 div:int (none) 229,229 0 1 41 3.04636e+28 41 7.43015e+26 81 33 36 7 0 instset-heads.cfg babbbbabbbabbabbbababbaabbaaaaababaabaaac 
 228 div:int (none) 225,225 0 1 41 1.29402e+29 41 3.15615e+27 62 25 26 5 0 instset-heads.cfg babbbbabababbabbbaaabbaabbaaaaababaabaaac 
+216 div:int (none) 1,211 0 1 41 6.69631e+26 41 1.63325e+25 28 11 24 1 0 instset-heads.cfg babbababababbabbbaaabbbabbaabaababaababac 
 221 div:int (none) 216,217 0 1 41 8.17417e+26 41 1.9937e+25 54 18 24 2 0 instset-heads.cfg babbababababbabbbaaabbaabbaaaaababaababac 
+211 div:int (none) 206,208 0 15 41 1.30583e+27 41 3.18495e+25 22 9 18 2 0 instset-heads.cfg babbababababbaabbaaabbaabbaaaaababaababac 
+215 div:int (none) 211,1 0 3 41 7.34441e+28 41 1.79132e+27 31 11 12 3 0 instset-heads.cfg babbababababbaabbaaabbbabbaabaababaabaaac 
+206 div:int (none) 1 0 4 41 1.25396e+26 41 3.05844e+24 19 8 10 1 0 instset-heads.cfg babbababababbaabbaaabbbabbaaaaababaababac 

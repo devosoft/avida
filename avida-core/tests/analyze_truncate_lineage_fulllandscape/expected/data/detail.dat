@@ -1,5 +1,5 @@
 #filetype genotype_data
-#format id depth length update_born fitness num_cpus task.0 task.1 task.2 task.3 task.4 task.5 task.6 task.7 task.8 frac_pos frac_neg frac_neut frac_dead land_fitness sequence 
+#format id depth length update_born fitness num_cpus task task task task task task task task task frac_pos frac_neg frac_neut frac_dead land_fitness sequence 
 
 # Legend:
 # 1: Genotype ID

@@ -1,5 +1,5 @@
 #filetype genotype_data
-#format length viable copy_length exe_length merit comp_merit gest_time efficiency fitness task.0 task.0 
+#format length viable copy_length exe_length merit comp_merit gest_time efficiency fitness task task 
 
 # Legend:
 # 1: Genome Length

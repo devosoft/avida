@@ -1,10 +1,10 @@
 # Avida count data
-# Mon Sep 16 13:33:14 2013
+# Thu Apr 24 15:26:51 2014
 #  1: update
 #  2: number of insts executed this update
 #  3: number of organisms
-#  4: (deprecated) number of different genotypes
-#  5: (deprecated) number of different threshold genotypes
+#  4: number of different genotypes
+#  5: number of different threshold genotypes
 #  6: (deprecated) number of different species
 #  7: (deprecated) number of different threshold species
 #  8: (deprecated) number of different lineages
@@ -17,6 +17,6 @@
 # 15: number of multi-threaded organisms
 # 16: number of modified organisms
 
-0 2100 70 0 0 0 0 0 70 0 70 70 70 70 0 0 
-100 108000 3599 0 0 0 0 0 124 125 40 1423 1946 3599 0 0 
-200 107940 3600 0 0 0 0 0 92 90 36 1454 1951 3600 0 0 
+0 2100 70 5 5 0 0 0 70 0 70 70 70 70 0 0 
+100 108000 3599 3147 61 0 0 0 124 125 40 1423 1946 3599 0 0 
+200 107940 3600 3493 32 0 0 0 92 90 36 1454 1951 3600 0 0 
