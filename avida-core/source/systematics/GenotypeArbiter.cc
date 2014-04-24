@@ -34,7 +34,7 @@
 #include <cmath>
 
 
-Avida::Systematics::GenotypeArbiter::GenotypeArbiter(Universe* universe, const RoleID& role, int threshold, bool disable_class)
+Avida::Systematics::GenotypeArbiter::GenotypeArbiter(const RoleID& role, int threshold, bool disable_class)
   : Arbiter(role)
   , m_threshold(threshold)
   , m_disable_class(disable_class)
@@ -48,16 +48,6 @@ Avida::Systematics::GenotypeArbiter::GenotypeArbiter(Universe* universe, const R
   , m_tot_genotypes(0)
   , m_coalescent_depth(-1)
 {
-  Avida::Environment::ManagerPtr env = Avida::Environment::Manager::Of(universe);
-  Avida::Environment::ConstActionTriggerIDSetPtr trigger_ids = env->GetActionTriggerIDs();
-  m_env_action_average.Resize(trigger_ids->GetSize());
-  m_env_action_count.Resize(trigger_ids->GetSize());
-  int idx = 0;
-  for (Avida::Environment::ConstActionTriggerIDSetIterator it = trigger_ids->Begin(); it.Next(); idx++) {
-    m_env_action_average[idx] = Apto::FormatStr("environment.triggers.%s.average", (const char*)*it.Get());
-    m_env_action_count[idx] = Apto::FormatStr("environment.triggers.%s.count", (const char*)*it.Get());
-  }
-  setupProvidedData(universe);
 }
 
 Avida::Systematics::GenotypeArbiter::~GenotypeArbiter()
@@ -71,6 +61,20 @@ Avida::Systematics::GenotypeArbiter::~GenotypeArbiter()
   
   assert(m_historic.GetSize() == 0);
   assert(m_best == 0);
+}
+
+void Avida::Systematics::GenotypeArbiter::RegistrationCallback(Universe* universe)
+{
+  Avida::Environment::ManagerPtr env = Avida::Environment::Manager::Of(universe);
+  Avida::Environment::ConstActionTriggerIDSetPtr trigger_ids = env->GetActionTriggerIDs();
+  m_env_action_average.Resize(trigger_ids->GetSize());
+  m_env_action_count.Resize(trigger_ids->GetSize());
+  int idx = 0;
+  for (Avida::Environment::ConstActionTriggerIDSetIterator it = trigger_ids->Begin(); it.Next(); idx++) {
+    m_env_action_average[idx] = Apto::FormatStr("environment.triggers.%s.average", (const char*)*it.Get());
+    m_env_action_count[idx] = Apto::FormatStr("environment.triggers.%s.count", (const char*)*it.Get());
+  }
+  setupProvidedData(universe);
 }
 
 

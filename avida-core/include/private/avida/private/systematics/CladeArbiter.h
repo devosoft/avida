@@ -92,6 +92,10 @@ namespace Avida {
       void UpdateProvidedValues(Update current_update);
       Data::PackagePtr GetProvidedValue(const Data::DataID& data_id) const;
       Apto::String DescribeProvidedValue(const Data::DataID& data_id) const;
+      
+      
+    protected:
+      void RegistrationCallback(Universe* universe);
 
     private:
       // Methods called by Clade

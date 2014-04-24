@@ -118,7 +118,7 @@ namespace Avida {
       
       
     public:
-      GenotypeArbiter(Universe* universe, const RoleID& role, int threshold, bool disable_class = false);
+      GenotypeArbiter(const RoleID& role, int threshold, bool disable_class = false);
       ~GenotypeArbiter();
       
       // Arbiter Interface Methods
@@ -139,6 +139,8 @@ namespace Avida {
       Data::PackagePtr GetProvidedValue(const Data::DataID& data_id) const;
       Apto::String DescribeProvidedValue(const Data::DataID& data_id) const;
       
+    protected:
+      void RegistrationCallback(Universe* universe);
       
     private:
       // Methods called by Genotype

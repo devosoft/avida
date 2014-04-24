@@ -38,6 +38,7 @@ namespace Avida {
     
     class Arbiter : public virtual Apto::RefCountObject<Apto::ThreadSafe>
     {
+      friend class Manager;
     public:
       class Iterator;
       typedef Apto::SmartPtr<Iterator> IteratorPtr;
@@ -71,6 +72,8 @@ namespace Avida {
       LIB_EXPORT virtual bool LegacySave(void* df) const;
       LIB_EXPORT virtual GroupPtr LegacyLoad(void* props);
       
+    protected:
+      LIB_EXPORT virtual void RegistrationCallback(Universe* universe) = 0;
       
     protected:
       LIB_EXPORT void notifyListeners(GroupPtr g, EventType t, UnitPtr u = UnitPtr(NULL));

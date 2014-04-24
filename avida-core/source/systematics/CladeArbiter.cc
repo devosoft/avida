@@ -33,12 +33,11 @@
 #include <cmath>
 
 
-Avida::Systematics::CladeArbiter::CladeArbiter(Universe* universe, const RoleID& role)
+Avida::Systematics::CladeArbiter::CladeArbiter(const RoleID& role)
 : Arbiter(role)
 , m_next_id(1)
 , m_cur_update(-1)
 {
-  setupProvidedData(universe);
 }
 
 Avida::Systematics::CladeArbiter::~CladeArbiter()
@@ -50,6 +49,11 @@ Avida::Systematics::CladeArbiter::~CladeArbiter()
     removeClade(*list_it.Get());
   }
   
+}
+
+void Avida::Systematics::CladeArbiter::RegistrationCallback(Universe* universe)
+{
+  setupProvidedData(universe);
 }
 
 

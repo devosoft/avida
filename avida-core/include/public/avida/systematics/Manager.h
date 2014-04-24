@@ -39,10 +39,11 @@ namespace Avida {
     class Manager : public UniverseFacet
     {
     private:
+      Universe* m_universe;
       Apto::Array<ArbiterPtr> m_arbiters;
       
     public:
-      LIB_EXPORT inline Manager() { ; }
+      LIB_EXPORT inline Manager() : m_universe(NULL) { ; }
       LIB_EXPORT inline ~Manager() { ; }
       
       bool RegisterArbiter(ArbiterPtr a);
