@@ -38,7 +38,7 @@ using namespace Avida::Hardware::InstructionFlags;
 using namespace Avida::Util;
 
 
-Hardware::Types::GP8::GP8InstLib* Hardware::Types::GP8::s_inst_slib = Hardware::Types::GP8::initInstLib();
+Hardware::Types::GP8::GP8InstLib* Hardware::Types::GP8::s_inst_lib = Hardware::Types::GP8::initInstLib();
 
 Hardware::Types::GP8::GP8InstLib* Hardware::Types::GP8::initInstLib(void)
 {
@@ -189,7 +189,7 @@ Hardware::Types::GP8::GP8InstLib* Hardware::Types::GP8::initInstLib(void)
   };
   
   
-  const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
+  const int n_size = sizeof(s_n_array)/sizeof(NOPEntry);
   
   static Apto::String n_names[n_size];
   static int nop_mods[n_size];
@@ -214,30 +214,29 @@ Hardware::Types::GP8::GP8InstLib* Hardware::Types::GP8::initInstLib(void)
   return new GP8InstLib(f_size, s_f_array, n_names, nop_mods, functions, hw_units, imm_methods, def, null_inst);
 }
 
-Hardware::Types::GP8::cHardwareGP8(Context& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
-: cHardwareBase(world, in_organism, in_inst_set), m_genes(0), m_mem_array(1), m_sensor_sessions(NUM_NOPS)
+Hardware::Types::GP8::GP8(Context& ctx, ConfigPtr cfg, Biota::OrganismPtr owner)
+: InstArchCPU(ctx, cfg, owner), m_genes(0), m_mem_array(1), m_sensor_sessions(NUM_NOPS)
 {
-  m_functions = s_inst_slib->Functions();
-  m_hw_units = s_inst_slib->HWUnits();
-  m_imm_methods = s_inst_slib->ImmediateMethods();
+  m_functions = s_inst_lib->Functions();
+  m_hw_units = s_inst_lib->HWUnits();
+  m_imm_methods = s_inst_lib->ImmediateMethods();
   
   m_spec_die = false;
   
-  m_no_cpu_cycle_time = m_world->GetConfig().NO_CPU_CYCLE_TIME.Get();
-  
-  m_slip_read_head = !m_world->GetConfig().SLIP_COPY_MODE.Get();
-  
-  m_juv_enabled = (m_world->GetConfig().JUV_PERIOD.Get() > 0);
-  
-  const Genome& in_genome = in_organism->GetGenome();
+  const Genome& in_genome = owner->UnitGenome();
   ConstInstructionSequencePtr in_seq_p;
   in_seq_p.DynamicCastFrom(in_genome.Representation());
   const InstructionSequence& in_seq = *in_seq_p;
   
   m_mem_array[0] = in_seq;  // Initialize memory...
-  m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
   Reset(ctx); // Setup the rest of the hardware...
 }
+
+Hardware::Types::GP8::~GP8()
+{
+  
+}
+
 
 
 void Hardware::Types::GP8::internalReset()
@@ -248,7 +247,6 @@ void Hardware::Types::GP8::internalReset()
   m_cycle_count = 0;
   m_last_output = 0;
   
-  m_sensor.Reset();
   for (int i = 0; i < m_sensor_sessions.GetSize(); i++) m_sensor_sessions[i].Clear();
   
   // Stack
@@ -284,7 +282,7 @@ void Hardware::Types::GP8::setupGenes()
   Head cur_promoter(this, 0, 0, false);
   
   do {
-    if (m_inst_set->IsPromoter(cur_promoter.GetInst())) {
+    if (m_instset->IsPromoter(cur_promoter.GetInst())) {
       // Flag the promoter as executed
       cur_promoter.SetFlagExecuted();
       
@@ -304,7 +302,7 @@ void Hardware::Types::GP8::setupGenes()
       int gene_idx = 0;
       InstMemSpace& gene = m_genes[gene_id].memory;
       
-      while (!m_inst_set->IsTerminator(seghead.GetInst()) && seghead != gene_content_start) {
+      while (!m_instset->IsTerminator(seghead.GetInst()) && seghead != gene_content_start) {
         if (gene.GetSize() <= gene_idx) gene.Resize(gene.GetSize() + 1);
         gene[gene_idx] = seghead.GetInst();
         seghead.SetFlagExecuted();
@@ -335,12 +333,10 @@ void Hardware::Types::GP8::setupGenes()
     Head thread_start(this, 0, 0, true);
     threadCreate(m_genes[0].label, thread_start);
   }
-  
-  ResizeCostArrays(m_threads.GetSize());
 }
 
 
-void Hardware::Types::GP8::Thread::Reset(cHardwareGP8* in_hardware, const Head& start_pos)
+void Hardware::Types::GP8::Thread::Reset(GP8* in_hardware, const Head& start_pos)
 {
   // Clear registers
   for (int i = 0; i < NUM_REGISTERS; i++) reg[i].Clear();
@@ -366,57 +362,40 @@ void Hardware::Types::GP8::Thread::Reset(cHardwareGP8* in_hardware, const Head& 
   sensor_session.Clear();
 }
 
-
-bool Hardware::Types::GP8::SingleProcess(Context& ctx, bool speculative)
+bool Hardware::Types::GP8::ProcessCycleStep(Context& ctx, Update current_update, bool speculative)
 {
-  // If speculatively stalled, stay that way until a real instruction comes
-  if (speculative && m_spec_stall) return false;
+  (void)ctx;
+  (void)current_update;
+  (void)speculative;
   
+  return false;
+}
+
+void Hardware::Types::GP8::ProcessTimeStep(Context& ctx, Update current_update)
+{
+  m_hw_reset = false;
   
-  // Mark this organism as running...
-  m_organism->SetRunning(true);
+  // Update cycle counts
+  m_cycle_count++;
   
-  
-  // Handle if this organism died while speculatively executing
-  if (!speculative && m_spec_die) {
-    m_organism->Die(ctx);
-    m_organism->SetRunning(false);
-    return false;
+  // Wake any stalled threads
+  for (int i = 0; i < m_threads.GetSize(); i++) {
+    if (!m_threads[i].active && m_threads[i].wait_reg == -1) m_threads[i].active = true;
   }
   
+  // Reset hardware units
+  m_hw_busy = 0;
+  m_hw_queue_eat = false;
+  m_hw_queue_move = false;
+  m_hw_queue_rotate = false;
   
-  cPhenotype& phenotype = m_organism->GetPhenotype();
+  m_hw_queued = 0;
   
+  m_hw_queue_eat_threads.Resize(0);
   
-  if (m_spec_stall) {
-    m_spec_stall = false;
-  } else {
-    m_hw_reset = false;
-    
-    // Update cycle counts
-    m_cycle_count++;
-    phenotype.IncCPUCyclesUsed();
-    if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
-    
-    // Wake any stalled threads
-    for (int i = 0; i < m_threads.GetSize(); i++) {
-      if (!m_threads[i].active && m_threads[i].wait_reg == -1) m_threads[i].active = true;
-    }
-    
-    // Reset hardware units
-    m_hw_busy = 0;
-    m_hw_queue_eat = false;
-    m_hw_queue_move = false;
-    m_hw_queue_rotate = false;
-    
-    m_hw_queued = 0;
-    
-    m_hw_queue_eat_threads.Resize(0);
-    
-    // Reset execution state
-    m_cur_uop = 0;
-    m_cur_thread = 0;
-  }
+  // Reset execution state
+  m_cur_uop = 0;
+  m_cur_thread = 0;
   
   // Execute specified number of micro ops per cpu cycle on each thread in a round robin fashion
   const int uop_ratio = m_inst_set->GetUOpsPerCycle();
@@ -431,32 +410,19 @@ bool Hardware::Types::GP8::SingleProcess(Context& ctx, bool speculative)
       Head& ip = m_threads[m_cur_thread].heads[hIP];
       ip.Adjust();
       
-      // Print the status of this CPU at each step...
-      if (m_tracer) m_tracer->TraceHardware(ctx, *this);
-      
       // Find the instruction to be executed
       const Instruction cur_inst = ip.GetInst();
       
-      if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
-        // Speculative instruction stall, flag it and halt the thread
-        m_spec_stall = true;
-        m_organism->SetRunning(false);
-        return false;
-      }
-      
-      // Print the short form status of this CPU at each step...
-      if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true);
       
       bool exec = true;
       int exec_success = 0;
       
-      unsigned int inst_hw_units = m_hw_units[m_inst_set->GetLibFunctionIndex(ip.GetInst())];
+      unsigned int inst_hw_units = m_hw_units[m_instset->LibIDOf(ip.GetInst())];
       
       // Check if this instruction needs hardware units that are busy
       if ((inst_hw_units & m_hw_busy)) {
         m_threads[m_cur_thread].active = false;
         m_threads[m_cur_thread].wait_reg = -1;
-        if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true, exec_success);
         continue;
       }
       
@@ -525,7 +491,6 @@ bool Hardware::Types::GP8::SingleProcess(Context& ctx, bool speculative)
       }
       
       if (phenotype.GetToDelete()) {
-        if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true, exec_success);
         break;
       }
       
@@ -569,7 +534,7 @@ bool Hardware::Types::GP8::SingleProcess(Context& ctx, bool speculative)
   m_organism->SetRunning(false);
   CheckImplicitRepro(ctx);
   
-  return !m_spec_die && !m_spec_stall;
+  return true;
 }
 
 
@@ -595,31 +560,6 @@ bool Hardware::Types::GP8::SingleProcess_ExecuteInst(Context& ctx, const Instruc
     m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
   }
   return exec_success;
-}
-
-
-void Hardware::Types::GP8::ProcessBonusInst(Context& ctx, const Instruction& inst)
-{
-  // Mark this organism as running...
-  bool prev_run_state = m_organism->IsRunning();
-  m_organism->SetRunning(true);
-  
-  if (!m_action_side_effect_queue) {
-    // regular bonus instruction process
-    assert(m_cur_thread < m_threads.GetSize());
-    if (m_tracer) m_tracer->TraceHardware(ctx, *this, true);
-    SingleProcess_ExecuteInst(ctx, inst);
-  } else {
-    int running_thread = m_cur_thread;
-    for (int qidx = 0; qidx < m_action_side_effect_queue->GetSize(); qidx++) {
-      m_cur_thread = m_action_side_effect_queue->Get(qidx);
-      if (m_tracer) m_tracer->TraceHardware(ctx, *this, true);
-      SingleProcess_ExecuteInst(ctx, inst);
-    }
-    m_cur_thread = running_thread;
-  }
-  
-  m_organism->SetRunning(prev_run_state);
 }
 
 

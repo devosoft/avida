@@ -71,7 +71,7 @@ namespace Avida {
         
         
         // --------  Static Variables  --------
-        static GP8InstLib* s_inst_slib;
+        static GP8InstLib* s_inst_lib;
         
         
       private:
@@ -302,13 +302,21 @@ namespace Avida {
 
       
       public:
+        GP8(Context& ctx, ConfigPtr cfg, Biota::OrganismPtr owner);
+        ~GP8();
         
-        static InstLib* InstructionLibrary() { return s_inst_slib; }
+        static InstLib* InstructionLibrary() { return s_inst_lib; }
       
+        void Reset(Context& ctx);
+        
+        bool ProcessCycleStep(Context& ctx, Update current_update, bool speculative);
+        void ProcessTimeStep(Context& ctx, Update current_update);
+        
+        bool AcceptSymbiont(Context& ctx, Biota::OrganismPtr symbiont);
       
+        
       private:
-        
-        static GP8InstLib* getInstLib() { return s_inst_slib; }
+        static GP8InstLib* getInstLib() { return s_inst_lib; }
         
         // --------  Core Execution Methods  --------
         bool executeInst(Context& ctx, const Instruction& cur_inst);
@@ -545,10 +553,10 @@ namespace Avida {
           const unsigned int* HWUnits() const { return m_hw_units; }
           const ImmMethod* ImmediateMethods() const { return m_imm_methods; }
           
-          const Entry& Get(int i) const { assert(i < m_size); return m_entries[i]; }
+          const Entry& EntryAt(int i) const { assert(i < m_size); return m_entries[i]; }
           
-          const Apto::String& GetNopName(const unsigned int idx) { return m_nopmod_names[idx]; }
-          int GetNopMod(const unsigned int idx) { return m_nopmods[idx]; }
+          const Apto::String& NopNameOf(unsigned int idx) const { return m_nopmod_names[idx]; }
+          int NopModOf(unsigned int idx) const { return m_nopmods[idx]; }
         };
         
         
