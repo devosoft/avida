@@ -59,6 +59,8 @@ using namespace AvidaTools;
 cStats::cStats(cWorld* world)
 : m_world(world)
 , m_data_manager(this, "population_data")
+, m_num_genotypes(0)
+//, m_threshold_genotypes(0)
 , m_update(-1)
 , avida_time(0)
 , rave_true_replication_rate( 500 )
@@ -445,6 +447,26 @@ mgr->Register(name, activate); \
   
 #undef PROVIDE
 }
+
+
+
+Data::ConstDataSetPtr cStats::RequestedData() const
+{
+  if (!m_requested) {
+    m_requested = Data::DataSetPtr(new Data::DataSet);
+    m_requested->Insert("systematics.genotype.current");
+    m_requested->Insert("systematics.genotype.current_threshold");
+  }
+  return m_requested;
+}
+
+void cStats::NotifyData(Update current_update, Data::DataRetrievalFunctor retrieve_data)
+{
+  m_num_genotypes = retrieve_data("systematics.genotype.current")->IntValue();
+  m_threshold_genotypes = retrieve_data("systematics.genotype.current_threshold")->IntValue();
+}
+
+
 
 void cStats::ZeroTasks()
 {
@@ -1055,6 +1077,7 @@ void cStats::PrintTopPredatorFromSensorInstructionData(const cString& filename, 
   df->Endl();
 }
 
+
 void cStats::PrintCountData(const cString& filename)
 {
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
@@ -1065,8 +1088,8 @@ void cStats::PrintCountData(const cString& filename)
   df->Write(m_update,                "update");
   df->Write(num_executed,            "number of insts executed this update");
   df->Write(num_creatures,           "number of organisms");
-  df->Write(0,                       "(deprecated) number of different genotypes");
-  df->Write(0,                       "(deprecated) number of different threshold genotypes");
+  df->Write(m_num_genotypes,         "number of different genotypes");
+  df->Write(m_threshold_genotypes,   "number of different threshold genotypes");
   df->Write(0,                       "(deprecated) number of different species");
   df->Write(0,                       "(deprecated) number of different threshold species");
   df->Write(0,                       "(deprecated) number of different lineages");

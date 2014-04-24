@@ -119,7 +119,7 @@ Avida::Viewer::Driver* Avida::Viewer::Driver::InitWithDirectory(const Apto::Stri
   if (!world) return NULL;
 
   Systematics::ManagerPtr systematics = Systematics::Manager::Of(new_world);
-  systematics->RegisterRole("clade", Systematics::ArbiterPtr(new Systematics::CladeArbiter(new_world)));
+  systematics->RegisterArbiter(Systematics::ArbiterPtr(new Systematics::CladeArbiter(new_world, "clade")));
 
   
   return new Avida::Viewer::Driver(world, new_world);

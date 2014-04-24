@@ -145,11 +145,12 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback, const Apto::Map<Ap
   // Systematics
   Systematics::ManagerPtr systematics(new Systematics::Manager);
   systematics->AttachTo(new_world);
-  systematics->RegisterRole("genotype", Systematics::ArbiterPtr(new Systematics::GenotypeArbiter(new_world, m_conf->THRESHOLD.Get(), m_conf->DISABLE_GENOTYPE_CLASSIFICATION.Get())));
+  systematics->RegisterArbiter(Systematics::ArbiterPtr(new Systematics::GenotypeArbiter(new_world, "genotype", m_conf->THRESHOLD.Get(), m_conf->DISABLE_GENOTYPE_CLASSIFICATION.Get())));
 
   
   // Setup Stats Object
   m_stats = Apto::SmartPtr<cStats, Apto::InternalRCObject>(new cStats(this));
+  Data::Manager::Of(m_new_world)->AttachRecorder(m_stats);
 
   
   // Initialize the hardware manager, loading all of the instruction sets

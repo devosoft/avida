@@ -175,7 +175,9 @@ bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder, bool concurrent_
       if (!m_active_arg_provider_map[raw_id]->IsValidArgument(raw_id, argument)) return false;
     } else {
       // Check for standard data value availability
-      if (!m_provider_map.Has(*it.Get())) return false;
+      if (!m_provider_map.Has(data_id)) {
+        return false;
+      }
     }
   }
   

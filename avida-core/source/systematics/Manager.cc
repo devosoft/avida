@@ -29,14 +29,13 @@
 #include "avida/systematics/Unit.h"
 
 
-bool Avida::Systematics::Manager::RegisterRole(const RoleID& role, ArbiterPtr arbiter)
+bool Avida::Systematics::Manager::RegisterArbiter(ArbiterPtr arbiter)
 {
   for (int i = 0; i < m_arbiters.GetSize(); i++) {
-    if (m_arbiters[i]->Role() == role) return (m_arbiters[i] == arbiter);
+    if (m_arbiters[i]->Role() == arbiter->Role()) return (m_arbiters[i] == arbiter);
   }
   
   m_arbiters.Push(arbiter);
-  arbiter->SetRole(role);
   return true;
 }
 

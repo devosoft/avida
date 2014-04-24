@@ -36,8 +36,9 @@
 #include <cmath>
 
 
-Avida::Systematics::GenotypeArbiter::GenotypeArbiter(World* world, int threshold, bool disable_class)
-  : m_threshold(threshold)
+Avida::Systematics::GenotypeArbiter::GenotypeArbiter(World* world, const RoleID& role, int threshold, bool disable_class)
+  : Arbiter(role)
+  , m_threshold(threshold)
   , m_disable_class(disable_class)
   , m_active_sz(1)
   , m_coalescent(NULL)
@@ -58,6 +59,7 @@ Avida::Systematics::GenotypeArbiter::GenotypeArbiter(World* world, int threshold
     m_env_action_average[idx] = Apto::FormatStr("environment.triggers.%s.average", (const char*)*it.Get());
     m_env_action_count[idx] = Apto::FormatStr("environment.triggers.%s.count", (const char*)*it.Get());
   }
+  setupProvidedData(world);
 }
 
 Avida::Systematics::GenotypeArbiter::~GenotypeArbiter()
@@ -427,9 +429,9 @@ void Avida::Systematics::GenotypeArbiter::setupProvidedData(World* world)
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<const double&> > doubleStat(this, &GenotypeArbiter::packageData<double>);
 
   // Define PROVIDE macro to simplify instantiating new provided data
-#define PROVIDE(name, desc, type, val) { \
-  m_provided_data[Apto::String("systematics.") + Role() + "." + name] = ProvidedData(desc, Apto::BindFirst(type ## Stat, val));\
-  mgr->Register(name, activate); \
+#define PROVIDE(name, desc, type, val) { Apto::String pvn = Apto::String("systematics.") + Role() + "." + name; \
+  m_provided_data[pvn] = ProvidedData(desc, Apto::BindFirst(type ## Stat, val));\
+  mgr->Register(pvn, activate); \
 }
 
   PROVIDE("total", "Total Number of Genotypes", int, m_tot_genotypes);

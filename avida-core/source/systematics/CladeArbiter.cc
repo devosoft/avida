@@ -33,11 +33,12 @@
 #include <cmath>
 
 
-Avida::Systematics::CladeArbiter::CladeArbiter(World* world)
-: m_next_id(1)
+Avida::Systematics::CladeArbiter::CladeArbiter(World* world, const RoleID& role)
+: Arbiter(role)
+, m_next_id(1)
 , m_cur_update(-1)
 {
-  (void)world;
+  setupProvidedData(world);
 }
 
 Avida::Systematics::CladeArbiter::~CladeArbiter()

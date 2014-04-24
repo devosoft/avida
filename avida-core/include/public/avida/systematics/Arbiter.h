@@ -38,7 +38,6 @@ namespace Avida {
     
     class Arbiter : virtual public Apto::RefCountObject<Apto::ThreadSafe>
     {
-      friend class Manager;
     public:
       class Iterator;
       typedef Apto::SmartPtr<Iterator> IteratorPtr;
@@ -48,6 +47,7 @@ namespace Avida {
       Apto::Set<Listener*> m_listeners;
       
     public:
+      LIB_EXPORT inline Arbiter(const RoleID& role) : m_role(role) { ; }
       LIB_EXPORT virtual ~Arbiter() = 0;
       
       LIB_EXPORT inline const RoleID& Role() const { return m_role; }
@@ -85,10 +85,6 @@ namespace Avida {
         virtual GroupPtr Get() = 0;
         virtual GroupPtr Next() = 0;        
       };
-      
-    private:
-      // Systematics::Manager Interaction
-      LIB_LOCAL inline void SetRole(const RoleID& role) { m_role = role; }
     };
     
   };

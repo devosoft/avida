@@ -29,6 +29,7 @@
 
 #include "avida/core/InstructionSequence.h"
 #include "avida/data/Provider.h"
+#include "avida/data/Recorder.h"
 
 #include "apto/stat/Accumulator.h"
 
@@ -85,7 +86,7 @@ struct s_inst_circumstances {
   int tol_max;
 };
 
-class cStats : public Data::ArgumentedProvider
+class cStats : public Data::ArgumentedProvider, public Data::Recorder
 {
 private:
   cWorld* m_world;
@@ -106,6 +107,12 @@ private:
   Apto::Map<Apto::String, ProvidedData> m_provided_data;
   mutable Data::ConstDataSetPtr m_provides;
 
+  
+  // --------  Data Provider Support  ---------
+  mutable Data::DataSetPtr m_requested;
+  int m_num_genotypes;
+  int m_threshold_genotypes;
+  
 
   // --------  Time scales  ---------
   int m_update;
@@ -414,6 +421,11 @@ public:
   bool IsValidArgument(const Data::DataID& data_id, Data::Argument arg) const;
   
   Data::PackagePtr GetProvidedValueForArgument(const Data::DataID& data_id, const Data::Argument& arg) const;
+  
+  
+  // Data::Recorder
+  Data::ConstDataSetPtr RequestedData() const;
+  void NotifyData(Update current_update, Data::DataRetrievalFunctor retrieve_data);
   
   // cStats
   void ProcessUpdate();
