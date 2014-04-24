@@ -45,7 +45,7 @@ namespace Avida {
       LIB_EXPORT inline Manager() { ; }
       LIB_EXPORT inline ~Manager() { ; }
       
-      bool RegisterRole(const RoleID& role, ArbiterPtr a);
+      bool RegisterArbiter(ArbiterPtr a);
       ArbiterPtr ArbiterForRole(const RoleID& role);
       
       LIB_EXPORT void ClassifyNewUnit(UnitPtr u, const RoleClassificationHints* role_hints = NULL);

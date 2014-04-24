@@ -50,7 +50,7 @@ namespace Avida {
     // Group
     // --------------------------------------------------------------------------------------------------------------
     
-    class Group : virtual public Apto::RefCountObject<Apto::ThreadSafe> {
+    class Group : public virtual Apto::RefCountObject<Apto::ThreadSafe> {
     protected:
       GroupID m_id;
       mutable int m_a_refs;

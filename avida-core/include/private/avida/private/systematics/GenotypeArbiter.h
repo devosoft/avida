@@ -118,7 +118,7 @@ namespace Avida {
       
       
     public:
-      GenotypeArbiter(Universe* universe, int threshold, bool disable_class = false);
+      GenotypeArbiter(Universe* universe, const RoleID& role, int threshold, bool disable_class = false);
       ~GenotypeArbiter();
       
       // Arbiter Interface Methods

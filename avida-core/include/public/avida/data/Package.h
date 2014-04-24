@@ -37,7 +37,7 @@ namespace Avida {
     // Data::Package - base class for data provider value packages
     // --------------------------------------------------------------------------------------------------------------
     
-    class Package : public Apto::RefCountObject<Apto::ThreadSafe>, public Apto::ClassAllocator<SmallObjectMalloc>
+    class Package : public virtual Apto::RefCountObject<Apto::ThreadSafe>, public Apto::ClassAllocator<SmallObjectMalloc>
     {
     public:
       LIB_EXPORT virtual ~Package() = 0;

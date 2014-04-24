@@ -35,7 +35,7 @@ namespace Avida {
     // Output::Socket - Protocol defining interface for output sockets that can be managed by the output manager
     // --------------------------------------------------------------------------------------------------------------
     
-    class Socket : public Apto::RefCountObject<Apto::ThreadSafe>
+    class Socket : public virtual Apto::RefCountObject<Apto::ThreadSafe>
     {
     protected:
       Universe* m_universe;

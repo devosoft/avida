@@ -41,7 +41,7 @@ namespace Avida {
     // Container
     // --------------------------------------------------------------------------------------------------------------
     
-    class Container : public Apto::RefCountObject<Apto::ThreadSafe>
+    class Container : public virtual Apto::RefCountObject<Apto::ThreadSafe>
     {
       friend class Manager;
     protected:

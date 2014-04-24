@@ -70,7 +70,7 @@ namespace Avida {
       
       
     public:
-      CladeArbiter(Universe* universe);
+      CladeArbiter(Universe* universe, const RoleID& role);
       ~CladeArbiter();
       
       GroupPtr GroupWithName(const Apto::String& name);

@@ -250,7 +250,7 @@ void Hardware::Types::GP8::internalReset()
   for (int i = 0; i < m_sensor_sessions.GetSize(); i++) m_sensor_sessions[i].Clear();
   
   // Stack
-  m_global_stack.Clear(m_inst_set->GetStackSize());
+  m_global_stack.Clear(m_instset->GetStackSize());
   
   
   // Threads
@@ -398,7 +398,7 @@ void Hardware::Types::GP8::ProcessTimeStep(Context& ctx, Update current_update)
   m_cur_thread = 0;
   
   // Execute specified number of micro ops per cpu cycle on each thread in a round robin fashion
-  const int uop_ratio = m_inst_set->GetUOpsPerCycle();
+  const int uop_ratio = m_instset->GetUOpsPerCycle();
   for (; m_cur_uop < uop_ratio; m_cur_uop++) {
     for (m_cur_thread = (m_cur_thread < m_threads.GetSize()) ? m_cur_thread : 0; m_cur_thread < m_threads.GetSize(); m_cur_thread++) {
       // Setup the hardware for the next instruction to be executed.
@@ -440,11 +440,11 @@ void Hardware::Types::GP8::ProcessTimeStep(Context& ctx, Update current_update)
         // NOTE: This call based on the cur_inst must occur prior to instruction
         //       execution, because this instruction reference may be invalid after
         //       certain classes of instructions (namely divide instructions) @DMB
-        const int addl_time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
+        const int addl_time_cost = m_instset->GetAddlTimeCost(cur_inst);
         
         // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
-        if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) {
-          exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
+        if ( m_instset->GetProbFail(cur_inst) > 0.0 ) {
+          exec = !( ctx.GetRandom().P(m_instset->GetProbFail(cur_inst)) );
           rand_fail = !exec;
         }
         
@@ -460,7 +460,6 @@ void Hardware::Types::GP8::ProcessTimeStep(Context& ctx, Update current_update)
         
         // Check if the instruction just executed caused premature death, break out of execution if so
         if (phenotype.GetToDelete()) {
-          if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true, exec_success);
           break;
         }
         

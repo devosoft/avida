@@ -36,7 +36,7 @@ namespace Avida {
     // Data::Recorder - Protocol defining interface for data recorders that can attach to the data manager
     // --------------------------------------------------------------------------------------------------------------
     
-    class Recorder : public Apto::RefCountObject<Apto::ThreadSafe>
+    class Recorder : public virtual Apto::RefCountObject<Apto::ThreadSafe>
     {
     public:
       LIB_EXPORT virtual ~Recorder() = 0;
