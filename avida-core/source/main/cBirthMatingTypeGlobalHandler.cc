@@ -266,6 +266,35 @@ bool cBirthMatingTypeGlobalHandler::compareBirthEntries(cAvidaContext& ctx, int 
       }
       return (value1 > value2);
       break;
+    case MATE_PREFERENCE_LOWEST_DISPLAY_A: //Prefers to mate with the organism with the highest value of mating display A
+      value1 = (double) entry1.GetMatingDisplayA();
+      value2 = (double) entry2.GetMatingDisplayA();
+      if (m_world->GetConfig().NOISY_MATE_ASSESSMENT.Get()) {
+        value1 += ctx.GetRandom().GetRandNormal(0, value1*cv);
+        value2 += ctx.GetRandom().GetRandNormal(0, value2*cv);
+      }
+      return (value1 < value2);
+      break;
+    
+    case MATE_PREFERENCE_LOWEST_DISPLAY_B: //Prefers to mate with the organism with the highest value of mating display B
+      value1 = (double) entry1.GetMatingDisplayB();
+      value2 = (double) entry2.GetMatingDisplayB();
+      if (m_world->GetConfig().NOISY_MATE_ASSESSMENT.Get()) {
+        value1 += ctx.GetRandom().GetRandNormal(0, value1*cv);
+        value2 += ctx.GetRandom().GetRandNormal(0, value2*cv);
+      }
+      return (value1 < value2);
+      break;
+      
+    case MATE_PREFERENCE_LOWEST_MERIT:
+      value1 = (double) entry1.merit.GetDouble();
+      value2 = (double) entry2.merit.GetDouble();
+      if (m_world->GetConfig().NOISY_MATE_ASSESSMENT.Get()) {
+        value1 += ctx.GetRandom().GetRandNormal(0, value1*cv);
+        value2 += ctx.GetRandom().GetRandNormal(0, value2*cv);
+      }
+      return (value1 < value2);
+      break;
   }
   
   //If we're still here... just decide randomly since we need to give some return value...
@@ -299,7 +328,7 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
     int last_compatible = -1; //The index of the last entry in compatible_entries holding a compatible m_entries index
     for (int i = 0; i < num_waiting; i++) {
       if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
-        //Here, heck to see if the current entry belongs to the parent's group! @CHC
+        //Here, check to see if the current entry belongs to the parent's group! @CHC
         bool groups_match = false;
         if (!(m_world->GetConfig().MATE_IN_GROUPS.Get())) {
           groups_match = true; //Within-group mating is turned off, so don't need to check
