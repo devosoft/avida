@@ -20,7 +20,8 @@
 #include "cBarScreen.h"
 #include "cAnalyzeScreen.h"
 
-#include <fstream>
+#include <vector>
+#include <memory>
 
 using namespace std;
 
@@ -28,7 +29,9 @@ cTextWindow* cAnalyzeView::base_window = NULL;
 cBarScreen* cAnalyzeView::bar_screen = NULL;
 
 
-cAnalyzeView::cAnalyzeView(cWorld* world, cTextViewerDriver_Base* driver) : info(world, this)
+cAnalyzeView::cAnalyzeView(cWorld* world, cTextViewerDriver_Base* driver) : info(world, 
+
+this)
 {
   Setup(world->GetDefaultContext(), "Avida");
 
@@ -37,7 +40,7 @@ cAnalyzeView::cAnalyzeView(cWorld* world, cTextViewerDriver_Base* driver) : info
 
 cAnalyzeView::~cAnalyzeView()
 {
-  if (analyze_screen) delete analyze_screen;
+  delete analyze_screen;
   EndProg(0);
 }
 
@@ -129,23 +132,23 @@ void cAnalyzeView::DoInputs(cAvidaContext& ctx)
   }
 }
 
-
-int cAnalyzeView::Confirm(const cString & message)
+int cAnalyzeView::Confirm(const cString& message)
 {
   const int mess_length = message.GetSize();
 
   // Create a confirm window, and draw it on the screen.
 
-  cTextWindow * conf_win
-    = new cTextWindow(3, mess_length + 10, 10, (base_window->Width() - 10 - mess_length) / 2);
-  conf_win->Box();
-  conf_win->SetBoldColor(COLOR_WHITE);
-  conf_win->Print(1, 2, "%s (y/n)", static_cast<const char*>(message));
-  conf_win->SetBoldColor(COLOR_CYAN);
-  conf_win->Print(1, mess_length + 4, 'y');
-  conf_win->Print(1, mess_length + 6, 'n');
-  conf_win->SetColor(COLOR_WHITE);
-  conf_win->Refresh();
+  cTextWindow conf_win(3, mess_length + 10, 10, (base_window->Width() - 10 - mess_length) /
+2);
+;
+  conf_win.Box();
+  conf_win.SetBoldColor(COLOR_WHITE);
+  conf_win.Print(1, 2, "%s (y/n)", static_cast<const char*>(message));
+  conf_win.SetBoldColor(COLOR_CYAN);
+  conf_win.Print(1, mess_length + 4, 'y');
+  conf_win.Print(1, mess_length + 6, 'n');
+  conf_win.SetColor(COLOR_WHITE);
+  conf_win.Refresh();
 
   // Wait for the results.
   bool finished = false;
@@ -154,6 +157,7 @@ int cAnalyzeView::Confirm(const cString & message)
 
   while (finished == false) {
     cur_char = GetInput();
+    
     switch (cur_char) {
     case 'q':
     case 'Q':
@@ -170,22 +174,25 @@ int cAnalyzeView::Confirm(const cString & message)
       finished = true;
       result = true;
       break;
+    default:
+      // You need a default case when cur_char == NULL
+      // .......
+      break;
     }
   }
 
-  // Delete the window, redraw the screen, and return the results.
-  delete conf_win;
+  // Redraw and return the results.
   Redraw();
   return result;
 }
 
-void cAnalyzeView::Notify(const cString & message)
+void cAnalyzeView::Notify(const cString& message)
 {
   cString mess_copy(message);
 
   // Setup all of the individual lines.
   int num_lines = message.CountNumLines();
-  cString * line_array = new cString[num_lines];
+  std::vector<cString> line_array(num_lines);
   int max_width = 0;
   for (int i = 0; i < num_lines; i++) {
     line_array[i] = mess_copy.PopLine();
@@ -195,15 +202,14 @@ void cAnalyzeView::Notify(const cString & message)
 
   // Create a window and draw it on the screen.
 
-  cTextWindow * notify_win
-    = new cTextWindow(2 + num_lines, max_width + 4, (24 - num_lines - 3) / 2,
-		      (70 - max_width) / 2);
-  notify_win->Box();
-  notify_win->SetBoldColor(COLOR_WHITE);
+  cTextWindow notify_win(2 + num_lines, max_width + 4, (24 - num_lines - 3) / 2,
+    	      (70 - max_width) / 2), cTextWindow_deleter);
+  notify_win.Box();
+  notify_win.SetBoldColor(COLOR_WHITE);
   for (int j = 0; j < num_lines; j++) {
-    notify_win->Print(1 + j, 2, "%s", static_cast<const char*>(line_array[j]));
+    notify_win.Print(1 + j, 2, "%s", static_cast<const char*>(line_array[j]));
   }
-  notify_win->Refresh();
+  notify_win.Refresh();
 
   // Wait for the results.
   bool finished = false;
@@ -222,9 +228,6 @@ void cAnalyzeView::Notify(const cString & message)
     }
   }
 
-  // Delete the window and redraw the screen.
-  delete notify_win;
-  delete [] line_array;
+  // Redraw the screen.
   Redraw();
 }
-
