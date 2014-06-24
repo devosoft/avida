@@ -469,6 +469,7 @@ private:
   bool Inst_Sterilize(cAvidaContext& ctx);
 
   bool Inst_SpawnDeme(cAvidaContext& ctx);
+  bool Inst_Lyse(cAvidaContext& ctx);
   bool Inst_Kazi(cAvidaContext& ctx);
   bool Inst_Kazi1(cAvidaContext& ctx);
   bool Inst_Kazi2(cAvidaContext& ctx);
