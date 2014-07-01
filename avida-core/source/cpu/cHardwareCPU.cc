@@ -3647,6 +3647,7 @@ bool cHardwareCPU::Inst_Lyse(cAvidaContext& ctx)
   //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
   if (GetRegister(FindModifiedRegister(REG_AX))){
     m_organism->GetPhenotype().SetKaboomExecuted(true);
+    m_organism->Die(ctx);
   } else {
     m_world->GetStats().IncDontExplode();
   }
