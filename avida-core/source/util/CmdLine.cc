@@ -103,11 +103,12 @@ static void processArgs(cStringList &argv, cAvidaConfig* cfg, Apto::Map<Apto::St
       exit(0);
     }
     else if (cur_arg == "-seed" || cur_arg == "-s") {
-      if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
+      if (arg_num + 1 == argc) {
         cerr << "Error: Must include a number as the random seed!" << endl;
         exit(0);
       } else {
-        arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
+        arg_num++;
+        if (arg_num < argc) cur_arg = args[arg_num];
         val_seed = cur_arg.AsInt();
       }
       flag_seed = true;
