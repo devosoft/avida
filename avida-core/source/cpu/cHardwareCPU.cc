@@ -483,6 +483,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("spawn-deme", &cHardwareCPU::Inst_SpawnDeme, INST_CLASS_LIFECYCLE, nInstFlag::STALL),
     
     // Suicide
+    tInstLibEntry<tMethod>("lyse",	&cHardwareCPU::Inst_Lyse, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode",	&cHardwareCPU::Inst_Kazi, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode1", &cHardwareCPU::Inst_Kazi1, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode2", &cHardwareCPU::Inst_Kazi2, INST_CLASS_OTHER, nInstFlag::STALL),
@@ -3641,7 +3642,17 @@ bool cHardwareCPU::Inst_SmartExplode(cAvidaContext& ctx)
   return true;
 }
 
-
+bool cHardwareCPU::Inst_Lyse(cAvidaContext& ctx)
+{
+  //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
+  if (GetRegister(FindModifiedRegister(REG_AX))){
+    m_organism->GetPhenotype().SetKaboomExecuted(true);
+    m_organism->Die(ctx);
+  } else {
+    m_world->GetStats().IncDontExplode();
+  }
+  return true;
+}
 
 bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
 {
