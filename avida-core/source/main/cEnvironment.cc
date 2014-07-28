@@ -1781,8 +1781,10 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       // hjg
       double x = ctx.GetRandom().GetDouble();
       if (x < prob_lethal) {
-	lethal = true;
+        lethal = true;
       }
+    } else {
+      lethal = prob_lethal;
     }
 
     result.Lethal(lethal);
