@@ -4261,6 +4261,35 @@ public:
   }
 };
 
+class cActionSwapRandomCells : public cAction
+{
+private:
+  int num_swaps;
+  
+public:
+  cActionSwapRandomCells(cWorld* world, const cString& args, Feedback&) : cAction(world, args), num_swaps(-1)
+  {
+    cString largs(args);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int number swaps>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int num_cells = m_world->GetPopulation().GetSize();
+    
+    for (int i=0; i<num_swaps;i++){
+      int id1 = ctx.GetRandom().GetInt(0, num_cells);
+      int id2 = ctx.GetRandom().GetInt(0, num_cells);
+      //if the id's happen to be the same, it just won't swap
+      if (!(id1 == id2)) {
+        m_world->GetPopulation().SwapCells(id1, id2, ctx);
+      }
+    }
+  }
+};
+
+
 class cActionPred_DemeResourceThresholdPredicate : public cAction {
 private:
   cString resourceName;
@@ -5638,6 +5667,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionConnectCells>("ConnectCells");
   action_lib->Register<cActionDisconnectCells>("DisconnectCells");
   action_lib->Register<cActionSwapCells>("SwapCells");
+  action_lib->Register<cActionSwapRandomCells>("SwapRandomCells");
 	
   action_lib->Register<cActionCompeteDemesByTaskCount>("CompeteDemesByTaskCount");
   action_lib->Register<cActionCompeteDemesByTaskCountAndEfficiency>("CompeteDemesByTaskCountAndEfficiency");
