@@ -623,6 +623,9 @@ public:
   void ChangeBeg() { m_beggar = !m_beggar; }
   bool IsBeggar() { return m_beggar; }
   
+  double GetParaDonate() { return m_para_donate;}
+  void SetParaDonate(double donate_prob) { m_para_donate = donate_prob;}
+  
   void SetGuard() { m_guard = !m_guard; }
   bool IsGuard() { return m_guard; }
   void IncGuard() { m_num_guard++; }
@@ -672,6 +675,8 @@ protected:
   bool m_p_mthread;
   
   bool m_beggar;
+  
+  double m_para_donate;
   
   bool m_guard;
     int m_num_guard;

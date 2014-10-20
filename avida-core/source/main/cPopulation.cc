@@ -755,6 +755,29 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       offspring_array[i]->SetReputation(parent_organism->GetReputation());
     }
     
+    // If we're using host-controlled parasite virulence, i.e. the host donates cycles to symbiont and evolves that donation amount @AEJ
+    if (m_world->GetConfig().VIRULENCE_SOURCE.Get() == 2)
+    {
+      //mutate virulence
+      // m_world->GetConfig().PARASITE_VIRULENCE.Get()
+      double oldVir = parent_organism->GetParaDonate();
+    
+      //default to not mutating
+      double newVir = oldVir;
+    
+      //but if we do mutate...
+      if (m_world->GetRandom().GetDouble() < m_world->GetConfig().VIRULENCE_MUT_RATE.Get())
+      {
+        //get this in a temp variable so we don't have to make the next line huge
+        double vir_sd = m_world->GetConfig().VIRULENCE_SD.Get();
+      
+        //sd^2 = varience
+        newVir = m_world->GetRandom().GetRandNormal(oldVir, vir_sd * vir_sd);
+      
+      }
+      offspring_array[i]->SetParaDonate(Apto::Max(Apto::Min(newVir, 1.0), 0.0));
+    }
+    
     // If spatial groups are used, put the offspring in the
     // parents' group, if tolerances are used check if the offspring
     // is successfully born into the parent's group or successfully immigrates

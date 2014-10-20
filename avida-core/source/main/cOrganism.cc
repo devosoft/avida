@@ -194,6 +194,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
   , m_p_merit(0)
   , m_beggar(false)
+  , m_para_donate(world->GetConfig().PARASITE_VIRULENCE.Get())
   , m_guard(false)
   , m_num_guard(0)
   , m_num_deposits(0)

@@ -224,7 +224,14 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     {
       Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite;
       parasite.DynamicCastFrom(m_threads[1].owner);
-      parasiteVirulence = parasite->GetVirulence();
+      //Virulence can be from parasite or host
+      if (m_world->GetConfig().VIRULENCE_SOURCE.Get() == 2) {
+        //Host controls threads donated to parasite @AEJ
+        parasiteVirulence = m_organism->GetParaDonate();
+      } else {
+        //Parasite inherited virulence
+        parasiteVirulence = parasite->GetVirulence();
+      }
     }
     else
     {
