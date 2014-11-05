@@ -345,6 +345,10 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, Feed
       if (!AssertInputInt(var_value, "max_tot_count", var_type, feedback)) return false;
       new_requisite->SetMaxTotReactionCount(var_value.AsInt());
     }
+    else if (var_name == "parasite_only") {
+      if (!AssertInputInt(var_value, "parasite_only", var_type, feedback)) return false;
+      new_requisite->SetParasiteOnly(var_value.AsInt());
+    }
     else {
       feedback.Error("unknown requisite variable '%s' in reaction '%s'",
                                     (const char*)var_name, (const char*)reaction->GetName());
@@ -413,6 +417,10 @@ bool cEnvironment::LoadContextReactionRequisite(cReaction* reaction, cString des
     else if (var_name == "max_tot_count") {
       if (!AssertInputInt(var_value, "max_tot_count", var_type, feedback)) return false;
       new_requisite->SetMaxTotReactionCount(var_value.AsInt());
+    }
+    else if (var_name == "parasite_only") {
+      if (!AssertInputInt(var_value, "parasite_only", var_type, feedback)) return false;
+      new_requisite->SetParasiteOnly(var_value.AsInt());
     }
     else {
       feedback.Error("unknown requisite variable '%s' in reaction '%s'",
@@ -1295,7 +1303,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     const bool on_divide = taskctx.GetOnDivide();
 
     // Examine requisites on this reaction
-    if (TestRequisites(taskctx, cur_reaction, task_cnt, reaction_count, on_divide) == false) { 
+    if (TestRequisites(taskctx, cur_reaction, task_cnt, reaction_count, on_divide, is_parasite) == false) {
       if (!skipProcessing){
         continue;
       }
@@ -1355,7 +1363,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
 }
 
 bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_reaction,
-                                  int task_count, const Apto::Array<int>& reaction_count, const bool on_divide) const
+                                  int task_count, const Apto::Array<int>& reaction_count, const bool on_divide, bool is_parasite) const
 {
   const tList<cReactionRequisite>& req_list = cur_reaction->GetRequisites();
   const int num_reqs = req_list.GetSize();
@@ -1433,6 +1441,10 @@ bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_re
     int div_type = cur_req->GetDivideOnly();
     if (div_type == 1 && !on_divide) continue;
     if (div_type == 0 && on_divide) continue;
+    
+    // If the reaction is parasite only, check to see if we are a parasite
+    if (cur_req->GetParasiteOnly()){
+      if (!is_parasite) continue;}
 
     return true;
   }

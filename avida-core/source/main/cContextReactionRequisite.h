@@ -45,6 +45,7 @@ private:
   int min_tot_reaction_count;
   int max_tot_reaction_count;
   int divide_only;
+  int parasite_only;
 
 
   cContextReactionRequisite(const cContextReactionRequisite&); // @not_implemented
@@ -53,7 +54,7 @@ private:
 public:
   cContextReactionRequisite() : min_task_count(0) , max_task_count(INT_MAX), 
     min_reaction_count(0) , max_reaction_count(INT_MAX),
-	  min_tot_reaction_count(0), max_tot_reaction_count(INT_MAX), divide_only(0) { ; }
+	  min_tot_reaction_count(0), max_tot_reaction_count(INT_MAX), divide_only(0), parasite_only(0) { ; }
   ~cContextReactionRequisite() { ; }
 
   const tList<cReaction>& GetReactions() const { return prior_reaction_list; }
@@ -63,6 +64,7 @@ public:
   int GetMinReactionCount() const { return min_reaction_count; }
   int GetMaxReactionCount() const { return max_reaction_count; }
   int GetDivideOnly() const { return divide_only; }
+  int GetParasiteOnly() const { return parasite_only; }
   int GetMinTotReactionCount() const { return min_tot_reaction_count; }
   int GetMaxTotReactionCount() const { return max_tot_reaction_count; }
 
@@ -77,6 +79,7 @@ public:
   void SetMinReactionCount(int min) { min_reaction_count = min; }
   void SetMaxReactionCount(int max) { max_reaction_count = max; }
   void SetDivideOnly(int div) { divide_only = div; }
+  void SetParasiteOnly(int para) { parasite_only = para; }
   void SetMinTotReactionCount(int min) { min_tot_reaction_count = min; }
   void SetMaxTotReactionCount(int max) { max_tot_reaction_count = max; }
 
