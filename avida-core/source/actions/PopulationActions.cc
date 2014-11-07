@@ -4270,6 +4270,7 @@ public:
   cActionSwapRandomCells(cWorld* world, const cString& args, Feedback&) : cAction(world, args), num_swaps(-1)
   {
     cString largs(args);
+    if (largs.GetSize()) num_swaps = largs.PopWord().AsInt();
   }
   
   static const cString GetDescription() { return "Arguments: <int number swaps>"; }
