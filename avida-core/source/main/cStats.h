@@ -216,6 +216,8 @@ private:
     
   // ------- Kaboom Stats --------------------
   int num_kabooms;
+  int num_kabooms_pre;
+  int num_kabooms_post;
   int num_kaboom_kills;
   Apto::Array<int> hd_list;
   
@@ -921,6 +923,8 @@ public:
     
  // Kaboom stats
   void IncKaboom() { num_kabooms++; }
+  void IncKaboomPreDivide() { num_kabooms_pre++; }
+  void IncKaboomPostDivide() { num_kabooms_post++; }
   void IncKaboomKills() {num_kaboom_kills++;}
   void AddHamDistance(int distance) { hd_list.Push(distance); }
   void PrintKaboom(const cString& filename);

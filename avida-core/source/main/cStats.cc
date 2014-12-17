@@ -3722,6 +3722,8 @@ void cStats::PrintKaboom(const cString& filename)
   df->Write(m_update, "Update [update]");
   
   df->Write(num_kabooms, "number of kabooms");
+  df->Write(num_kabooms_pre, "number of kabooms pre divide");
+  df->Write(num_kabooms_post, "number of kabooms pre divide");
   df->Write(num_kaboom_kills, "number of orgs killed by kabooms");
   df->Write(hd_list, "hamming distances", "");
   
