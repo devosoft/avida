@@ -470,6 +470,8 @@ private:
 
   bool Inst_SpawnDeme(cAvidaContext& ctx);
   bool Inst_Lyse(cAvidaContext& ctx);
+  bool Inst_Lyse_PreDivide(cAvidaContext& ctx);
+  bool Inst_Lyse_PostDivide(cAvidaContext& ctx);
   bool Inst_Kazi(cAvidaContext& ctx);
   bool Inst_Kazi1(cAvidaContext& ctx);
   bool Inst_Kazi2(cAvidaContext& ctx);

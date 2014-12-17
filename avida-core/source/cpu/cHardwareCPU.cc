@@ -484,6 +484,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     
     // Suicide
     tInstLibEntry<tMethod>("lyse",	&cHardwareCPU::Inst_Lyse, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("lyse-pre",	&cHardwareCPU::Inst_Lyse_PreDivide, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("lyse-post",	&cHardwareCPU::Inst_Lyse_PostDivide, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode",	&cHardwareCPU::Inst_Kazi, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode1", &cHardwareCPU::Inst_Kazi1, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode2", &cHardwareCPU::Inst_Kazi2, INST_CLASS_OTHER, nInstFlag::STALL),
@@ -3646,6 +3648,30 @@ bool cHardwareCPU::Inst_Lyse(cAvidaContext& ctx)
 {
   //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
   if (GetRegister(FindModifiedRegister(REG_AX))){
+    m_organism->GetPhenotype().SetKaboomExecuted(true);
+    m_world->GetStats().IncKaboom();
+  } else {
+    m_world->GetStats().IncDontExplode();
+  }
+  return true;
+}
+
+bool cHardwareCPU::Inst_Lyse_PreDivide(cAvidaContext& ctx)
+{
+  //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
+  if (GetRegister(FindModifiedRegister(REG_AX)) && (m_organism->GetPhenotype().GetNumDivides()==0)){
+    m_organism->GetPhenotype().SetKaboomExecuted(true);
+    m_world->GetStats().IncKaboom();
+  } else {
+    m_world->GetStats().IncDontExplode();
+  }
+  return true;
+}
+
+bool cHardwareCPU::Inst_Lyse_PostDivide(cAvidaContext& ctx)
+{
+  //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
+  if (GetRegister(FindModifiedRegister(REG_AX)) && (m_organism->GetPhenotype().GetNumDivides()>0)){
     m_organism->GetPhenotype().SetKaboomExecuted(true);
     m_world->GetStats().IncKaboom();
   } else {
