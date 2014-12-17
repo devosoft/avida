@@ -3659,7 +3659,7 @@ bool cHardwareCPU::Inst_Lyse(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Lyse_PreDivide(cAvidaContext& ctx)
 {
   //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
-  if (GetRegister(FindModifiedRegister(REG_AX)) && (m_organism->GetPhenotype().GetNumDivides()==0)){
+  if (ctx.GetRandom().P(0.5) && (m_organism->GetPhenotype().GetNumDivides()==0)){
     m_organism->GetPhenotype().SetKaboomExecuted(true);
     m_world->GetStats().IncKaboom();
   } else {
@@ -3671,7 +3671,7 @@ bool cHardwareCPU::Inst_Lyse_PreDivide(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Lyse_PostDivide(cAvidaContext& ctx)
 {
   //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
-  if (GetRegister(FindModifiedRegister(REG_AX)) && (m_organism->GetPhenotype().GetNumDivides()>0)){
+  if (ctx.GetRandom().P(0.5) && (m_organism->GetPhenotype().GetNumDivides()>0)){
     m_organism->GetPhenotype().SetKaboomExecuted(true);
     m_world->GetStats().IncKaboom();
   } else {
