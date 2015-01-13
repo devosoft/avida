@@ -486,6 +486,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("lyse",	&cHardwareCPU::Inst_Lyse, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("lyse-pre",	&cHardwareCPU::Inst_Lyse_PreDivide, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("lyse-post",	&cHardwareCPU::Inst_Lyse_PostDivide, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("nop-pre", &cHardwareCPU::Inst_NopPre, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("nop-post", &cHardwareCPU::Inst_NopPost, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode",	&cHardwareCPU::Inst_Kazi, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode1", &cHardwareCPU::Inst_Kazi1, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode2", &cHardwareCPU::Inst_Kazi2, INST_CLASS_OTHER, nInstFlag::STALL),
@@ -3678,6 +3680,26 @@ bool cHardwareCPU::Inst_Lyse_PostDivide(cAvidaContext& ctx)
     m_world->GetStats().IncDontExplode();
   }
   return true;
+}
+
+bool cHardwareCPU::Inst_NopPre(cAvidaContext& ctx)
+{
+  //A no-operation instruction that only succeeds pre-divide in order to measure base pre-divide executions
+  if (m_organism->GetPhenotype().GetNumDivides()==0){
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool cHardwareCPU::Inst_NopPost(cAvidaContext& ctx)
+{
+  //A no-operation instruction that only succeeds pre-divide in order to measure base pre-divide executions
+  if (m_organism->GetPhenotype().GetNumDivides()>0){
+    return true;
+  } else {
+    return false;
+  }
 }
 
 bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)

@@ -3731,6 +3731,8 @@ void cStats::PrintKaboom(const cString& filename)
   hd_list.ResizeClear(0);
   num_kabooms = 0;
   num_kaboom_kills=0;
+  num_kabooms_pre=0;
+  num_kabooms_post=0;
   
 }
 
