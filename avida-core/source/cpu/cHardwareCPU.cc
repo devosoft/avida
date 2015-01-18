@@ -4589,17 +4589,21 @@ bool cHardwareCPU::Inst_CollectUnitProbabilistic(cAvidaContext& ctx)
 
 /* Takes the resource specified by the COLLECT_RESOURCE_SPECIFIC config option
  * from the environment and adds it to the internal resource bins of the organism.
+ * Number of units to be collected is specific by COLLECT_AMOUNT config option 
+ * (default: 1) - ELD
  */
 bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
 {
   const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
   double res_before = m_organism->GetRBin(resource);
-  bool success = DoActualCollect(ctx, resource, true, true, false, false, 1);
+  bool success = DoActualCollect(ctx, resource, true, true, false, false, m_world->GetConfig().COLLECT_AMOUNT.Get());
   double res_after = m_organism->GetRBin(resource);
   GetRegister(FindModifiedRegister(REG_BX)) = (int)(res_after - res_before);
   return success;
 }
-// Collects the resource associated with the next instruction to be copied
+// Probabalistically collects COLLECT_AMOUNT units of the resource associated with the next 
+// instruction to be copied. As in other probabalistic collects, likelihood is based on the amount
+// of the desired resource in the environment, divided by COLLECT_PROB_DIVISOR
 // Returns success if resource is collected successfully. - ELD
 bool cHardwareCPU::Inst_CollectSpecificNeeded(cAvidaContext& ctx)
 {
@@ -4609,7 +4613,7 @@ bool cHardwareCPU::Inst_CollectSpecificNeeded(cAvidaContext& ctx)
   //of the instruction that is about to be copied, which conveniently 
   //corresponds to the index of the resource associated with that instruction
   double res_before = m_organism->GetRBin(resource);
-  bool success = DoActualCollect(ctx, resource, false, true, false, true, 1);
+  bool success = DoActualCollect(ctx, resource, false, true, true, true, m_world->GetConfig().COLLECT_AMOUNT.Get());
   double res_after = m_organism->GetRBin(resource);
   GetRegister(FindModifiedRegister(REG_BX)) = (int)(res_after - res_before);
   return success;
@@ -4617,7 +4621,10 @@ bool cHardwareCPU::Inst_CollectSpecificNeeded(cAvidaContext& ctx)
 
 // Collects all resources in a ratio of 1:1:1:...:1 unless otherwise
 // specified in the NON_1_RESOURCE_RATIOS setting in the config file.
-// Returns success if both resources are collected successfully. - ELD
+// The number of units of a 1:1 resource to be colected is specified by
+// COLLECT_AMOUNT in the config filed (default: 1) and all other amounts
+// are calculated accordingly.
+// Returns success if all resources are collected successfully. - ELD
 bool cHardwareCPU::Inst_CollectSpecificRatio(cAvidaContext& ctx)
 {
   double res_before = 0;
@@ -4667,9 +4674,9 @@ bool cHardwareCPU::Inst_CollectSpecificRatio(cAvidaContext& ctx)
   delete [] ratios;
 
   for (int i=0; i<m_organism->GetRBins().GetSize(); i++){
-    float collAmnt = 1.0;
+    float collAmnt = m_world->GetConfig().COLLECT_AMOUNT.Get();
     if (ratioMap.count(i) == 1){
-      collAmnt = ratioMap[i];
+      collAmnt *= ratioMap[i];
     }
     res_before = m_organism->GetRBin(i);
     success = success && DoActualCollect(ctx, i, false, true, false, true, collAmnt);
