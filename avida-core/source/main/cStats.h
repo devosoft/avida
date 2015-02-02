@@ -219,6 +219,7 @@ private:
   int num_kabooms_pre;
   int num_kabooms_post;
   int num_kaboom_kills;
+  double sum_perc_lyse;
   Apto::Array<int> hd_list;
   
   // Quorum threshold stats
@@ -928,6 +929,7 @@ public:
   void IncKaboomKills() {num_kaboom_kills++;}
   void AddHamDistance(int distance) { hd_list.Push(distance); }
   void PrintKaboom(const cString& filename);
+  void IncPercLyse(double perc) {sum_perc_lyse += perc; }
   
   //Quorum Sensing stats
   void IncDontExplode() {num_stop_explode++;}

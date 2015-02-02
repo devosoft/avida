@@ -3649,9 +3649,15 @@ bool cHardwareCPU::Inst_SmartExplode(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Lyse(cAvidaContext& ctx)
 {
   //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
-  if (GetRegister(FindModifiedRegister(REG_AX))){
+  const int reg_used = FindModifiedRegister(REG_AX);
+  double percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+  if (percent_prob==-1.0){
+    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+  }
+  if (ctx.GetRandom().P(percent_prob)) { 
     m_organism->GetPhenotype().SetKaboomExecuted(true);
     m_world->GetStats().IncKaboom();
+    m_world->GetStats().IncPercLyse(percent_prob); 
   } else {
     m_world->GetStats().IncDontExplode();
   }
@@ -3661,9 +3667,15 @@ bool cHardwareCPU::Inst_Lyse(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Lyse_PreDivide(cAvidaContext& ctx)
 {
   //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
-  if (ctx.GetRandom().P(m_world->GetConfig().KABOOM_PROB.Get()) && (m_organism->GetPhenotype().GetNumDivides()==0)){
+  const int reg_used = FindModifiedRegister(REG_AX);
+  double percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+  if (percent_prob==-1.0){
+    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+  }
+  if ((ctx.GetRandom().P(percent_prob)) && (m_organism->GetPhenotype().GetNumDivides()==0)){
     m_organism->GetPhenotype().SetKaboomExecuted(true);
     m_world->GetStats().IncKaboomPreDivide();
+    m_world->GetStats().IncPercLyse(percent_prob); 
   } else {
     m_world->GetStats().IncDontExplode();
   }
@@ -3673,9 +3685,15 @@ bool cHardwareCPU::Inst_Lyse_PreDivide(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Lyse_PostDivide(cAvidaContext& ctx)
 {
   //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
-  if (ctx.GetRandom().P(m_world->GetConfig().KABOOM_PROB.Get()) && (m_organism->GetPhenotype().GetNumDivides()>0)){
+  const int reg_used = FindModifiedRegister(REG_AX);
+  double percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+  if (percent_prob==-1.0){
+    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+  }
+  if ((ctx.GetRandom().P(percent_prob)) && (m_organism->GetPhenotype().GetNumDivides()>0)){
     m_organism->GetPhenotype().SetKaboomExecuted(true);
     m_world->GetStats().IncKaboomPostDivide();
+    m_world->GetStats().IncPercLyse(percent_prob); 
   } else {
     m_world->GetStats().IncDontExplode();
   }
