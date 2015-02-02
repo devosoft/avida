@@ -331,6 +331,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   
   //Explosions
   if (name == "exploded") NewTask(name, "Organism exploded", &cTaskLib::Task_Exploded);
+  if (name == "exploded2") NewTask(name, "Organism exploded", &cTaskLib::Task_Exploded2);
 
   // String matching
   if (name == "all-ones") Load_AllOnes(name, info, envreqs, feedback);
@@ -3995,6 +3996,19 @@ double cTaskLib::Task_MoveFT(cTaskContext& ctx) const
 double cTaskLib::Task_Exploded(cTaskContext& ctx) const
 {
   bool exploded = ctx.GetOrganism()->GetPhenotype().GetKaboomExecuted();
+  double reward = 0.0;
+  // If the organism has executed an explode instruction
+  if (exploded) {
+    reward = 1;
+  }
+  return reward;
+}
+
+/* Reward organisms for executing the explode command. Second reaction included in order to make two differently valued explode reactions*/
+
+double cTaskLib::Task_Exploded2(cTaskContext& ctx) const
+{
+  bool exploded = ctx.GetOrganism()->GetPhenotype().GetKaboomExecuted2();
   double reward = 0.0;
   // If the organism has executed an explode instruction
   if (exploded) {

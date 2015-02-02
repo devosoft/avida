@@ -3674,7 +3674,8 @@ bool cHardwareCPU::Inst_Lyse_PostDivide(cAvidaContext& ctx)
 {
   //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
   if (ctx.GetRandom().P(m_world->GetConfig().KABOOM_PROB.Get()) && (m_organism->GetPhenotype().GetNumDivides()>0)){
-    m_organism->GetPhenotype().SetKaboomExecuted(true);
+    //In order to test pre- and post-divide lyse at different resource values, there are two different reactions
+    m_organism->GetPhenotype().SetKaboomExecuted2(true);
     m_world->GetStats().IncKaboomPostDivide();
   } else {
     m_world->GetStats().IncDontExplode();
