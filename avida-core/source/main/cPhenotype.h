@@ -295,6 +295,7 @@ private:
   int  parent_cross_num; // How many corssovers did the parent do?
   bool born_parent_group;// Was offspring born into the parent's group?
   bool kaboom_executed; // Has organism executed an explode instruction?
+  bool kaboom_executed2; // Has organism executed an explode instruction? Testing two instructions
 
   // 6. Child information...
   bool copy_true;        // Can this genome produce an exact copy of itself?
@@ -621,6 +622,9 @@ public:
   
   bool GetKaboomExecuted() {return kaboom_executed;} //@AEJ
   void SetKaboomExecuted(bool value) {kaboom_executed = value;} //@AEJ
+  bool GetKaboomExecuted2() {return kaboom_executed2;} //@AEJ
+  void SetKaboomExecuted2(bool value) {kaboom_executed2 = value;} //@AEJ
+
 
   void SetCurRBinsAvail(const Apto::Array<double>& in_avail) { cur_rbins_avail = in_avail; }
   void SetCurRbinsTotal(const Apto::Array<double>& in_total) { cur_rbins_total = in_total; }
