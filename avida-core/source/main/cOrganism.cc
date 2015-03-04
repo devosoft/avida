@@ -875,7 +875,10 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   }
   
   // No zero merit offspring!
-  int cur_merit_base = GetPhenotype().CalcSizeMerit();
+  //THIS WAS AN INT!!! - I guess for POW fitness it shouldn't matter much,
+  //but for MULT merits that go less than 1 (poison), this causes all sorts of hell.
+  double cur_merit_base = GetPhenotype().CalcSizeMerit();
+  
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   int cur_bonus = GetPhenotype().GetCurBonus();
   if (merit_default_bonus) {
