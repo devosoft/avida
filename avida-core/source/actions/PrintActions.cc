@@ -3377,8 +3377,8 @@ public:
     Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
     ofstream& fp = df->OFStream();
     
-    for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
         double fitness = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().GetFitness() : 0.0;
         fp << fitness << " ";
@@ -3758,9 +3758,9 @@ public:
     
     cPopulation* pop = &m_world->GetPopulation();
     
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
-        int genome_length= 0;
+    for (int j = 0; j < pop->GetWorldY(); j++) {
+      for (int i = 0; i < pop->GetWorldX(); i++) {
+        int genome_length = 0;
         int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true)
         {
@@ -3849,9 +3849,9 @@ public:
     
     cPopulation* pop = &m_world->GetPopulation();
     int task_id;      
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
-        int cell_num = i * pop->GetWorldX() + j;
+    for (int j = 0; j < pop->GetWorldY(); j++) {
+      for (int i = 0; i < pop->GetWorldX(); i++) {
+        int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           task_id = organism->GetPhenotype().GetLastTaskID();
@@ -3892,8 +3892,8 @@ public:
     
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
     
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
+    for (int j = 0; j < pop->GetWorldY(); j++) {
+      for (int i = 0; i < pop->GetWorldX(); i++) {
         int task_sum = 0;
         int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
@@ -3938,8 +3938,8 @@ public:
     
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
     
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
+    for (int j = 0; j < pop->GetWorldY(); j++) {
+      for (int i = 0; i < pop->GetWorldX(); i++) {
         int task_sum = 0;
         int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
@@ -3986,10 +3986,10 @@ public:
     cPopulation* pop = &m_world->GetPopulation();
   
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
+    for (int j = 0; j < pop->GetWorldY(); j++) {
+      for (int i = 0; i < pop->GetWorldX(); i++) {
         cString task_list = "";
-        int cell_num = i * pop->GetWorldX() + j;
+        int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           cPhenotype& test_phenotype = organism->GetPhenotype();
@@ -4033,10 +4033,10 @@ public:
     cPopulation* pop = &m_world->GetPopulation();
     
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
+    for (int j = 0; j < pop->GetWorldY(); j++) {
+      for (int i = 0; i < pop->GetWorldX(); i++) {
         cString task_list = "";
-        int cell_num = i * pop->GetWorldX() + j;
+        int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           if(organism->GetNumParasites() > 0)
@@ -4083,8 +4083,8 @@ public:
     
     cPopulation* pop = &m_world->GetPopulation();
     
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
+    for (int j = 0; j < pop->GetWorldY(); j++) {
+      for (int i = 0; i < pop->GetWorldX(); i++) {
         double virulence = 0;
         int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
@@ -4201,8 +4201,8 @@ public:
     
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
     
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
+    for (int j = 0; j < pop->GetWorldY(); j++) {
+      for (int i = 0; i < pop->GetWorldX(); i++) {
         int task_sum = 0;
         int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
@@ -4242,8 +4242,8 @@ public:
     
     cPopulation* pop = &m_world->GetPopulation();
     
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
+    for (int j = 0; j < pop->GetWorldY(); j++) {
+      for (int i = 0; i < pop->GetWorldX(); i++) {
         cString genome_seq("");
         int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true)
@@ -4282,8 +4282,8 @@ public:
     
     cPopulation* pop = &m_world->GetPopulation();
     
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
+    for (int j = 0; j < pop->GetWorldY(); j++) {
+      for (int i = 0; i < pop->GetWorldX(); i++) {
         cString genome_seq("");
         int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true)
@@ -4321,8 +4321,8 @@ public:
     
     cPopulation* pop = &m_world->GetPopulation();
     
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
+    for (int j = 0; j < pop->GetWorldY(); j++) {
+      for (int i = 0; i < pop->GetWorldX(); i++) {
         cString genome_seq("");
         int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true)
@@ -4365,8 +4365,8 @@ public:
     
     cPopulation* pop = &m_world->GetPopulation();
     
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
+    for (int j = 0; j < pop->GetWorldY(); j++) {
+      for (int i = 0; i < pop->GetWorldX(); i++) {
         cString genome_seq("");
         int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true)
@@ -4409,8 +4409,8 @@ public:
     Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
     ofstream& fp = df->OFStream();
     
-    for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
         int donor = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().IsDonorLast() : -1;
         fp << donor << " ";
@@ -4439,8 +4439,8 @@ public:
     Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
     ofstream& fp = df->OFStream();
     
-    for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
         int recv = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().IsReceiver() : -1;
         fp << recv << " ";
