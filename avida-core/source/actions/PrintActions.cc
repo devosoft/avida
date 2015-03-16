@@ -3804,9 +3804,10 @@ public:
     
     for (int i = 0; i < pop->GetWorldY(); i++) {
       for (int j = 0; j < pop->GetWorldX(); j++) {
-        int task_sum = 0;
+        int task_sum = -1;
         int cell_num = i * pop->GetWorldX() + j;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
+	  task_sum = 0;
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           cCPUTestInfo test_info;
           testcpu->TestGenome(ctx, test_info, organism->GetGenome());
