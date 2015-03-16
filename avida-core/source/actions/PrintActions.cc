@@ -3802,10 +3802,10 @@ public:
     
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
     
-    for (int i = 0; i < pop->GetWorldX(); i++) {
-      for (int j = 0; j < pop->GetWorldY(); j++) {
+    for (int i = 0; i < pop->GetWorldY(); i++) {
+      for (int j = 0; j < pop->GetWorldX(); j++) {
         int task_sum = 0;
-        int cell_num = j * pop->GetWorldX() + i;
+        int cell_num = i * pop->GetWorldX() + j;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           cCPUTestInfo test_info;
