@@ -800,7 +800,8 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
 
 void cPhenotype::ResetMerit()
 {
-  int cur_merit_base = CalcSizeMerit();
+  //LZ This was an int!
+  double cur_merit_base = CalcSizeMerit();
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
     cur_bonus = merit_default_bonus;
@@ -822,7 +823,8 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   assert(initialized == true);
   
   // Update these values as needed...
-  int cur_merit_base = CalcSizeMerit();
+  //LZ This was an int!
+  double cur_merit_base = CalcSizeMerit();
   
   // If we are resetting the current merit, do it here
   // and it will also be propagated to the child
@@ -1060,7 +1062,8 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   assert(initialized == true);
   
   // Update these values as needed...
-  int cur_merit_base = CalcSizeMerit();
+  //LZ This was an int!
+  double cur_merit_base = CalcSizeMerit();
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
     cur_bonus = merit_default_bonus;
@@ -2091,7 +2094,9 @@ void cPhenotype::NewTrial()
   // SetCurBonus(m_world->GetConfig().DEFAULT_BONUS.Get());
   
   // Update these values as needed...
-  int cur_merit_base = CalcSizeMerit();
+  //LZ This was an int!
+
+  double cur_merit_base = CalcSizeMerit();
   
   // If we are resetting the current merit, do it here
   // and it will also be propagated to the child
@@ -2271,7 +2276,8 @@ void cPhenotype::NewTrial()
  **/
 void cPhenotype::TrialDivideReset(const InstructionSequence& _genome)
 {
-  int cur_merit_base = CalcSizeMerit();
+  //LZ This was an int!
+  double cur_merit_base = CalcSizeMerit();
   
   // If we are resetting the current merit, do it here
   // and it will also be propagated to the child

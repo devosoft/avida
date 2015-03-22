@@ -880,7 +880,9 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   double cur_merit_base = GetPhenotype().CalcSizeMerit();
   
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
-  int cur_bonus = GetPhenotype().GetCurBonus();
+  
+  //LZ
+  double cur_bonus = GetPhenotype().GetCurBonus();
   if (merit_default_bonus) {
     cur_bonus = merit_default_bonus;
   }
