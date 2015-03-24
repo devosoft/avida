@@ -802,7 +802,8 @@ void cPhenotype::ResetMerit()
 {
   //LZ This was an int!
   double cur_merit_base = CalcSizeMerit();
-  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
+  //LZ
+  const double merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
     cur_bonus = merit_default_bonus;
   }
@@ -828,7 +829,8 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   
   // If we are resetting the current merit, do it here
   // and it will also be propagated to the child
-  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
+  //LZ
+  const double merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
     cur_bonus = merit_default_bonus;
   }
@@ -1064,7 +1066,8 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   // Update these values as needed...
   //LZ This was an int!
   double cur_merit_base = CalcSizeMerit();
-  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
+  //LZ
+  const double merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
     cur_bonus = merit_default_bonus;
   }
@@ -1801,7 +1804,8 @@ int cPhenotype::CalcSizeMerit() const
 
 double cPhenotype::CalcCurrentMerit() const
 {
-  int merit_base = CalcSizeMerit();
+  //LZ this was int
+  double merit_base = CalcSizeMerit();
   
   return merit_base * cur_bonus;  
 }
@@ -2100,7 +2104,8 @@ void cPhenotype::NewTrial()
   
   // If we are resetting the current merit, do it here
   // and it will also be propagated to the child
-  int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
+  //LZ
+  double merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
     cur_bonus = merit_default_bonus;
   }
@@ -2281,7 +2286,8 @@ void cPhenotype::TrialDivideReset(const InstructionSequence& _genome)
   
   // If we are resetting the current merit, do it here
   // and it will also be propagated to the child
-  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
+  //LZ
+  const double merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
     cur_bonus = merit_default_bonus;
   }

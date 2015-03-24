@@ -357,7 +357,9 @@ public:
   double CalcFitness(double _merit_base, double _bonus, int _gestation_time, int _cpu_cycles) const;
 
   double CalcFitnessRatio() {
-    const int merit_base = CalcSizeMerit();
+    
+    //LZ this was int!
+    const double merit_base = CalcSizeMerit();
     const double cur_fitness = merit_base * cur_bonus / time_used;
     return cur_fitness / last_fitness;
   }

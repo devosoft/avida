@@ -879,7 +879,8 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   //but for MULT merits that go less than 1 (poison), this causes all sorts of hell.
   double cur_merit_base = GetPhenotype().CalcSizeMerit();
   
-  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
+  //LZ
+  const double merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   
   //LZ
   double cur_bonus = GetPhenotype().GetCurBonus();
