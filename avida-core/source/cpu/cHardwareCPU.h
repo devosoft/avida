@@ -483,6 +483,8 @@ private:
   bool Inst_SenseQuorum(cAvidaContext& ctx);
   bool Inst_NoisyQuorum(cAvidaContext& ctx);
   bool Inst_SmartExplode(cAvidaContext& ctx);
+  bool Inst_Explode_PreDivide(cAvidaContext& ctx);
+  bool Inst_Explode_PostDivide(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
   bool Inst_Poison(cAvidaContext& ctx);
   bool Inst_Suicide(cAvidaContext& ctx);

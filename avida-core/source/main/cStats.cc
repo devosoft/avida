@@ -3717,6 +3717,7 @@ void cStats::PrintKaboom(const cString& filename)
 {
   
   float ave_perc_lyse = (float)sum_perc_lyse/(float)num_kabooms;
+  float ave_cpu_cycles = (float)sum_cpu_cycles/(float)num_kabooms;
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   df->WriteComment("The number of kabooms.");
   
@@ -3725,9 +3726,10 @@ void cStats::PrintKaboom(const cString& filename)
   
   df->Write(num_kabooms, "number of kabooms");
   df->Write(num_kabooms_pre, "number of kabooms pre divide");
-  df->Write(num_kabooms_post, "number of kabooms pre divide");
+  df->Write(num_kabooms_post, "number of kabooms post divide");
   df->Write(num_kaboom_kills, "number of orgs killed by kabooms");
   df->Write(ave_perc_lyse, "average probability of lyse explosions");
+  df->Write(ave_cpu_cycles, "average cpu cycles at time of lyse");
   df->Write(hd_list, "hamming distances", "");
   
   df->Endl();
@@ -3737,6 +3739,7 @@ void cStats::PrintKaboom(const cString& filename)
   num_kabooms_pre=0;
   num_kabooms_post=0;
   sum_perc_lyse=0;
+  sum_cpu_cycles=0;
  
 }
 
