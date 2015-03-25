@@ -97,7 +97,7 @@ static void processArgs(cStringList &argv, cAvidaConfig* cfg, Apto::Map<Apto::St
       << "  -v[ersion]            Prints the version number" << endl
       << "  -v0 -v1 -v2 -v3 -v4   Set output verbosity to 0..4" << endl
       << "  -w[arn]               Warn when default config settings are used." << endl
-      << "  --generate-config     Generate the default configration files" << endl
+      << "  --generate-config     Generate the default configuration files" << endl
       << endl;
       
       exit(0);
