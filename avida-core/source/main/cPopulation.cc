@@ -4996,10 +4996,10 @@ void cPopulation::DumpDemeFounders(ofstream& fp) {
 void cPopulation::CCladeSetupOrganism(cOrganism*)
 {
   //  int gen_id = organism->GetBioGroup("genotype")->GetID();
-  if (m_world->GetConfig().TRACK_CCLADES.Get() > 0) {
+  //if (m_world->GetConfig().TRACK_CCLADES.Get() > 0) {
     // @TODO - support for IsCCladeFounder?
     //    if (m_world->GetClassificationManager().IsCCladeFounder(gen_id)) organism->SetCCladeLabel(gen_id);
-  }
+  //}
 }
 
 
