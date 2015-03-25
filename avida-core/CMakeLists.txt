@@ -3,6 +3,10 @@ PROJECT(AVIDA)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 
+IF(EMSCRIPTEN)
+   MESSAGE(STATUS "Using emscripten")
+ENDIF(EMSCRIPTEN)
+
 IF(COMMAND cmake_policy)
   CMAKE_POLICY(SET CMP0003 NEW)
 ENDIF(COMMAND cmake_policy)
@@ -72,6 +76,11 @@ IF(UNIX)
     SET(COMPILER_OPTIMIZATION_FLAGS "-mno-fused-madd ${COMPILER_OPTIMIZATION_FLAGS}")
   ENDIF(HAVE_FUSED_MADD)
 
+  # Some emscripten warnings
+   IF(EMSCRIPTEN)
+      SET(COMPILER_WARNING_FLAGS "${COMPILER_WARNING_FLAGS} -Wno-warn-absolute-paths")
+   ENDIF(EMSCRIPTEN)
+
   # Four types of c++ compilations:
   # - debug (Debug)
   # - minimum-size release (MinSizeRel)
@@ -102,6 +111,7 @@ IF(NOT CMAKE_BUILD_TYPE)
     FORCE
   )
 ENDIF(NOT CMAKE_BUILD_TYPE)
+
 
 
 
@@ -355,7 +365,11 @@ LIST(APPEND ALL_INC_DIRS ${PROJECT_SOURCE_DIR}/include/private)
 
 
 # Locate Apto
-FIND_PATH(APTO_INCLUDE_DIR apto/core.h PATHS ${PROJECT_SOURCE_DIR}/../libs/apto/include)
+# For some reason emscripten's toolchain is unhappy with the FIND_PATH command; setting manually
+#FIND_PATH(APTO_INCLUDE_DIR apto/core.h PATHS ${PROJECT_SOURCE_DIR}/../libs/apto/include)
+SET(APTO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../libs/apto/include)
+MESSAGE(STATUS ${APTO_INCLUDE_DIR})
+
 IF(NOT TARGET aptostatic)
   FIND_LIBRARY(APTO_LIBRARY apto PATHS ${PROJECT_SOURCE_DIR}/../cbuild/lib ${PROJECT_SOURCE_DIR}/../libs/apto/cbuild/lib)
   ADD_LIBRARY(aptostatic STATIC IMPORTED)
@@ -365,6 +379,13 @@ ENDIF(NOT TARGET aptostatic)
 
 # Create the static library from the master source list
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS} ${APTO_INCLUDE_DIR})
+
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+     message(STATUS "dir='${dir}'")
+endforeach()
+
+
 ADD_LIBRARY(avida-core ${AVIDA_CORE_SOURCES})
 IF(WIN32)
   SET_TARGET_PROPERTIES(avida-core PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
@@ -407,6 +428,9 @@ IF(UNIX)
 ELSE(UNIX)
   SET(AVD_ENABLE_TCMALLOC FALSE)
 ENDIF(UNIX)
+IF(EMSCRIPTEN)
+   SET(AVD_ENABLE_TCMALLOC FALSE)
+ENDIF(EMSCRIPTEN)
 IF(AVD_ENABLE_TCMALLOC)
   # Locate TCMalloc
   IF(NOT TARGET tcmalloc-1.4)
@@ -436,9 +460,9 @@ IF(AVD_CMDLINE)
   IF(AVD_ENABLE_TCMALLOC)
     LIST(APPEND AVIDA_CMDLINE_LIBS tcmalloc-1.4)
   ENDIF(AVD_ENABLE_TCMALLOC)  
-  IF(NOT MSVC)
+  IF(NOT MSVC AND NOT EMSCRIPTEN)
     LIST(APPEND AVIDA_CMDLINE_LIBS pthread)
-  ENDIF(NOT MSVC)
+  ENDIF(NOT MSVC AND NOT EMSCRIPTEN)
   TARGET_LINK_LIBRARIES(avida ${AVIDA_CMDLINE_LIBS})
   
   INSTALL_TARGETS(/work avida)
