@@ -4991,6 +4991,7 @@ void cPopulation::DumpDemeFounders(ofstream& fp) {
  Defaulting is established in Inject or ActivateOffspring methods of this class.
  
  @MRR May 2007
+ @MRR March 2015 CClade support is currently disabled
  **/
 void cPopulation::CCladeSetupOrganism(cOrganism*)
 {

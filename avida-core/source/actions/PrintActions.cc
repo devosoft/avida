@@ -1470,6 +1470,7 @@ public:
  update number_cclades ccladeID0 ccladeID0_count ccladeID1
  
  @MRR May 2007
+ @MRR March 2015 (Disabled)
  */
 class cActionPrintCCladeCounts : public cAction
 {
@@ -1912,6 +1913,7 @@ public:
 
 /*
  @MRR May 2007 [BETA]
+ @MRR March 2015 (Disabled)
  This function requires CCLADE_TRACKING to be enabled and avida
  operating non-analyze mode.
  
@@ -2039,6 +2041,7 @@ public:
 
 /*
  @MRR May 2007  [BETA]
+ @MRR March 2015 (Disabled)
  This function requires CCLADE_TRACKING to be enabled and Avida
  operating non-analyze mode.
  
@@ -5440,9 +5443,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
   
   //Coalescence Clade Actions
-  action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
-  action_lib->Register<cActionPrintCCladeFitnessHistogram>("PrintCCladeFitnessHistogram");
-  action_lib->Register<cActionPrintCCladeRelativeFitnessHistogram>("PrintCCladeRelativeFitnessHistogram");
+  //@MRR The CClade tracking mechanism is currently disabled (March 2015)
+  //action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
+  //action_lib->Register<cActionPrintCCladeFitnessHistogram>("PrintCCladeFitnessHistogram");
+  //action_lib->Register<cActionPrintCCladeRelativeFitnessHistogram>("PrintCCladeRelativeFitnessHistogram");
   
   // Processed Data
   action_lib->Register<cActionPrintData>("PrintData");

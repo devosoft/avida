@@ -172,11 +172,13 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback, const Apto::Map<Ap
   // If there were errors loading at this point, it is perilous to try to go further (pop depends on an instruction set)
   if (!success) return success;
   
-  
-  // @MRR CClade Tracking
-//	if (m_conf->TRACK_CCLADES.Get() > 0)
-//		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
-  
+  /*
+   CClade Tracking is currently disabled (March 2015)
+   @MRR CClade Tracking
+	if (m_conf->TRACK_CCLADES.Get() > 0)
+        m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
+  */
+    
   const bool revert_fatal = m_conf->REVERT_FATAL.Get() > 0.0;
   const bool revert_neg = m_conf->REVERT_DETRIMENTAL.Get() > 0.0;
   const bool revert_neut = m_conf->REVERT_NEUTRAL.Get() > 0.0;
