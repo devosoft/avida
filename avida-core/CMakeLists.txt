@@ -2,9 +2,10 @@ PROJECT(AVIDA)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-
+#Emscripten requires some extra handling
 IF(EMSCRIPTEN)
    MESSAGE(STATUS "Using emscripten")
+   SET( CMAKE_EXE_LINKER_FLAGS "--embed-file ../../avida-core/support/config@/" )
 ENDIF(EMSCRIPTEN)
 
 IF(COMMAND cmake_policy)
