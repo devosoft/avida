@@ -13,7 +13,7 @@ if [ "$1" == emscripten ]; then
       exit 1
    fi
    export C_FLAGS="${C_FLAGS} -Wno-warn-absolute-paths --embed-file=../work"
-   script build.log time cmake "${@:2}:" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT_PATH}/cmake/Modules/Platform/Emscripten.cmake ../
+   script build.log time cmake "${@:2}:" -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT_PATH}/cmake/Modules/Platform/Emscripten.cmake ../
 else
    script build.log time cmake "$@" ../
 fi
