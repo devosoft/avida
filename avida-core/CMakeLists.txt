@@ -5,7 +5,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 #Emscripten requires some extra handling
 IF(EMSCRIPTEN)
    MESSAGE(STATUS "Using emscripten")
-   SET( CMAKE_EXE_LINKER_FLAGS "--embed-file ../../avida-core/support/config@/" )
 ENDIF(EMSCRIPTEN)
 
 IF(COMMAND cmake_policy)
@@ -369,7 +368,6 @@ LIST(APPEND ALL_INC_DIRS ${PROJECT_SOURCE_DIR}/include/private)
 # For some reason emscripten's toolchain is unhappy with the FIND_PATH command; setting manually
 #FIND_PATH(APTO_INCLUDE_DIR apto/core.h PATHS ${PROJECT_SOURCE_DIR}/../libs/apto/include)
 SET(APTO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../libs/apto/include)
-MESSAGE(STATUS ${APTO_INCLUDE_DIR})
 
 IF(NOT TARGET aptostatic)
   FIND_LIBRARY(APTO_LIBRARY apto PATHS ${PROJECT_SOURCE_DIR}/../cbuild/lib ${PROJECT_SOURCE_DIR}/../libs/apto/cbuild/lib)
@@ -380,11 +378,6 @@ ENDIF(NOT TARGET aptostatic)
 
 # Create the static library from the master source list
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS} ${APTO_INCLUDE_DIR})
-
-get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-foreach(dir ${dirs})
-     message(STATUS "dir='${dir}'")
-endforeach()
 
 
 ADD_LIBRARY(avida-core ${AVIDA_CORE_SOURCES})
@@ -442,6 +435,27 @@ IF(AVD_ENABLE_TCMALLOC)
 ENDIF(AVD_ENABLE_TCMALLOC)
 
 
+# Handle the pthread library
+# MSVC and EMSCRIPTEN cannot use the pthread library
+# ------------------------------------------------------------------------------
+IF(MSVC OR EMSCRIPTEN)
+   SET(AVD_ENABLE_PTHREAD FALSE)
+ELSE(MSVC OR EMSCRIPTEN)
+   SET(AVD_ENABLE_PTHREAD TRUE)
+ENDIF(MSVC OR EMSCRIPTEN)
+
+
+# Emscripten uses an embedded file system; so configuration files need to
+# be included at executable link time.
+IF(EMSCRIPTEN)
+  IF($ENV{EMS_EMBED_DIR})
+     SET(EMS_AVIDA_EMBED_DIR "$ENV(EMS_EMBED_DIR)")
+  ELSE($ENV{EMS_EMBED_DIR})
+     SET(EMS_AVIDA_EMBED_DIR "../../avida-core/support/config/")
+  ENDIF($ENV{EMS_EMBED_DIR})
+ENDIF(EMSCRIPTEN)
+
+
 
 # Target Processing
 # - For each enabled target, process its build instructions.  Must occur after
@@ -457,13 +471,18 @@ IF(AVD_CMDLINE)
   SOURCE_GROUP(target\\avida FILES ${AVIDA_CMDLINE_SOURCES})
   ADD_EXECUTABLE(avida ${AVIDA_CMDLINE_SOURCES})
 
-  SET(AVIDA_CMDLINE_LIBS aptostatic avida-core aptostatic)  
+  SET(AVIDA_CMDLINE_LIBS avida-core aptostatic)  
   IF(AVD_ENABLE_TCMALLOC)
     LIST(APPEND AVIDA_CMDLINE_LIBS tcmalloc-1.4)
   ENDIF(AVD_ENABLE_TCMALLOC)  
-  IF(NOT MSVC AND NOT EMSCRIPTEN)
+  IF(AVD_ENABLE_PTHREAD)
     LIST(APPEND AVIDA_CMDLINE_LIBS pthread)
-  ENDIF(NOT MSVC AND NOT EMSCRIPTEN)
+  ENDIF(AVD_ENABLE_PTHREAD)
+
+  # We need to add some information at link time for embedded files
+  # and also make sure that allow our memory to grow
+  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --embed-file ${EMS_AVIDA_EMBED_DIR}@/ -s ALLOW_MEMORY_GROWTH=1")
+
   TARGET_LINK_LIBRARIES(avida ${AVIDA_CMDLINE_LIBS})
   
   INSTALL_TARGETS(/work avida)
@@ -517,9 +536,9 @@ IF(AVD_GUI_NCURSES)
     ADD_EXECUTABLE(avida-viewer ${AVIDA_VIEWER_SOURCES})
     
     SET(AVIDA_VIEWER_LIBS avida-core aptostatic ${NCURSES_LIBRARY})
-    IF(NOT MSVC)
+    IF(AVD_ENABLE_PTHREAD)
       LIST(APPEND AVIDA_VIEWER_LIBS pthread)
-    ENDIF(NOT MSVC)
+    ENDIF(AVD_ENABLE_PTHREAD)
     IF(AVD_ENABLE_TCMALLOC)
       LIST(APPEND AVIDA_VIEWER_LIBS tcmalloc-1.4)
     ENDIF(AVD_ENABLE_TCMALLOC)
@@ -565,9 +584,9 @@ IF(AVD_GUI_PROTOTYPE_TEXT)
     ADD_EXECUTABLE(avida-text ${AVIDA_TEXT_VIEWER_SOURCES} ${Viewer_SOURCES} ${COREGUI_SOURCES})
     
     SET(AVIDA_TEXT_VIEWER_LIBS avida-core ${NCURSES_LIBRARY})
-    IF(NOT MSVC)
+    IF(AVD_ENABLE_PTHREAD)
       LIST(APPEND AVIDA_TEXT_VIEWER_LIBS pthread)
-    ENDIF(NOT MSVC)
+    ENDIF(AVD_ENABLE_PTHREAD)
     IF(AVD_ENABLE_TCMALLOC)
       LIST(APPEND AVIDA_TEXT_VIEWER_LIBS tcmalloc-1.4)
     ENDIF(AVD_ENABLE_TCMALLOC)
@@ -617,17 +636,27 @@ ENDIF(AVD_UNIT_TESTS)
 # Default Configuration Files
 # - Installed into the work directory alongside selected targets
 # ------------------------------------------------------------------------------
-SET(CFG_FILES_DIR support/config)
-SET(CFG_FILES
-  ${CFG_FILES_DIR}/analyze.cfg
-  ${CFG_FILES_DIR}/avida.cfg
-  ${CFG_FILES_DIR}/environment.cfg
-  ${CFG_FILES_DIR}/events.cfg
-  ${CFG_FILES_DIR}/instset-heads.cfg
-  ${CFG_FILES_DIR}/instset-heads-sex.cfg
-  ${CFG_FILES_DIR}/instset-transsmt.cfg
-  ${CFG_FILES_DIR}/default-heads.org
-  ${CFG_FILES_DIR}/default-heads-sex.org
-  ${CFG_FILES_DIR}/default-transsmt.org 
-)
+IF(NOT EMSCRIPTEN)
+  SET(CFG_FILES_DIR support/config)
+  SET(CFG_FILES
+      ${CFG_FILES_DIR}/analyze.cfg
+      ${CFG_FILES_DIR}/avida.cfg
+      ${CFG_FILES_DIR}/environment.cfg
+      ${CFG_FILES_DIR}/events.cfg
+      ${CFG_FILES_DIR}/instset-heads.cfg
+      ${CFG_FILES_DIR}/instset-heads-sex.cfg
+      ${CFG_FILES_DIR}/instset-transsmt.cfg
+      ${CFG_FILES_DIR}/default-heads.org
+      ${CFG_FILES_DIR}/default-heads-sex.org
+      ${CFG_FILES_DIR}/default-transsmt.org 
+    )
+ELSE(NOT EMSCRIPTEN)
+   # With optimizations turned off, the *.js.mem file is not generated
+   # Instead, the virtual filesystem is embedded in the executable
+   IF(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+      SET(CFG_FILES
+         ${CMAKE_BINARY_DIR}/bin/avida.js.mem
+         )
+   ENDIF(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+ENDIF(NOT EMSCRIPTEN)
 INSTALL_FILES(/work FILES ${CFG_FILES})

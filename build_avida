@@ -4,7 +4,6 @@ git submodule init
 git submodule update
 mkdir -p cbuild
 cd cbuild
-rm -f build.log
 
 if [ "$1" == emscripten ]; then
    if [ -z "$EMSCRIPTEN_ROOT_PATH" ]; then
@@ -12,11 +11,10 @@ if [ "$1" == emscripten ]; then
       echo "to the location of the emscripten sdk."
       exit 1
    fi
-   export C_FLAGS="${C_FLAGS} -Wno-warn-absolute-paths --embed-file=../work"
-   script build.log time cmake "${@:2}:" -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT_PATH}/cmake/Modules/Platform/Emscripten.cmake ../
+   cmake "${@:2}:" -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT_PATH}/cmake/Modules/Platform/Emscripten.cmake ..
 else
-   script build.log time cmake "$@" ../
+   cmake "$@" ../
 fi
  
-script -a build.log make -j10 install
+make  -j10 install
 
