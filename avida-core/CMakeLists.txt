@@ -445,17 +445,6 @@ ELSE(MSVC OR EMSCRIPTEN)
 ENDIF(MSVC OR EMSCRIPTEN)
 
 
-# Emscripten uses an embedded file system; so configuration files need to
-# be included at executable link time.
-IF(EMSCRIPTEN)
-  IF($ENV{EMS_EMBED_DIR})
-     SET(EMS_AVIDA_EMBED_DIR "$ENV(EMS_EMBED_DIR)")
-  ELSE($ENV{EMS_EMBED_DIR})
-     SET(EMS_AVIDA_EMBED_DIR "../../avida-core/support/config/")
-  ENDIF($ENV{EMS_EMBED_DIR})
-ENDIF(EMSCRIPTEN)
-
-
 
 # Target Processing
 # - For each enabled target, process its build instructions.  Must occur after
@@ -481,7 +470,9 @@ IF(AVD_CMDLINE)
 
   # We need to add some information at link time for embedded files
   # and also make sure that allow our memory to grow
-  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --embed-file ${EMS_AVIDA_EMBED_DIR}@/ -s ALLOW_MEMORY_GROWTH=1")
+  IF(EMSCRIPTEN)
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --embed-file ${EMS_AVIDA_EMBED_DIR}@/ -s ALLOW_MEMORY_GROWTH=1")
+ ENDIF(EMSCRIPTEN) 
 
   TARGET_LINK_LIBRARIES(avida ${AVIDA_CMDLINE_LIBS})
   

@@ -5,14 +5,27 @@ git submodule update
 mkdir -p cbuild
 cd cbuild
 
-if [ "$1" == emscripten ]; then
+if [ "$1" == "emscripten" ]; then
    if [ -z "$EMSCRIPTEN_ROOT_PATH" ]; then
       echo "Please set the environment variable \$EMSCRIPTEN_ROOT_PATH"
       echo "to the location of the emscripten sdk."
       exit 1
    fi
-   cmake "${@:2}:" -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT_PATH}/cmake/Modules/Platform/Emscripten.cmake ..
-else
+   # Emscripten requires us to know in advance where
+   # our configuration files are located.
+   # Unfortunately, this needs to be *relative* to
+   # the build system's internal directory.
+   # In this case "../../avida-core/support/config"
+   # will point to the default avida configuration files
+   # that are usually installed
+   if [ -z "${EMS_EMBED_DIR}" ]; then
+      EMS_EMBED_DIR="../../avida-core/support/config"
+   fi
+   em_cmake_flags=" ${@:2} 
+       -DEMS_AVIDA_EMBED_DIR=${EMS_EMBED_DIR} 
+       -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT_PATH}/cmake/Modules/Platform/Emscripten.cmake "
+   cmake ${em_cmake_flags} ../
+      else
    cmake "$@" ../
 fi
  
