@@ -110,7 +110,7 @@ Usage: %(_testrunner_name)s [options] [testname ...]
     
     -j number [%(cpus)d]
       Set the number of concurrent tests to run. i.e. - the number of CPUs
-      that are availabile.
+      that are available.
       
     -l | --list-tests
       List all available tests and exits.  Tests that will require new
