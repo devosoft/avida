@@ -6,7 +6,7 @@ mkdir -p cbuild
 cd cbuild
 
 if [ "$1" == "emscripten" ]; then
-   if [ -z "$EMSCRIPTEN_ROOT_PATH" ]; then
+   if [ -z "$EMSCRIPTEN" ]; then
       echo "Please set the environment variable \$EMSCRIPTEN_ROOT_PATH"
       echo "to the location of the emscripten sdk."
       exit 1
@@ -23,11 +23,10 @@ if [ "$1" == "emscripten" ]; then
    fi
    em_cmake_flags=" ${@:2} 
        -DEMS_AVIDA_EMBED_DIR=${EMS_EMBED_DIR} 
-       -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT_PATH}/cmake/Modules/Platform/Emscripten.cmake "
+       -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN}/cmake/Modules/Platform/Emscripten.cmake "
    cmake ${em_cmake_flags} ../
-      else
-   cmake "$@" ../
+else 
+   cmake "$[@]" ../
 fi
- 
-make  -j10 install
+make -j 10 install
 

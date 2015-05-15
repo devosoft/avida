@@ -96,7 +96,7 @@ IF(UNIX)
     "-O2 -g ${COMPILER_OPTIMIZATION_FLAGS} ${COMPILER_WARNING_FLAGS} -DDEBUG"
     CACHE STRING "Flags used by the compiler during release builds." FORCE)
   SET(CMAKE_CXX_FLAGS_RELEASE
-    "-O3 ${COMPILER_OPTIMIZATION_FLAGS} ${COMPILER_WARNING_FLAGS} -DNDEBUG"
+    "-O2 ${COMPILER_OPTIMIZATION_FLAGS} ${COMPILER_WARNING_FLAGS} -DNDEBUG"
     CACHE STRING "Flags used by the compiler during release builds." FORCE)
 ENDIF(UNIX)
 
@@ -364,22 +364,6 @@ LIST(APPEND ALL_INC_DIRS ${PROJECT_SOURCE_DIR}/include/public)
 LIST(APPEND ALL_INC_DIRS ${PROJECT_SOURCE_DIR}/include/private)
 
 
-# Locate Apto
-# For some reason emscripten's toolchain is unhappy with the FIND_PATH command; setting manually
-#FIND_PATH(APTO_INCLUDE_DIR apto/core.h PATHS ${PROJECT_SOURCE_DIR}/../libs/apto/include)
-SET(APTO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../libs/apto/include)
-
-IF(NOT TARGET aptostatic)
-  FIND_LIBRARY(APTO_LIBRARY apto PATHS ${PROJECT_SOURCE_DIR}/../cbuild/lib ${PROJECT_SOURCE_DIR}/../libs/apto/cbuild/lib)
-  ADD_LIBRARY(aptostatic STATIC IMPORTED)
-  SET_PROPERTY(TARGET aptostatic PROPERTY IMPORTED_LOCATION "${APTO_LIBRARY}")
-ENDIF(NOT TARGET aptostatic)
-
-
-# Create the static library from the master source list
-INCLUDE_DIRECTORIES(${ALL_INC_DIRS} ${APTO_INCLUDE_DIR})
-
-
 ADD_LIBRARY(avida-core ${AVIDA_CORE_SOURCES})
 IF(WIN32)
   SET_TARGET_PROPERTIES(avida-core PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
@@ -401,6 +385,22 @@ ENDIF(WIN32)
 #IF(WIN32)
 #  SET_TARGET_PROPERTIES(viewershared PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
 #ENDIF(WIN32)
+
+
+# Locate Apto
+# For some reason emscripten's toolchain is unhappy with the FIND_PATH command; setting manually
+#FIND_PATH(APTO_INCLUDE_DIR apto/core.h PATHS ${PROJECT_SOURCE_DIR}/../libs/apto/include)
+SET(APTO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../libs/apto/include)
+
+IF(NOT TARGET aptostatic)
+  FIND_LIBRARY(APTO_LIBRARY apto PATHS ${PROJECT_SOURCE_DIR}/../cbuild/lib ${PROJECT_SOURCE_DIR}/../libs/apto/cbuild/lib)
+  ADD_LIBRARY(aptostatic STATIC IMPORTED)
+  SET_PROPERTY(TARGET aptostatic PROPERTY IMPORTED_LOCATION "${APTO_LIBRARY}")
+ENDIF(NOT TARGET aptostatic)
+
+
+# Create the static library from the master source list
+INCLUDE_DIRECTORIES(${ALL_INC_DIRS} ${APTO_INCLUDE_DIR})
 
 
 # Locate TCMalloc
