@@ -364,32 +364,28 @@ LIST(APPEND ALL_INC_DIRS ${PROJECT_SOURCE_DIR}/include/public)
 LIST(APPEND ALL_INC_DIRS ${PROJECT_SOURCE_DIR}/include/private)
 
 
-ADD_LIBRARY(avida-core ${AVIDA_CORE_SOURCES})
-IF(WIN32)
-  SET_TARGET_PROPERTIES(avida-core PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
-ENDIF(WIN32)
-#ADD_LIBRARY(avida-coreshared SHARED ${AVIDA_CORE_SOURCES})
-#SET_TARGET_PROPERTIES(avida-coreshared PROPERTIES OUTPUT_NAME avida-core)
-#TARGET_LINK_LIBRARIES(avida-coreshared aptoshared)
-#IF(WIN32)
-#  SET_TARGET_PROPERTIES(avida-coreshared PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
-#ENDIF(WIN32)
-
-ADD_LIBRARY(viewer ${VIEWERCORE_SOURCES})
-IF(WIN32)
+# Setup libraries.  Emscripten and Windows need some special
+# handling. 
+IF (NOT EMSCRIPTEN)
+   ADD_LIBRARY(avida-core ${AVIDA_CORE_SOURCES})
+   ADD_LIBRARY(viewer ${VIEWERCORE_SOURCES})
+  IF(WIN32)
+    SET_TARGET_PROPERTIES(avida-core PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
   SET_TARGET_PROPERTIES(viewer PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
-ENDIF(WIN32)
-#ADD_LIBRARY(viewershared SHARED ${VIEWERCORE_SOURCES})
-#SET_TARGET_PROPERTIES(viewershared PROPERTIES OUTPUT_NAME viewer)
-#TARGET_LINK_LIBRARIES(viewershared aptoshared)
-#IF(WIN32)
-#  SET_TARGET_PROPERTIES(viewershared PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
-#ENDIF(WIN32)
+  ENDIF(WIN32)
+ELSE (NOT EMSCRIPTEN)
+   # Do not make a true library when using emscripten.
+   # There are problems with the current LLVM toolchain
+   # and emscripten when trying to handle files with the
+   # same name.  Instead link them when the target executable
+   # is requested.
+   ADD_LIBRARY(avida_core_objs OBJECT ${AVIDA_CORE_SOURCES})
+   ADD_LIBRARY(viewer_objs OBJECT ${VIEWERCORE_SOURCES})
+ENDIF (NOT EMSCRIPTEN)
+
 
 
 # Locate Apto
-# For some reason emscripten's toolchain is unhappy with the FIND_PATH command; setting manually
-#FIND_PATH(APTO_INCLUDE_DIR apto/core.h PATHS ${PROJECT_SOURCE_DIR}/../libs/apto/include)
 SET(APTO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../libs/apto/include)
 
 IF(NOT TARGET aptostatic)
@@ -458,23 +454,26 @@ IF(AVD_CMDLINE)
   SET(AVIDA_CMDLINE_DIR source/targets/avida)
   SET(AVIDA_CMDLINE_SOURCES ${AVIDA_CMDLINE_DIR}/primitive.cc ${AVIDA_CMDLINE_DIR}/Avida2Driver.cc)
   SOURCE_GROUP(target\\avida FILES ${AVIDA_CMDLINE_SOURCES})
-  ADD_EXECUTABLE(avida ${AVIDA_CMDLINE_SOURCES})
-
-  SET(AVIDA_CMDLINE_LIBS avida-core aptostatic)  
-  IF(AVD_ENABLE_TCMALLOC)
-    LIST(APPEND AVIDA_CMDLINE_LIBS tcmalloc-1.4)
-  ENDIF(AVD_ENABLE_TCMALLOC)  
-  IF(AVD_ENABLE_PTHREAD)
-    LIST(APPEND AVIDA_CMDLINE_LIBS pthread)
-  ENDIF(AVD_ENABLE_PTHREAD)
-
-  # We need to add some information at link time for embedded files
-  # and also make sure that allow our memory to grow
-  IF(EMSCRIPTEN)
-    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --embed-file ${EMS_AVIDA_EMBED_DIR}@/ -s ALLOW_MEMORY_GROWTH=1")
- ENDIF(EMSCRIPTEN) 
-
-  TARGET_LINK_LIBRARIES(avida ${AVIDA_CMDLINE_LIBS})
+  
+  IF (NOT EMSCRIPTEN)
+    SET(AVIDA_CMDLINE_LIBS avida-core aptostatic)  
+    IF(AVD_ENABLE_TCMALLOC)
+      LIST(APPEND AVIDA_CMDLINE_LIBS tcmalloc-1.4)
+    ENDIF(AVD_ENABLE_TCMALLOC)  
+    IF(AVD_ENABLE_PTHREAD)
+      LIST(APPEND AVIDA_CMDLINE_LIBS pthread)
+    ENDIF(AVD_ENABLE_PTHREAD)
+    ADD_EXECUTABLE(avida ${AVIDA_CMDLINE_SOURCES})
+    TARGET_LINK_LIBRARIES(avida ${AVIDA_CMDLINE_LIBS})
+  ELSE (NOT EMSCRIPTEN)
+     SET(CMAKE_EXE_LINKER_FLAGS 
+        "${CMAKE_EXE_LINKER_FLAGS} --embed-file ${EMS_AVIDA_EMBED_DIR}@/ -s ALLOW_MEMORY_GROWTH=1")
+     ADD_EXECUTABLE(avida 
+                    ${AVIDA_CMDLINE_SOURCES}
+                    $<TARGET_OBJECTS:apto_objs>
+                    $<TARGET_OBJECTS:avida_core_objs>
+                   )
+   ENDIF (NOT EMSCRIPTEN)
   
   INSTALL_TARGETS(/work avida)
 ENDIF(AVD_CMDLINE)

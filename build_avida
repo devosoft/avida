@@ -7,8 +7,8 @@ cd cbuild
 
 if [ "$1" == "emscripten" ]; then
    if [ -z "$EMSCRIPTEN" ]; then
-      echo "Please set the environment variable \$EMSCRIPTEN_ROOT_PATH"
-      echo "to the location of the emscripten sdk."
+      echo "Emscripten's environment variables are not properly set."
+      echo "Unable to build."
       exit 1
    fi
    # Emscripten requires us to know in advance where
@@ -26,7 +26,7 @@ if [ "$1" == "emscripten" ]; then
        -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN}/cmake/Modules/Platform/Emscripten.cmake "
    cmake ${em_cmake_flags} ../
 else 
-   cmake "$[@]" ../
+   cmake "$@" ../
 fi
 make -j 10 install
 

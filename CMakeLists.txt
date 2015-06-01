@@ -22,6 +22,7 @@ IF(NOT WIN32 AND NOT EMSCRIPTEN)
 ENDIF(NOT WIN32 AND NOT EMSCRIPTEN)
 ADD_SUBDIRECTORY(avida-core)
 
+
 # Default location for installed software/configs/ docs is the build directory.
 SET(CMAKE_INSTALL_PREFIX
   "${PROJECT_BINARY_DIR}"
