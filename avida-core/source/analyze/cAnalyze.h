@@ -282,6 +282,7 @@ private:
   void AnalyzeFitnessLandscapeTwoSites(cString cur_string);
   void AnalyzeComplexityTwoSites(cString cur_string);
   void AnalyzeKnockouts(cString cur_string);
+  void GetSkeletons(cString cur_string);
   void AnalyzePopComplexity(cString cur_string);
   void AnalyzeMateSelection(cString cur_string);
   void AnalyzeComplexityDelta(cString cur_string);

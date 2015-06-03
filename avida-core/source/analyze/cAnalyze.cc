@@ -4619,6 +4619,184 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
   }
 }
 
+void cAnalyze::GetSkeletons(cString cur_string)
+{
+  cout << "Turning population into skeletons of only informative sites..." << endl;
+  
+  
+  int max_knockouts = 1;
+  if (cur_string.GetSize() > 0) max_knockouts = cur_string.PopWord().AsInt();
+  
+  
+  
+  // Loop through all of the genotypes in this batch...
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * genotype = NULL;
+  while ((genotype = batch_it.Next()) != NULL) {
+    if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "  Knockout: " << genotype->GetName() << endl;
+    
+    // Calculate the stats for the genotype we're working with...
+    genotype->Recalculate(m_ctx);
+    const double base_fitness = genotype->GetFitness();
+    
+    const int max_line = genotype->GetLength();
+    
+    const Genome& base_genome = genotype->GetGenome();
+    ConstInstructionSequencePtr base_seq_p;
+    ConstGeneticRepresentationPtr rep_p = base_genome.Representation();
+    base_seq_p.DynamicCastFrom(rep_p);
+    const InstructionSequence& base_seq = *base_seq_p;
+    
+    Genome mod_genome(base_genome);
+    InstructionSequencePtr mod_seq_p;
+    GeneticRepresentationPtr mod_rep_p = mod_genome.Representation();
+    mod_seq_p.DynamicCastFrom(mod_rep_p);
+    InstructionSequence& mod_seq = *mod_seq_p;
+    
+    Instruction null_inst = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).ActivateNullInst();
+    Apto::Array<int> ko_effect(max_line);
+    // Loop through all the lines of code, testing the removal of each.
+    for (int line_num = 0; line_num < max_line; line_num++) {
+      // Save a copy of the current instruction and replace it with "NULL"
+
+      int cur_inst = base_seq[line_num].GetOp();
+      mod_seq[line_num] = null_inst;
+      cAnalyzeGenotype ko_genotype(m_world, mod_genome);
+      ko_genotype.Recalculate(m_ctx);
+      
+      double ko_fitness = ko_genotype.GetFitness();
+      // Save a copy of the current instruction and replace it with "NULL"
+      
+      if (ko_fitness == 0.0) {
+	ko_effect[line_num] = -2;
+      } else if (ko_fitness < base_fitness) {
+	ko_effect[line_num] = -1;
+      } else if (ko_fitness == base_fitness) {
+	ko_effect[line_num] = 0;
+      } else if (ko_fitness > base_fitness) {
+	ko_effect[line_num] = 1;
+      } else {
+	cerr << "ERROR: illegal state in AnalyzeKnockouts()" << endl;
+      }
+      
+      
+      
+      if (ko_fitness < base_fitness) {
+        // If the knockout affected fitness, keep the instruction, otherwise the site is non-informative and therefore stays null.
+        mod_seq[line_num].SetOp(cur_inst);
+      }
+
+    }
+    genotype->SetGenome(mod_genome);
+    
+    //We can't really make skeletons based on double knockouts, however it will warn you if there appears to be an effect from a double knockout.
+    if (max_knockouts > 1) {
+
+      for (int line1 = 0; line1 < max_line; line1++) {
+        if (mod_seq[line1].GetOp() == null_inst.GetOp()) continue;
+	for (int line2 = line1+1; line2 < max_line; line2++) {
+          if (mod_seq[line2].GetOp() == null_inst.GetOp()) continue;
+          //Need to reload the genome from the organism to make sure we get the correct partial skeleton
+          const Genome& base_genome = genotype->GetGenome();
+          ConstInstructionSequencePtr base_seq_p;
+          ConstGeneticRepresentationPtr rep_p = base_genome.Representation();
+          base_seq_p.DynamicCastFrom(rep_p);
+          const InstructionSequence& base_seq = *base_seq_p;
+    
+          Genome mod_genome(base_genome);
+          InstructionSequencePtr mod_seq_p;
+          GeneticRepresentationPtr mod_rep_p = mod_genome.Representation();
+          mod_seq_p.DynamicCastFrom(mod_rep_p);
+          InstructionSequence& mod_seq = *mod_seq_p;
+          
+          int cur_inst1 = base_seq[line1].GetOp();
+          int cur_inst2 = base_seq[line2].GetOp();
+          mod_seq[line1] = null_inst;
+          mod_seq[line2] = null_inst;
+          cAnalyzeGenotype ko_genotype(m_world, mod_genome);
+          ko_genotype.Recalculate(m_ctx);
+          
+          double ko_fitness = ko_genotype.GetFitness();
+
+          
+          // If both individual knockouts are both harmful, but in combination
+          // they are neutral or even beneficial, they should not count as 
+          // information.
+          if (ko_fitness >= base_fitness &&
+              ko_effect[line1] < 0 && ko_effect[line2] < 0) {
+	    cout << "Warning: individual knockouts harmful, but combination not, removing both" << endl;
+            //Together they are non-informative so knock them both out
+            genotype->SetGenome(mod_genome);
+            
+          }
+
+          // If the individual knockouts are both neutral (or beneficial?),
+          // but in combination they are harmful, they are likely redundant
+          // to each other.  For now, count them both as information.
+          else if (ko_fitness < base_fitness &&
+		   ko_effect[line1] >= 0 && ko_effect[line2] >= 0) {
+	    //This should never actually happen because redundant instructions should have been removed during the single knockouts
+	    cout << "Warning: redundant instructions found, which shouldn't be the case!" << endl;
+	    //To keep from being random, the first instruction is knocked out and the second kept.
+	    mod_seq[line2].SetOp(cur_inst2);
+	    genotype->SetGenome(mod_genome);
+          }else {
+            //These sites are both informative together so keep them
+            // Reset the mod_genome back to the original sequence.
+            mod_seq[line1].SetOp(cur_inst1);
+            mod_seq[line2].SetOp(cur_inst2);
+          }
+        }
+      }
+      
+      
+      //Need to reload the genome from the organism to make sure we get the correct partial skeleton
+
+      const Genome& base_genome = genotype->GetGenome();
+      ConstInstructionSequencePtr base_seq_p;
+      ConstGeneticRepresentationPtr rep_p = base_genome.Representation();
+      base_seq_p.DynamicCastFrom(rep_p);
+      const InstructionSequence& base_seq = *base_seq_p;
+    
+      Genome mod_genome(base_genome);
+      InstructionSequencePtr mod_seq_p;
+      GeneticRepresentationPtr mod_rep_p = mod_genome.Representation();
+      mod_seq_p.DynamicCastFrom(mod_rep_p);
+      InstructionSequence& mod_seq = *mod_seq_p;
+      
+      // Loop through all the lines of code, testing the removal of each. We're doing this again because there is a possibility new single knockouts will become clear after double knockouts removed.
+      for (int line_num = 0; line_num < max_line; line_num++) {
+        if (mod_seq[line_num].GetOp() == null_inst.GetOp()) continue;
+        // Save a copy of the current instruction and replace it with "NULL"
+        genotype->Recalculate(m_ctx);
+        const double base_fitness = genotype->GetFitness();
+        int cur_inst = base_seq[line_num].GetOp();
+        mod_seq[line_num] = null_inst;
+        cAnalyzeGenotype ko_genotype(m_world, mod_genome);
+        ko_genotype.Recalculate(m_ctx);
+      
+        double ko_fitness = ko_genotype.GetFitness();
+	// Save a copy of the current instruction and replace it with "NULL"
+
+        if (ko_fitness < base_fitness) {
+          // If the knockout affected fitness, keep the instruction, otherwise the site is non-informative and therefore stays null.
+          mod_seq[line_num].SetOp(cur_inst);
+          
+        }else cout << "Additional single knockout found after double knockouts removed! line: "<< line_num << endl;
+        genotype->SetGenome(mod_genome);
+
+      }
+    }
+    
+
+
+
+   
+    
+  }
+}
+
+
 
 void cAnalyze::CommandMapTasks(cString cur_string)
 {
@@ -9834,6 +10012,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("ANALYZE_FITNESS_TWO_SITES", &cAnalyze::AnalyzeFitnessLandscapeTwoSites);
   AddLibraryDef("ANALYZE_COMPLEXITY_TWO_SITES", &cAnalyze::AnalyzeComplexityTwoSites);
   AddLibraryDef("ANALYZE_KNOCKOUTS", &cAnalyze::AnalyzeKnockouts);
+  AddLibraryDef("GET_SKELETONS", &cAnalyze::GetSkeletons);
   AddLibraryDef("ANALYZE_POP_COMPLEXITY", &cAnalyze::AnalyzePopComplexity);
   AddLibraryDef("MAP_DEPTH", &cAnalyze::CommandMapDepth);
   // (Untested) AddLibraryDef("PAIRWISE_ENTROPY", &cAnalyze::CommandPairwiseEntropy); 

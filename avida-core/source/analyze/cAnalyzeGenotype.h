@@ -294,6 +294,7 @@ public:
   cWorld* GetWorld() { return m_world; }
 
   Genome& GetGenome() { return m_genome; }
+  void SetGenome(Genome& genome) {m_genome = genome;};
   const Genome& GetGenome() const { return m_genome; }
   const cString& GetName() const { return name; }
   const cString& GetAlignedSequence() const { return aligned_sequence; }
