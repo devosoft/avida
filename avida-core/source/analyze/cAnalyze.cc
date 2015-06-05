@@ -4992,7 +4992,7 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
           const InstructionSequence& coal_seq = *coal_seq_p;
 
           if (cur_seq == coal_seq){
-            lineage_map[coal_seq]++;
+            lineage1_map[coal_seq]++;
             found = true;
             break;
           }
@@ -5003,9 +5003,51 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
   }
 
   // Same for second file
-  // Count number of significant lineages that are in first file but not second (ie are new!)
-  // Repeat for all the updates
   
+  std::map<InstructionSequence, int> lineage2_map;
+
+  for (std::vector<vector<cAnalyzeGenotype> >::iterator previous_lineage = previous_lineages.begin(); previous_lineage != previous_lineages.end(); ++previous_lineage){
+
+    for (std::vector<cAnalyzeGenotype>::iterator prev_genotype = previous_lineage->begin(); prev_genotype != previous_lineage->end(); ++prev_genotype)
+    {
+      const Genome& prev_genome = prev_genotype->GetGenome();
+      ConstInstructionSequencePtr prev_seq_p;
+      ConstGeneticRepresentationPtr prev_rep_p = prev_genome.Representation();
+      prev_seq_p.DynamicCastFrom(prev_rep_p);
+      const InstructionSequence& prev_seq = *prev_seq_p;
+      bool found = false;
+      
+      for (std::vector<cAnalyzeGenotype>::iterator coal_genotype = current_coal_genotypes.begin(); coal_genotype != previous_coal_genotypes.end(); ++coal_genotype)
+      {
+        if (coal_genotype->GetNumCPUs() > 0)
+        {
+          const Genome& coal_genome = coal_genotype->GetGenome();
+          ConstInstructionSequencePtr coal_seq_p;
+          ConstGeneticRepresentationPtr coal_rep_p = coal_genome.Representation();
+          coal_seq_p.DynamicCastFrom(coal_rep_p);
+          const InstructionSequence& coal_seq = *coal_seq_p;
+
+          if (prev_seq == coal_seq){
+            lineage2_map[coal_seq]++;
+            found = true;
+            break;
+          }
+        }
+      }
+      if (found) break;
+    }
+  }
+  // Count number of significant lineages that are in first file but not second (ie are new!)
+  int sig_lineages = 0;
+  for (std::map<InstructionSequence, int>::iterator key_it = lineage1_map.begin(); key_it != lineage1_map.end(); ++key_it)
+  {
+    if (lineage2_map.count(key_it->first)==0)
+    {
+      sig_lineages++;
+    }
+  }
+  // TODO: Have it then go back for every timepoint based on the gap between the two files
+  cout << "Number of new significant lineages " << sig_lineages << endl;
 }
 
 
