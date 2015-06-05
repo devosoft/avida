@@ -4796,6 +4796,259 @@ void cAnalyze::GetSkeletons(cString cur_string)
   }
 }
 
+std::vector<cAnalyzeGenotype> cAnalyze::LoadDetailFileAsVector(cString cur_string)
+{
+  std::vector<cAnalyzeGenotype> genotypes;
+  cString filename = cur_string.PopWord();
+  
+  cout << "Loading: " << filename << endl;
+  
+  cInitFile input_file(filename, m_world->GetWorkingDir());
+  if (!input_file.WasOpened()) {
+    const cUserFeedback& feedback = input_file.GetFeedback();
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
+    if (exit_on_error) exit(1);
+  }
+  
+  const cString filetype = input_file.GetFiletype();
+  if (filetype != "population_data" &&  // Deprecated
+      filetype != "genotype_data") {
+    cerr << "error: cannot load files of type \"" << filetype << "\"." << endl;
+    if (exit_on_error) exit(1);
+  }
+  
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Loading file of type: " << filetype << endl;
+  }
+  
+  
+  // Construct a linked list of data types that can be loaded...
+  tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
+  tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
+  cUserFeedback feedback;
+  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(input_file.GetFormat(), output_list, &feedback);
+  
+  for (int i = 0; i < feedback.GetNumMessages(); i++) {
+    switch (feedback.GetMessageType(i)) {
+      case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+      case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
+      default: break;
+    };
+    cerr << feedback.GetMessage(i) << endl;
+  }  
+  
+  if (feedback.GetNumErrors()) return genotypes;
+  
+  bool id_inc = input_file.GetFormat().HasString("id");
+  
+  // Setup the genome...
+  const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+  HashPropertyMap props;
+  cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
+  Genome default_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(1)));
+  int load_count = 0;
+  
+  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
+    cString cur_line = input_file.GetLine(line_id);
+    
+    cAnalyzeGenotype* genotype = new cAnalyzeGenotype(m_world, default_genome);
+    
+    output_it.Reset();
+    tDataEntryCommand<cAnalyzeGenotype>* data_command = NULL;
+    while ((data_command = output_it.Next()) != NULL) {
+      data_command->SetValue(genotype, cur_line.PopWord());
+    }
+    
+    // Give this genotype a name.  Base it on the ID if possible.
+    if (id_inc == false) {
+      cString name = cStringUtil::Stringf("org-%d", load_count++);
+      genotype->SetName(name);
+    }
+    else {
+      cString name = cStringUtil::Stringf("org-%d", genotype->GetID());
+      genotype->SetName(name);
+    }
+    
+    // Add this genotype to the proper batch.
+    genotypes.push_back(*genotype);
+  }
+  return genotypes;
+}
+
+std::vector<std::vector<cAnalyzeGenotype> > cAnalyze::MakeLineageVector(std::vector<cAnalyzeGenotype> current_genotypes)
+{
+  std::vector<std::vector<cAnalyzeGenotype> > lineages;
+
+  for (int i=0; i < (int)current_genotypes.size(); i++)
+  {
+    if (current_genotypes[i].GetNumCPUs() > 0)
+    {
+      cAnalyzeGenotype* found_gen = &current_genotypes[i];
+  
+      // Otherwise, trace back through the id numbers to mark all of those
+      // in the ancestral lineage...
+  
+      // Construct a list of genotypes found...
+      
+      std::vector<cAnalyzeGenotype> found_list;
+      found_list.push_back(*found_gen);
+      int next_id = found_gen->GetParentID();
+      bool found = true;
+      while (found == true) {
+        found = false;
+        
+        for (std::vector<cAnalyzeGenotype>::iterator found_gen = current_genotypes.begin(); found_gen != current_genotypes.end(); ++found_gen) {
+          if (found_gen->GetID() == next_id) {
+            found_list.push_back(*found_gen);
+            next_id = found_gen->GetParentID();
+            found = true;
+            break;
+          }
+        }
+      }
+      lineages.push_back(found_list);
+    }
+  }
+  return lineages;
+}
+
+
+void cAnalyze::CountNewSignificantLineages(cString cur_string)
+{
+  // Take in two detail files to compare (or maybe a range and interval of the detail files for the whole run)
+
+  //CHANGE THIS
+  int coalesence = 4200;
+
+  // LOAD
+  cString first_file_update = cur_string.PopWord();
+  cString first_file = "detail-";
+  first_file += first_file_update;
+  first_file += ".spop";
+  
+  cString second_file_update = cur_string.PopWord();
+  cString second_file = "detail-";
+  second_file += second_file_update;
+  second_file += ".spop";
+  
+  std::vector<cAnalyzeGenotype> current_genotypes = LoadDetailFileAsVector(first_file);
+  
+  std::vector<cAnalyzeGenotype> previous_genotypes = LoadDetailFileAsVector(second_file);
+
+  // For both detail files (most recent) go through each genotype of live population, find its lineage ( in reverse chronological order)
+  std::vector<std::vector<cAnalyzeGenotype> > current_lineages = MakeLineageVector(current_genotypes);
+  std::vector<std::vector<cAnalyzeGenotype> > previous_lineages = MakeLineageVector(previous_genotypes);
+
+  // Figure out the coalescence time for each and try grabbing those detail files, throw error if they aren't there
+  int interval = atoi(first_file_update) - atoi(first_file_update);
+  int first_file_coalescence = atoi(first_file_update) - coalesence;
+  first_file_coalescence -= (first_file_coalescence % interval);
+
+  cString first_file_coalescence_name = "detail-";
+  first_file_coalescence_name += first_file_coalescence;
+  first_file_coalescence_name += ".spop";
+
+  std::vector<cAnalyzeGenotype> current_coal_genotypes = LoadDetailFileAsVector(first_file_coalescence_name);
+
+  int second_file_coalescence = atoi(second_file_update) - coalesence;
+  second_file_coalescence -= (second_file_coalescence % interval);
+
+  cString second_file_coalescence_name = "detail-";
+  second_file_coalescence_name += second_file_coalescence;
+  second_file_coalescence_name += ".spop";
+
+  std::vector<cAnalyzeGenotype> previous_coal_genotypes = LoadDetailFileAsVector(second_file_coalescence_name);
+
+  // Find lineage's most recent parent in the coalescnece time detail file and save to hash (skipping if it is already in the hash)
+
+  std::map<InstructionSequence, int> lineage1_map;
+
+  for (std::vector<vector<cAnalyzeGenotype> >::iterator current_lineage = current_lineages.begin(); current_lineage != current_lineages.end(); ++current_lineage){
+
+    for (std::vector<cAnalyzeGenotype>::iterator curr_genotype = current_lineage->begin(); curr_genotype != current_lineage->end(); ++curr_genotype)
+    {
+      const Genome& cur_genome = curr_genotype->GetGenome();
+      ConstInstructionSequencePtr cur_seq_p;
+      ConstGeneticRepresentationPtr cur_rep_p = cur_genome.Representation();
+      cur_seq_p.DynamicCastFrom(cur_rep_p);
+      const InstructionSequence& cur_seq = *cur_seq_p;
+      bool found = false;
+      
+      for (std::vector<cAnalyzeGenotype>::iterator coal_genotype = current_coal_genotypes.begin(); coal_genotype != current_coal_genotypes.end(); ++coal_genotype)
+      {
+        if (coal_genotype->GetNumCPUs() > 0)
+        {
+          const Genome& coal_genome = coal_genotype->GetGenome();
+          ConstInstructionSequencePtr coal_seq_p;
+          ConstGeneticRepresentationPtr coal_rep_p = coal_genome.Representation();
+          coal_seq_p.DynamicCastFrom(coal_rep_p);
+          const InstructionSequence& coal_seq = *coal_seq_p;
+
+          if (cur_seq == coal_seq){
+            lineage1_map[coal_seq]++;
+            found = true;
+            break;
+          }
+        }
+      }
+      if (found) break;
+    }
+  }
+
+  // Same for second file
+  
+  std::map<InstructionSequence, int> lineage2_map;
+
+  for (std::vector<vector<cAnalyzeGenotype> >::iterator previous_lineage = previous_lineages.begin(); previous_lineage != previous_lineages.end(); ++previous_lineage){
+
+    for (std::vector<cAnalyzeGenotype>::iterator prev_genotype = previous_lineage->begin(); prev_genotype != previous_lineage->end(); ++prev_genotype)
+    {
+      const Genome& prev_genome = prev_genotype->GetGenome();
+      ConstInstructionSequencePtr prev_seq_p;
+      ConstGeneticRepresentationPtr prev_rep_p = prev_genome.Representation();
+      prev_seq_p.DynamicCastFrom(prev_rep_p);
+      const InstructionSequence& prev_seq = *prev_seq_p;
+      bool found = false;
+      
+      for (std::vector<cAnalyzeGenotype>::iterator coal_genotype = current_coal_genotypes.begin(); coal_genotype != previous_coal_genotypes.end(); ++coal_genotype)
+      {
+        if (coal_genotype->GetNumCPUs() > 0)
+        {
+          const Genome& coal_genome = coal_genotype->GetGenome();
+          ConstInstructionSequencePtr coal_seq_p;
+          ConstGeneticRepresentationPtr coal_rep_p = coal_genome.Representation();
+          coal_seq_p.DynamicCastFrom(coal_rep_p);
+          const InstructionSequence& coal_seq = *coal_seq_p;
+
+          if (prev_seq == coal_seq){
+            lineage2_map[coal_seq]++;
+            found = true;
+            break;
+          }
+        }
+      }
+      if (found) break;
+    }
+  }
+  // Count number of significant lineages that are in first file but not second (ie are new!)
+  int sig_lineages = 0;
+  for (std::map<InstructionSequence, int>::iterator key_it = lineage1_map.begin(); key_it != lineage1_map.end(); ++key_it)
+  {
+    if (lineage2_map.count(key_it->first)==0)
+    {
+      sig_lineages++;
+    }
+  }
+  // TODO: Have it then go back for every timepoint based on the gap between the two files
+  cout << "Number of new significant lineages " << sig_lineages << endl;
+}
 
 
 void cAnalyze::CommandMapTasks(cString cur_string)
@@ -10013,6 +10266,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("ANALYZE_COMPLEXITY_TWO_SITES", &cAnalyze::AnalyzeComplexityTwoSites);
   AddLibraryDef("ANALYZE_KNOCKOUTS", &cAnalyze::AnalyzeKnockouts);
   AddLibraryDef("GET_SKELETONS", &cAnalyze::GetSkeletons);
+  AddLibraryDef("COUNT_NEW_SIG_LINEAGES", &cAnalyze::CountNewSignificantLineages);
   AddLibraryDef("ANALYZE_POP_COMPLEXITY", &cAnalyze::AnalyzePopComplexity);
   AddLibraryDef("MAP_DEPTH", &cAnalyze::CommandMapDepth);
   // (Untested) AddLibraryDef("PAIRWISE_ENTROPY", &cAnalyze::CommandPairwiseEntropy); 
