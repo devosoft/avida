@@ -271,7 +271,7 @@ public:
   void SetParentDist(int _dist) { parent_dist = _dist; }
   void SetAncestorDist(int _dist) { ancestor_dist = _dist; }
   void SetLineageLabel(int _label) { lineage_label = _label; }
-
+  void SetGenome(Genome genome){m_genome = genome;}
   void SetMatingType(int _mating_type) { m_mating_type = _mating_type; } //@CHC
   void SetMatePreference(int _mate_preference) { m_mate_preference = _mate_preference; } //@CHC
   void SetMatingDisplayA(int _mating_display_a) { m_mating_display_a = _mating_display_a; } //@CHC

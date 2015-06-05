@@ -4619,6 +4619,395 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
   }
 }
 
+void cAnalyze::GetSkeletons(cString cur_string)
+{
+  cout << "Turning population into skeletons of only informative sites..." << endl;
+  
+  
+  int max_knockouts = 1;
+  if (cur_string.GetSize() > 0) max_knockouts = cur_string.PopWord().AsInt();
+  
+  
+  
+  // Loop through all of the genotypes in this batch...
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * genotype = NULL;
+  while ((genotype = batch_it.Next()) != NULL) {
+    if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "  Knockout: " << genotype->GetName() << endl;
+    
+    // Calculate the stats for the genotype we're working with...
+    genotype->Recalculate(m_ctx);
+    const double base_fitness = genotype->GetFitness();
+    
+    const int max_line = genotype->GetLength();
+    
+    const Genome& base_genome = genotype->GetGenome();
+    ConstInstructionSequencePtr base_seq_p;
+    ConstGeneticRepresentationPtr rep_p = base_genome.Representation();
+    base_seq_p.DynamicCastFrom(rep_p);
+    const InstructionSequence& base_seq = *base_seq_p;
+    
+    Genome mod_genome(base_genome);
+    InstructionSequencePtr mod_seq_p;
+    GeneticRepresentationPtr mod_rep_p = mod_genome.Representation();
+    mod_seq_p.DynamicCastFrom(mod_rep_p);
+    InstructionSequence& mod_seq = *mod_seq_p;
+    
+    Instruction null_inst = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).ActivateNullInst();
+    Apto::Array<int> ko_effect(max_line);
+    // Loop through all the lines of code, testing the removal of each.
+    for (int line_num = 0; line_num < max_line; line_num++) {
+      // Save a copy of the current instruction and replace it with "NULL"
+
+      int cur_inst = base_seq[line_num].GetOp();
+      mod_seq[line_num] = null_inst;
+      cAnalyzeGenotype ko_genotype(m_world, mod_genome);
+      ko_genotype.Recalculate(m_ctx);
+      
+      double ko_fitness = ko_genotype.GetFitness();
+      // Save a copy of the current instruction and replace it with "NULL"
+      
+      if (ko_fitness == 0.0) {
+	ko_effect[line_num] = -2;
+      } else if (ko_fitness < base_fitness) {
+	ko_effect[line_num] = -1;
+      } else if (ko_fitness == base_fitness) {
+	ko_effect[line_num] = 0;
+      } else if (ko_fitness > base_fitness) {
+	ko_effect[line_num] = 1;
+      } else {
+	cerr << "ERROR: illegal state in AnalyzeKnockouts()" << endl;
+      }
+      
+      
+      
+      if (ko_fitness < base_fitness) {
+        // If the knockout affected fitness, keep the instruction, otherwise the site is non-informative and therefore stays null.
+        mod_seq[line_num].SetOp(cur_inst);
+      }
+
+    }
+    genotype->SetGenome(mod_genome);
+    
+    //We can't really make skeletons based on double knockouts, however it will warn you if there appears to be an effect from a double knockout.
+    if (max_knockouts > 1) {
+
+      for (int line1 = 0; line1 < max_line; line1++) {
+        if (mod_seq[line1].GetOp() == null_inst.GetOp()) continue;
+	for (int line2 = line1+1; line2 < max_line; line2++) {
+          if (mod_seq[line2].GetOp() == null_inst.GetOp()) continue;
+          //Need to reload the genome from the organism to make sure we get the correct partial skeleton
+          const Genome& base_genome = genotype->GetGenome();
+          ConstInstructionSequencePtr base_seq_p;
+          ConstGeneticRepresentationPtr rep_p = base_genome.Representation();
+          base_seq_p.DynamicCastFrom(rep_p);
+          const InstructionSequence& base_seq = *base_seq_p;
+    
+          Genome mod_genome(base_genome);
+          InstructionSequencePtr mod_seq_p;
+          GeneticRepresentationPtr mod_rep_p = mod_genome.Representation();
+          mod_seq_p.DynamicCastFrom(mod_rep_p);
+          InstructionSequence& mod_seq = *mod_seq_p;
+          
+          int cur_inst1 = base_seq[line1].GetOp();
+          int cur_inst2 = base_seq[line2].GetOp();
+          mod_seq[line1] = null_inst;
+          mod_seq[line2] = null_inst;
+          cAnalyzeGenotype ko_genotype(m_world, mod_genome);
+          ko_genotype.Recalculate(m_ctx);
+          
+          double ko_fitness = ko_genotype.GetFitness();
+
+          
+          // If both individual knockouts are both harmful, but in combination
+          // they are neutral or even beneficial, they should not count as 
+          // information.
+          if (ko_fitness >= base_fitness &&
+              ko_effect[line1] < 0 && ko_effect[line2] < 0) {
+	    cout << "Warning: individual knockouts harmful, but combination not, removing both" << endl;
+            //Together they are non-informative so knock them both out
+            genotype->SetGenome(mod_genome);
+            
+          }
+
+          // If the individual knockouts are both neutral (or beneficial?),
+          // but in combination they are harmful, they are likely redundant
+          // to each other.  For now, count them both as information.
+          else if (ko_fitness < base_fitness &&
+		   ko_effect[line1] >= 0 && ko_effect[line2] >= 0) {
+	    //This should never actually happen because redundant instructions should have been removed during the single knockouts
+	    cout << "Warning: redundant instructions found, which shouldn't be the case!" << endl;
+	    //To keep from being random, the first instruction is knocked out and the second kept.
+	    mod_seq[line2].SetOp(cur_inst2);
+	    genotype->SetGenome(mod_genome);
+          }else {
+            //These sites are both informative together so keep them
+            // Reset the mod_genome back to the original sequence.
+            mod_seq[line1].SetOp(cur_inst1);
+            mod_seq[line2].SetOp(cur_inst2);
+          }
+        }
+      }
+      
+      
+      //Need to reload the genome from the organism to make sure we get the correct partial skeleton
+
+      const Genome& base_genome = genotype->GetGenome();
+      ConstInstructionSequencePtr base_seq_p;
+      ConstGeneticRepresentationPtr rep_p = base_genome.Representation();
+      base_seq_p.DynamicCastFrom(rep_p);
+      const InstructionSequence& base_seq = *base_seq_p;
+    
+      Genome mod_genome(base_genome);
+      InstructionSequencePtr mod_seq_p;
+      GeneticRepresentationPtr mod_rep_p = mod_genome.Representation();
+      mod_seq_p.DynamicCastFrom(mod_rep_p);
+      InstructionSequence& mod_seq = *mod_seq_p;
+      
+      // Loop through all the lines of code, testing the removal of each. We're doing this again because there is a possibility new single knockouts will become clear after double knockouts removed.
+      for (int line_num = 0; line_num < max_line; line_num++) {
+        if (mod_seq[line_num].GetOp() == null_inst.GetOp()) continue;
+        // Save a copy of the current instruction and replace it with "NULL"
+        genotype->Recalculate(m_ctx);
+        const double base_fitness = genotype->GetFitness();
+        int cur_inst = base_seq[line_num].GetOp();
+        mod_seq[line_num] = null_inst;
+        cAnalyzeGenotype ko_genotype(m_world, mod_genome);
+        ko_genotype.Recalculate(m_ctx);
+      
+        double ko_fitness = ko_genotype.GetFitness();
+	// Save a copy of the current instruction and replace it with "NULL"
+
+        if (ko_fitness < base_fitness) {
+          // If the knockout affected fitness, keep the instruction, otherwise the site is non-informative and therefore stays null.
+          mod_seq[line_num].SetOp(cur_inst);
+          
+        }else cout << "Additional single knockout found after double knockouts removed! line: "<< line_num << endl;
+        genotype->SetGenome(mod_genome);
+
+      }
+    }
+    
+
+
+
+   
+    
+  }
+}
+
+genotype_vector cAnalyze::LoadDetailFileAsVector(cString cur_string)
+{
+  std::vector<cAnalyzeGenotype> genotypes;
+  cString filename = cur_string.PopWord();
+  
+  cout << "Loading: " << filename << endl;
+  
+  cInitFile input_file(filename, m_world->GetWorkingDir());
+  if (!input_file.WasOpened()) {
+    const cUserFeedback& feedback = input_file.GetFeedback();
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
+    if (exit_on_error) exit(1);
+  }
+  
+  const cString filetype = input_file.GetFiletype();
+  if (filetype != "population_data" &&  // Deprecated
+      filetype != "genotype_data") {
+    cerr << "error: cannot load files of type \"" << filetype << "\"." << endl;
+    if (exit_on_error) exit(1);
+  }
+  
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Loading file of type: " << filetype << endl;
+  }
+  
+  
+  // Construct a linked list of data types that can be loaded...
+  tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
+  tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
+  cUserFeedback feedback;
+  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(input_file.GetFormat(), output_list, &feedback);
+  
+  for (int i = 0; i < feedback.GetNumMessages(); i++) {
+    switch (feedback.GetMessageType(i)) {
+      case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+      case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
+      default: break;
+    };
+    cerr << feedback.GetMessage(i) << endl;
+  }  
+  
+  if (feedback.GetNumErrors()) exit(1);
+  
+  bool id_inc = input_file.GetFormat().HasString("id");
+  
+  // Setup the genome...
+  const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+  HashPropertyMap props;
+  cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
+  Genome default_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(1)));
+  int load_count = 0;
+  
+  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
+    cString cur_line = input_file.GetLine(line_id);
+    
+    cAnalyzeGenotype* genotype = new cAnalyzeGenotype(m_world, default_genome);
+    
+    output_it.Reset();
+    tDataEntryCommand<cAnalyzeGenotype>* data_command = NULL;
+    while ((data_command = output_it.Next()) != NULL) {
+      data_command->SetValue(genotype, cur_line.PopWord());
+    }
+    
+    // Give this genotype a name.  Base it on the ID if possible.
+    if (id_inc == false) {
+      cString name = cStringUtil::Stringf("org-%d", load_count++);
+      genotype->SetName(name);
+    }
+    else {
+      cString name = cStringUtil::Stringf("org-%d", genotype->GetID());
+      genotype->SetName(name);
+    }
+    
+    // Add this genotype to the proper batch.
+    genotypes.push_back(*genotype);
+  }
+  return genotypes;
+}
+
+lineage_vector cAnalyze::MakeLineageVector(genotype_vector current_genotypes)
+{
+  lineage_vector lineages;
+
+  for (int i=0; i < (int)current_genotypes.size(); i++)
+  {
+    if (current_genotypes[i].GetNumCPUs() > 0)
+    {
+      cAnalyzeGenotype* found_gen = &current_genotypes[i];
+  
+      // Otherwise, trace back through the id numbers to mark all of those
+      // in the ancestral lineage...
+  
+      // Construct a list of genotypes found...
+      
+      genotype_vector found_list;
+      found_list.push_back(*found_gen);
+      int next_id = found_gen->GetParentID();
+      bool found = true;
+      while (found == true) {
+        found = false;
+        
+        for (genotype_vector::iterator found_gen = current_genotypes.begin(); found_gen != current_genotypes.end(); ++found_gen) {
+          if (found_gen->GetID() == next_id) {
+            found_list.push_back(*found_gen);
+            next_id = found_gen->GetParentID();
+            found = true;
+            break;
+          }
+        }
+      }
+      lineages.push_back(found_list);
+    }
+  }
+  return lineages;
+}
+
+
+void cAnalyze::CountNewSignificantLineages(cString cur_string)
+{
+  // Take in two detail files to compare (or maybe a range and interval of the detail files for the whole run)
+
+  //CHANGE THIS
+  int coalesence = 4200;
+
+  // LOAD
+  cString first_file_update = cur_string.PopWord();
+  cString first_file = "detail-";
+  first_file += first_file_update;
+  first_file += ".spop";
+  
+  cString second_file_update = cur_string.PopWord();
+  cString second_file = "detail-";
+  second_file += second_file_update;
+  second_file += ".spop";
+  
+  genotype_vector current_genotypes = LoadDetailFileAsVector(first_file);
+  
+  genotype_vector previous_genotypes = LoadDetailFileAsVector(second_file);
+
+  // For both detail files (most recent) go through each genotype of live population, find its lineage ( in reverse chronological order)
+  lineage_vector current_lineages = MakeLineageVector(current_genotypes);
+  lineage_vector previous_lineages = MakeLineageVector(previous_genotypes);
+
+  // Figure out the coalescence time for each and try grabbing those detail files, throw error if they aren't there
+  int interval = atoi(first_file_update) - atoi(first_file_update);
+  int first_file_coalescence = atoi(first_file_update) - coalesence;
+  first_file_coalescence -= (first_file_coalescence % interval);
+
+  cString first_file_coalescence_name = "detail-";
+  first_file_coalescence_name += first_file_coalescence;
+  first_file_coalescence_name += ".spop";
+
+  genotype_vector current_coal_genotypes = LoadDetailFileAsVector(first_file_coalescence_name);
+
+  int second_file_coalescence = atoi(second_file_update) - coalesence;
+  second_file_coalescence -= (second_file_coalescence % interval);
+
+  cString second_file_coalescence_name = "detail-";
+  second_file_coalescence_name += second_file_coalescence;
+  second_file_coalescence_name += ".spop";
+
+  genotype_vector previous_coal_genotypes = LoadDetailFileAsVector(second_file_coalescence_name);
+
+  // Find lineage's most recent parent in the coalescnece time detail file and save to hash (skipping if it is already in the hash)
+
+  std::map<InstructionSequence, int> lineage_map;
+
+  for (lineage_vector::iterator current_lineage = current_lineages.begin(); current_lineage != current_lineages.end(); ++current_lineage){
+
+    for (genotype_vector::iterator curr_genotype = current_lineage->begin(); curr_genotype != current_lineage->end(); ++curr_genotype)
+    {
+      const Genome& cur_genome = curr_genotype->GetGenome();
+      ConstInstructionSequencePtr cur_seq_p;
+      ConstGeneticRepresentationPtr cur_rep_p = cur_genome.Representation();
+      cur_seq_p.DynamicCastFrom(cur_rep_p);
+      const InstructionSequence& cur_seq = *cur_seq_p;
+      bool found = false;
+      
+      for (genotype_vector::iterator coal_genotype = current_coal_genotypes.begin(); coal_genotype != current_coal_genotypes.end(); ++coal_genotype)
+      {
+        if (coal_genotype->GetNumCPUs() > 0)
+        {
+          const Genome& coal_genome = coal_genotype->GetGenome();
+          ConstInstructionSequencePtr coal_seq_p;
+          ConstGeneticRepresentationPtr coal_rep_p = coal_genome.Representation();
+          coal_seq_p.DynamicCastFrom(coal_rep_p);
+          const InstructionSequence& coal_seq = *coal_seq_p;
+
+          if (cur_seq == coal_seq){
+            lineage_map[coal_seq]++;
+            found = true;
+            break;
+          }
+        }
+      }
+      if (found) break;
+    }
+  }
+
+  // Same for second file
+  // Count number of significant lineages that are in first file but not second (ie are new!)
+  // Repeat for all the updates
+  
+}
+
 
 void cAnalyze::CommandMapTasks(cString cur_string)
 {
@@ -9834,6 +10223,8 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("ANALYZE_FITNESS_TWO_SITES", &cAnalyze::AnalyzeFitnessLandscapeTwoSites);
   AddLibraryDef("ANALYZE_COMPLEXITY_TWO_SITES", &cAnalyze::AnalyzeComplexityTwoSites);
   AddLibraryDef("ANALYZE_KNOCKOUTS", &cAnalyze::AnalyzeKnockouts);
+  AddLibraryDef("GET_SKELETONS", &cAnalyze::GetSkeletons);
+  AddLibraryDef("COUNT_NEW_SIG_LINEAGES", &cAnalyze::CountNewSignificantLineages);
   AddLibraryDef("ANALYZE_POP_COMPLEXITY", &cAnalyze::AnalyzePopComplexity);
   AddLibraryDef("MAP_DEPTH", &cAnalyze::CommandMapDepth);
   // (Untested) AddLibraryDef("PAIRWISE_ENTROPY", &cAnalyze::CommandPairwiseEntropy); 

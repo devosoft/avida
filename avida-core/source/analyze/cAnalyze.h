@@ -26,6 +26,7 @@
 #include "apto/rng.h"
 
 #include <iostream>
+#include <vector>
 
 #include "cAnalyzeJobQueue.h"
 #include "cAvidaContext.h"
@@ -36,6 +37,7 @@
 #include "cStringList.h"
 #include "tList.h"
 #include "tMatrix.h"
+
 
 
 const int MAX_BATCHES = 50000;
@@ -56,6 +58,9 @@ class cTestCPU;
 class cWorld;
 template <class T> class tDataEntry;
 template <class T> class tDataEntryCommand;
+
+typedef std::vector<std::vector<cAnalyzeGenotype> > lineage_vector;
+typedef std::vector<cAnalyzeGenotype> genotype_vector;
 
 
 class cAnalyze {
@@ -203,6 +208,8 @@ private:
   // from a file specified by the user, or resource.dat by default.
   void LoadResources(cString cur_string);
   void LoadFile(cString cur_string);
+  genotype_vector LoadDetailFileAsVector(cString cur_string); 
+  //Loads all sequences from a detail file into a vector
   
   // Reduction and Sampling
   void CommandFilter(cString cur_string);
@@ -265,6 +272,9 @@ private:
   void CommandAlign(cString cur_string);
   void AnalyzeNewInfo(cString cur_string);  
   void MutationRevert(cString cur_string);
+  lineage_vector MakeLineageVector(genotype_vector current_genotypes); 
+  //Finds the lineages of all organisms in a detail file and loads 
+  //them into a vector. Lineages are represented as vectors of genotypes.
   
   // Build Input Files for Avida
   void WriteClone(cString cur_string);
@@ -285,6 +295,11 @@ private:
   void AnalyzePopComplexity(cString cur_string);
   void AnalyzeMateSelection(cString cur_string);
   void AnalyzeComplexityDelta(cString cur_string);
+
+  // Complexity barriers
+  void GetSkeletons(cString cur_string);
+  void CountNewSignificantLineages(cString cur_string); //Measure 1
+  
   
   // Environment Manipulation
   void EnvironmentSetup(cString cur_string);
