@@ -4968,7 +4968,7 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
 
   // Find lineage's most recent parent in the coalescnece time detail file and save to hash (skipping if it is already in the hash)
 
-  std::map<InstructionSequence, int> lineage_map;
+  std::map<InstructionSequence, int> lineage1_map;
 
   for (lineage_vector::iterator current_lineage = current_lineages.begin(); current_lineage != current_lineages.end(); ++current_lineage){
 
