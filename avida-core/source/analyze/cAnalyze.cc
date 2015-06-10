@@ -79,6 +79,7 @@
 #include <string>
 #include <queue>
 #include <stack>
+#include <stdlib.h>
 
 #include <cerrno>
 extern "C" {
@@ -4947,12 +4948,15 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
   std::vector<std::vector<cAnalyzeGenotype> > previous_lineages = MakeLineageVector(previous_genotypes);
 
   // Figure out the coalescence time for each and try grabbing those detail files, throw error if they aren't there
-  int interval = atoi(first_file_update) - atoi(first_file_update);
+  int interval = atoi(second_file_update) - atoi(first_file_update);
   int first_file_coalescence = atoi(first_file_update) - coalesence;
   first_file_coalescence -= (first_file_coalescence % interval);
 
   cString first_file_coalescence_name = "detail-";
-  first_file_coalescence_name += first_file_coalescence;
+  //(cString)first_file_coalescence_name += to_string(first_file_coalescence).c_str();
+  stringstream ss;
+  ss << first_file_coalescence;
+  first_file_coalescence_name += ss.str().c_str();
   first_file_coalescence_name += ".spop";
 
   std::vector<cAnalyzeGenotype> current_coal_genotypes = LoadDetailFileAsVector(first_file_coalescence_name);
@@ -4960,8 +4964,10 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
   int second_file_coalescence = atoi(second_file_update) - coalesence;
   second_file_coalescence -= (second_file_coalescence % interval);
 
+  stringstream ss2;
+  ss2 << second_file_coalescence;
   cString second_file_coalescence_name = "detail-";
-  second_file_coalescence_name += second_file_coalescence;
+  second_file_coalescence_name += ss2.str().c_str();
   second_file_coalescence_name += ".spop";
 
   std::vector<cAnalyzeGenotype> previous_coal_genotypes = LoadDetailFileAsVector(second_file_coalescence_name);
@@ -5016,6 +5022,7 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
       prev_seq_p.DynamicCastFrom(prev_rep_p);
       const InstructionSequence& prev_seq = *prev_seq_p;
       bool found = false;
+      
       
       for (std::vector<cAnalyzeGenotype>::iterator coal_genotype = current_coal_genotypes.begin(); coal_genotype != previous_coal_genotypes.end(); ++coal_genotype)
       {
