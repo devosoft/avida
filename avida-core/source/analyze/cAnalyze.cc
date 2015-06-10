@@ -4797,7 +4797,7 @@ void cAnalyze::GetSkeletons(cString cur_string)
   }
 }
 
-std::vector<cAnalyzeGenotype> cAnalyze::LoadDetailFileAsVector(cString cur_string)
+genotype_vector cAnalyze::LoadDetailFileAsVector(cString cur_string)
 {
   std::vector<cAnalyzeGenotype> genotypes;
   cString filename = cur_string.PopWord();
@@ -4845,7 +4845,7 @@ std::vector<cAnalyzeGenotype> cAnalyze::LoadDetailFileAsVector(cString cur_strin
     cerr << feedback.GetMessage(i) << endl;
   }  
   
-  if (feedback.GetNumErrors()) return genotypes;
+  if (feedback.GetNumErrors()) exit(1);
   
   bool id_inc = input_file.GetFormat().HasString("id");
   
@@ -4883,9 +4883,9 @@ std::vector<cAnalyzeGenotype> cAnalyze::LoadDetailFileAsVector(cString cur_strin
   return genotypes;
 }
 
-std::vector<std::vector<cAnalyzeGenotype> > cAnalyze::MakeLineageVector(std::vector<cAnalyzeGenotype> current_genotypes)
+lineage_vector cAnalyze::MakeLineageVector(genotype_vector current_genotypes)
 {
-  std::vector<std::vector<cAnalyzeGenotype> > lineages;
+  lineage_vector lineages;
 
   for (int i=0; i < (int)current_genotypes.size(); i++)
   {
@@ -4898,14 +4898,14 @@ std::vector<std::vector<cAnalyzeGenotype> > cAnalyze::MakeLineageVector(std::vec
   
       // Construct a list of genotypes found...
       
-      std::vector<cAnalyzeGenotype> found_list;
+      genotype_vector found_list;
       found_list.push_back(*found_gen);
       int next_id = found_gen->GetParentID();
       bool found = true;
       while (found == true) {
         found = false;
         
-        for (std::vector<cAnalyzeGenotype>::iterator found_gen = current_genotypes.begin(); found_gen != current_genotypes.end(); ++found_gen) {
+        for (genotype_vector::iterator found_gen = current_genotypes.begin(); found_gen != current_genotypes.end(); ++found_gen) {
           if (found_gen->GetID() == next_id) {
             found_list.push_back(*found_gen);
             next_id = found_gen->GetParentID();
@@ -4939,13 +4939,13 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
   second_file += second_file_update;
   second_file += ".spop";
   
-  std::vector<cAnalyzeGenotype> current_genotypes = LoadDetailFileAsVector(first_file);
+  genotype_vector current_genotypes = LoadDetailFileAsVector(first_file);
   
-  std::vector<cAnalyzeGenotype> previous_genotypes = LoadDetailFileAsVector(second_file);
+  genotype_vector previous_genotypes = LoadDetailFileAsVector(second_file);
 
   // For both detail files (most recent) go through each genotype of live population, find its lineage ( in reverse chronological order)
-  std::vector<std::vector<cAnalyzeGenotype> > current_lineages = MakeLineageVector(current_genotypes);
-  std::vector<std::vector<cAnalyzeGenotype> > previous_lineages = MakeLineageVector(previous_genotypes);
+  lineage_vector current_lineages = MakeLineageVector(current_genotypes);
+  lineage_vector previous_lineages = MakeLineageVector(previous_genotypes);
 
   // Figure out the coalescence time for each and try grabbing those detail files, throw error if they aren't there
   int interval = atoi(second_file_update) - atoi(first_file_update);
@@ -4959,7 +4959,7 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
   first_file_coalescence_name += ss.str().c_str();
   first_file_coalescence_name += ".spop";
 
-  std::vector<cAnalyzeGenotype> current_coal_genotypes = LoadDetailFileAsVector(first_file_coalescence_name);
+  genotype_vector current_coal_genotypes = LoadDetailFileAsVector(first_file_coalescence_name);
 
   int second_file_coalescence = atoi(second_file_update) - coalesence;
   second_file_coalescence -= (second_file_coalescence % interval);
@@ -4970,15 +4970,15 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
   second_file_coalescence_name += ss2.str().c_str();
   second_file_coalescence_name += ".spop";
 
-  std::vector<cAnalyzeGenotype> previous_coal_genotypes = LoadDetailFileAsVector(second_file_coalescence_name);
+  genotype_vector previous_coal_genotypes = LoadDetailFileAsVector(second_file_coalescence_name);
 
   // Find lineage's most recent parent in the coalescnece time detail file and save to hash (skipping if it is already in the hash)
 
   std::map<InstructionSequence, int> lineage1_map;
 
-  for (std::vector<vector<cAnalyzeGenotype> >::iterator current_lineage = current_lineages.begin(); current_lineage != current_lineages.end(); ++current_lineage){
+  for (lineage_vector::iterator current_lineage = current_lineages.begin(); current_lineage != current_lineages.end(); ++current_lineage){
 
-    for (std::vector<cAnalyzeGenotype>::iterator curr_genotype = current_lineage->begin(); curr_genotype != current_lineage->end(); ++curr_genotype)
+    for (genotype_vector::iterator curr_genotype = current_lineage->begin(); curr_genotype != current_lineage->end(); ++curr_genotype)
     {
       const Genome& cur_genome = curr_genotype->GetGenome();
       ConstInstructionSequencePtr cur_seq_p;
@@ -4987,7 +4987,7 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
       const InstructionSequence& cur_seq = *cur_seq_p;
       bool found = false;
       
-      for (std::vector<cAnalyzeGenotype>::iterator coal_genotype = current_coal_genotypes.begin(); coal_genotype != current_coal_genotypes.end(); ++coal_genotype)
+      for (genotype_vector::iterator coal_genotype = current_coal_genotypes.begin(); coal_genotype != current_coal_genotypes.end(); ++coal_genotype)
       {
         if (coal_genotype->GetNumCPUs() > 0)
         {
