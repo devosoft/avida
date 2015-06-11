@@ -157,6 +157,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_org_display(NULL)
   , m_queued_display_data(NULL)
   , m_display(false)
+  , m_lyse_display(false)
   , m_input_pointer(0)
   , m_input_buf(world->GetEnvironment().GetInputSize())
   , m_output_buf(world->GetEnvironment().GetOutputSize())

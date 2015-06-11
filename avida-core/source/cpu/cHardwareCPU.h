@@ -470,8 +470,8 @@ private:
 
   bool Inst_SpawnDeme(cAvidaContext& ctx);
   bool Inst_Lyse(cAvidaContext& ctx);
-  bool Inst_Lyse_PreDivide(cAvidaContext& ctx);
-  bool Inst_Lyse_PostDivide(cAvidaContext& ctx);
+  bool Inst_DisplayLyse(cAvidaContext& ctx);
+  bool Inst_CheckLyse(cAvidaContext& ctx);
   bool Inst_NopPre(cAvidaContext& ctx);
   bool Inst_NopPost(cAvidaContext& ctx);
   bool Inst_Kazi(cAvidaContext& ctx);
@@ -483,8 +483,6 @@ private:
   bool Inst_SenseQuorum(cAvidaContext& ctx);
   bool Inst_NoisyQuorum(cAvidaContext& ctx);
   bool Inst_SmartExplode(cAvidaContext& ctx);
-  bool Inst_Explode_PreDivide(cAvidaContext& ctx);
-  bool Inst_Explode_PostDivide(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
   bool Inst_Poison(cAvidaContext& ctx);
   bool Inst_Suicide(cAvidaContext& ctx);

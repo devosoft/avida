@@ -80,6 +80,7 @@ private:
   sOrgDisplay* m_org_display;
   sOrgDisplay* m_queued_display_data;
   bool m_display;
+  bool m_lyse_display;                     // Is this organism saying its about to lyse?
   
   // Other stats
   Genome m_offspring_genome;              // Child genome, while under construction.
@@ -211,6 +212,8 @@ public:
   inline sOrgDisplay* GetOrgDisplayData() { return m_org_display; }
   inline sOrgDisplay* GetPotentialDisplayData() { return m_queued_display_data; }
   void SetSimpDisplay(int display_part, int value);
+  void SetLyseDisplay() {m_lyse_display = !m_lyse_display;}
+  bool GetLyseDisplay() {return m_lyse_display;}
   
   // --------  cOrgInterface Methods  --------
   cHardwareBase& GetHardware() { return *m_hardware; }

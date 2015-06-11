@@ -484,8 +484,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     
     // Suicide
     tInstLibEntry<tMethod>("lyse",	&cHardwareCPU::Inst_Lyse, INST_CLASS_OTHER, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("lyse-pre",	&cHardwareCPU::Inst_Lyse_PreDivide, INST_CLASS_OTHER, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("lyse-post",	&cHardwareCPU::Inst_Lyse_PostDivide, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("display-lyse",	&cHardwareCPU::Inst_DisplayLyse, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("check-lyse",	&cHardwareCPU::Inst_CheckLyse, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("nop-pre", &cHardwareCPU::Inst_NopPre, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("nop-post", &cHardwareCPU::Inst_NopPost, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode",	&cHardwareCPU::Inst_Kazi, INST_CLASS_OTHER, nInstFlag::STALL),
@@ -497,8 +497,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense-quorum", &cHardwareCPU::Inst_SenseQuorum, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("noisy-quorum", &cHardwareCPU::Inst_NoisyQuorum, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("smart-explode", &cHardwareCPU::Inst_SmartExplode, INST_CLASS_OTHER, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("explode-pre", &cHardwareCPU::Inst_Explode_PreDivide, INST_CLASS_OTHER, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("explode-post", &cHardwareCPU::Inst_Explode_PostDivide, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("poison", &cHardwareCPU::Inst_Poison),
     tInstLibEntry<tMethod>("suicide", &cHardwareCPU::Inst_Suicide, INST_CLASS_OTHER, nInstFlag::STALL),		
@@ -3648,45 +3646,6 @@ bool cHardwareCPU::Inst_SmartExplode(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_Explode_PreDivide(cAvidaContext& ctx)
-{
-  const int reg_used = FindModifiedRegister(REG_AX);
-  double percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
-  int distance = (int) m_world->GetConfig().KABOOM_HAMMING.Get();
-  if (percent_prob==-1){
-    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  }   		    
-  // execute explode chance
-    m_organism->GetPhenotype().SetKaboomExecuted(true);
-    //Case where both Probability and Hamming Distance are static
-    if ( ctx.GetRandom().P(percent_prob) && (m_organism->GetPhenotype().GetNumDivides()==0) ){
-      m_organism->Kaboom(distance, ctx);
-      m_world->GetStats().IncKaboomPreDivide();
-  } else {
-    m_world->GetStats().IncDontExplode();
-  }
-  return true;
-}
-
-bool cHardwareCPU::Inst_Explode_PostDivide(cAvidaContext& ctx)
-{
-  const int reg_used = FindModifiedRegister(REG_AX);
-  double percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
-  int distance = (int) m_world->GetConfig().KABOOM_HAMMING.Get();
-  if (percent_prob==-1){
-    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  }
-  // execute explode chance
-    m_organism->GetPhenotype().SetKaboomExecuted(true);
-    //Case where both Probability and Hamming Distance are static
-    if ( ctx.GetRandom().P(percent_prob) && (m_organism->GetPhenotype().GetNumDivides()>0) ){
-      m_organism->Kaboom(distance, ctx);
-      m_world->GetStats().IncKaboomPostDivide();
-    } else {
-      m_world->GetStats().IncDontExplode();
-    }
-  return true;
-}
 
 bool cHardwareCPU::Inst_Lyse(cAvidaContext& ctx)
 {
@@ -3709,39 +3668,54 @@ bool cHardwareCPU::Inst_Lyse(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_Lyse_PreDivide(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_DisplayLyse(cAvidaContext& ctx)
 {
-  //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
-  const int reg_used = FindModifiedRegister(REG_AX);
-  double percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
-  if (percent_prob==-1.0){
-    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  }
-  if ((ctx.GetRandom().P(percent_prob)) && (m_organism->GetPhenotype().GetNumDivides()==0)){
-    m_organism->GetPhenotype().SetKaboomExecuted(true);
-    m_world->GetStats().IncKaboomPreDivide();
-    m_world->GetStats().IncPercLyse(percent_prob); 
-  } else {
-    m_world->GetStats().IncDontExplode();
-  }
+  m_organism->SetLyseDisplay();
   return true;
 }
 
-bool cHardwareCPU::Inst_Lyse_PostDivide(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_CheckLyse(cAvidaContext& ctx)
 {
-  //Note: This instruction doesn't kill the organism and assumes it is paired with a lethal reaction
-  const int reg_used = FindModifiedRegister(REG_AX);
-  double percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
-  if (percent_prob==-1.0){
-    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+  int lyse_counter = 0;
+  
+  int cellID = m_organism->GetCellID();
+  int radius = 1;
+  
+  int world_x = m_world->GetConfig().WORLD_X.Get();
+  int world_y = m_world->GetConfig().WORLD_Y.Get();
+  int cell_x = cellID % world_x;
+  int cell_y = (cellID - cell_x)/world_x;
+  int x = cell_x;
+  int y = cell_y;
+
+  for (int i = cell_x - radius; i <= cell_x + radius; i++) {
+    for (int j = cell_y - radius; j <= cell_y + radius; j++) {
+      
+      if (i<0) x = world_x + i;
+      else if (i>= world_x) x = i-world_x;
+      else x = i;
+      
+      if (j<0) y = world_y + j;
+      else if (j >= world_y) y = j-world_y;
+      else y = j;
+      
+      cPopulationCell& neighbor_cell = m_world->GetPopulation().GetCell(y*world_x + x);
+
+      
+      //do we actually have someone in neighborhood?
+      if (neighbor_cell.IsOccupied() == false) continue;
+      
+      cOrganism* org_temp = neighbor_cell.GetOrganism();
+      
+      if (org_temp != NULL) {
+        if (org_temp->GetLyseDisplay()) lyse_counter ++;
+      }
+  
+    }
   }
-  if ((ctx.GetRandom().P(percent_prob)) && (m_organism->GetPhenotype().GetNumDivides()>0)){
-    m_organism->GetPhenotype().SetKaboomExecuted2(true);
-    m_world->GetStats().IncKaboomPostDivide();
-    m_world->GetStats().IncPercLyse(percent_prob); 
-  } else {
-    m_world->GetStats().IncDontExplode();
-  }
+  
+  GetRegister(FindModifiedRegister(REG_AX)) = lyse_counter;
+  
   return true;
 }
 
