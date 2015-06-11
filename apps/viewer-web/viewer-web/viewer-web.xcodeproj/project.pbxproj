@@ -6,11 +6,48 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXFileReference section */
+		B44A22E91B261CC300008AA0 /* viewer-web.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "viewer-web.cc"; path = "../src/viewer-web.cc"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
 /* Begin PBXGroup section */
 		B44A22DA1B261C4600008AA0 = {
 			isa = PBXGroup;
 			children = (
+				B44A22E51B261C6700008AA0 /* Source */,
+				B44A22E81B261C9500008AA0 /* Libraries */,
+				B44A22E61B261C7700008AA0 /* Resources */,
+				B44A22E71B261C8C00008AA0 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		B44A22E51B261C6700008AA0 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				B44A22E91B261CC300008AA0 /* viewer-web.cc */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		B44A22E61B261C7700008AA0 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		B44A22E71B261C8C00008AA0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B44A22E81B261C9500008AA0 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Libraries;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -23,10 +60,11 @@
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = I;
 			dependencies = (
 			);
 			name = "viewer-web";
-			passBuildSettingsInEnvironment = 1;
+			passBuildSettingsInEnvironment = 0;
 			productName = "viewer-web";
 		};
 /* End PBXLegacyTarget section */

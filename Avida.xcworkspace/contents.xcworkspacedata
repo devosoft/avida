@@ -10,6 +10,9 @@
       <FileRef
          location = "group:apps/viewer-macos/viewer-macos.xcodeproj">
       </FileRef>
+      <FileRef
+         location = "group:apps/viewer-web/viewer-web/viewer-web.xcodeproj">
+      </FileRef>
    </Group>
    <Group
       location = "container:"
