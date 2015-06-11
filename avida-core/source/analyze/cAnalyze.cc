@@ -4735,12 +4735,12 @@ void cAnalyze::GetSkeletons(cString cur_string)
           // but in combination they are harmful, they are likely redundant
           // to each other.  For now, count them both as information.
           else if (ko_fitness < base_fitness &&
-		   ko_effect[line1] >= 0 && ko_effect[line2] >= 0) {
-	    //This should never actually happen because redundant instructions should have been removed during the single knockouts
-	    cout << "Warning: redundant instructions found, which shouldn't be the case!" << endl;
-	    //To keep from being random, the first instruction is knocked out and the second kept.
-	    mod_seq[line2].SetOp(cur_inst2);
-	    genotype->SetGenome(mod_genome);
+        ko_effect[line1] >= 0 && ko_effect[line2] >= 0) {
+            //This should never actually happen because redundant instructions should have been removed during the single knockouts
+            cout << "Warning: redundant instructions found, which shouldn't be the case!" << endl;
+            //To keep from being random, the first instruction is knocked out and the second kept.
+            mod_seq[line2].SetOp(cur_inst2);
+            genotype->SetGenome(mod_genome);
           }else {
             //These sites are both informative together so keep them
             // Reset the mod_genome back to the original sequence.
@@ -4787,9 +4787,20 @@ void cAnalyze::GetSkeletons(cString cur_string)
         genotype->SetGenome(mod_genome);
 
       }
+      
+
     }
     
-
+    //Remove repeated null instructions
+    for (int line_num = 0; line_num < max_line; line_num++) {
+      if (mod_seq[line_num] == null_inst)
+      {
+        mod_seq.Remove(line_num, 1);
+        cout << "removed a repeat" << endl;
+      }
+        
+    }
+    genotype->SetGenome(mod_genome);
 
 
    
@@ -9921,6 +9932,8 @@ cAnalyzeGenotype * cAnalyze::PopGenotype(cString gen_desc, int batch_id)
     found_gen = gen_list.PopMax(&cAnalyzeGenotype::GetMerit);
   else if (gen_desc == "fitness")
     found_gen = gen_list.PopMax(&cAnalyzeGenotype::GetFitness);
+  else if (gen_desc == "length")
+    found_gen = gen_list.PopMax(&cAnalyzeGenotype::GetLength);
   else if (gen_desc.IsNumeric(0))
     found_gen = gen_list.PopValue(&cAnalyzeGenotype::GetID, gen_desc.AsInt());
   else if (gen_desc == "random") {
