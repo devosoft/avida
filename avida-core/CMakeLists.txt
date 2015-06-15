@@ -376,7 +376,7 @@ IF (NOT EMSCRIPTEN)
    ADD_LIBRARY(viewer ${VIEWERCORE_SOURCES})
   IF(WIN32)
     SET_TARGET_PROPERTIES(avida-core PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
-  SET_TARGET_PROPERTIES(viewer PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
+    SET_TARGET_PROPERTIES(viewer PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
   ENDIF(WIN32)
 ELSE (NOT EMSCRIPTEN)
    # Do not make a true library when using emscripten.
@@ -393,45 +393,52 @@ ENDIF (NOT EMSCRIPTEN)
 # Locate Apto
 SET(APTO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../libs/apto/include)
 
-IF(NOT TARGET aptostatic)
-  FIND_LIBRARY(APTO_LIBRARY apto PATHS ${PROJECT_SOURCE_DIR}/../cbuild/lib ${PROJECT_SOURCE_DIR}/../libs/apto/cbuild/lib)
+IF(NOT TARGET aptostatic AND NOT EMSCRIPTEN)
+  FIND_LIBRARY(APTO_LIBRARY apto PATHS 
+     ${PROJECT_SOURCE_DIR}/../cbuild/lib 
+     ${PROJECT_SOURCE_DIR}/../libs/apto/cbuild/lib
+     )
   ADD_LIBRARY(aptostatic STATIC IMPORTED)
   SET_PROPERTY(TARGET aptostatic PROPERTY IMPORTED_LOCATION "${APTO_LIBRARY}")
-ENDIF(NOT TARGET aptostatic)
+ENDIF(NOT TARGET aptostatic AND NOT EMSCRIPTEN)
 
 
 # Create the static library from the master source list
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS} ${APTO_INCLUDE_DIR})
 
 
-# Locate TCMalloc
-IF(NOT TARGET tcmalloc-1.4)
-  FIND_LIBRARY(TCMALLOC_LIBRARY tcmalloc-1.4 PATHS ${PROJECT_SOURCE_DIR}/../cbuild/lib ${PROJECT_SOURCE_DIR}/../libs/tcmalloc-1.4/cbuild/lib)
-  ADD_LIBRARY(tcmalloc-1.4 STATIC IMPORTED)
-  SET_PROPERTY(TARGET tcmalloc-1.4 PROPERTY IMPORTED_LOCATION "${TCMALLOC_LIBRARY}")
-ENDIF(NOT TARGET tcmalloc-1.4)
-
 
 # Handle the TCMalloc library
 # ------------------------------------------------------------------------------
+OPTION(
+   AVD_ENABLE_TCMALLOC
+   "Use tcmalloc for memory allocation"
+   ON
+   )
+
 IF(UNIX)
   IF (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
-    SET(AVD_ENABLE_TCMALLOC FALSE)
-  ELSE (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
-    SET(AVD_ENABLE_TCMALLOC TRUE)
-  ENDIF (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
-ELSE(UNIX)
-  SET(AVD_ENABLE_TCMALLOC FALSE)
+     SET(ICPC_COMPILER TRUE)
+  ENDIF(CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
 ENDIF(UNIX)
-IF(EMSCRIPTEN)
-   SET(AVD_ENABLE_TCMALLOC FALSE)
-ENDIF(EMSCRIPTEN)
+
+IF (EMSCRIPTEN OR MSVC OR ICPC_COMPILER)
+   SET(AVD_ENABLE_TCMALLOC OFF)
+ENDIF (EMSCRIPTEN OR MSVC OR ICPC_COMPILER)
+
+MESSAGE(STATUS "TCMalloc: ${AVD_ENABLE_TCMALLOC}")
+
 IF(AVD_ENABLE_TCMALLOC)
   # Locate TCMalloc
   IF(NOT TARGET tcmalloc-1.4)
-    FIND_LIBRARY(TCMALLOC_LIBRARY tcmalloc-1.4 PATHS ${PROJECT_SOURCE_DIR}/../cbuild/lib ${PROJECT_SOURCE_DIR}/../libs/tcmalloc/cbuild/lib)
+    FIND_LIBRARY(TCMALLOC_LIBRARY 
+       tcmalloc-1.4 PATHS 
+         ${PROJECT_SOURCE_DIR}/../cbuild/lib 
+         ${PROJECT_SOURCE_DIR}/../libs/tcmalloc/cbuild/lib
+         )
     ADD_LIBRARY(tcmalloc-1.4 STATIC IMPORTED)
-    SET_PROPERTY(TARGET tcmalloc-1.4 PROPERTY IMPORTED_LOCATION "${TCMALLOC_LIBRARY}")
+    SET_PROPERTY(
+       TARGET tcmalloc-1.4 PROPERTY IMPORTED_LOCATION "${TCMALLOC_LIBRARY}")
   ENDIF(NOT TARGET tcmalloc-1.4)
 ENDIF(AVD_ENABLE_TCMALLOC)
 
@@ -439,23 +446,25 @@ ENDIF(AVD_ENABLE_TCMALLOC)
 # Handle the pthread library
 # MSVC and EMSCRIPTEN cannot use the pthread library
 # ------------------------------------------------------------------------------
-CMAKE_DEPENDENT_OPTION(
+OPTION(
    AVD_ENABLE_PTHREAD
-   "Enable PThread Library"
+   "Enable the pthread library"
    ON
-   "MSVC;EMSCRIPTEN"
-   OFF 
    )
+
+IF (MSVC OR EMSCRIPTEN)
+   SET(AVD_ENABLE_PTHREAD OFF)
+ENDIF (MSVC OR EMSCRIPTEN) 
+
 
 
 # Target Processing
 # - For each enabled target, process its build instructions.  Must occur after
 # - avida-core has been defined.
 # ------------------------------------------------------------------------------
-CMAKE_DEPENDENT_OPTION(AVD_CMDLINE
+OPTION(AVD_CMDLINE
   "Enable building standard command line Avida (fastest version)."
   ON
-  "AVD_HTML" OFF
 )
 
 IF(AVD_CMDLINE)
@@ -482,18 +491,22 @@ IF(AVD_CMDLINE)
                     $<TARGET_OBJECTS:avida_core_objs>
                    )
    ENDIF (NOT EMSCRIPTEN)
-  
   INSTALL_TARGETS(/work avida)
 ENDIF(AVD_CMDLINE)
 
 
 # By default, do not build the console interface to Avida.
-CMAKE_DEPENDENT_OPTION(
+OPTION(
    AVD_GUI_NCURSES
    "Enable building Avida console interface."
    OFF
-   "EMSCRIPTEN" OFF 
 )
+
+# Emscripten can't handle an ncurses interface at this time.
+IF (EMSCRIPTEN)
+   SET(AVD_GUI_NCURSES OFF)
+ENDIF (EMSCRIPTEN)
+
 
 # Make sure requisites are present for build of console interface.  Give
 # user feedback if they're missing.
@@ -553,12 +566,16 @@ ENDIF(AVD_GUI_NCURSES)
 
 
 # By default, do not build the console interface to Avida.
-CMAKE_DEPENDENT_OPTION(
+OPTION(
    AVD_GUI_PROTOTYPE_TEXT
    "Enable building new exprimental Avida text interface. THIS MAY NOT COMPILE!"
    OFF
-   "EMSCRIPTEN" OFF
 )
+
+IF (EMSCRIPTEN)
+   SET(AVD_GUI_PROTOTYPE_TEXT OFF)
+ENDIF(EMSCRIPTEN)
+
 # Make sure requisites are present for build of console interface.  Give
 # user feedback if they're missing.
 IF(AVD_GUI_PROTOTYPE_TEXT)
