@@ -1,9 +1,9 @@
-PROJECT(AVIDA_WEB)
-
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 INCLUDE(CMakeDependentOption)
 
+
+MESSAGE(STATUS "AVIDA WEB")
 
 # The following three variables must be after the PROJECT statement, otherwise
 # newer versions of cmake will (correctly) use an empty value of
@@ -112,30 +112,30 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 
 
 
-# Locate Apto's Headers
-SET(APTO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../libs/apto/include)
-
 # Locate Empirical's Headers
-SET(EMPIRICAL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../libs/empirical)
+SET(EMPIRICAL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/empirical)
 
-# Locate Avida-Core's Headers
-SET(AVIDA_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../avida-core/include)
-
+# Locate apto's headers
+SET(APTO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/apto/include)
 
 INCLUDE_DIRECTORIES(
-   ${APTO_INCLUDE_DIR}
    ${EMPIRICAL_INCLUDE_DIR}
-   ${AVIDA_INCLUDE_DIR}
+   ${AVIDA_INCLUDES}
+   ${APTO_INCLUDE_DIR}
    )
 
 
 # Avida-HTML should only be built if the EMSCRIPTEN toolchain is active
 # and the commandline version of Avida is not requested.
-CMAKE_DEPENDENT_OPTION(AVD_HTML
+OPTION(AVD_HTML
    "Enable building JS/Emscripten/HTML version of Avida"
-   ON
-   "AVD_CMDLINE; NOT EMSCRIPTEN" OFF
+   OFF
 )
+
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+FOREACH(DIR ${dirs})
+   MESSAGE(STATUS "DIR='${DIR}'")
+ENDFOREACH()
 
 
 # Setup the Avida-Web Target
@@ -146,11 +146,13 @@ IF(AVD_HTML)
       ${AVIDA_HTML_DIR}/viewer-web.cc
       )
    SOURCE_GROUP(target\\avida FILES ${AVIDA_CMDLINE_SOURCES})
-  
+ 
+   SET(EMS_AVIDA_EMBED_DIR resources/) 
+
    SET(CMAKE_EXE_LINKER_FLAGS 
         "${CMAKE_EXE_LINKER_FLAGS} 
         --embed-file ${EMS_AVIDA_EMBED_DIR}@/ -s ALLOW_MEMORY_GROWTH=1")
-     ADD_EXECUTABLE(avida.html 
+   ADD_EXECUTABLE(avida.html 
                     ${AVIDA_HTML_SOURCES}
                     $<TARGET_OBJECTS:apto_objs>
                     $<TARGET_OBJECTS:avida_core_objs>

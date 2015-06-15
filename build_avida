@@ -45,11 +45,9 @@ if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ]; then
        -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN}/cmake/Modules/Platform/Emscripten.cmake "
 
    if [ "$1" == "avida.js" ]; then
-      -DAVD_CMDLINE=ON
-      -DAVD_HTML=OFF
+      em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=ON -DAVD_HTML=OFF"
    elif [ "$1" == "avida.html" ]; then
-      -DAVD_CMDLINE=OFF
-      -DAVD_HTML=ON
+      em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=OFF -DAVD_HTML=ON"
    fi
    cmake ${em_cmake_flags} ../
 
