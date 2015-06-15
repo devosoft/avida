@@ -4792,10 +4792,12 @@ void cAnalyze::GetSkeletons(cString cur_string)
     }
     
     //Remove repeated null instructions
+    //TODO: this doesn't seem to be working, set the seq/genome somehow??
     for (int line_num = 0; line_num < max_line; line_num++) {
-      if (mod_seq[line_num] == null_inst)
+      if (mod_seq[line_num] == null_inst && mod_seq[line_num-1] == null_inst)
       {
         mod_seq.Remove(line_num, 1);
+        line_num -= 1;
         cout << "removed a repeat" << endl;
       }
         
@@ -5004,6 +5006,7 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
         {
           const Genome& coal_genome = coal_genotype->GetGenome();
           ConstInstructionSequencePtr coal_seq_p;
+          //TODO: This line is throwing a seg fault because it thinks it can't access the counter?
           ConstGeneticRepresentationPtr coal_rep_p = coal_genome.Representation();
           coal_seq_p.DynamicCastFrom(coal_rep_p);
           const InstructionSequence& coal_seq = *coal_seq_p;
@@ -5035,7 +5038,7 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
       bool found = false;
       
       
-      for (std::vector<cAnalyzeGenotype>::iterator coal_genotype = current_coal_genotypes.begin(); coal_genotype != previous_coal_genotypes.end(); ++coal_genotype)
+      for (std::vector<cAnalyzeGenotype>::iterator coal_genotype = previous_coal_genotypes.begin(); coal_genotype != previous_coal_genotypes.end(); ++coal_genotype)
       {
         if (coal_genotype->GetNumCPUs() > 0)
         {
