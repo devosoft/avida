@@ -20,8 +20,12 @@ ADD_SUBDIRECTORY(libs/apto)
 IF(NOT WIN32 AND NOT EMSCRIPTEN)
   ADD_SUBDIRECTORY(libs/tcmalloc-1.4)
 ENDIF(NOT WIN32 AND NOT EMSCRIPTEN)
+
 ADD_SUBDIRECTORY(avida-core)
 
+IF(EMSCRIPTEN)
+   ADD_SUBDIRECTORY(apps/viewer-web)
+ENDIF(EMSCRIPTEN)
 
 # Default location for installed software/configs/ docs is the build directory.
 SET(CMAKE_INSTALL_PREFIX
