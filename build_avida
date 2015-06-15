@@ -5,12 +5,30 @@ git submodule update
 mkdir -p cbuild
 cd cbuild
 
-if [ "$1" == "emscripten" ]; then
+# Unfortunately, there is no way to handle switching toolchains inside
+# of a CMakeLists.txt file.  It must be done on the commandline.  So,
+# instead of having a cmake option, we must use a wrapper script to configure
+# the build system for emscripten.
+# To build the javascript version of the console:
+#       ./build_avida avida.js
+# To build a web gui:
+#       ./build_avida avida.html
+#
+# Please note the comments on setting the configuration files below. 
+# They *must* be set prior to compilation.
+#
+# This script requires that the shell environment be aware of emcripten.
+# Please use the emscripten sdk ./set_env.sh script to handle this
+# configuration.
+# @MRR June 2015
+
+if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ]; then
    if [ -z "$EMSCRIPTEN" ]; then
       echo "Emscripten's environment variables are not properly set."
       echo "Unable to build."
       exit 1
    fi
+
    # Emscripten requires us to know in advance where
    # our configuration files are located.
    # Unfortunately, this needs to be *relative* to
@@ -21,10 +39,20 @@ if [ "$1" == "emscripten" ]; then
    if [ -z "${EMS_EMBED_DIR}" ]; then
       EMS_EMBED_DIR="../../avida-core/support/config"
    fi
+   
    em_cmake_flags=" ${@:2} 
        -DEMS_AVIDA_EMBED_DIR=${EMS_EMBED_DIR} 
        -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN}/cmake/Modules/Platform/Emscripten.cmake "
+
+   if [ "$1" == "avida.js" ]; then
+      -DAVD_CMDLINE=ON
+      -DAVD_HTML=OFF
+   elif [ "$1" == "avida.html" ]; then
+      -DAVD_CMDLINE=OFF
+      -DAVD_HTML=ON
+   fi
    cmake ${em_cmake_flags} ../
+
 else 
    cmake "$@" ../
 fi
