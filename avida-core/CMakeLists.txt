@@ -441,6 +441,7 @@ ENDIF(AVD_ENABLE_TCMALLOC)
 # ------------------------------------------------------------------------------
 CMAKE_DEPENDENT_OPTION(
    AVD_ENABLE_PTHREAD
+   "Enable PThread Library"
    ON
    "MSVC;EMSCRIPTEN"
    OFF 
