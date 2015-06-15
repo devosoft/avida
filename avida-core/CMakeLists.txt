@@ -2,6 +2,9 @@ PROJECT(AVIDA)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
+INCLUDE(CMakeDependentOption)
+
+
 #Emscripten requires some extra handling
 IF(EMSCRIPTEN)
    MESSAGE(STATUS "Using emscripten")
@@ -73,12 +76,14 @@ IF(UNIX)
   SET(CMAKE_REQUIRED_FLAGS "")
 
   IF(HAVE_FUSED_MADD)
-    SET(COMPILER_OPTIMIZATION_FLAGS "-mno-fused-madd ${COMPILER_OPTIMIZATION_FLAGS}")
+    SET(COMPILER_OPTIMIZATION_FLAGS 
+       "-mno-fused-madd ${COMPILER_OPTIMIZATION_FLAGS}")
   ENDIF(HAVE_FUSED_MADD)
 
   # Some emscripten warnings
    IF(EMSCRIPTEN)
-      SET(COMPILER_WARNING_FLAGS "${COMPILER_WARNING_FLAGS} -Wno-warn-absolute-paths")
+      SET(COMPILER_WARNING_FLAGS 
+         "${COMPILER_WARNING_FLAGS} -Wno-warn-absolute-paths")
    ENDIF(EMSCRIPTEN)
 
   # Four types of c++ compilations:
@@ -434,22 +439,24 @@ ENDIF(AVD_ENABLE_TCMALLOC)
 # Handle the pthread library
 # MSVC and EMSCRIPTEN cannot use the pthread library
 # ------------------------------------------------------------------------------
-IF(MSVC OR EMSCRIPTEN)
-   SET(AVD_ENABLE_PTHREAD FALSE)
-ELSE(MSVC OR EMSCRIPTEN)
-   SET(AVD_ENABLE_PTHREAD TRUE)
-ENDIF(MSVC OR EMSCRIPTEN)
-
+CMAKE_DEPENDENT_OPTION(
+   AVD_ENABLE_PTHREAD
+   ON
+   "MSVC;EMSCRIPTEN"
+   OFF 
+   )
 
 
 # Target Processing
 # - For each enabled target, process its build instructions.  Must occur after
 # - avida-core has been defined.
 # ------------------------------------------------------------------------------
-OPTION(AVD_CMDLINE
+CMAKE_DEPENDENT_OPTION(AVD_CMDLINE
   "Enable building standard command line Avida (fastest version)."
   ON
+  "AVD_HTML" OFF
 )
+
 IF(AVD_CMDLINE)
   SET(AVIDA_CMDLINE_DIR source/targets/avida)
   SET(AVIDA_CMDLINE_SOURCES ${AVIDA_CMDLINE_DIR}/primitive.cc ${AVIDA_CMDLINE_DIR}/Avida2Driver.cc)
@@ -480,10 +487,13 @@ ENDIF(AVD_CMDLINE)
 
 
 # By default, do not build the console interface to Avida.
-OPTION(AVD_GUI_NCURSES
-  "Enable building Avida console interface."
-  OFF
+CMAKE_DEPENDENT_OPTION(
+   AVD_GUI_NCURSES
+   "Enable building Avida console interface."
+   OFF
+   "EMSCRIPTEN" OFF 
 )
+
 # Make sure requisites are present for build of console interface.  Give
 # user feedback if they're missing.
 IF(AVD_GUI_NCURSES)
@@ -542,9 +552,11 @@ ENDIF(AVD_GUI_NCURSES)
 
 
 # By default, do not build the console interface to Avida.
-OPTION(AVD_GUI_PROTOTYPE_TEXT
-  "Enable building new exprimental Avida text interface. THIS MAY NOT COMPILE!"
-  OFF
+CMAKE_DEPENDENT_OPTION(
+   AVD_GUI_PROTOTYPE_TEXT
+   "Enable building new exprimental Avida text interface. THIS MAY NOT COMPILE!"
+   OFF
+   "EMSCRIPTEN" OFF
 )
 # Make sure requisites are present for build of console interface.  Give
 # user feedback if they're missing.
