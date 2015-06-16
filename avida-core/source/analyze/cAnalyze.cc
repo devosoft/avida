@@ -5309,6 +5309,63 @@ void cAnalyze::CountNovelSkeletons(cString cur_string)
   cout << "Novel Genotypes: " << count << endl;
 }
 
+void cAnalyze::CountEcologicalComplexity(cString cur_string)
+{
+  //LOAD
+  cString first_file_update = cur_string.PopWord();
+  cString first_file = "detail-";
+  first_file += first_file_update;
+  first_file += ".spop";
+
+  genotype_vector skeletons = GetSkeletons(first_file);
+  lineage_vector lineages = MakeLineageVector(skeletons);
+
+  std::map<cString, bool> found;
+
+  for (lineage_vector::iterator cur_lineage = lineages.begin(); cur_lineage != lineages.end(); ++cur_lineage)
+    {
+      cAnalyzeGenotype alive = (*cur_lineage)[0];
+      const Genome& cur_genome = alive.GetGenome();
+      ConstInstructionSequencePtr cur_seq_p;
+      ConstGeneticRepresentationPtr cur_rep_p = cur_genome.Representation();
+      cur_seq_p.DynamicCastFrom(cur_rep_p);
+      const InstructionSequence& cur_seq = *cur_seq_p;
+
+      for (int line_num = 0; line_num<cur_seq.GetSize(); line_num++)
+	{
+	  Instruction cur_inst = cur_seq[line_num];
+	  for (genotype_vector::iterator ancestor = cur_lineage->begin(); ancestor != cur_lineage->end(); ++ancestor)
+	    {
+	      const Genome& ancestor_genome = ancestor->GetGenome();
+	      ConstInstructionSequencePtr ancestor_seq_p;
+	      ConstGeneticRepresentationPtr ancestor_rep_p = ancestor_genome.Representation();
+	      ancestor_seq_p.DynamicCastFrom(ancestor_rep_p);
+	      const InstructionSequence& ancestor_seq = *ancestor_seq_p;
+	      
+	      if (ancestor_seq[line_num] != cur_inst)
+		{
+		  cout << ancestor_seq[line_num].GetOp() << " " << cur_inst.GetOp() << endl;
+		  cout << ancestor_seq.AsString() << " " << cur_seq.AsString() << endl;
+		  //Assemble the string!
+		  stringstream ss;
+		  ss << line_num;
+		  ss << cur_inst.GetSymbol();
+		  ss << ancestor->GetID();
+		  cString key = ss.str().c_str();
+		  cout << line_num << " " << cur_inst.GetSymbol() << " " << cur_inst.AsString() << " " << cur_inst.GetOp() << " " << ancestor->GetID() << endl;
+		  found[key] = true;
+		  break;
+		}
+	    }
+	}
+    }
+  for (std::map<cString, bool>::iterator iter = found.begin(); iter != found.end(); ++iter)
+    {
+      cout << iter->first << endl;
+    }
+  cout << "Ecological complexity: " << found.size() << endl;
+}
+
 void cAnalyze::CommandMapTasks(cString cur_string)
 {
   cString msg;  //Use if to construct any messages to send to driver
@@ -10529,6 +10586,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("GET_SKELETONS_BATCH", &cAnalyze::GetSkeletons_Batch);
   AddLibraryDef("COUNT_NEW_SIG_LINEAGES", &cAnalyze::CountNewSignificantLineages);
   AddLibraryDef("COUNT_NOVEL_SKELETONS", &cAnalyze::CountNovelSkeletons);
+  AddLibraryDef("COUNT_ECOLOGICAL_COMPLEXITY", &cAnalyze::CountEcologicalComplexity);
   AddLibraryDef("ANALYZE_POP_COMPLEXITY", &cAnalyze::AnalyzePopComplexity);
   AddLibraryDef("MAP_DEPTH", &cAnalyze::CommandMapDepth);
   // (Untested) AddLibraryDef("PAIRWISE_ENTROPY", &cAnalyze::CommandPairwiseEntropy); 
