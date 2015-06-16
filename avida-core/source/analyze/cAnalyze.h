@@ -297,8 +297,11 @@ private:
   void AnalyzeComplexityDelta(cString cur_string);
 
   // Complexity barriers
-  void GetSkeletons(cString cur_string);
+  std::vector<cAnalyzeGenotype> GetSkeletons(cString cur_string);
+  //void GetSkeletons(cString cur_string);
+  void GetSkeletons_Batch(cString cur_string);
   void CountNewSignificantLineages(cString cur_string); //Measure 1
+  void CountNovelSkeletons(cString cur_string); //Measure 2
   
   
   // Environment Manipulation
