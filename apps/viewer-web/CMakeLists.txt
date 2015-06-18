@@ -110,13 +110,12 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 
 
 
-
-
 # Locate Empirical's Headers
 SET(EMPIRICAL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/empirical)
 
 # Locate apto's headers
 SET(APTO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/apto/include)
+
 
 INCLUDE_DIRECTORIES(
    ${EMPIRICAL_INCLUDE_DIR}
@@ -137,31 +136,64 @@ FOREACH(DIR ${dirs})
    MESSAGE(STATUS "DIR='${DIR}'")
 ENDFOREACH()
 
+SET(AVIDA_HTML_DIR src/)
+SET(
+   AVIDA_HTML_SOURCES 
+   ${AVIDA_HTML_DIR}/viewer-web.cc
+   )
+SOURCE_GROUP(target\\avida FILES ${AVIDA_HTML_SOURCES})
 
-# Setup the Avida-Web Target
+
+# Setup the configuration files to be loaded at start
+# Keep in mind this path needs to be relative
+# Unfortunately, it is relative to where ever we are in 
+# the build system.  In this case we're a couple levels
+# deep in the cbuild directory, so we need to go back up
+# a few levels.
+SET(EMS_AVIDA_EMBED_DIR ../../../apps/viewer-web/config)
+
+# A list of functions that should be exported
+# The list is fragile.  It *must* be enclosed in quotes
+# (") when fed to the shell.  Also, the list must include
+# a space between entries.
+SET(EMS_EXPORT_FUNCS
+   "\"['_main', '_empCppCallback']\""
+   )
+
+# Flags specific to the web target
+SET(WEB_FLAGS
+   "--js-library ${PROJECT_SOURCE_DIR}/libs/empirical/emtools/library_emp.js\
+   -s DISABLE_EXCEPTION_CATCHING=1\
+   -s COMPILER_ASSERTIONS=1\
+   -s EXPORTED_FUNCTIONS=${EMS_EXPORT_FUNCS}\
+   -s NO_EXIT_RUNTIME=1
+   -DDEBUG "
+   )
+
+SET(OFLAGS_WEB 
+   "-g4 -Wno-warn-absolute-paths -Wno-dollar-in-identifier-extension -s TOTAL_MEMORY=67108864 ")
+SET(CMAKE_CXX_FLAGS_RELEASE "")
+SET(CMAKE_CXX_FLAGS "${OFLAGS_WEB} ${WEB_FLAGS} -std=c++11 -Wno-unused-function")
+SET(CMAKE_EXE_LINKER_FLAGS 
+     "${CMAKE_EXE_LINKER_FLAGS}\
+     --preload-file ${EMS_AVIDA_EMBED_DIR}@/ -s ALLOW_MEMORY_GROWTH=1")
+
+
+#Setup the Avida-Web Target
 IF(AVD_HTML)
-   SET(AVIDA_HTML_DIR src/)
-   SET(
-      AVIDA_HTML_SOURCES 
-      ${AVIDA_HTML_DIR}/viewer-web.cc
-      )
-   SOURCE_GROUP(target\\avida FILES ${AVIDA_CMDLINE_SOURCES})
- 
-   SET(EMS_AVIDA_EMBED_DIR resources/) 
+   ADD_EXECUTABLE(avida 
+                 ${AVIDA_HTML_SOURCES}
+                 $<TARGET_OBJECTS:apto_objs>
+                 $<TARGET_OBJECTS:avida_core_objs>
+                 )
 
-   SET(CMAKE_EXE_LINKER_FLAGS 
-        "${CMAKE_EXE_LINKER_FLAGS} 
-        --embed-file ${EMS_AVIDA_EMBED_DIR}@/ -s ALLOW_MEMORY_GROWTH=1")
-   ADD_EXECUTABLE(avida.html 
-                    ${AVIDA_HTML_SOURCES}
-                    $<TARGET_OBJECTS:apto_objs>
-                    $<TARGET_OBJECTS:avida_core_objs>
-                   )
-   INSTALL_TARGETS(/work avida.html)
+   INSTALL_TARGETS(/work avida)
+   
+   #Install web-related resources (e.g. images, etc.)
+   INSTALL(DIRECTORY resources/ DESTINATION work)
+   INSTALL(FILES ${PROJECT_SOURCE_DIR}/libs/empirical/UTests/UI/jquery-1.11.2.min.js DESTINATION work)
 ENDIF(AVD_HTML)
 
 
-# Install web-related resources (e.g. images, etc.)
-INSTALL(DIRECTORY resources/ DESTINATION work)
 
 
