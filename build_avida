@@ -1,5 +1,25 @@
 #!/bin/sh
 
+# This is ugly; thanks sed
+# This function adds a line at a particular location
+# in a file
+# arguments:
+#  $1  file path
+#  $2  line number for insertion
+#  $3  text to insert at line
+function add_line(){
+   file=$1;
+   line=$2;
+   text=$3;
+   sed -i ".bak" -e "${line}i\\
+   ${text}\\
+   " ${file}
+}
+
+
+# Now let's get ready to build
+# By first updating our git modules and making
+# our cbuild directory
 git submodule init
 git submodule update
 mkdir -p cbuild
@@ -22,6 +42,9 @@ cd cbuild
 # configuration.
 # @MRR June 2015
 
+
+# Decide whether or not to use emscripten's cmake toolchain
+# and then build
 if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ]; then
    if [ -z "$EMSCRIPTEN" ]; then
       echo "Emscripten's environment variables are not properly set."
@@ -36,6 +59,9 @@ if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ]; then
    # In this case "../../avida-core/support/config"
    # will point to the default avida configuration files
    # that are usually installed
+   # Note that the web-viewer uses it's own configuration
+   # scripts, with this value being overriden in the local
+   # CMakeLists.txt file for the web-viewer
    if [ -z "${EMS_EMBED_DIR}" ]; then
       EMS_EMBED_DIR="../../avida-core/support/config"
    fi
@@ -44,6 +70,7 @@ if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ]; then
        -DEMS_AVIDA_EMBED_DIR=${EMS_EMBED_DIR} 
        -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN}/cmake/Modules/Platform/Emscripten.cmake "
 
+   # Only the viewer or the shell version should be built, exclusively
    if [ "$1" == "avida.js" ]; then
       em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=ON -DAVD_HTML=OFF"
    elif [ "$1" == "avida.html" ]; then
@@ -54,5 +81,18 @@ if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ]; then
 else 
    cmake "$@" ../
 fi
+
+# Now that we're all configured, make it and install
 make -j 10 install
+
+
+# Because of the way relative paths are handled during building, we
+# need to make some edits to the avida.js file so it can find the
+# configuration files and pre-load them into the virtual file system.
+# This post-processing applies to avida.html only at this time.
+if [ $? -eq 0 ] && [ "$1" == "avida.html" ]; then 
+   avida_js="work/avida.js"
+   echo "${avida_js}"
+   sed -i '' "s:\.\.\/\.\.\/bin\/avida.data:avida.data:g" "${avida_js}" 
+fi
 

@@ -23,14 +23,6 @@ class cWebViewerDriver : public WorldDriver
       bool m_first_update;
       bool m_pause;
       bool m_done;
-      /*
-      class StdIOFeedback : public Avida::Feedback
-      {
-         void Error(const char* fmt, ...);
-         void Warning(const char* fmt, ...);
-         void Notify(const char* fmt, ...);
-      } m_feedback;
-      */
       cUserFeedback m_feedback;
 
       void Setup();
@@ -89,6 +81,9 @@ void cWebViewerDriver::DisplayErrors(){
          case cUserFeedback::eFeedbackType::UF_NOTIFICATION:
             UI::document << notify_clr <<"\">Note: ";
             break;
+         default:
+            UI::document << "#000000\">";
+            break;
       }
       UI::document << msg.GetData() << "</p>";
    }
@@ -98,21 +93,22 @@ void cWebViewerDriver::Setup()
 {
    GlobalObjectManager::Register(this);
    UI::Initialize();
-   if (m_world=nullptr){
+   if (!m_world){
       m_feedback.Error("cWebViewerDriver is unable to find the world.");
    } else {
-      m_feedback.Notify("Setting driver.");
-      m_world->SetDriver(this);
-      UI::document << "<p>Update:  ";  //<< UI::Var(cWebViewerDriver::m_update);
-      UI::document << "<p>Pop Size: "; //<< UI::Var(cWebViewerDriver::m_num_creatures);
-      UI::document << "<p>Avg Fitness: ";// << UI::Var(cWebViewerDriver::m_ave_fitness);
+      m_feedback.Error("Setting driver.");
+      emp::Alert("Here");
+      //m_world->SetDriver(this);
+
+      //UI::document << "<p>Update:  ";  //<< UI::Var(cWebViewerDriver::m_update);
+      //UI::document << "<p>Pop Size: "; //<< UI::Var(cWebViewerDriver::m_num_creatures);
+      //UI::document << "<p>Avg Fitness: ";// << UI::Var(cWebViewerDriver::m_ave_fitness);
    }
    Refresh();
 }
 
 void cWebViewerDriver::Run()
 {
-  return;
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
   
@@ -164,7 +160,5 @@ void cWebViewerDriver::Run()
     // Exit conditons...
     if (population.GetNumOrganisms() == 0) m_done = true;
   }
-  Refresh();
-
 }
 #endif
