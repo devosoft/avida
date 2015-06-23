@@ -2,8 +2,6 @@ PROJECT(avida-main)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-SET(CMAKE_VERBOSE_MAKEFILE on)
-
 # Final software is built directly into the work subdirectory.
 SET(EXECUTABLE_OUTPUT_PATH
   "${PROJECT_BINARY_DIR}/bin"

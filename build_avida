@@ -92,7 +92,6 @@ make -j 10 install
 # This post-processing applies to avida.html only at this time.
 if [ $? -eq 0 ] && [ "$1" == "avida.html" ]; then 
    avida_js="work/avida.js"
-   echo "${avida_js}"
    sed -i '' "s:\.\.\/\.\.\/bin\/avida.data:/avida.data:g" "${avida_js}" 
 fi
 

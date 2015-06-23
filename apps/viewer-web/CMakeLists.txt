@@ -5,6 +5,13 @@ INCLUDE(CMakeDependentOption)
 
 MESSAGE(STATUS "AVIDA WEB")
 
+
+# Emscripten will need to have a proper suffix set
+# when we're compiling into web-platform as opposed to node.
+# By default it uses ".js" which causes the file system to
+# not be setup properly
+SET(CMAKE_EXECUTABLE_SUFFIX ".html")
+
 # The following three variables must be after the PROJECT statement, otherwise
 # newer versions of cmake will (correctly) use an empty value of
 # PROJECT_BINARY_DIR, since the project didn't exist yet.
