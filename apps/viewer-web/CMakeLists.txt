@@ -187,14 +187,17 @@ IF(AVD_HTML)
                  $<TARGET_OBJECTS:apto_objs>
                  $<TARGET_OBJECTS:avida_core_objs>
                  )
+   
 
    INSTALL_TARGETS(/work avida)
-   
-   #Install web-related resources (e.g. images, etc.)
-   INSTALL(DIRECTORY resources/ DESTINATION work)
-   INSTALL(FILES ${PROJECT_SOURCE_DIR}/libs/empirical/UTests/UI/jquery-1.11.2.min.js DESTINATION work)
 ENDIF(AVD_HTML)
 
-
-
-
+SET(BINARY_SUPPORT
+   ${EXECUTABLE_OUTPUT_PATH}/avida.data
+   ${EXECUTABLE_OUTPUT_PATH}/avida.html.map
+   ${EXECUTABLE_OUTPUT_PATH}/avida.html.mem
+   ${EXECUTABLE_OUTPUT_PATH}/avida.js
+   ${PROJECT_SOURCE_DIR}/libs/empirical/UTests/UI/jquery-1.11.2.min.js
+   )
+INSTALL(DIRECTORY resources/ DESTINATION work)
+INSTALL_FILES(/work FILES ${BINARY_SUPPORT})

@@ -669,13 +669,15 @@ IF(NOT EMSCRIPTEN)
       ${CFG_FILES_DIR}/default-heads-sex.org
       ${CFG_FILES_DIR}/default-transsmt.org 
     )
-ELSE(NOT EMSCRIPTEN AND NOT AVD_HTML)
-   # With optimizations turned off, the *.js.mem file is not generated
-   # Instead, the virtual filesystem is embedded in the executable
-   IF(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-      SET(CFG_FILES
-         ${CMAKE_BINARY_DIR}/bin/avida.js.mem
-         )
-   ENDIF(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+ELSE(NOT EMSCRIPTEN)
+   IF (NOT AVD_HTML)
+      # With optimizations turned off, the *.js.mem file is not generated
+      # Instead, the virtual filesystem is embedded in the executable
+      IF(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+         SET(CFG_FILES
+            ${CMAKE_BINARY_DIR}/bin/avida.js.mem
+            )
+      ENDIF(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+   ENDIF(NOT AVD_HTML)
 ENDIF(NOT EMSCRIPTEN AND NOT AVD_HTML)
 INSTALL_FILES(/work FILES ${CFG_FILES})
