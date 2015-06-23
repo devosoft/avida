@@ -157,7 +157,7 @@ SET(EMS_AVIDA_EMBED_DIR ../../../apps/viewer-web/config)
 # (") when fed to the shell.  Also, the list must include
 # a space between entries.
 SET(EMS_EXPORT_FUNCS
-   "\"['_main', '_empCppCallback']\""
+   "\"['_main', '_empCppCallback', '_StepDriver']\""
    )
 
 # Flags specific to the web target
@@ -167,11 +167,12 @@ SET(WEB_FLAGS
    -s COMPILER_ASSERTIONS=1\
    -s EXPORTED_FUNCTIONS=${EMS_EXPORT_FUNCS}\
    -s NO_EXIT_RUNTIME=1\
+   -s DEMANGLE_SUPPORT=1\
    -DDEBUG "
    )
 
 SET(OFLAGS_WEB 
-   "-g4 -Wno-warn-absolute-paths -Wno-dollar-in-identifier-extension -s TOTAL_MEMORY=67108864 ")
+   "-g4 -Wno-warn-absolute-paths -s TOTAL_MEMORY=67108864 ")
 SET(CMAKE_CXX_FLAGS_RELEASE "")
 SET(CMAKE_CXX_FLAGS "${OFLAGS_WEB} ${WEB_FLAGS} -std=c++11 -Wno-unused-function")
 SET(CMAKE_EXE_LINKER_FLAGS 
@@ -181,7 +182,7 @@ SET(CMAKE_EXE_LINKER_FLAGS
 
 #Setup the Avida-Web Target
 IF(AVD_HTML)
-   ADD_EXECUTABLE(avida 
+   ADD_EXECUTABLE(avida
                  ${AVIDA_HTML_SOURCES}
                  $<TARGET_OBJECTS:apto_objs>
                  $<TARGET_OBJECTS:avida_core_objs>

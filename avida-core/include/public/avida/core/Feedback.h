@@ -41,6 +41,7 @@ namespace Avida {
     LIB_EXPORT virtual void Error(const char* fmt, ...) = 0;
     LIB_EXPORT virtual void Warning(const char* fmt, ...) = 0;
     LIB_EXPORT virtual void Notify(const char* fmt, ...) = 0;
+    LIB_EXPORT virtual void Clear() = 0;
   };
 };
 

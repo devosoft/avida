@@ -1,0 +1,6 @@
+#!/bin/bash
+
+avida_js="cbuild/work/avida.js"
+echo "${avida_js}"
+sed -i '' "s:\.\.\/\.\.\/bin\/avida.data:/avida.data:g" "${avida_js}" 
+

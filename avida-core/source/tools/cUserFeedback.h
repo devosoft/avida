@@ -65,6 +65,7 @@ public:
   void Error(const char* fmt, ...);
   void Warning(const char* fmt, ...);
   void Notify(const char* fmt, ...);
+  void Clear() {m_errors=0;m_warnings=0;m_entries.ResizeClear(0);}
   
   
   int GetNumMessages() const { return m_entries.GetSize(); }
