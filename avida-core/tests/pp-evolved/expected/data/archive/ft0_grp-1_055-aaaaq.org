@@ -1,4 +1,4 @@
-# Thu Apr 24 15:27:05 2014
+# Fri Jun 26 08:30:38 2015
 # Filename........: archive/ft0_grp-1_055-aaaaq.org
 # Update Output...: 50
 # Is Viable.......: 0
