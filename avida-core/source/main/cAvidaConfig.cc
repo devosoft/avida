@@ -83,7 +83,7 @@ bool cAvidaConfig::Load(const cString& filename, const cString& working_dir, cUs
   }
   
   cString version_id = init_file.ReadString("VERSION_ID", "Unknown", warn_default);
-  if (Version::CheckCompatibility(version_id)) {
+  if (!Version::CheckCompatibility(version_id)) {
     if (feedback)
       feedback->Warning("config file version number mismatch -- Avida: '%s'  File: '%s'", Version::String(), (const char*)version_id);
   }
