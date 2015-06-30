@@ -302,7 +302,8 @@ private:
   void GetSkeletons_Batch(cString cur_string);
   void CountNewSignificantLineages(cString cur_string); //Measure 1
   void CountNovelSkeletons(cString cur_string); //Measure 2
-  void CountEcologicalComplexity(cString cur_string); //Measure 3
+  //void CountEcologicalComplexity(cString cur_string); //Measure 3
+  void ShannonDiversitySkeletons(cString cur_string);
   
   
   // Environment Manipulation

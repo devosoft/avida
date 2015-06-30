@@ -5309,6 +5309,8 @@ void cAnalyze::CountNovelSkeletons(cString cur_string)
   cout << "Novel Genotypes: " << count << endl;
 }
 
+/* Uh, maybe we'll come back to this measurment. Turns out the alignment
+makes it pretty challenging
 void cAnalyze::CountEcologicalComplexity(cString cur_string)
 {
   //LOAD
@@ -5364,6 +5366,51 @@ void cAnalyze::CountEcologicalComplexity(cString cur_string)
       cout << iter->first << endl;
     }
   cout << "Ecological complexity: " << found.size() << endl;
+  } */
+
+
+void cAnalyze::ShannonDiversitySkeletons(cString cur_string){
+  //LOAD
+  cString file_update = cur_string.PopWord();
+  cString file_name = "detail-";
+  file_name += file_update;
+  file_name += ".spop";
+
+  genotype_vector skeletons = GetSkeletons(file_name);
+  
+  std::map<InstructionSequence, int> skeleton_counts;
+  float pop_size = 0.0;
+
+  for (genotype_vector::iterator iter = skeletons.begin(); iter != skeletons.end(); ++iter)
+    {
+      if (iter->GetNumCPUs() > 0)
+	{
+	  const Genome& cur_genome = iter->GetGenome();
+	  ConstInstructionSequencePtr cur_seq_p;
+	  ConstGeneticRepresentationPtr cur_rep_p = cur_genome.Representation();
+	  cur_seq_p.DynamicCastFrom(cur_rep_p);
+	  const InstructionSequence& cur_seq = *cur_seq_p;
+	  pop_size += iter->GetNumCPUs();
+	  if (skeleton_counts.count(cur_seq) > 0)
+	    {
+	      skeleton_counts[cur_seq] += iter->GetNumCPUs();
+	    } 
+	  else {
+	    cout << "Found new skeleton! " << cur_seq.AsString() << endl;
+	    skeleton_counts[cur_seq] = iter->GetNumCPUs();
+	  }
+	}
+    }
+  float diversity = 0.0;
+
+  for (std::map<InstructionSequence, int>::iterator iter = skeleton_counts.begin(); iter != skeleton_counts.end(); ++iter)
+    {
+      float prob = iter->second/pop_size;
+      diversity += prob * log2(prob);
+      cout << iter->first.AsString() << " " << iter->second << " " << prob << " " << diversity << endl;
+    }
+  cout << "Skeleton diversity: " << diversity*-1 << endl;
+  //return diversity *-1;
 }
 
 void cAnalyze::CommandMapTasks(cString cur_string)
@@ -10586,7 +10633,8 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("GET_SKELETONS_BATCH", &cAnalyze::GetSkeletons_Batch);
   AddLibraryDef("COUNT_NEW_SIG_LINEAGES", &cAnalyze::CountNewSignificantLineages);
   AddLibraryDef("COUNT_NOVEL_SKELETONS", &cAnalyze::CountNovelSkeletons);
-  AddLibraryDef("COUNT_ECOLOGICAL_COMPLEXITY", &cAnalyze::CountEcologicalComplexity);
+  //AddLibraryDef("COUNT_ECOLOGICAL_COMPLEXITY", &cAnalyze::CountEcologicalComplexity);
+  AddLibraryDef("CALC_SKELETON_DIVERSITY", &cAnalyze::ShannonDiversitySkeletons);
   AddLibraryDef("ANALYZE_POP_COMPLEXITY", &cAnalyze::AnalyzePopComplexity);
   AddLibraryDef("MAP_DEPTH", &cAnalyze::CommandMapDepth);
   // (Untested) AddLibraryDef("PAIRWISE_ENTROPY", &cAnalyze::CommandPairwiseEntropy); 
