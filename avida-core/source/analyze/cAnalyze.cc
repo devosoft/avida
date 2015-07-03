@@ -5432,7 +5432,7 @@ void cAnalyze::GetLargestSkeleton(cString cur_string){
       cur_seq_p.DynamicCastFrom(cur_rep_p);
       const InstructionSequence& cur_seq = *cur_seq_p;
       
-      for (int i = 0; i < iter->GetLength(); i++)
+      for (int i = 0; i < cur_seq.GetSize(); i++)
 	{
 	  if (cur_seq[i] != null_inst){
 	    length++;
@@ -10668,6 +10668,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("COUNT_NOVEL_SKELETONS", &cAnalyze::CountNovelSkeletons);
   //AddLibraryDef("COUNT_ECOLOGICAL_COMPLEXITY", &cAnalyze::CountEcologicalComplexity);
   AddLibraryDef("CALC_SKELETON_DIVERSITY", &cAnalyze::ShannonDiversitySkeletons);
+  AddLibraryDef("GET_LARGEST_SKELETON", &cAnalyze::GetLargestSkeleton);
   AddLibraryDef("ANALYZE_POP_COMPLEXITY", &cAnalyze::AnalyzePopComplexity);
   AddLibraryDef("MAP_DEPTH", &cAnalyze::CommandMapDepth);
   // (Untested) AddLibraryDef("PAIRWISE_ENTROPY", &cAnalyze::CommandPairwiseEntropy); 
