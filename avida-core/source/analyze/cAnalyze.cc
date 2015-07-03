@@ -5206,7 +5206,7 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
       if (found) break;
     }
   }
-
+ 
   // Same for second file
   
   std::map<InstructionSequence, int> lineage2_map;
@@ -5412,6 +5412,39 @@ void cAnalyze::ShannonDiversitySkeletons(cString cur_string){
   cout << "Skeleton diversity: " << diversity*-1 << endl;
   //return diversity *-1;
 }
+
+void cAnalyze::GetLargestSkeleton(cString cur_string){
+  cout << "Getting largest skeleton..." << endl;
+  cString file_update = cur_string.PopWord();
+  cString file_name = "detail-";
+  file_name += file_update;
+  file_name += ".spop";
+
+  genotype_vector skeletons = GetSkeletons(file_name);
+  int largest = 0;
+  for (genotype_vector::iterator iter = skeletons.begin(); iter != skeletons.end(); ++iter)
+    {
+      int length = 0;
+      const Genome& cur_genome = iter->GetGenome();
+      Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cur_genome.Properties().Get("instset").StringValue()).ActivateNullInst();
+      ConstInstructionSequencePtr cur_seq_p;
+      ConstGeneticRepresentationPtr cur_rep_p = cur_genome.Representation();
+      cur_seq_p.DynamicCastFrom(cur_rep_p);
+      const InstructionSequence& cur_seq = *cur_seq_p;
+      
+      for (int i = 0; i < iter->GetLength(); i++)
+	{
+	  if (cur_seq[i] != null_inst){
+	    length++;
+	  }
+	}
+      if (length > largest){
+	largest = length;
+      }
+    }
+  cout << "Largest skeleton: " << largest << endl;
+}
+
 
 void cAnalyze::CommandMapTasks(cString cur_string)
 {
