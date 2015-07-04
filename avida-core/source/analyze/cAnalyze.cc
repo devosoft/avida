@@ -4724,7 +4724,7 @@ genotype_vector cAnalyze::GetSkeletons(cString cur_string)
           // information.
           if (ko_fitness >= base_fitness &&
               ko_effect[line1] < 0 && ko_effect[line2] < 0) {
-	    cout << "Warning: individual knockouts harmful, but combination not, removing both" << endl;
+	    //cout << "Warning: individual knockouts harmful, but combination not, removing both" << endl;
             //Together they are non-informative so knock them both out
             genotype->SetGenome(mod_genome);
             
@@ -4782,7 +4782,7 @@ genotype_vector cAnalyze::GetSkeletons(cString cur_string)
           // If the knockout affected fitness, keep the instruction, otherwise the site is non-informative and therefore stays null.
           mod_seq[line_num].SetOp(cur_inst);
           
-        }else cout << "Additional single knockout found after double knockouts removed! line: "<< line_num << endl;
+        }//else cout << "Additional single knockout found after double knockouts removed! line: "<< line_num << endl;
         genotype->SetGenome(mod_genome);
 
       }
@@ -5404,7 +5404,7 @@ void cAnalyze::ShannonDiversitySkeletons(cString cur_string){
 	      skeleton_counts[cur_seq] += iter->GetNumCPUs();
 	    } 
 	  else {
-	    cout << "Found new skeleton! " << cur_seq.AsString() << endl;
+	    //cout << "Found new skeleton! " << cur_seq.AsString() << endl;
 	    skeleton_counts[cur_seq] = iter->GetNumCPUs();
 	  }
 	}
@@ -5415,7 +5415,7 @@ void cAnalyze::ShannonDiversitySkeletons(cString cur_string){
     {
       float prob = iter->second/pop_size;
       diversity += prob * log2(prob);
-      cout << iter->first.AsString() << " " << iter->second << " " << prob << " " << diversity << endl;
+      //cout << iter->first.AsString() << " " << iter->second << " " << prob << " " << diversity << endl;
     }
   cout << "Skeleton diversity: " << diversity*-1 << endl;
   ofstream outfile;
