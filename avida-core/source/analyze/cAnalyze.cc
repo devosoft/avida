@@ -4751,7 +4751,7 @@ genotype_vector cAnalyze::GetSkeletons(cString cur_string)
       
       
       //Need to reload the genome from the organism to make sure we get the correct partial skeleton
-
+      cout << "At reload step" << endl;
       const Genome& base_genome = genotype->GetGenome();
       ConstInstructionSequencePtr base_seq_p;
       ConstGeneticRepresentationPtr rep_p = base_genome.Representation();
@@ -4765,6 +4765,7 @@ genotype_vector cAnalyze::GetSkeletons(cString cur_string)
       InstructionSequence& mod_seq = *mod_seq_p;
       
       // Loop through all the lines of code, testing the removal of each. We're doing this again because there is a possibility new single knockouts will become clear after double knockouts removed.
+      cout << "aboust to loop through all lines" << endl;
       for (int line_num = 0; line_num < max_line; line_num++) {
         if (mod_seq[line_num].GetOp() == null_inst.GetOp()) continue;
         // Save a copy of the current instruction and replace it with "NULL"
@@ -4789,16 +4790,19 @@ genotype_vector cAnalyze::GetSkeletons(cString cur_string)
       
 
     }
-    
+    cout << "about to remove repeated nulls" << endl;
+
     //Remove repeated null instructions
     //TODO: this doesn't seem to be working, set the seq/genome somehow??
     for (int line_num = 0; line_num < max_line; line_num++) {
       if (mod_seq[line_num] == null_inst && mod_seq[line_num-1] == null_inst)
       {
         mod_seq.Remove(line_num, 1);
-        line_num -= 1;
+        line_num -= 1;  
       }
-        
+      if (mod_seq.GetSize() == 1){
+	break;
+      } 
     }
     genotype->SetGenome(mod_genome);    
   }
