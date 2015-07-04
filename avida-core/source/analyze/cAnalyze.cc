@@ -5254,6 +5254,10 @@ void cAnalyze::CountNewSignificantLineages(cString cur_string)
   }
   // TODO: Have it then go back for every timepoint based on the gap between the two files
   cout << "Number of new significant lineages " << sig_lineages << endl;
+  ofstream outfile;
+  outfile.open("change_potential.csv", ios_base::app);
+  outfile << second_file_update << "," << sig_lineages << endl;
+  outfile.close();
 }
 
 //Arguments: The update of the detail file to be analyzed and the interval between updates
@@ -5307,6 +5311,10 @@ void cAnalyze::CountNovelSkeletons(cString cur_string)
 	}
     }
   cout << "Novel Genotypes: " << count << endl;
+  ofstream outfile;
+  outfile.open("novelty_potential.csv", ios_base::app);
+  outfile << first_file_update << "," << count << endl;
+  outfile.close();
 }
 
 /* Uh, maybe we'll come back to this measurment. Turns out the alignment
@@ -5410,6 +5418,10 @@ void cAnalyze::ShannonDiversitySkeletons(cString cur_string){
       cout << iter->first.AsString() << " " << iter->second << " " << prob << " " << diversity << endl;
     }
   cout << "Skeleton diversity: " << diversity*-1 << endl;
+  ofstream outfile;
+  outfile.open("ecoogical_potential.csv", ios_base::app);
+  outfile << file_update << "," << diversity*-1 << endl;
+  outfile.close();
   //return diversity *-1;
 }
 
@@ -5443,6 +5455,10 @@ void cAnalyze::GetLargestSkeleton(cString cur_string){
       }
     }
   cout << "Largest skeleton: " << largest << endl;
+  ofstream outfile;
+  outfile.open("complexity_potential.csv", ios_base::app);
+  outfile << file_update << "," << largest << endl;
+  outfile.close();
 }
 
 
