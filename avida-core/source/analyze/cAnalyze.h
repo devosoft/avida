@@ -305,7 +305,7 @@ private:
   //void CountEcologicalComplexity(cString cur_string); //Measure 3
   void ShannonDiversitySkeletons(cString cur_string);
   void GetLargestSkeleton(cString cur_string);
-  
+  void AllComplexityBarriers(cString cur_string);
   
   // Environment Manipulation
   void EnvironmentSetup(cString cur_string);
