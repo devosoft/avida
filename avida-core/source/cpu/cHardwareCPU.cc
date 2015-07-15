@@ -54,6 +54,7 @@
 #include <climits>
 #include <fstream>
 #include <cmath>
+#include <algorithm>
 
 using namespace std;
 using namespace Avida;
@@ -3093,7 +3094,7 @@ bool cHardwareCPU::Inst_Setbit(cAvidaContext&)
   const int to_set = FindModifiedRegister(REG_BX);
   const int bit_reg = FindNextRegister(to_set);
   
-  const int bit_to_set = max(0, GetRegister(bit_reg)) % (sizeof(int) * 8);
+  const int bit_to_set = std::max(0, GetRegister(bit_reg)) % (sizeof(int) * 8);
   
   GetRegister(to_set) |= 1 << bit_to_set;
   

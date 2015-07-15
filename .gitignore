@@ -7,5 +7,20 @@ cmake_install.cmake
 install_manifest.txt
 .DS_Store
 wbuild
-
+*.log
+*.filter
+x86
+bin
+*.sln
+*.sdf
+*.vcxproj*
+lib
+build.xml
+*.dir*
+*.log
+*.tlog*
+*.obj
+*.swp
+*.suo
+*.opensdf
 

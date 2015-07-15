@@ -48,7 +48,10 @@
 #include "cTaskEntry.h"
 #include "cWorld.h"
 
+#include <algorithm>
+
 using namespace Avida;
+using namespace std;
 
 
 cEnvironment::cEnvironment(cWorld* world) : m_world(world) , m_tasklib(world),

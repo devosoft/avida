@@ -32,6 +32,7 @@
 #include "tList.h"
 
 #include <fstream>
+#include <algorithm>
 
 using namespace std;
 
