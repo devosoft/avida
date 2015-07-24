@@ -11,3 +11,7 @@
 [submodule "libs/av_ui"]
 	path = libs/av_ui
 	url = http://github.com/dblackwood/av_ui
+[submodule "libs/empirical"]
+        path = libs/empirical
+        url = https://github.com/mecere99/empirical
+
