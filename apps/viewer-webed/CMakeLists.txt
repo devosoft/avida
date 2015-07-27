@@ -140,6 +140,7 @@ SOURCE_GROUP(target\\avida FILES ${AVIDAED_WEB_SOURCES})
 # deep in the cbuild directory, so we need to go back up
 # a few levels.
 SET(EMS_AVIDA_EMBED_DIR ../../../apps/viewer-webed/config)
+SET(RESOURCES_DIR ../../../apps/viewer-webed/resources)
 
 # A list of functions that should be exported
 # The list is fragile.  It *must* be enclosed in quotes
@@ -164,7 +165,8 @@ SET(OFLAGS_WEB
 SET(CMAKE_CXX_FLAGS_RELEASE "")
 SET(CMAKE_CXX_FLAGS "${OFLAGS_WEB} ${WEB_FLAGS} -std=c++11 -Wno-unused-function")
 SET(CMAKE_EXE_LINKER_FLAGS 
-     "${CMAKE_EXE_LINKER_FLAGS}\
+   "${CMAKE_EXE_LINKER_FLAGS} \
+     --pre-js ${RESOURCES_DIR}/avidaui-prepend.js \
      --embed-file ${EMS_AVIDA_EMBED_DIR}@/ -s ALLOW_MEMORY_GROWTH=1")
 
 

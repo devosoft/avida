@@ -49,7 +49,8 @@ namespace Avida{
             bool Ready() {return (!m_done && m_world!=nullptr && m_ctx!=nullptr);};
             Avida::Feedback& Feedback() {return m_feedback;}
 
-            void StepUpdate();
+            bool StepUpdate();
+            void Run();
             void PlayPause();
             void Stop();
             json GetPopulationData();
@@ -59,17 +60,20 @@ namespace Avida{
       void Driver::PlayPause()
       {
          std::cerr << "PlayPause" << std::endl;
+         std::cerr << "\t m_pause=" << m_pause << " m_done=" << m_done << std::endl;
          if (m_pause){
-            Driver::m_pause = false;
+            m_pause = false;
+            if (!m_done) 
+               Run();
          } else {
-            Driver::m_pause = true;
+            m_pause = true;
          }
       }
 
       void Driver::Stop()
       {
          std::cerr << "Stop." << std::endl;
-         Driver::m_done = true;
+         m_done = true;
       }
 
       
@@ -134,10 +138,17 @@ namespace Avida{
       }
 
 
-      void Driver::StepUpdate(){
 
-         if (Driver::m_pause || Driver::m_done)
-            return;
+      void Driver::Run()
+      {
+         while(StepUpdate());
+      }
+
+
+      bool Driver::StepUpdate()
+      {
+         if (m_pause || m_done)
+            return false;
          cPopulation& population = m_world->GetPopulation();
          cStats& stats = m_world->GetStats();
 
@@ -150,10 +161,12 @@ namespace Avida{
          DisplayErrors(); 
 
          m_world->GetEvents(*m_ctx);
-         if (m_done == true) return;
+         if (m_done == true) return false;
 
          // Increment the Update.
          stats.IncCurrentUpdate();
+         
+         std::cerr << "Update: " << stats.GetUpdate() << std::endl;
 
          population.ProcessPreUpdate();
 
@@ -188,6 +201,7 @@ namespace Avida{
 
          // Exit conditons...
          if (population.GetNumOrganisms() == 0) m_done = true;
+         return true;
       } //Driver.h
    } //WebViewer namespace
 } //Avida namespace
