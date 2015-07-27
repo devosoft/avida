@@ -1,5 +1,5 @@
-#ifndef Avida_cWebViewerDriver_h
-#define Avida_cWebViewerDriver_h
+#ifndef Avida_WebViewer_Driver_h
+#define Avida_WebViewer_Driver_h
 
 #include "cStats.h"
 #include "cWorld.h"
@@ -14,7 +14,7 @@ using namespace Avida;
 
 namespace Avida{
    namespace WebViewer{
-      class cWebViewerDriver : public WorldDriver
+      class Driver : public WorldDriver
       {
          private:  //These do nothing
             void Pause()  {}
@@ -36,11 +36,11 @@ namespace Avida{
             void Setup(cWorld*, cUserFeedback);
 
          public:
-            cWebViewerDriver(cWorld* world, cUserFeedback feedback)
-            { cWebViewerDriver::Setup(world, feedback); }
-            ~cWebViewerDriver() {GlobalObjectManager::Unregister(this);}
-            cWebViewerDriver() = delete;
-            cWebViewerDriver(const cWebViewerDriver&) = delete;
+            Driver(cWorld* world, cUserFeedback feedback)
+            { Driver::Setup(world, feedback); }
+            ~Driver() {GlobalObjectManager::Unregister(this);}
+            Driver() = delete;
+            Driver(const Driver&) = delete;
 
             bool Ready() {return (!m_done && m_world!=nullptr && m_ctx!=nullptr);};
             Avida::Feedback& Feedback() {return m_feedback;}
@@ -51,22 +51,22 @@ namespace Avida{
 
       };
 
-      void cWebViewerDriver::PlayPause(){
+      void Driver::PlayPause(){
          std::cerr << "PlayPause" << std::endl;
          if (m_pause){
-            cWebViewerDriver::m_pause = false;
+            Driver::m_pause = false;
          } else {
-            cWebViewerDriver::m_pause = true;
+            Driver::m_pause = true;
          }
       }
 
-      void cWebViewerDriver::Stop(){
+      void Driver::Stop(){
          std::cerr << "Stop." << std::endl;
-         cWebViewerDriver::m_done = true;
+         Driver::m_done = true;
       }
 
 
-      void cWebViewerDriver::DisplayErrors(){
+      void Driver::DisplayErrors(){
          for (int k=0; k<m_feedback.GetNumMessages(); ++k){
             cUserFeedback::eFeedbackType msg_type = m_feedback.GetMessageType(k);
             const cString& msg = m_feedback.GetMessage(k);
@@ -89,12 +89,12 @@ namespace Avida{
       }
 
 
-      void cWebViewerDriver::Setup(cWorld* a_world, cUserFeedback feedback)
+      void Driver::Setup(cWorld* a_world, cUserFeedback feedback)
       {
          GlobalObjectManager::Register(this);
          m_feedback = feedback;
          if (!a_world){
-            m_feedback.Error("cWebViewerDriver is unable to find the world.");
+            m_feedback.Error("Driver is unable to find the world.");
          } else {
             // Setup our members 
             m_pause = false;
@@ -106,9 +106,9 @@ namespace Avida{
       }
 
 
-      void cWebViewerDriver::StepUpdate(){
+      void Driver::StepUpdate(){
 
-         if (cWebViewerDriver::m_pause || cWebViewerDriver::m_done)
+         if (Driver::m_pause || Driver::m_done)
             return;
          cPopulation& population = m_world->GetPopulation();
          cStats& stats = m_world->GetStats();
@@ -160,7 +160,7 @@ namespace Avida{
 
          // Exit conditons...
          if (population.GetNumOrganisms() == 0) m_done = true;
-      } //cWebViewerDriver.h
+      } //Driver.h
    } //WebViewer namespace
 } //Avida namespace
 
