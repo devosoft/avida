@@ -111,15 +111,15 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 
 
 
-# Locate Rapid JSON's headers
-SET(RAPIDJSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/rapidjson/include)
+# Locate JSON headers
+SET(JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/json/src) 
 
 # Locate apto's headers
 SET(APTO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/apto/include)
 
 
 INCLUDE_DIRECTORIES(
-   ${RAPIDJSON_INCLUDE_DIR}
+   ${JSON_INCLUDE_DIR}
    ${AVIDA_INCLUDES}
    ${APTO_INCLUDE_DIR}
    )
@@ -146,7 +146,7 @@ SET(EMS_AVIDA_EMBED_DIR ../../../apps/viewer-webed/config)
 # (") when fed to the shell.  Also, the list must include
 # a space between entries.
 SET(EMS_EXPORT_FUNCS
-   "\"['_main', '_empCppCallback', '_StepDriver']\""
+   "\"['_main', '_PlayPause', '_Stop', '_GetPopulationData']\""
    )
 
 # Flags specific to the web target

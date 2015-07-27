@@ -7,10 +7,14 @@
 #include "cHardwareBase.h"
 #include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
+#include "avida/data/Manager.h"
+#include "avida/data/Package.h"
 #include <iostream>
+#include "json.hpp"
 
 
 using namespace Avida;
+using json = nlohmann::json;
 
 namespace Avida{
    namespace WebViewer{
@@ -48,10 +52,12 @@ namespace Avida{
             void StepUpdate();
             void PlayPause();
             void Stop();
+            json GetPopulationData();
 
       };
 
-      void Driver::PlayPause(){
+      void Driver::PlayPause()
+      {
          std::cerr << "PlayPause" << std::endl;
          if (m_pause){
             Driver::m_pause = false;
@@ -60,9 +66,31 @@ namespace Avida{
          }
       }
 
-      void Driver::Stop(){
+      void Driver::Stop()
+      {
          std::cerr << "Stop." << std::endl;
          Driver::m_done = true;
+      }
+
+      
+      json Driver::GetPopulationData()
+      {
+         #define MGR_TO_JSON(KEY, TYPE)\
+            { #KEY, mgr->GetCurrentValue(#KEY)->TYPE##Value() }
+
+         const Avida::Data::ManagerPtr mgr = m_world->GetDataManager();
+         json pop_data = {
+            MGR_TO_JSON(core.update, Int),
+            MGR_TO_JSON(core.world.organisms, Int),
+            MGR_TO_JSON(core.world.ave_metabolic_rate, Double),
+            MGR_TO_JSON(core.world.ave_gestation_time, Double),
+            MGR_TO_JSON(core.world.ave_fitness, Double),
+            MGR_TO_JSON(core.world.ave_age, Double)
+         };
+
+         #undef MGR_TO_JSON
+
+         return pop_data;
       }
 
 

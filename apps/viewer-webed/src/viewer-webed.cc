@@ -41,9 +41,9 @@ void PlayPause()
 }
 
 extern "C"
-void Finish()
+void Stop()
 {
-   driver->Finish();
+   driver->Stop();
 }
 
 extern "C"
