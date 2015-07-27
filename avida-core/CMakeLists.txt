@@ -670,7 +670,7 @@ IF(NOT EMSCRIPTEN)
       ${CFG_FILES_DIR}/default-transsmt.org 
     )
 ELSE(NOT EMSCRIPTEN)
-   IF (NOT AVD_HTML)
+   IF (NOT AVD_HTML AND NOT AVD_ED) 
       # With optimizations turned off, the *.js.mem file is not generated
       # Instead, the virtual filesystem is embedded in the executable
       IF(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -678,6 +678,6 @@ ELSE(NOT EMSCRIPTEN)
             ${CMAKE_BINARY_DIR}/bin/avida.js.mem
             )
       ENDIF(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-   ENDIF(NOT AVD_HTML)
+   ENDIF(NOT AVD_HTML AND NOT AVD_ED)
 ENDIF(NOT EMSCRIPTEN)
 INSTALL_FILES(/work FILES ${CFG_FILES})

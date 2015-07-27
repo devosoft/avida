@@ -196,4 +196,7 @@ void Avida2Driver::StdIOFeedback::Notify(const char* fmt, ...)
   printf("\n");
 }
 
+void Avida2Driver::StdIOFeedback::Clear()
+{
+}
 

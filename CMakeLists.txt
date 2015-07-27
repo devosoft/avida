@@ -25,7 +25,11 @@ ENDIF(NOT WIN32 AND NOT EMSCRIPTEN)
 ADD_SUBDIRECTORY(avida-core)
 
 IF(EMSCRIPTEN)
-   ADD_SUBDIRECTORY(apps/viewer-web)
+   IF(AVD_HTML)
+      ADD_SUBDIRECTORY(apps/viewer-web)
+   ELSEIF(AVD_ED)
+      ADD_SUBDIRECTORY(apps/viewer-webed)
+   ENDIF(AVD_HTML)
 ENDIF(EMSCRIPTEN)
 
 # Default location for installed software/configs/ docs is the build directory.

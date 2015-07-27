@@ -1,5 +1,7 @@
 #!/bin/sh
 
+EMSCRIPTEN_APPS=("avida.js" "avida.html" "avida-ed")
+
 # This is ugly; thanks sed
 # This function adds a line at a particular location
 # in a file
@@ -45,7 +47,7 @@ cd cbuild
 
 # Decide whether or not to use emscripten's cmake toolchain
 # and then build
-if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ]; then
+if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ] || [ "$1" ==  "avida-ed" ]; then
    if [ -z "$EMSCRIPTEN" ]; then
       echo "Emscripten's environment variables are not properly set."
       echo "Unable to build."
@@ -72,9 +74,11 @@ if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ]; then
 
    # Only the viewer or the shell version should be built, exclusively
    if [ "$1" == "avida.js" ]; then
-      em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=ON -DAVD_HTML=OFF"
+      em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=ON -DAVD_HTML=OFF -DAVD_ED=OFF"
    elif [ "$1" == "avida.html" ]; then
-      em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=OFF -DAVD_HTML=ON"
+      em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=OFF -DAVD_HTML=ON -DAVD_ED=OFF"
+   elif [ "$1" == "avida-ed" ]; then
+      em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=OFF -DAVD_HTML=OFF -DAVD_ED=ON"
    fi
    cmake ${em_cmake_flags} ../
 
@@ -90,8 +94,10 @@ make -j 10 install
 # need to make some edits to the avida.js file so it can find the
 # configuration files and pre-load them into the virtual file system.
 # This post-processing applies to avida.html only at this time.
-if [ $? -eq 0 ] && [ "$1" == "avida.html" ]; then 
-   avida_js="work/avida.js"
-   sed -i '' "s:\.\.\/\.\.\/bin\/avida.data:/avida.data:g" "${avida_js}" 
+if [ $? -eq 0 ]; then
+   if [ "$1" == "avida.html" ] || [ "$1" == "avida-ed" ]; then
+      avida_js="work/avida.js"
+      sed -i '' "s:\.\.\/\.\.\/bin\/avida.data:/avida.data:g" "${avida_js}" 
+   fi
 fi
 
