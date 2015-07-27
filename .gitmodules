@@ -5,13 +5,10 @@
 	path = libs/apto
 	url = https://github.com/devosoft/apto
 	branch = master
-[submodule "libs/rapidjson"]
-	path = libs/rapidjson
-	url = https://github.com/ruppmatt/rapidjson
+[submodule "libs/json"]
+	path = libs/json
+	url = https://github.com/ruppmatt/json
 [submodule "libs/av_ui"]
 	path = libs/av_ui
 	url = http://github.com/dblackwood/av_ui
-[submodule "libs/empirical"]
-        path = libs/empirical
-        url = https://github.com/mecere99/empirical
 
