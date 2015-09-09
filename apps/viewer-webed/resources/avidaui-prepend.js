@@ -16,7 +16,15 @@ var avida_running = 0;
 var msg_queue = [];
 
 onmessage = function(msg) {
-  Module.ccall('ReceiveMessage', null, ['string'], msg.toString());
+  msg_queue.push(msg.data);
+}
+
+function getMessages() {
+  var msgs = JSON.stringify(msg_queue);
+  var buffer = _malloc(msgs.length+1);
+  writeStringToMemory(msgs,buffer);
+  msg_queue = [];
+  return buffer;
 }
 
 

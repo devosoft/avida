@@ -49,8 +49,10 @@ namespace Avida{
       Driver() = delete;
       Driver(const Driver&) = delete;
       
-      bool Ready() {return (!m_finished && m_world!=nullptr && m_ctx!=nullptr);};
-      Avida::Feedback& Feedback() {return m_feedback;}
+      bool Ready() const {return (!m_finished && m_world!=nullptr && m_ctx!=nullptr);};
+      bool IsFinished() const { return m_finished; }
+      bool IsPaused() const { return m_paused; }
+      Avida::Feedback& Feedback()  {return m_feedback;}
       
       void ProcessMessage(const WebViewerMsg& msg);
       bool StepUpdate();
@@ -64,8 +66,8 @@ namespace Avida{
     
     void Driver::RunPause()
     {
-      std::cerr << "RunPause" << std::endl;
-      std::cerr << "\t m_paused=" << m_paused << " m_finished=" << m_finished << std::endl;
+      cerr << "RunPause" << endl;
+      cerr << "\t m_paused=" << m_paused << " m_finished=" << m_finished << endl;
       if (m_paused){
         m_paused = false;
       } else {
@@ -145,34 +147,37 @@ namespace Avida{
     
     void Driver::ProcessMessage(const WebViewerMsg& msg)
     {
+      cerr << "\tProcessing message" << msg.dump() << endl;
       bool success = false;
       
       if (msg.find("Key") == msg.end()) {  //This message is missing it's Key; can't process.
+        cerr << "\t\tMessage is invlaid" << endl;
         WebViewerMsg error_msg;
         error_msg["Key"] = "AvidaError";
         error_msg["Fatal"] = false;
         error_msg["Type"] = "Messaging";
         error_msg["Description"] = "Message is missing key.";
         error_msg["Received"] = msg;
-        PostMessage(error_msg);
+        //PostMessage(error_msg);
       } else {
-        
-        WebViewerMsg msg = ReturnMessage(msg);
-        msg["Success"] = false;
+        cerr << "\t\tMessage is valid." << endl;
+        //WebViewerMsg msg = ReturnMessage(msg);
+        //msg["Success"] = false;
         
         string key = msg["Key"];
       
         if (key == "RunPause"){
-          msg["Success"] = true;
+          cerr << "\t\t\tMessage is RunPause" << endl;
+          //msg["Success"] = true;
           RunPause();
-          PostMessage(msg);
+          //PostMessage(msg);
         } else if (key == "Finish") {
-          msg["Success"] = true;
+          //msg["Success"] = true;
           m_finished = true;
         } else {
-          msg["Description"] = "Unknown key";
+          //msg["Description"] = "Unknown key";
         }
-        PostMessage(msg);
+        //PostMessage(msg);
       }
     }
     
@@ -180,16 +185,7 @@ namespace Avida{
     extern "C"
     void Driver::Run()
     {
-      while(! m_finished){
-        while(m_paused){
-          emscripten_sleep(10);
-        }
-        while(!m_paused && !m_finished){
-          m_finished = StepUpdate();
-          emscripten_sleep(10);
-        }
-      }
-      //TODO: PostMessage: Finished
+            //This method may not be needed.
     }
     
     
@@ -253,5 +249,7 @@ namespace Avida{
     } //Driver.h
   } //WebViewer namespace
 } //Avida namespace
+
+
 
 #endif

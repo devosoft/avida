@@ -8,6 +8,7 @@
 
 #include "Messaging.h"
 #include "Driver.h"
+#include <cstdlib>
 
 #ifndef viewer_webed_Callbacks_h
 #define viewer_webed_Callbacks_h
@@ -16,28 +17,36 @@ extern Avida::WebViewer::Driver* driver;
 
 namespace Avida {
   namespace WebViewer {
-    /*
-      This is a means of allowing JS to pass received
-      messages into Avida.
-    */
-    extern "C"
-    void ReceiveMessage(const ReceivedMessage msg)
+    
+    void CheckMessages()
     {
-      driver->ProcessMessage(nlohmann::json::parse(msg));
+      cerr << "CheckMessage" << endl;
+      EMStringPtr msg_buf = GetMessages();
+      json msgs = nlohmann::json::parse( (char*) msg_buf);
+      std::free( (void*) msg_buf);
+      for (auto msg : msgs){
+        driver->ProcessMessage(msg);
+      }
     }
     
-    
     /*
-      This is a backup means of running the driver using
-      a callback from JS.  The Emterpreterified (!)
-      code does not require this callback to be exposed
-      as the callstack is preserved to allow for message
-      reception.
+      I need to expose this function using C-style linkage
+      so I can whitelist it for emterpretifying.
     */
     extern "C"
     void RunDriver()
     {
-      driver->Run();
+      while(!driver->IsFinished()){
+        while(driver->IsPaused()){
+          emscripten_sleep(100);
+          CheckMessages();
+        }
+        while(!(driver->IsFinished() && driver->IsPaused())){
+          driver->StepUpdate();
+          emscripten_sleep(100);
+          CheckMessages();
+        }
+      }
     }
   }
 }

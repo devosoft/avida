@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
    cWorld* world = cWorld::Initialize(cfg, "/", new_world, &feedback, &defs);
 
    driver = new Driver(world, feedback);
-   driver->Run();
+   RunDriver();
 }
 
 

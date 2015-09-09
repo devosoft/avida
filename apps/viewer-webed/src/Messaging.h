@@ -11,7 +11,7 @@
 namespace Avida{
   namespace WebViewer{
     
-    typedef std::int8_t EMStringPtr;
+    typedef std::uint32_t EMStringPtr;
     typedef nlohmann::json WebViewerMsg;
     typedef char* ReceivedMessage;
     
@@ -22,11 +22,11 @@ namespace Avida{
     
     
     extern "C"
-    void CheckMessages()
+    EMStringPtr GetMessages()
     {
-      // Call getMessages on the JS side
-      EM_ASM(getMessages());
+      return EM_ASM_INT_V(return getMessages());
     }
+    
     
     void PostMessage(const WebViewerMsg& msg)
     {
@@ -35,7 +35,6 @@ namespace Avida{
       // In reality, emscripten requires these
       // messages must be strings or numbers
       // We're defaulting to strings only.
-      
       EM_ASM_ARGS(
                   {
                     doPostMessage(Pointer_stringify($0));
