@@ -630,7 +630,7 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
 }
 
 
-void cAnalyzeGenotype::PrintTasks(ofstream& fp, int min_task, int max_task)
+void cAnalyzeGenotype::PrintTasks(ostream& fp, int min_task, int max_task)
 {
   if (max_task == -1) max_task = task_counts.GetSize();
   
@@ -639,7 +639,7 @@ void cAnalyzeGenotype::PrintTasks(ofstream& fp, int min_task, int max_task)
   }
 }
 
-void cAnalyzeGenotype::PrintTasksQuality(ofstream& fp, int min_task, int max_task)
+void cAnalyzeGenotype::PrintTasksQuality(ostream& fp, int min_task, int max_task)
 {
   if (max_task == -1) max_task = task_counts.GetSize();
   
@@ -648,7 +648,7 @@ void cAnalyzeGenotype::PrintTasksQuality(ofstream& fp, int min_task, int max_tas
   }
 }
 
-void cAnalyzeGenotype::PrintInternalTasks(ofstream& fp, int min_task, int max_task)
+void cAnalyzeGenotype::PrintInternalTasks(ostream& fp, int min_task, int max_task)
 {
   if (max_task == -1) max_task = internal_task_counts.GetSize();
   
@@ -657,7 +657,7 @@ void cAnalyzeGenotype::PrintInternalTasks(ofstream& fp, int min_task, int max_ta
   }
 }
 
-void cAnalyzeGenotype::PrintInternalTasksQuality(ofstream& fp, int min_task, int max_task)
+void cAnalyzeGenotype::PrintInternalTasksQuality(ostream& fp, int min_task, int max_task)
 {
   if (max_task == -1) max_task = internal_task_counts.GetSize();
   

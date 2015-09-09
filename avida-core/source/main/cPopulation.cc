@@ -4954,7 +4954,7 @@ void cPopulation::PrintDemeTasks() {
   df->Endl();
 }
 
-void cPopulation::DumpDemeFounders(ofstream& fp) {
+void cPopulation::DumpDemeFounders(ostream& fp) {
   fp << "#filetype deme_founders" << endl
   << "#format deme_id num_founders genotype_ids" << endl
   << endl

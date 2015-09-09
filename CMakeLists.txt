@@ -2,6 +2,8 @@ PROJECT(avida-main)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
+SET(CMAKE_VERBOSE_MAKEFILE on)
+
 # Final software is built directly into the work subdirectory.
 SET(EXECUTABLE_OUTPUT_PATH
   "${PROJECT_BINARY_DIR}/bin"
@@ -15,8 +17,11 @@ SET(LIBRARY_OUTPUT_PATH
   "Built libraries are placed here before installation."
 )
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 
 ADD_SUBDIRECTORY(libs/apto)
+
 
 IF(NOT WIN32 AND NOT EMSCRIPTEN)
   ADD_SUBDIRECTORY(libs/tcmalloc-1.4)

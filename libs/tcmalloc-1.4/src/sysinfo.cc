@@ -829,7 +829,7 @@ int ProcMapsIterator::FormatLine(char* buffer, int bufsize,
       ? '-' : 'p';
 
   const int rc = snprintf(buffer, bufsize,
-                          "%08"PRIx64"-%08"PRIx64" %c%c%c%c %08"PRIx64" %02x:%02x %-11"PRId64" %s\n",
+                          "%08" PRIx64 "-%08" PRIx64 " %c%c%c%c %08" PRIx64 " %02x:%02x %-11" PRId64 " %s\n",
                           start, end, r,w,x,p, offset,
                           static_cast<int>(dev/256), static_cast<int>(dev%256),
                           inode, filename);

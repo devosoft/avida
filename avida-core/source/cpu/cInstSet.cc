@@ -313,7 +313,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
 }
 
 
-void cInstSet::SaveInstructionSequence(ofstream& of, const InstructionSequence& seq) const
+void cInstSet::SaveInstructionSequence(ostream& of, const InstructionSequence& seq) const
 {
   for (int i = 0; i < seq.GetSize(); i++) of << GetName(seq[i]) << endl;  
 }

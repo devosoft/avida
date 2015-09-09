@@ -91,7 +91,7 @@ Avida::Output::FilePtr Avida::Output::File::StaticWithPath(World* world, Apto::S
 Avida::Output::File::File(World* world, const OutputID& name, bool append)
   : Socket(world, name), m_descr_written(false), m_num_cols(0)
 {
-  m_fp.open(name, (append) ? (std::ios::out | std::ios::app) : std::ios::out);
+ m_fp.open(name, (append) ? (std::ios::out | std::ios::app) : std::ios::out);
   assert(m_fp.good());
 }
 

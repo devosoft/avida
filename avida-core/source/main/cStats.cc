@@ -1609,7 +1609,7 @@ void cStats::PrintResWallLocData(const cString& filename, cAvidaContext& ctx)
     df->Endl();
   }
   
-  std::ofstream& fp = df->OFStream();
+  std::ostream& fp = df->OFStream();
   fp << m_update << " ";
   
   const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
@@ -1930,7 +1930,7 @@ void cStats::PrintPredicatedMessages(const cString& filename)
   df->WriteColumnDesc("predicate data: [pdata]");
   df->FlushComments();
   
-  std::ofstream& out = df->OFStream();
+  std::ostream& out = df->OFStream();
   for(message_pred_ptr_list::iterator i=m_message_predicates.begin();
       i!=m_message_predicates.end(); ++i) {
     (*i)->Print(GetUpdate(), out);
@@ -2184,7 +2184,7 @@ void cStats::PrintDemeGLSFounders(const cString& filename){
   df->WriteColumnDesc("{target genotype ID, target genome... founder 0, ...}");
   df->FlushComments();
   
-  std::ofstream& out = df->OFStream();
+  std::ostream& out = df->OFStream();
   
   //  typedef std::map<std::pair<int, int>, std::vector<std::pair<int, std::string> > > t_gls_founder_map;
   
@@ -2356,7 +2356,7 @@ void cStats::PrintGroupAttackData(const cString& filename, const cString& inst_s
     df->Endl();
   }
   
-  std::ofstream& fp = df->OFStream();
+  std::ostream& fp = df->OFStream();
   cString inst;
   for (int i = 0; i < m_group_attack_names[inst_set].GetSize(); i++) {
     inst = m_group_attack_names[inst_set][i];
@@ -2378,7 +2378,7 @@ void cStats::PrintGroupAttackBits(unsigned char raw_bits)
     df->WriteTimeStamp();
     df->Endl();
   }  
-  std::ofstream& fp = df->OFStream();
+  std::ostream& fp = df->OFStream();
   fp << raw_bits << endl;
 }
 
@@ -2400,7 +2400,7 @@ void cStats::PrintGroupAttackString(cString& string)
     df->Endl();
   }
   
-  std::ofstream& fp = df->OFStream();
+  std::ostream& fp = df->OFStream();
   fp << GetUpdate() << "," << string << endl;
 }
 
@@ -2477,7 +2477,7 @@ void cStats::PrintBirthLocData(int org_idx)
   const int locy = loc / worldx;
   const int ft = org->GetParentFT();
   
-  std::ofstream& fp = df->OFStream();
+  std::ostream& fp = df->OFStream();
   fp << GetUpdate() << "," << org->GetID() << "," << ft << "," << locx << "," << locy;
   fp << endl;
 }
@@ -2502,7 +2502,7 @@ void cStats::PrintLookData(cString& string)
     df->Endl();
   }
   
-  std::ofstream& fp = df->OFStream();
+  std::ostream& fp = df->OFStream();
   fp << GetUpdate() << "," << string << endl;
 }
 
@@ -2530,7 +2530,7 @@ void cStats::PrintLookDataOutput(cString& string)
     df->Endl();
   }
   
-  std::ofstream& fp = df->OFStream();
+  std::ostream& fp = df->OFStream();
   fp << GetUpdate() << "," << string << endl;
 }
 
@@ -2555,7 +2555,7 @@ void cStats::PrintLookEXDataOutput(cString& string)
     df->Endl();
   }
   
-  std::ofstream& fp = df->OFStream();
+  std::ostream& fp = df->OFStream();
   fp << GetUpdate() << "," << string << endl;
 }
 
@@ -2578,7 +2578,7 @@ void cStats::PrintDemeFoundersData(const cString& filename)
   df->WriteColumnDesc("{Genotype ID of founder 0, ...}");
   df->FlushComments();
   
-  std::ofstream& out = df->OFStream();
+  std::ostream& out = df->OFStream();
   for(t_founder_map::iterator i=m_deme_founders.begin(); i!=m_deme_founders.end(); ++i) {
     out << GetUpdate() << " " << i->first << " " << i->second.size();
     for(std::vector<int>::iterator j=i->second.begin(); j!=i->second.end(); ++j) {
@@ -2904,7 +2904,7 @@ void cStats::PrintDemeCurrentTaskExeData(const cString& filename)
 void cStats::PrintCurrentTaskCounts(const cString& filename)
 {
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   fp << "Update " << m_world->GetStats().GetUpdate() << ":" << endl;
   for (int y = 0; y < m_world->GetPopulation().GetWorldY(); y++) {
     for (int x = 0; x < m_world->GetPopulation().GetWorldX(); x++) {
@@ -4836,7 +4836,7 @@ void cStats::PrintSuccessfulMates(cString& filename) {
   df->WriteComment("Second half of each line gives information about the 'chooser'");
   df->WriteComment(cBirthEntry::GetPhenotypeStringFormat());
   df->Endl();
-  std::ofstream& df_stream = df->OFStream();
+  std::ostream& df_stream = df->OFStream();
   for (int i = 0; i < m_num_successful_mates; i++) {
     df_stream << m_successful_mates[i].GetPhenotypeString() << " " << m_choosers[i].GetPhenotypeString() << endl;
   }
@@ -5007,7 +5007,7 @@ void cStats::PrintMiniTraceReactions(cOrganism* org)
     df->Endl();
   }
   
-  std::ofstream& fp = df->OFStream();
+  std::ostream& fp = df->OFStream();
   
   Apto::Array<int> reaction_count = org->GetPhenotype().GetCurReactionCount();
   Apto::Array<int> reaction_cycles = org->GetPhenotype().GetFirstReactionCycles();
@@ -5047,7 +5047,7 @@ void cStats::PrintMicroTraces(Apto::Array<char, Apto::Smart>& exec_trace, int bi
     df->Endl();
   }
   
-  std::ofstream& fp = df->OFStream();
+  std::ostream& fp = df->OFStream();
   fp << death_update << "," << birth_update << "," << org_id << "," << gen_id << "," << ft << ",";
   for (int i = 0; i < exec_trace.GetSize(); i++) {
     fp << exec_trace[i];
@@ -5157,7 +5157,7 @@ void cStats::PrintTopNavTrace(bool flush)
   df->WriteComment("Execution Trace to First Reproduction");
   df->Endl();
   
-  std::ofstream& fp = df->OFStream();
+  std::ostream& fp = df->OFStream();
   
   // in case nobody has reproduced (e.g. in single org trial) print what we know to date
   if (!topreactions.GetSize()) {
@@ -5241,7 +5241,7 @@ void cStats::PrintReproData(cOrganism* org)
     df->Endl();
   }
   
-  std::ofstream& fp = df->OFStream();
+  std::ostream& fp = df->OFStream();
   fp << update << " " << org->SystematicsGroup("genotype")->ID()<< " " << org->GetID() << " " << org->GetPhenotype().GetAge() << " " << org->GetPhenotype().GetTimeUsed()
   << " " << org->GetPhenotype().GetNumExecs() << " ";
   Apto::Array<int> reaction_count = org->GetPhenotype().GetCurReactionCount();

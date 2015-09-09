@@ -24,6 +24,17 @@ function add_line(){
 # our cbuild directory
 git submodule init
 git submodule update
+
+# If we're envoking this from XCode, we get additional
+# arguments if not building (e.g. cleaning or rebuilding)
+if [ $1 == "clean" ]; then
+   rm -rf cbuild
+   exit 0
+elif [ $1 == "install" ] || [ $1 == "installhdrs" ] || [ $1 == "installsrc" ]; then
+   echo "Xcode action $1 is not supported."
+   exit 1
+fi
+
 mkdir -p cbuild
 cd cbuild
 
@@ -50,8 +61,13 @@ cd cbuild
 if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ] || [ "$1" ==  "avida-ed" ]; then
    if [ -z "$EMSCRIPTEN" ]; then
       echo "Emscripten's environment variables are not properly set."
-      echo "Unable to build."
-      exit 1
+      echo "Attempting to use .profile to add (assuming emsdk_env.sh is called there.)"
+      source ~/.profile
+      if [ -z "$EMSCRIPTEN" ]; then
+         echo "Emscripten's environment variables are still not set."
+         echo "Aborting build."
+         exit 1
+      fi
    fi
 
    # Emscripten requires us to know in advance where
@@ -88,6 +104,11 @@ fi
 
 # Now that we're all configured, make it and install
 make -j 10 install
+build_exit=$?
+if [ "${build_exit}" -ne 0 ]; then
+   echo "Build error error ${build_exit}"
+   exit $build_exit
+fi
 
 
 # Because of the way relative paths are handled during building, we

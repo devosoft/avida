@@ -77,7 +77,7 @@ namespace Avida {
       LIB_EXPORT inline bool SetFileType(const Apto::String& ft);
 
       
-      LIB_EXPORT inline std::ofstream& OFStream() { return m_fp; }
+      LIB_EXPORT inline std::ostream& OFStream() { return m_fp; }
       
       
       // The following methods output a value into the data file.

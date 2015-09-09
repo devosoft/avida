@@ -184,7 +184,7 @@ public:
   
   bool LoadWithStringList(const cStringList& sl, cUserFeedback* errors = NULL);
   
-  void SaveInstructionSequence(ofstream& of, const InstructionSequence& seq) const;
+  void SaveInstructionSequence(ostream& of, const InstructionSequence& seq) const;
 };
 
 

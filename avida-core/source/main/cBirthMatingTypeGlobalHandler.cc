@@ -410,7 +410,7 @@ void cBirthMatingTypeGlobalHandler::PrintBirthChamber(const cString& filename)
   df->WriteComment(cBirthEntry::GetPhenotypeStringFormat());
   df->Endl();
   
-  std::ofstream& df_stream = df->OFStream();
+  std::ostream& df_stream = df->OFStream();
   
   for (int i = 0; i < m_entries.GetSize(); i++) {
     if (m_bc->ValidateBirthEntry(m_entries[i])) {

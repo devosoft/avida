@@ -87,7 +87,7 @@ public:
   ~cTestCPU() { }
   
   bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome);
-  bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome, std::ofstream& out_fp);
+  bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome, std::ostream& out_fp);
   
   void PrintGenome(cAvidaContext& ctx, const Genome& genome, cString filename = "", int update = -1, bool for_groups = false, int last_birth_cell = 0, int last_group_id = -1, int last_forager_type = -1);
 

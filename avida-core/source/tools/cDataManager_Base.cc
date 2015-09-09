@@ -56,7 +56,7 @@ bool cDataManager_Base::PrintRow(Avida::Output::File& data_file, cString row_ent
   }
   
   
-  ofstream& fp = data_file.OFStream();
+  ostream& fp = data_file.OFStream();
   while (row_entries.GetSize() > 0) {
     cString cur_entry( row_entries.Pop(sep) );
     if ( Print(cur_entry, fp) == false ) {

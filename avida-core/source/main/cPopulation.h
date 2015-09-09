@@ -249,7 +249,7 @@ public:
   void PrintDemesMeritsData(); //@JJB**
   
   // Print deme founders
-  void DumpDemeFounders(ofstream& fp);
+  void DumpDemeFounders(ostream& fp);
   
   // Print donation stats
   void PrintDonationStats();

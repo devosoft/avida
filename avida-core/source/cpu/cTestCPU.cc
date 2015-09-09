@@ -190,7 +190,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const Gen
   return test_info.is_viable;
 }
 
-bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome, ofstream& out_fp)
+bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome, ostream& out_fp)
 {
   ctx.SetTestMode();
   test_info.Clear();

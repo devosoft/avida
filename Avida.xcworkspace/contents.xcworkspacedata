@@ -8,10 +8,10 @@
       location = "container:"
       name = "Applications">
       <FileRef
-         location = "group:apps/viewer-macos/viewer-macos.xcodeproj">
+         location = "container:apps/viewer-webed/viewer-webed.xcodeproj">
       </FileRef>
       <FileRef
-         location = "group:apps/viewer-web/viewer-web/viewer-web.xcodeproj">
+         location = "group:apps/viewer-macos/viewer-macos.xcodeproj">
       </FileRef>
    </Group>
    <Group

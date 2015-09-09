@@ -118,20 +118,19 @@ SET(JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/json/src)
 SET(APTO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/apto/include)
 
 
-INCLUDE_DIRECTORIES(
-   ${JSON_INCLUDE_DIR}
-   ${AVIDA_INCLUDES}
-   ${APTO_INCLUDE_DIR}
-   )
-
-
-SET(AVIDAED_WEB_DIR src/)
+SET(AVIDAED_WEB_DIR ${PROJECT_SOURCE_DIR}/apps/viewer-webed/src)
 SET(
    AVIDAED_WEB_SOURCES 
    ${AVIDAED_WEB_DIR}/viewer-webed.cc
    )
 SOURCE_GROUP(target\\avida FILES ${AVIDAED_WEB_SOURCES})
 
+INCLUDE_DIRECTORIES(
+   ${JSON_INCLUDE_DIR}
+   ${AVIDA_INCLUDES}
+   ${APTO_INCLUDE_DIR}
+   ${AVIDAED_WEB_DIR}
+)
 
 # Setup the configuration files to be loaded at start
 # Keep in mind this path needs to be relative
@@ -147,25 +146,29 @@ SET(RESOURCES_DIR ../../../apps/viewer-webed/resources)
 # (") when fed to the shell.  Also, the list must include
 # a space between entries.
 SET(EMS_EXPORT_FUNCS
-   "\"['_main', '_PlayPause', '_Stop', '_GetPopulationData']\""
+   "\"['_main', '_ReceiveMessage', '_RunDriver' ]\""
+   )
+
+SET(EMS_EMTERPRETIFY_WHITELIST
+   "\"['_main', '_Run']\""
    )
 
 # Flags specific to the web target
 SET(WEB_FLAGS
    "-s DISABLE_EXCEPTION_CATCHING=1\
-   -s COMPILER_ASSERTIONS=1\
    -s EXPORTED_FUNCTIONS=${EMS_EXPORT_FUNCS}\
-   -s NO_EXIT_RUNTIME=1\
    -s DEMANGLE_SUPPORT=1\
+   -s NO_EXIT_RUNTIME=1\
+   -s EMTERPRETIFY=1\
+   -s EMTERPRETIFY_WHITELIST=${EMS_EMTERPRETIFY_WHITELIST}\
+   -s EMTERPRETIFY_ASYNC=1\
    -DDEBUG "
    )
 
-SET(OFLAGS_WEB 
-   "-g4 -Wno-warn-absolute-paths -s TOTAL_MEMORY=67108864 ")
 SET(CMAKE_CXX_FLAGS_RELEASE "")
-SET(CMAKE_CXX_FLAGS "${OFLAGS_WEB} ${WEB_FLAGS} -std=c++11 -Wno-unused-function")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OFLAGS_WEB} ${WEB_FLAGS}")
 SET(CMAKE_EXE_LINKER_FLAGS 
-   "${CMAKE_EXE_LINKER_FLAGS} \
+     "${CMAKE_EXE_LINKER_FLAGS} \
      --pre-js ${RESOURCES_DIR}/avidaui-prepend.js \
      --embed-file ${EMS_AVIDA_EMBED_DIR}@/ -s ALLOW_MEMORY_GROWTH=1")
 
@@ -175,13 +178,13 @@ ADD_EXECUTABLE(avida
                  ${AVIDAED_WEB_SOURCES}
                  $<TARGET_OBJECTS:apto_objs>
                  $<TARGET_OBJECTS:avida_core_objs>
+                 $<TARGET_OBJECTS:viewer_objs>
                  )
    
 
 INSTALL_TARGETS(/work avida)
 
 SET(BINARY_SUPPORT
-   ${EXECUTABLE_OUTPUT_PATH}/avida.js.map
    ${EXECUTABLE_OUTPUT_PATH}/avida.js.mem
    )
 INSTALL(DIRECTORY resources/ DESTINATION work)

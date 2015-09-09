@@ -7,11 +7,18 @@
 #include "cAvidaConfig.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
-#include "Driver.h"
 #include "avida/util/CmdLine.h"
 
-static Avida::WebViewer::Driver* driver;
+#include "Driver.h"
+#include "Callbacks.h"
+#include <emscripten.h>
 
+using namespace Avida::WebViewer;
+extern Driver* driver;
+
+Driver* driver = nullptr;
+
+ 
 extern "C" 
 int main(int argc, char* argv[])
 {
@@ -28,26 +35,8 @@ int main(int argc, char* argv[])
 
    cWorld* world = cWorld::Initialize(cfg, "/", new_world, &feedback, &defs);
 
-   Avida::WebViewer::Driver* driver = 
-      new Avida::WebViewer::Driver(world, feedback);
-   
-   return 0;
+   driver = new Driver(world, feedback);
+   driver->Run();
 }
 
-extern "C"
-void PlayPause()
-{
-   driver->PlayPause();
-}
 
-extern "C"
-void Stop()
-{
-   driver->Stop();
-}
-
-extern "C"
-void GetPopulationData()
-{
-   driver->GetPopulationData();
-}

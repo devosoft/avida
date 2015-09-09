@@ -364,9 +364,9 @@ SET(VIEWERCORE_SOURCES
 )
 SOURCE_GROUP(viewer FILES ${VIEWERCORE_SOURCES})
 
-
 LIST(APPEND ALL_INC_DIRS ${PROJECT_SOURCE_DIR}/include/public)
 LIST(APPEND ALL_INC_DIRS ${PROJECT_SOURCE_DIR}/include/private)
+
 
 
 # Setup libraries.  Emscripten and Windows need some special
@@ -403,8 +403,10 @@ IF(NOT TARGET aptostatic AND NOT EMSCRIPTEN)
 ENDIF(NOT TARGET aptostatic AND NOT EMSCRIPTEN)
 
 
+SET(JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../libs/json/src)
+
 # Create the static library from the master source list
-INCLUDE_DIRECTORIES(${ALL_INC_DIRS} ${APTO_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${ALL_INC_DIRS} ${JSON_INCLUDE_DIR} ${APTO_INCLUDE_DIR})
 SET(AVIDA_INCLUDES "${ALL_INC_DIRS}" PARENT_SCOPE)
 
 
@@ -413,7 +415,7 @@ SET(AVIDA_INCLUDES "${ALL_INC_DIRS}" PARENT_SCOPE)
 OPTION(
    AVD_ENABLE_TCMALLOC
    "Use tcmalloc for memory allocation"
-   ON
+   OFF
    )
 
 IF(UNIX)
@@ -473,7 +475,7 @@ IF(AVD_CMDLINE)
   SOURCE_GROUP(target\\avida FILES ${AVIDA_CMDLINE_SOURCES})
   
   IF (NOT EMSCRIPTEN)
-    SET(AVIDA_CMDLINE_LIBS avida-core aptostatic)  
+     SET(AVIDA_CMDLINE_LIBS avida-core viewer aptostatic)  
     IF(AVD_ENABLE_TCMALLOC)
       LIST(APPEND AVIDA_CMDLINE_LIBS tcmalloc-1.4)
     ENDIF(AVD_ENABLE_TCMALLOC)  
@@ -489,6 +491,7 @@ IF(AVD_CMDLINE)
                     ${AVIDA_CMDLINE_SOURCES}
                     $<TARGET_OBJECTS:apto_objs>
                     $<TARGET_OBJECTS:avida_core_objs>
+                    $<TARGET_OBJECTS:viewer_objs>
                    )
    ENDIF (NOT EMSCRIPTEN)
   INSTALL_TARGETS(/work avida)

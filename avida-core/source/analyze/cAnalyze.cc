@@ -1821,7 +1821,7 @@ void cAnalyze::CommandPrintTasks(cString cur_string)
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -1843,7 +1843,7 @@ void cAnalyze::CommandPrintTasksQuality(cString cur_string)
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -1884,7 +1884,7 @@ void cAnalyze::CommandDetail(cString cur_string)
     CommandDetail_Body(cout, file_type, output_it);
   } else {
     Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
+    ostream& fp = df->OFStream();
     CommandDetail_Header(fp, file_type, output_it);
     CommandDetail_Body(fp, file_type, output_it);
 	}
@@ -1930,7 +1930,7 @@ void cAnalyze::CommandDetailTimeline(cString cur_string)
     CommandDetail_Body(cout, file_type, output_it, time_step, max_time);
   } else {
     Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
+    ostream& fp = df->OFStream();
     CommandDetail_Header(fp, file_type, output_it, time_step);
     CommandDetail_Body(fp, file_type, output_it, time_step, max_time);
   }
@@ -2114,7 +2114,7 @@ void cAnalyze::CommandDetailAverage(cString cur_string)
   bool file_active = omgr->IsOpen(oid);
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), oid);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   // if it's a new file print out the header
   if (file_active == false) {
@@ -2152,7 +2152,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
   if (file_extension == "html") file_type = FILE_TYPE_HTML;
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   cAnalyzeGenotype* first_genotype = batch[cur_batch].List().GetFirst();
   
   // Write out the header on the file
@@ -2247,7 +2247,7 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
   
   // Setup the file...
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   cAnalyzeGenotype* first_genotype = batch[cur_batch].List().GetFirst();
   
   // Determine the file type...
@@ -2356,7 +2356,7 @@ void cAnalyze::CommandHistogram(cString cur_string)
     CommandHistogram_Body(cout, file_type, output_it);
   } else {
     Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
+    ostream& fp = df->OFStream();
     CommandHistogram_Header(fp, file_type, output_it);
     CommandHistogram_Body(fp, file_type, output_it);
   }
@@ -2595,7 +2595,7 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
   }
     
   Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   fp << "# 1: Number of organisms of this phenotype" << endl
     << "# 2: Number of genotypes of this phenotye" << endl
@@ -2771,7 +2771,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   
   filename.Set("%s%s", static_cast<const char*>(directory), static_cast<const char*>(filename));
   Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& cpx_fp = df->OFStream();
+  ostream& cpx_fp = df->OFStream();
   
   cpx_fp << "# Legend:" << endl;
   cpx_fp << "# 1: Genotype ID" << endl;
@@ -3210,7 +3210,7 @@ void cAnalyze::CommandPrintDistances(cString cur_string)
   }
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fout = df->OFStream();
+  ostream& fout = df->OFStream();
   
   fout << "# All pairs edit distance" << endl;
   fout << "# 1: Num organism pairs" << endl;
@@ -3293,7 +3293,7 @@ void cAnalyze::CommandPrintTreeStats(cString cur_string)
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
 
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
 
   fp << "# Legend:" << endl;
   fp << "# 1: Average cumulative stemminess" << endl;
@@ -3319,7 +3319,7 @@ void cAnalyze::CommandPrintCumulativeStemminess(cString cur_string)
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   fp << "# Legend:" << endl;
   fp << "# 1: Average cumulative stemminess" << endl;
@@ -3371,7 +3371,7 @@ void cAnalyze::CommandPrintGamma(cString cur_string)
   int furcation_time_convention = 1;
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   fp << "# Legend:" << endl;
   fp << "# 1: Pybus-Harvey gamma statistic" << endl;
@@ -3385,7 +3385,7 @@ void cAnalyze::CommandPrintGamma(cString cur_string)
 
   if(lineage_thru_time_fname != ""){
     Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)lineage_thru_time_fname);
-    ofstream& ltt_fp = df->OFStream();
+    ostream& ltt_fp = df->OFStream();
 
     ltt_fp << "# Legend:" << endl;
     ltt_fp << "# 1: num_lineages" << endl;
@@ -3428,7 +3428,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   
   filename.Set("%s%s", static_cast<const char*>(directory), static_cast<const char*>(filename));
   Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& cpx_fp = df->OFStream();
+  ostream& cpx_fp = df->OFStream();
   
   cpx_fp << "# Legend:" << endl;
   cpx_fp << "# 1: Genotype ID" << endl;
@@ -3764,7 +3764,7 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
   cString filename("resourcefitmap.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
 
   int f1=-1, f2=-1, rangecount[2]={0,0}, threshcount[2]={0,0};
   double f1Max = 0.0, f1Min = 0.0, f2Max = 0.0, f2Min = 0.0;
@@ -4719,7 +4719,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       filename.Set("%stasksites.%s.html", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
     }
     Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
+    ostream& fp = df->OFStream();
     
     // Construct linked filenames...
     cString next_file("");
@@ -4987,7 +4987,7 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
   }
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   // printing the headers
   // not done by default since many dumps may be analyzed at the same time
@@ -5620,7 +5620,7 @@ void cAnalyze::CommandMapMutations(cString cur_string)
       cout << "  Using filename \"" << filename << "\"" << endl;
     }
     Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
+    ostream& fp = df->OFStream();
     
     // Calculate the stats for the genotype we're working with...
     genotype->Recalculate(m_ctx);
@@ -5866,7 +5866,7 @@ void cAnalyze::CommandMapDepth(cString cur_string)
   cout << "max_depth = " << max_depth << endl;
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   cout << "Output to " << filename << endl;
   Apto::Array<int> depth_array(max_depth+1);
@@ -6515,7 +6515,7 @@ void cAnalyze::AnalyzeNewInfo(cString cur_string)
   cString newinfo_fn;
   newinfo_fn.Set("%s%s.newinfo.dat", static_cast<const char*>(directory), "lineage");
   Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)newinfo_fn);
-  ofstream& newinfo_fp = df->OFStream();
+  ostream& newinfo_fp = df->OFStream();
   
   newinfo_fp << "# Legend:" << endl;
   newinfo_fp << "# 1:Child Genotype ID" << endl;
@@ -6587,7 +6587,7 @@ void cAnalyze::WriteClone(cString cur_string)
   
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   // Start up again at update zero...
   fp << "0 ";
@@ -6651,7 +6651,7 @@ void cAnalyze::WriteInjectEvents(cString cur_string)
   if (cur_string.GetSize() != 0) lineage = cur_string.PopWord().AsInt();
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   int org_count = 0;
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -6687,7 +6687,7 @@ void cAnalyze::WriteInjectInitial(cString cur_string)
   if (cur_string.GetSize() != 0) lineage = cur_string.PopWord().AsInt();
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   int org_count = 0;
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -6745,7 +6745,7 @@ void cAnalyze::WriteCompetition(cString cur_string)
   }
   
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   // Count the number of organisms in each batch...
   cAnalyzeGenotype * genotype = NULL;
@@ -6876,7 +6876,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
   
   // Print out the header...
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   fp << "# " << sequences[0] << endl;
   fp << "# " << sequences[num_sequences - 1] << endl;
   fp << "# ";
@@ -7045,7 +7045,7 @@ void cAnalyze::AnalyzeInstructions(cString cur_string)
   
   // Setup the file...
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   // Determine the file type...
   int file_type = FILE_TYPE_TEXT;
@@ -7196,7 +7196,7 @@ void cAnalyze::AnalyzeInstPop(cString cur_string)
   
   // Setup the file...
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   for (int i = 0; i < num_insts; i++) {
     Instruction cur_inst(i);
@@ -7289,7 +7289,7 @@ void cAnalyze::AnalyzeMutationTraceback(cString cur_string)
   
   // Open the output file...
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);
   
@@ -7419,7 +7419,7 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     lineage_filename.Set("%s%s.complexity.dat", static_cast<const char*>(directory), "nonlineage");
   }
   Avida::Output::FilePtr lineage_df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)lineage_filename);
-  ofstream& lineage_fp = lineage_df->OFStream();
+  ostream& lineage_fp = lineage_df->OFStream();
   
   while ((genotype = batch_it.Next()) != NULL) {
     if (m_world->GetVerbosity() >= VERBOSE_ON) {
@@ -7430,7 +7430,7 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     cString filename;
     filename.Set("%s%s.complexity.dat", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
     Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-    ofstream& fp = df->OFStream();
+    ostream& fp = df->OFStream();
     
     lineage_fp << genotype->GetID() << " ";
     
@@ -8452,7 +8452,7 @@ void cAnalyze::AnalyzePopComplexity(cString cur_string)
   cString filename;
   filename.Set("%spop%s.complexity.dat", static_cast<const char*>(directory), static_cast<const char*>(file));
   Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& fp = df->OFStream();
+  ostream& fp = df->OFStream();
   
   //////////////////////////////////////////////////////////
   // Loop through all of the genotypes in this batch ...
@@ -8540,7 +8540,7 @@ void cAnalyze::MutationRevert(cString cur_string)
 	
 	//Request a file
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  ofstream& FOT = df->OFStream();
+  ostream& FOT = df->OFStream();
 	/*
    FOT output per line
    ID

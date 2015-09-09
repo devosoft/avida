@@ -42,16 +42,10 @@ namespace Avida {
     
     class HardwareSnapshot
     {
-    private:
-      const cInstSet* m_inst_set;
-      
-      Apto::Array<int> m_registers;
-      Apto::Map<Apto::String, Apto::Array<int> > m_buffers;
-      Apto::String m_selected_buffer;
-      Apto::Array<int> m_default_buffer;
-      Apto::Map<Apto::String, int> m_function_counts;
-      
-      struct MemSpace
+    
+    public:
+    
+    struct MemSpace
       {
         Apto::String label;
         Apto::Array<Instruction> memory;
@@ -72,6 +66,16 @@ namespace Avida {
         LIB_LOCAL inline Jump(int fm, int fi, int tm, int ti, int f)
           : from_mem_space(fm), from_idx(fi), to_mem_space(tm), to_idx(ti), freq(f) { ; }
       };
+      
+    private:
+      const cInstSet* m_inst_set;
+      
+      Apto::Array<int> m_registers;
+      Apto::Map<Apto::String, Apto::Array<int> > m_buffers;
+      Apto::String m_selected_buffer;
+      Apto::Array<int> m_default_buffer;
+      Apto::Map<Apto::String, int> m_function_counts;
+      
       Apto::Array<Jump, Apto::Smart> m_jumps;
       
       Instruction m_next_inst;
@@ -109,9 +113,13 @@ namespace Avida {
       
       LIB_EXPORT inline int FunctionCount(const Apto::String& function) const { return m_function_counts.GetWithDefault(function, 0); };
       
+      LIB_EXPORT inline const Apto::Array<int>& Registers() const { return m_registers; }
+      LIB_EXPORT inline const Apto::Map<Apto::String, Apto::Array<int> >& Buffers() const { return m_buffers; }
+      LIB_EXPORT inline const Apto::Map<Apto::String, int>& Functions() const { return m_function_counts; }
+      LIB_EXPORT inline const Apto::Array<MemSpace, Apto::ManagedPointer>& MemorySpace() const { return m_mem_spaces; }
+      LIB_EXPORT inline const Apto::Array<Jump, Apto::Smart>&  Jumps() const { return m_jumps; }
       
       LIB_EXPORT inline Instruction NextInstruction() const { return m_next_inst; }
-      
       
       LIB_EXPORT ConstGraphicPtr GraphicForContext(GraphicsContext& gctx) const;
       
