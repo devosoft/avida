@@ -1,0 +1,236 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		B4181DDF1B94EB2C0002B429 /* avida-adaptor.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = "avida-adaptor.js"; path = "resources/avida-adaptor.js"; sourceTree = "<group>"; };
+		B4181DE01B94EB2C0002B429 /* avidaui-prepend.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = "avidaui-prepend.js"; path = "resources/avidaui-prepend.js"; sourceTree = "<group>"; };
+		B4181DE11B94EB2C0002B429 /* test.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = test.html; path = resources/test.html; sourceTree = "<group>"; };
+		B4181DE21B94EB420002B429 /* avida.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = avida.cfg; path = config/avida.cfg; sourceTree = "<group>"; };
+		B4181DE31B94EB420002B429 /* default-heads.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "default-heads.org"; path = "config/default-heads.org"; sourceTree = "<group>"; };
+		B4181DE41B94EB420002B429 /* environment.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = environment.cfg; path = config/environment.cfg; sourceTree = "<group>"; };
+		B4181DE51B94EB420002B429 /* events.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = events.cfg; path = config/events.cfg; sourceTree = "<group>"; };
+		B4181DE61B94EB420002B429 /* instset-heads.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "instset-heads.cfg"; path = "config/instset-heads.cfg"; sourceTree = "<group>"; };
+		B4181DE71B94EB4C0002B429 /* viewer-webed.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "viewer-webed.cc"; path = "src/viewer-webed.cc"; sourceTree = "<group>"; };
+		B4181DE81B94EB4C0002B429 /* Messaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Messaging.h; path = src/Messaging.h; sourceTree = "<group>"; };
+		B4181DE91B94EB4C0002B429 /* Driver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Driver.h; path = src/Driver.h; sourceTree = "<group>"; };
+		B478A2FD1B98A00E0023242C /* Callbacks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Callbacks.h; path = src/Callbacks.h; sourceTree = "<group>"; };
+		B478A2FE1BA0BB5A0023242C /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		B4181DCF1B94D19C0002B429 = {
+			isa = PBXGroup;
+			children = (
+				B478A2FE1BA0BB5A0023242C /* CMakeLists.txt */,
+				B4181DDE1B94EAD20002B429 /* Resources */,
+				B4181DDD1B94EACB0002B429 /* Config */,
+				B4181DDC1B94EAC50002B429 /* Source */,
+			);
+			sourceTree = "<group>";
+		};
+		B4181DDC1B94EAC50002B429 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				B4181DE71B94EB4C0002B429 /* viewer-webed.cc */,
+				B478A2FD1B98A00E0023242C /* Callbacks.h */,
+				B4181DE81B94EB4C0002B429 /* Messaging.h */,
+				B4181DE91B94EB4C0002B429 /* Driver.h */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		B4181DDD1B94EACB0002B429 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				B4181DE21B94EB420002B429 /* avida.cfg */,
+				B4181DE31B94EB420002B429 /* default-heads.org */,
+				B4181DE41B94EB420002B429 /* environment.cfg */,
+				B4181DE51B94EB420002B429 /* events.cfg */,
+				B4181DE61B94EB420002B429 /* instset-heads.cfg */,
+			);
+			name = Config;
+			sourceTree = "<group>";
+		};
+		B4181DDE1B94EAD20002B429 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B4181DDF1B94EB2C0002B429 /* avida-adaptor.js */,
+				B4181DE01B94EB2C0002B429 /* avidaui-prepend.js */,
+				B4181DE11B94EB2C0002B429 /* test.html */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		B4181DD41B94D19C0002B429 /* viewer-webed */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) avida-ed";
+			buildConfigurationList = B4181DD71B94D19C0002B429 /* Build configuration list for PBXLegacyTarget "viewer-webed" */;
+			buildPhases = (
+			);
+			buildToolPath = "$(PROJECT_DIR)/../../build_avida";
+			buildWorkingDirectory = /Users/ruppmatt/devel/Avida/avida;
+			dependencies = (
+			);
+			name = "viewer-webed";
+			passBuildSettingsInEnvironment = 1;
+			productName = "Avida Web Ed";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		B4181DD01B94D19C0002B429 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0620;
+				ORGANIZATIONNAME = MSU;
+				TargetAttributes = {
+					B4181DD41B94D19C0002B429 = {
+						CreatedOnToolsVersion = 6.2;
+					};
+				};
+			};
+			buildConfigurationList = B4181DD31B94D19C0002B429 /* Build configuration list for PBXProject "viewer-webed" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = B4181DCF1B94D19C0002B429;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B4181DD41B94D19C0002B429 /* viewer-webed */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		B4181DD51B94D19C0002B429 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B4181DD61B94D19C0002B429 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B4181DD81B94D19C0002B429 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUGGING_SYMBOLS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "viewer-webed";
+			};
+			name = Debug;
+		};
+		B4181DD91B94D19C0002B429 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "viewer-webed";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B4181DD31B94D19C0002B429 /* Build configuration list for PBXProject "viewer-webed" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B4181DD51B94D19C0002B429 /* Debug */,
+				B4181DD61B94D19C0002B429 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B4181DD71B94D19C0002B429 /* Build configuration list for PBXLegacyTarget "viewer-webed" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B4181DD81B94D19C0002B429 /* Debug */,
+				B4181DD91B94D19C0002B429 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B4181DD01B94D19C0002B429 /* Project object */;
+}
