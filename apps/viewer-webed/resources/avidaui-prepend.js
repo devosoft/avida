@@ -33,8 +33,8 @@ function getMessages() {
   communicate with Worker owner(s).  The necessary
   pointer-to-string-to-json conversion occurs here.
 */
-function doPostMessage(msg_ptr) {
-  var json_msg = JSON.parse(Module.Pointer_stringify(msg_ptr));
+function doPostMessage(msg_str) {
+  var json_msg = JSON.parse(msg_str);
   if (json_msg.Key === 'AvidaStatus'){
     switch (json_msg.Status){
       case 'Paused':

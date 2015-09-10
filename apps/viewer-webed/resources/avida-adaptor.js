@@ -17,10 +17,9 @@ var timer_func_called = 0;
 var aTimer=setInterval( timerFunc, 1000 )
 
 function timerFunc(){
-   console.log("Time!");
    timer_func_called = timer_func_called + 1;
 
-   if (timer_func_called == 500){
+   if (timer_func_called == 50){
       console.log("Sending Finish");
       coreWorker.postMessage(finish_msg);
       clearInterval(aTimer);

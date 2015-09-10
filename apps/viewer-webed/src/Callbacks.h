@@ -20,7 +20,6 @@ namespace Avida {
     
     void CheckMessages()
     {
-      cerr << "CheckMessage" << endl;
       EMStringPtr msg_buf = GetMessages();
       json msgs = nlohmann::json::parse( (char*) msg_buf);
       std::free( (void*) msg_buf);
@@ -36,6 +35,7 @@ namespace Avida {
     extern "C"
     void RunDriver()
     {
+      PostMessage(MSG_READY);
       while(!driver->IsFinished()){
         while(driver->IsPaused()){
           emscripten_sleep(100);
@@ -48,6 +48,15 @@ namespace Avida {
         }
       }
     }
+  
+  
+    void AvidaExit()
+    {
+      WebViewerMsg msg_exit = ErrorMessage(FATAL);
+      msg_exit["Description"] = "Avida is exiting";
+      PostMessage(msg_exit);
+    }
+
   }
 }
 

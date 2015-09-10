@@ -15,10 +15,13 @@ namespace Avida{
     typedef nlohmann::json WebViewerMsg;
     typedef char* ReceivedMessage;
     
+    typedef enum ERROR_TYPE {FATAL, WARNING, NOTIFICATION, UNKNOWN} ERROR_TYPE;
+    
     const WebViewerMsg MSG_READY = {
       {"Key", "AvidaStatus"},
       {"Status", "Paused"}
     };
+    
     
     
     extern "C"
@@ -39,16 +42,44 @@ namespace Avida{
                   {
                     doPostMessage(Pointer_stringify($0));
                   }, 
-                  msg.dump().c_str()
+                    msg.dump().c_str()
                   );
     }
     
+    
+    WebViewerMsg ErrorMessage(ERROR_TYPE err)
+    {
+      WebViewerMsg ret = { "Key","AvidaError" };
+      switch(err){
+        case FATAL:
+          ret["Type"] = "fatal";
+          break;
+        case WARNING:
+          ret["Type"] = "warning";
+          break;
+        case NOTIFICATION:
+          ret["Type"] = "notification";
+          break;
+        case UNKNOWN:
+        default:
+          ret["Type"] = "unknown";
+          break;
+      }
+      return ret;
+    }
     
     WebViewerMsg ReturnMessage(const WebViewerMsg& received)
     {
       WebViewerMsg return_msg;
       return_msg["Key"] = received["Key"];
       return_msg["Received"] = received;
+      return return_msg;
+    }
+    
+    
+    WebViewerMsg DefaultAddEventMessage(const WebViewerMsg& received)
+    {
+      WebViewerMsg return_msg = received;
       return return_msg;
     }
     

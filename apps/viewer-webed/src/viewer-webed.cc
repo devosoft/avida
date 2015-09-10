@@ -12,6 +12,7 @@
 #include "Driver.h"
 #include "Callbacks.h"
 #include <emscripten.h>
+#include <cstdlib> 
 
 using namespace Avida::WebViewer;
 extern Driver* driver;
@@ -36,7 +37,12 @@ int main(int argc, char* argv[])
    cWorld* world = cWorld::Initialize(cfg, "/", new_world, &feedback, &defs);
 
    driver = new Driver(world, feedback);
+   
+   atexit(AvidaExit);
+   
    RunDriver();
+   
+   //emscripten_force_exit(0);
 }
 
 

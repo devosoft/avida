@@ -23,9 +23,9 @@ namespace Avida{
   namespace WebViewer{
     class Driver : public WorldDriver
     {
-    private:  //These do nothing
-      void Pause()  {}
-      void Finish() {}
+    private:
+      void Pause()  { m_paused = (m_paused) ? false : true; }
+      void Finish() {m_finished = true;}
       void Abort(AbortCondition cnd) {}
       void RegisterCallback(DriverCallback callback) {}
       
@@ -37,10 +37,9 @@ namespace Avida{
       bool m_first_update;
       cAvidaContext* m_ctx;
       
-      bool m_ready;
-      
       void DisplayErrors();
       void Setup(cWorld*, cUserFeedback);
+      void ProcessAddEvent(const WebViewerMsg& msg, WebViewerMsg& ret_msg);
       
     public:
       Driver(cWorld* world, cUserFeedback feedback)
@@ -64,65 +63,28 @@ namespace Avida{
     };
     
     
-    void Driver::RunPause()
+    void Driver::DisplayErrors()
     {
-      cerr << "RunPause" << endl;
-      cerr << "\t m_paused=" << m_paused << " m_finished=" << m_finished << endl;
-      if (m_paused){
-        m_paused = false;
-      } else {
-        m_paused = true;
-      }
-    }
-    
-    void Driver::Stop()
-    {
-      std::cerr << "Stop." << std::endl;
-      m_finished = true;
-    }
-    
-    
-    json Driver::GetPopulationData()
-    {
-      const cStats& stats = m_world->GetStats();
-      const int update = stats.GetUpdate();;
-      const double ave_fitness = stats.GetAveFitness();;
-      const double ave_gestation_time = stats.GetAveGestation();
-      const double ave_metabolic_rate = stats.GetAveMerit();
-      const int org_count = stats.GetNumCreatures();
-      const double ave_age = stats.GetAveCreatureAge();
-      
-      json pop_data = {
-        {"core.update", update},
-        {"core.world.ave_fitness", ave_fitness},
-        {"core.world.ave_gestation_time", ave_gestation_time},
-        {"core.world.ave_metabolic_rate", ave_metabolic_rate},
-        {"core.world.organisms", org_count},
-        {"core.world.ave_age", ave_age}
-      };
-      
-      return pop_data;
-    }
-    
-    
-    void Driver::DisplayErrors(){
       for (int k=0; k<m_feedback.GetNumMessages(); ++k){
         cUserFeedback::eFeedbackType msg_type = m_feedback.GetMessageType(k);
         const cString& msg = m_feedback.GetMessage(k);
+        WebViewerMsg ret_msg;
         switch(msg_type){
           case cUserFeedback::eFeedbackType::UF_ERROR:
-            std::cerr << "Error: ";
+            ret_msg = ErrorMessage(FATAL);
             break;
           case cUserFeedback::eFeedbackType::UF_WARNING:
-            std::cerr << "Warning: ";
+            ret_msg = ErrorMessage(WARNING);
             break;
           case cUserFeedback::eFeedbackType::UF_NOTIFICATION:
-            std::cerr << "Note: ";
+            ret_msg = ErrorMessage(NOTIFICATION);
             break;
           default:
+            ret_msg = ErrorMessage(UNKNOWN);
             break;
         }
-        cerr << msg.GetData() << std::endl;
+        ret_msg["Description"] = msg.GetData();
+        PostMessage(ret_msg);
       }
       m_feedback.Clear();
     }
@@ -147,38 +109,34 @@ namespace Avida{
     
     void Driver::ProcessMessage(const WebViewerMsg& msg)
     {
-      cerr << "\tProcessing message" << msg.dump() << endl;
-      bool success = false;
-      
       if (msg.find("Key") == msg.end()) {  //This message is missing it's Key; can't process.
-        cerr << "\t\tMessage is invlaid" << endl;
-        WebViewerMsg error_msg;
-        error_msg["Key"] = "AvidaError";
-        error_msg["Fatal"] = false;
-        error_msg["Type"] = "Messaging";
-        error_msg["Description"] = "Message is missing key.";
-        error_msg["Received"] = msg;
-        //PostMessage(error_msg);
+        WebViewerMsg error_msg = ErrorMessage(WARNING);
+        error_msg["Received"];
+        PostMessage(error_msg);
       } else {
-        cerr << "\t\tMessage is valid." << endl;
-        //WebViewerMsg msg = ReturnMessage(msg);
-        //msg["Success"] = false;
-        
-        string key = msg["Key"];
-      
-        if (key == "RunPause"){
-          cerr << "\t\t\tMessage is RunPause" << endl;
-          //msg["Success"] = true;
-          RunPause();
-          //PostMessage(msg);
-        } else if (key == "Finish") {
-          //msg["Success"] = true;
-          m_finished = true;
-        } else {
-          //msg["Description"] = "Unknown key";
+        WebViewerMsg ret_msg = ReturnMessage(msg);
+        ret_msg["Success"] = false;
+        if (msg["Key"] == "RunPause"){
+          ret_msg["Success"] = true;
+          Pause();
+        } else if (msg["Key"] == "Finish") {
+          ret_msg["Success"] = true;
+          Finish();
+        } else if (msg["Key"] == "AddEvent") {
+          ProcessAddEvent(msg, ret_msg);
         }
-        //PostMessage(msg);
+        else {
+          ret_msg["Description"] = "Unknown key";
+        }
+        PostMessage(ret_msg);
       }
+    }
+    
+    
+    void Driver::ProcessAddEvent(const WebViewerMsg& msg, WebViewerMsg& ret_msg)
+    {
+      WebViewerMsg rec_msg = DefaultAddEventMessage(msg);
+      
     }
     
     
