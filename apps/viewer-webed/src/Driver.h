@@ -71,19 +71,19 @@ namespace Avida{
         WebViewerMsg ret_msg;
         switch(msg_type){
           case cUserFeedback::eFeedbackType::UF_ERROR:
-            ret_msg = ErrorMessage(FATAL);
+            ret_msg = ErrorMessage(Feedback::FATAL);
             break;
           case cUserFeedback::eFeedbackType::UF_WARNING:
-            ret_msg = ErrorMessage(WARNING);
+            ret_msg = ErrorMessage(Feedback::WARNING);
             break;
           case cUserFeedback::eFeedbackType::UF_NOTIFICATION:
-            ret_msg = ErrorMessage(NOTIFICATION);
+            ret_msg = ErrorMessage(Feedback::NOTIFICATION);
             break;
           default:
-            ret_msg = ErrorMessage(UNKNOWN);
+            ret_msg = ErrorMessage(Feedback::UNKNOWN);
             break;
         }
-        ret_msg["Description"] = msg.GetData();
+        ret_msg["description"] = msg.GetData();
         PostMessage(ret_msg);
       }
       m_feedback.Clear();
@@ -109,24 +109,24 @@ namespace Avida{
     
     void Driver::ProcessMessage(const WebViewerMsg& msg)
     {
-      if (msg.find("Key") == msg.end()) {  //This message is missing it's Key; can't process.
-        WebViewerMsg error_msg = ErrorMessage(WARNING);
-        error_msg["Received"];
+      if (msg.find("key") == msg.end()) {  //This message is missing it's Key; can't process.
+        WebViewerMsg error_msg = ErrorMessage(Feedback::WARNING);
+        error_msg["received"];
         PostMessage(error_msg);
       } else {
         WebViewerMsg ret_msg = ReturnMessage(msg);
-        ret_msg["Success"] = false;
-        if (msg["Key"] == "RunPause"){
-          ret_msg["Success"] = true;
+        ret_msg["success"] = false;
+        if (msg["key"] == "runPause"){
+          ret_msg["success"] = true;
           Pause();
-        } else if (msg["Key"] == "Finish") {
-          ret_msg["Success"] = true;
+        } else if (msg["key"] == "finish") {
+          ret_msg["success"] = true;
           Finish();
-        } else if (msg["Key"] == "AddEvent") {
+        } else if (msg["key"] == "addEvent") {
           ProcessAddEvent(msg, ret_msg);
         }
         else {
-          ret_msg["Description"] = "Unknown key";
+          ret_msg["description"] = "unknown key";
         }
         PostMessage(ret_msg);
       }

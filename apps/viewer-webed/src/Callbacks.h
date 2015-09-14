@@ -52,8 +52,8 @@ namespace Avida {
   
     void AvidaExit()
     {
-      WebViewerMsg msg_exit = ErrorMessage(FATAL);
-      msg_exit["Description"] = "Avida is exiting";
+      WebViewerMsg msg_exit = ErrorMessage(Feedback::FATAL);
+      msg_exit["description"] = "Avida is exiting";
       PostMessage(msg_exit);
     }
 

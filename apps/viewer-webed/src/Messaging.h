@@ -15,7 +15,9 @@ namespace Avida{
     typedef nlohmann::json WebViewerMsg;
     typedef char* ReceivedMessage;
     
-    typedef enum ERROR_TYPE {FATAL, WARNING, NOTIFICATION, UNKNOWN} ERROR_TYPE;
+    namespace Feedback{
+      typedef enum ERROR_TYPE {FATAL, WARNING, NOTIFICATION, UNKNOWN} ERROR_TYPE;
+    }
     
     const WebViewerMsg MSG_READY = {
       {"Key", "AvidaStatus"},
@@ -47,22 +49,22 @@ namespace Avida{
     }
     
     
-    WebViewerMsg ErrorMessage(ERROR_TYPE err)
+    WebViewerMsg ErrorMessage(Feedback::ERROR_TYPE err)
     {
-      WebViewerMsg ret = { "Key","AvidaError" };
+      WebViewerMsg ret = { "key","userFeedback" };
       switch(err){
-        case FATAL:
-          ret["Type"] = "fatal";
+        case Feedback::FATAL:
+          ret["type"] = "fatal";
           break;
-        case WARNING:
-          ret["Type"] = "warning";
+        case Feedback::WARNING:
+          ret["type"] = "warning";
           break;
-        case NOTIFICATION:
-          ret["Type"] = "notification";
+        case Feedback::NOTIFICATION:
+          ret["type"] = "notification";
           break;
-        case UNKNOWN:
+        case Feedback::UNKNOWN:
         default:
-          ret["Type"] = "unknown";
+          ret["type"] = "unknown";
           break;
       }
       return ret;
@@ -71,8 +73,8 @@ namespace Avida{
     WebViewerMsg ReturnMessage(const WebViewerMsg& received)
     {
       WebViewerMsg return_msg;
-      return_msg["Key"] = received["Key"];
-      return_msg["Received"] = received;
+      return_msg["key"] = received["key"];
+      return_msg["received"] = received;
       return return_msg;
     }
     
@@ -80,6 +82,12 @@ namespace Avida{
     WebViewerMsg DefaultAddEventMessage(const WebViewerMsg& received)
     {
       WebViewerMsg return_msg = received;
+      return_msg["start"] = 
+        (received.find("start") != received.end()) ? received["start"] : "now";
+      return_msg["interval"] = 
+        (received.find("interval") != received.end()) ? received["interval"] : "1.0";
+      return_msg["end"] = 
+        (received.find("end") != received.end()) ? received["end"] : "end";
       return return_msg;
     }
     

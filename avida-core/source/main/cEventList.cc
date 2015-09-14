@@ -30,16 +30,12 @@
 #include "cString.h"
 #include "cWorld.h"
 
-#include <cfloat>           // for DBL_MIN
+
 #include <iostream>
 
 using namespace std;
 
 
-const double cEventList::TRIGGER_BEGIN = DBL_MIN;
-const double cEventList::TRIGGER_END = DBL_MAX;
-const double cEventList::TRIGGER_ALL = 0.0;
-const double cEventList::TRIGGER_ONCE = DBL_MAX;
 
 
 cEventList::~cEventList()
@@ -83,6 +79,7 @@ bool cEventList::AddEvent(eTriggerType trigger, double start, double interval,
   }
   
   cerr << "error: unable to load event '" << name << "'" << endl; 
+  feedback.Error(cString("Unable to load event ") + name);
   
   return false;
 }
@@ -279,7 +276,13 @@ void cEventList::SyncEvent(cEventListEntry* entry)
   // Ignore events that are immdeiate
   if (entry->GetTrigger() == IMMEDIATE) return;
   
+  
   double t_val = GetTriggerValue(entry->GetTrigger());
+  
+  // If the event should start now, make its start t_val
+  if (entry->GetStart() == TRIGGER_NOW)
+    entry->ResetStart(t_val);
+  
   
   // If t_val has past the end, remove (even if it is TRIGGER_ALL)
   if (t_val > entry->GetStop()) {
@@ -431,10 +434,11 @@ bool cEventList::AddEventFileFormat(const cString& in_line, Feedback& feedback)
   tmp = timing_str.Pop(':');
   
   // If first value is valid, we are getting a timing.
-  if (tmp.IsNumber() || tmp == "begin") {
+  if (tmp.IsNumber() || tmp == "begin" || tmp == "now") {
     
     // First number is start
     if (tmp == "begin") start = TRIGGER_BEGIN;
+    else if (tmp == "now") start = TRIGGER_NOW;
     else start = tmp.AsDouble();
     
     // If no other words... is "start" syntax

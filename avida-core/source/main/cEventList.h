@@ -28,7 +28,7 @@
 #endif
 
 #include "tList.h"
-
+#include <cfloat>           // for DBL_MIN
 
 namespace Avida {
   class Feedback;
@@ -62,10 +62,11 @@ public:
   //                  available or is incomplete with this option.
   enum eTriggerType { UPDATE, GENERATION, IMMEDIATE, BIRTHS, UNDEFINED, BIRTHS_INTERRUPT };
   
-  static const double TRIGGER_BEGIN;  //Are these unsafely defined? @MRR
-  static const double TRIGGER_END;
-  static const double TRIGGER_ALL;
-  static const double TRIGGER_ONCE;
+  static constexpr double TRIGGER_NOW = -1.0;
+  static constexpr double TRIGGER_BEGIN = DBL_MIN;  
+  static constexpr double TRIGGER_END = DBL_MAX;
+  static constexpr double TRIGGER_ALL = 0.0;
+  static constexpr double TRIGGER_ONCE = DBL_MAX;
   
 private:
   class cEventListEntry;  
@@ -160,6 +161,7 @@ private:
     
     virtual ~cEventListEntry() { delete m_action; }
     
+    void ResetStart(const double start) { m_start = start; }
     void SetPrev(cEventListEntry* prev) { m_prev = prev; }
     void SetNext(cEventListEntry* next) { m_next = next; }
     
