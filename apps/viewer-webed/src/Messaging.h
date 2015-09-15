@@ -20,8 +20,8 @@ namespace Avida{
     }
     
     const WebViewerMsg MSG_READY = {
-      {"Key", "AvidaStatus"},
-      {"Status", "Paused"}
+      {"key", "avidaStatus"},
+      {"status", "paused"}
     };
     
     
