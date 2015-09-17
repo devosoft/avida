@@ -4375,10 +4375,9 @@ public:
           if(organism->GetNumParasites() > 0)
           {
             Apto::Array<Systematics::UnitPtr> parasites = organism->GetParasites();
-            Genome para_genome(parasites[0]->Properties().Get("genome"));
-            ConstInstructionSequencePtr seq;
-            seq.DynamicCastFrom(para_genome.Representation());
-            genome_seq = seq->AsString();
+            Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite;
+            parasite.DynamicCastFrom(parasites[0]);
+            genome_seq = parasite->UnitGenome().Representation()->AsString();
           }
           else { genome_seq = "0"; }
         }
