@@ -4621,14 +4621,15 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
 }
 
 //Takes name of detail file to convert to skeletons
-genotype_vector cAnalyze::GetSkeletons(cString cur_string)
+//This is a helper function for a lot of other functions,
+//rather than a command you should actually run from analyze mode.
+//GetSkeletons_Batch is the function that gets run from analyze mode.
+genotype_vector cAnalyze::GetSkeletons(cString cur_string, int max_knockouts=2)
 {
   cout << "Turning population into skeletons of only informative sites..." << endl;
 
   // LOAD  
   genotype_vector genotypes = LoadDetailFileAsVector(cur_string);
-  
-  int max_knockouts = 2;
   
   // Loop through all of the genotypes in this batch...
   cAnalyzeGenotype * genotype = NULL;
@@ -4810,12 +4811,9 @@ genotype_vector cAnalyze::GetSkeletons(cString cur_string)
 void cAnalyze::GetSkeletons_Batch(cString cur_string)
 {
   cout << "Turning population into skeletons of only informative sites..." << endl;
-  
-  
-  int max_knockouts = 1;
-  if (cur_string.GetSize() > 0) max_knockouts = cur_string.PopWord().AsInt();
-  
-  
+    
+  int max_knockouts = 2;
+  if (cur_string.GetSize() > 0) max_knockouts = cur_string.PopWord().AsInt();  
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -4985,7 +4983,6 @@ void cAnalyze::GetSkeletons_Batch(cString cur_string)
       {
         mod_seq.Remove(line_num, 1);
         line_num -= 1;
-        cout << "removed a repeat" << endl;
       }
         
     }
@@ -5469,7 +5466,7 @@ void cAnalyze::AllComplexityBarriers(cString cur_string)
   // Take in two detail files to compare (or maybe a range and interval of the detail files for the whole run)
 
   //CHANGE THIS
-  int coalesence = 4200;
+  int coalesence = 50000;
 
   // LOAD
   cString first_file_update = cur_string.PopWord();
@@ -10938,8 +10935,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("ANALYZE_FITNESS_TWO_SITES", &cAnalyze::AnalyzeFitnessLandscapeTwoSites);
   AddLibraryDef("ANALYZE_COMPLEXITY_TWO_SITES", &cAnalyze::AnalyzeComplexityTwoSites);
   AddLibraryDef("ANALYZE_KNOCKOUTS", &cAnalyze::AnalyzeKnockouts);
-  //AddLibraryDef("GET_SKELETONS", &cAnalyze::GetSkeletons);
-  AddLibraryDef("GET_SKELETONS_BATCH", &cAnalyze::GetSkeletons_Batch);
+  AddLibraryDef("GET_SKELETONS", &cAnalyze::GetSkeletons_Batch);
   AddLibraryDef("COUNT_NEW_SIG_LINEAGES", &cAnalyze::CountNewSignificantLineages);
   AddLibraryDef("COUNT_NOVEL_SKELETONS", &cAnalyze::CountNovelSkeletons);
   //AddLibraryDef("COUNT_ECOLOGICAL_COMPLEXITY", &cAnalyze::CountEcologicalComplexity);
