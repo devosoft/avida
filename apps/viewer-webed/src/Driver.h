@@ -75,18 +75,25 @@ namespace Avida{
         switch(msg_type){
           case cUserFeedback::eFeedbackType::UF_ERROR:
             ret_msg = FeedbackMessage(Feedback::FATAL);
+            ret_msg["message"] = msg.GetData();
             break;
           case cUserFeedback::eFeedbackType::UF_WARNING:
             ret_msg = FeedbackMessage(Feedback::WARNING);
+            ret_msg["message"] = msg.GetData();
             break;
           case cUserFeedback::eFeedbackType::UF_NOTIFICATION:
             ret_msg = FeedbackMessage(Feedback::NOTIFICATION);
+            ret_msg["message"] = msg.GetData();
+            break;
+          case cUserFeedback::eFeedbackType::UF_DATA:
+            ret_msg = FeedbackMessage(Feedback::DATA);
+            ret_msg["message"] = nlohmann::json::parse(msg.GetData());
             break;
           default:
             ret_msg = FeedbackMessage(Feedback::UNKNOWN);
+            ret_msg["message"] = msg.GetData();
             break;
         }
-        ret_msg["message"] = msg.GetData();
         PostMessage(ret_msg);
       }
       m_feedback.Clear();
@@ -125,13 +132,17 @@ namespace Avida{
         if (msg["type"] == "addEvent") {  //This message is requesting we add an Event
           cerr << "Message is addEvent type" << endl;
           ProcessAddEvent(msg, ret_msg);  //So try to add it.
+          cerr << "Done processing message" << endl;
         }
         else {
           cerr << "Message is unknown type" << endl;
           ret_msg["message"] = "unknown type";  //We don't know what this message wants
         }
+        cerr << "About to PostMessage: " << ret_msg.dump() << endl;
         PostMessage(ret_msg);
+        cerr << "About to ProcessFeedback: " << endl;
         ProcessFeedback();
+        cerr << "Done processing message." << endl;
       }
     }
     
@@ -143,6 +154,8 @@ namespace Avida{
       
       //Some properties aren't required; we'll add defaults if they are missing
       WebViewerMsg msg = DefaultAddEventMessage(rcv_msg);
+      
+      cerr << "Defaulted message to be processed is " << msg << endl;
       
       //Validate that the properties in the addEvent message is correct.
       if (!ValidateEventMessage(msg)){
@@ -168,6 +181,7 @@ namespace Avida{
           //We were able to create a line from an event file, now let's try to add it
           //to the event list; if we can't, feedback will be generated and success
           //will be set to false.
+          cerr << "Trying to add event line: " << event_line << endl;
           ret_msg["success"] = m_world->GetEventsList()->AddEventFileFormat(event_line.data(), m_feedback);
         }
       } //Done with non runPause message processing
@@ -178,32 +192,27 @@ namespace Avida{
       bool success = true;
       
       //Action name is missing
-      cerr << "testing name" << endl;
       if (msg.find("name") == msg.end()){
         success=false;
         m_feedback.Warning("addEvent is missing name property");
       }
       // Can't find event trigger type
-      cerr << "testing Trigger type" << endl;
       if (msg.find("triggerType") == msg.end()){
         success=false;
         m_feedback.Warning("addEvent is missing triggerType property");
       }
       //Missing start condition
-      cerr << "testing start" << endl;
       if (msg.find("start") == msg.end()){
         success = false;
         m_feedback.Warning("addEvent is missing start property");
       }
       // Can't find the event interval
-      cerr << "testing interval" << endl;
       if (msg.find("interval") == msg.end()){
         success=false;
         m_feedback.Warning("addEvent is missing interval property");
       }
       // Can't find the event end 
-      cerr << "testing end" << endl;
-      if (msg.find("end") == msg.end()){
+      if (msg.find("end") == msg.end() || msg["end"] != ""){
         success=false;
         m_feedback.Warning("addEvent is missing end property");
       }
@@ -214,17 +223,16 @@ namespace Avida{
     
     bool Driver::JsonToEventFormat(json msg, string& line)
     {
-      
-      
       ostringstream line_in;
              
-      line_in << msg["start"] << ":" << msg["interval"];
+      line_in << DeQuote(msg["triggerType"]) << " ";
+      line_in << DeQuote(msg["start"]) << ":" << DeQuote(msg["interval"]);
       if (msg["end"] != "")
-        line_in << ":" << msg["end"];
-      line_in << " " << msg["name"];
+        line_in << ":" << DeQuote(msg["end"]);
+      line_in << " " << DeQuote(msg["name"]);
       if (msg.find("args") != msg.end())
         for (auto arg : msg["args"]) // copy each array element
-          line_in << " " << arg;  // to the input line
+          line_in << " " << DeQuote(arg);  // to the input line
       line = line_in.str();  //Return our input from the stream
       return true;
     }

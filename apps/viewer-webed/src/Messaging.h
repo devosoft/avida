@@ -52,7 +52,7 @@ namespace Avida{
     
     WebViewerMsg FeedbackMessage(Feedback::FEEDBACK_TYPE err)
     {
-      WebViewerMsg ret = { "type","userFeedback" };
+      WebViewerMsg ret = {{ "type","userFeedback" }};
       switch(err){
         case Feedback::FATAL:
           ret["level"] = "fatal";
@@ -85,19 +85,26 @@ namespace Avida{
     
     WebViewerMsg DefaultAddEventMessage(const WebViewerMsg& received)
     {
-      cerr << "Defaulting Add Event" << endl;
       WebViewerMsg return_msg(received);
-      cerr << "start" << endl;
+      return_msg["triggerType"] =
+        (received.find("triggerType") != received.end()) ? received["triggerType"] : "update";
       return_msg["start"] = 
         (received.find("start") != received.end()) ? received["start"] : "now";
-      cerr << "interval" << endl;
       return_msg["interval"] = 
         (received.find("interval") != received.end()) ? received["interval"] : "always";
-      cerr << "end" << endl;
       return_msg["end"] = 
         (received.find("end") != received.end()) ? received["end"] : "";
-      cerr << "ok" << endl;
       return return_msg;
+    }
+    
+    
+    string DeQuote(const string& str_in)
+    {
+      ostringstream oss;
+      for (char c : str_in)
+        if (c != '"' && c != '\'')
+          oss << c;
+      return oss.str();
     }
     
   }  //WebViewer

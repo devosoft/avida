@@ -52,7 +52,7 @@ public:
       {"ave_metabolic_rate", ave_metabolic_rate},
       {"organisms", org_count},
       {"ave_age", ave_age},
-      {"not", stats.GetTaskLastCount(0)},
+      {"not", stats.GetTaskLastCount(0)},    //TODO: THIS WILL ONLY WORK WITH LOGIC 9  @MRR
       {"nand", stats.GetTaskLastCount(1)},
       {"and", stats.GetTaskLastCount(2)},
       {"orn", stats.GetTaskLastCount(3)},
