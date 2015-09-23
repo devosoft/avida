@@ -55,7 +55,6 @@ namespace Avida{
       
       void ProcessMessage(const WebViewerMsg& msg);
       bool StepUpdate();
-      void Run();
       void RunPause();
       void Stop();
       json GetPopulationData();
@@ -139,12 +138,6 @@ namespace Avida{
       
     }
     
-    
-    extern "C"
-    void Driver::Run()
-    {
-            //This method may not be needed.
-    }
     
     
     bool Driver::StepUpdate()
