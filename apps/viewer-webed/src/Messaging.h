@@ -20,8 +20,9 @@ namespace Avida{
     }
     
     const WebViewerMsg MSG_READY = {
-      {"key", "avidaStatus"},
-      {"status", "paused"}
+      {"type", "userFeedback"},
+      {"level", "notification"},
+      {"message", "ready"}
     };
     
     
@@ -51,20 +52,20 @@ namespace Avida{
     
     WebViewerMsg ErrorMessage(Feedback::ERROR_TYPE err)
     {
-      WebViewerMsg ret = { "key","userFeedback" };
+      WebViewerMsg ret = { "type","userFeedback" };
       switch(err){
         case Feedback::FATAL:
-          ret["type"] = "fatal";
+          ret["level"] = "fatal";
           break;
         case Feedback::WARNING:
-          ret["type"] = "warning";
+          ret["level"] = "warning";
           break;
         case Feedback::NOTIFICATION:
-          ret["type"] = "notification";
+          ret["level"] = "notification";
           break;
         case Feedback::UNKNOWN:
         default:
-          ret["type"] = "unknown";
+          ret["level"] = "unknown";
           break;
       }
       return ret;
@@ -73,8 +74,8 @@ namespace Avida{
     WebViewerMsg ReturnMessage(const WebViewerMsg& received)
     {
       WebViewerMsg return_msg;
-      return_msg["key"] = received["key"];
-      return_msg["received"] = received;
+      return_msg["type"] = "response";
+      return_msg["request"] = received;
       return return_msg;
     }
     
@@ -85,9 +86,9 @@ namespace Avida{
       return_msg["start"] = 
         (received.find("start") != received.end()) ? received["start"] : "now";
       return_msg["interval"] = 
-        (received.find("interval") != received.end()) ? received["interval"] : "1.0";
+        (received.find("interval") != received.end()) ? received["interval"] : "always";
       return_msg["end"] = 
-        (received.find("end") != received.end()) ? received["end"] : "end";
+        (received.find("end") != received.end()) ? received["end"] : "";
       return return_msg;
     }
     

@@ -5,11 +5,13 @@
 #include "cWorld.h"
 #include "cPopulation.h"
 #include "cHardwareBase.h"
+#include "cEventList.h"
 #include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
 #include <iostream>
+#include <sstream>
 
 #include <emscripten.h>
 #include "Messaging.h"
@@ -37,9 +39,12 @@ namespace Avida{
       bool m_first_update;
       cAvidaContext* m_ctx;
       
-      void DisplayErrors();
+      void ProcessFeedback();
       void Setup(cWorld*, cUserFeedback);
       void ProcessAddEvent(const WebViewerMsg& msg, WebViewerMsg& ret_msg);
+      bool ValidateEventMessage(const json& msg);
+      bool JsonToEventFormat(json msg, string& line);
+      
       
     public:
       Driver(cWorld* world, cUserFeedback feedback)
@@ -62,7 +67,7 @@ namespace Avida{
     };
     
     
-    void Driver::DisplayErrors()
+    void Driver::ProcessFeedback()
     {
       for (int k=0; k<m_feedback.GetNumMessages(); ++k){
         cUserFeedback::eFeedbackType msg_type = m_feedback.GetMessageType(k);
@@ -108,24 +113,19 @@ namespace Avida{
     
     void Driver::ProcessMessage(const WebViewerMsg& msg)
     {
-      if (msg.find("key") == msg.end()) {  //This message is missing it's Key; can't process.
+      //This message is missing it's type; can't process.
+      if (msg.find("type") == msg.end()) {  
         WebViewerMsg error_msg = ErrorMessage(Feedback::WARNING);
-        error_msg["received"];
+        error_msg["request"];
         PostMessage(error_msg);
       } else {
         WebViewerMsg ret_msg = ReturnMessage(msg);
         ret_msg["success"] = false;
-        if (msg["key"] == "runPause"){
-          ret_msg["success"] = true;
-          Pause();
-        } else if (msg["key"] == "finish") {
-          ret_msg["success"] = true;
-          Finish();
-        } else if (msg["key"] == "addEvent") {
-          ProcessAddEvent(msg, ret_msg);
+        if (msg["type"] == "addEvent") {  //This message is requesting we add an Event
+          ProcessAddEvent(msg, ret_msg);  //So try to add it.
         }
         else {
-          ret_msg["description"] = "unknown key";
+          ret_msg["message"] = "unknown type";  //We don't know what this message wants
         }
         PostMessage(ret_msg);
       }
@@ -134,10 +134,88 @@ namespace Avida{
     
     void Driver::ProcessAddEvent(const WebViewerMsg& msg, WebViewerMsg& ret_msg)
     {
+    
+      //Some properties aren't required; we'll add defaults if they are missing
       WebViewerMsg rec_msg = DefaultAddEventMessage(msg);
-      
+      //All add events must have a name property defined
+
+      //TODO: actually make run pause action; for now just treat it as immediate
+      //Right now any addEvent with runPause will happen immediately.
+      if (msg["name"] == "runPause"){
+        ret_msg["success"] = true;
+        RunPause();
+        PostMessage(ret_msg);
+      } else {
+        string event_line;  //This will contain a properly formatted event list line if successful
+        if (!JsonToEventFormat(rec_msg, event_line)){
+          //Because we are avoiding exceptions, we're using a bool to flag success
+          //If we're here, we were unsuccessful and need to send feedback and post
+          //a failure response message
+          ret_msg["message"] = "Missing properties; unable to addEvent";
+        } else {
+          //We were able to create a line from an event file, now let's try to add it
+          //to the event list; if we can't, feedback will be generated and success
+          //will be set to false.
+          ret_msg["success"] = m_world->GetEventsList()->AddEventFileFormat(event_line.data(), m_feedback);
+        }
+        PostMessage(ret_msg);  //Post our response message
+        ProcessFeedback();     //Post any feedback
+        return;
+      } //Done with non runPause message processing
     }
     
+    bool Driver::ValidateEventMessage(const json& msg)
+    {
+      bool success = true;
+      
+      //Action name is missing
+      if (msg.find("name") == msg.end()){
+        success=false;
+        m_feedback.Warning("addEvent is missing name property");
+      }
+      // Can't find event trigger type
+      if (msg.find("triggerType") == msg.end()){
+        success=false;
+        m_feedback.Warning("addEvent is missing triggerType property");
+      }
+      //Missing start condition
+      if (msg.find("start") == msg.end()){
+        success = false;
+        m_feedback.Warning("addEvent is missing start property");
+      }
+      // Can't find the event interval
+      if (msg.find("interval") == msg.end()){
+        success=false;
+        m_feedback.Warning("addEvent is missing interval property");
+      }
+      // Can't find the event end 
+      if (msg.find("end") == msg.end()){
+        success=false;
+        m_feedback.Warning("addEvent is missing end property");
+      }
+      return success;
+    }
+    
+    
+    
+    bool Driver::JsonToEventFormat(json msg, string& line)
+    {
+      if (!ValidateEventMessage(msg)){
+        return false;
+      }
+      
+      ostringstream line_in;
+             
+      line_in << msg["start"] << ":" << msg["interval"];
+      if (msg["end"] != "")
+        line_in << ":" << msg["end"];
+      line_in << " " << msg["name"];
+      if (msg.find("args") != msg.end())
+        for (auto arg : msg["args"]) // copy each array element
+          line_in << " " << arg;  // to the input line
+      line = line_in.str();  //Return our input from the stream
+      return true;
+    }
     
     
     bool Driver::StepUpdate()
@@ -153,7 +231,7 @@ namespace Avida{
       m_world->GetConfig().POINT_DEL_PROB.Get();
       
       //Perform a single update
-      DisplayErrors(); 
+      ProcessFeedback(); 
       
       m_world->GetEvents(*m_ctx);
       if (m_finished == true) return false;
@@ -192,7 +270,7 @@ namespace Avida{
         }
       }
       
-      DisplayErrors();
+      ProcessFeedback();
       
       // Exit conditons...
       if (population.GetNumOrganisms() == 0) m_finished = true;
