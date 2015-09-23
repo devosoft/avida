@@ -60,7 +60,6 @@ namespace Avida{
       
       void ProcessMessage(const WebViewerMsg& msg);
       bool StepUpdate();
-      void RunPause();
       void Stop();
       json GetPopulationData();
       
@@ -113,8 +112,10 @@ namespace Avida{
     
     void Driver::ProcessMessage(const WebViewerMsg& msg)
     {
+      cerr << msg.dump() << endl;
       //This message is missing it's type; can't process.
       if (msg.find("type") == msg.end()) {  
+        cerr << "Message is missing type" << endl;
         WebViewerMsg error_msg = ErrorMessage(Feedback::WARNING);
         error_msg["request"];
         PostMessage(error_msg);
@@ -122,45 +123,53 @@ namespace Avida{
         WebViewerMsg ret_msg = ReturnMessage(msg);
         ret_msg["success"] = false;
         if (msg["type"] == "addEvent") {  //This message is requesting we add an Event
+          cerr << "Message is addEvent type" << endl;
           ProcessAddEvent(msg, ret_msg);  //So try to add it.
         }
         else {
+          cerr << "Message is unknown type" << endl;
           ret_msg["message"] = "unknown type";  //We don't know what this message wants
         }
         PostMessage(ret_msg);
+        ProcessFeedback();
       }
     }
     
     
-    void Driver::ProcessAddEvent(const WebViewerMsg& msg, WebViewerMsg& ret_msg)
+    void Driver::ProcessAddEvent(const WebViewerMsg& rcv_msg, WebViewerMsg& ret_msg)
     {
     
+      cerr << "Attempting to addEvent" << endl;
+      
       //Some properties aren't required; we'll add defaults if they are missing
-      WebViewerMsg rec_msg = DefaultAddEventMessage(msg);
-      //All add events must have a name property defined
-
+      WebViewerMsg msg = DefaultAddEventMessage(rcv_msg);
+      
+      //Validate that the properties in the addEvent message is correct.
+      if (!ValidateEventMessage(msg)){
+        cerr << "addEvent is invalid" << endl;
+        ret_msg["success"] = false;
+      }
       //TODO: actually make run pause action; for now just treat it as immediate
       //Right now any addEvent with runPause will happen immediately.
-      if (msg["name"] == "runPause"){
+      else if (msg["name"] == "runPause"){
+        cerr << "Event is RunPause" << endl;
         ret_msg["success"] = true;
-        RunPause();
-        PostMessage(ret_msg);
+        Pause();
       } else {
+        cerr << "Event is other than runPause" << endl;
         string event_line;  //This will contain a properly formatted event list line if successful
-        if (!JsonToEventFormat(rec_msg, event_line)){
+        if (!JsonToEventFormat(msg, event_line)){
           //Because we are avoiding exceptions, we're using a bool to flag success
           //If we're here, we were unsuccessful and need to send feedback and post
           //a failure response message
           ret_msg["message"] = "Missing properties; unable to addEvent";
-        } else {
+        } 
+        else {
           //We were able to create a line from an event file, now let's try to add it
           //to the event list; if we can't, feedback will be generated and success
           //will be set to false.
           ret_msg["success"] = m_world->GetEventsList()->AddEventFileFormat(event_line.data(), m_feedback);
         }
-        PostMessage(ret_msg);  //Post our response message
-        ProcessFeedback();     //Post any feedback
-        return;
       } //Done with non runPause message processing
     }
     
@@ -169,26 +178,31 @@ namespace Avida{
       bool success = true;
       
       //Action name is missing
+      cerr << "testing name" << endl;
       if (msg.find("name") == msg.end()){
         success=false;
         m_feedback.Warning("addEvent is missing name property");
       }
       // Can't find event trigger type
+      cerr << "testing Trigger type" << endl;
       if (msg.find("triggerType") == msg.end()){
         success=false;
         m_feedback.Warning("addEvent is missing triggerType property");
       }
       //Missing start condition
+      cerr << "testing start" << endl;
       if (msg.find("start") == msg.end()){
         success = false;
         m_feedback.Warning("addEvent is missing start property");
       }
       // Can't find the event interval
+      cerr << "testing interval" << endl;
       if (msg.find("interval") == msg.end()){
         success=false;
         m_feedback.Warning("addEvent is missing interval property");
       }
       // Can't find the event end 
+      cerr << "testing end" << endl;
       if (msg.find("end") == msg.end()){
         success=false;
         m_feedback.Warning("addEvent is missing end property");
@@ -200,9 +214,7 @@ namespace Avida{
     
     bool Driver::JsonToEventFormat(json msg, string& line)
     {
-      if (!ValidateEventMessage(msg)){
-        return false;
-      }
+      
       
       ostringstream line_in;
              

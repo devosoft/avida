@@ -82,13 +82,18 @@ namespace Avida{
     
     WebViewerMsg DefaultAddEventMessage(const WebViewerMsg& received)
     {
-      WebViewerMsg return_msg = received;
+      cerr << "Defaulting Add Event" << endl;
+      WebViewerMsg return_msg(received);
+      cerr << "start" << endl;
       return_msg["start"] = 
         (received.find("start") != received.end()) ? received["start"] : "now";
+      cerr << "interval" << endl;
       return_msg["interval"] = 
         (received.find("interval") != received.end()) ? received["interval"] : "always";
+      cerr << "end" << endl;
       return_msg["end"] = 
         (received.find("end") != received.end()) ? received["end"] : "";
+      cerr << "ok" << endl;
       return return_msg;
     }
     
