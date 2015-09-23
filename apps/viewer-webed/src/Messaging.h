@@ -30,7 +30,7 @@ namespace Avida{
     extern "C"
     EMStringPtr GetMessages()
     {
-      return EM_ASM_INT_V(return getMessages());
+      return EM_ASM_INT_V(return doGetMessages());
     }
     
     
