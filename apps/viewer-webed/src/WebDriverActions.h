@@ -46,21 +46,21 @@ public:
     json pop_data = {
       {"type", "data"},
       {"name", "webPopulationStats"},
-      {"core.update", update},
-      {"core.world.ave_fitness", ave_fitness},
-      {"core.world.ave_gestation_time", ave_gestation_time},
-      {"core.world.ave_metabolic_rate", ave_metabolic_rate},
-      {"core.world.organisms", org_count},
-      {"core.world.ave_age", ave_age},
-      {"core.environment.triggers.not.test_organisms", stats.GetTaskLastCount(0)},
-      {"core.environment.triggers.nand.test_organisms", stats.GetTaskLastCount(1)},
-      {"core.environment.triggers.and.test_organisms", stats.GetTaskLastCount(2)},
-      {"core.environment.triggers.orn.test_organisms", stats.GetTaskLastCount(3)},
-      {"core.environment.triggers.or.test_organisms", stats.GetTaskLastCount(4)},
-      {"core.environment.triggers.andn.test_organisms", stats.GetTaskLastCount(5)},
-      {"core.environment.triggers.nor.test_organisms", stats.GetTaskLastCount(6)},
-      {"core.environment.triggers.xor.test_organisms", stats.GetTaskLastCount(7)},
-      {"core.environment.triggers.equ.test_organisms", stats.GetTaskLastCount(8)}
+      {"update", update},
+      {"ave_fitness", ave_fitness},
+      {"ave_gestation_time", ave_gestation_time},
+      {"ave_metabolic_rate", ave_metabolic_rate},
+      {"organisms", org_count},
+      {"ave_age", ave_age},
+      {"not", stats.GetTaskLastCount(0)},
+      {"nand", stats.GetTaskLastCount(1)},
+      {"and", stats.GetTaskLastCount(2)},
+      {"orn", stats.GetTaskLastCount(3)},
+      {"or", stats.GetTaskLastCount(4)},
+      {"andn", stats.GetTaskLastCount(5)},
+      {"nor", stats.GetTaskLastCount(6)},
+      {"xor", stats.GetTaskLastCount(7)},
+      {"equ", stats.GetTaskLastCount(8)}
     };
     m_feedback.Data(pop_data.dump().c_str());
   }
