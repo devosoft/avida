@@ -37,7 +37,8 @@ public:
   enum eFeedbackType {
     UF_ERROR,
     UF_WARNING,
-    UF_NOTIFICATION
+    UF_NOTIFICATION,
+    UF_DATA
   };
   
   
@@ -65,6 +66,7 @@ public:
   void Error(const char* fmt, ...);
   void Warning(const char* fmt, ...);
   void Notify(const char* fmt, ...);
+  void Data(const char* fmt, ...);
   void Clear() {m_errors=0;m_warnings=0;m_entries.ResizeClear(0);}
   
   
@@ -102,6 +104,14 @@ inline void cUserFeedback::Notify(const char* fmt, ...)
   va_list args;
   va_start(args, fmt);
   m_entries.Push(sEntry(UF_NOTIFICATION, fmt, args));
+  va_end(args);
+}
+
+inline void cUserFeedback::Data(const char* fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  m_entries.Push(sEntry(UF_DATA, fmt, args));
   va_end(args);
 }
 

@@ -7,10 +7,14 @@
 #include "cAvidaConfig.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
+#include "cActionLibrary.h"
+
 #include "avida/util/CmdLine.h"
 
 #include "Driver.h"
 #include "Callbacks.h"
+#include "WebDriverActions.h"
+
 #include <emscripten.h>
 #include <cstdlib> 
 
@@ -25,6 +29,11 @@ int main(int argc, char* argv[])
 {
   
    Avida::Initialize();
+   
+   //Initialize WebDriverActions separately to keep it out of avida-core library
+   cActionLibrary* act_lib = &cActionLibrary::GetInstance();
+   RegisterWebDriverActions(act_lib);
+   
    
    Apto::Map<Apto::String, Apto::String> defs;
    cAvidaConfig* cfg = new cAvidaConfig();

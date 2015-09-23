@@ -6,12 +6,12 @@
 //  Copyright (c) 2015 MSU. All rights reserved.
 
 
-#include "Messaging.h"
+#ifndef viewer_webed_Callbacks_h
+#define viewer_webed_Callbacks_h
+
 #include "Driver.h"
 #include <cstdlib>
 
-#ifndef viewer_webed_Callbacks_h
-#define viewer_webed_Callbacks_h
 
 extern Avida::WebViewer::Driver* driver;
 
@@ -52,7 +52,7 @@ namespace Avida {
   
     void AvidaExit()
     {
-      WebViewerMsg msg_exit = ErrorMessage(Feedback::FATAL);
+      WebViewerMsg msg_exit = FeedbackMessage(Feedback::FATAL);
       msg_exit["description"] = "Avida is exiting";
       PostMessage(msg_exit);
     }

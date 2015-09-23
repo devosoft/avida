@@ -141,6 +141,7 @@ private:
     void Error(const char* fmt, ...) { (void)fmt; }
     void Warning(const char* fmt, ...) { (void)fmt; }
     void Notify(const char* fmt, ...) { (void)fmt; }
+    void Data(const char* fmt, ...) { (void)fmt; }
     void Clear() {}
   } m_feedback;
 

@@ -16,7 +16,7 @@ namespace Avida{
     typedef char* ReceivedMessage;
     
     namespace Feedback{
-      typedef enum ERROR_TYPE {FATAL, WARNING, NOTIFICATION, UNKNOWN} ERROR_TYPE;
+      typedef enum FEEDBACK_TYPE {FATAL, WARNING, NOTIFICATION, DATA, UNKNOWN} FEEDBACK_TYPE;
     }
     
     const WebViewerMsg MSG_READY = {
@@ -50,7 +50,7 @@ namespace Avida{
     }
     
     
-    WebViewerMsg ErrorMessage(Feedback::ERROR_TYPE err)
+    WebViewerMsg FeedbackMessage(Feedback::FEEDBACK_TYPE err)
     {
       WebViewerMsg ret = { "type","userFeedback" };
       switch(err){
@@ -62,6 +62,9 @@ namespace Avida{
           break;
         case Feedback::NOTIFICATION:
           ret["level"] = "notification";
+          break;
+        case Feedback::DATA:
+          ret["level"] = "data";
           break;
         case Feedback::UNKNOWN:
         default:

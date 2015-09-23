@@ -6,7 +6,7 @@
 #include "cPopulation.h"
 #include "cHardwareBase.h"
 #include "cEventList.h"
-#include "avida/core/Feedback.h"
+#include "cUserFeedback.h"
 #include "avida/core/WorldDriver.h"
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
@@ -74,19 +74,19 @@ namespace Avida{
         WebViewerMsg ret_msg;
         switch(msg_type){
           case cUserFeedback::eFeedbackType::UF_ERROR:
-            ret_msg = ErrorMessage(Feedback::FATAL);
+            ret_msg = FeedbackMessage(Feedback::FATAL);
             break;
           case cUserFeedback::eFeedbackType::UF_WARNING:
-            ret_msg = ErrorMessage(Feedback::WARNING);
+            ret_msg = FeedbackMessage(Feedback::WARNING);
             break;
           case cUserFeedback::eFeedbackType::UF_NOTIFICATION:
-            ret_msg = ErrorMessage(Feedback::NOTIFICATION);
+            ret_msg = FeedbackMessage(Feedback::NOTIFICATION);
             break;
           default:
-            ret_msg = ErrorMessage(Feedback::UNKNOWN);
+            ret_msg = FeedbackMessage(Feedback::UNKNOWN);
             break;
         }
-        ret_msg["description"] = msg.GetData();
+        ret_msg["message"] = msg.GetData();
         PostMessage(ret_msg);
       }
       m_feedback.Clear();
@@ -116,7 +116,7 @@ namespace Avida{
       //This message is missing it's type; can't process.
       if (msg.find("type") == msg.end()) {  
         cerr << "Message is missing type" << endl;
-        WebViewerMsg error_msg = ErrorMessage(Feedback::WARNING);
+        WebViewerMsg error_msg = FeedbackMessage(Feedback::WARNING);
         error_msg["request"];
         PostMessage(error_msg);
       } else {

@@ -122,6 +122,7 @@ SET(AVIDAED_WEB_DIR ${PROJECT_SOURCE_DIR}/apps/viewer-webed/src)
 SET(
    AVIDAED_WEB_SOURCES 
    ${AVIDAED_WEB_DIR}/viewer-webed.cc
+   ${AVIDAED_WEB_DIR}/WebDriverActions.cc
    )
 SOURCE_GROUP(target\\avida FILES ${AVIDAED_WEB_SOURCES})
 
