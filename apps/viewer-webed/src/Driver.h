@@ -86,8 +86,8 @@ namespace Avida{
             ret_msg["message"] = msg.GetData();
             break;
           case cUserFeedback::eFeedbackType::UF_DATA:
-            ret_msg = FeedbackMessage(Feedback::DATA);
-            ret_msg["message"] = nlohmann::json::parse(msg.GetData());
+            //Data messages will get sent directly with no userFeedback wrapper
+            ret_msg = nlohmann::json::parse(msg.GetData());
             break;
           default:
             ret_msg = FeedbackMessage(Feedback::UNKNOWN);
@@ -119,10 +119,9 @@ namespace Avida{
     
     void Driver::ProcessMessage(const WebViewerMsg& msg)
     {
-      cerr << msg.dump() << endl;
+      //cerr << msg.dump() << endl;
       //This message is missing it's type; can't process.
       if (msg.find("type") == msg.end()) {  
-        cerr << "Message is missing type" << endl;
         WebViewerMsg error_msg = FeedbackMessage(Feedback::WARNING);
         error_msg["request"];
         PostMessage(error_msg);
@@ -130,19 +129,19 @@ namespace Avida{
         WebViewerMsg ret_msg = ReturnMessage(msg);
         ret_msg["success"] = false;
         if (msg["type"] == "addEvent") {  //This message is requesting we add an Event
-          cerr << "Message is addEvent type" << endl;
+          //cerr << "Message is addEvent type" << endl;
           ProcessAddEvent(msg, ret_msg);  //So try to add it.
           cerr << "Done processing message" << endl;
         }
         else {
-          cerr << "Message is unknown type" << endl;
+          //cerr << "Message is unknown type" << endl;
           ret_msg["message"] = "unknown type";  //We don't know what this message wants
         }
-        cerr << "About to PostMessage: " << ret_msg.dump() << endl;
+        //cerr << "About to PostMessage: " << ret_msg.dump() << endl;
         PostMessage(ret_msg);
-        cerr << "About to ProcessFeedback: " << endl;
+        //cerr << "About to ProcessFeedback: " << endl;
         ProcessFeedback();
-        cerr << "Done processing message." << endl;
+        //cerr << "Done processing message." << endl;
       }
     }
     
@@ -165,11 +164,11 @@ namespace Avida{
       //TODO: actually make run pause action; for now just treat it as immediate
       //Right now any addEvent with runPause will happen immediately.
       else if (msg["name"] == "runPause"){
-        cerr << "Event is RunPause" << endl;
+        //cerr << "Event is RunPause" << endl;
         ret_msg["success"] = true;
         Pause();
       } else {
-        cerr << "Event is other than runPause" << endl;
+        //cerr << "Event is other than runPause" << endl;
         string event_line;  //This will contain a properly formatted event list line if successful
         if (!JsonToEventFormat(msg, event_line)){
           //Because we are avoiding exceptions, we're using a bool to flag success
@@ -181,7 +180,7 @@ namespace Avida{
           //We were able to create a line from an event file, now let's try to add it
           //to the event list; if we can't, feedback will be generated and success
           //will be set to false.
-          cerr << "Trying to add event line: " << event_line << endl;
+          //cerr << "Trying to add event line: " << event_line << endl;
           ret_msg["success"] = m_world->GetEventsList()->AddEventFileFormat(event_line.data(), m_feedback);
         }
       } //Done with non runPause message processing
@@ -259,7 +258,7 @@ namespace Avida{
       // Increment the Update.
       stats.IncCurrentUpdate();
       
-      std::cerr << "Update: " << stats.GetUpdate() << std::endl;
+      //std::cerr << "Update: " << stats.GetUpdate() << std::endl;
       
       population.ProcessPreUpdate();
       
