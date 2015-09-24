@@ -1338,16 +1338,16 @@ class cActionPrintJSONDominantGenotypeTrace : public cAction
     
     json ParseSnapshot(const Viewer::HardwareSnapshot& s)
     {
-      const std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const std::string alphabet = "abcdefghijklmnopqrstuvwxyz";
       json j;
-      j["DidDivide"] = s.IsPostDivide();
-      j["NextInstruction"] = s.NextInstruction().AsString().GetData();;
+      j["didDivide"] = s.IsPostDivide();
+      j["nextInstruction"] = s.NextInstruction().AsString().GetData();;
 
       std::map<std::string, std::string> regs;
       for (int i = 0; i < s.Registers().GetSize(); ++i)
         regs[alphabet.substr(i,1) + "X"] =
           Int32ToBinary(s.Register(i));
-      j["Registers"] = regs;
+      j["registers"] = regs;
       
       std::map<std::string, std::vector<string>> bufs;
       for (auto it_i = s.Buffers().Begin(); it_i.Next();){
@@ -1357,46 +1357,46 @@ class cActionPrintJSONDominantGenotypeTrace : public cAction
         }
         bufs[it_i.Get()->Value1().GetData()] = entries;
       }
-      j["Buffers"] = bufs;
+      j["buffers"] = bufs;
       
       std::map<std::string, int> functions;
       for (auto it = s.Functions().Begin(); it.Next();)
         functions[it.Get()->Value1().GetData()] = *(it.Get()->Value2());
-      j["Functions"] = functions;
+      j["functions"] = functions;
       
       
       std::vector<std::map<string,int>> jumps;
       for (auto it = s.Jumps().Begin(); it.Next();){
         std::map<string,int> a_jump;
         const Viewer::HardwareSnapshot::Jump& this_jump = *(it.Get());
-        a_jump["FromMemSpace"] = this_jump.from_mem_space;
-        a_jump["FromIDX"] = this_jump.from_idx;
-        a_jump["ToMemSpace"] = this_jump.to_mem_space;
-        a_jump["ToIDX"] = this_jump.to_idx;
-        a_jump["Freq"] = this_jump.freq;
+        a_jump["fromMemSpace"] = this_jump.from_mem_space;
+        a_jump["fromIDX"] = this_jump.from_idx;
+        a_jump["toMemSpace"] = this_jump.to_mem_space;
+        a_jump["toIDX"] = this_jump.to_idx;
+        a_jump["freq"] = this_jump.freq;
         jumps.push_back(a_jump);
       }
-      j["Jumps"] = jumps;
+      j["jumps"] = jumps;
       
       std::vector<json> memspace;
       for (auto it = s.MemorySpace().Begin(); it.Next();){
         json this_space;
-        this_space["Label"] = it.Get()->label;
+        this_space["label"] = it.Get()->label;
         vector<string> memory;
         for (auto it_mem = it.Get()->memory.Begin(); it_mem.Next();)
           memory.push_back(it_mem.Get()->GetSymbol().GetData());
-        this_space["Memory"] = memory;
+        this_space["memory"] = memory;
         vector<int> mutated;
         for (auto it_mutated = it.Get()->mutated.Begin(); it_mutated.Next();)
           mutated.push_back( (*(it_mutated.Get())) ? 1 : 0 );
-        this_space["Mutated"] = mutated;
+        this_space["mutated"] = mutated;
         std::map<string, int> heads;
         for (auto it_heads = it.Get()->heads.Begin(); it_heads.Next();)
-          heads[it_heads.Get()->Value1().GetData()] = *(it_heads.Get()->Value2());
-        this_space["Heads"] = heads;
+          heads[tolower(it_heads.Get()->Value1().GetData())] = *(it_heads.Get()->Value2());
+        this_space["heads"] = heads;
         memspace.push_back(this_space);
       }
-      j["MemSpace"] = memspace;
+      j["memSpace"] = memspace;
       return j;
     }
 
