@@ -496,6 +496,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("explode5", &cHardwareCPU::Inst_Kazi5, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-quorum", &cHardwareCPU::Inst_SenseQuorum, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("noisy-quorum", &cHardwareCPU::Inst_NoisyQuorum, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-autoinducer", &cHardwareCPU::Inst_SenseAI, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("smart-explode", &cHardwareCPU::Inst_SmartExplode, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("poison", &cHardwareCPU::Inst_Poison),
@@ -3717,6 +3718,56 @@ bool cHardwareCPU::Inst_CheckLyse(cAvidaContext& ctx)
   GetRegister(FindModifiedRegister(REG_AX)) = lyse_counter;
   
   return true;
+}
+
+bool cHardwareCPU::Inst_SenseAI(cAvidaContext& ctx)
+{
+  int ai_counter = 0;
+  
+  int cellID = m_organism->GetCellID();
+  int radius = 1;
+  
+  int world_x = m_world->GetConfig().WORLD_X.Get();
+  int world_y = m_world->GetConfig().WORLD_Y.Get();
+  int cell_x = cellID % world_x;
+  int cell_y = (cellID - cell_x)/world_x;
+  int x = cell_x;
+  int y = cell_y;
+
+  for (int i = cell_x - radius; i <= cell_x + radius; i++) {
+    for (int j = cell_y - radius; j <= cell_y + radius; j++) {
+      
+      if (i<0) x = world_x + i;
+      else if (i>= world_x) x = i-world_x;
+      else x = i;
+      
+      if (j<0) y = world_y + j;
+      else if (j >= world_y) y = j-world_y;
+      else y = j;
+      
+      cPopulationCell& neighbor_cell = m_world->GetPopulation().GetCell(y*world_x + x);
+
+      
+      //do we actually have someone in neighborhood?
+      if (neighbor_cell.IsOccupied() == false) continue;
+      
+      cOrganism* org_temp = neighbor_cell.GetOrganism();
+      
+      if (org_temp != NULL) {
+        if (org_temp->GetLyseDisplay()) ai_counter ++;
+      }
+  
+    }
+  }
+  
+  if (ai_counter >=4)
+  {
+    //The organism is now 'producing' a public good that surrounding organism can gain from
+    m_organism->GetPhenotype().SetKaboomExecuted(true);
+    return true;
+  }
+  else return false;
+
 }
 
 bool cHardwareCPU::Inst_NopPre(cAvidaContext& ctx)

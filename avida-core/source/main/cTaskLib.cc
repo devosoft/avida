@@ -329,9 +329,10 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "eat-target-equ") Load_ConsumeTargetEqu(name, info, envreqs, feedback);
   else if (name == "move-ft") Load_MoveFT(name, info, envreqs, feedback);
   
-  //Explosions
+  //Altruism
   if (name == "exploded") NewTask(name, "Organism exploded", &cTaskLib::Task_Exploded);
   if (name == "exploded2") NewTask(name, "Organism exploded", &cTaskLib::Task_Exploded2);
+  if (name == "consume-public-good") NewTask(name, "Public good consumed", &cTaskLib::Task_ConsumePublicGood);
 
   // String matching
   if (name == "all-ones") Load_AllOnes(name, info, envreqs, feedback);
@@ -4015,6 +4016,52 @@ double cTaskLib::Task_Exploded2(cTaskContext& ctx) const
     reward = 1;
   }
   return reward;
+}
+
+/*Reward organisms for having neighbors around them that are producing a public good*/
+double cTaskLib::Task_ConsumePublicGood(cTaskContext& ctx) const
+{
+  int good_counter = 0;
+  
+  int cellID = ctx.GetOrganism()->GetCellID();
+  
+  int radius = 1;
+  
+  int world_x = m_world->GetConfig().WORLD_X.Get();
+  int world_y = m_world->GetConfig().WORLD_Y.Get();
+  int cell_x = cellID % world_x;
+  int cell_y = (cellID - cell_x)/world_x;
+  int x = cell_x;
+  int y = cell_y;
+
+  for (int i = cell_x - radius; i <= cell_x + radius; i++) {
+    for (int j = cell_y - radius; j <= cell_y + radius; j++) {
+      
+      if (i<0) x = world_x + i;
+      else if (i>= world_x) x = i-world_x;
+      else x = i;
+      
+      if (j<0) y = world_y + j;
+      else if (j >= world_y) y = j-world_y;
+      else y = j;
+      
+      cPopulationCell& neighbor_cell = m_world->GetPopulation().GetCell(y*world_x + x);
+
+      
+      //do we actually have someone in neighborhood?
+      if (neighbor_cell.IsOccupied() == false) continue;
+      
+      cOrganism* org_temp = neighbor_cell.GetOrganism();
+      
+      if (org_temp != NULL) {
+        if (org_temp->GetPhenotype().GetKaboomExecuted()) good_counter ++;
+      }
+  
+    }
+  }
+  if (good_counter >= 4) return true;
+  else return false;
+
 }
 
 double cTaskLib::Task_XorMax(cTaskContext& ctx) const
