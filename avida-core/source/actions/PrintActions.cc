@@ -72,6 +72,7 @@
 #include <map>
 #include <type_traits>
 #include <string>
+#include <cctype>
 
 class cBioGroup;
 
@@ -1326,7 +1327,6 @@ class cActionPrintJSONDominantGenotypeTrace : public cAction
 
   private:
   
-    
     cString m_filename_prefix;
     
     string Int32ToBinary(unsigned int value){
@@ -1392,7 +1392,7 @@ class cActionPrintJSONDominantGenotypeTrace : public cAction
         this_space["mutated"] = mutated;
         std::map<string, int> heads;
         for (auto it_heads = it.Get()->heads.Begin(); it_heads.Next();)
-          heads[tolower(it_heads.Get()->Value1().GetData())] = *(it_heads.Get()->Value2());
+          heads[it_heads.Get()->Value1().AsLower().GetData()] = *(it_heads.Get()->Value2());
         this_space["heads"] = heads;
         memspace.push_back(this_space);
       }
