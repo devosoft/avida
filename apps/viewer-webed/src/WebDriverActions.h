@@ -11,11 +11,21 @@
 
 class cActionLibrary;
 
+#include <cmath>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+
 #include "avida/core/Feedback.h"
+#include "avida/core/Types.h"
 #include "cActionLibrary.h"
 
 #include "avida/viewer/OrganismTrace.h"
 #include "avida/private/systematics/Genotype.h"
+
+#include "cPopulation.h"
+#include "cOrganism.h"
+#include "cWorld.h"
 
 #include "Driver.h"
 #include "WebDriverActions.h"
@@ -67,7 +77,7 @@ public:
     };
     m_feedback.Data(pop_data.dump().c_str());
   }
-};
+}; // cWebActionPopulationStats
 
 
 class cWebActionOrgTraceBySequence : public cWebAction
@@ -180,15 +190,204 @@ class cWebActionOrgTraceBySequence : public cWebAction
       
       m_feedback.Data(WebViewerMsg(snapshots).dump().c_str());
     }
+};  //End cWebActionOrgTraceBySequence
 
+
+
+class cWebActionOrgDataByCellID : public cWebAction {
+private:
+  int m_cell_id;
+  
+public:
+  cWebActionOrgDataByCellID(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world, args, fb)
+  {
+    cString largs(args);
+    int pop_size = m_world->GetPopulation().GetSize();
+    if (largs.GetSize()){
+      m_cell_id = largs.PopWord().AsInt();
+    } else {
+      m_feedback.Warning("webOrgDataByCellID requires a cell_id argument");
+    }
+    if (m_cell_id > pop_size || m_cell_id < 0){
+      m_feedback.Warning("webOrgDataCellID cell_id is not within the appropriate range.");
+    }
+  }
+  static const cString GetDescription() { return "Arguments: cellID"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cOrganism* org = m_world->GetPopulation().GetCell(m_cell_id).GetOrganism();
+    /*WebViewerMsg data = 
+      {
+        {"type","data"},
+        {"name","webOrgDataByCellID"},
+        {"orgName","-"},
+        {"fitness",std::NaN},
+        {"metabolism",std::NaN},
+        {"gestation",std::NaN},
+        {"age":,std:NaN},
+        {"ancestor", "-"},
+        {"tasks":
+          {
+            {"not",0},
+            {"nan",0},
+            {"and",0},
+            {"ornot",0},
+            {"or",0},
+            {"nor",0},
+            {"xor",0},
+            {"equ",0}
+          }
+        }
+       m_feedback.Data(data.dump().c_str());*/
+  }
+}; // cWebActionPopulationStats
+
+
+
+class cWebActionGridData : public cWebAction {
+  public:
+    cWebActionGridData(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world,args,fb)
+    {
+    }
+    
+    static const cString GetDescription() { return "Arguments: none";}
+    
+    void Process(cAvidaContext& ctx)
+    {
+      WebViewerMsg data = { {"type","data"}, {"name","webGridData"} };
+      cPopulation& population = m_world->GetPopulation();
+      vector<double> fitness;
+      vector<double> gestation;
+      vector<double> metabolism;
+      vector<double> ancestor;
+      vector<double> task_not;
+      vector<double> task_nan;
+      vector<double> task_and;
+      vector<double> task_ornot;
+      vector<double> task_andnot;
+      vector<double> task_or;
+      vector<double> task_nor;
+      vector<double> task_xor;
+      vector<double> task_equ;
+      
+      
+      for (int i=0; i < population.GetSize(); i++)
+      {
+        cPopulationCell& cell = population.GetCell(i);
+        cOrganism* org = cell.GetOrganism();
+        
+        
+        if (org == nullptr){
+          fitness.push_back(nan(""));
+          gestation.push_back(nan(""));
+          metabolism.push_back(nan(""));
+          ancestor.push_back(nan(""));
+          task_not.push_back(0);
+          task_nan.push_back(0);
+          task_and.push_back(0);
+          task_ornot.push_back(0);
+          task_andnot.push_back(0);
+          task_or.push_back(0);
+          task_nor.push_back(0);
+          task_xor.push_back(0);
+          task_equ.push_back(0);
+        } else {
+          cPhenotype& phen = org->GetPhenotype();
+          fitness.push_back(phen.GetFitness());
+          gestation.push_back(phen.GetGestationTime());
+          metabolism.push_back(phen.GetMerit().GetDouble());
+          ancestor.push_back(org->GetLineageLabel());
+          task_not.push_back(phen.GetCurCountForTask(0));
+          task_nan.push_back(phen.GetCurCountForTask(1));
+          task_and.push_back(phen.GetCurCountForTask(2));
+          task_ornot.push_back(phen.GetCurCountForTask(3));
+          task_andnot.push_back(phen.GetCurCountForTask(4));
+          task_or.push_back(phen.GetCurCountForTask(5));
+          task_nor.push_back(phen.GetCurCountForTask(6));
+          task_xor.push_back(phen.GetCurCountForTask(7));
+          task_equ.push_back(phen.GetCurCountForTask(8));
+        }
+      }
+      data["fitness"] = { 
+                  {"data",fitness}, 
+                  {"minVal",*std::min_element(std::begin(fitness),std::end(fitness))}, 
+                  {"maxVal",*std::max_element(std::begin(fitness),std::end(fitness))} 
+                  };
+      data["metabolism"] = {
+                  {"data",metabolism}, 
+                  {"minVal",*std::min_element(std::begin(metabolism),std::end(metabolism))}, 
+                  {"maxVal",*std::max_element(std::begin(metabolism),std::end(metabolism))} 
+                  };
+      data["gestation"] = {
+                  {"data",gestation}, 
+                  {"minVal",*std::min_element(std::begin(gestation),std::end(gestation))}, 
+                  {"maxVal",*std::max_element(std::begin(gestation),std::end(gestation))} 
+                  };
+
+      data["ancestor"] = {
+                  {"data",ancestor}, 
+                  {"minVal",*std::min_element(std::begin(ancestor),std::end(ancestor))}, 
+                  {"maxVal",*std::max_element(std::begin(ancestor),std::end(ancestor))} 
+                  };
+
+      data["not"] =  {
+                  {"data",task_not}, 
+                  {"minVal",*std::min_element(std::begin(task_not),std::end(task_not))}, 
+                  {"maxVal",*std::max_element(std::begin(task_not),std::end(task_not))} 
+                  };
+
+      data["nan"] =  {
+                  {"data",task_nan}, 
+                  {"minVal",*std::min_element(std::begin(task_nan),std::end(task_nan))}, 
+                  {"maxVal",*std::max_element(std::begin(task_nan),std::end(task_nan))} 
+                  };
+      data["and"] = {
+                  {"data",task_and}, 
+                  {"minVal",*std::min_element(std::begin(task_and),std::end(task_and))}, 
+                  {"maxVal",*std::max_element(std::begin(task_and),std::end(task_and))} 
+                  };
+      data["ornot"] = {
+                  {"data",task_ornot}, 
+                  {"minVal",*std::min_element(std::begin(task_ornot),std::end(task_ornot))}, 
+                  {"maxVal",*std::max_element(std::begin(task_ornot),std::end(task_ornot))} 
+                  };
+      data["andnot"] = {
+                  {"data",task_andnot}, 
+                  {"minVal",*std::min_element(std::begin(task_andnot),std::end(task_andnot))}, 
+                  {"maxVal",*std::max_element(std::begin(task_andnot),std::end(task_andnot))} 
+                  };
+      data["or"] = {
+                  {"data",task_or}, 
+                  {"minVal",*std::min_element(std::begin(task_or),std::end(task_or))}, 
+                  {"maxVal",*std::max_element(std::begin(task_or),std::end(task_or))} 
+                  };
+      data["nor"] =  {
+                  {"data",task_nor}, 
+                  {"minVal",*std::min_element(std::begin(task_nor),std::end(task_nor))}, 
+                  {"maxVal",*std::max_element(std::begin(task_nor),std::end(task_nor))} 
+                  };
+      data["xor"] = {
+                  {"data",task_xor}, 
+                  {"minVal",*std::min_element(std::begin(task_xor),std::end(task_xor))}, 
+                  {"maxVal",*std::max_element(std::begin(task_xor),std::end(task_xor))} 
+                  };
+      data["equ"] = {
+                  {"data",task_equ}, 
+                  {"minVal",*std::min_element(std::begin(task_equ),std::end(task_equ))}, 
+                  {"maxVal",*std::max_element(std::begin(task_equ),std::end(task_equ))} 
+                  };
+      m_feedback.Data(data.dump().c_str());
+    }
 };
-
 
 
 void RegisterWebDriverActions(cActionLibrary* action_lib)
 {
     action_lib->Register<cWebActionPopulationStats>("webPopulationStats");
     action_lib->Register<cWebActionOrgTraceBySequence>("webOrgTraceBySequence");
+    action_lib->Register<cWebActionOrgDataByCellID>("webOrgDataByCellID");
+    action_lib->Register<cWebActionGridData>("webGridData");
 }
 
 #endif
