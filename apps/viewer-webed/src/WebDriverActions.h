@@ -261,7 +261,7 @@ class cWebActionGridData : public cWebAction {
       vector<double> gestation;
       vector<double> metabolism;
       vector<double> ancestor;
-      vector<double> task_not;
+      vector<double> task_not;   //TODO: Generalize this method for any number of tasks
       vector<double> task_nan;
       vector<double> task_and;
       vector<double> task_ornot;
@@ -347,12 +347,12 @@ class cWebActionGridData : public cWebAction {
                   {"minVal",*std::min_element(std::begin(task_and),std::end(task_and))}, 
                   {"maxVal",*std::max_element(std::begin(task_and),std::end(task_and))} 
                   };
-      data["ornot"] = {
+      data["orn"] = {
                   {"data",task_ornot}, 
                   {"minVal",*std::min_element(std::begin(task_ornot),std::end(task_ornot))}, 
                   {"maxVal",*std::max_element(std::begin(task_ornot),std::end(task_ornot))} 
                   };
-      data["andnot"] = {
+      data["andn"] = {
                   {"data",task_andnot}, 
                   {"minVal",*std::min_element(std::begin(task_andnot),std::end(task_andnot))}, 
                   {"maxVal",*std::max_element(std::begin(task_andnot),std::end(task_andnot))} 
