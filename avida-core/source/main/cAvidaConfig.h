@@ -458,6 +458,8 @@ public:
   CONFIG_ADD_VAR(PARASITE_NO_COPY_MUT, int, 0, "Parasites do not get copy mutation rates");
   CONFIG_ADD_VAR(PARASITE_USE_GENOTYPE_FILE, int, 0, "Parasite Genotypes are loaded from a file rather than replicated from parent -- see LoadParasiteGenotypeList");
   CONFIG_ADD_VAR(HOST_USE_GENOTYPE_FILE, int, 0, "Host Genotypes are loaded from a file rather than replicated from parent -- see LoadHostGenotypeList");
+  
+  CONFIG_ADD_VAR(FULL_VERTICAL_TRANS, int, 0, "Determines if offspring of infected host is automatically infected. 0 for no, 1 for yes. If you want to keep parent infected as well, you need to set DIVIDE_METHOD to 2.");
 
 
   // -------- CPU Archetecture

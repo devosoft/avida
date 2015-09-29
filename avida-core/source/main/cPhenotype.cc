@@ -1695,7 +1695,10 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   }
   
   //Kill any cells that did lethal reactions
-  if (result.GetLethal()) to_die = true;
+  if (result.GetLethal())
+  {
+    to_die = true;
+    }
   
   // Sterilize organisms that have performed a sterilizing task.
   if (result.GetSterilize()) {

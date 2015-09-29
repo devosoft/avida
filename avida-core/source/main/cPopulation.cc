@@ -778,6 +778,35 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       offspring_array[i]->SetParaDonate(Apto::Max(Apto::Min(newVir, 1.0), 0.0));
     }
     
+    // If full vertical transmission of symbionts is on, we need to infect the offspring.
+    if (m_world->GetConfig().FULL_VERTICAL_TRANS.Get() == 1)
+    {
+      Apto::Array<Systematics::UnitPtr> parasites_to_inject = parent_organism->GetParasites();
+      cOrganism* target_organism = offspring_array[i];
+      // target_organism-> target_organism->GetHardware().GetCurThread()
+      for (int p=0; p<parasites_to_inject.GetSize(); ++p)
+      {
+        
+          Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite_parent;
+          parasite_parent.DynamicCastFrom(parasites_to_inject[p]);
+      
+        
+        Genome mg(parasite_parent->UnitGenome());
+        
+        
+        cString label;
+        label.Set("Test");
+        Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite(new cParasite(m_world, mg, 0, Systematics::Source(Systematics::HORIZONTAL, (const char*)label)));
+  
+        //default to configured parasite virulence
+        parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
+  
+        if (target_organism->ParasiteInfectHost(parasite)) {
+          Systematics::Manager::Of(m_world->GetNewWorld())->ClassifyNewUnit(parasite);
+        }
+      }
+    }
+    
     // If spatial groups are used, put the offspring in the
     // parents' group, if tolerances are used check if the offspring
     // is successfully born into the parent's group or successfully immigrates
