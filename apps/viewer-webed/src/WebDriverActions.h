@@ -15,6 +15,7 @@ class cActionLibrary;
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include <limits>
 
 #include "avida/core/Feedback.h"
 #include "avida/core/Types.h"
@@ -23,11 +24,14 @@ class cActionLibrary;
 #include "avida/viewer/OrganismTrace.h"
 #include "avida/private/systematics/Genotype.h"
 
-#include "cPopulation.h"
+
+#include "cEnvironment.h"
 #include "cOrganism.h"
+#include "cPopulation.h"
 #include "cWorld.h"
 
 #include "Driver.h"
+#include "WebDebug.h"
 #include "WebDriverActions.h"
 
 using namespace Avida::WebViewer;
@@ -48,34 +52,38 @@ public:
   }
   static const cString GetDescription() { return "no arguments"; }
   void Process(cAvidaContext& ctx){
+    //cerr << "webPopulationStats" << endl;
     const cStats& stats = m_world->GetStats();
-    const int update = stats.GetUpdate();;
-    const double ave_fitness = stats.GetAveFitness();;
-    const double ave_gestation_time = stats.GetAveGestation();
-    const double ave_metabolic_rate = stats.GetAveMerit();
-    const int org_count = stats.GetNumCreatures();
-    const double ave_age = stats.GetAveCreatureAge();
+    int update = stats.GetUpdate();;
+    double ave_fitness = stats.GetAveFitness();;
+    double ave_gestation_time = stats.GetAveGestation();
+    double ave_metabolic_rate = stats.GetAveMerit();
+    int org_count = stats.GetNumCreatures();
+    double ave_age = stats.GetAveCreatureAge();
     
-    json pop_data = {
-      {"type", "data"},
-      {"name", "webPopulationStats"},
+    /*
+    cerr << update << " "
+         << ave_fitness << " "
+         << ave_gestation_time << " " 
+         << ave_metabolic_rate << " "
+         << org_count << " " 
+         << ave_age << "  ?"
+         << stats.GetTaskLastCountSize() << endl;
+    */
+    
+    WebViewerMsg pop_data = {
+      {"type", "data"}
+      ,{"name", "webPopulationStats"},
       {"update", update},
       {"ave_fitness", ave_fitness},
       {"ave_gestation_time", ave_gestation_time},
       {"ave_metabolic_rate", ave_metabolic_rate},
       {"organisms", org_count},
-      {"ave_age", ave_age},
-      {"not", stats.GetTaskLastCount(0)},    //TODO: THIS WILL ONLY WORK WITH LOGIC 9  @MRR
-      {"nand", stats.GetTaskLastCount(1)},
-      {"and", stats.GetTaskLastCount(2)},
-      {"orn", stats.GetTaskLastCount(3)},
-      {"or", stats.GetTaskLastCount(4)},
-      {"andn", stats.GetTaskLastCount(5)},
-      {"nor", stats.GetTaskLastCount(6)},
-      {"xor", stats.GetTaskLastCount(7)},
-      {"equ", stats.GetTaskLastCount(8)}
+      {"ave_age", ave_age}
     };
+    
     m_feedback.Data(pop_data.dump().c_str());
+    //cerr << "\t\tdone." << endl;
   }
 }; // cWebActionPopulationStats
 
@@ -217,6 +225,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cOrganism* org = m_world->GetPopulation().GetCell(m_cell_id).GetOrganism();
+    
     /*WebViewerMsg data = 
       {
         {"type","data"},
@@ -257,20 +266,17 @@ class cWebActionGridData : public cWebAction {
     {
       WebViewerMsg data = { {"type","data"}, {"name","webGridData"} };
       cPopulation& population = m_world->GetPopulation();
+      cEnvironment& env = m_world->GetEnvironment();
       vector<double> fitness;
       vector<double> gestation;
       vector<double> metabolism;
       vector<double> ancestor;
-      vector<double> task_not;   //TODO: Generalize this method for any number of tasks
-      vector<double> task_nan;
-      vector<double> task_and;
-      vector<double> task_ornot;
-      vector<double> task_andnot;
-      vector<double> task_or;
-      vector<double> task_nor;
-      vector<double> task_xor;
-      vector<double> task_equ;
-      
+      map<string, vector<double>> tasks;
+      double nan = std::numeric_limits<double>::quiet_NaN();
+      vector<string> task_names;
+      for (int t=0; t<env.GetNumTasks(); t++){
+        task_names.push_back(string(env.GetTask(t).GetName().GetData()));
+      }
       
       for (int i=0; i < population.GetSize(); i++)
       {
@@ -279,34 +285,28 @@ class cWebActionGridData : public cWebAction {
         
         
         if (org == nullptr){
-          fitness.push_back(nan(""));
-          gestation.push_back(nan(""));
-          metabolism.push_back(nan(""));
-          ancestor.push_back(nan(""));
-          task_not.push_back(0);
-          task_nan.push_back(0);
-          task_and.push_back(0);
-          task_ornot.push_back(0);
-          task_andnot.push_back(0);
-          task_or.push_back(0);
-          task_nor.push_back(0);
-          task_xor.push_back(0);
-          task_equ.push_back(0);
+          fitness.push_back(nan);
+          gestation.push_back(nan);
+          metabolism.push_back(nan);
+          ancestor.push_back(nan);
+          for (int t=0; t<env.GetNumTasks(); t++){
+            if (tasks.find(task_names[t]) == tasks.end())
+              tasks[task_names[t]] = vector<double>(1,0.0);
+            else
+              tasks[task_names[t]].push_back(0.0);
+          }          
         } else {
           cPhenotype& phen = org->GetPhenotype();
           fitness.push_back(phen.GetFitness());
           gestation.push_back(phen.GetGestationTime());
           metabolism.push_back(phen.GetMerit().GetDouble());
           ancestor.push_back(org->GetLineageLabel());
-          task_not.push_back(phen.GetCurCountForTask(0));
-          task_nan.push_back(phen.GetCurCountForTask(1));
-          task_and.push_back(phen.GetCurCountForTask(2));
-          task_ornot.push_back(phen.GetCurCountForTask(3));
-          task_andnot.push_back(phen.GetCurCountForTask(4));
-          task_or.push_back(phen.GetCurCountForTask(5));
-          task_nor.push_back(phen.GetCurCountForTask(6));
-          task_xor.push_back(phen.GetCurCountForTask(7));
-          task_equ.push_back(phen.GetCurCountForTask(8));
+          for (int t=0; t<env.GetNumTasks(); t++){
+            if (tasks.find(task_names[t]) == tasks.end())
+              tasks[task_names[t]] = vector<double>(1,phen.GetCurCountForTask(t));
+            else
+              tasks[task_names[t]].push_back(phen.GetCurCountForTask(t));
+          }          
         }
       }
       data["fitness"] = { 
@@ -330,53 +330,16 @@ class cWebActionGridData : public cWebAction {
                   {"minVal",*std::min_element(std::begin(ancestor),std::end(ancestor))}, 
                   {"maxVal",*std::max_element(std::begin(ancestor),std::end(ancestor))} 
                   };
-
-      data["not"] =  {
-                  {"data",task_not}, 
-                  {"minVal",*std::min_element(std::begin(task_not),std::end(task_not))}, 
-                  {"maxVal",*std::max_element(std::begin(task_not),std::end(task_not))} 
-                  };
-
-      data["nan"] =  {
-                  {"data",task_nan}, 
-                  {"minVal",*std::min_element(std::begin(task_nan),std::end(task_nan))}, 
-                  {"maxVal",*std::max_element(std::begin(task_nan),std::end(task_nan))} 
-                  };
-      data["and"] = {
-                  {"data",task_and}, 
-                  {"minVal",*std::min_element(std::begin(task_and),std::end(task_and))}, 
-                  {"maxVal",*std::max_element(std::begin(task_and),std::end(task_and))} 
-                  };
-      data["orn"] = {
-                  {"data",task_ornot}, 
-                  {"minVal",*std::min_element(std::begin(task_ornot),std::end(task_ornot))}, 
-                  {"maxVal",*std::max_element(std::begin(task_ornot),std::end(task_ornot))} 
-                  };
-      data["andn"] = {
-                  {"data",task_andnot}, 
-                  {"minVal",*std::min_element(std::begin(task_andnot),std::end(task_andnot))}, 
-                  {"maxVal",*std::max_element(std::begin(task_andnot),std::end(task_andnot))} 
-                  };
-      data["or"] = {
-                  {"data",task_or}, 
-                  {"minVal",*std::min_element(std::begin(task_or),std::end(task_or))}, 
-                  {"maxVal",*std::max_element(std::begin(task_or),std::end(task_or))} 
-                  };
-      data["nor"] =  {
-                  {"data",task_nor}, 
-                  {"minVal",*std::min_element(std::begin(task_nor),std::end(task_nor))}, 
-                  {"maxVal",*std::max_element(std::begin(task_nor),std::end(task_nor))} 
-                  };
-      data["xor"] = {
-                  {"data",task_xor}, 
-                  {"minVal",*std::min_element(std::begin(task_xor),std::end(task_xor))}, 
-                  {"maxVal",*std::max_element(std::begin(task_xor),std::end(task_xor))} 
-                  };
-      data["equ"] = {
-                  {"data",task_equ}, 
-                  {"minVal",*std::min_element(std::begin(task_equ),std::end(task_equ))}, 
-                  {"maxVal",*std::max_element(std::begin(task_equ),std::end(task_equ))} 
-                  };
+                  
+                  
+      for (auto it : tasks){
+        data[it.first] = {
+          {"data",it.second},
+          {"minVal",*std::min_element(std::begin(it.second),std::end(it.second))},
+          {"maxVal",*std::max_element(std::begin(it.second),std::end(it.second))}
+        };
+      }
+      cerr << "Size of message is: " << data.dump().size() << endl;
       m_feedback.Data(data.dump().c_str());
     }
 };

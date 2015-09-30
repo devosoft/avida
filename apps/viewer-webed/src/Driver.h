@@ -68,35 +68,44 @@ namespace Avida{
     
     void Driver::ProcessFeedback()
     {
+      cerr << "Processing Feedback" << endl;
       for (int k=0; k<m_feedback.GetNumMessages(); ++k){
         cUserFeedback::eFeedbackType msg_type = m_feedback.GetMessageType(k);
         const cString& msg = m_feedback.GetMessage(k);
         WebViewerMsg ret_msg;
         switch(msg_type){
           case cUserFeedback::eFeedbackType::UF_ERROR:
+            cerr << "\tFeedback message is type ERROR" << endl;
             ret_msg = FeedbackMessage(Feedback::FATAL);
             ret_msg["message"] = msg.GetData();
             break;
           case cUserFeedback::eFeedbackType::UF_WARNING:
+            cerr << "\tFeedback message is type WARNING" << endl;
             ret_msg = FeedbackMessage(Feedback::WARNING);
             ret_msg["message"] = msg.GetData();
             break;
           case cUserFeedback::eFeedbackType::UF_NOTIFICATION:
+            cerr << "\tFeedback message is type NOTIFICATION" << endl;
             ret_msg = FeedbackMessage(Feedback::NOTIFICATION);
             ret_msg["message"] = msg.GetData();
             break;
           case cUserFeedback::eFeedbackType::UF_DATA:
+            cerr << "\tFeedback message is type DATA" << endl;
+            cerr << msg.GetData() << endl;
             //Data messages will get sent directly with no userFeedback wrapper
             ret_msg = nlohmann::json::parse(msg.GetData());
             break;
           default:
+            cerr << "\tFeedback message is type UNKNOWN" << endl;
             ret_msg = FeedbackMessage(Feedback::UNKNOWN);
             ret_msg["message"] = msg.GetData();
             break;
         }
+        cerr << "About to post feedback message: " << ret_msg.dump() << endl;
         PostMessage(ret_msg);
       }
       m_feedback.Clear();
+      cerr << "Feedback processing complete" << endl;
     }
     
     
@@ -119,7 +128,7 @@ namespace Avida{
     
     void Driver::ProcessMessage(const WebViewerMsg& msg)
     {
-      //cerr << msg.dump() << endl;
+      cerr << msg.dump() << endl;
       //This message is missing it's type; can't process.
       if (msg.find("type") == msg.end()) {  
         WebViewerMsg error_msg = FeedbackMessage(Feedback::WARNING);
@@ -129,19 +138,19 @@ namespace Avida{
         WebViewerMsg ret_msg = ReturnMessage(msg);
         ret_msg["success"] = false;
         if (msg["type"] == "addEvent") {  //This message is requesting we add an Event
-          //cerr << "Message is addEvent type" << endl;
+          cerr << "Message is addEvent type" << endl;
           ProcessAddEvent(msg, ret_msg);  //So try to add it.
           cerr << "Done processing message" << endl;
         }
         else {
-          //cerr << "Message is unknown type" << endl;
+          cerr << "Message is unknown type" << endl;
           ret_msg["message"] = "unknown type";  //We don't know what this message wants
         }
-        //cerr << "About to PostMessage: " << ret_msg.dump() << endl;
+        cerr << "About to PostMessage: " << ret_msg.dump() << endl;
         PostMessage(ret_msg);
-        //cerr << "About to ProcessFeedback: " << endl;
+        cerr << "About to ProcessFeedback: " << endl;
         ProcessFeedback();
-        //cerr << "Done processing message." << endl;
+        cerr << "Done processing message." << endl;
       }
     }
     
@@ -168,19 +177,20 @@ namespace Avida{
         ret_msg["success"] = true;
         Pause();
       } else {
-        //cerr << "Event is other than runPause" << endl;
+        cerr << "Event is other than runPause" << endl;
         string event_line;  //This will contain a properly formatted event list line if successful
         if (!JsonToEventFormat(msg, event_line)){
           //Because we are avoiding exceptions, we're using a bool to flag success
           //If we're here, we were unsuccessful and need to send feedback and post
           //a failure response message
-          ret_msg["message"] = "Missing properties; unable to addEvent";
+          cerr << "There is a problem with this message." << endl;
+          //ret_msg["message"] = "Missing properties; unable to addEvent";
         } 
         else {
           //We were able to create a line from an event file, now let's try to add it
           //to the event list; if we can't, feedback will be generated and success
           //will be set to false.
-          //cerr << "Trying to add event line: " << event_line << endl;
+          cerr << "Trying to add event line: " << event_line << endl;
           ret_msg["success"] = m_world->GetEventsList()->AddEventFileFormat(event_line.data(), m_feedback);
         }
       } //Done with non runPause message processing
@@ -191,30 +201,36 @@ namespace Avida{
       bool success = true;
       
       //Action name is missing
+      cerr << "\t\tChecking for name" << endl;
       if (msg.find("name") == msg.end()){
         success=false;
         m_feedback.Warning("addEvent is missing name property");
       }
       // Can't find event trigger type
+      cerr << "\t\tChecking for type" << endl;
       if (msg.find("triggerType") == msg.end()){
         success=false;
         m_feedback.Warning("addEvent is missing triggerType property");
       }
       //Missing start condition
+      cerr << "\t\tChecking for start" << endl;
       if (msg.find("start") == msg.end()){
         success = false;
         m_feedback.Warning("addEvent is missing start property");
       }
       // Can't find the event interval
+      cerr << "\t\tChecking for interval" << endl;
       if (msg.find("interval") == msg.end()){
         success=false;
         m_feedback.Warning("addEvent is missing interval property");
       }
       // Can't find the event end 
+      cerr << "\t\tChecking for end" << endl;
       if (msg.find("end") == msg.end() || msg["end"] != ""){
         success=false;
         m_feedback.Warning("addEvent is missing end property");
       }
+      cerr << "\t\tDone verifying event." << endl;
       return success;
     }
     
@@ -223,15 +239,24 @@ namespace Avida{
     bool Driver::JsonToEventFormat(json msg, string& line)
     {
       ostringstream line_in;
-             
+      cerr << "\t\t\tLinifying trigger" << endl;       
       line_in << DeQuote(msg["triggerType"]) << " ";
+      cerr << "\t\t\tLinifying timingr" << endl;       
       line_in << DeQuote(msg["start"]) << ":" << DeQuote(msg["interval"]);
       if (msg["end"] != "")
         line_in << ":" << DeQuote(msg["end"]);
+      cerr << "\t\t\tLinifying name" << endl;       
       line_in << " " << DeQuote(msg["name"]);
+      cerr << "\t\t\tARRRRG" << endl;
       if (msg.find("args") != msg.end())
-        for (auto arg : msg["args"]) // copy each array element
-          line_in << " " << DeQuote(arg);  // to the input line
+        cerr << "\t\t\targs: " << msg["args"] << endl;
+        for (auto arg : msg["args"]){ // copy each array element
+          cerr << "\t\t\t\t" << arg << endl;
+          if (arg.is_string())
+            line_in << " " << DeQuote(arg);
+          else
+            line_in << " " << arg;
+        }
       line = line_in.str();  //Return our input from the stream
       return true;
     }
