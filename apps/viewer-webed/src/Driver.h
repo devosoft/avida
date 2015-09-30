@@ -26,7 +26,8 @@ namespace Avida{
     class Driver : public WorldDriver
     {
     private:
-      void Pause()  { m_paused = (m_paused) ? false : true; }
+      void DumpEventList();
+      void Pause()  { DumpEventList(); m_paused = (m_paused) ? false : true; }
       void Finish() {m_finished = true;}
       void Abort(AbortCondition cnd) {}
       void RegisterCallback(DriverCallback callback) {}
@@ -152,6 +153,15 @@ namespace Avida{
         ProcessFeedback();
         cerr << "Done processing message." << endl;
       }
+    }
+    
+    
+    void Driver::DumpEventList()
+    {
+      cEventList* list = m_world->GetEventsList();
+      if (list == nullptr)
+        return;
+      list->PrintEventList(std::cerr);
     }
     
     
