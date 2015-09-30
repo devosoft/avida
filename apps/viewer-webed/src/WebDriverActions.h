@@ -73,15 +73,20 @@ public:
     
     WebViewerMsg pop_data = {
       {"type", "data"}
-      ,{"name", "webPopulationStats"},
-      {"update", update},
-      {"ave_fitness", ave_fitness},
-      {"ave_gestation_time", ave_gestation_time},
-      {"ave_metabolic_rate", ave_metabolic_rate},
-      {"organisms", org_count},
-      {"ave_age", ave_age}
+      ,{"name", "webPopulationStats"}
+      ,{"update", update}
+      ,{"ave_fitness", ave_fitness}
+      ,{"ave_gestation_time", ave_gestation_time}
+      ,{"ave_metabolic_rate", ave_metabolic_rate}
+      ,{"organisms", org_count}
+      ,{"ave_age", ave_age}
     };
     
+    cEnvironment& env = m_world->GetEnvironment();
+    for (int t=0; t< env.GetNumTasks(); t++){
+      pop_data[string(env.GetTask(t).GetName().GetData())] = 
+        stats.GetTaskLastCount(t);
+    }
     m_feedback.Data(pop_data.dump().c_str());
     //cerr << "\t\tdone." << endl;
   }
