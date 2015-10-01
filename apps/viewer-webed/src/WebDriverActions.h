@@ -190,7 +190,7 @@ class cWebActionOrgTraceBySequence : public cWebAction
       }
     }
     
-    static const cString GetDescription() { return "Arguments: GenomeSequence PointMutationRate"; }
+    static const cString GetDescription() { return "Arguments: GenomeSequence PointMutationRate Seed"; }
     
     void Process(cAvidaContext& ctx)
     {
@@ -206,14 +206,20 @@ class cWebActionOrgTraceBySequence : public cWebAction
       Viewer::OrganismTrace trace(m_world, genome, m_mutation_rate, m_seed);
       
       cerr << "\tTrace ready" << endl;
-      vector<WebViewerMsg> snapshots;
+      vector<json> snapshots;
+      WebViewerMsg retval = { 
+                        {"type","data"},
+                        {"name","webOrgTraceBySequence"}
+                        };
+                        
       for (int i = 0; i < trace.SnapshotCount(); ++i)
       {
         snapshots.push_back(ParseSnapshot(trace.Snapshot(i)));
       }
+      retval["snapshots"] = snapshots;
       
       cerr << "\tAbout to make feedback" << endl;
-      m_feedback.Data(WebViewerMsg(snapshots).dump().c_str());
+      m_feedback.Data(WebViewerMsg(retval).dump().c_str());
     }
 };  //End cWebActionOrgTraceBySequence
 
