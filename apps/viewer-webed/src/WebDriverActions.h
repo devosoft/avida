@@ -276,7 +276,7 @@ class cWebActionGridData : public cWebAction {
       for (auto val : vec){
         if (!isfinite(val))
           continue;
-        if (val < min || !isfinite(val))
+        if (val < min || !isfinite(min))
           min = val;
       }
       return min;
