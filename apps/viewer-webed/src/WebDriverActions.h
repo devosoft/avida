@@ -121,7 +121,7 @@ class cWebActionOrgTraceBySequence : public cWebAction
 
       std::map<std::string, std::string> regs;
       for (int i = 0; i < s.Registers().GetSize(); ++i)
-        regs[alphabet.substr(i,1) + "X"] =
+        regs[alphabet.substr(i,1) + "x"] =
           Int32ToBinary(s.Register(i));
       j["registers"] = regs;
       
