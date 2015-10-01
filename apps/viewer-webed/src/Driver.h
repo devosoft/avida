@@ -43,8 +43,8 @@ namespace Avida{
       void ProcessFeedback();
       void Setup(cWorld*, cUserFeedback);
       void ProcessAddEvent(const WebViewerMsg& msg, WebViewerMsg& ret_msg);
-      bool ValidateEventMessage(const json& msg);
-      bool JsonToEventFormat(json msg, string& line);
+      bool ValidateEventMessage(const WebViewerMsg& msg);
+      string JsonToEventFormat(const WebViewerMsg& msg);
       
       
     public:
@@ -188,23 +188,21 @@ namespace Avida{
         Pause();
       } else {
         cerr << "Event is other than runPause" << endl;
-        string event_line;  //This will contain a properly formatted event list line if successful
-        if (!JsonToEventFormat(msg, event_line)){
-          //Because we are avoiding exceptions, we're using a bool to flag success
-          //If we're here, we were unsuccessful and need to send feedback and post
-          //a failure response message
-          cerr << "There is a problem with this message." << endl;
-          //ret_msg["message"] = "Missing properties; unable to addEvent";
-        } 
-        else {
-          //We were able to create a line from an event file, now let's try to add it
-          //to the event list; if we can't, feedback will be generated and success
-          //will be set to false.
-          cerr << "Trying to add event line: " << event_line << endl;
-          ret_msg["success"] = m_world->GetEventsList()->AddEventFileFormat(event_line.data(), m_feedback);
+        string event_line = JsonToEventFormat(msg);  //This will contain a properly formatted event list line if successful
+        cerr << "Trying to add event line: " << event_line << endl;
+        bool success = m_world->GetEventsList()->AddEventFileFormat(event_line.data(), m_feedback);
+        ret_msg["success"] = success;
+        if (success){  //Process any immediate events
+          cerr << "Event successfully added" << endl;
+          m_world->GetEventsList()->ProcessImmediates(*m_ctx);
+          cerr << "Immediate events processed." << endl;
+        } else {
+          cerr << "Unable to add event" << endl;
         }
       } //Done with non runPause message processing
     }
+    
+    
     
     bool Driver::ValidateEventMessage(const json& msg)
     {
@@ -222,23 +220,33 @@ namespace Avida{
         success=false;
         m_feedback.Warning("addEvent is missing triggerType property");
       }
-      //Missing start condition
-      cerr << "\t\tChecking for start" << endl;
-      if (msg.find("start") == msg.end()){
-        success = false;
-        m_feedback.Warning("addEvent is missing start property");
-      }
-      // Can't find the event interval
-      cerr << "\t\tChecking for interval" << endl;
-      if (msg.find("interval") == msg.end()){
-        success=false;
-        m_feedback.Warning("addEvent is missing interval property");
-      }
-      // Can't find the event end 
-      cerr << "\t\tChecking for end" << endl;
-      if (msg.find("end") == msg.end() || msg["end"] != ""){
-        success=false;
-        m_feedback.Warning("addEvent is missing end property");
+      
+      if (msg["triggerType"] == "i" || msg["triggerType"] == "immediate"){
+        cerr << "\t\tMessage is trigerType immediate" << endl;
+        if (msg.count("start") != 0 || msg.count("interval") != 0 || msg.count("end") != 0){
+          cerr << "\t\tMessage has a start, interval, or end condition specified." << endl;
+          m_feedback.Warning("addEvent is triggerType immediate but has timing start, interval, or end specified");
+          success = false;
+        }
+      } else {
+        //Missing start condition
+        cerr << "\t\tChecking for start" << endl;
+        if (msg.find("start") == msg.end()){
+          success = false;
+          m_feedback.Warning("addEvent is missing start property");
+        }
+        // Can't find the event interval
+        cerr << "\t\tChecking for interval" << endl;
+        if (msg.find("interval") == msg.end()){
+          success=false;
+          m_feedback.Warning("addEvent is missing interval property");
+        }
+        // Can't find the event end 
+        cerr << "\t\tChecking for end" << endl;
+        if (msg.find("end") == msg.end() || msg["end"] != ""){
+          success=false;
+          m_feedback.Warning("addEvent is missing end property");
+        }
       }
       cerr << "\t\tDone verifying event." << endl;
       return success;
@@ -246,17 +254,25 @@ namespace Avida{
     
     
     
-    bool Driver::JsonToEventFormat(json msg, string& line)
+    string Driver::JsonToEventFormat(const WebViewerMsg& msg)
     {
       ostringstream line_in;
+      cerr << "..." << endl;
+      cerr << DeQuote(msg["triggerType"]);
       cerr << "\t\t\tLinifying trigger" << endl;       
       line_in << DeQuote(msg["triggerType"]) << " ";
-      cerr << "\t\t\tLinifying timingr" << endl;       
-      line_in << ((msg["start"].is_string()) ? DeQuote(msg["start"]) : to_string((double)(msg["start"])));
-      line_in << ":";
-      line_in << ((msg["interval"].is_string()) ? DeQuote(msg["interval"]) : to_string((double)(msg["interval"])));
-      if (msg["end"] != "")
-         line_in << ((msg["end"].is_string()) ? DeQuote(msg["end"]) : to_string((double)(msg["end"])));
+      cerr << "\t\t\tLinifying timing" << endl;       
+      if (msg["triggerType"] != "i" && msg["triggerType"] != "immediate")
+      {
+        cerr << "\t\t\tLinifying start" << endl;
+        line_in << ((msg["start"].is_string()) ? DeQuote(msg["start"]) : to_string((double)(msg["start"])));
+        line_in << ":";
+        cerr << "\t\t\tLinifying interval" << endl;
+        line_in << ((msg["interval"].is_string()) ? DeQuote(msg["interval"]) : to_string((double)(msg["interval"])));
+        cerr << "\t\t\tLinifying end" << endl;
+        if (msg["end"] != "")
+           line_in << ((msg["end"].is_string()) ? DeQuote(msg["end"]) : to_string((double)(msg["end"])));
+      }
       cerr << "\t\t\tLinifying name" << endl;       
       line_in << " " << DeQuote(msg["name"]);
       cerr << "\t\t\tARRRRG" << endl;
@@ -269,8 +285,7 @@ namespace Avida{
           else
             line_in << " " << arg;
         }
-      line = line_in.str();  //Return our input from the stream
-      return true;
+      return line_in.str();  //Return our input from the stream
     }
     
     

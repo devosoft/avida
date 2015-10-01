@@ -114,16 +114,20 @@ class cWebActionOrgTraceBySequence : public cWebAction
     json ParseSnapshot(const Viewer::HardwareSnapshot& s)
     {
       const std::string alphabet = "abcdefghijklmnopqrstuvwxyz";
+      
+      cerr << "\tTrace 1" << endl;
       json j;
       j["didDivide"] = s.IsPostDivide();
       j["nextInstruction"] = s.NextInstruction().AsString().GetData();;
 
+      cerr << "\tTrace 2" << endl;
       std::map<std::string, std::string> regs;
       for (int i = 0; i < s.Registers().GetSize(); ++i)
         regs[alphabet.substr(i,1) + "X"] =
           Int32ToBinary(s.Register(i));
       j["registers"] = regs;
       
+      cerr << "\tTrace 3" << endl;
       std::map<std::string, std::vector<string>> bufs;
       for (auto it_i = s.Buffers().Begin(); it_i.Next();){
         vector<string> entries;
@@ -134,12 +138,14 @@ class cWebActionOrgTraceBySequence : public cWebAction
       }
       j["buffers"] = bufs;
       
+      cerr << "\tTrace 4" << endl;
       std::map<std::string, int> functions;
       for (auto it = s.Functions().Begin(); it.Next();)
         functions[it.Get()->Value1().GetData()] = *(it.Get()->Value2());
       j["functions"] = functions;
       
       
+      cerr << "\tTrace 5" << endl;
       std::vector<std::map<string,int>> jumps;
       for (auto it = s.Jumps().Begin(); it.Next();){
         std::map<string,int> a_jump;
@@ -153,6 +159,7 @@ class cWebActionOrgTraceBySequence : public cWebAction
       }
       j["jumps"] = jumps;
       
+      cerr << "\tTrace 6" << endl;
       std::vector<json> memspace;
       for (auto it = s.MemorySpace().Begin(); it.Next();){
         json this_space;
@@ -172,6 +179,7 @@ class cWebActionOrgTraceBySequence : public cWebAction
         memspace.push_back(this_space);
       }
       j["memSpace"] = memspace;
+      cerr << "\tTrace Done." << endl;
       return j;
     }
 
@@ -194,18 +202,20 @@ class cWebActionOrgTraceBySequence : public cWebAction
     
     void Process(cAvidaContext& ctx)
     {
-      
+      cerr << "cWebActionOrtTraceBySequence::Process" << endl;
       //Trace the genome sequence
       GenomePtr genome = 
         GenomePtr(new Genome(Apto::String(m_sequence.c_str())));
       Viewer::OrganismTrace trace(m_world, genome, m_mutation_rate, m_seed);
       
-      vector<json> snapshots;
+      cerr << "\tTrace ready" << endl;
+      vector<WebViewerMsg> snapshots;
       for (int i = 0; i < trace.SnapshotCount(); ++i)
       {
         snapshots.push_back(ParseSnapshot(trace.Snapshot(i)));
       }
       
+      cerr << "\tAbout to make feedback" << endl;
       m_feedback.Data(WebViewerMsg(snapshots).dump().c_str());
     }
 };  //End cWebActionOrgTraceBySequence

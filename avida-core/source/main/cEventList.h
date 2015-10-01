@@ -109,6 +109,7 @@ public:
   
   bool LoadEventFile(const cString& filename, const cString& working_dir, Feedback& feedback, const Apto::Map<Apto::String, Apto::String>* defs = NULL);
   
+  void ProcessImmediates(cAvidaContext& ctx); //Process all immediate events now
   void Process(cAvidaContext& ctx);
   void Sync(); // Get all events caught up.
   
