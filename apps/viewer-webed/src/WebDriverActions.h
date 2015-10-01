@@ -45,6 +45,8 @@ class cWebAction : public cAction
 };
 
 
+
+
 class cWebActionPopulationStats : public cWebAction {
 public:
   cWebActionPopulationStats(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world, args, fb)
@@ -260,6 +262,41 @@ public:
 
 
 class cWebActionGridData : public cWebAction {
+  private:
+
+    /*
+      Need to use our own min/max_val functions
+      because of nans.
+    */
+    double min_val(const vector<double>& vec)
+    {
+      if (vec.empty())
+        return std::numeric_limits<double>::quiet_NaN();
+      double min = vec[0];
+      for (auto val : vec){
+        if (!isfinite(val))
+          continue;
+        if (val < min || !isfinite(val))
+          min = val;
+      }
+      return min;
+    }
+    
+    double max_val(const vector<double>& vec)
+    {
+      if (vec.empty())
+        return std::numeric_limits<double>::quiet_NaN();
+      double max = vec[0];
+      for (auto val : vec){
+        if (!isfinite(val))
+          continue;
+        if (val > max || !isfinite(max))
+          max = val;
+      }
+      return max;
+    }
+    
+  
   public:
     cWebActionGridData(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world,args,fb)
     {
@@ -316,32 +353,32 @@ class cWebActionGridData : public cWebAction {
       }
       data["fitness"] = { 
                   {"data",fitness}, 
-                  {"minVal",*std::min_element(std::begin(fitness),std::end(fitness))}, 
-                  {"maxVal",*std::max_element(std::begin(fitness),std::end(fitness))} 
+                  {"minVal",min_val(fitness)}, 
+                  {"maxVal",max_val(fitness)} 
                   };
       data["metabolism"] = {
                   {"data",metabolism}, 
-                  {"minVal",*std::min_element(std::begin(metabolism),std::end(metabolism))}, 
-                  {"maxVal",*std::max_element(std::begin(metabolism),std::end(metabolism))} 
+                  {"minVal",min_val(metabolism)}, 
+                  {"maxVal",max_val(metabolism)} 
                   };
       data["gestation"] = {
                   {"data",gestation}, 
-                  {"minVal",*std::min_element(std::begin(gestation),std::end(gestation))}, 
-                  {"maxVal",*std::max_element(std::begin(gestation),std::end(gestation))} 
+                  {"minVal",min_val(gestation)}, 
+                  {"maxVal",max_val(gestation)} 
                   };
 
       data["ancestor"] = {
                   {"data",ancestor}, 
-                  {"minVal",*std::min_element(std::begin(ancestor),std::end(ancestor))}, 
-                  {"maxVal",*std::max_element(std::begin(ancestor),std::end(ancestor))} 
+                  {"minVal",min_val(ancestor)}, 
+                  {"maxVal",max_val(ancestor)} 
                   };
                   
                   
       for (auto it : tasks){
         data[it.first] = {
           {"data",it.second},
-          {"minVal",*std::min_element(std::begin(it.second),std::end(it.second))},
-          {"maxVal",*std::max_element(std::begin(it.second),std::end(it.second))}
+          {"minVal",min_val(it.second)},
+          {"maxVal",max_val(it.second)}
         };
       }
       cerr << "Size of message is: " << data.dump().size() << endl;
