@@ -448,7 +448,7 @@ bool cEventList::AddEventFileFormat(const cString& in_line, Feedback& feedback)
     } else {
       // Second word is interval
       tmp = timing_str.Pop(':');
-      if (tmp == "all") interval = TRIGGER_ALL;
+      if (tmp == "all" || tmp == "always") interval = TRIGGER_ALL;
       else if (tmp == "once") interval = TRIGGER_ONCE;
       else interval = tmp.AsDouble();
 

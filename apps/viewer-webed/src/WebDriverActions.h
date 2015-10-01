@@ -100,6 +100,7 @@ class cWebActionOrgTraceBySequence : public cWebAction
 
   private:
   
+    int m_seed;
     double m_mutation_rate;
     string m_sequence;
     
@@ -181,6 +182,8 @@ class cWebActionOrgTraceBySequence : public cWebAction
       cString largs(args);
       if (largs.GetSize()){
         m_sequence = string(largs.PopWord().GetData());
+        m_mutation_rate = (largs.GetSize()) ? largs.PopWord().AsDouble() : 0.0;
+        m_seed = (largs.GetSize()) ? largs.PopWord().AsInt() : -1;
       } else {
         m_feedback.Warning("webOrgTraceBySequence: a genome sequence is a required argument.");
       }
@@ -195,7 +198,7 @@ class cWebActionOrgTraceBySequence : public cWebAction
       //Trace the genome sequence
       GenomePtr genome = 
         GenomePtr(new Genome(Apto::String(m_sequence.c_str())));
-      Viewer::OrganismTrace trace(m_world, genome, m_mutation_rate);
+      Viewer::OrganismTrace trace(m_world, genome, m_mutation_rate, m_seed);
       
       vector<json> snapshots;
       for (int i = 0; i < trace.SnapshotCount(); ++i)
