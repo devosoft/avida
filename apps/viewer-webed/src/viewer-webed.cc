@@ -47,6 +47,7 @@ int main(int argc, char* argv[])
 
    driver = new Driver(world, feedback);
    
+   cerr << world << endl;
    //atexit(AvidaExit);
    
    RunDriver();

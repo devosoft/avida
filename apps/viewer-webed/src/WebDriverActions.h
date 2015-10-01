@@ -115,19 +115,16 @@ class cWebActionOrgTraceBySequence : public cWebAction
     {
       const std::string alphabet = "abcdefghijklmnopqrstuvwxyz";
       
-      cerr << "\tTrace 1" << endl;
       json j;
       j["didDivide"] = s.IsPostDivide();
       j["nextInstruction"] = s.NextInstruction().AsString().GetData();;
 
-      cerr << "\tTrace 2" << endl;
       std::map<std::string, std::string> regs;
       for (int i = 0; i < s.Registers().GetSize(); ++i)
         regs[alphabet.substr(i,1) + "X"] =
           Int32ToBinary(s.Register(i));
       j["registers"] = regs;
       
-      cerr << "\tTrace 3" << endl;
       std::map<std::string, std::vector<string>> bufs;
       for (auto it_i = s.Buffers().Begin(); it_i.Next();){
         vector<string> entries;
@@ -138,14 +135,12 @@ class cWebActionOrgTraceBySequence : public cWebAction
       }
       j["buffers"] = bufs;
       
-      cerr << "\tTrace 4" << endl;
       std::map<std::string, int> functions;
       for (auto it = s.Functions().Begin(); it.Next();)
         functions[it.Get()->Value1().GetData()] = *(it.Get()->Value2());
       j["functions"] = functions;
       
       
-      cerr << "\tTrace 5" << endl;
       std::vector<std::map<string,int>> jumps;
       for (auto it = s.Jumps().Begin(); it.Next();){
         std::map<string,int> a_jump;
@@ -159,7 +154,6 @@ class cWebActionOrgTraceBySequence : public cWebAction
       }
       j["jumps"] = jumps;
       
-      cerr << "\tTrace 6" << endl;
       std::vector<json> memspace;
       for (auto it = s.MemorySpace().Begin(); it.Next();){
         json this_space;
@@ -179,7 +173,6 @@ class cWebActionOrgTraceBySequence : public cWebAction
         memspace.push_back(this_space);
       }
       j["memSpace"] = memspace;
-      cerr << "\tTrace Done." << endl;
       return j;
     }
 
@@ -195,17 +188,21 @@ class cWebActionOrgTraceBySequence : public cWebAction
       } else {
         m_feedback.Warning("webOrgTraceBySequence: a genome sequence is a required argument.");
       }
-      m_mutation_rate = (largs.GetSize() > 0) ? largs.PopWord().AsDouble() : 0.0;
     }
     
     static const cString GetDescription() { return "Arguments: GenomeSequence PointMutationRate"; }
     
     void Process(cAvidaContext& ctx)
     {
+      cerr << m_world << endl;
       cerr << "cWebActionOrtTraceBySequence::Process" << endl;
+      cerr << "\tArguments: " << m_sequence << "," << m_mutation_rate 
+           << "," << m_seed << endl;
       //Trace the genome sequence
       GenomePtr genome = 
-        GenomePtr(new Genome(Apto::String(m_sequence.c_str())));
+        GenomePtr(new Genome(Apto::String( (m_sequence).c_str())));
+      cerr << "\tAbout to Trace with settings " << m_world
+           <<  "," << m_sequence << "," << m_mutation_rate << "," << m_seed;
       Viewer::OrganismTrace trace(m_world, genome, m_mutation_rate, m_seed);
       
       cerr << "\tTrace ready" << endl;

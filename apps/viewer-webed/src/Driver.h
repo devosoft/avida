@@ -102,7 +102,7 @@ namespace Avida{
             ret_msg["message"] = msg.GetData();
             break;
         }
-        cerr << "About to post feedback message: " << ret_msg.dump() << endl;
+        //cerr << "About to post feedback message: " << ret_msg.dump() << endl;
         PostMessage(ret_msg);
       }
       m_feedback.Clear();
@@ -147,7 +147,7 @@ namespace Avida{
           cerr << "Message is unknown type" << endl;
           ret_msg["message"] = "unknown type";  //We don't know what this message wants
         }
-        cerr << "About to PostMessage: " << ret_msg.dump() << endl;
+        //cerr << "About to PostMessage: " << ret_msg.dump() << endl;
         PostMessage(ret_msg);
         cerr << "About to ProcessFeedback: " << endl;
         ProcessFeedback();
