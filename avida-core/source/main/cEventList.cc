@@ -79,7 +79,7 @@ bool cEventList::AddEvent(eTriggerType trigger, double start, double interval,
   }
   
   cerr << "error: unable to load event '" << name << "'" << endl; 
-  feedback.Error(cString("Unable to load event ") + name);
+  feedback.Warning(cString("Unable to load event ") + name);
   
   return false;
 }
@@ -435,6 +435,7 @@ bool cEventList::AddEventFileFormat(const cString& in_line, Feedback& feedback)
   
   // If first value is valid, we are getting a timing.
   if (tmp.IsNumber() || tmp == "begin" || tmp == "now") {
+  
     
     // First number is start
     if (tmp == "begin") start = TRIGGER_BEGIN;

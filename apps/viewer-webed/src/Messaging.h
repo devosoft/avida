@@ -85,6 +85,8 @@ namespace Avida{
       WebViewerMsg return_msg(received);
       return_msg["triggerType"] =
         (received.find("triggerType") != received.end()) ? received["triggerType"] : "update";
+      if (return_msg["triggerType"] == "i" || return_msg["triggerType"] == "immediate")
+        return return_msg;
       return_msg["start"] = 
         (received.find("start") != received.end()) ? received["start"] : "now";
       return_msg["interval"] = 
