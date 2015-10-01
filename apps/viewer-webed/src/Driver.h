@@ -252,9 +252,11 @@ namespace Avida{
       cerr << "\t\t\tLinifying trigger" << endl;       
       line_in << DeQuote(msg["triggerType"]) << " ";
       cerr << "\t\t\tLinifying timingr" << endl;       
-      line_in << DeQuote(msg["start"]) << ":" << DeQuote(msg["interval"]);
+      line_in << ((msg["start"].is_string()) ? DeQuote(msg["start"]) : to_string((double)(msg["start"])));
+      line_in << ":";
+      line_in << ((msg["interval"].is_string()) ? DeQuote(msg["interval"]) : to_string((double)(msg["interval"])));
       if (msg["end"] != "")
-        line_in << ":" << DeQuote(msg["end"]);
+         line_in << ((msg["end"].is_string()) ? DeQuote(msg["end"]) : to_string((double)(msg["end"])));
       cerr << "\t\t\tLinifying name" << endl;       
       line_in << " " << DeQuote(msg["name"]);
       cerr << "\t\t\tARRRRG" << endl;
