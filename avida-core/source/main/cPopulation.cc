@@ -798,9 +798,35 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
         label.Set("Test");
         Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite(new cParasite(m_world, mg, 0, Systematics::Source(Systematics::HORIZONTAL, (const char*)label)));
   
-        //default to configured parasite virulence
-        parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
-  
+        //Need to set the virulence properly
+        if (m_world->GetConfig().VIRULENCE_SOURCE.Get() == 2){
+          //Virulence controlled by host
+          parasite->SetVirulence(target_organism->GetParaDonate());
+        } else if (m_world->GetConfig().VIRULENCE_SOURCE.Get() == 1)
+        {
+          //Virulence inherited from parent parasite
+          double oldVir = parasite_parent->GetVirulence();
+    
+          //default to not mutating
+          double newVir = oldVir;
+    
+          //but if we do mutate...
+          if (m_world->GetRandom().GetDouble() < m_world->GetConfig().VIRULENCE_MUT_RATE.Get())
+          {
+            //get this in a temp variable so we don't have to make the next line huge
+            double vir_sd = m_world->GetConfig().VIRULENCE_SD.Get();
+      
+            //sd^2 = varience
+            newVir = m_world->GetRandom().GetRandNormal(oldVir, vir_sd * vir_sd);
+      
+          }
+          parasite->SetVirulence(Apto::Max(Apto::Min(newVir, 1.0), 0.0));
+        } else
+        {
+          //get default virulence
+          parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
+        }
+        
         if (target_organism->ParasiteInfectHost(parasite)) {
           Systematics::Manager::Of(m_world->GetNewWorld())->ClassifyNewUnit(parasite);
         }
