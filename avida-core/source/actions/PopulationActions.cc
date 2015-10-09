@@ -439,12 +439,30 @@ public:
     if (m_cell_start < 0 || m_cell_end >= m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       ctx.Driver().Feedback().Warning("InjectSequence has invalid range!");
     } else {
-      const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      HashPropertyMap props;
-      cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
-      Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence)));
-      for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+      int tok=0;
+      for (int k=0; k<m_sequence.GetSize(); k++)
+        if (m_sequence[k] == ',') tok++;
+      
+      if (tok == 1){
+        //There is just a single representation; use default hardware and intruction set
+        const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+        HashPropertyMap props;
+        cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
+        Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence)));
+        for (int i = m_cell_start; i < m_cell_end; i++) {
+          m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+        }
+        
+      } else if (tok == 3) {
+        //Hardware and instruction information is embedded with the representation
+        Genome genome(Apto::String(m_sequence.GetData()));
+        for (int i = m_cell_start; i < m_cell_end; i++) {
+          m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+        }
+        
+      } else {
+        //There's something wrong with the format of this string
+        return;
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
