@@ -23,6 +23,7 @@ class cActionLibrary;
 
 #include "avida/viewer/OrganismTrace.h"
 #include "avida/private/systematics/Genotype.h"
+#include "avida/private/systematics/Clade.h"
 
 
 #include "cEnvironment.h"
@@ -227,7 +228,38 @@ class cWebActionOrgTraceBySequence : public cWebAction
 
 class cWebActionOrgDataByCellID : public cWebAction {
 private:
+  static constexpr int NO_SELECTION = -1;
+  static constexpr double nan = std::numeric_limits<double>::quiet_NaN();
   int m_cell_id;
+  
+  double GetTestFitness(Systematics::GenotypePtr& gptr) 
+  {
+    Apto::RNG::AvidaRNG rng(100); 
+    cAvidaContext ctx(&m_world->GetDriver(),rng); 
+    return Systematics::GenomeTestMetrics::GetMetrics(m_world,ctx,gptr)->GetFitness();
+  }
+  
+  double GetTestMerit(Systematics::GenotypePtr& gptr) 
+  {
+    Apto::RNG::AvidaRNG rng(100); 
+    cAvidaContext ctx(&m_world->GetDriver(),rng); 
+    return Systematics::GenomeTestMetrics::GetMetrics(m_world,ctx,gptr)->GetMerit();
+  }
+  
+  double GetTestGestationTime(Systematics::GenotypePtr& gptr) 
+  {
+    Apto::RNG::AvidaRNG rng(100); 
+    cAvidaContext ctx(&m_world->GetDriver(),rng); 
+    return Systematics::GenomeTestMetrics::GetMetrics(m_world,ctx,gptr)->GetGestationTime();
+  }
+  
+  int GetTestTaskCount(Systematics::GenotypePtr& gptr, cString& task_name)
+  {
+    Apto::RNG::AvidaRNG rng(100); 
+    cAvidaContext ctx(&m_world->GetDriver(),rng); 
+    return Systematics::GenomeTestMetrics::GetMetrics(m_world,ctx,gptr)->GetGestationTime();
+  }
+  
   
 public:
   cWebActionOrgDataByCellID(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world, args, fb)
@@ -247,31 +279,54 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cOrganism* org = m_world->GetPopulation().GetCell(m_cell_id).GetOrganism();
+    cOrganism* org = (m_cell_id == NO_SELECTION) ? nullptr : m_world->GetPopulation().GetCell(m_cell_id).GetOrganism();
     
-    /*WebViewerMsg data = 
-      {
-        {"type","data"},
-        {"name","webOrgDataByCellID"},
-        {"orgName","-"},
-        {"fitness",std::NaN},
-        {"metabolism",std::NaN},
-        {"gestation",std::NaN},
-        {"age":,std:NaN},
-        {"ancestor", "-"},
-        {"tasks":
-          {
-            {"not",0},
-            {"nan",0},
-            {"and",0},
-            {"ornot",0},
-            {"or",0},
-            {"nor",0},
-            {"xor",0},
-            {"equ",0}
-          }
-        }
-       m_feedback.Data(data.dump().c_str());*/
+  
+    WebViewerMsg data = { {"type","data"}, {"name","webOrgDataByCellID"} };
+    
+    if (org == nullptr){
+      data["genotypeName"] = "-";
+      data["fitness"] = nan;
+      data["metabolism"] = nan;
+      data["gestation"] = nan;
+      data["age"] = nan;
+      data["ancestor"] = nan;
+      data["genome"] = "";
+      data["isEstimate"] = false;
+      data["tasks"] = {};
+    } else {
+      // We're going to emulate AvidaEd OSX right now and go through the
+      // genotype rather than the organism for information.
+      Systematics::GenotypePtr gptr;
+      gptr.DynamicCastFrom(org->SystematicsGroup("genotype"));
+      data["genotypeName"] = gptr->Properties().Get("name").StringValue().Substring(4).GetData();
+      data["genome"] = gptr->Properties().Get("genome").StringValue().GetData();
+      data["age"] = gptr->Properties().Get("update_born").IntValue();
+      
+      Systematics::CladePtr cptr;
+      cptr.DynamicCastFrom(org->SystematicsGroup("clade"));
+      data["ancestor"] = (cptr == nullptr) ? json(nan) : json(cptr->Properties().Get("name").StringValue());
+      //TODO: Clades have names?  How?
+      
+      bool has_gestated = (gptr->Properties().Get("total_gestation_count").IntValue() > 0);
+      data["isEstimate"] = (has_gestated) ? false : true;
+      data["fitness"] = (has_gestated) ? gptr->Properties().Get("ave_fitness").DoubleValue() : GetTestFitness(gptr);
+      data["metabolism"] = (has_gestated) ? gptr->Properties().Get("ave_metabolic_rate").DoubleValue() : GetTestMerit(gptr);
+      data["gestation"] = (has_gestated) ? gptr->Properties().Get("ave_gestation").DoubleValue() : GetTestGestationTime(gptr);
+      
+      //TODO: It doesn't look like genotypes actually track task counts right now
+      //Instead, AvidaEd goes through a test cpu to always grab the information
+      map<string,double> task_count;
+      cEnvironment& env = m_world->GetEnvironment();
+      for (int t=0; t<env.GetNumTasks(); t++){
+        cString task_name = env.GetTask(t).GetName();
+        task_count[task_name.GetData()] = GetTestTaskCount(gptr, task_name);
+      }
+      data["tasks"] = task_count;
+    }
+    
+    m_feedback.Data(data.dump().c_str());
+      
   }
 }; // cWebActionPopulationStats
 

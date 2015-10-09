@@ -506,3 +506,22 @@ bool cEventList::IsEventUpcoming(const cString& event_name) {
 	}
 	return false;
 }
+
+/*
+  Delete an event by its name; return the number of entries removed
+*/
+int cEventList::DeleteEventByName(const cString& event_name){
+  cEventListEntry* entry = m_head;
+  int deleted = 0;
+  while(entry != nullptr){
+    if (entry->GetName() == event_name) {
+      cEventListEntry* to_delete = entry;
+      entry = entry->GetNext();
+      Delete(to_delete);
+      deleted++;
+    } else {
+      entry = entry->GetNext();
+    }
+  }
+  return deleted;
+}

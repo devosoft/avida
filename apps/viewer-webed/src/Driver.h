@@ -39,6 +39,7 @@ namespace Avida{
       cWorld* m_world;
       bool m_first_update;
       cAvidaContext* m_ctx;
+      int active_cell_id;
       
       void ProcessFeedback();
       void Setup(cWorld*, cUserFeedback);
@@ -123,6 +124,7 @@ namespace Avida{
         m_world = a_world;
         m_ctx = new cAvidaContext(this, m_world->GetRandom());
         m_world->SetDriver(this);
+        active_cell_id = -1;
       }     
     }
     
@@ -190,6 +192,11 @@ namespace Avida{
         cerr << "Event is other than runPause" << endl;
         string event_line = JsonToEventFormat(msg);  //This will contain a properly formatted event list line if successful
         cerr << "Trying to add event line: " << event_line << endl;
+        if (msg["singleton"] == json(true)) {
+          cerr << "Message is singleton; deleting other entries with event named: " << msg["name"] << endl;
+          int deleted = m_world->GetEventsList()->DeleteEventByName(cString(msg["name"].get<std::string>().c_str()));
+          cerr << deleted << " events removed." << endl;
+        }
         bool success = m_world->GetEventsList()->AddEventFileFormat(event_line.data(), m_feedback);
         ret_msg["success"] = success;
         if (success){  //Process any immediate events
@@ -276,15 +283,21 @@ namespace Avida{
       cerr << "\t\t\tLinifying name" << endl;       
       line_in << " " << DeQuote(msg["name"]);
       cerr << "\t\t\tARRRRG" << endl;
-      if (msg.find("args") != msg.end())
+      if (msg.find("args") != msg.end()){
         cerr << "\t\t\targs: " << msg["args"] << endl;
-        for (auto arg : msg["args"]){ // copy each array element
-          cerr << "\t\t\t\t" << arg << endl;
-          if (arg.is_string())
-            line_in << " " << DeQuote(arg);
-          else
-            line_in << " " << arg;
-        }
+        if (msg["args"].is_array()){
+          for (auto arg : msg["args"]){ // copy each array element
+            cerr << "\t\t\t\t" << arg << endl;
+            if (arg.is_string())
+              line_in << " " << DeQuote(arg);
+            else
+              line_in << " " << arg;
+          }
+        } 
+      } else {
+        cerr << "\t\t\targ is single value of " << msg["args"] << endl;
+        line_in << msg["args"];
+      }
       return line_in.str();  //Return our input from the stream
     }
     

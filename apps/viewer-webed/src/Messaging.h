@@ -7,6 +7,7 @@
 #include <string>
 #include <emscripten.h>
 
+using json = nlohmann::json;
 
 namespace Avida{
   namespace WebViewer{
@@ -96,7 +97,9 @@ namespace Avida{
         (received.count("interval")) ? received["interval"] : "always";
       return_msg["end"] = 
         (received.count("end")) ? received["end"] : "";
-      
+      return_msg["singleton"] =
+        (received.count("singleton")) ? received["singleton"] : json(false);
+        
       return return_msg;
     }
     
