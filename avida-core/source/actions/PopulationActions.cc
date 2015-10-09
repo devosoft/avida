@@ -443,7 +443,7 @@ public:
       for (int k=0; k<m_sequence.GetSize(); k++)
         if (m_sequence[k] == ',') tok++;
       
-      if (tok == 1){
+      if (tok == 0){
         //There is just a single representation; use default hardware and intruction set
         const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
         HashPropertyMap props;
@@ -453,7 +453,7 @@ public:
           m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
         }
         
-      } else if (tok == 3) {
+      } else if (tok == 2) {
         //Hardware and instruction information is embedded with the representation
         Genome genome(Apto::String(m_sequence.GetData()));
         for (int i = m_cell_start; i < m_cell_end; i++) {
