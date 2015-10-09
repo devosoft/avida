@@ -279,7 +279,8 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cOrganism* org = (m_cell_id == NO_SELECTION) ? nullptr : m_world->GetPopulation().GetCell(m_cell_id).GetOrganism();
+    if (m_cell_id == NO_SELECTION) return;
+    cOrganism* org = m_world->GetPopulation().GetCell(m_cell_id).GetOrganism();
     
   
     WebViewerMsg data = { {"type","data"}, {"name","webOrgDataByCellID"} };
