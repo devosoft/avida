@@ -19,6 +19,7 @@ class cActionLibrary;
 
 #include "avida/core/Feedback.h"
 #include "avida/core/Types.h"
+#include "avida/environment/Manager.h"
 #include "cActionLibrary.h"
 
 #include "avida/viewer/OrganismTrace.h"
@@ -257,7 +258,8 @@ private:
   {
     Apto::RNG::AvidaRNG rng(100); 
     cAvidaContext ctx(&m_world->GetDriver(),rng); 
-    return Systematics::GenomeTestMetrics::GetMetrics(m_world,ctx,gptr)->GetGestationTime();
+    Environment::ManagerPtr env = Avida::Environment::Manager::Of(m_world->GetNewWorld());
+    return Systematics::GenomeTestMetrics::GetMetrics(m_world,ctx,gptr)->GetTaskCounts()[env->GetActionTrigger(task_name.GetData())->TempOrdering()];
   }
   
   
@@ -316,7 +318,7 @@ public:
       data["gestation"] = (has_gestated) ? gptr->Properties().Get("ave_gestation").DoubleValue() : GetTestGestationTime(gptr);
       
       //TODO: It doesn't look like genotypes actually track task counts right now
-      //Instead, AvidaEd goes through a test cpu to always grab the information
+      //Instead, AvidaEd OSX goes through a test cpu to always grab the information
       map<string,double> task_count;
       cEnvironment& env = m_world->GetEnvironment();
       for (int t=0; t<env.GetNumTasks(); t++){

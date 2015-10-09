@@ -70,7 +70,7 @@ namespace Avida{
     
     void Driver::ProcessFeedback()
     {
-      cerr << "Processing Feedback" << endl;
+      //cerr << "Processing Feedback" << endl;
       for (int k=0; k<m_feedback.GetNumMessages(); ++k){
         cUserFeedback::eFeedbackType msg_type = m_feedback.GetMessageType(k);
         const cString& msg = m_feedback.GetMessage(k);
@@ -107,7 +107,7 @@ namespace Avida{
         PostMessage(ret_msg);
       }
       m_feedback.Clear();
-      cerr << "Feedback processing complete" << endl;
+      //cerr << "Feedback processing complete" << endl;
     }
     
     
@@ -293,10 +293,10 @@ namespace Avida{
             else
               line_in << " " << arg;
           }
-        } 
-      } else {
-        cerr << "\t\t\targ is single value of " << msg["args"] << endl;
-        line_in << msg["args"];
+        } else {
+          cerr << "\t\t\targ is single value of " << msg["args"] << endl;
+          line_in << " " << msg["args"];
+        }
       }
       return line_in.str();  //Return our input from the stream
     }
