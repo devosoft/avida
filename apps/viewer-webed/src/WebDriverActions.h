@@ -304,8 +304,7 @@ public:
       gptr.DynamicCastFrom(org->SystematicsGroup("genotype"));
       data["genotypeName"] = gptr->Properties().Get("name").StringValue().Substring(4).GetData();
       data["genome"] = gptr->Properties().Get("genome").StringValue().GetData();
-      data["age"] = gptr->Properties().Get("update_born").IntValue();
-      
+      data["age"] = org->GetPhenotype().GetAge();
       Systematics::CladePtr cptr;
       cptr.DynamicCastFrom(org->SystematicsGroup("clade"));
       data["ancestor"] = (cptr == nullptr) ? json(nan) : json(cptr->Properties().Get("name").StringValue());
