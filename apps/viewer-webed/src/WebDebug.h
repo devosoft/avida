@@ -13,7 +13,7 @@
 #include <iostream>
 
 //How detailed should our debug output be
-#define D_VERBOSITY 0
+#define D_VERBOSITY 1
 
 //Constants to define different types of debugging
 #define D_FLOW 1
@@ -43,7 +43,7 @@
 
   #define D_1(LEVEL, MSG, VERBOSITY)\
   do{\
-    if ( (LEVEL & DEBUG_LEVEL) && (VERBOSITY >= D_VERBOSITY) )\
+    if ( (LEVEL & DEBUG_LEVEL) && (VERBOSITY <= D_VERBOSITY) )\
     {\
       DEBUG_STREAM << MSG << std::endl;\
     }\
