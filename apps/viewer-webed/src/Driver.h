@@ -95,7 +95,7 @@ namespace Avida{
           case cUserFeedback::eFeedbackType::UF_DATA:
              D_(D_MSG_OUT, "Feedback message is type DATA");
             //Data messages will get sent directly with no userFeedback wrapper
-            ret_msg = nlohmann::json::parse(msg.GetData());
+            ret_msg = json::parse(msg.GetData());
             break;
           default:
             D_(D_MSG_OUT, "Feedback message is type UNKNOWN");

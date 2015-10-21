@@ -32,7 +32,7 @@
 #include <cstring>
 #include <cassert>
 
-#define MAX_STRING_LENGTH 1048576
+#define MAX_STRING_LENGTH 2097152 //This is really large to handle data messages
 #define CONTINUE_LINE_CHAR '\\'
 
 /**
