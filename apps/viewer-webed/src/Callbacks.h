@@ -35,13 +35,21 @@ namespace Avida {
     extern "C"
     void RunDriver()
     {
+      D_(D_FLOW, "Entering runtime loop");
       PostMessage(MSG_READY);
       while(!driver->IsFinished()){
+        D_(D_FLOW, "Driver is active.");
+        bool first_pass = true;
         while(driver->IsPaused()){
+          D_(D_FLOW, "Driver is paused.");
+          first_pass = false;
           emscripten_sleep(100);
           CheckMessages();
         }
+        first_pass = true;
         while(!(driver->IsFinished() && driver->IsPaused())){
+          D_(D_FLOW, "Driver is running.");
+          first_pass = false;
           driver->StepUpdate();
           emscripten_sleep(100);
           CheckMessages();
@@ -49,9 +57,9 @@ namespace Avida {
       }
     }
   
-  
     void AvidaExit()
     {
+      D_(D_FLOW, "The Avida runtime is termiating.");
       WebViewerMsg msg_exit = FeedbackMessage(Feedback::FATAL);
       msg_exit["description"] = "Avida is exiting";
       PostMessage(msg_exit);

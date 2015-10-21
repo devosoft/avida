@@ -32,22 +32,24 @@ int main(int argc, char* argv[])
    
    //Initialize WebDriverActions separately to keep it out of avida-core library
    cActionLibrary* act_lib = &cActionLibrary::GetInstance();
-   RegisterWebDriverActions(act_lib);
+   RegisterWebDriverActions(act_lib);   
+   D_(D_STATUS, "Avida is globally initialized.");
    
-   
-   Apto::Map<Apto::String, Apto::String> defs;
    cAvidaConfig* cfg = new cAvidaConfig();
    cUserFeedback feedback;
 
+   Apto::Map<Apto::String, Apto::String> defs;
    Avida::Util::ProcessCmdLineArgs(argc, argv, cfg, defs);
 
+   D_(D_STATUS, "Avida is now configured.");
+
    World* new_world = new World;
-
    cWorld* world = cWorld::Initialize(cfg, "/", new_world, &feedback, &defs);
-
-   driver = new Driver(world, feedback);
+   D_(D_STATUS, "The world is located at " << world);
    
-   cerr << world << endl;
+   driver = new Driver(world, feedback);
+   D_(D_STATUS, "The driver is located at " << &driver);
+
    //atexit(AvidaExit);
    
    RunDriver();

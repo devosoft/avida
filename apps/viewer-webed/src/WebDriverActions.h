@@ -38,6 +38,8 @@ class cActionLibrary;
 
 using namespace Avida::WebViewer;
 
+constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+
 class cWebAction : public cAction
 {
   protected:
@@ -56,7 +58,7 @@ public:
   }
   static const cString GetDescription() { return "no arguments"; }
   void Process(cAvidaContext& ctx){
-    //cerr << "webPopulationStats" << endl;
+    D_(D_ACTIONS, "cWebActionPopulationStats::Processs");
     const cStats& stats = m_world->GetStats();
     int update = stats.GetUpdate();;
     double ave_fitness = stats.GetAveFitness();;
@@ -64,16 +66,6 @@ public:
     double ave_metabolic_rate = stats.GetAveMerit();
     int org_count = stats.GetNumCreatures();
     double ave_age = stats.GetAveCreatureAge();
-    
-    /*
-    cerr << update << " "
-         << ave_fitness << " "
-         << ave_gestation_time << " " 
-         << ave_metabolic_rate << " "
-         << org_count << " " 
-         << ave_age << "  ?"
-         << stats.GetTaskLastCountSize() << endl;
-    */
     
     WebViewerMsg pop_data = {
       {"type", "data"}
@@ -92,7 +84,7 @@ public:
         stats.GetTaskLastCount(t);
     }
     m_feedback.Data(pop_data.dump().c_str());
-    //cerr << "\t\tdone." << endl;
+    D_(D_ACTIONS, "cWebActionPopulationStats::Process [completed]");
   }
 }; // cWebActionPopulationStats
 
@@ -196,18 +188,16 @@ class cWebActionOrgTraceBySequence : public cWebAction
     
     void Process(cAvidaContext& ctx)
     {
-      cerr << m_world << endl;
-      cerr << "cWebActionOrtTraceBySequence::Process" << endl;
-      cerr << "\tArguments: " << m_sequence << "," << m_mutation_rate 
-           << "," << m_seed << endl;
+      D_(D_ACTIONS, "cWebActionOrtTraceBySequence::Process" );
+
       //Trace the genome sequence
       GenomePtr genome = 
         GenomePtr(new Genome(Apto::String( (m_sequence).c_str())));
-      cerr << "\tAbout to Trace with settings " << m_world
-           <<  "," << m_sequence << "," << m_mutation_rate << "," << m_seed;
+      D_(D_ACTIONS, "\tAbout to Trace with settings " << m_world
+           <<  "," << m_sequence << "," << m_mutation_rate << "," << m_seed, 1 );
       Viewer::OrganismTrace trace(m_world, genome, m_mutation_rate, m_seed);
       
-      cerr << "\tTrace ready" << endl;
+      D_(D_ACTIONS, "Trace ready.", 1);
       vector<json> snapshots;
       WebViewerMsg retval = { 
                         {"type","data"},
@@ -220,8 +210,9 @@ class cWebActionOrgTraceBySequence : public cWebAction
       }
       retval["snapshots"] = snapshots;
       
-      cerr << "\tAbout to make feedback" << endl;
+      D_(D_ACTIONS, "cWebOrgTraceBySequence: About to make feedback",1);
       m_feedback.Data(WebViewerMsg(retval).dump().c_str());
+      D_(D_ACTIONS, "cWebOrgTraceBySequence::Process completed");
     }
 };  //End cWebActionOrgTraceBySequence
 
@@ -230,7 +221,6 @@ class cWebActionOrgTraceBySequence : public cWebAction
 class cWebActionOrgDataByCellID : public cWebAction {
 private:
   static constexpr int NO_SELECTION = -1;
-  static constexpr double nan = std::numeric_limits<double>::quiet_NaN();
   int m_cell_id;
   
   double GetTestFitness(Systematics::GenotypePtr& gptr) 
@@ -281,7 +271,13 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    if (m_cell_id == NO_SELECTION) return;
+    D_(D_ACTIONS, "cWebActionOrgDataByCellID::Process");
+    D_(D_ACTIONS, "Selected cellID: " << m_cell_id, 1);
+    if (m_cell_id == NO_SELECTION) 
+    { 
+      D_(D_ACTIONS, "cWebActionOrgDataByCellID::Process completed.");
+      return;
+    }
     cOrganism* org = m_world->GetPopulation().GetCell(m_cell_id).GetOrganism();
     
   
@@ -289,11 +285,11 @@ public:
     
     if (org == nullptr){
       data["genotypeName"] = "-";
-      data["fitness"] = nan;
-      data["metabolism"] = nan;
-      data["gestation"] = nan;
-      data["age"] = nan;
-      data["ancestor"] = nan;
+      data["fitness"] = NaN;
+      data["metabolism"] = NaN;
+      data["gestation"] = NaN;
+      data["age"] = NaN;
+      data["ancestor"] = NaN;
       data["genome"] = "";
       data["isEstimate"] = false;
       data["tasks"] = {};
@@ -307,7 +303,7 @@ public:
       data["age"] = org->GetPhenotype().GetAge();
       Systematics::CladePtr cptr;
       cptr.DynamicCastFrom(org->SystematicsGroup("clade"));
-      data["ancestor"] = (cptr == nullptr) ? json(nan) : json(cptr->Properties().Get("name").StringValue());
+      data["ancestor"] = (cptr == nullptr) ? json(NaN) : json(cptr->Properties().Get("name").StringValue());
       //TODO: Clades have names?  How?
       
       bool has_gestated = (gptr->Properties().Get("total_gestation_count").IntValue() > 0);
@@ -328,7 +324,7 @@ public:
     }
     
     m_feedback.Data(data.dump().c_str());
-      
+    D_(D_ACTIONS, "cWebActionOrgDataByCellID::Process completed.");
   }
 }; // cWebActionPopulationStats
 
@@ -344,7 +340,7 @@ class cWebActionGridData : public cWebAction {
     double min_val(const vector<double>& vec)
     {
       if (vec.empty())
-        return std::numeric_limits<double>::quiet_NaN();
+        return NaN;
       double min = vec[0];
       for (auto val : vec){
         if (!isfinite(val))
@@ -358,7 +354,7 @@ class cWebActionGridData : public cWebAction {
     double max_val(const vector<double>& vec)
     {
       if (vec.empty())
-        return std::numeric_limits<double>::quiet_NaN();
+        return NaN;
       double max = vec[0];
       for (auto val : vec){
         if (!isfinite(val))
@@ -379,6 +375,7 @@ class cWebActionGridData : public cWebAction {
     
     void Process(cAvidaContext& ctx)
     {
+      D_(D_ACTIONS, "cWebActionGridData::Process");
       WebViewerMsg data = { {"type","data"}, {"name","webGridData"} };
       cPopulation& population = m_world->GetPopulation();
       cEnvironment& env = m_world->GetEnvironment();
@@ -387,7 +384,6 @@ class cWebActionGridData : public cWebAction {
       vector<double> metabolism;
       vector<double> ancestor;
       map<string, vector<double>> tasks;
-      double nan = std::numeric_limits<double>::quiet_NaN();
       vector<string> task_names;
       for (int t=0; t<env.GetNumTasks(); t++){
         task_names.push_back(string(env.GetTask(t).GetName().GetData()));
@@ -400,10 +396,10 @@ class cWebActionGridData : public cWebAction {
         
         
         if (org == nullptr){
-          fitness.push_back(nan);
-          gestation.push_back(nan);
-          metabolism.push_back(nan);
-          ancestor.push_back(nan);
+          fitness.push_back(NaN);
+          gestation.push_back(NaN);
+          metabolism.push_back(NaN);
+          ancestor.push_back(NaN);
           for (int t=0; t<env.GetNumTasks(); t++){
             if (tasks.find(task_names[t]) == tasks.end())
               tasks[task_names[t]] = vector<double>(1,0.0);
@@ -454,8 +450,8 @@ class cWebActionGridData : public cWebAction {
           {"maxVal",max_val(it.second)}
         };
       }
-      cerr << "Size of message is: " << data.dump().size() << endl;
       m_feedback.Data(data.dump().c_str());
+      D_(D_ACTIONS, "cWebActionGridData::Process completed.");
     }
 };
 

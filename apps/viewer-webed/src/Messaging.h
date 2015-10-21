@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <string>
 #include <emscripten.h>
+#include "WebDebug.h"
 
 using json = nlohmann::json;
 
@@ -37,6 +38,8 @@ namespace Avida{
     
     void PostMessage(const WebViewerMsg& msg)
     {
+      D_(D_FLOW | D_MSG_OUT, "About to post message" << msg);
+      D_(D_MSG_OUT, "Message is: " << msg, 1);
       // We're enforcing a rule that all messages
       // sent or received must be JSON objects.
       // In reality, emscripten requires these
@@ -48,6 +51,7 @@ namespace Avida{
                   }, 
                     msg.dump().c_str()
                   );
+      D_(D_FLOW | D_MSG_OUT, "Done posting message.");
     }
     
     
@@ -83,6 +87,7 @@ namespace Avida{
     
     WebViewerMsg DefaultAddEventMessage(const WebViewerMsg& received)
     {
+      D_(D_FLOW | D_MSG_IN, "Defaulting message " << received);
       WebViewerMsg return_msg(received);
       
       return_msg["triggerType"] =
@@ -99,7 +104,8 @@ namespace Avida{
         (received.count("end")) ? received["end"] : "";
       return_msg["singleton"] =
         (received.count("singleton")) ? received["singleton"] : json(false);
-        
+      
+      D_(D_FLOW | D_MSG_IN, "Done defaulting message.");
       return return_msg;
     }
     
