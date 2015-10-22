@@ -39,7 +39,7 @@ namespace Avida {
   
     /*
       Just a quick class to store and retrieve settings for a world.
-      The driver and InitializeToDefault method use this.  The cAvidaConfig
+      The driver and CreateDefaultDriver method use this.  The cAvidaConfig
       pointer will be passed to a world object which will then delete it
       once the world has run its course.
     */
@@ -77,7 +77,6 @@ namespace Avida {
       This will in turn create the world and by agreement set responsbility
       for deleting the driver to the cWorld object. 
     */
-    extern "C"
     Driver* CreateDefaultDriver()
     {
       cAvidaConfig* cfg = new cAvidaConfig();
@@ -103,7 +102,7 @@ namespace Avida {
         cUserFeedback* feedback = new cUserFeedback();
         cWorld* world = cWorld::Initialize(cfg.cfg, cfg.working_dir, new_world, feedback, defs);
         D_(D_STATUS, "The world is located at " << world);
-        driver = new Driver(world, feedback);
+        driver = new Driver(world, feedback);  //The driver and world register each other
         D_(D_STATUS, "The driver is located at " << &driver);
         return driver;
     }
@@ -122,6 +121,11 @@ namespace Avida {
     
     /*
       Return a new driver (and delete the old) with new settings.
+      This should only be done when configuration settings like
+      the size of the world or number of tasks (not number of rewarded
+      tasks) changes.  This is because there are a lot of data structures
+      that rely on these objects and it's just easier to reinitialize than
+      try to modify the core to realize data should be resized or invalidated.
     */
     Driver* DriverReset(Driver* driver)
     {
@@ -153,7 +157,7 @@ namespace Avida {
       I need to expose this function using C-style linkage
       so I can whitelist it for emterpretifying.  The RuntimeLoop
       handles the logic of transitioning between paused and running
-      states; when to check for messages; and when to pause to
+      states; when to check for messages; and when to sleep to
       let our browser do its own processing.  It also handles
       setting up our world/driver, resetting our world/driver, and
       preparing to exit the program.
@@ -161,6 +165,20 @@ namespace Avida {
     extern "C"
     void RuntimeLoop()
     {
+      /*
+        When Avida starts, we won't know what the first set of
+        actual experimental settings are (e.g. grid size, tasks,
+        mutation rate, etc.)... but we do need to make sure that
+        the AvidaEd UI is able to handle things like tracing 
+        organisms.  One way to do this is to create a driver
+        that uses a default set of configurations.  Most configuration
+        settings in AvidaED will not result in the driver being completely
+        reset, anyhow.  Presently, only changing the grid size
+        will require the driver to be reset.  Everything else can
+        simply modify the configuration object or alter the environment
+        rewards.  We will let the driver, though, decide when it
+        wants to be reincarnated with completely new settings and events.
+      */
       Driver* driver = CreateDefaultDriver();
       
       D_(D_FLOW | D_STATUS, "Entering runtime loop");
@@ -169,14 +187,16 @@ namespace Avida {
       /* Any call to CheckMessage could end up forcing us
         to delete the cWorld object (and the driver, feedback, etc.)
         objects.  Consequently, we always have to check to see
-        if our driver still exists before polling its state.  If it
-        is ever "finished" or a nullptr, we should break out of this
-        function.
+        if our driver still exists before polling its state.  It
+        should *never* be nullptr unless something went wrong with
+        creating the driver.
       */
       while(driver && !driver->IsFinished()){
       
         D_(D_STATUS, "Driver is active.");
         
+        //Begin with the driver in a paused state.
+        //Messages can still be received periodically.
         bool first_pass = true;
         while(driver && 
               driver->IsPaused() && 
@@ -189,6 +209,11 @@ namespace Avida {
           CheckMessages(driver);
         } //End paused loop
         
+        //Move from paused state to running state.
+        //We will transition back to the paused state
+        //when we get the appropriate message or exit.
+        //Note that a reset will also shove us into a paused
+        //state.
         first_pass = true;
         while( driver && 
                !( driver->IsFinished() && 
@@ -204,11 +229,14 @@ namespace Avida {
         } // End step update loop
         
         //Reset requests require us to destroy the current world and driver
-        //and initialize a new one before we proceed.
+        //and initialize a new one before we proceed.  This will clear
+        //all persistant data like events and stats.
         if (driver && driver->DoReset()){
-          driver = ResetDriver();
+          driver = DriverReset(driver);
         }
       } // End driver available and not finished loop
+      
+      //Time to exit our runtime; cleanup after ourselves.
       if (driver){
         AvidaExit(driver);
       } else {
