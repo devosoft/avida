@@ -154,7 +154,8 @@ namespace Avida {
     
     /*
       We should be posting a message and setting state information
-      in the JS runtime.
+      in the JS runtime when we're transitioning between runtime states
+      or when we're resetting the driver.
     */
     void NotifyDriverPaused()
     {
@@ -203,6 +204,7 @@ namespace Avida {
         rewards.  We will let the driver, though, decide when it
         wants to be reincarnated with completely new settings and events.
       */
+      NotifyDriverResetting();
       Driver* driver = CreateDefaultDriver();
       
       D_(D_FLOW | D_STATUS, "Entering runtime loop");
