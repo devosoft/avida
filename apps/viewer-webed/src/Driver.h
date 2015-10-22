@@ -31,7 +31,7 @@ namespace Avida{
       void Pause()  { D_(D_FLOW | D_STATUS, "Pause"); D_(D_EVENTS, DumpEventList()); m_paused = (m_paused) ? false : true; }
       void Finish() {m_finished = true;}
       void Abort(AbortCondition cnd) {}
-      void RegisterCallback(DriverCallback callback) {}
+      
       
     protected:
       bool m_paused;
@@ -60,6 +60,8 @@ namespace Avida{
       bool IsFinished() const { return m_finished; }
       bool IsPaused() const { return m_paused; }
       Avida::Feedback& Feedback()  {return m_feedback;}
+      cWorld* GetWorld() { return m_world; }
+      
       
       void ProcessMessage(const WebViewerMsg& msg);
       bool StepUpdate();
