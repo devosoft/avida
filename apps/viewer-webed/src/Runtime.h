@@ -107,6 +107,7 @@ namespace Avida {
         return driver;
     }
     
+    
     /*
       We'll let the world clean up the driver.
       DON'T directly delete the driver.  You'll
@@ -151,6 +152,29 @@ namespace Avida {
       DeleteDriver(driver);
     }
     
+    /*
+      We should be posting a message and setting state information
+      in the JS runtime.
+    */
+    void NotifyDriverPaused()
+    {
+      D_(D_STATUS, "Driver is paused.");
+    }
+    
+    void NotifyDriverRunning()
+    {
+      D_(D_STATUS, "Driver is running.");
+    }
+    
+    void NotifyDriverResetting()
+    {
+      D_(D_STATUS, "Driver is resetting.");
+    }
+    
+    void NotifyExitingRuntime()
+    {
+    }
+    
     
     
     /*
@@ -182,7 +206,6 @@ namespace Avida {
       Driver* driver = CreateDefaultDriver();
       
       D_(D_FLOW | D_STATUS, "Entering runtime loop");
-      PostMessage(MSG_READY);
       
       /* Any call to CheckMessage could end up forcing us
         to delete the cWorld object (and the driver, feedback, etc.)
@@ -192,8 +215,6 @@ namespace Avida {
         creating the driver.
       */
       while(driver && !driver->IsFinished()){
-      
-        D_(D_STATUS, "Driver is active.");
         
         //Begin with the driver in a paused state.
         //Messages can still be received periodically.
@@ -202,7 +223,7 @@ namespace Avida {
               driver->IsPaused() && 
               !driver->DoReset() ){
           if (first_pass){
-            D_(D_STATUS, "Driver is paused.");
+            NotifyDriverPaused()
             first_pass = false;
           }
           emscripten_sleep(100);
@@ -220,7 +241,7 @@ namespace Avida {
                   driver->IsPaused() &&
                   driver->DoReset()) ) {
           if (first_pass){
-            D_(D_STATUS, "Driver is running.");
+            NotifyDriverRunning();
             first_pass = false;
           }
           driver->StepUpdate();
@@ -232,12 +253,14 @@ namespace Avida {
         //and initialize a new one before we proceed.  This will clear
         //all persistant data like events and stats.
         if (driver && driver->DoReset()){
+          NotifyDriverResetting();
           driver = DriverReset(driver);
         }
       } // End driver available and not finished loop
       
       //Time to exit our runtime; cleanup after ourselves.
       if (driver){
+        NotifyRuntimeExiting();
         AvidaExit(driver);
       } else {
         cerr << "We should never be here.  The driver was unavailable during runtime loop." << endl;
