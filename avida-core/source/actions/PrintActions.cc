@@ -244,17 +244,19 @@ class cActionPrintResourceData : public cAction
 {
 private:
   cString m_filename;
+  cString maps;
 public:
   cActionPrintResourceData(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
     if (largs == "") m_filename = "resource.dat"; else m_filename = largs.PopWord();
+    if (largs == "") maps = "1"; else maps = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname=\"resource.dat\"]"; }
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().UpdateResStats(ctx);
-    m_world->GetStats().PrintResourceData(m_filename);
+    m_world->GetStats().PrintResourceData(m_filename, maps);
   }
 };
 

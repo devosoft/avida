@@ -1548,7 +1548,7 @@ void cStats::PrintReactionExeData(const cString& filename)
 }
 
 
-void cStats::PrintResourceData(const cString& filename)
+void cStats::PrintResourceData(const cString& filename, cString maps)
 {
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   
@@ -1570,7 +1570,7 @@ void cStats::PrintResourceData(const cString& filename)
         sum_spa_resource += spatial_res_count[i][j];
       }
       df->Write(sum_spa_resource, resource_names[i] );
-      PrintSpatialResData(filename, i);
+      if(maps=="1") PrintSpatialResData(filename, i);
     } else {
       df->Write(resource_count[i], resource_names[i] );
     }

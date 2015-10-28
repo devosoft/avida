@@ -881,7 +881,7 @@ public:
   void PrintCurrentReactionData(const cString& filename);
   void PrintReactionRewardData(const cString& filename);
   void PrintCurrentReactionRewardData(const cString& filename);
-  void PrintResourceData(const cString& filename);
+  void PrintResourceData(const cString& filename, cString maps="1");
   void PrintResourceLocData(const cString& filename, cAvidaContext& ctx);
   void PrintResWallLocData(const cString& filename, cAvidaContext& ctx);
   void PrintSpatialResData(const cString& filename, int i);
