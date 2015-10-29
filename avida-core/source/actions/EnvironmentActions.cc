@@ -245,6 +245,50 @@ public:
   }
 };
 
+/*Adds a specific amount of a specific resource to a specific cell. Same as Set but doesn't ignore amount that is already there.*/
+class cActionInjectCellResource : public cAction
+{
+private:
+  Apto::Array<int> m_cell_list;
+  cString m_res_name;
+  double m_res_count;
+  int m_res_id;
+  
+public:
+  cActionInjectCellResource(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_list(0), m_res_name(""), m_res_count(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) 
+    {
+      cString s = largs.PopWord();
+      m_cell_list = cStringUtil::ReturnArray(s);    
+    }
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+    m_res_id = res->GetID(); // Save the id so we don't have to do many string conversions
+  }
+
+  static const cString GetDescription() { return "Arguments: <int cell_id> <string res_name> <double res_count>"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_id);
+    for(int i=0; i<m_cell_list.GetSize(); i++)
+    {
+      int m_cell_id = m_cell_list[i];
+      Apto::Array<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, ctx);
+      if ((res != NULL) && (res->GetID() < counts.GetSize()))
+      {
+        counts[res->GetID()] += m_res_count;
+        m_world->GetPopulation().GetResourceCount().SetCellResources(m_cell_id, counts);
+      }
+    }
+  }
+};
+
 
 /*Change the settings of a Gradient Resource*/
 class cActionSetGradientResource : public cAction
@@ -1623,6 +1667,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetDemeResource>("SetDemeResource");
   action_lib->Register<cZeroResources>("ZeroResources");
   action_lib->Register<cActionSetCellResource>("SetCellResource");
+  action_lib->Register<cActionInjectCellResource>("InjectCellResource");
   action_lib->Register<cActionMergeResourceAcrossDemes>("MergeResourceAcrossDemes");
   action_lib->Register<cActionChangeEnvironment>("ChangeEnvironment");
   action_lib->Register<cActionSetGradientResource>("SetGradientResource");
