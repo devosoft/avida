@@ -37,25 +37,7 @@ namespace Avida {
   namespace WebViewer {
   
   
-    /*
-      Just a quick class to store and retrieve settings for a world.
-      The driver and CreateDefaultDriver method use this.  The cAvidaConfig
-      pointer will be passed to a world object which will then delete it
-      once the world has run its course.
-    */
-    class DriverConfig  
-    {
-      protected:
-        cAvidaConfig* cfg;
-        string working_dir;
-      
-      public:
-        DriverConfig(cAvidaConfig* acfg, string& dir) : cfg(acfg), working_dir(dir) {}
-        cAvidaConfig* GetConfig() { return cfg; }
-        char* GetWorkingDir() { return working_dir.GetData(); };
-    };
-    
-    
+        
     /*
       Periodically, the RuntimeLoop will check for messages sent from
       different Worker threads.  These messages are sent to the
@@ -64,7 +46,7 @@ namespace Avida {
     void CheckMessages(Driver* driver)
     {
       EMStringPtr msg_buf = GetMessages();
-      json msgs = nlohmann::json::parse( (char*) msg_buf);
+      json msgs = json::parse( (char*) msg_buf);
       std::free( (void*) msg_buf);  //Cleanup JS allocation
       for (auto msg : msgs){
         driver->ProcessMessage(msg);
@@ -73,39 +55,43 @@ namespace Avida {
     
     
     /*
+      Setup the driver/world with a particular set of configuration options.
+    */
+    Driver* SetupDriver(DriverConfig* cfg, Apto::Map<Apto::String, Apto::String>* defs = nullptr)
+    {
+        //new_world, feedback, and the driver are all deleted when the cWorld object is deleted.
+        World* new_world = new World;
+        cUserFeedback feedback;
+        cWorld* world = cWorld::Initialize(cfg->GetConfig(), cfg->GetWorkingDir(), new_world, &feedback, defs);
+        D_(D_STATUS, "The world is located at " << world);
+        Driver* driver = new Driver(world, feedback);  //The driver and world register each other
+        D_(D_STATUS, "The driver is located at " << &driver);
+        return driver;
+    }
+    
+    
+    
+    /*
       Setup the driver using the default packaged settings.
       This will in turn create the world and by agreement set responsbility
       for deleting the driver to the cWorld object. 
     */
-    Driver* CreateDefaultDriver()
+    Driver* CreateDefaultDriver(int argc, char* argv[])
     {
       cAvidaConfig* cfg = new cAvidaConfig();
-      cUserFeedback feedback = new cUserFeedback;
+      cUserFeedback* feedback = new cUserFeedback;
       
       Apto::Map<Apto::String, Apto::String> defs;
       Avida::Util::ProcessCmdLineArgs(argc, argv, cfg, defs);
       
-      DriverConfig d_cfg(cfg,"/");
+      DriverConfig* d_cfg = new DriverConfig(cfg,"/");
       Driver* driver = SetupDriver(d_cfg, &defs);
+      delete d_cfg;
+      
       D_(D_STATUS, "Avida is now configured with default settings.");
       return driver;
     }
     
-    
-    /*
-      Setup the driver/world with a particular set of configuration options.
-    */
-    Driver* SetupDriver(DriverConfig& cfg, Apto::Map<Apto::String, Apto::String>* defs = nullptr)
-    {
-        //new_world, feedback, and the driver are all deleted when the cWorld object is deleted.
-        World* new_world = new World;
-        cUserFeedback* feedback = new cUserFeedback();
-        cWorld* world = cWorld::Initialize(cfg.cfg, cfg.working_dir, new_world, feedback, defs);
-        D_(D_STATUS, "The world is located at " << world);
-        driver = new Driver(world, feedback);  //The driver and world register each other
-        D_(D_STATUS, "The driver is located at " << &driver);
-        return driver;
-    }
     
     
     /*
@@ -131,9 +117,9 @@ namespace Avida {
     Driver* DriverReset(Driver* driver)
     {
       D_(D_FLOW | D_STATUS, "Resetting driver.");
-      WebViewerMsg msg_reset = FeedbackMessage(Feedback:NOTIFICATION);
+      WebViewerMsg msg_reset = FeedbackMessage(Feedback::NOTIFICATION);
       msg_reset["description"] = "The Avida driver is resetting";
-      DriverConfig d_cfg = driver->GetNextConfig();
+      DriverConfig* d_cfg = driver->GetNextConfig();
       DeleteDriver(driver);
       return SetupDriver(d_cfg);
     }
@@ -188,7 +174,7 @@ namespace Avida {
       preparing to exit the program.
     */
     extern "C"
-    void RuntimeLoop()
+    void RuntimeLoop(int argc, char* argv[])
     {
       /*
         When Avida starts, we won't know what the first set of
@@ -205,7 +191,7 @@ namespace Avida {
         wants to be reincarnated with completely new settings and events.
       */
       NotifyDriverResetting();
-      Driver* driver = CreateDefaultDriver();
+      Driver* driver = CreateDefaultDriver(argc, argv);
       
       D_(D_FLOW | D_STATUS, "Entering runtime loop");
       
@@ -225,7 +211,7 @@ namespace Avida {
               driver->IsPaused() && 
               !driver->DoReset() ){
           if (first_pass){
-            NotifyDriverPaused()
+            NotifyDriverPaused();
             first_pass = false;
           }
           emscripten_sleep(100);
@@ -262,7 +248,7 @@ namespace Avida {
       
       //Time to exit our runtime; cleanup after ourselves.
       if (driver){
-        NotifyRuntimeExiting();
+        NotifyExitingRuntime();
         AvidaExit(driver);
       } else {
         cerr << "We should never be here.  The driver was unavailable during runtime loop." << endl;

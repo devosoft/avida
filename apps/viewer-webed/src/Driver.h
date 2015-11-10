@@ -17,6 +17,7 @@
 #include "Messaging.h"
 #include "json.hpp"
 #include "WebDebug.h"
+#include "DriverConfig.h"
 
 
 using namespace Avida;
@@ -31,11 +32,14 @@ namespace Avida{
       void Pause()  { D_(D_FLOW | D_STATUS, "Pause"); D_(D_EVENTS, DumpEventList()); m_paused = (m_paused) ? false : true; }
       void Finish() {m_finished = true;}
       void Abort(AbortCondition cnd) {}
+      void RegisterCallback(DriverCallback callback) {}
+      
       
       
     protected:
       bool m_paused;
       bool m_finished;
+      bool m_resetting;
       cUserFeedback m_feedback;
       cWorld* m_world;
       bool m_first_update;
@@ -59,8 +63,10 @@ namespace Avida{
       bool Ready() const {return (!m_finished && m_world!=nullptr && m_ctx!=nullptr);};
       bool IsFinished() const { return m_finished; }
       bool IsPaused() const { return m_paused; }
+      bool DoReset() const {return m_resetting;}
       Avida::Feedback& Feedback()  {return m_feedback;}
       cWorld* GetWorld() { return m_world; }
+      DriverConfig* GetNextConfig() { return nullptr; }
       
       
       void ProcessMessage(const WebViewerMsg& msg);
@@ -116,7 +122,6 @@ namespace Avida{
     {
       D_(D_FLOW, "Setting up driver.");
       GlobalObjectManager::Register(this);
-      m_feedback = feedback;
       if (!a_world){
         D_(D_FLOW, "Unable tosetup driver; world missing");
         m_feedback.Error("Driver is unable to find the world.");
@@ -124,6 +129,7 @@ namespace Avida{
         // Setup our members 
         m_paused = true;
         m_finished = false;
+        m_resetting = false;
         m_world = a_world;
         m_ctx = new cAvidaContext(this, m_world->GetRandom());
         m_world->SetDriver(this);

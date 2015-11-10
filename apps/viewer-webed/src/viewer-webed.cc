@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
    RegisterWebDriverActions(act_lib);   
    D_(D_STATUS, "Avida is globally initialized.");
    
-   RuntimeLoop();
+   RuntimeLoop(argc, argv);
 }
 
 

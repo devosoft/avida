@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		B40C9CD11BE7BD6D00F22C20 /* DriverConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DriverConfig.h; path = src/DriverConfig.h; sourceTree = "<group>"; };
+		B40EAE7E1BBC81AF005BFA85 /* WebDebug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = WebDebug.h; path = src/WebDebug.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B4181DDF1B94EB2C0002B429 /* avida-adaptor.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = "avida-adaptor.js"; path = "resources/avida-adaptor.js"; sourceTree = "<group>"; };
 		B4181DE01B94EB2C0002B429 /* avidaui-prepend.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = "avidaui-prepend.js"; path = "resources/avidaui-prepend.js"; sourceTree = "<group>"; };
 		B4181DE11B94EB2C0002B429 /* test.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = test.html; path = resources/test.html; sourceTree = "<group>"; };
@@ -17,9 +19,10 @@
 		B4181DE61B94EB420002B429 /* instset-heads.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "instset-heads.cfg"; path = "config/instset-heads.cfg"; sourceTree = "<group>"; };
 		B4181DE71B94EB4C0002B429 /* viewer-webed.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "viewer-webed.cc"; path = "src/viewer-webed.cc"; sourceTree = "<group>"; };
 		B4181DE81B94EB4C0002B429 /* Messaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Messaging.h; path = src/Messaging.h; sourceTree = "<group>"; };
-		B4181DE91B94EB4C0002B429 /* Driver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Driver.h; path = src/Driver.h; sourceTree = "<group>"; };
-		B478A2FD1B98A00E0023242C /* Callbacks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Callbacks.h; path = src/Callbacks.h; sourceTree = "<group>"; };
+		B4181DE91B94EB4C0002B429 /* Driver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Driver.h; path = src/Driver.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		B478A2FD1B98A00E0023242C /* Runtime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Runtime.h; path = src/Runtime.h; sourceTree = "<group>"; };
 		B478A2FE1BA0BB5A0023242C /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		B4C475821BB321AD000E054C /* WebDriverActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebDriverActions.h; path = src/WebDriverActions.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -37,9 +40,12 @@
 			isa = PBXGroup;
 			children = (
 				B4181DE71B94EB4C0002B429 /* viewer-webed.cc */,
-				B478A2FD1B98A00E0023242C /* Callbacks.h */,
+				B478A2FD1B98A00E0023242C /* Runtime.h */,
 				B4181DE81B94EB4C0002B429 /* Messaging.h */,
 				B4181DE91B94EB4C0002B429 /* Driver.h */,
+				B4C475821BB321AD000E054C /* WebDriverActions.h */,
+				B40EAE7E1BBC81AF005BFA85 /* WebDebug.h */,
+				B40C9CD11BE7BD6D00F22C20 /* DriverConfig.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";

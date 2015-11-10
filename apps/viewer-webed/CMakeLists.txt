@@ -146,11 +146,11 @@ SET(RESOURCES_DIR ../../../apps/viewer-webed/resources)
 # (") when fed to the shell.  Also, the list must include
 # a space between entries.
 SET(EMS_EXPORT_FUNCS
-   "\"['_main', '_RunDriver' ]\""
+   "\"['_main', '_RuntimeLoop' ]\""
    )
 
 SET(EMS_EMTERPRETIFY_WHITELIST
-   "\"['_main', '_RunDriver']\""
+   "\"['_main', '_RuntimeLoop']\""
    )
 
 # Flags specific to the web target
