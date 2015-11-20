@@ -45,6 +45,7 @@ private:
   double germline_add;
   double germline_mult;
   Apto::Array<cString> insts_triggered;
+  bool is_random_resource;
   bool lethal;
   bool sterilize;
   bool active_reaction;
@@ -72,6 +73,7 @@ public:
   void Consume(int id, double num, bool is_env_resource);
   void Produce(int id, double num, bool is_env_resource);
   void Detect(int id, double num);
+  void SetRandomResource(bool flag);
   void Lethal(bool flag);
   void Sterilize(bool flag);
   void MarkTask(int id, const double quality=1, const double value=0);
@@ -92,6 +94,7 @@ public:
   double GetDetected(int id);
   double GetInternalConsumed(int id);
   double GetInternalProduced(int id);
+  bool GetIsRandomResource();
   bool GetLethal();
   bool GetSterilize();
   bool ReactionTriggered(int id);

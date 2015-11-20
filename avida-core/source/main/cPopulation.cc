@@ -779,56 +779,59 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     }
     
     // If full vertical transmission of symbionts is on, we need to infect the offspring.
-    if (m_world->GetConfig().FULL_VERTICAL_TRANS.Get() == 1)
+    if (m_world->GetConfig().FULL_VERTICAL_TRANS.Get() != 0.0)
     {
-      Apto::Array<Systematics::UnitPtr> parasites_to_inject = parent_organism->GetParasites();
-      cOrganism* target_organism = offspring_array[i];
-      // target_organism-> target_organism->GetHardware().GetCurThread()
-      for (int p=0; p<parasites_to_inject.GetSize(); ++p)
+      if(ctx.GetRandom().P(m_world->GetConfig().FULL_VERTICAL_TRANS.Get()))
       {
+        Apto::Array<Systematics::UnitPtr> parasites_to_inject = parent_organism->GetParasites();
+        cOrganism* target_organism = offspring_array[i];
+        // target_organism-> target_organism->GetHardware().GetCurThread()
+        for (int p=0; p<parasites_to_inject.GetSize(); ++p)
+        {
         
           Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite_parent;
           parasite_parent.DynamicCastFrom(parasites_to_inject[p]);
       
         
-        Genome mg(parasite_parent->UnitGenome());
+          Genome mg(parasite_parent->UnitGenome());
         
         
-        cString label;
-        label.Set("Test");
-        Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite(new cParasite(m_world, mg, 0, Systematics::Source(Systematics::HORIZONTAL, (const char*)label)));
+          cString label;
+          label.Set("Test");
+          Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite(new cParasite(m_world, mg, 0, Systematics::Source(Systematics::HORIZONTAL, (const char*)label)));
   
-        //Need to set the virulence properly
-        if (m_world->GetConfig().VIRULENCE_SOURCE.Get() == 2){
-          //Virulence controlled by host
-          parasite->SetVirulence(target_organism->GetParaDonate());
-        } else if (m_world->GetConfig().VIRULENCE_SOURCE.Get() == 1)
-        {
-          //Virulence inherited from parent parasite
-          double oldVir = parasite_parent->GetVirulence();
-    
-          //default to not mutating
-          double newVir = oldVir;
-    
-          //but if we do mutate...
-          if (m_world->GetRandom().GetDouble() < m_world->GetConfig().VIRULENCE_MUT_RATE.Get())
+          //Need to set the virulence properly
+          if (m_world->GetConfig().VIRULENCE_SOURCE.Get() == 2){
+            //Virulence controlled by host
+            parasite->SetVirulence(target_organism->GetParaDonate());
+          } else if (m_world->GetConfig().VIRULENCE_SOURCE.Get() == 1)
           {
-            //get this in a temp variable so we don't have to make the next line huge
-            double vir_sd = m_world->GetConfig().VIRULENCE_SD.Get();
+            //Virulence inherited from parent parasite
+            double oldVir = parasite_parent->GetVirulence();
+    
+            //default to not mutating
+            double newVir = oldVir;
+    
+            //but if we do mutate...
+            if (m_world->GetRandom().GetDouble() < m_world->GetConfig().VIRULENCE_MUT_RATE.Get())
+            {
+              //get this in a temp variable so we don't have to make the next line huge
+              double vir_sd = m_world->GetConfig().VIRULENCE_SD.Get();
       
-            //sd^2 = varience
-            newVir = m_world->GetRandom().GetRandNormal(oldVir, vir_sd * vir_sd);
+              //sd^2 = varience
+              newVir = m_world->GetRandom().GetRandNormal(oldVir, vir_sd * vir_sd);
       
+            }
+            parasite->SetVirulence(Apto::Max(Apto::Min(newVir, 1.0), 0.0));
+          } else
+          {
+            //get default virulence
+            parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
           }
-          parasite->SetVirulence(Apto::Max(Apto::Min(newVir, 1.0), 0.0));
-        } else
-        {
-          //get default virulence
-          parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
-        }
         
-        if (target_organism->ParasiteInfectHost(parasite)) {
-          Systematics::Manager::Of(m_world->GetNewWorld())->ClassifyNewUnit(parasite);
+          if (target_organism->ParasiteInfectHost(parasite)) {
+            Systematics::Manager::Of(m_world->GetNewWorld())->ClassifyNewUnit(parasite);
+          }
         }
       }
     }

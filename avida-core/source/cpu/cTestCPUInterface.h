@@ -120,6 +120,7 @@ public:
   cResourceCount* GetResourceCount() { return NULL; }
   void TriggerDoUpdates(cAvidaContext&) { }
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
+  void UpdateRandomResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateAVResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateDemeResources(cAvidaContext&, const Apto::Array<double>&) { ; }
   

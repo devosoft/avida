@@ -248,9 +248,10 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   is_germ_cell             = in_phen.is_germ_cell;
   
   // 5. Status Flags...  (updated at each divide)
+  make_random_resource      = in_phen.make_random_resource;
   to_die                  = in_phen.to_die;		 
   to_delete               = in_phen.to_delete;        
-  is_injected             = in_phen.is_injected;      
+  is_injected             = in_phen.is_injected;
   is_clone                = in_phen.is_clone;
   is_donor_cur            = in_phen.is_donor_cur;     
   is_donor_last           = in_phen.is_donor_last;     
@@ -558,6 +559,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   parent_true   = parent_phenotype.copy_true;
   parent_sex    = parent_phenotype.divide_sex;
   parent_cross_num    = parent_phenotype.cross_num;
+  make_random_resource = false;
   to_die = false;
   to_delete = false;
   
@@ -769,6 +771,7 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   parent_true   = true;
   parent_sex    = false;
   parent_cross_num    = 0;
+  make_random_resource = false;
   to_die = false;
   to_delete = false;
   kaboom_executed = false;
@@ -1453,6 +1456,7 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   parent_true   = clone_phenotype.copy_true;
   parent_sex    = clone_phenotype.divide_sex;
   parent_cross_num    = clone_phenotype.cross_num;
+  make_random_resource = false;
   to_die = false;
   to_delete = false;
   is_energy_requestor = false;
@@ -1694,11 +1698,17 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     }
   }
   
+  //Note if the resource should be placed in a random cell instead of this cell
+  if (result.GetIsRandomResource())
+  {
+    make_random_resource = true;
+  }
+  
   //Kill any cells that did lethal reactions
   if (result.GetLethal())
   {
     to_die = true;
-    }
+  }
   
   // Sterilize organisms that have performed a sterilizing task.
   if (result.GetSterilize()) {

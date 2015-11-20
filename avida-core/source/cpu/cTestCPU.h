@@ -78,6 +78,7 @@ private:
   
   // Internal methods for setting up and updating resources
   void InitResources(cAvidaContext& ctx, int res_method = RES_INITIAL, cResourceHistory* res = NULL, int update = 0, int cpu_cycle_offset = 0);
+  void UpdateRandomResources(cAvidaContext& ctx, int cpu_cycles_used);
   void UpdateResources(cAvidaContext& ctx, int cpu_cycles_used);
   inline void SetResourceUpdate(cAvidaContext& ctx, int update, bool exact = true);
   inline void SetResource(cAvidaContext& ctx, int id, double new_level);

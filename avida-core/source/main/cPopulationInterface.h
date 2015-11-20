@@ -128,6 +128,7 @@ public:
   cResourceCount* GetResourceCount();
   void TriggerDoUpdates(cAvidaContext& ctx);
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
+  void UpdateRandomResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void Die(cAvidaContext& ctx); 
   void KillCellID(int target, cAvidaContext& ctx); 

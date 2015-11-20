@@ -213,6 +213,11 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedba
     else if (var_name == "inst") {
       new_process->SetInst(var_value);
     }
+    else if (var_name =="random") {
+      if (!AssertInputBool(var_value, "random", var_type, feedback))
+        return false;
+      new_process->SetRandomResource(var_value.AsInt());
+    }
     else if (var_name == "lethal") {
       if (!AssertInputDouble(var_value, "lethal", var_type, feedback))
         return false;
@@ -1799,6 +1804,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       lethal = prob_lethal;
     }
 
+    result.SetRandomResource(cur_process->GetIsRandomResource());
     result.Lethal(lethal);
     result.Sterilize(cur_process->GetSterilize());
   }

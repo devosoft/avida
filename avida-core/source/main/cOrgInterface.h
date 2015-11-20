@@ -126,6 +126,7 @@ public:
   virtual cResourceCount* GetResourceCount() = 0;
   virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
   virtual void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
+  virtual void UpdateRandomResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
   virtual void UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
   virtual void Die(cAvidaContext& ctx) = 0; 
   virtual void KillCellID(int target, cAvidaContext& ctx) = 0; 

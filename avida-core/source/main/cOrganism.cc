@@ -505,7 +505,13 @@ void cOrganism::doOutput(cAvidaContext& ctx,
       GetPhenotype().SetToDie();
     }
   }
-  m_interface->UpdateResources(ctx, global_res_change);
+  if (m_phenotype.GetMakeRandomResource()){
+    //call the random resource update function
+    m_interface->UpdateRandomResources(ctx, global_res_change);
+    
+  }else{
+    m_interface->UpdateResources(ctx, global_res_change);
+  }
 
   //update deme resources
   m_interface->UpdateDemeResources(ctx, deme_res_change);

@@ -230,6 +230,7 @@ private:
   // 5. Status Flags...  (updated at each divide)
   bool to_die;		 // Has organism has triggered something fatal?
   bool to_delete;        // Should this organism be deleted when finished?
+  bool make_random_resource; // Is the resource the organism just produced to be placed randomly?
   bool is_injected;      // Was this organism injected into the population?
   bool is_clone;      // Was this organism created as a clone in the population?
   bool is_donor_cur;     // Has this organism attempted to donate merit?
@@ -415,6 +416,7 @@ public:
   int GetLastMatingDisplayA() const { return last_mating_display_a; } //@CHC
   int GetLastMatingDisplayB() const { return last_mating_display_b; } //@CHC
 
+  bool GetMakeRandomResource() const {assert(initialized == true); return make_random_resource;}
   bool GetToDie() const { assert(initialized == true); return to_die; }
   bool GetToDelete() const { assert(initialized == true); return to_delete; }
   int GetCurNumErrors() const { assert(initialized == true); return cur_num_errors; }

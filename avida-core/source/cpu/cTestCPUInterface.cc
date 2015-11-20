@@ -109,6 +109,11 @@ void cTestCPUInterface::UpdateResources(cAvidaContext& ctx, const Apto::Array<do
    m_testcpu->ModifyResources(ctx, res_change);
 }
 
+void cTestCPUInterface::UpdateRandomResources(cAvidaContext& ctx, const Apto::Array<double>& res_change)
+{
+   m_testcpu->ModifyResources(ctx, res_change);
+}
+
 void cTestCPUInterface::Kaboom(int distance, cAvidaContext& ctx)
 {
   (void) distance;
