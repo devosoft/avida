@@ -485,6 +485,7 @@ private:
   bool Inst_SmartExplode(cAvidaContext& ctx);
   bool Inst_SenseAI(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
+  bool Inst_Prob_Die(cAvidaContext& ctx);
   bool Inst_Poison(cAvidaContext& ctx);
   bool Inst_Suicide(cAvidaContext& ctx);
   bool Inst_RelinquishEnergyToFutureDeme(cAvidaContext& ctx);

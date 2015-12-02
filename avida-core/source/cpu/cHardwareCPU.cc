@@ -499,6 +499,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense-autoinducer", &cHardwareCPU::Inst_SenseAI, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("smart-explode", &cHardwareCPU::Inst_SmartExplode, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("prob-die",	&cHardwareCPU::Inst_Prob_Die, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("poison", &cHardwareCPU::Inst_Poison),
     tInstLibEntry<tMethod>("suicide", &cHardwareCPU::Inst_Suicide, INST_CLASS_OTHER, nInstFlag::STALL),		
     tInstLibEntry<tMethod>("relinquishEnergyToFutureDeme", &cHardwareCPU::Inst_RelinquishEnergyToFutureDeme, INST_CLASS_OTHER, nInstFlag::STALL),
@@ -4001,6 +4002,20 @@ bool cHardwareCPU::Inst_Sterilize(cAvidaContext&)
 bool cHardwareCPU::Inst_Die(cAvidaContext& ctx)
 {
   m_organism->Die(ctx);
+  return true;
+}
+
+bool cHardwareCPU::Inst_Prob_Die(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_AX);
+  double percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+  if (percent_prob==-1.0){
+    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+  }
+  if (ctx.GetRandom().P(percent_prob)) {
+    m_organism->Die(ctx);
+    return true;
+    }
   return true;
 }
 
