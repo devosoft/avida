@@ -4031,12 +4031,13 @@ double cTaskLib::Task_ConsumePublicGood(cTaskContext& ctx) const
   int world_y = m_world->GetConfig().WORLD_Y.Get();
   int cell_x = cellID % world_x;
   int cell_y = (cellID - cell_x)/world_x;
-  int x;
-  int y;
+
 
   for (int i = cell_x - radius; i <= cell_x + radius; i++) {
     for (int j = cell_y - radius; j <= cell_y + radius; j++) {
-      if (i==x && j ==y) continue;
+      int x;
+      int y;
+      if (i==cell_x && j ==cell_y) continue;
       //TODO: make it modulus instead of subtract so that the radius can be bigger than the size of the world
       if (i<0) x = world_x + i;
       else if (i>= world_x) x = i-world_x;

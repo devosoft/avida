@@ -3732,13 +3732,13 @@ bool cHardwareCPU::Inst_SenseAI(cAvidaContext& ctx)
   int world_y = m_world->GetConfig().WORLD_Y.Get();
   int cell_x = cellID % world_x;
   int cell_y = (cellID - cell_x)/world_x;
-  int x;
-  int y;
+
 
   for (int i = cell_x - radius; i <= cell_x + radius; i++) {
     for (int j = cell_y - radius; j <= cell_y + radius; j++) {
-      
-      if (i==x && j ==y) continue;
+      int y;
+      int x;
+      if (i==cell_x && j ==cell_y) continue;
       
       if (i<0) x = world_x + i;
       else if (i>= world_x) x = i-world_x;
