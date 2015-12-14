@@ -10,6 +10,7 @@
 #define viewer_webed_Callbacks_h
 
 #include "Driver.h"
+#include <fstream>
 #include <cstdlib>
 
 
@@ -36,7 +37,39 @@
 namespace Avida {
   namespace WebViewer {
   
+    void SyncFS()
+    {
+      EM_ASM(
+        FS.syncfs(false, function(err) {
+          if (err) {
+            console.log("Unable to sync FS");
+          }
+          else {
+            console.log("Sync'd FS");
+          }
+        }
+      ));
+    }
   
+    void WriteTemp()
+    {
+      ofstream fot("/cwd/tmp");
+      fot << "The quick brown fox jumped over the lazy dog" << endl;
+      SyncFS();
+      fot.close();
+    }
+    /*
+      Setup the IDBFS (IndexedDB File System).
+      This is meant as a temporary measure until we can get
+      a full-browser pouchDB implementation working.
+    */
+    void SetupIDBFS()
+    {
+      EM_ASM(
+        FS.mkdir('/cwd');
+        FS.mount(IDBFS, {}, '/cwd');
+      );
+    }
         
     /*
       Periodically, the RuntimeLoop will check for messages sent from
@@ -190,7 +223,14 @@ namespace Avida {
         rewards.  We will let the driver, though, decide when it
         wants to be reincarnated with completely new settings and events.
       */
+      
+      D_(D_FLOW | D_STATUS, "Creating file system");
+      SetupIDBFS();
+      WriteTemp();
+      
       NotifyDriverResetting();
+      
+      
       Driver* driver = CreateDefaultDriver(argc, argv);
       
       D_(D_FLOW | D_STATUS, "Entering runtime loop");

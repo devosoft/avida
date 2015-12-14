@@ -15,3 +15,6 @@
 	path = libs/av_ui
 	url = https://github.com/dblackwood/av_ui
 
+[submodule "libs/pouchdbfs"]
+	path = libs/pouchdbfs
+	url = https://github.com/ruppmatt/pouchdbfs
