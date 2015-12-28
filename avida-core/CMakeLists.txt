@@ -398,15 +398,9 @@ ENDIF(NOT TARGET tcmalloc-1.4)
 
 # Handle the TCMalloc library
 # ------------------------------------------------------------------------------
-IF(UNIX)
-  IF (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
-    SET(AVD_ENABLE_TCMALLOC FALSE)
-  ELSE (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
-    SET(AVD_ENABLE_TCMALLOC TRUE)
-  ENDIF (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
-ELSE(UNIX)
-  SET(AVD_ENABLE_TCMALLOC FALSE)
-ENDIF(UNIX)
+
+SET(AVD_ENABLE_TCMALLOC FALSE)
+
 IF(AVD_ENABLE_TCMALLOC)
   # Locate TCMalloc
   IF(NOT TARGET tcmalloc-1.4)
