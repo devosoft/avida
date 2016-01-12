@@ -783,18 +783,17 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     {
       if(ctx.GetRandom().P(m_world->GetConfig().FULL_VERTICAL_TRANS.Get()))
       {
+        
         Apto::Array<Systematics::UnitPtr> parasites_to_inject = parent_organism->GetParasites();
         cOrganism* target_organism = offspring_array[i];
         // target_organism-> target_organism->GetHardware().GetCurThread()
         for (int p=0; p<parasites_to_inject.GetSize(); ++p)
         {
-        
+          //cout << "successful vert trans!" << endl;
           Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite_parent;
           parasite_parent.DynamicCastFrom(parasites_to_inject[p]);
-      
         
           Genome mg(parasite_parent->UnitGenome());
-        
         
           cString label;
           label.Set("Test");
@@ -833,7 +832,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
             Systematics::Manager::Of(m_world->GetNewWorld())->ClassifyNewUnit(parasite);
           }
         }
-      }
+      } //else cout << "vert trans failed!" << endl;
     }
     
     // If spatial groups are used, put the offspring in the

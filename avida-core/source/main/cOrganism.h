@@ -212,7 +212,7 @@ public:
   inline sOrgDisplay* GetOrgDisplayData() { return m_org_display; }
   inline sOrgDisplay* GetPotentialDisplayData() { return m_queued_display_data; }
   void SetSimpDisplay(int display_part, int value);
-  void SetLyseDisplay() {m_lyse_display = !m_lyse_display;}
+  void SetLyseDisplay() {m_lyse_display = true;}
   bool GetLyseDisplay() {return m_lyse_display;}
   
   // --------  cOrgInterface Methods  --------

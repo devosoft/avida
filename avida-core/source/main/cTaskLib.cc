@@ -4056,7 +4056,10 @@ double cTaskLib::Task_ConsumePublicGood(cTaskContext& ctx) const
       cOrganism* org_temp = neighbor_cell.GetOrganism();
       
       if (org_temp != NULL) {
-        if (org_temp->GetPhenotype().GetKaboomExecuted()) good_counter ++;
+        if (org_temp->GetPhenotype().GetKaboomExecuted()){
+          good_counter ++;
+          org_temp->GetPhenotype().ClearKaboomExecuted();
+        }
       }
   
     }

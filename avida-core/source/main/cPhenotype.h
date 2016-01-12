@@ -628,6 +628,7 @@ public:
   void SetKaboomExecuted(bool value) {kaboom_executed = value;} //@AEJ
   bool GetKaboomExecuted2() {return kaboom_executed2;} //@AEJ
   void SetKaboomExecuted2(bool value) {kaboom_executed2 = value;} //@AEJ
+  void ClearKaboomExecuted() {kaboom_executed = false;} //@AEJ
 
 
   void SetCurRBinsAvail(const Apto::Array<double>& in_avail) { cur_rbins_avail = in_avail; }
