@@ -12,12 +12,14 @@
 #include "avida/data/Package.h"
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #include <emscripten.h>
 #include "Messaging.h"
 #include "json.hpp"
 #include "WebDebug.h"
 #include "DriverConfig.h"
+#include "Types.h"
 
 
 using namespace Avida;
@@ -39,7 +41,11 @@ namespace Avida{
     protected:
       bool m_paused;
       bool m_finished;
-      bool m_resetting;
+      bool m_error;
+      bool m_reset;   
+      
+      std::string m_reset_path;
+      
       cUserFeedback m_feedback;
       cWorld* m_world;
       bool m_first_update;
@@ -54,8 +60,7 @@ namespace Avida{
       
       
     public:
-      Driver(cWorld* world, cUserFeedback feedback)
-      { Driver::Setup(world, feedback); }
+      Driver(cWorld* world, cUserFeedback& feedback) { Driver::Setup(world, feedback); }
       ~Driver() {GlobalObjectManager::Unregister(this);}
       Driver() = delete;
       Driver(const Driver&) = delete;
@@ -63,7 +68,8 @@ namespace Avida{
       bool Ready() const {return (!m_finished && m_world!=nullptr && m_ctx!=nullptr);};
       bool IsFinished() const { return m_finished; }
       bool IsPaused() const { return m_paused; }
-      bool DoReset() const {return m_resetting;}
+      bool DoReset() const {return m_reset;}
+      void DoReset(const std::string& path) {m_reset = true; m_reset_path = path);
       Avida::Feedback& Feedback()  {return m_feedback;}
       cWorld* GetWorld() { return m_world; }
       DriverConfig* GetNextConfig() { return nullptr; }
@@ -118,24 +124,32 @@ namespace Avida{
     }
     
     
-    void Driver::Setup(cWorld* a_world, cUserFeedback feedback)
+    void Driver::Setup(cWorld* a_world, cUserFeedback& feedback)
     {
+      m_feedback = feedback;
+      m_paused = false;
+      m_finished = false;
+      m_reset = false;
+      m_world = nullptr;
+      m_ctx = nullptr;
+      m_error = false;
+      
       D_(D_FLOW, "Setting up driver.");
       GlobalObjectManager::Register(this);
       if (!a_world){
+        m_error = true;
         D_(D_FLOW, "Unable tosetup driver; world missing");
         m_feedback.Error("Driver is unable to find the world.");
       } else {
         // Setup our members 
         m_paused = true;
-        m_finished = false;
-        m_resetting = false;
         m_world = a_world;
         m_ctx = new cAvidaContext(this, m_world->GetRandom());
         m_world->SetDriver(this);
         active_cell_id = -1;
         D_(D_FLOW, "Driver setup successful.");
-      }     
+      }
+      ProcessFeedback();
     }
     
     
@@ -302,16 +316,14 @@ namespace Avida{
            line_in << ((msg["end"].is_string()) ? DeQuote(msg["end"]) : to_string((double)(msg["end"])));
       }       
       line_in << " " << DeQuote(msg["name"]);
-      if (msg.find("args") != msg.end()){
-        if (msg["args"].is_array()){
-          for (auto arg : msg["args"]){ // copy each array element
-            if (arg.is_string())
-              line_in << " " << DeQuote(arg);
-            else
-              line_in << " " << arg;
-          }
-        } else {
-          line_in << " " << msg["args"];
+      if (contains(msg,"args")){  //Arguments are specified through the args property (ordered, unnamed)
+        for (auto arg : msg["args"]){ 
+          line_in << " " << (msg["args"]).is_string()) ? DeQuote(msg[args]) : msg["args"]);
+      } else {  // Arguments in json format
+        json jargs = StripProperties(jargs, EVENT_PROPERTIES);  //Remove known properties for events
+        if (!jargs.empty()){  //If there are still properties defined, pass them
+          string str_jargs = string(UNIT_SEP) + string(jargs.dump());  //UNIT_SEP at 0 indicates to WebActions this is a json object
+          line_in << " " << str_jargs;
         }
       }
       D_(D_MSG_IN | D_FLOW, "Done JsonToEventFormat");

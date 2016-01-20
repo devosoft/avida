@@ -12,10 +12,14 @@
 class cActionLibrary;
 
 #include <cmath>
+#include <cstring>
 #include <vector>
 #include <algorithm>
 #include <iterator>
 #include <limits>
+#include <sstream>
+#include <fstream>
+
 
 #include "avida/core/Feedback.h"
 #include "avida/core/Types.h"
@@ -26,6 +30,7 @@ class cActionLibrary;
 #include "avida/private/systematics/Genotype.h"
 #include "avida/private/systematics/Clade.h"
 
+#include "apto/core/FileSystem.h"
 
 #include "cEnvironment.h"
 #include "cOrganism.h"
@@ -35,17 +40,43 @@ class cActionLibrary;
 #include "Driver.h"
 #include "WebDebug.h"
 #include "WebDriverActions.h"
+#include "Types.h"
 
 using namespace Avida::WebViewer;
 
-constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+
+
+
+
+
 
 class cWebAction : public cAction
 {
   protected:
     Avida::Feedback& m_feedback;
+    bool m_json_args;
+    
+    /*
+      Return a json object
+      If the argument string contains a UNIT_SEP as the first
+      character, treat the arguments as a JSON object.  If
+      the arguments are not a json object, return an empty json
+      object.
+    */
+    static json GetJSONArgs()
+    {
+      if (m_json_args)
+        return json::parse(args.c_str()[1]);
+      return json j;
+    }
+    
   public:
-    cWebAction(cWorld* world, const cString& args, Avida::Feedback& fb) : cAction(world,args) , m_feedback(fb) {}
+    cWebAction(cWorld* world, const cString& args, Avida::Feedback& fb) 
+    : cAction(world,args) 
+    , m_feedback(fb) 
+    {
+      m_json_args = (args.GetSize() == 0 || args[0] == UNIT_SEP);
+    }
 };
 
 
@@ -456,12 +487,65 @@ class cWebActionGridData : public cWebAction {
 };
 
 
+class importExpr : public cWebAction
+{
+  private:
+    json m_files;
+    constexpr string m_working_dir = "/working_dir";
+    
+  public:
+    cWebActionGridData(cWorld* world, const cString& args, Avida::Feedback& fb) 
+      : cWebAction(world,args,fb)
+    {
+        if (m_json_args){
+          json jargs = GetJSONArgs();
+          if (contains(jargs,"files")
+            m_files = jargs["files"];
+        }
+    }
+    
+    static const cString GetDescription() { return "Arguments: [expr_name  \"{JSON-FORMATTED FILES}\"";}
+    
+    void Process(cAvidaContext& ctx)
+    {
+      //If the directory exists, recursively delete it
+      Apto::FileSystem::RmDir(m_working_dir, true);
+      
+      //Create the directory
+      Apto::FileSystem::MkDir(m_working_dir);
+      
+      if (m_files.empty() || !m_files.is_array())
+        return;
+        
+      //Add the files
+      for (auto it = m_files.begin(); it != m_files.end(); ++it){
+        const json& j_file = *it;
+        if (contains(j_file,"name")){
+            string path = m_working_dir + j_file["name"];
+            ofstream fot(path.c_str(), std::ofstream::out | std::ofstream::trunc);
+            if (fot.is_open() && fot.good() && contains(j_file,"data") && j_file["data"].is_string()))
+            {
+              fot << j_file[data];
+            }
+            fot.close();
+        }
+      }
+        
+      WebDriver* driver = dynamic_cast<WebDriver*>(&ctx.GetDriver());
+      if (driver == nullptr)
+        return;
+      driver->DoReset(m_working_dir);
+    };
+}
+
+
 void RegisterWebDriverActions(cActionLibrary* action_lib)
 {
     action_lib->Register<cWebActionPopulationStats>("webPopulationStats");
     action_lib->Register<cWebActionOrgTraceBySequence>("webOrgTraceBySequence");
     action_lib->Register<cWebActionOrgDataByCellID>("webOrgDataByCellID");
     action_lib->Register<cWebActionGridData>("webGridData");
+    action_lib->Register<cWebActionImportExpr>("importExpr");
 }
 
 #endif

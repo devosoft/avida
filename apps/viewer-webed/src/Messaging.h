@@ -27,6 +27,9 @@ namespace Avida{
       {"message", "ready"}
     };
     
+    constexpr vector<string> EVENT_PROPERTIES = 
+      {"type", "name", "triggerType", "start", "interval", "end", "singleton"};
+    
     
     
     extern "C"
@@ -117,6 +120,23 @@ namespace Avida{
         if (c != '"' && c != '\'')
           oss << c;
       return oss.str();
+    }
+    
+    
+    json StripProperties(const json& j, const vector<string>& excl_props)
+    {
+      json n;
+      for (auto it = j.begin(); it != j.end(); ++it){
+        if (excl_props.find(j.key() != excl_props.end())
+          continue;
+        n[j.key()] = j.value();
+      }
+      reuturn n;
+    }
+    
+    bool contains(const json& j, const string& p)
+    {
+      return (j.find(p) != j.end());
     }
     
   }  //WebViewer

@@ -37,7 +37,7 @@
 namespace Avida {
   namespace WebViewer {
   
-    void SyncFS()
+    void SyncFS(bool from_remote)
     {
       EM_ASM(
         FS.syncfs(false, function(err) {
@@ -53,16 +53,30 @@ namespace Avida {
   
     void WriteTemp()
     {
-      ofstream fot("/cwd/tmp");
+      ofstream fot("/cwd/tmp.txt");
       fot << "The quick brown fox jumped over the lazy dog" << endl;
-      SyncFS();
+      SyncFS(false);
       fot.close();
     }
+    
+    void ReadTemp()
+    {
+      return;
+      SyncFS(true);
+      string path = "/ws/g4/entryname.txt";
+      ifstream fin(path.c_str());
+      string from_file;
+      fin >> from_file;
+      cerr << "Received: " << from_file << " from " << path << endl;
+    }
+    
+    
     /*
       Setup the IDBFS (IndexedDB File System).
       This is meant as a temporary measure until we can get
       a full-browser pouchDB implementation working.
     */
+    
     void SetupIDBFS()
     {
       EM_ASM(
@@ -70,7 +84,8 @@ namespace Avida {
         FS.mount(IDBFS, {}, '/cwd');
       );
     }
-        
+       
+         
     /*
       Periodically, the RuntimeLoop will check for messages sent from
       different Worker threads.  These messages are sent to the
@@ -87,41 +102,29 @@ namespace Avida {
     }
     
     
-    /*
-      Setup the driver/world with a particular set of configuration options.
-    */
-    Driver* SetupDriver(DriverConfig* cfg, Apto::Map<Apto::String, Apto::String>* defs = nullptr)
-    {
-        //new_world, feedback, and the driver are all deleted when the cWorld object is deleted.
-        World* new_world = new World;
-        cUserFeedback feedback;
-        cWorld* world = cWorld::Initialize(cfg->GetConfig(), cfg->GetWorkingDir(), new_world, &feedback, defs);
-        D_(D_STATUS, "The world is located at " << world);
-        Driver* driver = new Driver(world, feedback);  //The driver and world register each other
-        D_(D_STATUS, "The driver is located at " << &driver);
-        return driver;
-    }
-    
-    
     
     /*
-      Setup the driver using the default packaged settings.
+      Setup the driver from a particular path containing configuration files.
       This will in turn create the world and by agreement set responsbility
       for deleting the driver to the cWorld object. 
     */
-    Driver* CreateDefaultDriver(int argc, char* argv[])
+    Driver* SetupDriver(int argc, char* argv[], const string& path)
     {
       cAvidaConfig* cfg = new cAvidaConfig();
       cUserFeedback* feedback = new cUserFeedback;
       
       Apto::Map<Apto::String, Apto::String> defs;
       Avida::Util::ProcessCmdLineArgs(argc, argv, cfg, defs);
+      World* new_world = new World;
+      cUserFeedback feedback;  //Temporary feedback object; messages from init will be copied into the driver
+      cWorld* world = cWorld::Initialize(cfg->GetConfig(), cfg->GetWorkingDir(), new_world, feedback, defs);
+      D_(D_STATUS, "The world is located at " << world);
       
-      DriverConfig* d_cfg = new DriverConfig(cfg,"/");
-      Driver* driver = SetupDriver(d_cfg, &defs);
-      delete d_cfg;
+      Driver* driver = new Driver(world, feedback);  //The driver and world register each other
       
-      D_(D_STATUS, "Avida is now configured with default settings.");
+      D_(D_STATUS, "The driver is located at " << &driver);
+      
+      D_(D_STATUS, "Avida driver with configuration from " + path);
       return driver;
     }
     
@@ -152,9 +155,9 @@ namespace Avida {
       D_(D_FLOW | D_STATUS, "Resetting driver.");
       WebViewerMsg msg_reset = FeedbackMessage(Feedback::NOTIFICATION);
       msg_reset["description"] = "The Avida driver is resetting";
-      DriverConfig* d_cfg = driver->GetNextConfig();
+      string path = driver->NewDriverPath();
       DeleteDriver(driver);
-      return SetupDriver(d_cfg);
+      return SetupDriver(0, nullptr, path);
     }
   
   
@@ -224,14 +227,15 @@ namespace Avida {
         wants to be reincarnated with completely new settings and events.
       */
       
-      D_(D_FLOW | D_STATUS, "Creating file system");
-      SetupIDBFS();
-      WriteTemp();
+      //D_(D_FLOW | D_STATUS, "Creating file system");
+      //SetupIDBFS();
+      //WriteTemp();
+      //ReadTemp();
       
       NotifyDriverResetting();
       
       
-      Driver* driver = CreateDefaultDriver(argc, argv);
+      Driver* driver = SetupDriver(argc, argv, "/");
       
       D_(D_FLOW | D_STATUS, "Entering runtime loop");
       

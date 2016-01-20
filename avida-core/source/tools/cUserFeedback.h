@@ -61,6 +61,15 @@ private:
 public:
   cUserFeedback() : m_errors(0), m_warnings(0) { ; }
   ~cUserFeedback() { ; }
+  cUserFeedback(const cUserFeedback& f){
+      *this = f;
+  }
+  cUserFeedback& operator=(const cUserFeedback& f){
+    this->m_errors = f.m_errors;
+    this->m_warnings = f.m_warnings;
+    this->m_entries = f.m_entries;
+    return *this;
+  }
   
   // Feedback Methods
   void Error(const char* fmt, ...);
@@ -80,6 +89,10 @@ public:
   
   inline void Append(const cUserFeedback& uf);
 };
+
+
+
+
 
 inline void cUserFeedback::Error(const char* fmt, ...)
 {
