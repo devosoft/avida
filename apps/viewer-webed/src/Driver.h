@@ -39,22 +39,22 @@ namespace Avida{
       
       
     protected:
-      bool m_paused;
-      bool m_finished;
-      bool m_error;
-      bool m_reset;   
+      bool m_paused;    //Driver is paused
+      bool m_finished;  //Driver is finished
+      bool m_error;     //The driver has a critical error
+      bool m_reset;     //The driver wants to reset when possible
       
-      std::string m_reset_path;
+      std::string m_reset_path;  //The path that contains configuration files for the next driver after the reset
       
-      cUserFeedback m_feedback;
-      cWorld* m_world;
-      bool m_first_update;
+      cUserFeedback m_feedback;  //A buffer containing messages that need to be sent to the GUI
+      cWorld* m_world;           //The world
       cAvidaContext* m_ctx;
-      int active_cell_id;
+      int active_cell_id;        //The GUI has the ability to select an active cell; the driver needs this information for some actions
       
-      void ProcessFeedback();
-      void Setup(cWorld*, cUserFeedback);
-      void ProcessAddEvent(const WebViewerMsg& msg, WebViewerMsg& ret_msg);
+      
+      void ProcessFeedback();  //Send messages to the GUI
+      void Setup(cWorld*, cUserFeedback);  
+      void ProcessAddEvent(const WebViewerMsg& msg, WebViewerMsg& ret_msg);  
       bool ValidateEventMessage(const WebViewerMsg& msg);
       string JsonToEventFormat(const WebViewerMsg& msg);
       
@@ -65,11 +65,17 @@ namespace Avida{
       Driver() = delete;
       Driver(const Driver&) = delete;
       
-      bool Ready() const {return (!m_finished && m_world!=nullptr && m_ctx!=nullptr);};
+      bool IsError() const return { m_error; }
       bool IsFinished() const { return m_finished; }
       bool IsPaused() const { return m_paused; }
-      bool DoReset() const {return m_reset;}
+      
+      bool ShouldReset() const {return m_reset;}
       void DoReset(const std::string& path) {m_reset = true; m_reset_path = path);
+      
+      bool IsActive() const {return m_world!=nullptr && m_ctx!=nullptr && !m_finished && !m_reset);
+      bool ShouldPause() const { return m_is_paused && IsActive());
+      bool ShouldRun() const {return !m_is_paused && IsActive());
+      
       Avida::Feedback& Feedback()  {return m_feedback;}
       cWorld* GetWorld() { return m_world; }
       DriverConfig* GetNextConfig() { return nullptr; }
@@ -83,6 +89,14 @@ namespace Avida{
     };
     
     
+    
+    /*
+      The Feedback object contains messages that we want to send
+      to the GUI.
+      
+      This method is where the driver files through the feedback
+      object and creates JSON messages to send to the GUI.
+    */
     void Driver::ProcessFeedback()
     {
       D_(D_FLOW,"Processing Feedback");
@@ -124,6 +138,13 @@ namespace Avida{
     }
     
     
+    /*
+      Setup our driver.
+      
+      If there was a problem, set m_error to true.
+      
+      Otherwise, get ready to run and place us in a paused state.
+    */
     void Driver::Setup(cWorld* a_world, cUserFeedback& feedback)
     {
       m_feedback = feedback;
@@ -153,6 +174,9 @@ namespace Avida{
     }
     
     
+    /*
+      Handle a message that was sent to the driver.
+    */
     void Driver::ProcessMessage(const WebViewerMsg& msg)
     {
       D_(D_FLOW | D_MSG_IN, "ProcessMessage");
@@ -181,6 +205,9 @@ namespace Avida{
     }
     
     
+    /*
+      As the name sounds, dump our event list.
+    */
     string Driver::DumpEventList()
     {
       cEventList* list = m_world->GetEventsList();
@@ -192,6 +219,19 @@ namespace Avida{
     }
     
     
+    /*
+      Try to add an event from a message requesting that we do so.
+      
+      We will first add in additional properties of the message
+      with particular defaults.
+      
+      Next, we will try to add the message to the event queue by
+      seralizing the message into something the event system can
+      consume.
+      
+      After that, we will trigger any immediate events and move
+      on.
+    */
     void Driver::ProcessAddEvent(const WebViewerMsg& rcv_msg, WebViewerMsg& ret_msg)
     {
     
@@ -251,6 +291,11 @@ namespace Avida{
     
     
     
+    /*
+      Events need to have a particular format in order for them to be
+      processed correctly.  This method attempts to validate an
+      event message.
+    */
     bool Driver::ValidateEventMessage(const json& msg)
     {
       D_(D_FLOW | D_MSG_IN, "Validating event message.");
@@ -301,11 +346,24 @@ namespace Avida{
     }
     
     
-    
+    /*
+      Avida's event system expects that we'll be sending it a single string to configure the
+      timing and action that is to be triggered.  Therefore, we must convert our JSON object
+      into a string that it can consume.
+      
+      A special note: WebActions can receive not just an ordered, space delimited string of
+      arguments.  They can also receive a serialized JSON object.  If args is undefined
+      and there are additional properties of the message are considered parts of the JSON
+      object to send the action.  WebViewer actions determine if the string object pased as an
+      argument is a serialized JSON object if the first character of the argument string is a
+      UNIT_SEP character.
+    */
     string Driver::JsonToEventFormat(const WebViewerMsg& msg)
     {
       D_(D_MSG_IN | D_FLOW, "JsonToEventFormat");
       ostringstream line_in;
+      
+      //Convert action triggering information
       line_in << DeQuote(msg["triggerType"]) << " ";
       if (msg["triggerType"] != "i" && msg["triggerType"] != "immediate")
       {
@@ -314,8 +372,12 @@ namespace Avida{
         line_in << ((msg["interval"].is_string()) ? DeQuote(msg["interval"]) : to_string((double)(msg["interval"])));
         if (msg["end"] != "")
            line_in << ((msg["end"].is_string()) ? DeQuote(msg["end"]) : to_string((double)(msg["end"])));
-      }       
+      }
+      
+      //Convert action name
       line_in << " " << DeQuote(msg["name"]);
+      
+      //Convert action arguments
       if (contains(msg,"args")){  //Arguments are specified through the args property (ordered, unnamed)
         for (auto arg : msg["args"]){ 
           line_in << " " << (msg["args"]).is_string()) ? DeQuote(msg[args]) : msg["args"]);
@@ -326,16 +388,24 @@ namespace Avida{
           line_in << " " << str_jargs;
         }
       }
+      
       D_(D_MSG_IN | D_FLOW, "Done JsonToEventFormat");
       return line_in.str();  //Return our input from the stream
     }
     
     
+    
+    /*
+      StepUpdate executes a single update of the Avida Experiment.
+    */
     bool Driver::StepUpdate()
     {
       
+      //If we're paused or we're done, return that we're no longer running
       if (m_paused || m_finished)
         return false;
+        
+      //Otherwise, let's get ready to do an update
       cPopulation& population = m_world->GetPopulation();
       cStats& stats = m_world->GetStats();
       

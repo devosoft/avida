@@ -246,14 +246,12 @@ namespace Avida {
         should *never* be nullptr unless something went wrong with
         creating the driver.
       */
-      while(driver && !driver->IsFinished()){
+      while(driver && driver->IsActive()){
         
         //Begin with the driver in a paused state.
         //Messages can still be received periodically.
         bool first_pass = true;
-        while(driver && 
-              driver->IsPaused() && 
-              !driver->DoReset() ){
+        while(driver && driver->ShouldPause()){
           if (first_pass){
             NotifyDriverPaused();
             first_pass = false;
@@ -268,10 +266,7 @@ namespace Avida {
         //Note that a reset will also shove us into a paused
         //state.
         first_pass = true;
-        while( driver && 
-               !( driver->IsFinished() && 
-                  driver->IsPaused() &&
-                  driver->DoReset()) ) {
+        while( driver && driver->ShouldRun() ) {
           if (first_pass){
             NotifyDriverRunning();
             first_pass = false;
@@ -284,7 +279,7 @@ namespace Avida {
         //Reset requests require us to destroy the current world and driver
         //and initialize a new one before we proceed.  This will clear
         //all persistant data like events and stats.
-        if (driver && driver->DoReset()){
+        if (driver && driver->ShouldReset()){
           NotifyDriverResetting();
           driver = DriverReset(driver);
         }
