@@ -3738,7 +3738,7 @@ bool cHardwareCPU::Inst_SenseAI(cAvidaContext& ctx)
     for (int j = cell_y - radius; j <= cell_y + radius; j++) {
       int y;
       int x;
-      if (i==cell_x && j ==cell_y) continue;
+      //if (i==cell_x && j ==cell_y) continue;
       
       if (i<0) x = world_x + i;
       else if (i>= world_x) x = i-world_x;
@@ -3763,7 +3763,7 @@ bool cHardwareCPU::Inst_SenseAI(cAvidaContext& ctx)
     }
   }
   
-  if (ai_counter >=4)
+  if (ai_counter >=3)
   {
     //The organism is now 'producing' a public good that surrounding organism can gain from
     m_organism->GetPhenotype().SetKaboomExecuted(true);

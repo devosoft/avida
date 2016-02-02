@@ -40,6 +40,7 @@
 #include <cmath>
 #include <climits>
 #include <iomanip>
+#include <set>
 
 // Various workarounds for Visual Studio shortcomings
 #if APTO_PLATFORM(WINDOWS)
@@ -333,6 +334,8 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   if (name == "exploded") NewTask(name, "Organism exploded", &cTaskLib::Task_Exploded);
   if (name == "exploded2") NewTask(name, "Organism exploded", &cTaskLib::Task_Exploded2);
   if (name == "consume-public-good") NewTask(name, "Public good consumed", &cTaskLib::Task_ConsumePublicGood);
+  if (name == "ai-display-cost") NewTask(name, "Autoinducer cost paid", &cTaskLib::Task_AIDisplayCost);
+  if (name == "produce-public-good") NewTask(name, "Public good produced", &cTaskLib::Task_ProducePublicGood);
 
   // String matching
   if (name == "all-ones") Load_AllOnes(name, info, envreqs, feedback);
@@ -4018,6 +4021,22 @@ double cTaskLib::Task_Exploded2(cTaskContext& ctx) const
   return reward;
 }
 
+/*Charges organism for setting the autoinducer flag.*/
+double cTaskLib::Task_AIDisplayCost(cTaskContext& ctx) const
+{
+  cOrganism* org = ctx.GetOrganism();
+  return org->GetLyseDisplay();
+  
+}
+
+/*Charges organism for producing public good.*/
+double cTaskLib::Task_ProducePublicGood(cTaskContext& ctx) const
+{
+  cOrganism* org = ctx.GetOrganism();
+  return org->GetPhenotype().GetKaboomExecuted();
+  
+}
+
 /*Reward organisms for having neighbors around them that are producing a public good. Currently assumes toroidal world.*/
 double cTaskLib::Task_ConsumePublicGood(cTaskContext& ctx) const
 {
@@ -4032,12 +4051,12 @@ double cTaskLib::Task_ConsumePublicGood(cTaskContext& ctx) const
   int cell_x = cellID % world_x;
   int cell_y = (cellID - cell_x)/world_x;
 
-
+  std::set<cOrganism*> prod_set;
   for (int i = cell_x - radius; i <= cell_x + radius; i++) {
     for (int j = cell_y - radius; j <= cell_y + radius; j++) {
       int x;
       int y;
-      if (i==cell_x && j ==cell_y) continue;
+      //if (i==cell_x && j ==cell_y) continue;
       //TODO: make it modulus instead of subtract so that the radius can be bigger than the size of the world
       if (i<0) x = world_x + i;
       else if (i>= world_x) x = i-world_x;
@@ -4058,13 +4077,21 @@ double cTaskLib::Task_ConsumePublicGood(cTaskContext& ctx) const
       if (org_temp != NULL) {
         if (org_temp->GetPhenotype().GetKaboomExecuted()){
           good_counter ++;
-          org_temp->GetPhenotype().ClearKaboomExecuted();
+          prod_set.insert(org_temp);
         }
       }
   
     }
   }
-  if (good_counter >= 4) return true;
+  if (good_counter >= 3){
+    //Select a random organism from the producing set to actually get resource from
+    double r = std::rand() % prod_set.size();
+    set<cOrganism*>::const_iterator it(prod_set.begin());
+    std::advance(it, r);
+    cOrganism* org_choice = *it;
+    org_choice->GetPhenotype().ClearKaboomExecuted();
+    return true;
+  }
   else return false;
 
 }
