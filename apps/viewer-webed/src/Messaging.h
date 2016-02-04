@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <string>
 #include <emscripten.h>
+#include <vector>
 #include "WebDebug.h"
 
 using json = nlohmann::json;
@@ -27,15 +28,15 @@ namespace Avida{
       {"message", "ready"}
     };
     
-    constexpr vector<string> EVENT_PROPERTIES = 
+    const vector<string> EVENT_PROPERTIES = 
       {"type", "name", "triggerType", "start", "interval", "end", "singleton"};
     
     
     
     extern "C"
-    EMStringPtr GetMessages()
+    EMStringPtr GetMessage()
     {
-      return EM_ASM_INT_V(return doGetMessages());
+      return EM_ASM_INT_V(return doGetMessage());
     }
     
     
@@ -127,11 +128,16 @@ namespace Avida{
     {
       json n;
       for (auto it = j.begin(); it != j.end(); ++it){
-        if (excl_props.find(j.key() != excl_props.end())
+        auto e_it = excl_props.begin();
+        auto e_end = excl_props.end();
+        while(e_it != e_end && *e_it != it.key()){  //For some reason std::find is having problems
+          ++e_it;
+        }
+        if (e_it != e_end)  //We did not find the property it.key()
           continue;
-        n[j.key()] = j.value();
+        n[it.key()] = it.value();
       }
-      reuturn n;
+      return n;
     }
     
     bool contains(const json& j, const string& p)

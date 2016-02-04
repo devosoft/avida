@@ -436,6 +436,9 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
+    cerr << "cActionInjectSequence::Process" << endl;
+    cerr << "m_world->GetPopulation().GetSize(): " << m_world->GetPopulation().GetSize() << endl;
+    cerr << "InjectCellID: " << m_cell_start;
     if (m_cell_start < 0 || m_cell_end >= m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       ctx.Driver().Feedback().Warning("InjectSequence has invalid range!");
     } else {

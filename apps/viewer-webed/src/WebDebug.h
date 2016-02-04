@@ -26,11 +26,11 @@
 
 ////What should we be outputting for debug purposes?
 
-/*
+
 #define DEBUG_LEVEL \
   (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
-*/
-#define DEBUG_LEVEL 0
+
+//#define DEBUG_LEVEL 0
 
 
 #define DEBUG_STREAM std::cerr

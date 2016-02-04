@@ -19,12 +19,14 @@ onmessage = function(msg) {
   msg_queue.push(msg.data);
 }
 
-function doGetMessages() {
-  var msgs = JSON.stringify(msg_queue);
-  var buffer = _malloc(msgs.length+1);
-  writeStringToMemory(msgs,buffer);
-  msg_queue = [];
-  return buffer;
+function doGetMessage() {
+  if (msg_queue.length > 0){
+    var msg = JSON.stringify(msg_queue.shift());
+    var buffer = _malloc(msg.length+1);
+    writeStringToMemory(msg,buffer);
+    return buffer;
+  }
+  return 0;
 }
 
 

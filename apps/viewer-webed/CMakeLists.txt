@@ -156,6 +156,8 @@ SET(EMS_EMTERPRETIFY_WHITELIST
 # Flags specific to the web target
 SET(WEB_FLAGS
    "-g\
+   -O2\
+   -Oz\
    -s DISABLE_EXCEPTION_CATCHING=1\
    -s EXPORTED_FUNCTIONS=${EMS_EXPORT_FUNCS}\
    -s DEMANGLE_SUPPORT=1\
@@ -171,7 +173,8 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WEB_FLAGS}")
 SET(CMAKE_EXE_LINKER_FLAGS 
      "${CMAKE_EXE_LINKER_FLAGS} \
      --pre-js ${RESOURCES_DIR}/avidaui-prepend.js \
-     --embed-file ${EMS_AVIDA_EMBED_DIR}@/ -s ALLOW_MEMORY_GROWTH=1")
+     --embed-file ${EMS_AVIDA_EMBED_DIR}@/ \
+     -s ALLOW_MEMORY_GROWTH=1")
 
 
 #Setup the Avida-Web Target

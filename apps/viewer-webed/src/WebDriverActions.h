@@ -63,11 +63,12 @@ class cWebAction : public cAction
       the arguments are not a json object, return an empty json
       object.
     */
-    static json GetJSONArgs()
+    json GetJSONArgs()
     {
       if (m_json_args)
-        return json::parse(args.c_str()[1]);
-      return json j;
+        return json::parse(&m_args.GetData()[1]);
+      json j;
+      return j;
     }
     
   public:
@@ -75,7 +76,7 @@ class cWebAction : public cAction
     : cAction(world,args) 
     , m_feedback(fb) 
     {
-      m_json_args = (args.GetSize() == 0 || args[0] == UNIT_SEP);
+      m_json_args = (args.GetSize() > 0 && args[0] == UNIT_SEP);
     }
 };
 
@@ -309,7 +310,8 @@ public:
       D_(D_ACTIONS, "cWebActionOrgDataByCellID::Process completed.");
       return;
     }
-    cOrganism* org = m_world->GetPopulation().GetCell(m_cell_id).GetOrganism();
+    
+    cOrganism* org = (m_cell_id == NO_SELECTION) ? nullptr : m_world->GetPopulation().GetCell(m_cell_id).GetOrganism();
     
   
     WebViewerMsg data = { {"type","data"}, {"name","webOrgDataByCellID"} };
@@ -487,56 +489,72 @@ class cWebActionGridData : public cWebAction {
 };
 
 
-class importExpr : public cWebAction
+class cWebActionImportExpr : public cWebAction
 {
   private:
     json m_files;
-    constexpr string m_working_dir = "/working_dir";
+    string m_working_dir;
     
   public:
-    cWebActionGridData(cWorld* world, const cString& args, Avida::Feedback& fb) 
+    cWebActionImportExpr(cWorld* world, const cString& args, Avida::Feedback& fb)
       : cWebAction(world,args,fb)
+      , m_working_dir("/working_dir")
     {
+        D_(D_FLOW, "In cWebActionImportExpr::cWebActionImportExpr");
         if (m_json_args){
           json jargs = GetJSONArgs();
-          if (contains(jargs,"files")
+          if (contains(jargs,"files"))
             m_files = jargs["files"];
         }
+        D_(D_FLOW, "Done cWebActionImportExpr::cWebActionImportExpr");
     }
     
     static const cString GetDescription() { return "Arguments: [expr_name  \"{JSON-FORMATTED FILES}\"";}
     
     void Process(cAvidaContext& ctx)
     {
+      D_(D_FLOW, "In cWebImportExpr::Process");
       //If the directory exists, recursively delete it
-      Apto::FileSystem::RmDir(m_working_dir, true);
+      Apto::FileSystem::RmDir(m_working_dir.c_str(), true);
       
       //Create the directory
-      Apto::FileSystem::MkDir(m_working_dir);
+      Apto::FileSystem::MkDir(m_working_dir.c_str());
       
       if (m_files.empty() || !m_files.is_array())
         return;
-        
+      
+      //Copy default files
+      vector<string> copy_files = {"/avida.cfg", "/default-heads.org", "/environment.cfg", "/events.cfg", "/instset.cfg"};
+      for (auto f : copy_files){
+        string dst = m_working_dir + f;
+        Apto::FileSystem::CpFile(f.c_str(), dst.c_str());
+      } 
+            
       //Add the files
       for (auto it = m_files.begin(); it != m_files.end(); ++it){
         const json& j_file = *it;
-        if (contains(j_file,"name")){
-            string path = m_working_dir + j_file["name"];
+        if (contains(j_file,"name") && j_file["name"].is_string()){
+            string path = m_working_dir + "/" + j_file["name"].get<string>();
             ofstream fot(path.c_str(), std::ofstream::out | std::ofstream::trunc);
-            if (fot.is_open() && fot.good() && contains(j_file,"data") && j_file["data"].is_string()))
+            if (fot.is_open() && fot.good() && contains(j_file,"data") && j_file["data"].is_string())
             {
-              fot << j_file[data];
+              D_(D_FLOW, "Writing file " + path);
+              fot << j_file["data"].get<string>();
             }
             fot.close();
         }
       }
+      
+      
         
-      WebDriver* driver = dynamic_cast<WebDriver*>(&ctx.GetDriver());
+      WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
       if (driver == nullptr)
         return;
       driver->DoReset(m_working_dir);
+      D_(D_FLOW, "Done cWebImportExpr::Process");
+
     };
-}
+};
 
 
 void RegisterWebDriverActions(cActionLibrary* action_lib)

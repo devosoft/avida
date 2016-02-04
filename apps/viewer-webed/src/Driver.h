@@ -53,8 +53,8 @@ namespace Avida{
       
       
       void ProcessFeedback();  //Send messages to the GUI
-      void Setup(cWorld*, cUserFeedback);  
-      void ProcessAddEvent(const WebViewerMsg& msg, WebViewerMsg& ret_msg);  
+      void Setup(cWorld*, cUserFeedback&);  
+      bool ProcessAddEvent(const WebViewerMsg& msg, WebViewerMsg& ret_msg);  
       bool ValidateEventMessage(const WebViewerMsg& msg);
       string JsonToEventFormat(const WebViewerMsg& msg);
       
@@ -65,23 +65,26 @@ namespace Avida{
       Driver() = delete;
       Driver(const Driver&) = delete;
       
-      bool IsError() const return { m_error; }
+      
+      bool IsError() const  { return m_error; }
       bool IsFinished() const { return m_finished; }
       bool IsPaused() const { return m_paused; }
       
       bool ShouldReset() const {return m_reset;}
-      void DoReset(const std::string& path) {m_reset = true; m_reset_path = path);
+      string GetNewDriverPath() const {return m_reset_path;}
+      void DoReset(const std::string path) {m_reset = true; m_reset_path = path;}
       
-      bool IsActive() const {return m_world!=nullptr && m_ctx!=nullptr && !m_finished && !m_reset);
-      bool ShouldPause() const { return m_is_paused && IsActive());
-      bool ShouldRun() const {return !m_is_paused && IsActive());
+      bool IsActive() const {return !m_error && !m_finished && !m_reset;}
+      bool ShouldPause() const { return m_paused && IsActive();}
+      bool ShouldRun() const {return !m_paused && IsActive();}
+      void DoRun() {m_paused = false;}
       
       Avida::Feedback& Feedback()  {return m_feedback;}
       cWorld* GetWorld() { return m_world; }
       DriverConfig* GetNextConfig() { return nullptr; }
       
       
-      void ProcessMessage(const WebViewerMsg& msg);
+      bool ProcessMessage(const WebViewerMsg& msg);
       bool StepUpdate();
       void Stop();
       json GetPopulationData();
@@ -154,10 +157,12 @@ namespace Avida{
       m_world = nullptr;
       m_ctx = nullptr;
       m_error = false;
+      m_reset_path = "";
       
       D_(D_FLOW, "Setting up driver.");
       GlobalObjectManager::Register(this);
-      if (!a_world){
+      cerr << "world: " << a_world << endl;
+      if (a_world == nullptr){
         m_error = true;
         D_(D_FLOW, "Unable tosetup driver; world missing");
         m_feedback.Error("Driver is unable to find the world.");
@@ -177,10 +182,11 @@ namespace Avida{
     /*
       Handle a message that was sent to the driver.
     */
-    void Driver::ProcessMessage(const WebViewerMsg& msg)
+    bool Driver::ProcessMessage(const WebViewerMsg& msg)
     {
       D_(D_FLOW | D_MSG_IN, "ProcessMessage");
       D_(D_MSG_IN, "Received Message: " << msg);
+      bool retval = true;
       //This message is missing it's type; can't process.
       if (msg.find("type") == msg.end()) {  
         WebViewerMsg error_msg = FeedbackMessage(Feedback::WARNING);
@@ -191,17 +197,19 @@ namespace Avida{
         ret_msg["success"] = false;
         if (msg["type"] == "addEvent") {  //This message is requesting we add an Event
           D_(D_MSG_IN, "Message is addEvent type");
-          ProcessAddEvent(msg, ret_msg);  //So try to add it.
+          retval = ProcessAddEvent(msg, ret_msg);  //So try to add it.
           D_(D_MSG_IN, "Done processing message");
         }
         else {
           D_(D_MSG_IN, "Message is unknown type");
           ret_msg["message"] = "unknown type";  //We don't know what this message wants
+          
         }
         PostMessage(ret_msg);
         ProcessFeedback();
       }
       D_(D_FLOW | D_MSG_IN, "Done processing message");
+      return true;
     }
     
     
@@ -232,7 +240,7 @@ namespace Avida{
       After that, we will trigger any immediate events and move
       on.
     */
-    void Driver::ProcessAddEvent(const WebViewerMsg& rcv_msg, WebViewerMsg& ret_msg)
+    bool Driver::ProcessAddEvent(const WebViewerMsg& rcv_msg, WebViewerMsg& ret_msg)
     {
     
       D_(D_FLOW, "Attempting to addEvent");
@@ -273,13 +281,6 @@ namespace Avida{
           D_(D_MSG_IN, "Event successfully added");
           // If we're paused, and the event starts "now", 
           // process the event immediately but also queue it for the next update as well
-          if (msg["start"] == json("now") && m_paused == true){
-            WebViewerMsg immediate = msg;
-            immediate["trigger"] = "immediate";
-            event_line = JsonToEventFormat(immediate);
-            success = m_world->GetEventsList()->AddEventFileFormat(event_line.data(), m_feedback);
-            D_(D_MSG_IN, "Event triggers now, and we're paused.  Did it add for immediate execution? " << success);
-          }
           m_world->GetEventsList()->ProcessImmediates(*m_ctx);
           D_(D_MSG_IN, "Immediate events processed.");
         } else {
@@ -287,6 +288,7 @@ namespace Avida{
         }
       } //Done with non runPause message processing
       D_(D_MSG_IN | D_FLOW, "Done processing add event.");
+      return ShouldReset();
     }
     
     
@@ -379,12 +381,16 @@ namespace Avida{
       
       //Convert action arguments
       if (contains(msg,"args")){  //Arguments are specified through the args property (ordered, unnamed)
-        for (auto arg : msg["args"]){ 
-          line_in << " " << (msg["args"]).is_string()) ? DeQuote(msg[args]) : msg["args"]);
+        D_(D_FLOW, "Action contains argument array");
+        for (auto arg : msg["args"])
+          line_in << " " << arg;
       } else {  // Arguments in json format
-        json jargs = StripProperties(jargs, EVENT_PROPERTIES);  //Remove known properties for events
+        D_(D_FLOW | D_MSG_IN, "Action contains possible JSON named properties.");
+        json jargs = StripProperties(msg, EVENT_PROPERTIES);  //Remove known properties for events
+        D_(D_FLOW | D_MSG_IN, "JSON properties are: " + jargs.dump());
         if (!jargs.empty()){  //If there are still properties defined, pass them
-          string str_jargs = string(UNIT_SEP) + string(jargs.dump());  //UNIT_SEP at 0 indicates to WebActions this is a json object
+          D_(D_FLOW | D_MSG_IN, "Adding JSON serial to parameter field");
+          string str_jargs = UNIT_SEP + string(jargs.dump());  //UNIT_SEP at 0 indicates to WebActions this is a json object
           line_in << " " << str_jargs;
         }
       }
@@ -460,6 +466,7 @@ namespace Avida{
       // Exit conditons...
       if (population.GetNumOrganisms() == 0) m_finished = true;
       return true;
+
     } //Driver.h
   } //WebViewer namespace
 } //Avida namespace
