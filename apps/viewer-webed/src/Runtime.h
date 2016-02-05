@@ -36,6 +36,8 @@
 
 namespace Avida {
   namespace WebViewer {
+  
+    const int SLEEP_DELAY = 1;
     
     void SyncFS(bool from_remote)
     {
@@ -298,7 +300,7 @@ namespace Avida {
               NotifyDriverPaused(driver);
               first_pass = false;
             }
-            emscripten_sleep(100);
+            emscripten_sleep(SLEEP_DELAY);
             CheckMessages(driver);
           } //End paused loop
           
@@ -314,7 +316,7 @@ namespace Avida {
               first_pass = false;
             }
             driver->StepUpdate();
-            emscripten_sleep(100);
+            emscripten_sleep(SLEEP_DELAY);
             CheckMessages(driver);
           } // End step update loop
           
