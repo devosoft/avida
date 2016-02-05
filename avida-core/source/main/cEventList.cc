@@ -149,12 +149,10 @@ double cEventList::GetTriggerValue(eTriggerType trigger) const
 
 void cEventList::ProcessImmediates(cAvidaContext& ctx)
 {
-  cerr << "Processing immediates" << endl;
   cEventListEntry* entry = m_head;
   while (entry != NULL){
     cEventListEntry* next_entry = entry->GetNext();
     if (entry->GetTrigger() == IMMEDIATE) {
-      cerr << "About to process " << entry->GetName() << endl;
       entry->GetAction()->Process(ctx);
       Delete(entry);
     }

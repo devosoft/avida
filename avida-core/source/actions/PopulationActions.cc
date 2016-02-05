@@ -420,7 +420,6 @@ public:
   cActionInjectSequence(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
-    cerr << "Inject arguments: " << args << endl;
     cString largs(args);
     m_sequence = largs.PopWord();
     if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
@@ -436,9 +435,6 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cerr << "cActionInjectSequence::Process" << endl;
-    cerr << "m_world->GetPopulation().GetSize(): " << m_world->GetPopulation().GetSize() << endl;
-    cerr << "InjectCellID: " << m_cell_start;
     if (m_cell_start < 0 || m_cell_end >= m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       ctx.Driver().Feedback().Warning("InjectSequence has invalid range!");
     } else {

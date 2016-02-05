@@ -67,7 +67,9 @@ namespace Avida {
       ifstream fin(path.c_str());
       string from_file;
       fin >> from_file;
+      
       cerr << "Received: " << from_file << " from " << path << endl;
+      
     }
     
     
@@ -113,23 +115,14 @@ namespace Avida {
      */
     Driver* SetupDriver(int argc, char* argv[], const string& path)
     {
-      char cpath[256];
-      string cfg_path = path + "/avida.cfg";
-      ifstream fin(cfg_path.c_str());
-      char line[256];
-      while(fin.good() && !fin.eof()){
-        fin.getline(line,256);
-        cerr << "avida.cfg: " << line << endl;
-      }
-      fin.close();
       cAvidaConfig* cfg = new cAvidaConfig();
       
       if (Apto::FileSystem::ChDir(Apto::String(path.c_str()))){
-        cerr << "Switched to directory: " << path << endl;
+        D_(D_STATUS,  "Switched to directory: " << path);
       } else {
-        cerr << "Unable to switch to directory: " << path << endl;
+        D_(D_STATUS, "Unable to switch to directory: " << path);
         if (!Apto::FileSystem::ChDir(Apto::String("/"))){
-          cerr << "FATAL ERROR: Cannot access /" << endl;
+          D_(D_STATUS,  "FATAL ERROR: Cannot access /");
         }
       }
       Apto::Map<Apto::String, Apto::String> defs;
@@ -146,7 +139,7 @@ namespace Avida {
       
       D_(D_STATUS, "The driver is located at " << driver);
       
-      D_(D_STATUS, "Avida driver with configuration from " + path);
+      D_(D_STATUS, "Avida driver with configuration from " << path);
       return driver;
     }
     
@@ -175,13 +168,12 @@ namespace Avida {
     Driver* DriverReset(Driver* driver)
     {
       if (driver){
-               cerr << "About to delete driver:"  << driver 
-               << " with world " << driver->GetWorld() 
-               << " with grid "
-               << driver->GetWorld()->GetConfig().WORLD_X.Get() 
-               << " " 
-               << driver->GetWorld()->GetConfig().WORLD_Y.Get()
-               << std::endl;
+               D_(D_STATUS, "About to delete driver:"  << driver\
+               << " with world " << driver->GetWorld()\
+               << " with grid "\
+               << driver->GetWorld()->GetConfig().WORLD_X.Get()\
+               << " "\
+               << driver->GetWorld()->GetConfig().WORLD_Y.Get());
       }
       D_(D_FLOW | D_STATUS, "Resetting driver.");
       WebViewerMsg msg_reset = FeedbackMessage(Feedback::NOTIFICATION);
@@ -193,12 +185,11 @@ namespace Avida {
      
       driver = SetupDriver(0, nullptr, path);
       if (driver){
-               cerr << "About to run driver:"  << driver 
-               << " with world " << driver->GetWorld() 
-               << driver->GetWorld()->GetConfig().WORLD_X.Get() 
-               << " " 
-               << driver->GetWorld()->GetConfig().WORLD_Y.Get()
-               << std::endl;
+               D_(D_STATUS,  "About to run driver:"  << driver\
+               << " with world " << driver->GetWorld()\
+               << driver->GetWorld()->GetConfig().WORLD_X.Get()\
+               << " " \
+               << driver->GetWorld()->GetConfig().WORLD_Y.Get());
       }
       return driver;
     }
@@ -222,22 +213,25 @@ namespace Avida {
      in the JS runtime when we're transitioning between runtime states
      or when we're resetting the driver.
      */
-    void NotifyDriverPaused()
+    void NotifyDriverPaused(Driver* driver)
     {
       D_(D_STATUS, "Driver is paused.");
+      WebViewerMsg paused = MSG_DRIVER_PAUSED;
+      paused["update"] = driver->GetWorld()->GetStats().GetUpdate();
+      PostMessage(MSG_DRIVER_PAUSED);
     }
     
-    void NotifyDriverRunning()
+    void NotifyDriverRunning(Driver* driver)
     {
       D_(D_STATUS, "Driver is running.");
     }
     
-    void NotifyDriverResetting()
+    void NotifyDriverResetting(Driver* driver)
     {
       D_(D_STATUS, "Driver is resetting.");
     }
     
-    void NotifyExitingRuntime()
+    void NotifyExitingRuntime(Driver* driver)
     {
       D_(D_STATUS, "Exiting runtime.  This is not recoverable via the web worker.");
     }
@@ -276,7 +270,7 @@ namespace Avida {
       //WriteTemp();
       //ReadTemp();
       
-      NotifyDriverResetting();
+      NotifyDriverResetting(nullptr);
       
       
       Driver* driver = SetupDriver(argc, argv, "/");
@@ -295,16 +289,13 @@ namespace Avida {
           //Begin with the driver in a paused state.
           //Messages can still be received periodically.
           
-          cerr << "ZZ: The driver is located at " << driver << endl;
-          cerr << driver->GetWorld()->GetConfig().WORLD_X.Get() 
-               << " " 
-               << driver->GetWorld()->GetConfig().WORLD_Y.Get()
-               << std::endl;
+          D_(D_STATUS, "Runtime reports the driver is located at " << driver);
+          
           
           bool first_pass = true;
           while(driver && driver->ShouldPause()){
             if (first_pass){
-              NotifyDriverPaused();
+              NotifyDriverPaused(driver);
               first_pass = false;
             }
             emscripten_sleep(100);
@@ -319,7 +310,7 @@ namespace Avida {
           first_pass = true;
           while( driver && driver->ShouldRun() ) {
             if (first_pass){
-              NotifyDriverRunning();
+              NotifyDriverRunning(driver);
               first_pass = false;
             }
             driver->StepUpdate();
@@ -331,19 +322,19 @@ namespace Avida {
           //and initialize a new one before we proceed.  This will clear
           //all persistant data like events and stats.
           if ( driver && driver->ShouldReset() ){
-            NotifyDriverResetting();
+            NotifyDriverResetting(driver);
             driver = DriverReset(driver);
             
           }
         } // The driver is no longer active
-        cerr << driver->IsFinished() << driver->IsError() << driver->ShouldReset() << driver->IsActive() << endl;
+        D_(D_STATUS, "Driver State: " << driver->IsFinished() << driver->IsError() << driver->ShouldReset() << driver->IsActive());
         driver = SetupDriver(argc, argv, "/");  //Reset to default driver
       }
       
       cerr << "At the moment, we should never get here." << endl;
       //Time to exit our runtime; cleanup after ourselves.
       if (driver){
-        NotifyExitingRuntime();
+        NotifyExitingRuntime(driver);
         AvidaExit(driver);
       } else {
         cerr << "We should never be here.  The driver was unavailable during runtime loop." << endl;

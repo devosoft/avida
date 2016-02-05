@@ -28,6 +28,11 @@ namespace Avida{
       {"message", "ready"}
     };
     
+    const WebViewerMsg MSG_DRIVER_PAUSED = {
+      {"type", "data"},
+      {"name", "paused"},
+    };
+    
     const vector<string> EVENT_PROPERTIES = 
       {"type", "name", "triggerType", "start", "interval", "end", "singleton"};
     

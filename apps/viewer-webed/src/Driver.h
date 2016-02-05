@@ -161,7 +161,6 @@ namespace Avida{
       
       D_(D_FLOW, "Setting up driver.");
       GlobalObjectManager::Register(this);
-      cerr << "world: " << a_world << endl;
       if (a_world == nullptr){
         m_error = true;
         D_(D_FLOW, "Unable tosetup driver; world missing");

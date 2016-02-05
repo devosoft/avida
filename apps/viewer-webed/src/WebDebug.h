@@ -27,10 +27,10 @@
 ////What should we be outputting for debug purposes?
 
 
-#define DEBUG_LEVEL \
-  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
+//#define DEBUG_LEVEL \
+//  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
-//#define DEBUG_LEVEL 0
+#define DEBUG_LEVEL D_STATUS
 
 
 #define DEBUG_STREAM std::cerr
@@ -49,7 +49,7 @@
   do{\
     if ( ( (LEVEL) & (DEBUG_LEVEL) ) && (VERBOSITY <= D_VERBOSITY) )\
     {\
-      DEBUG_STREAM << MSG << std::endl;\
+      DEBUG_STREAM << "AVIDA: " << MSG << std::endl;\
     }\
   } while(0)
   
