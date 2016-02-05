@@ -30,7 +30,7 @@
 //#define DEBUG_LEVEL \
 //  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
-#define DEBUG_LEVEL D_STATUS
+#define DEBUG_LEVEL (D_STATUS | D_MSG_IN)
 
 
 #define DEBUG_STREAM std::cerr

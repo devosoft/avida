@@ -36,8 +36,6 @@
 
 namespace Avida {
   namespace WebViewer {
-  
-    const int SLEEP_DELAY = 1;
     
     void SyncFS(bool from_remote)
     {
@@ -287,6 +285,8 @@ namespace Avida {
        creating the driver.
        */
       while(driver){
+        int sleep_delay = driver->GetWorld()->GetConfig().SLEEP_DELAY.Get();
+        PostMessage(MSG_READY);
         while(driver->IsActive()){
           //Begin with the driver in a paused state.
           //Messages can still be received periodically.
@@ -300,7 +300,7 @@ namespace Avida {
               NotifyDriverPaused(driver);
               first_pass = false;
             }
-            emscripten_sleep(SLEEP_DELAY);
+            emscripten_sleep(sleep_delay);
             CheckMessages(driver);
           } //End paused loop
           
@@ -316,7 +316,7 @@ namespace Avida {
               first_pass = false;
             }
             driver->StepUpdate();
-            emscripten_sleep(SLEEP_DELAY);
+            emscripten_sleep(sleep_delay);
             CheckMessages(driver);
           } // End step update loop
           

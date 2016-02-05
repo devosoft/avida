@@ -878,6 +878,8 @@ public:
   CONFIG_ADD_VAR(INST_SET, cString, "-", "Instruction set file ('-' = use default for hardware type)");
   CONFIG_ADD_VAR(INST_SET_LOAD_LEGACY, int, 0, "Load legacy format instruction set file format");
 
+  CONFIG_ADD_GROUP(WEB_GROUP, "Settings for the web browser interface");
+  CONFIG_ADD_VAR(SLEEP_DELAY, int, 250, "The minimum delay between updates to allow for browser processing");
 
 #endif
   

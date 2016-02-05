@@ -250,6 +250,9 @@ class cWebActionOrgTraceBySequence : public cWebAction
 
 
 
+
+
+
 class cWebActionOrgDataByCellID : public cWebAction {
 private:
   static constexpr int NO_SELECTION = -1;
@@ -293,6 +296,7 @@ public:
     if (largs.GetSize()){
       m_cell_id = largs.PopWord().AsInt();
     } else {
+      m_cell_id = NO_SELECTION;
       m_feedback.Warning("webOrgDataByCellID requires a cell_id argument");
     }
     if (m_cell_id > pop_size || m_cell_id < 0){
@@ -360,6 +364,8 @@ public:
     D_(D_ACTIONS, "cWebActionOrgDataByCellID::Process completed.");
   }
 }; // cWebActionPopulationStats
+
+
 
 
 
@@ -487,6 +493,8 @@ class cWebActionGridData : public cWebAction {
       D_(D_ACTIONS, "cWebActionGridData::Process completed.");
     }
 };
+
+
 
 
 class cWebActionImportExpr : public cWebAction
