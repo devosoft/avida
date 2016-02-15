@@ -451,6 +451,86 @@ public:
 };
 
 /*
+ Injects a set number of identical organisms into random cells.
+ 
+ Parameters:
+ filename (string)
+ The filename of the genotype to load.
+ num (int)
+ The number of organisms to inject.
+ merit (double) default: -1
+ The initial merit of the organism. If set to -1, this is ignored.
+ lineage label (integer) default: 0
+ An integer that marks all descendants of this organism.
+ neutral metric (double) default: 0
+ A double value that randomly drifts over time.
+ */
+class cActionInjectWellMixed : public cAction
+{
+private:
+  cString m_filename;
+  int m_cell_num;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+public:
+  cActionInjectWellMixed(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_cell_num(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_cell_num = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string fname> [int cell_num=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_filename.GetSize() == 0) {
+      cerr << "error: no organism file specified" << endl;
+      return;
+    }
+    
+    if (m_cell_num < 0 || m_cell_num > m_world->GetPopulation().GetSize()) {
+      ctx.Driver().Feedback().Warning("InjectWellMixed has invalid range!");
+    } else {
+      GenomePtr genome;
+      cUserFeedback feedback;
+      genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+      for (int i = 0; i < feedback.GetNumMessages(); i++) {
+        switch (feedback.GetMessageType(i)) {
+          case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+          case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
+          default: break;
+        };
+        cerr << feedback.GetMessage(i) << endl;
+      }
+      if (!genome) return;
+      int world_size = m_world->GetPopulation().GetSize();
+      for (int i = 0; i < m_cell_num; i++) {
+         // Find a random cell to use. Assumes one exists.
+        
+        int target_cell = ctx.GetRandom().GetInt(0, world_size-1);
+        
+        
+        
+        assert(target_cell > -1);
+        assert(target_cell < m_world->GetPopulation().GetSize());
+        
+        m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, target_cell, m_merit, m_lineage_label, m_neutral_metric);
+      
+      }
+      m_world->GetPopulation().SetSyncEvents(true);
+    }
+  }
+};
+
+
+/*
  Injects identical organisms into a range of cells of the population with a specified divide mut rate (per site).
  
  Parameters:
@@ -5586,6 +5666,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectAll>("InjectAll");
   action_lib->Register<cActionInjectRange>("InjectRange");
   action_lib->Register<cActionInjectSequence>("InjectSequence");
+  action_lib->Register<cActionInjectWellMixed>("InjectWellMixed");
   action_lib->Register<cActionInjectSequenceWithDivMutRate>("InjectSequenceWDivMutRate");
   action_lib->Register<cActionInjectDemes>("InjectDemes");
   action_lib->Register<cActionInjectModuloDemes>("InjectModuloDemes");
