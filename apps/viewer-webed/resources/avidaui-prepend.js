@@ -14,10 +14,40 @@
 
 var avida_running = 0;
 var msg_queue = [];
+var ports = { console:null, ui:null };
 
-onmessage = function(msg) {
-  msg_queue.push(msg.data);
+//Checking to see if we can use a shared web worker
+if (false){
+  onconnect = function(msg){
+    var port = msg.port[0];
+    var to_queue;
+    if (msg.data['zsource'] == 'console'){
+      ports.console = port;
+      ports.console.onmessage = function(msg){
+        to_queue = msg.data;
+        port.postMessage(msg.data);
+        delete to_queue.zsource;
+        msg_queue.push(to_queue);
+      }
+    } else {
+      port.ui = port;
+      port.ui.onmessage = function(msg){
+        to_queue = msg.data;
+        msg_queue.push(to_queue);
+        if (ports.console !== null){
+          to_relay = msg.data;
+          msg.data.zsource = 'ui';
+          ports.console.postMessage(to_relay);
+        }
+      }
+    }
+  }
+} else {
+  onmessage = function(msg) {
+    msg_queue.push(msg.data);
+  }
 }
+
 
 function doGetMessage() {
   if (msg_queue.length > 0){
@@ -37,7 +67,7 @@ function doGetMessage() {
 */
 function doPostMessage(msg_str) {
   var json_msg = JSON.parse(msg_str);
-  if (json_msg.Key === 'AvidaStatus'){
+  if (json_msg.key === 'AvidaStatus'){
     switch (json_msg.Status){
       case 'Paused':
       case 'Finished':
@@ -51,5 +81,16 @@ function doPostMessage(msg_str) {
         break;
     }
   }
-  postMessage(json_msg);
+  
+  //Relay information to the console interface if needed
+  if (false){
+    if (ports.ui !== null && msg.type !== 'debug'){
+      ports.ui.postMessage(json_msg);
+    }
+    if (ports.console !== null){
+      ports.ui.postMessage(json_msg);
+    }
+  } else {
+    postMessage(json_msg);
+  }
 }
