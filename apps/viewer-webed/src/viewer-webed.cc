@@ -35,5 +35,3 @@ int main(int argc, char* argv[])
    
    RuntimeLoop(argc, argv);
 }
-
-

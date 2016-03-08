@@ -6,7 +6,6 @@
 #include "cPopulation.h"
 #include "cHardwareBase.h"
 #include "cEventList.h"
-#include "cUserFeedback.h"
 #include "avida/core/WorldDriver.h"
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
@@ -30,6 +29,7 @@ namespace Avida{
     class Driver : public WorldDriver
     {
     private:
+      static constexpr char event_set_update[] = "i setUpdate";
       string DumpEventList();
       void Pause()  { D_(D_FLOW | D_STATUS, "Pause"); D_(D_EVENTS, DumpEventList()); m_paused = (m_paused) ? false : true; }
       void Finish() {m_finished = true;}
@@ -46,7 +46,7 @@ namespace Avida{
       
       std::string m_reset_path;  //The path that contains configuration files for the next driver after the reset
       
-      cUserFeedback m_feedback;  //A buffer containing messages that need to be sent to the GUI
+      WebViewer::Feedback m_feedback;  //A buffer containing messages that need to be sent to the GUI
       cWorld* m_world;           //The world
       cAvidaContext* m_ctx;
       int active_cell_id;        //The GUI has the ability to select an active cell; the driver needs this information for some actions
@@ -57,7 +57,7 @@ namespace Avida{
       bool ProcessAddEvent(const WebViewerMsg& msg, WebViewerMsg& ret_msg);  
       bool ValidateEventMessage(const WebViewerMsg& msg);
       string JsonToEventFormat(const WebViewerMsg& msg);
-      
+      void TrySetUpdate();
       
     public:
       Driver(cWorld* world, cUserFeedback& feedback) { Driver::Setup(world, feedback); }
@@ -103,35 +103,39 @@ namespace Avida{
     void Driver::ProcessFeedback()
     {
       D_(D_FLOW,"Processing Feedback");
-      for (int k=0; k<m_feedback.GetNumMessages(); ++k){
-        cUserFeedback::eFeedbackType msg_type = m_feedback.GetMessageType(k);
-        const cString& msg = m_feedback.GetMessage(k);
+      for (auto entry : m_feedback.GetFeedback()){
+        Feedback::FeedbackType msg_type = entry.GetType();
+        const std::string& msg = entry.GetMessage();
+        
         WebViewerMsg ret_msg;
         switch(msg_type){
-          case cUserFeedback::eFeedbackType::UF_ERROR:
+          case Feedback::ERROR:
             D_(D_MSG_OUT, "Feedback message is type ERROR");
-            ret_msg = FeedbackMessage(Feedback::FATAL);
-            ret_msg["message"] = msg.GetData();
+            ret_msg = FeedbackMessage(Feedback::ERROR);
+            ret_msg["message"] = msg;
+            m_error = true;
+            m_reset = true;
+            m_reset_path = "/";
             break;
-          case cUserFeedback::eFeedbackType::UF_WARNING:
+          case Feedback::WARNING:
             D_(D_MSG_OUT, "tFeedback message is type WARNING");
             ret_msg = FeedbackMessage(Feedback::WARNING);
-            ret_msg["message"] = msg.GetData();
+            ret_msg["message"] = msg;
             break;
-          case cUserFeedback::eFeedbackType::UF_NOTIFICATION:
+          case Feedback::NOTIFY:
             D_(D_MSG_OUT, "Feedback message is type NOTIFICATION");
-            ret_msg = FeedbackMessage(Feedback::NOTIFICATION);
-            ret_msg["message"] = msg.GetData();
+            ret_msg = FeedbackMessage(Feedback::NOTIFY);
+            ret_msg["message"] = msg;
             break;
-          case cUserFeedback::eFeedbackType::UF_DATA:
+          case Feedback::DATA:
              D_(D_MSG_OUT, "Feedback message is type DATA");
             //Data messages will get sent directly with no userFeedback wrapper
-            ret_msg = json::parse(msg.GetData());
+            ret_msg = json::parse(msg);
             break;
           default:
             D_(D_MSG_OUT, "Feedback message is type UNKNOWN");
             ret_msg = FeedbackMessage(Feedback::UNKNOWN);
-            ret_msg["message"] = msg.GetData();
+            ret_msg["message"] = msg;
             break;
         }
         PostMessage(ret_msg);
@@ -172,9 +176,29 @@ namespace Avida{
         m_ctx = new cAvidaContext(this, m_world->GetRandom());
         m_world->SetDriver(this);
         active_cell_id = -1;
+        TrySetUpdate();
         D_(D_FLOW, "Driver setup successful.");
       }
       ProcessFeedback();
+    }
+    
+    /*
+      Populated dishes require us to reset the update.
+      Check to see if the working directory contains
+      this information.  (This is done here for
+      legacy reasons; it could be made into an event
+      that is loaded via the events.cfg file, but
+      Avida Mac doesn't work this way.)
+    */
+    void Driver::TrySetUpdate()
+    {
+      if (Apto::FileSystem::IsFile("update")){
+        bool success = m_world->GetEventsList()->AddEventFileFormat(event_set_update, m_feedback);
+        if (!success){
+            D_(D_STATUS, "Unable to set update.");
+            m_feedback.Error("Unable to set update");
+        }
+      }
     }
     
     

@@ -10,6 +10,7 @@
 #define viewer_webed_Callbacks_h
 
 #include "Driver.h"
+#include "apto/core/FileSystem.h"
 #include <fstream>
 #include <cstdlib>
 
@@ -133,10 +134,19 @@ namespace Avida {
       cWorld* world = cWorld::Initialize(cfg, "/", new_world, &feedback, &defs);
       
       
+      
       D_(D_STATUS, "The world is located at " << world);
       
       Driver* driver = new Driver(world, feedback);  //The driver and world register each other
       
+      //If there were any errors, do not use this world
+      //Keeping the driver intialized to send messages through the web worker interface
+      if (feedback.GetNumErrors() > 0){
+        D_(D_STATUS, "There were errors on configuring the world. Aborting driver construction.");
+        delete world;
+        return nullptr;
+      }
+
       D_(D_STATUS, "The driver is located at " << driver);
       
       D_(D_STATUS, "Avida driver with configuration from " << path);
@@ -176,7 +186,7 @@ namespace Avida {
                << driver->GetWorld()->GetConfig().WORLD_Y.Get());
       }
       D_(D_FLOW | D_STATUS, "Resetting driver.");
-      WebViewerMsg msg_reset = FeedbackMessage(Feedback::NOTIFICATION);
+      WebViewerMsg msg_reset = FeedbackMessage(Avida::WebViewer::Feedback::NOTIFY);
       msg_reset["description"] = "The Avida driver is resetting";
       string path = driver->GetNewDriverPath();
       if (path == "")
@@ -202,7 +212,7 @@ namespace Avida {
     void AvidaExit(Driver* driver)
     {
       D_(D_FLOW | D_STATUS, "The Avida runtime is termiating.");
-      WebViewerMsg msg_exit = FeedbackMessage(Feedback::FATAL);
+      WebViewerMsg msg_exit = FeedbackMessage(Avida::WebViewer::Feedback::ERROR);
       msg_exit["description"] = "Avida is exiting";
       PostMessage(msg_exit);
       DeleteDriver(driver);
@@ -218,17 +228,22 @@ namespace Avida {
       D_(D_STATUS, "Driver is paused.");
       WebViewerMsg paused = MSG_DRIVER_PAUSED;
       paused["update"] = driver->GetWorld()->GetStats().GetUpdate();
-      PostMessage(MSG_DRIVER_PAUSED);
+      PostMessage(paused);
     }
     
     void NotifyDriverRunning(Driver* driver)
     {
       D_(D_STATUS, "Driver is running.");
+      WebViewerMsg running = MSG_DRIVER_RUNNING;
+      running["update"] = driver->GetWorld()->GetStats().GetUpdate();
+      PostMessage(running);
     }
     
     void NotifyDriverResetting(Driver* driver)
     {
       D_(D_STATUS, "Driver is resetting.");
+      WebViewerMsg resetting = MSG_DRIVER_RESETTING;
+      PostMessage(resetting);
     }
     
     void NotifyExitingRuntime(Driver* driver)
@@ -329,7 +344,15 @@ namespace Avida {
             
           }
         } // The driver is no longer active
-        D_(D_STATUS, "Driver State: " << driver->IsFinished() << driver->IsError() << driver->ShouldReset() << driver->IsActive());
+        if (driver){
+          D_(D_STATUS, "Driver State: " 
+            << "Finished:" << driver->IsFinished()
+            << " IsError:" << driver->IsError()
+            << " ShouldReset:" << driver->ShouldReset()
+            << " IsActive:" << driver->IsActive());
+        } else {
+          D_(D_STATUS, "The driver is not available.");
+        }
         driver = SetupDriver(argc, argv, "/");  //Reset to default driver
       }
       

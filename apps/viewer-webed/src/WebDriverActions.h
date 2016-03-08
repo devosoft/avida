@@ -36,11 +36,13 @@ class cActionLibrary;
 #include "cOrganism.h"
 #include "cPopulation.h"
 #include "cWorld.h"
+#include "cStats.h"
 
 #include "Driver.h"
 #include "WebDebug.h"
 #include "WebDriverActions.h"
 #include "Types.h"
+
 
 using namespace Avida::WebViewer;
 
@@ -52,32 +54,32 @@ using namespace Avida::WebViewer;
 
 class cWebAction : public cAction
 {
-  protected:
-    Avida::Feedback& m_feedback;
-    bool m_json_args;
-    
-    /*
-      Return a json object
-      If the argument string contains a UNIT_SEP as the first
-      character, treat the arguments as a JSON object.  If
-      the arguments are not a json object, return an empty json
-      object.
-    */
-    json GetJSONArgs()
-    {
-      if (m_json_args)
-        return json::parse(&m_args.GetData()[1]);
-      json j;
-      return j;
-    }
-    
-  public:
-    cWebAction(cWorld* world, const cString& args, Avida::Feedback& fb) 
-    : cAction(world,args) 
-    , m_feedback(fb) 
-    {
-      m_json_args = (args.GetSize() > 0 && args[0] == UNIT_SEP);
-    }
+protected:
+  Avida::Feedback& m_feedback;
+  bool m_json_args;
+  
+  /*
+   Return a json object
+   If the argument string contains a UNIT_SEP as the first
+   character, treat the arguments as a JSON object.  If
+   the arguments are not a json object, return an empty json
+   object.
+   */
+  json GetJSONArgs()
+  {
+    if (m_json_args)
+      return json::parse(&m_args.GetData()[1]);
+    json j;
+    return j;
+  }
+  
+public:
+  cWebAction(cWorld* world, const cString& args, Avida::Feedback& fb) 
+  : cAction(world,args) 
+  , m_feedback(fb) 
+  {
+    m_json_args = (args.GetSize() > 0 && args[0] == UNIT_SEP);
+  }
 };
 
 
@@ -113,7 +115,7 @@ public:
     cEnvironment& env = m_world->GetEnvironment();
     for (int t=0; t< env.GetNumTasks(); t++){
       pop_data[string(env.GetTask(t).GetName().GetData())] = 
-        stats.GetTaskLastCount(t);
+      stats.GetTaskLastCount(t);
     }
     m_feedback.Data(pop_data.dump().c_str());
     D_(D_ACTIONS, "cWebActionPopulationStats::Process [completed]");
@@ -123,129 +125,129 @@ public:
 
 class cWebActionOrgTraceBySequence : public cWebAction
 {
-
-  private:
   
-    int m_seed;
-    double m_mutation_rate;
-    string m_sequence;
+private:
+  
+  int m_seed;
+  double m_mutation_rate;
+  string m_sequence;
+  
+  string Int32ToBinary(unsigned int value){
+    string retval = "";
+    for (int i = 0; i < 32; i++)
+      retval += ( (value >> i) & 1) ? "1" : "0";
+    return retval;
+  }
+  
+  json ParseSnapshot(const Viewer::HardwareSnapshot& s)
+  {
+    const std::string alphabet = "abcdefghijklmnopqrstuvwxyz";
     
-    string Int32ToBinary(unsigned int value){
-      string retval = "";
-      for (int i = 0; i < 32; i++)
-        retval += ( (value >> i) & 1) ? "1" : "0";
-      return retval;
+    json j;
+    j["didDivide"] = s.IsPostDivide();
+    j["nextInstruction"] = s.NextInstruction().AsString().GetData();;
+    
+    std::map<std::string, std::string> regs;
+    for (int i = 0; i < s.Registers().GetSize(); ++i)
+      regs[alphabet.substr(i,1) + "x"] =
+      Int32ToBinary(s.Register(i));
+    j["registers"] = regs;
+    
+    std::map<std::string, std::vector<string>> bufs;
+    for (auto it_i = s.Buffers().Begin(); it_i.Next();){
+      vector<string> entries;
+      for (auto it_j = it_i.Get()->Value2()->Begin(); it_j.Next();){
+        entries.push_back(Int32ToBinary(*it_j.Get()));
+      }
+      bufs[it_i.Get()->Value1().GetData()] = entries;
     }
+    j["buffers"] = bufs;
     
-    json ParseSnapshot(const Viewer::HardwareSnapshot& s)
+    std::map<std::string, int> functions;
+    for (auto it = s.Functions().Begin(); it.Next();)
+      functions[it.Get()->Value1().GetData()] = *(it.Get()->Value2());
+    j["functions"] = functions;
+    
+    
+    std::vector<std::map<string,int>> jumps;
+    for (auto it = s.Jumps().Begin(); it.Next();){
+      std::map<string,int> a_jump;
+      const Viewer::HardwareSnapshot::Jump& this_jump = *(it.Get());
+      a_jump["fromMemSpace"] = this_jump.from_mem_space;
+      a_jump["fromIDX"] = this_jump.from_idx;
+      a_jump["toMemSpace"] = this_jump.to_mem_space;
+      a_jump["toIDX"] = this_jump.to_idx;
+      a_jump["freq"] = this_jump.freq;
+      jumps.push_back(a_jump);
+    }
+    j["jumps"] = jumps;
+    
+    std::vector<json> memspace;
+    for (auto it = s.MemorySpace().Begin(); it.Next();){
+      json this_space;
+      this_space["label"] = it.Get()->label;
+      vector<string> memory;
+      for (auto it_mem = it.Get()->memory.Begin(); it_mem.Next();)
+        memory.push_back(it_mem.Get()->GetSymbol().GetData());
+      this_space["memory"] = memory;
+      vector<int> mutated;
+      for (auto it_mutated = it.Get()->mutated.Begin(); it_mutated.Next();)
+        mutated.push_back( (*(it_mutated.Get())) ? 1 : 0 );
+      this_space["mutated"] = mutated;
+      std::map<string, int> heads;
+      for (auto it_heads = it.Get()->heads.Begin(); it_heads.Next();)
+        heads[it_heads.Get()->Value1().AsLower().GetData()] = *(it_heads.Get()->Value2());
+      this_space["heads"] = heads;
+      memspace.push_back(this_space);
+    }
+    j["memSpace"] = memspace;
+    return j;
+  }
+  
+public:
+  cWebActionOrgTraceBySequence(cWorld* world, const cString& args, Avida::Feedback& m_feedback)
+  : cWebAction(world, args, m_feedback)
+  {
+    cString largs(args);
+    if (largs.GetSize()){
+      m_sequence = string(largs.PopWord().GetData());
+      m_mutation_rate = (largs.GetSize()) ? largs.PopWord().AsDouble() : 0.0;
+      m_seed = (largs.GetSize()) ? largs.PopWord().AsInt() : -1;
+    } else {
+      m_feedback.Warning("webOrgTraceBySequence: a genome sequence is a required argument.");
+    }
+  }
+  
+  static const cString GetDescription() { return "Arguments: GenomeSequence PointMutationRate Seed"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    D_(D_ACTIONS, "cWebActionOrtTraceBySequence::Process" );
+    
+    //Trace the genome sequence
+    GenomePtr genome = 
+    GenomePtr(new Genome(Apto::String( (m_sequence).c_str())));
+    D_(D_ACTIONS, "\tAbout to Trace with settings " << m_world
+       <<  "," << m_sequence << "," << m_mutation_rate << "," << m_seed, 1 );
+    Viewer::OrganismTrace trace(m_world, genome, m_mutation_rate, m_seed);
+    
+    D_(D_ACTIONS, "Trace ready.", 1);
+    vector<json> snapshots;
+    WebViewerMsg retval = { 
+      {"type","data"},
+      {"name","webOrgTraceBySequence"}
+    };
+    
+    for (int i = 0; i < trace.SnapshotCount(); ++i)
     {
-      const std::string alphabet = "abcdefghijklmnopqrstuvwxyz";
-      
-      json j;
-      j["didDivide"] = s.IsPostDivide();
-      j["nextInstruction"] = s.NextInstruction().AsString().GetData();;
-
-      std::map<std::string, std::string> regs;
-      for (int i = 0; i < s.Registers().GetSize(); ++i)
-        regs[alphabet.substr(i,1) + "x"] =
-          Int32ToBinary(s.Register(i));
-      j["registers"] = regs;
-      
-      std::map<std::string, std::vector<string>> bufs;
-      for (auto it_i = s.Buffers().Begin(); it_i.Next();){
-        vector<string> entries;
-        for (auto it_j = it_i.Get()->Value2()->Begin(); it_j.Next();){
-          entries.push_back(Int32ToBinary(*it_j.Get()));
-        }
-        bufs[it_i.Get()->Value1().GetData()] = entries;
-      }
-      j["buffers"] = bufs;
-      
-      std::map<std::string, int> functions;
-      for (auto it = s.Functions().Begin(); it.Next();)
-        functions[it.Get()->Value1().GetData()] = *(it.Get()->Value2());
-      j["functions"] = functions;
-      
-      
-      std::vector<std::map<string,int>> jumps;
-      for (auto it = s.Jumps().Begin(); it.Next();){
-        std::map<string,int> a_jump;
-        const Viewer::HardwareSnapshot::Jump& this_jump = *(it.Get());
-        a_jump["fromMemSpace"] = this_jump.from_mem_space;
-        a_jump["fromIDX"] = this_jump.from_idx;
-        a_jump["toMemSpace"] = this_jump.to_mem_space;
-        a_jump["toIDX"] = this_jump.to_idx;
-        a_jump["freq"] = this_jump.freq;
-        jumps.push_back(a_jump);
-      }
-      j["jumps"] = jumps;
-      
-      std::vector<json> memspace;
-      for (auto it = s.MemorySpace().Begin(); it.Next();){
-        json this_space;
-        this_space["label"] = it.Get()->label;
-        vector<string> memory;
-        for (auto it_mem = it.Get()->memory.Begin(); it_mem.Next();)
-          memory.push_back(it_mem.Get()->GetSymbol().GetData());
-        this_space["memory"] = memory;
-        vector<int> mutated;
-        for (auto it_mutated = it.Get()->mutated.Begin(); it_mutated.Next();)
-          mutated.push_back( (*(it_mutated.Get())) ? 1 : 0 );
-        this_space["mutated"] = mutated;
-        std::map<string, int> heads;
-        for (auto it_heads = it.Get()->heads.Begin(); it_heads.Next();)
-          heads[it_heads.Get()->Value1().AsLower().GetData()] = *(it_heads.Get()->Value2());
-        this_space["heads"] = heads;
-        memspace.push_back(this_space);
-      }
-      j["memSpace"] = memspace;
-      return j;
+      snapshots.push_back(ParseSnapshot(trace.Snapshot(i)));
     }
-
-  public:
-    cWebActionOrgTraceBySequence(cWorld* world, const cString& args, Avida::Feedback& m_feedback)
-    : cWebAction(world, args, m_feedback)
-    {
-      cString largs(args);
-      if (largs.GetSize()){
-        m_sequence = string(largs.PopWord().GetData());
-        m_mutation_rate = (largs.GetSize()) ? largs.PopWord().AsDouble() : 0.0;
-        m_seed = (largs.GetSize()) ? largs.PopWord().AsInt() : -1;
-      } else {
-        m_feedback.Warning("webOrgTraceBySequence: a genome sequence is a required argument.");
-      }
-    }
+    retval["snapshots"] = snapshots;
     
-    static const cString GetDescription() { return "Arguments: GenomeSequence PointMutationRate Seed"; }
-    
-    void Process(cAvidaContext& ctx)
-    {
-      D_(D_ACTIONS, "cWebActionOrtTraceBySequence::Process" );
-
-      //Trace the genome sequence
-      GenomePtr genome = 
-        GenomePtr(new Genome(Apto::String( (m_sequence).c_str())));
-      D_(D_ACTIONS, "\tAbout to Trace with settings " << m_world
-           <<  "," << m_sequence << "," << m_mutation_rate << "," << m_seed, 1 );
-      Viewer::OrganismTrace trace(m_world, genome, m_mutation_rate, m_seed);
-      
-      D_(D_ACTIONS, "Trace ready.", 1);
-      vector<json> snapshots;
-      WebViewerMsg retval = { 
-                        {"type","data"},
-                        {"name","webOrgTraceBySequence"}
-                        };
-                        
-      for (int i = 0; i < trace.SnapshotCount(); ++i)
-      {
-        snapshots.push_back(ParseSnapshot(trace.Snapshot(i)));
-      }
-      retval["snapshots"] = snapshots;
-      
-      D_(D_ACTIONS, "cWebOrgTraceBySequence: About to make feedback",1);
-      m_feedback.Data(WebViewerMsg(retval).dump().c_str());
-      D_(D_ACTIONS, "cWebOrgTraceBySequence::Process completed");
-    }
+    D_(D_ACTIONS, "cWebOrgTraceBySequence: About to make feedback",1);
+    m_feedback.Data(WebViewerMsg(retval).dump().c_str());
+    D_(D_ACTIONS, "cWebOrgTraceBySequence::Process completed");
+  }
 };  //End cWebActionOrgTraceBySequence
 
 
@@ -317,7 +319,7 @@ public:
     
     cOrganism* org = (m_cell_id == NO_SELECTION) ? nullptr : m_world->GetPopulation().GetCell(m_cell_id).GetOrganism();
     
-  
+    
     WebViewerMsg data = { {"type","data"}, {"name","webOrgDataByCellID"} };
     
     if (org == nullptr){
@@ -370,128 +372,128 @@ public:
 
 
 class cWebActionGridData : public cWebAction {
-  private:
-
-    /*
-      Need to use our own min/max_val functions
-      because of nans.
-    */
-    double min_val(const vector<double>& vec)
-    {
-      if (vec.empty())
-        return NaN;
-      double min = vec[0];
-      for (auto val : vec){
-        if (!isfinite(val))
-          continue;
-        if (val < min || !isfinite(min))
-          min = val;
-      }
-      return min;
-    }
-    
-    double max_val(const vector<double>& vec)
-    {
-      if (vec.empty())
-        return NaN;
-      double max = vec[0];
-      for (auto val : vec){
-        if (!isfinite(val))
-          continue;
-        if (val > max || !isfinite(max))
-          max = val;
-      }
-      return max;
-    }
-    
+private:
   
-  public:
-    cWebActionGridData(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world,args,fb)
-    {
+  /*
+   Need to use our own min/max_val functions
+   because of nans.
+   */
+  double min_val(const vector<double>& vec)
+  {
+    if (vec.empty())
+      return NaN;
+    double min = vec[0];
+    for (auto val : vec){
+      if (!isfinite(val))
+        continue;
+      if (val < min || !isfinite(min))
+        min = val;
+    }
+    return min;
+  }
+  
+  double max_val(const vector<double>& vec)
+  {
+    if (vec.empty())
+      return NaN;
+    double max = vec[0];
+    for (auto val : vec){
+      if (!isfinite(val))
+        continue;
+      if (val > max || !isfinite(max))
+        max = val;
+    }
+    return max;
+  }
+  
+  
+public:
+  cWebActionGridData(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world,args,fb)
+  {
+  }
+  
+  static const cString GetDescription() { return "Arguments: none";}
+  
+  void Process(cAvidaContext& ctx)
+  {
+    D_(D_ACTIONS, "cWebActionGridData::Process");
+    WebViewerMsg data = { {"type","data"}, {"name","webGridData"} };
+    cPopulation& population = m_world->GetPopulation();
+    cEnvironment& env = m_world->GetEnvironment();
+    vector<double> fitness;
+    vector<double> gestation;
+    vector<double> metabolism;
+    vector<double> ancestor;
+    map<string, vector<double>> tasks;
+    vector<string> task_names;
+    for (int t=0; t<env.GetNumTasks(); t++){
+      task_names.push_back(string(env.GetTask(t).GetName().GetData()));
     }
     
-    static const cString GetDescription() { return "Arguments: none";}
-    
-    void Process(cAvidaContext& ctx)
+    for (int i=0; i < population.GetSize(); i++)
     {
-      D_(D_ACTIONS, "cWebActionGridData::Process");
-      WebViewerMsg data = { {"type","data"}, {"name","webGridData"} };
-      cPopulation& population = m_world->GetPopulation();
-      cEnvironment& env = m_world->GetEnvironment();
-      vector<double> fitness;
-      vector<double> gestation;
-      vector<double> metabolism;
-      vector<double> ancestor;
-      map<string, vector<double>> tasks;
-      vector<string> task_names;
-      for (int t=0; t<env.GetNumTasks(); t++){
-        task_names.push_back(string(env.GetTask(t).GetName().GetData()));
-      }
+      cPopulationCell& cell = population.GetCell(i);
+      cOrganism* org = cell.GetOrganism();
       
-      for (int i=0; i < population.GetSize(); i++)
-      {
-        cPopulationCell& cell = population.GetCell(i);
-        cOrganism* org = cell.GetOrganism();
-        
-        
-        if (org == nullptr){
-          fitness.push_back(NaN);
-          gestation.push_back(NaN);
-          metabolism.push_back(NaN);
-          ancestor.push_back(NaN);
-          for (int t=0; t<env.GetNumTasks(); t++){
-            if (tasks.find(task_names[t]) == tasks.end())
-              tasks[task_names[t]] = vector<double>(1,0.0);
-            else
-              tasks[task_names[t]].push_back(0.0);
-          }          
-        } else {
-          cPhenotype& phen = org->GetPhenotype();
-          fitness.push_back(phen.GetFitness());
-          gestation.push_back(phen.GetGestationTime());
-          metabolism.push_back(phen.GetMerit().GetDouble());
-          ancestor.push_back(org->GetLineageLabel());
-          for (int t=0; t<env.GetNumTasks(); t++){
-            if (tasks.find(task_names[t]) == tasks.end())
-              tasks[task_names[t]] = vector<double>(1,phen.GetCurCountForTask(t));
-            else
-              tasks[task_names[t]].push_back(phen.GetCurCountForTask(t));
-          }          
-        }
+      
+      if (org == nullptr){
+        fitness.push_back(NaN);
+        gestation.push_back(NaN);
+        metabolism.push_back(NaN);
+        ancestor.push_back(NaN);
+        for (int t=0; t<env.GetNumTasks(); t++){
+          if (tasks.find(task_names[t]) == tasks.end())
+            tasks[task_names[t]] = vector<double>(1,0.0);
+          else
+            tasks[task_names[t]].push_back(0.0);
+        }          
+      } else {
+        cPhenotype& phen = org->GetPhenotype();
+        fitness.push_back(phen.GetFitness());
+        gestation.push_back(phen.GetGestationTime());
+        metabolism.push_back(phen.GetMerit().GetDouble());
+        ancestor.push_back(org->GetLineageLabel());
+        for (int t=0; t<env.GetNumTasks(); t++){
+          if (tasks.find(task_names[t]) == tasks.end())
+            tasks[task_names[t]] = vector<double>(1,phen.GetCurCountForTask(t));
+          else
+            tasks[task_names[t]].push_back(phen.GetCurCountForTask(t));
+        }          
       }
-      data["fitness"] = { 
-                  {"data",fitness}, 
-                  {"minVal",min_val(fitness)}, 
-                  {"maxVal",max_val(fitness)} 
-                  };
-      data["metabolism"] = {
-                  {"data",metabolism}, 
-                  {"minVal",min_val(metabolism)}, 
-                  {"maxVal",max_val(metabolism)} 
-                  };
-      data["gestation"] = {
-                  {"data",gestation}, 
-                  {"minVal",min_val(gestation)}, 
-                  {"maxVal",max_val(gestation)} 
-                  };
-
-      data["ancestor"] = {
-                  {"data",ancestor}, 
-                  {"minVal",min_val(ancestor)}, 
-                  {"maxVal",max_val(ancestor)} 
-                  };
-                  
-                  
-      for (auto it : tasks){
-        data[it.first] = {
-          {"data",it.second},
-          {"minVal",min_val(it.second)},
-          {"maxVal",max_val(it.second)}
-        };
-      }
-      m_feedback.Data(data.dump().c_str());
-      D_(D_ACTIONS, "cWebActionGridData::Process completed.");
     }
+    data["fitness"] = { 
+      {"data",fitness}, 
+      {"minVal",min_val(fitness)}, 
+      {"maxVal",max_val(fitness)} 
+    };
+    data["metabolism"] = {
+      {"data",metabolism}, 
+      {"minVal",min_val(metabolism)}, 
+      {"maxVal",max_val(metabolism)} 
+    };
+    data["gestation"] = {
+      {"data",gestation}, 
+      {"minVal",min_val(gestation)}, 
+      {"maxVal",max_val(gestation)} 
+    };
+    
+    data["ancestor"] = {
+      {"data",ancestor}, 
+      {"minVal",min_val(ancestor)}, 
+      {"maxVal",max_val(ancestor)} 
+    };
+    
+    
+    for (auto it : tasks){
+      data[it.first] = {
+        {"data",it.second},
+        {"minVal",min_val(it.second)},
+        {"maxVal",max_val(it.second)}
+      };
+    }
+    m_feedback.Data(data.dump().c_str());
+    D_(D_ACTIONS, "cWebActionGridData::Process completed.");
+  }
 };
 
 
@@ -499,79 +501,123 @@ class cWebActionGridData : public cWebAction {
 
 class cWebActionImportExpr : public cWebAction
 {
-  private:
-    json m_files;
-    string m_working_dir;
-    
-  public:
-    cWebActionImportExpr(cWorld* world, const cString& args, Avida::Feedback& fb)
-      : cWebAction(world,args,fb)
-      , m_working_dir("/working_dir")
-    {
-        D_(D_FLOW, "In cWebActionImportExpr::cWebActionImportExpr");
-        if (m_json_args){
-          json jargs = GetJSONArgs();
-          if (contains(jargs,"files"))
-            m_files = jargs["files"];
-        }
-        D_(D_FLOW, "Done cWebActionImportExpr::cWebActionImportExpr");
+private:
+  json m_files;
+  string m_working_dir;
+  bool m_do_amend;
+  
+public:
+  cWebActionImportExpr(cWorld* world, const cString& args, Avida::Feedback& fb)
+  : cWebAction(world,args,fb)
+  , m_working_dir("/working_dir")
+  {
+    D_(D_FLOW, "In cWebActionImportExpr::cWebActionImportExpr");
+    if (m_json_args){
+      json jargs = GetJSONArgs();
+      if (contains(jargs,"files"))
+        m_files = jargs["files"];
+      m_do_amend = (contains(jargs,"amend") && jargs["amend"]) ? true : false;
     }
+    D_(D_FLOW, "Done cWebActionImportExpr::cWebActionImportExpr");
+  }
+  
+  static const cString GetDescription() { return "Arguments: [expr_name  \"{JSON-FORMATTED FILES}\"";}
+  
+  void Process(cAvidaContext& ctx)
+  {
+    D_(D_FLOW, "In cWebImportExpr::Process");
     
-    static const cString GetDescription() { return "Arguments: [expr_name  \"{JSON-FORMATTED FILES}\"";}
+    if (m_files.empty() || !m_files.is_array())
+      return;
     
-    void Process(cAvidaContext& ctx)
-    {
-      D_(D_FLOW, "In cWebImportExpr::Process");
-      //If the directory exists, recursively delete it
-      Apto::FileSystem::RmDir(m_working_dir.c_str(), true);
-      
+    
+    //If we're not amending what's already in the working directory,
+    //the delete it and copy the default settings over
+    if (!m_do_amend){
       //Create the directory
       Apto::FileSystem::MkDir(m_working_dir.c_str());
-      
-      if (m_files.empty() || !m_files.is_array())
-        return;
       
       //Copy default files
       vector<string> copy_files = {"/avida.cfg", "/default-heads.org", "/environment.cfg", "/events.cfg", "/instset.cfg"};
       for (auto f : copy_files){
-        string dst = m_working_dir + f;
+        string dst = m_working_dir + f;    
         Apto::FileSystem::CpFile(f.c_str(), dst.c_str());
       } 
-            
-      //Add the files
-      for (auto it = m_files.begin(); it != m_files.end(); ++it){
-        const json& j_file = *it;
-        if (contains(j_file,"name") && j_file["name"].is_string()){
-            string path = m_working_dir + "/" + j_file["name"].get<string>();
-            ofstream fot(path.c_str(), std::ofstream::out | std::ofstream::trunc);
-            if (fot.is_open() && fot.good() && contains(j_file,"data") && j_file["data"].is_string())
-            {
-              D_(D_FLOW, "Writing file " + path);
-              fot << j_file["data"].get<string>();
-            }
-            fot.close();
+    }
+    
+    //Add the files
+    for (auto it = m_files.begin(); it != m_files.end(); ++it){
+      const json& j_file = *it;
+      if (contains(j_file,"name") && j_file["name"].is_string()){
+        string path = m_working_dir + "/" + j_file["name"].get<string>();
+        ofstream fot(path.c_str(), std::ofstream::out | std::ofstream::trunc);
+        if (fot.is_open() && fot.good() && contains(j_file,"data") && j_file["data"].is_string())
+        {
+          D_(D_FLOW, "Writing file " + path);
+          fot << j_file["data"].get<string>();
+        }
+        fot.close();
+      }
+    }
+    
+    WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
+    if (driver == nullptr)
+      return;
+    driver->DoReset(m_working_dir);
+    D_(D_FLOW, "Done cWebImportExpr::Process");
+    
+  };
+};
+
+
+
+class cWebActionSetUpdate : public cWebAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cWebActionSetUpdate(cWorld* world, const cString& args, Avida::Feedback& fb)
+  : cWebAction(world,args,fb)
+  {
+    cString largs(args);
+    m_filename = (largs.GetSize()) ? largs.PopWord() : "update";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [expr_name  \"{JSON-FORMATTED FILES}\"";}
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (Apto::FileSystem::IsFile(m_filename.GetData())){
+      ifstream fin(m_filename.GetData());
+      int update;
+      fin >> update;
+      if (fin.good()){
+        fin.close();
+        WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
+        if (driver != nullptr){
+          driver->GetWorld()->GetStats().SetCurrentUpdate(update);
+          return;
         }
       }
-      
-      
-        
-      WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
-      if (driver == nullptr)
-        return;
-      driver->DoReset(m_working_dir);
-      D_(D_FLOW, "Done cWebImportExpr::Process");
-
-    };
+      fin.close();
+    }
+    m_feedback.Error("cWebActionSetUpdate: unable to read update file.");
+  }
 };
+
+
+
 
 
 void RegisterWebDriverActions(cActionLibrary* action_lib)
 {
-    action_lib->Register<cWebActionPopulationStats>("webPopulationStats");
-    action_lib->Register<cWebActionOrgTraceBySequence>("webOrgTraceBySequence");
-    action_lib->Register<cWebActionOrgDataByCellID>("webOrgDataByCellID");
-    action_lib->Register<cWebActionGridData>("webGridData");
-    action_lib->Register<cWebActionImportExpr>("importExpr");
+  action_lib->Register<cWebActionPopulationStats>("webPopulationStats");
+  action_lib->Register<cWebActionOrgTraceBySequence>("webOrgTraceBySequence");
+  action_lib->Register<cWebActionOrgDataByCellID>("webOrgDataByCellID");
+  action_lib->Register<cWebActionGridData>("webGridData");
+  action_lib->Register<cWebActionImportExpr>("importExpr");
+  action_lib->Register<cWebActionSetUpdate>("setUpdate");
 }
 
 #endif

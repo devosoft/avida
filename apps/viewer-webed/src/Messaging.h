@@ -2,14 +2,17 @@
 #define _Avida_Webviewer_Messaging_h
 
 #include "json.hpp"
+#include "WebDebug.h"
+#include "Feedback.h"
 #include <string>
 #include <cstdint>
 #include <string>
 #include <emscripten.h>
 #include <vector>
-#include "WebDebug.h"
+#include <iostream>
 
 using json = nlohmann::json;
+
 
 namespace Avida{
   namespace WebViewer{
@@ -18,9 +21,6 @@ namespace Avida{
     typedef nlohmann::json WebViewerMsg;
     typedef char* ReceivedMessage;
     
-    namespace Feedback{
-      typedef enum FEEDBACK_TYPE {FATAL, WARNING, NOTIFICATION, UNKNOWN} FEEDBACK_TYPE;
-    }
     
     const WebViewerMsg MSG_READY = {
       {"type", "userFeedback"},
@@ -31,6 +31,16 @@ namespace Avida{
     const WebViewerMsg MSG_DRIVER_PAUSED = {
       {"type", "data"},
       {"name", "paused"},
+    };
+    
+    const WebViewerMsg MSG_DRIVER_RUNNING = {
+      {"type", "data"},
+      {"name", "running"},
+    };
+    
+    const WebViewerMsg MSG_DRIVER_RESETTING = {
+      {"type", "data"},
+      {"name", "reset"},
     };
     
     const vector<string> EVENT_PROPERTIES = 
@@ -64,20 +74,25 @@ namespace Avida{
     }
     
     
-    WebViewerMsg FeedbackMessage(Feedback::FEEDBACK_TYPE err)
+    WebViewerMsg FeedbackMessage(const Feedback::FeedbackType& err)
     {
       WebViewerMsg ret = {{ "type","userFeedback" }};
       switch(err){
-        case Feedback::FATAL:
+        case Feedback::FeedbackType::ERROR:
           ret["level"] = "fatal";
           break;
-        case Feedback::WARNING:
+        case Feedback::FeedbackType::WARNING:
           ret["level"] = "warning";
           break;
-        case Feedback::NOTIFICATION:
+        case Feedback::FeedbackType::NOTIFY:
           ret["level"] = "notification";
           break;
-        case Feedback::UNKNOWN:
+        case Feedback::FeedbackType::DATA:
+          ret["level"] = "data";
+          break;
+        case Feedback::FeedbackType::DDEBUG:
+          ret["level"] = "debug";
+          break;
         default:
           ret["level"] = "unknown";
           break;
@@ -152,6 +167,10 @@ namespace Avida{
     
   }  //WebViewer
 }  //Avida
+
+
+
+
 
 #endif
 
