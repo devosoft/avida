@@ -1,0 +1,5 @@
+#!/bin/sh
+
+SCRIPT="build_tools/refresh_chrome.applescript"
+osascript ${SCRIPT} 
+
