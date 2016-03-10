@@ -516,7 +516,16 @@ public:
       json jargs = GetJSONArgs();
       if (contains(jargs,"files"))
         m_files = jargs["files"];
-      m_do_amend = (contains(jargs,"amend") && jargs["amend"]) ? true : false;
+      cerr << "here" << endl;
+      m_do_amend = false;
+      if (contains(jargs,"amend")){
+        string do_amend = jargs["amend"].get<string>();
+        cerr << "amend is " << do_amend << endl;
+        if (do_amend == "true"){
+          m_do_amend = true;
+        }
+      }
+      cerr << "there" << endl;
     }
     D_(D_FLOW, "Done cWebActionImportExpr::cWebActionImportExpr");
   }
@@ -529,17 +538,27 @@ public:
     
     if (m_files.empty() || !m_files.is_array())
       return;
+      
+    const char* const wdir = m_working_dir.c_str();
     
     
     //If we're not amending what's already in the working directory,
     //the delete it and copy the default settings over
     if (!m_do_amend){
+      D_(D_FLOW, "cWebImport::Expr::Process NOT amending");
+      if (Apto::FileSystem::IsFile(wdir)){
+        Apto::FileSystem::RmFile(wdir);
+      } else if (Apto::FileSystem::IsDir(wdir)){
+        Apto::FileSystem::RmDir(wdir);
+      }
+      
       //Create the directory
       Apto::FileSystem::MkDir(m_working_dir.c_str());
       
       //Copy default files
       vector<string> copy_files = {"/avida.cfg", "/default-heads.org", "/environment.cfg", "/events.cfg", "/instset.cfg"};
       for (auto f : copy_files){
+        D_(D_FLOW, "cWebImport::Expr::Process copying default file to working dir: " << f);
         string dst = m_working_dir + f;    
         Apto::FileSystem::CpFile(f.c_str(), dst.c_str());
       } 
@@ -553,7 +572,7 @@ public:
         ofstream fot(path.c_str(), std::ofstream::out | std::ofstream::trunc);
         if (fot.is_open() && fot.good() && contains(j_file,"data") && j_file["data"].is_string())
         {
-          D_(D_FLOW, "Writing file " + path);
+          D_(D_FLOW, "Writing file from message: " + path);
           fot << j_file["data"].get<string>();
         }
         fot.close();
@@ -588,20 +607,25 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
+    D_(D_FLOW, "In cWebActionSetUpdate::Process");
     if (Apto::FileSystem::IsFile(m_filename.GetData())){
+      D_(D_FLOW, m_filename + " file exists");
       ifstream fin(m_filename.GetData());
       int update;
       fin >> update;
-      if (fin.good()){
+      if (!fin.bad()){
+        D_(D_FLOW, "Sucessfully read in update as " << update);
         fin.close();
         WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
         if (driver != nullptr){
+          D_(D_FLOW, "Notifying driver to change update to " << update);
           driver->GetWorld()->GetStats().SetCurrentUpdate(update);
           return;
         }
       }
       fin.close();
     }
+    D_(D_FLOW, "There was an error reading and setting the update from a file");
     m_feedback.Error("cWebActionSetUpdate: unable to read update file.");
   }
 };

@@ -29,7 +29,6 @@ namespace Avida{
     class Driver : public WorldDriver
     {
     private:
-      static constexpr char event_set_update[] = "i setUpdate";
       string DumpEventList();
       void Pause()  { D_(D_FLOW | D_STATUS, "Pause"); D_(D_EVENTS, DumpEventList()); m_paused = (m_paused) ? false : true; }
       void Finish() {m_finished = true;}
@@ -192,8 +191,8 @@ namespace Avida{
     */
     void Driver::TrySetUpdate()
     {
-      if (Apto::FileSystem::IsFile("update")){
-        bool success = m_world->GetEventsList()->AddEventFileFormat(event_set_update, m_feedback);
+      if (Apto::FileSystem::IsFile("update")){        
+        bool success = m_world->GetEventsList()->AddEventFileFormat("i setUpdate update", m_feedback);
         if (!success){
             D_(D_STATUS, "Unable to set update.");
             m_feedback.Error("Unable to set update");

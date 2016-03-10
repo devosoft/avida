@@ -196,9 +196,9 @@ namespace Avida {
       driver = SetupDriver(0, nullptr, path);
       if (driver){
                D_(D_STATUS,  "About to run driver:"  << driver\
-               << " with world " << driver->GetWorld()\
+               << " with world " << driver->GetWorld() << "Grid is "\
                << driver->GetWorld()->GetConfig().WORLD_X.Get()\
-               << " " \
+               << " x " \
                << driver->GetWorld()->GetConfig().WORLD_Y.Get());
       }
       return driver;

@@ -869,6 +869,13 @@ public:
   CONFIG_ADD_VAR(LEARNING_COUNT, int, 0, "The number of times a task must be performed to avoid efficiency penalties");
 
 
+
+  // --------- WEB UI --------------
+  CONFIG_ADD_GROUP(WEB_GROUP, "Settings for the web browser interface");
+  CONFIG_ADD_VAR(SLEEP_DELAY, int, 250, "The minimum delay between updates to allow for browser processing");
+
+
+
   // -------- DEPRECATED ---------
   CONFIG_ADD_GROUP(DEPRECATED_GROUP, "DEPRECATED (New functionality listed in comments)");
   CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive\nDEPRECATED: use command line options -a[nalyze] or -i[nteractive])");
@@ -877,9 +884,6 @@ public:
   CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Default, heads-based CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Multi-threaded Behavioral CPU");
   CONFIG_ADD_VAR(INST_SET, cString, "-", "Instruction set file ('-' = use default for hardware type)");
   CONFIG_ADD_VAR(INST_SET_LOAD_LEGACY, int, 0, "Load legacy format instruction set file format");
-
-  CONFIG_ADD_GROUP(WEB_GROUP, "Settings for the web browser interface");
-  CONFIG_ADD_VAR(SLEEP_DELAY, int, 250, "The minimum delay between updates to allow for browser processing");
 
 #endif
   
