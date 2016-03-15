@@ -1,5 +1,7 @@
 #!/bin/sh
 
-SCRIPT="build_tools/refresh_chrome.applescript"
-osascript ${SCRIPT} 
+if [ -f cbuild/work/AvidaEd.html ]; then
+   SCRIPT="build_tools/refresh_chrome.applescript"
+   osascript ${SCRIPT} 
+fi
 

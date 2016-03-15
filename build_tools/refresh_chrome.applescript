@@ -1,5 +1,4 @@
 tell application id "com.google.Chrome"
-	activate
 	repeat with w in every window
 		repeat with t in (tabs of w)
 			if (title of t = "Avida-ED") then
