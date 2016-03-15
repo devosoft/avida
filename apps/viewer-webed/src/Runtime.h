@@ -11,6 +11,9 @@
 
 #include "Driver.h"
 #include "apto/core/FileSystem.h"
+#include "avida/private/systematics/CladeArbiter.h"
+#include "avida/systematics/Manager.h"
+
 #include <fstream>
 #include <cstdlib>
 
@@ -126,14 +129,18 @@ namespace Avida {
           D_(D_STATUS,  "FATAL ERROR: Cannot access /");
         }
       }
+      D_(D_STATUS, "Currently in directory " << Apto::FileSystem::GetCWD(),1);
       Apto::Map<Apto::String, Apto::String> defs;
       Avida::Util::ProcessCmdLineArgs(argc, argv, cfg, defs);
       World* new_world = new World;
       cUserFeedback feedback;  //Temporary feedback object; messages from init will be copied into the driver
       
-      cWorld* world = cWorld::Initialize(cfg, "/", new_world, &feedback, &defs);
+      cWorld* world = cWorld::Initialize(cfg, ".", new_world, &feedback, &defs);
       
       
+      //I'm not sure why this isn't in world initialization; for some reason it's in the a different driver's init
+      Avida::Systematics::ManagerPtr systematics = Avida::Systematics::Manager::Of(new_world);
+      systematics->RegisterArbiter(Avida::Systematics::ArbiterPtr(new Systematics::CladeArbiter(new_world, "clade")));
       
       D_(D_STATUS, "The world is located at " << world);
       
@@ -195,11 +202,11 @@ namespace Avida {
      
       driver = SetupDriver(0, nullptr, path);
       if (driver){
-               D_(D_STATUS,  "About to run driver:"  << driver\
-               << " with world " << driver->GetWorld() << "Grid is "\
-               << driver->GetWorld()->GetConfig().WORLD_X.Get()\
-               << " x " \
-               << driver->GetWorld()->GetConfig().WORLD_Y.Get());
+        D_(D_STATUS,  "About to run driver:"  << driver\
+          << " with world " << driver->GetWorld() << "Grid is "\
+          << driver->GetWorld()->GetConfig().WORLD_X.Get()\
+          << " x " \
+          << driver->GetWorld()->GetConfig().WORLD_Y.Get());
       }
       return driver;
     }

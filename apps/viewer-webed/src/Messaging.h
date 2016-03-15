@@ -111,7 +111,7 @@ namespace Avida{
     
     WebViewerMsg DefaultAddEventMessage(const WebViewerMsg& received)
     {
-      D_(D_FLOW | D_MSG_IN, "Defaulting message " << received);
+      D_(D_FLOW | D_MSG_IN, "Defaulting message " << received,1);
       WebViewerMsg return_msg(received);
       
       return_msg["triggerType"] =
@@ -129,7 +129,7 @@ namespace Avida{
       return_msg["singleton"] =
         (received.count("singleton")) ? received["singleton"] : json(false);
       
-      D_(D_FLOW | D_MSG_IN, "Done defaulting message.");
+      D_(D_FLOW | D_MSG_IN, "Done defaulting message.",1);
       return return_msg;
     }
     

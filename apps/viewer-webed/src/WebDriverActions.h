@@ -534,7 +534,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    D_(D_FLOW, "In cWebImportExpr::Process");
+    D_(D_FLOW | D_ACTIONS, "In cWebImportExpr::Process");
     
     if (m_files.empty() || !m_files.is_array())
       return;
@@ -558,7 +558,7 @@ public:
       //Copy default files
       vector<string> copy_files = {"/avida.cfg", "/default-heads.org", "/environment.cfg", "/events.cfg", "/instset.cfg"};
       for (auto f : copy_files){
-        D_(D_FLOW, "cWebImport::Expr::Process copying default file to working dir: " << f);
+        D_(D_ACTIONS, "cWebImport::Expr::Process copying default file to working dir: " << f,1);
         string dst = m_working_dir + f;    
         Apto::FileSystem::CpFile(f.c_str(), dst.c_str());
       } 
@@ -568,11 +568,13 @@ public:
     for (auto it = m_files.begin(); it != m_files.end(); ++it){
       const json& j_file = *it;
       if (contains(j_file,"name") && j_file["name"].is_string()){
-        string path = m_working_dir + "/" + j_file["name"].get<string>();
+        string fn = j_file["name"].get<string>();
+        string path =  m_working_dir + "/" + fn;
         ofstream fot(path.c_str(), std::ofstream::out | std::ofstream::trunc);
         if (fot.is_open() && fot.good() && contains(j_file,"data") && j_file["data"].is_string())
         {
-          D_(D_FLOW, "Writing file from message: " + path);
+          D_(D_ACTIONS, "Writing file from message: " + path,1);
+          D_(D_ACTIONS, j_file["data"].get<string>() << endl << "^^^^^^^^^^^^^^^^^^^",2);
           fot << j_file["data"].get<string>();
         }
         fot.close();

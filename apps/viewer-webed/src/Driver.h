@@ -77,6 +77,7 @@ namespace Avida{
       bool ShouldPause() const { return m_paused && IsActive();}
       bool ShouldRun() const {return !m_paused && IsActive();}
       void DoRun() {m_paused = false;}
+      void ProcessEvents() {m_world->GetEvents(*m_ctx);}
       
       Avida::Feedback& Feedback()  {return m_feedback;}
       cWorld* GetWorld() { return m_world; }
@@ -176,6 +177,8 @@ namespace Avida{
         m_world->SetDriver(this);
         active_cell_id = -1;
         TrySetUpdate();
+        D_(D_EVENTS, endl << "EVENT LIST" << endl << DumpEventList() << endl << "^^^^^^^^^^" << endl,1);
+        ProcessEvents();
         D_(D_FLOW, "Driver setup successful.");
       }
       ProcessFeedback();
@@ -193,6 +196,7 @@ namespace Avida{
     {
       if (Apto::FileSystem::IsFile("update")){        
         bool success = m_world->GetEventsList()->AddEventFileFormat("i setUpdate update", m_feedback);
+        ProcessEvents();
         if (!success){
             D_(D_STATUS, "Unable to set update.");
             m_feedback.Error("Unable to set update");
@@ -206,7 +210,7 @@ namespace Avida{
     */
     bool Driver::ProcessMessage(const WebViewerMsg& msg)
     {
-      D_(D_FLOW | D_MSG_IN, "ProcessMessage");
+      D_(D_FLOW | D_MSG_IN, "ProcessMessage",1);
       D_(D_MSG_IN, "Received Message: " << msg);
       bool retval = true;
       //This message is missing it's type; can't process.
@@ -218,20 +222,20 @@ namespace Avida{
         WebViewerMsg ret_msg = ReturnMessage(msg);
         ret_msg["success"] = false;
         if (msg["type"] == "addEvent") {  //This message is requesting we add an Event
-          D_(D_MSG_IN, "Message is addEvent type");
+          D_(D_MSG_IN, "Message is addEvent type",1);
           retval = ProcessAddEvent(msg, ret_msg);  //So try to add it.
-          D_(D_MSG_IN, "Done processing message");
+          D_(D_MSG_IN, "Done processing message",1);
         }
         else {
-          D_(D_MSG_IN, "Message is unknown type");
+          D_(D_MSG_IN, "Message is unknown type",1);
           ret_msg["message"] = "unknown type";  //We don't know what this message wants
           
         }
         PostMessage(ret_msg);
         ProcessFeedback();
       }
-      D_(D_FLOW | D_MSG_IN, "Done processing message");
-      return true;
+      D_(D_FLOW | D_MSG_IN, "Done processing message",1);
+      return !IsActive();
     }
     
     
@@ -270,7 +274,7 @@ namespace Avida{
       //Some properties aren't required; we'll add defaults if they are missing
       WebViewerMsg msg = DefaultAddEventMessage(rcv_msg);
       
-      D_(D_MSG_IN, "Defaulted message to be processed is " << msg);
+      D_(D_MSG_IN, "Defaulted message to be processed is " << msg,1);
       
       //Validate that the properties in the addEvent message is correct.
       if (!ValidateEventMessage(msg)){
@@ -280,19 +284,19 @@ namespace Avida{
       //TODO: actually make run pause action; for now just treat it as immediate
       //Right now any addEvent with runPause will happen immediately.
       else if (msg["name"] == "runPause"){
-        D_(D_MSG_IN, "addEvent has name runPause");
+        D_(D_MSG_IN, "addEvent has name runPause",1);
         ret_msg["success"] = true;
         Pause();
       } else {
-        D_(D_MSG_IN, "Event is other than runPause");
+        D_(D_MSG_IN, "Event is other than runPause",1);
         string event_line = JsonToEventFormat(msg);  //This will contain a properly formatted event list line if successful
-        D_(D_MSG_IN, "Trying to add event line: " + event_line);
+        D_(D_MSG_IN, "Trying to add event line: " + event_line,1);
         
         //Singleton events can only be in the event queue once
         if (msg["singleton"] == json(true)) {
           D_(D_MSG_IN, "Message is singleton; deleting other entries with event named: " << msg["name"]);
           int deleted = m_world->GetEventsList()->DeleteEventByName(cString(msg["name"].get<std::string>().c_str()));
-          D_(D_MSG_IN, deleted << " events removed.");
+          D_(D_MSG_IN, deleted << " events removed.",1);
         }
         
         //
@@ -300,16 +304,20 @@ namespace Avida{
         ret_msg["success"] = success;
         
         if (success){  //Process any immediate events
-          D_(D_MSG_IN, "Event successfully added");
+          D_(D_MSG_IN, "Event successfully added",1);
           // If we're paused, and the event starts "now", 
           // process the event immediately but also queue it for the next update as well
-          m_world->GetEventsList()->ProcessImmediates(*m_ctx);
-          D_(D_MSG_IN, "Immediate events processed.");
+          // Stop trying to process immediates if there weren't any processed when attempted
+          // This is to allow immediate events to trigger other immediate events
+          while(m_world->GetEventsList()->ProcessImmediates(*m_ctx)){
+            D_(D_EVENTS, "Found and processed immediate(s)");
+          }
+          D_(D_MSG_IN, "Immediate events processed.",1);
         } else {
-          D_(D_MSG_IN, "Unable to add event");
+          D_(D_MSG_IN, "Unable to add event",1);
         }
       } //Done with non runPause message processing
-      D_(D_MSG_IN | D_FLOW, "Done processing add event.");
+      D_(D_MSG_IN | D_FLOW, "Done processing add event.",1);
       return ShouldReset();
     }
     
@@ -322,50 +330,50 @@ namespace Avida{
     */
     bool Driver::ValidateEventMessage(const json& msg)
     {
-      D_(D_FLOW | D_MSG_IN, "Validating event message.");
+      D_(D_FLOW | D_MSG_IN, "Validating event message.",1);
       bool success = true;
       
       //Action name is missing
-      D_(D_MSG_IN, "Checking for name.");
+      D_(D_MSG_IN, "Checking for name.",1);
       if (msg.find("name") == msg.end()){
         success=false;
         m_feedback.Warning("addEvent is missing name property");
       }
       // Can't find event trigger type
-      D_(D_MSG_IN, "Checking for type");
+      D_(D_MSG_IN, "Checking for type",1);
       if (msg.find("triggerType") == msg.end()){
         success=false;
         m_feedback.Warning("addEvent is missing triggerType property");
       }
       
       if (msg["triggerType"] == "i" || msg["triggerType"] == "immediate"){
-        D_(D_MSG_IN, "Message is trigerType immediate");
+        D_(D_MSG_IN, "Message is trigerType immediate",1);
         if (msg.count("start") != 0 || msg.count("interval") != 0 || msg.count("end") != 0){
-          D_(D_MSG_IN, "Message has a start, interval, or end condition specified.");
+          D_(D_MSG_IN, "Message has a start, interval, or end condition specified.",1);
           m_feedback.Warning("addEvent is triggerType immediate but has timing start, interval, or end specified");
           success = false;
         }
       } else {
         //Missing start condition
-        D_(D_MSG_IN, "Checking for start");
+        D_(D_MSG_IN, "Checking for start",1);
         if (msg.find("start") == msg.end()){
           success = false;
           m_feedback.Warning("addEvent is missing start property");
         }
         // Can't find the event interval
-        D_(D_MSG_IN, "Checking for interval");
+        D_(D_MSG_IN, "Checking for interval",1);
         if (msg.find("interval") == msg.end()){
           success=false;
           m_feedback.Warning("addEvent is missing interval property");
         }
         // Can't find the event end 
-        D_(D_MSG_IN, "Checking for end");
+        D_(D_MSG_IN, "Checking for end",1);
         if (msg.find("end") == msg.end() || msg["end"] != ""){
           success=false;
           m_feedback.Warning("addEvent is missing end property");
         }
       }
-      D_(D_FLOW | D_MSG_IN, "Done validating event.");
+      D_(D_FLOW | D_MSG_IN, "Done validating event.",1);
       return success;
     }
     
@@ -384,7 +392,7 @@ namespace Avida{
     */
     string Driver::JsonToEventFormat(const WebViewerMsg& msg)
     {
-      D_(D_MSG_IN | D_FLOW, "JsonToEventFormat");
+      D_(D_MSG_IN | D_FLOW, "JsonToEventFormat",1);
       ostringstream line_in;
       
       //Convert action triggering information
@@ -403,21 +411,21 @@ namespace Avida{
       
       //Convert action arguments
       if (contains(msg,"args")){  //Arguments are specified through the args property (ordered, unnamed)
-        D_(D_FLOW, "Action contains argument array");
+        D_(D_FLOW, "Action contains argument array",1);
         for (auto arg : msg["args"])
           line_in << " " << arg;
       } else {  // Arguments in json format
-        D_(D_FLOW | D_MSG_IN, "Action contains possible JSON named properties.");
+        D_(D_FLOW | D_MSG_IN, "Action contains possible JSON named properties.",1);
         json jargs = StripProperties(msg, EVENT_PROPERTIES);  //Remove known properties for events
-        D_(D_FLOW | D_MSG_IN, "JSON properties are: " + jargs.dump());
+        D_(D_FLOW | D_MSG_IN, "JSON properties are: " + jargs.dump(),1);
         if (!jargs.empty()){  //If there are still properties defined, pass them
-          D_(D_FLOW | D_MSG_IN, "Adding JSON serial to parameter field");
+          D_(D_FLOW | D_MSG_IN, "Adding JSON serial to parameter field",1);
           string str_jargs = UNIT_SEP + string(jargs.dump());  //UNIT_SEP at 0 indicates to WebActions this is a json object
           line_in << " " << str_jargs;
         }
       }
       
-      D_(D_MSG_IN | D_FLOW, "Done JsonToEventFormat");
+      D_(D_MSG_IN | D_FLOW, "Done JsonToEventFormat",1);
       return line_in.str();  //Return our input from the stream
     }
     

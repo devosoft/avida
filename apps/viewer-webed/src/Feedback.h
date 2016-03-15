@@ -51,7 +51,24 @@ namespace Avida {
       
       Feedback(const cUserFeedback& fb)
       {
-        for (int i=0; i < fb.GetNumMessages(); i++){
+        AppendFromUserFeedback(fb);
+      }
+      
+      Feedback(const Feedback& fb)
+      {
+        *this = fb;
+      }
+      
+      
+      Feedback& operator=(const Feedback& fb)
+      {
+        this->m_entries = fb.m_entries;
+        return *this;
+      }
+      
+      void AppendFromUserFeedback(const cUserFeedback& fb)
+      {
+      for (int i=0; i < fb.GetNumMessages(); i++){
           cUserFeedback::eFeedbackType t = fb.GetMessageType(i);
           const char* msg = fb.GetMessage(i).GetData();
           switch (t){
@@ -69,18 +86,6 @@ namespace Avida {
               break;
           }
         }
-      }
-      
-      Feedback(const Feedback& fb)
-      {
-        *this = fb;
-      }
-      
-      
-      Feedback& operator=(const Feedback& fb)
-      {
-        this->m_entries = fb.m_entries;
-        return *this;
       }
       
       
