@@ -516,16 +516,13 @@ public:
       json jargs = GetJSONArgs();
       if (contains(jargs,"files"))
         m_files = jargs["files"];
-      cerr << "here" << endl;
       m_do_amend = false;
       if (contains(jargs,"amend")){
         string do_amend = jargs["amend"].get<string>();
-        cerr << "amend is " << do_amend << endl;
         if (do_amend == "true"){
           m_do_amend = true;
         }
       }
-      cerr << "there" << endl;
     }
     D_(D_FLOW, "Done cWebActionImportExpr::cWebActionImportExpr");
   }

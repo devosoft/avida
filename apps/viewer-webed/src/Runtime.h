@@ -318,12 +318,13 @@ namespace Avida {
           
           bool first_pass = true;
           while(driver && driver->ShouldPause()){
+            CheckMessages(driver);
             if (first_pass){
               NotifyDriverPaused(driver);
               first_pass = false;
+              D_(D_EVENTS, endl << "EVENT LIST" << endl << driver->DumpEventList() << endl << "^^^^^^^^^^" << endl,0);
             }
             emscripten_sleep(sleep_delay);
-            CheckMessages(driver);
           } //End paused loop
           
           //Move from paused state to running state.

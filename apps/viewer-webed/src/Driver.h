@@ -29,7 +29,6 @@ namespace Avida{
     class Driver : public WorldDriver
     {
     private:
-      string DumpEventList();
       void Pause()  { D_(D_FLOW | D_STATUS, "Pause"); D_(D_EVENTS, DumpEventList()); m_paused = (m_paused) ? false : true; }
       void Finish() {m_finished = true;}
       void Abort(AbortCondition cnd) {}
@@ -77,12 +76,14 @@ namespace Avida{
       bool ShouldPause() const { return m_paused && IsActive();}
       bool ShouldRun() const {return !m_paused && IsActive();}
       void DoRun() {m_paused = false;}
-      void ProcessEvents() {m_world->GetEvents(*m_ctx);}
+      void ProcessEvents() {m_world->GetEvents(*m_ctx);  ProcessFeedback();}
       
       Avida::Feedback& Feedback()  {return m_feedback;}
       cWorld* GetWorld() { return m_world; }
       DriverConfig* GetNextConfig() { return nullptr; }
       
+      string DumpEventList();
+
       
       bool ProcessMessage(const WebViewerMsg& msg);
       bool StepUpdate();
@@ -177,7 +178,7 @@ namespace Avida{
         m_world->SetDriver(this);
         active_cell_id = -1;
         TrySetUpdate();
-        D_(D_EVENTS, endl << "EVENT LIST" << endl << DumpEventList() << endl << "^^^^^^^^^^" << endl,1);
+        D_(D_EVENTS, endl << "EVENT LIST" << endl << DumpEventList() << endl << "^^^^^^^^^^" << endl,0);
         ProcessEvents();
         D_(D_FLOW, "Driver setup successful.");
       }
@@ -317,6 +318,8 @@ namespace Avida{
           D_(D_MSG_IN, "Unable to add event",1);
         }
       } //Done with non runPause message processing
+      D_(D_MSG_IN | D_EVENTS, "Processing other events.",1);
+      ProcessEvents();
       D_(D_MSG_IN | D_FLOW, "Done processing add event.",1);
       return ShouldReset();
     }
