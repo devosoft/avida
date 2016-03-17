@@ -23,7 +23,7 @@ using json = nlohmann::json;
 #define D_SEND_JSON 0
 
 //How detailed should our debug output be
-#define D_VERBOSITY 0
+#define D_VERBOSITY 1
 
 //Constants to define different types of debugging
 #define D_FLOW 1
@@ -37,10 +37,12 @@ using json = nlohmann::json;
 ////What should we be outputting for debug purposes?
 
 
-//#define DEBUG_LEVEL \
+//#define DEBUG_MODE \
 //  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
-#define DEBUG_LEVEL 0
+//#define DEBUG_MODE ( D_MSG_IN | D_STATUS | D_ACTIONS | D_EVENTS )
+
+#define DEBUG_MODE 0
 
 #ifdef NDEBUG 
 
@@ -48,11 +50,11 @@ using json = nlohmann::json;
 
 #else
 
-  #define D_0(LEVEL, MSG) D_1(LEVEL, MSG, 0)
+  #define D_0(MODE, MSG) D_1(MODE, MSG, 0)
 
-  #define D_1(LEVEL, MSG, VERBOSITY)\
+  #define D_1(MODE, MSG, VERBOSITY)\
   do{\
-    if ( ( (LEVEL) & (DEBUG_LEVEL) ) && (VERBOSITY <= D_VERBOSITY) )\
+    if ( ( (MODE) & (DEBUG_MODE) ) && (VERBOSITY <= D_VERBOSITY) )\
     {\
       if ( !D_SEND_JSON ){\
         DEBUG_STREAM << std::endl << "[AVIDA] " << MSG << std::endl;\
@@ -62,7 +64,7 @@ using json = nlohmann::json;
   
   #define D_SELECT(_0, _1, FUNC, ...) FUNC
   
-  #define D_(LEVEL, MSG, ...) D_SELECT(_0, ##__VA_ARGS__, D_1, D_0)(LEVEL, MSG, ##__VA_ARGS__)
+  #define D_(MODE, MSG, ...) D_SELECT(_0, ##__VA_ARGS__, D_1, D_0)(MODE, MSG, ##__VA_ARGS__)
 
 
 #endif  //NDEBUG

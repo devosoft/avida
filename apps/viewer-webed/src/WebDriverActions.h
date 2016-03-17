@@ -697,14 +697,13 @@ class cWebActionInjectSequence : public cWebAction
       D_(D_ACTIONS, "cWebActionInjectSequence::Process");
       WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
       if (driver != nullptr){
+        if (m_end_id == -1) m_end_id = m_start_id + 1;
         for (int cell_id=m_start_id; cell_id < m_end_id; cell_id++){
           Systematics::RoleClassificationHints hints;
           hints["clade"]["name"] = m_clade_name.c_str();
           Genome genome(Apto::String(m_genome.c_str()));
           driver->GetWorld()->GetPopulation().InjectGenome(
               cell_id, Systematics::Source(Systematics::DIVISION, "", true), genome, ctx, 0, true, &hints);
-          if (m_end_id == -1)
-            break;
         }
       } else {
         m_feedback.Error("cWebActionInjectSequence::Process unable to get the driver.");
