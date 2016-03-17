@@ -1,3 +1,7 @@
+!cbuild/bin/avida.js
+!cbuild/bin/avida.js.mem
+!cbuild/bin/
+!cbuild/
 build
 cbuild
 CMakeCache.txt
@@ -11,6 +15,4 @@ DerivedData
 .project
 *.swp
 !cbuild/bin
-!cbuild/bin/avida.js
-!cbuild/bin/avida.js.mem
 
