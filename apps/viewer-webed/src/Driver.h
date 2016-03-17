@@ -26,7 +26,7 @@ using json = nlohmann::json;
 
 namespace Avida{
   namespace WebViewer{
-    class Driver : public WorldDriver
+    class Driver : public Avida::WorldDriver 
     {
     private:
       void Pause()  { D_(D_FLOW | D_STATUS, "Pause"); D_(D_EVENTS, DumpEventList()); m_paused = (m_paused) ? false : true; }

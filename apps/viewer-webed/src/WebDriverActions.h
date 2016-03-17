@@ -29,6 +29,8 @@ class cActionLibrary;
 #include "avida/viewer/OrganismTrace.h"
 #include "avida/private/systematics/Genotype.h"
 #include "avida/private/systematics/Clade.h"
+#include "avida/private/systematics/CladeArbiter.h"
+
 
 #include "apto/core/FileSystem.h"
 
@@ -630,6 +632,86 @@ public:
 };
 
 
+class cWebActionReset : public cWebAction
+{
+  private:
+  
+  public:
+    cWebActionReset(cWorld* world, const cString& args, Avida::Feedback& fb)
+    : cWebAction(world,args,fb)
+    {
+    }
+    
+    static const cString GetDescription() { return "Arguments: NONE"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      D_(D_ACTIONS, "cWebActionReset::Process");
+      WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
+      if (driver != nullptr){
+          driver->DoReset("/");
+      } else {
+        m_feedback.Error("cWebActionReset::Process unable to reset driver.");
+      }
+      D_(D_ACTIONS, "cWebActionReset::Process [Done]");
+    }
+};
+
+
+
+class cWebActionInjectSequence : public cWebAction
+{
+  private:
+    string m_genome;
+    int m_start_id;
+    int m_end_id;
+    string m_clade_name;
+  
+  public:
+    cWebActionInjectSequence(cWorld* world, const cString& args, Avida::Feedback& fb)
+    : cWebAction(world,args,fb)
+    {
+      if (!m_json_args){
+        fb.Error("cWebActionInjectSequence needs to have json arguments.");
+      } else {
+        json jargs = GetJSONArgs();
+        if (contains(jargs,"genome")){
+          m_genome = jargs["genome"].get<string>();
+          if (contains(jargs,"start_cell_id")){
+            m_start_id = jargs["start_cell_id"].get<int>();
+            m_end_id = contains(jargs,"end_cell_id") ? jargs["end_cell_id"].get<int>() : -1;
+            m_clade_name = (contains(jargs,"clade_name") ? jargs["clade_name"].get<string>() : "none");
+          } else {
+            fb.Error("cWebActionInjectSequence requires a 'start_cell_id' int");
+          }
+        } else {
+          fb.Error("cWebActionInjectSequence requires a 'genome' string.");
+        }
+      }
+    }
+    
+    static const cString GetDescription() { return "Arguments: JSON {genome:STRING, start_cell_id:INT, end_cell_id:INT [Default -1; single cell inject], m_clade_name:STRING"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      D_(D_ACTIONS, "cWebActionInjectSequence::Process");
+      WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
+      if (driver != nullptr){
+        for (int cell_id=m_start_id; cell_id < m_end_id; cell_id++){
+          Systematics::RoleClassificationHints hints;
+          hints["clade"]["name"] = m_clade_name.c_str();
+          Genome genome(Apto::String(m_genome.c_str()));
+          driver->GetWorld()->GetPopulation().InjectGenome(
+              cell_id, Systematics::Source(Systematics::DIVISION, "", true), genome, ctx, 0, true, &hints);
+          if (m_end_id == -1)
+            break;
+        }
+      } else {
+        m_feedback.Error("cWebActionInjectSequence::Process unable to get the driver.");
+      }
+      D_(D_ACTIONS, "cWebActionInjectSequence::Process [Done]");
+    }
+};
 
 
 
@@ -641,6 +723,8 @@ void RegisterWebDriverActions(cActionLibrary* action_lib)
   action_lib->Register<cWebActionGridData>("webGridData");
   action_lib->Register<cWebActionImportExpr>("importExpr");
   action_lib->Register<cWebActionSetUpdate>("setUpdate");
+  action_lib->Register<cWebActionReset>("reset");
+  action_lib->Register<cWebActionInjectSequence>("webInjectSequence");
 }
 
 #endif
