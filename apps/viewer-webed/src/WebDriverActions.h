@@ -446,7 +446,7 @@ public:
       metabolism[i] = phen.GetMerit().GetDouble();
       ancestor[i]   = org->GetLineageLabel();
       for (int t=0; t<env.GetNumTasks(); t++){
-        tasks[task_names[t]][i] = phen.GetCurCountForTask(t);          
+        tasks[task_names[t]][i] = phen.GetLastCountForTask(t);          
       }
     }
     
