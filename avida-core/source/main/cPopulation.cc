@@ -850,28 +850,10 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       // Reset inputs and re-calculate merit if required
       if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
         environment.SetupInputs(ctx, parent_cell.m_inputs);
-        
-        int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
-        if (pc_phenotype) {
-          cCPUTestInfo test_info;
-          cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-          test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
-          Genome mg(parent_organism->GetGenome().HardwareType(),
-                    parent_organism->GetGenome().Properties(),
-                    GeneticRepresentationPtr(new InstructionSequence(parent_organism->GetHardware().GetMemory())));
-          test_cpu->TestGenome(ctx, test_info, mg); // Use the true genome
-          if (pc_phenotype & 1) {  // If we must update the merit
-            parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());
-          }
-          if (pc_phenotype & 2) {  // If we must update the gestation time
-            parent_phenotype.SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
-          }
-          if (pc_phenotype & 4) {  // If we must update the last instruction counts
-            parent_phenotype.SetTestCPUInstCount(test_info.GetTestPhenotype().GetLastInstCount());
-          }
-          parent_phenotype.SetFitness(parent_phenotype.GetMerit().CalcFitness(parent_phenotype.GetGestationTime())); // Update fitness
-          delete test_cpu;
-        }
+       
+        // If we are precalculating our phenotypes, do so 
+        if (m_world->GetConfig().PRECALC_PHENOTYPE.Get() > 0)
+          PrecalculatePhenotype(ctx, parent_organism, parent_cell);
       }
       AdjustSchedule(parent_cell, parent_phenotype.GetMerit());
       
@@ -1250,23 +1232,9 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   environment.SetupInputs(ctx, target_cell.m_inputs);
   
   // Precalculate the phenotype if requested
-  int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
-  if (pc_phenotype){
-    cCPUTestInfo test_info;
-    cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-    test_info.UseManualInputs(target_cell.GetInputs()); // Test using what the environment will be
-    Genome mg(in_organism->GetGenome().HardwareType(),
-              in_organism->GetGenome().Properties(),
-              GeneticRepresentationPtr(new InstructionSequence(in_organism->GetHardware().GetMemory())));
-    test_cpu->TestGenome(ctx, test_info, mg);  // Use the true genome
+  if (m_world->GetConfig().PRECALC_PHENOTYPE.Get() > 0)
+    PrecalculatePhenotype(ctx, in_organism, target_cell);
     
-    if (pc_phenotype & 1)
-      in_organism->GetPhenotype().SetMerit(test_info.GetTestPhenotype().GetMerit());
-    if (pc_phenotype & 2)
-      in_organism->GetPhenotype().SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
-    in_organism->GetPhenotype().SetFitness(in_organism->GetPhenotype().GetMerit().CalcFitness(in_organism->GetPhenotype().GetGestationTime()));
-    delete test_cpu;
-  }
   // Update the archive...
   
   
@@ -1406,6 +1374,26 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   }
   return org_survived;
 }
+
+
+
+void cPopulation::PrecalculatePhenotype(cAvidaContext& ctx, cOrganism* org, const cPopulationCell& target_cell)
+{
+    cCPUTestInfo test_info;
+    Apto::SmartPtr<cTestCPU> test_cpu(m_world->GetHardwareManager().CreateTestCPU(ctx));
+    test_info.UseManualInputs(target_cell.GetInputs()); // Test using what the environment will be
+    Genome mg(org->GetGenome().HardwareType(),
+              org->GetGenome().Properties(),
+              GeneticRepresentationPtr(new InstructionSequence(org->GetHardware().GetMemory())));
+    test_cpu->TestGenome(ctx, test_info, mg);  // Use the true genome
+  
+    org->GetPhenotype().SetMerit(test_info.GetTestPhenotype().GetMerit());
+    org->GetPhenotype().SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
+    org->GetPhenotype().SetTestCPUInstCount(test_info.GetTestPhenotype().GetLastInstCount());
+    org->GetPhenotype().SetFitness(org->GetPhenotype().GetMerit().CalcFitness(org->GetPhenotype().GetGestationTime()));
+}
+
+
 
 void cPopulation::TestForMiniTrace(cOrganism* in_organism) 
 {

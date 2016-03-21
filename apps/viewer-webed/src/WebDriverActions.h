@@ -423,46 +423,42 @@ public:
     WebViewerMsg data = { {"type","data"}, {"name","webGridData"} };
     cPopulation& population = m_world->GetPopulation();
     cEnvironment& env = m_world->GetEnvironment();
-    vector<double> fitness;
-    vector<double> gestation;
-    vector<double> metabolism;
-    vector<double> ancestor;
+    int sz = population.GetSize();
+    vector<double> fitness(sz, NaN);
+    vector<double> gestation(sz, NaN);
+    vector<double> metabolism(sz, NaN);
+    vector<double> ancestor(sz, NaN);
     map<string, vector<double>> tasks;
     vector<string> task_names;
     for (int t=0; t<env.GetNumTasks(); t++){
-      task_names.push_back(string(env.GetTask(t).GetName().GetData()));
+      const string task_name = env.GetTask(t).GetName().GetData();
+      tasks[task_name] = vector<double>(sz,NaN);
+      task_names.push_back(task_name);
     }
+    
     
     for (int i=0; i < population.GetSize(); i++)
     {
       cPopulationCell& cell = population.GetCell(i);
       cOrganism* org = cell.GetOrganism();
       
-      
-      if (org == nullptr){
-        fitness.push_back(NaN);
-        gestation.push_back(NaN);
-        metabolism.push_back(NaN);
-        ancestor.push_back(NaN);
-        for (int t=0; t<env.GetNumTasks(); t++){
-          if (tasks.find(task_names[t]) == tasks.end())
-            tasks[task_names[t]] = vector<double>(1,0.0);
-          else
-            tasks[task_names[t]].push_back(0.0);
-        }          
-      } else {
+      if (org == nullptr)
+        continue;
+    
+      //If phenotypes have been precalculated, use the phenotype information
+      if (m_world->GetConfig().PRECALC_PHENOTYPE.Get() > 0){
         cPhenotype& phen = org->GetPhenotype();
-        fitness.push_back(phen.GetFitness());
-        gestation.push_back(phen.GetGestationTime());
-        metabolism.push_back(phen.GetMerit().GetDouble());
-        ancestor.push_back(org->GetLineageLabel());
+        fitness[i]    = phen.GetFitness();
+        gestation[i]  = phen.GetGestationTime();
+        metabolism[i] = phen.GetMerit().GetDouble();
+        ancestor[i]   = org->GetLineageLabel();
         for (int t=0; t<env.GetNumTasks(); t++){
-          if (tasks.find(task_names[t]) == tasks.end())
-            tasks[task_names[t]] = vector<double>(1,phen.GetCurCountForTask(t));
-          else
-            tasks[task_names[t]].push_back(phen.GetCurCountForTask(t));
-        }          
+          tasks[task_names[t]][i] = phen.GetCurCountForTask(t);          
+        }
+      } else {
+        //There is no concensus on what we should do otherwise
       }
+
     }
     data["fitness"] = { 
       {"data",fitness}, 

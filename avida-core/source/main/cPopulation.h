@@ -158,6 +158,9 @@ public:
   bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
   bool ActivateParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code);
   
+  // Phenotypic pre-calculation utility @MRR
+  void PrecalculatePhenotype(cAvidaContext& ctx, cOrganism* org, const cPopulationCell& target_cell);
+  
   // Helper function for ActivateParasite - returns if the parasite from the infected host should infect the target host
   bool TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host);
   
