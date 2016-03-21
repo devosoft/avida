@@ -371,6 +371,17 @@ public:
 
 class cWebActionGridData : public cWebAction {
 private:
+
+  //Trying to keep data structures constructed
+  //between Process events to see if there is
+  //a speedup
+  int world_size;
+  vector<double> fitness;
+  vector<double> gestation;
+  vector<double> metabolism;
+  vector<string> ancestor;
+  vector<string> task_names;
+  map<string, vector<double>> tasks;
   
   /*
    Need to use our own min/max_val functions
@@ -408,6 +419,19 @@ private:
 public:
   cWebActionGridData(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world,args,fb)
   {
+    cPopulation& population = m_world->GetPopulation();
+    cEnvironment& env = m_world->GetEnvironment();
+    int sz = population.GetSize();
+    world_size = sz;
+    fitness.resize(sz, NaN);
+    gestation.resize(sz, NaN);
+    metabolism.resize(sz, NaN);
+    ancestor.resize(sz, "-");
+    for (int t=0; t<env.GetNumTasks(); t++){
+      const string task_name = env.GetTask(t).GetName().GetData();
+      tasks[task_name] = vector<double>(sz,NaN);
+      task_names.push_back(task_name);
+    }
   }
   
   static const cString GetDescription() { return "Arguments: none";}
@@ -416,36 +440,35 @@ public:
   {
     D_(D_ACTIONS, "cWebActionGridData::Process");
     WebViewerMsg data = { {"type","data"}, {"name","webGridData"} };
-    cPopulation& population = m_world->GetPopulation();
-    cEnvironment& env = m_world->GetEnvironment();
-    int sz = population.GetSize();
-    vector<double> fitness(sz, NaN);
-    vector<double> gestation(sz, NaN);
-    vector<double> metabolism(sz, NaN);
-    vector<double> ancestor(sz, NaN);
-    map<string, vector<double>> tasks;
-    vector<string> task_names;
-    for (int t=0; t<env.GetNumTasks(); t++){
-      const string task_name = env.GetTask(t).GetName().GetData();
-      tasks[task_name] = vector<double>(sz,NaN);
-      task_names.push_back(task_name);
+    
+    //Reset our vectors
+    fitness.resize(world_size, NaN);
+    gestation.resize(world_size, NaN);
+    metabolism.resize(world_size, NaN);
+    ancestor.resize(world_size, "-");
+    for (auto t : task_names){
+      tasks[t].resize(world_size,NaN);
     }
+
     
-    
-    for (int i=0; i < population.GetSize(); i++)
+    cPopulation& pop = m_world->GetPopulation();
+    for (int i=0; i < world_size; i++)
     {
-      cPopulationCell& cell = population.GetCell(i);
+      cPopulationCell& cell = pop.GetCell(i);
       cOrganism* org = cell.GetOrganism();
       
       if (org == nullptr)
         continue;
     
+      Systematics::CladePtr cptr;
+      cptr.DynamicCastFrom(org->SystematicsGroup("clade"));
+      
       cPhenotype& phen = org->GetPhenotype();
       fitness[i]    = phen.GetFitness();
       gestation[i]  = phen.GetGestationTime();
       metabolism[i] = phen.GetMerit().GetDouble();
-      ancestor[i]   = org->GetLineageLabel();
-      for (int t=0; t<env.GetNumTasks(); t++){
+      ancestor[i]   = (cptr == nullptr) ? "-" : cptr->Properties().Get("name").StringValue().GetData();
+      for (int t = 0; t < task_names.size(); t++){
         tasks[task_names[t]][i] = phen.GetLastCountForTask(t);          
       }
     }
@@ -467,11 +490,6 @@ public:
       {"maxVal",max_val(gestation)} 
     };
     
-    data["ancestor"] = {
-      {"data",ancestor}, 
-      {"minVal",min_val(ancestor)}, 
-      {"maxVal",max_val(ancestor)} 
-    };
     
     
     for (auto it : tasks){
@@ -815,6 +833,7 @@ void RegisterWebDriverActions(cActionLibrary* action_lib)
   action_lib->Register<cWebActionSetUpdate>("setUpdate");
   action_lib->Register<cWebActionReset>("reset");
   action_lib->Register<cWebActionInjectSequence>("webInjectSequence");
+  action_lib->Register<cWebActionExportExpr>("exportExpr");
 }
 
 #endif
