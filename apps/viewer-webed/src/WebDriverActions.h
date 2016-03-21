@@ -490,6 +490,10 @@ public:
       {"maxVal",max_val(gestation)} 
     };
     
+    data["ancestor"] = {
+      {"data", ancestor}
+    };
+    
     
     
     for (auto it : tasks){
