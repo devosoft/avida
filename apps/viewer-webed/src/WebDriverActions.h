@@ -626,6 +626,7 @@ class cWebActionExportExpr : public cWebAction
         json jfile = { {"name","filename"}, {"data",oss.str()} };
         files.push_back(jfile);
       }
+      cerr << "foo" << endl;
       return json(files);
     }
     
