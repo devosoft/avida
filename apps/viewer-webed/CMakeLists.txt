@@ -75,7 +75,7 @@ IF(UNIX)
   # Some emscripten warnings
    IF(EMSCRIPTEN)
       SET(COMPILER_WARNING_FLAGS 
-         "${COMPILER_WARNING_FLAGS} -Wno-warn-absolute-paths")
+         "${COMPILER_WARNING_FLAGS}")
    ENDIF(EMSCRIPTEN)
 
   # Four types of c++ compilations:
