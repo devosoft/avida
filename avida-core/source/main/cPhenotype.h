@@ -477,8 +477,13 @@ public:
   const Apto::Array<int>& GetLastParasiteTaskCount() const { assert(initialized == true); return last_para_tasks; }
   void  SetLastParasiteTaskCount(Apto::Array<int>  oldParaPhenotype);
   const Apto::Array<int>& GetLastInternalTaskCount() const { assert(initialized == true); return last_internal_task_count; }
+  
   const Apto::Array<double>& GetLastTaskQuality() const { assert(initialized == true); return last_task_quality; }
+  void SetLastTaskQuality(Apto::Array<double> quality) { assert(initialized == true); last_task_quality = quality; }
+  
   const Apto::Array<double>& GetLastTaskValue() const { assert(initialized == true); return last_task_value; }
+  void SetLastTaskValue(Apto::Array<double> value) { assert(initialized == true); last_task_value = value; }
+  
   const Apto::Array<double>& GetLastInternalTaskQuality() const { assert(initialized == true); return last_internal_task_quality; }
   const Apto::Array<double>& GetLastRBinsTotal() const { assert(initialized == true); return last_rbins_total; }
   const Apto::Array<double>& GetLastRBinsAvail() const { assert(initialized == true); return last_rbins_avail; }

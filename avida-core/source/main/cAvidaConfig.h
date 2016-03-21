@@ -872,7 +872,7 @@ public:
 
   // --------- WEB UI --------------
   CONFIG_ADD_GROUP(WEB_GROUP, "Settings for the web browser interface");
-  CONFIG_ADD_VAR(SLEEP_DELAY, int, 250, "The minimum delay between updates to allow for browser processing");
+  CONFIG_ADD_VAR(SLEEP_DELAY, int, 50, "The minimum delay between updates to allow for browser processing");
 
 
 

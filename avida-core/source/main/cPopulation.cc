@@ -1386,10 +1386,18 @@ void cPopulation::PrecalculatePhenotype(cAvidaContext& ctx, cOrganism* org, cons
               org->GetGenome().Properties(),
               GeneticRepresentationPtr(new InstructionSequence(org->GetHardware().GetMemory())));
     test_cpu->TestGenome(ctx, test_info, mg);  // Use the true genome
+    const cPhenotype& test_phen = test_info.GetTestPhenotype();
   
-    org->GetPhenotype().SetMerit(test_info.GetTestPhenotype().GetMerit());
-    org->GetPhenotype().SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
-    org->GetPhenotype().SetTestCPUInstCount(test_info.GetTestPhenotype().GetLastInstCount());
+    //TODO: Really we should be using some kind of copy constructor
+    //or setup method like we do when an organism divides in order
+    //to get all fields setup.
+    org->GetPhenotype().SetMerit(test_phen.GetMerit());
+    org->GetPhenotype().SetGestationTime(test_phen.GetGestationTime());
+    org->GetPhenotype().SetTestCPUInstCount(test_phen.GetLastInstCount());
+    org->GetPhenotype().SetLastTaskCount(test_phen.GetLastTaskCount());
+    org->GetPhenotype().SetLastTaskQuality(test_phen.GetLastTaskQuality());
+    org->GetPhenotype().SetLastTaskValue(test_phen.GetLastTaskValue());
+
     org->GetPhenotype().SetFitness(org->GetPhenotype().GetMerit().CalcFitness(org->GetPhenotype().GetGestationTime()));
 }
 

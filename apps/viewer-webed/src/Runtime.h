@@ -157,6 +157,10 @@ namespace Avida {
       D_(D_STATUS, "The driver is located at " << driver);
       
       D_(D_STATUS, "Avida driver with configuration from " << path);
+      
+      //TODO: Have Diane send this with every avida.cfg
+      driver->GetWorld()->GetConfig().PRECALC_PHENOTYPE.Set(1);
+      
       return driver;
     }
     

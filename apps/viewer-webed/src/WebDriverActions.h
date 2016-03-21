@@ -336,8 +336,7 @@ public:
       data["isEstimate"] = false;
       data["tasks"] = {};
     } else {
-      // We're going to emulate AvidaEd OSX right now and go through the
-      // genotype rather than the organism for information.
+      // This breaks from the Mac version; we're going to use precalculated phenotypes to get this informatoin
       Systematics::GenotypePtr gptr;
       gptr.DynamicCastFrom(org->SystematicsGroup("genotype"));
       data["genotypeName"] = gptr->Properties().Get("name").StringValue().Substring(4).GetData();
@@ -345,22 +344,18 @@ public:
       data["age"] = org->GetPhenotype().GetAge();
       Systematics::CladePtr cptr;
       cptr.DynamicCastFrom(org->SystematicsGroup("clade"));
-      data["ancestor"] = (cptr == nullptr) ? json(NaN) : json(cptr->Properties().Get("name").StringValue());
-      //TODO: Clades have names?  How?
+      data["ancestor"] = (cptr == nullptr) ? "-" : json(cptr->Properties().Get("name").StringValue());
+    
+      data["isEstimate"] = false;
+      data["fitness"] = org->GetPhenotype().GetFitness();
+      data["metabolism"] = org->GetPhenotype().GetMerit().GetDouble();
+      data["gestation"] = org->GetPhenotype().GetGestationTime();
       
-      bool has_gestated = (gptr->Properties().Get("total_gestation_count").IntValue() > 0);
-      data["isEstimate"] = (has_gestated) ? false : true;
-      data["fitness"] = (has_gestated) ? gptr->Properties().Get("ave_fitness").DoubleValue() : GetTestFitness(gptr);
-      data["metabolism"] = (has_gestated) ? gptr->Properties().Get("ave_metabolic_rate").DoubleValue() : GetTestMerit(gptr);
-      data["gestation"] = (has_gestated) ? gptr->Properties().Get("ave_gestation").DoubleValue() : GetTestGestationTime(gptr);
-      
-      //TODO: It doesn't look like genotypes actually track task counts right now
-      //Instead, AvidaEd OSX goes through a test cpu to always grab the information
       map<string,double> task_count;
       cEnvironment& env = m_world->GetEnvironment();
       for (int t=0; t<env.GetNumTasks(); t++){
         cString task_name = env.GetTask(t).GetName();
-        task_count[task_name.GetData()] = GetTestTaskCount(gptr, task_name);
+        task_count[task_name.GetData()] = org->GetPhenotype().GetLastCountForTask(t);
       }
       data["tasks"] = task_count;
     }
@@ -445,21 +440,17 @@ public:
       if (org == nullptr)
         continue;
     
-      //If phenotypes have been precalculated, use the phenotype information
-      if (m_world->GetConfig().PRECALC_PHENOTYPE.Get() > 0){
-        cPhenotype& phen = org->GetPhenotype();
-        fitness[i]    = phen.GetFitness();
-        gestation[i]  = phen.GetGestationTime();
-        metabolism[i] = phen.GetMerit().GetDouble();
-        ancestor[i]   = org->GetLineageLabel();
-        for (int t=0; t<env.GetNumTasks(); t++){
-          tasks[task_names[t]][i] = phen.GetCurCountForTask(t);          
-        }
-      } else {
-        //There is no concensus on what we should do otherwise
+      cPhenotype& phen = org->GetPhenotype();
+      fitness[i]    = phen.GetFitness();
+      gestation[i]  = phen.GetGestationTime();
+      metabolism[i] = phen.GetMerit().GetDouble();
+      ancestor[i]   = org->GetLineageLabel();
+      for (int t=0; t<env.GetNumTasks(); t++){
+        tasks[task_names[t]][i] = phen.GetCurCountForTask(t);          
       }
-
     }
+    
+    
     data["fitness"] = { 
       {"data",fitness}, 
       {"minVal",min_val(fitness)}, 
