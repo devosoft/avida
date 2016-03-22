@@ -606,13 +606,7 @@ class cWebActionExportExpr : public cWebAction
 {
   private:
     const string m_export_dir = "/export";
-    
-    string GetFileName(const string& abs_path)
-    {
-      std::size_t ndx = abs_path.find_last_of("/");
-      return abs_path.substr(ndx+1);
-    }
-    
+       
     json JSONifyDir()
     {
       Apto::Array<Apto::String, Apto::Smart> entries;
@@ -622,8 +616,10 @@ class cWebActionExportExpr : public cWebAction
       }
       vector<json> files;
       for (auto it = entries.Begin().Next(); it != nullptr; it++){
-        string filepath(it->GetData());
-        string filename = GetFileName(filepath);
+        string filename = string(it->GetData());
+        string filepath = m_export_dir + string(it->GetData());
+
+        
         ifstream fin(filepath.c_str());
         if (!fin.good()){
           m_feedback.Error(string("cWebActionExportExpr::JSONifyDir is unable to get export file " + filepath).c_str());
