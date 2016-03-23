@@ -617,7 +617,7 @@ class cWebActionExportExpr : public cWebAction
       vector<json> files;
       for (auto it = entries.Begin().Next(); it != nullptr; it++){
         string filename = string(it->GetData());
-        string filepath = m_export_dir + string(it->GetData());
+        string filepath = m_export_dir + "/" + string(it->GetData());
 
         
         ifstream fin(filepath.c_str());
