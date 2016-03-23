@@ -633,7 +633,7 @@ class cWebActionExportExpr : public cWebAction
         ostringstream oss;
         oss << fin.rdbuf();
         fin.close();
-        json jfile = { {"name","filename"}, {"data",oss.str()} };
+        json jfile = { {"name",filename}, {"data",oss.str()} };
         files.push_back(jfile);
         D_(D_ACTIONS, filename << " has size of " << oss.str().size(),1);
       }
