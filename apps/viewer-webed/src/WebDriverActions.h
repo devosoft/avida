@@ -606,6 +606,7 @@ class cWebActionExportExpr : public cWebAction
 {
   private:
     const string m_export_dir = "/export";
+    string m_pop_name;
        
     json JSONifyDir()
     {
@@ -645,6 +646,13 @@ class cWebActionExportExpr : public cWebAction
     cWebActionExportExpr(cWorld* world, const cString& args, Avida::Feedback& fb)
     : cWebAction(world,args,fb)
     {
+      m_pop_name = "untitled";
+      if (m_json_args){
+        json jargs = GetJSONArgs();
+        if (contains(jargs, "popName")){
+          m_pop_name = jargs["popName"].get<string>();
+        }
+      }
     }
     
     static const cString GetDescription() { return "Arguments: NONE"; }
@@ -662,7 +670,7 @@ class cWebActionExportExpr : public cWebAction
       
       //Copy our files from the current working directory to the export directory
       Apto::FileSystem::MkDir(m_export_dir.c_str());
-      vector<string> copy_files = {"avida.cfg", "default-heads.org", "environment.cfg", "events.cfg", "instset.cfg"};
+      vector<string> copy_files = {"avida.cfg", "environment.cfg", "events.cfg", "instset.cfg"};
       for (auto file : copy_files){
         string dst_file = m_export_dir + "/" + file;
         Apto::FileSystem::CpFile(file.c_str(), dst_file.c_str());
@@ -694,6 +702,7 @@ class cWebActionExportExpr : public cWebAction
       json retval;
       retval["type"] = "data";
       retval["name"] = "exportExpr";
+      retval["popName"] = m_pop_name;
       retval["files"] = JSONifyDir();
       m_feedback.Data(retval.dump().c_str());
       D_(D_ACTIONS, "cWebActionExportExpr::Process [Done]");
