@@ -80,6 +80,7 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
 , last_sense_count(m_world->GetStats().GetSenseSize())
+, precalc_is_viable(0)
 , last_mating_display_a(0)
 , last_mating_display_b(0)
 , generation(0)
@@ -219,6 +220,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_killed_targets      = in_phen.last_killed_targets;
   last_attacks             = in_phen.last_attacks;
   last_kills                = in_phen.last_kills;
+  precalc_is_viable        = 0;
   last_sense_count         = in_phen.last_sense_count;
   last_fitness             = in_phen.last_fitness;            
   last_child_germline_propensity = in_phen.last_child_germline_propensity;
@@ -462,6 +464,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   last_killed_targets       = parent_phenotype.last_killed_targets;
   last_attacks              = parent_phenotype.last_attacks;
   last_kills                = parent_phenotype.last_kills;
+  precalc_is_viable         = 0;
   last_sense_count          = parent_phenotype.last_sense_count;
   last_fitness              = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
   last_child_germline_propensity = parent_phenotype.last_child_germline_propensity;   // chance of child being a germline cell; @JEB
@@ -690,6 +693,7 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   last_killed_targets.SetAll(0);
   last_attacks = 0;
   last_kills = 0;
+  precalc_is_viable = 0;
   last_sense_count.SetAll(0);
   last_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   
@@ -877,6 +881,7 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   last_killed_targets       = cur_killed_targets;
   last_attacks              = cur_attacks;
   last_kills                = cur_kills;
+  precalc_is_viable         = 0;
   last_top_pred_group_attack_count    = cur_top_pred_group_attack_count;
   last_sense_count          = cur_sense_count;
   last_child_germline_propensity = cur_child_germline_propensity;
@@ -1110,6 +1115,7 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   last_killed_targets       = cur_killed_targets;
   last_attacks              = cur_attacks;
   last_kills                = cur_kills;
+  precalc_is_viable         = 0;
   last_top_pred_group_attack_count    = cur_top_pred_group_attack_count;
   last_sense_count          = cur_sense_count;
   last_child_germline_propensity = cur_child_germline_propensity;
@@ -1366,6 +1372,7 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   last_killed_targets      = clone_phenotype.last_killed_targets;
   last_attacks             = clone_phenotype.last_attacks;
   last_kills                = clone_phenotype.last_kills;
+  precalc_is_viable        = clone_phenotype.precalc_is_viable;
   last_sense_count         = clone_phenotype.last_sense_count;
   last_fitness             = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
   last_child_germline_propensity = clone_phenotype.last_child_germline_propensity;
@@ -2151,6 +2158,7 @@ void cPhenotype::NewTrial()
   last_killed_targets       = cur_killed_targets;
   last_attacks              = cur_attacks;
   last_kills                = cur_kills;
+  precalc_is_viable         = 0;
   last_top_pred_group_attack_count    = cur_top_pred_group_attack_count;
   last_sense_count          = cur_sense_count;
   

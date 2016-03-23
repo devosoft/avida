@@ -187,6 +187,7 @@ private:
   Apto::Array<int> last_killed_targets;
   int last_attacks;
   int last_kills;
+  int precalc_is_viable;  //@MRR triggered with PRECALC_PHENOTYPE; 0=unknown 1=viable -1=not viable
 
   Apto::Array<int> last_from_message_count;
 
@@ -641,6 +642,8 @@ public:
   void AddToCurRBinTotal(int index, double val) { cur_rbins_total[index] += val; }
   void SetCurCollectSpecCount(int spec_id, int val) { cur_collect_spec_counts[spec_id] = val; }
 
+  void SetPrecalcIsViable(int v) {precalc_is_viable = v;}
+
   void SetMatingType(int _mating_type) { mating_type = _mating_type; } //@CHC
   void SetMatePreference(int _mate_preference) { mate_preference = _mate_preference; } //@CHC
 
@@ -689,6 +692,7 @@ public:
   void IncKills() { cur_kills++; }
   int GetLastAttacks() const { return last_attacks; }
   int GetLastKills() const { return last_kills; }
+  int GetPrecalcIsViable() const {return precalc_is_viable;}
   
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }

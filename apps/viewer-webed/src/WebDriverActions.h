@@ -335,6 +335,7 @@ public:
       data["genome"] = "";
       data["isEstimate"] = false;
       data["tasks"] = {};
+      data["isViable"] = NaN;
     } else {
       // This breaks from the Mac version; we're going to use precalculated phenotypes to get this informatoin
       Systematics::GenotypePtr gptr;
@@ -350,6 +351,7 @@ public:
       data["fitness"] = org->GetPhenotype().GetFitness();
       data["metabolism"] = org->GetPhenotype().GetMerit().GetDouble();
       data["gestation"] = org->GetPhenotype().GetGestationTime();
+      data["isViable"] = org->GetPhenotype().GetPrecalcIsViable();
       
       map<string,double> task_count;
       cEnvironment& env = m_world->GetEnvironment();

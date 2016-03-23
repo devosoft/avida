@@ -1397,6 +1397,7 @@ void cPopulation::PrecalculatePhenotype(cAvidaContext& ctx, cOrganism* org, cons
     org->GetPhenotype().SetLastTaskCount(test_phen.GetLastTaskCount());
     org->GetPhenotype().SetLastTaskQuality(test_phen.GetLastTaskQuality());
     org->GetPhenotype().SetLastTaskValue(test_phen.GetLastTaskValue());
+    org->GetPhenotype().SetPrecalcIsViable( (test_info.IsViable() ? 1 : -1) );
 
     org->GetPhenotype().SetFitness(org->GetPhenotype().GetMerit().CalcFitness(org->GetPhenotype().GetGestationTime()));
 }
