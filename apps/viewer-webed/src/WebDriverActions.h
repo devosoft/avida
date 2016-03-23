@@ -609,21 +609,25 @@ class cWebActionExportExpr : public cWebAction
        
     json JSONifyDir()
     {
+      D_(D_ACTIONS, "JSONIFYING directory",1);
       Apto::Array<Apto::String, Apto::Smart> entries;
       if (!Apto::FileSystem::ReadDir(m_export_dir.c_str(), entries)){
         m_feedback.Error("cWebActionExportExpr::JSONifyDir is unable to get export directory contents");
         return json(nullptr);
       }
       vector<json> files;
-      for (auto it = entries.Begin().Next(); it != nullptr; it++){
-        string filename = string(it->GetData());
-        string filepath = m_export_dir + "/" + string(it->GetData());
-        if (filename[0] == '.' || !Apto::FileSystem::IsFile(filepath.c_str()))
+      for (int i = 0; i < entries.GetSize(); i++){
+        Apto::String it = entries[i];
+        string filename = string(it.GetData());
+        string filepath = m_export_dir + "/" + string(it.GetData());
+        if (filename[0] == '.')
           continue;
         
+        D_(D_ACTIONS, "About to read file " << filename,1);
         ifstream fin(filepath.c_str());
         if (!fin.good()){
           m_feedback.Error(string("cWebActionExportExpr::JSONifyDir is unable to get export file " + filepath).c_str());
+          D_(D_ACTIONS, "Unable to read filename " << filename);
           return json(nullptr);
         }
         ostringstream oss;
@@ -631,8 +635,9 @@ class cWebActionExportExpr : public cWebAction
         fin.close();
         json jfile = { {"name","filename"}, {"data",oss.str()} };
         files.push_back(jfile);
+        D_(D_ACTIONS, filename << " has size of " << oss.str().size(),1);
       }
-      cerr << "foo" << endl;
+      D_(D_ACTIONS, "[Done] JSONIFYING directory.  Files read: " << files.size(),1);
       return json(files);
     }
     
