@@ -618,7 +618,8 @@ class cWebActionExportExpr : public cWebAction
       for (auto it = entries.Begin().Next(); it != nullptr; it++){
         string filename = string(it->GetData());
         string filepath = m_export_dir + "/" + string(it->GetData());
-
+        if (filename[0] == '.' || !Apto::FileSystem::IsFile(filepath.c_str()))
+          continue;
         
         ifstream fin(filepath.c_str());
         if (!fin.good()){
