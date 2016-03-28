@@ -50,7 +50,7 @@ namespace Avida{
       int active_cell_id;        //The GUI has the ability to select an active cell; the driver needs this information for some actions
       
       
-      void ProcessFeedback();  //Send messages to the GUI
+      void ProcessFeedback(bool send_data=false);  //Send messages to the GUI
       void Setup(cWorld*, cUserFeedback&);  
       bool ProcessAddEvent(const WebViewerMsg& msg, WebViewerMsg& ret_msg);  
       bool ValidateEventMessage(const WebViewerMsg& msg);
@@ -83,7 +83,7 @@ namespace Avida{
       DriverConfig* GetNextConfig() { return nullptr; }
       
       string DumpEventList();
-
+      
       
       bool ProcessMessage(const WebViewerMsg& msg);
       bool StepUpdate();
@@ -95,13 +95,13 @@ namespace Avida{
     
     
     /*
-      The Feedback object contains messages that we want to send
-      to the GUI.
-      
-      This method is where the driver files through the feedback
-      object and creates JSON messages to send to the GUI.
-    */
-    void Driver::ProcessFeedback()
+     The Feedback object contains messages that we want to send
+     to the GUI.
+     
+     This method is where the driver files through the feedback
+     object and creates JSON messages to send to the GUI.
+     */
+    void Driver::ProcessFeedback(bool send_data)
     {
       D_(D_FLOW,"Processing Feedback");
       for (auto entry : m_feedback.GetFeedback()){
@@ -109,6 +109,7 @@ namespace Avida{
         const std::string& msg = entry.GetMessage();
         
         WebViewerMsg ret_msg;
+        ret_msg["update"] = m_world->GetStats().GetUpdate();
         switch(msg_type){
           case Feedback::ERROR:
             D_(D_MSG_OUT, "Feedback message is type ERROR");
@@ -129,9 +130,12 @@ namespace Avida{
             ret_msg["message"] = msg;
             break;
           case Feedback::DATA:
-             D_(D_MSG_OUT, "Feedback message is type DATA");
-            //Data messages will get sent directly with no userFeedback wrapper
-            ret_msg = json::parse(msg);
+            if (send_data){
+              D_(D_MSG_OUT, "Feedback message is type DATA");
+              //Data messages will get sent directly with no userFeedback wrapper
+              ret_msg = json::parse(msg);
+              ret_msg["update"] = m_world->GetStats().GetUpdate();
+            }
             break;
           default:
             D_(D_MSG_OUT, "Feedback message is type UNKNOWN");
@@ -147,12 +151,12 @@ namespace Avida{
     
     
     /*
-      Setup our driver.
-      
-      If there was a problem, set m_error to true.
-      
-      Otherwise, get ready to run and place us in a paused state.
-    */
+     Setup our driver.
+     
+     If there was a problem, set m_error to true.
+     
+     Otherwise, get ready to run and place us in a paused state.
+     */
     void Driver::Setup(cWorld* a_world, cUserFeedback& feedback)
     {
       m_feedback = feedback;
@@ -186,29 +190,29 @@ namespace Avida{
     }
     
     /*
-      Populated dishes require us to reset the update.
-      Check to see if the working directory contains
-      this information.  (This is done here for
-      legacy reasons; it could be made into an event
-      that is loaded via the events.cfg file, but
-      Avida Mac doesn't work this way.)
-    */
+     Populated dishes require us to reset the update.
+     Check to see if the working directory contains
+     this information.  (This is done here for
+     legacy reasons; it could be made into an event
+     that is loaded via the events.cfg file, but
+     Avida Mac doesn't work this way.)
+     */
     void Driver::TrySetUpdate()
     {
       if (Apto::FileSystem::IsFile("update")){        
         bool success = m_world->GetEventsList()->AddEventFileFormat("i setUpdate update", m_feedback);
         ProcessEvents();
         if (!success){
-            D_(D_STATUS, "Unable to set update.");
-            m_feedback.Error("Unable to set update");
+          D_(D_STATUS, "Unable to set update.");
+          m_feedback.Error("Unable to set update");
         }
       }
     }
     
     
     /*
-      Handle a message that was sent to the driver.
-    */
+     Handle a message that was sent to the driver.
+     */
     bool Driver::ProcessMessage(const WebViewerMsg& msg)
     {
       D_(D_FLOW | D_MSG_IN, "ProcessMessage",1);
@@ -227,8 +231,10 @@ namespace Avida{
           D_(D_MSG_IN, "Message is addEvent type",1);
           retval = ProcessAddEvent(msg, ret_msg);  //So try to add it.
           D_(D_MSG_IN, "Done processing message",1);
-        }
-        else {
+        } else if (msg["type"] == "stepUpdate"){
+          ProcessFeedback(true);
+          StepUpdate();
+        }else {
           D_(D_MSG_IN, "Message is unknown type",1);
           ret_msg["message"] = "unknown type";  //We don't know what this message wants
           
@@ -242,8 +248,8 @@ namespace Avida{
     
     
     /*
-      As the name sounds, dump our event list.
-    */
+     As the name sounds, dump our event list.
+     */
     string Driver::DumpEventList()
     {
       cEventList* list = m_world->GetEventsList();
@@ -256,21 +262,21 @@ namespace Avida{
     
     
     /*
-      Try to add an event from a message requesting that we do so.
-      
-      We will first add in additional properties of the message
-      with particular defaults.
-      
-      Next, we will try to add the message to the event queue by
-      seralizing the message into something the event system can
-      consume.
-      
-      After that, we will trigger any immediate events and move
-      on.
-    */
+     Try to add an event from a message requesting that we do so.
+     
+     We will first add in additional properties of the message
+     with particular defaults.
+     
+     Next, we will try to add the message to the event queue by
+     seralizing the message into something the event system can
+     consume.
+     
+     After that, we will trigger any immediate events and move
+     on.
+     */
     bool Driver::ProcessAddEvent(const WebViewerMsg& rcv_msg, WebViewerMsg& ret_msg)
     {
-    
+      
       D_(D_FLOW, "Attempting to addEvent");
       
       //Some properties aren't required; we'll add defaults if they are missing
@@ -328,10 +334,10 @@ namespace Avida{
     
     
     /*
-      Events need to have a particular format in order for them to be
-      processed correctly.  This method attempts to validate an
-      event message.
-    */
+     Events need to have a particular format in order for them to be
+     processed correctly.  This method attempts to validate an
+     event message.
+     */
     bool Driver::ValidateEventMessage(const json& msg)
     {
       D_(D_FLOW | D_MSG_IN, "Validating event message.",1);
@@ -383,17 +389,17 @@ namespace Avida{
     
     
     /*
-      Avida's event system expects that we'll be sending it a single string to configure the
-      timing and action that is to be triggered.  Therefore, we must convert our JSON object
-      into a string that it can consume.
-      
-      A special note: WebActions can receive not just an ordered, space delimited string of
-      arguments.  They can also receive a serialized JSON object.  If args is undefined
-      and there are additional properties of the message are considered parts of the JSON
-      object to send the action.  WebViewer actions determine if the string object pased as an
-      argument is a serialized JSON object if the first character of the argument string is a
-      UNIT_SEP character.
-    */
+     Avida's event system expects that we'll be sending it a single string to configure the
+     timing and action that is to be triggered.  Therefore, we must convert our JSON object
+     into a string that it can consume.
+     
+     A special note: WebActions can receive not just an ordered, space delimited string of
+     arguments.  They can also receive a serialized JSON object.  If args is undefined
+     and there are additional properties of the message are considered parts of the JSON
+     object to send the action.  WebViewer actions determine if the string object pased as an
+     argument is a serialized JSON object if the first character of the argument string is a
+     UNIT_SEP character.
+     */
     string Driver::JsonToEventFormat(const WebViewerMsg& msg)
     {
       D_(D_MSG_IN | D_FLOW, "JsonToEventFormat",1);
@@ -407,7 +413,7 @@ namespace Avida{
         line_in << ":";
         line_in << ((msg["interval"].is_string()) ? DeQuote(msg["interval"]) : to_string((double)(msg["interval"])));
         if (msg["end"] != "")
-           line_in << ((msg["end"].is_string()) ? DeQuote(msg["end"]) : to_string((double)(msg["end"])));
+          line_in << ((msg["end"].is_string()) ? DeQuote(msg["end"]) : to_string((double)(msg["end"])));
       }
       
       //Convert action name
@@ -436,15 +442,15 @@ namespace Avida{
     
     
     /*
-      StepUpdate executes a single update of the Avida Experiment.
-    */
+     StepUpdate executes a single update of the Avida Experiment.
+     */
     bool Driver::StepUpdate()
     {
       
       //If we're paused or we're done, return that we're no longer running
       if (m_paused || m_finished)
         return false;
-        
+      
       //Otherwise, let's get ready to do an update
       cPopulation& population = m_world->GetPopulation();
       cStats& stats = m_world->GetStats();
@@ -466,7 +472,7 @@ namespace Avida{
       
       population.ProcessPreUpdate();
       D_(D_FLOW, "Update: " << stats.GetUpdate(), 1);
-     
+      
       
       // Handle all data collection for previous update.
       if (stats.GetUpdate() > 0) {
@@ -500,7 +506,7 @@ namespace Avida{
       // Exit conditons...
       if (population.GetNumOrganisms() == 0) m_finished = true;
       return true;
-
+      
     } //Driver.h
   } //WebViewer namespace
 } //Avida namespace

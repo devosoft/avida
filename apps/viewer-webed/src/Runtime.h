@@ -308,7 +308,6 @@ namespace Avida {
        creating the driver.
        */
       while(driver){
-        int sleep_delay = driver->GetWorld()->GetConfig().SLEEP_DELAY.Get();
         PostMessage(MSG_READY);
         while(driver->IsActive()){
           //Begin with the driver in a paused state.
@@ -316,41 +315,19 @@ namespace Avida {
           
           D_(D_STATUS, "Runtime reports the driver is located at " << driver);
           
-          
           bool first_pass = true;
-          while(driver && driver->ShouldPause()){
+          while(driver && driver->IsActive()){
             CheckMessages(driver);
             if (first_pass){
-              NotifyDriverPaused(driver);
               first_pass = false;
               D_(D_EVENTS, endl << "EVENT LIST" << endl << driver->DumpEventList() << endl << "^^^^^^^^^^" << endl,0);
             }
-            emscripten_sleep(sleep_delay);
+            emscripten_sleep(5);
           } //End paused loop
           
-          //Move from paused state to running state.
-          //We will transition back to the paused state
-          //when we get the appropriate message or exit.
-          //Note that a reset will also shove us into a paused
-          //state.
-          first_pass = true;
-          while( driver && driver->ShouldRun() ) {
-            if (first_pass){
-              NotifyDriverRunning(driver);
-              first_pass = false;
-            }
-            driver->StepUpdate();
-            emscripten_sleep(sleep_delay);
-            CheckMessages(driver);
-          } // End step update loop
-          
-          //Reset requests require us to destroy the current world and driver
-          //and initialize a new one before we proceed.  This will clear
-          //all persistant data like events and stats.
           if ( driver && driver->ShouldReset() ){
             NotifyDriverResetting(driver);
             driver = DriverReset(driver);
-            
           }
         } // The driver is no longer active
         if (driver){
