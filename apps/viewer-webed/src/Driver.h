@@ -105,7 +105,9 @@ namespace Avida{
     void Driver::ProcessFeedback(bool send_data)
     {
       D_(D_FLOW,"Processing Feedback");
-      for (auto entry : m_feedback.GetFeedback()){
+      Feedback::FeedbackEntries feedback = m_feedback.GetFeedback();
+      for (auto it = feedback.begin(); it != feedback.end(); ){
+        Feedback::FeedbackEntry entry = *it;
         Feedback::FeedbackType msg_type = entry.GetType();
         const std::string& msg = entry.GetMessage();
         
@@ -119,16 +121,22 @@ namespace Avida{
             m_error = true;
             m_reset = true;
             m_reset_path = "/";
+            it = feedback.erase(it);
+            PostMessage(ret_msg);
             break;
           case Feedback::WARNING:
-            D_(D_MSG_OUT, "tFeedback message is type WARNING");
+            D_(D_MSG_OUT, "Feedback message is type WARNING");
             ret_msg = FeedbackMessage(Feedback::WARNING);
             ret_msg["message"] = msg;
+            it = feedback.erase(it);
+            PostMessage(ret_msg);
             break;
           case Feedback::NOTIFY:
             D_(D_MSG_OUT, "Feedback message is type NOTIFICATION");
             ret_msg = FeedbackMessage(Feedback::NOTIFY);
             ret_msg["message"] = msg;
+            it = feedback.erase(it);
+            PostMessage(ret_msg);
             break;
           case Feedback::DATA:
             if (send_data){
@@ -136,17 +144,22 @@ namespace Avida{
               //Data messages will get sent directly with no userFeedback wrapper
               ret_msg = json::parse(msg);
               ret_msg["update"] = m_world->GetStats().GetUpdate();
+              it = feedback.erase(it);
+              PostMessage(ret_msg);
+            } else {
+              ++it;
             }
             break;
           default:
             D_(D_MSG_OUT, "Feedback message is type UNKNOWN");
             ret_msg = FeedbackMessage(Feedback::UNKNOWN);
             ret_msg["message"] = msg;
+            it = feedback.erase(it);
+            PostMessage(ret_msg);
             break;
         }
-        PostMessage(ret_msg);
+        
       }
-      m_feedback.Clear();
       D_(D_FLOW, "Feedback processing complete");
     }
     

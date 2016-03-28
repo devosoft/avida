@@ -10,11 +10,11 @@
 #define WebFeedback_h
 
 #include <string>
-#include <vector>
 #include "avida/core/Feedback.h"
 #include "cUserFeedback.h"
 #include "cString.h"
 #include <sstream>
+#include <list>
 
 namespace Avida {
   namespace WebViewer{
@@ -39,7 +39,7 @@ namespace Avida {
         
       };
       
-      typedef vector<FeedbackEntry> FeedbackEntries;
+      typedef list<FeedbackEntry> FeedbackEntries;
       
     private:
       
