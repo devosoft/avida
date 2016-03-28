@@ -217,7 +217,8 @@ namespace Avida{
       //This message is missing it's type; can't process.
       if (msg.find("type") == msg.end()) {  
         WebViewerMsg error_msg = FeedbackMessage(Feedback::WARNING);
-        error_msg["request"];
+        error_msg["message"] = "Missing type property.";
+        error_msg["request"] = msg;
         PostMessage(error_msg);
       } else {
         WebViewerMsg ret_msg = ReturnMessage(msg);
