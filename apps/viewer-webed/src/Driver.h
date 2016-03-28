@@ -56,6 +56,7 @@ namespace Avida{
       bool ValidateEventMessage(const WebViewerMsg& msg);
       string JsonToEventFormat(const WebViewerMsg& msg);
       void TrySetUpdate();
+      void TryExportExpr();
       
     public:
       Driver(cWorld* world, cUserFeedback& feedback) { Driver::Setup(world, feedback); }
@@ -211,6 +212,30 @@ namespace Avida{
     
     
     /*
+      A corner case using the stepUpdate system is that a 
+      freeze will occur on the following update.  Since this
+      should be a quick operation, we'll just automatically
+      freeze the laste update before we do the next one.
+    */
+    void Driver::TryExportExpr()
+    {
+      WebViewerMsg export_event = 
+      { 
+        {"name","exportExpr"}, 
+        {"triggerType","immediate"},
+        {"saveFiles",true}, 
+        {"sendData",false} 
+      };
+      WebViewerMsg ret_msg;
+      bool success = ProcessAddEvent(export_event, ret_msg);
+      ProcessEvents();
+      if (!success){
+        D_(D_STATUS, "Unable to export experiment.");
+        m_feedback.Error("Unable to export experiment.");
+      }
+    }
+    
+    /*
      Handle a message that was sent to the driver.
      */
     bool Driver::ProcessMessage(const WebViewerMsg& msg)
@@ -232,6 +257,7 @@ namespace Avida{
           retval = ProcessAddEvent(msg, ret_msg);  //So try to add it.
           D_(D_MSG_IN, "Done processing message",1);
         } else if (msg["type"] == "stepUpdate"){
+          TryExportExpr();
           ProcessFeedback(true);
           StepUpdate();
         }else {

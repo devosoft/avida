@@ -609,6 +609,8 @@ class cWebActionExportExpr : public cWebAction
   private:
     const string m_export_dir = "/export";
     string m_pop_name;
+    bool m_save_files;
+    bool m_send_data;
        
     json JSONifyDir()
     {
@@ -649,11 +651,17 @@ class cWebActionExportExpr : public cWebAction
     : cWebAction(world,args,fb)
     {
       m_pop_name = "untitled";
+      m_save_files = false;
+      m_send_data = true;
       if (m_json_args){
         json jargs = GetJSONArgs();
         if (contains(jargs, "popName")){
           m_pop_name = jargs["popName"].get<string>();
         }
+        m_save_files = 
+          contains(jargs, "saveFiles") ? jargs["saveFiles"].get<bool>() : false;
+        m_save_files = 
+          contains(jargs, "sendData") ? jargs["sendData"].get<bool>() : true;
       }
     }
     
@@ -661,52 +669,56 @@ class cWebActionExportExpr : public cWebAction
     
     void Process(cAvidaContext& ctx)
     {
-      D_(D_ACTIONS, "cWebActionExportExpr::Process");
+      D_(D_ACTIONS, "cWebActionExportExpr::Process saveFiles=" << m_save_files << "; sendData" << m_send_data);
       
-      //Make way for a fresh directory
-      if (Apto::FileSystem::IsFile(m_export_dir.c_str())){
-        Apto::FileSystem::RmFile(m_export_dir.c_str());
-      } else if (Apto::FileSystem::IsDir(m_export_dir.c_str())){
-        Apto::FileSystem::RmDir(m_export_dir.c_str(), true);
-      }
-      
-      //Copy our files from the current working directory to the export directory
-      Apto::FileSystem::MkDir(m_export_dir.c_str());
-      vector<string> copy_files = {"avida.cfg", "environment.cfg", "events.cfg", "instset.cfg"};
-      for (auto file : copy_files){
-        string dst_file = m_export_dir + "/" + file;
-        Apto::FileSystem::CpFile(file.c_str(), dst_file.c_str());
-      }
-      
-      WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
-      if (driver != nullptr){
-        string m_pop_path = m_export_dir + "/detail.spop";
-        if (!driver->GetWorld()->GetPopulation().SavePopulation(m_pop_path.c_str(), true)){
-          m_feedback.Error("cWebActionExportExpr::Process is unable to save the population");
-          return;
-        };
-        string m_clade_path = m_export_dir + "/clade.ssg";
-        if (!driver->GetWorld()->GetPopulation().SaveStructuredSystematicsGroup("clade", m_clade_path.c_str())){
-          m_feedback.Error("cWebActionExportExpr::Process is unable to save clade information");
-        };
-        string m_events_path = m_export_dir + "/events.cfg";
-        std::ofstream fot(m_events_path.c_str());
-        if (!fot.good()){
-          m_feedback.Error("cWebActionExportExpr::Process is unable to write the events file");
-        } else {
-          fot << "u begin LoadPopulation detail.spop" << std::endl;
-          fot << "u begin LoadStructuredSystematicsGroup  role=clade:filename=clade.ssg" << std::endl;
-          fot.close();
+      if (m_save_files){
+        //Make way for a fresh directory
+        if (Apto::FileSystem::IsFile(m_export_dir.c_str())){
+          Apto::FileSystem::RmFile(m_export_dir.c_str());
+        } else if (Apto::FileSystem::IsDir(m_export_dir.c_str())){
+          Apto::FileSystem::RmDir(m_export_dir.c_str(), true);
         }
-      } else {
-        m_feedback.Error("cWebActionExportExpr::Process cannot locate driver.");
+        
+        //Copy our files from the current working directory to the export directory
+        Apto::FileSystem::MkDir(m_export_dir.c_str());
+        vector<string> copy_files = {"avida.cfg", "environment.cfg", "events.cfg", "instset.cfg"};
+        for (auto file : copy_files){
+          string dst_file = m_export_dir + "/" + file;
+          Apto::FileSystem::CpFile(file.c_str(), dst_file.c_str());
+        }
+        
+        WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
+        if (driver != nullptr){
+          string m_pop_path = m_export_dir + "/detail.spop";
+          if (!driver->GetWorld()->GetPopulation().SavePopulation(m_pop_path.c_str(), true)){
+            m_feedback.Error("cWebActionExportExpr::Process is unable to save the population");
+            return;
+          };
+          string m_clade_path = m_export_dir + "/clade.ssg";
+          if (!driver->GetWorld()->GetPopulation().SaveStructuredSystematicsGroup("clade", m_clade_path.c_str())){
+            m_feedback.Error("cWebActionExportExpr::Process is unable to save clade information");
+          };
+          string m_events_path = m_export_dir + "/events.cfg";
+          std::ofstream fot(m_events_path.c_str());
+          if (!fot.good()){
+            m_feedback.Error("cWebActionExportExpr::Process is unable to write the events file");
+          } else {
+            fot << "u begin LoadPopulation detail.spop" << std::endl;
+            fot << "u begin LoadStructuredSystematicsGroup  role=clade:filename=clade.ssg" << std::endl;
+            fot.close();
+          }
+        } else {
+          m_feedback.Error("cWebActionExportExpr::Process cannot locate driver.");
+        }
       }
-      json retval;
-      retval["type"] = "data";
-      retval["name"] = "exportExpr";
-      retval["popName"] = m_pop_name;
-      retval["files"] = JSONifyDir();
-      m_feedback.Data(retval.dump().c_str());
+      if (m_send_data){
+        json retval;
+        retval["type"] = "data";
+        retval["name"] = "exportExpr";
+        retval["popName"] = m_pop_name;
+        retval["files"] = JSONifyDir();
+        m_feedback.Data(retval.dump().c_str());
+      }
       D_(D_ACTIONS, "cWebActionExportExpr::Process [Done]");
     }
 };
