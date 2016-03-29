@@ -273,6 +273,8 @@ namespace Avida{
           TryExportExpr();
           ProcessFeedback(true);
           StepUpdate();
+        } else if (msg["type"] == "sendData"){
+          ProcessFeedback(true);
         }else {
           D_(D_MSG_IN, "Message is unknown type",1);
           ret_msg["message"] = "unknown type";  //We don't know what this message wants
