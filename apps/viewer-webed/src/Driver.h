@@ -240,12 +240,8 @@ namespace Avida{
         {"sendData",false} 
       };
       WebViewerMsg ret_msg;
-      bool success = ProcessAddEvent(export_event, ret_msg);
+      ProcessAddEvent(export_event, ret_msg);
       ProcessEvents();
-      if (!success){
-        D_(D_STATUS, "Unable to export experiment.");
-        m_feedback.Error("Unable to export experiment.");
-      }
     }
     
     /*

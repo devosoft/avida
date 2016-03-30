@@ -660,7 +660,7 @@ class cWebActionExportExpr : public cWebAction
         }
         m_save_files = 
           contains(jargs, "saveFiles") ? jargs["saveFiles"].get<bool>() : false;
-        m_save_files = 
+        m_send_data = 
           contains(jargs, "sendData") ? jargs["sendData"].get<bool>() : true;
       }
     }
