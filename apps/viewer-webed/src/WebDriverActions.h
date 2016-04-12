@@ -83,6 +83,15 @@ public:
   {
     m_json_args = (args.GetSize() > 0 && args[0] == UNIT_SEP);
   }
+  
+  void PackageData(WebViewerMsg data, bool send_immediate = false)
+  {
+    WebViewerMsg retval;
+    retval["data"] = data;
+    retval["sendImmediate"] = send_immediate;
+    retval["data"]["update"] = m_world->GetStats().GetUpdate();
+    m_feedback.Data(retval.dump().c_str());
+  }
 };
 
 
@@ -120,10 +129,16 @@ public:
       pop_data[string(env.GetTask(t).GetName().GetData())] = 
       stats.GetTaskLastCount(t);
     }
-    m_feedback.Data(pop_data.dump().c_str());
+    PackageData(pop_data);
     D_(D_ACTIONS, "cWebActionPopulationStats::Process [completed]");
   }
 }; // cWebActionPopulationStats
+
+
+
+
+
+
 
 
 class cWebActionOrgTraceBySequence : public cWebAction
@@ -247,8 +262,7 @@ public:
     }
     retval["snapshots"] = snapshots;
     
-    D_(D_ACTIONS, "cWebOrgTraceBySequence: About to make feedback",1);
-    m_feedback.Data(WebViewerMsg(retval).dump().c_str());
+    PackageData(retval, true);
     D_(D_ACTIONS, "cWebOrgTraceBySequence::Process completed");
   }
 };  //End cWebActionOrgTraceBySequence
@@ -319,50 +333,15 @@ public:
       D_(D_ACTIONS, "cWebActionOrgDataByCellID::Process completed.");
       return;
     }
+
     
-    cOrganism* org = (m_cell_id == NO_SELECTION) ? nullptr : m_world->GetPopulation().GetCell(m_cell_id).GetOrganism();
-    
-    
-    WebViewerMsg data = { {"type","data"}, {"name","webOrgDataByCellID"} };
-    
-    if (org == nullptr){
-      data["genotypeName"] = "-";
-      data["fitness"] = NaN;
-      data["metabolism"] = NaN;
-      data["gestation"] = NaN;
-      data["age"] = NaN;
-      data["ancestor"] = NaN;
-      data["genome"] = "";
-      data["isEstimate"] = false;
-      data["tasks"] = {};
-      data["isViable"] = NaN;
-    } else {
-      // This breaks from the Mac version; we're going to use precalculated phenotypes to get this informatoin
-      Systematics::GenotypePtr gptr;
-      gptr.DynamicCastFrom(org->SystematicsGroup("genotype"));
-      data["genotypeName"] = gptr->Properties().Get("name").StringValue().Substring(4).GetData();
-      data["genome"] = gptr->Properties().Get("genome").StringValue().GetData();
-      data["age"] = org->GetPhenotype().GetAge();
-      Systematics::CladePtr cptr;
-      cptr.DynamicCastFrom(org->SystematicsGroup("clade"));
-      data["ancestor"] = (cptr == nullptr) ? "-" : json(cptr->Properties().Get("name").StringValue());
-    
-      data["isEstimate"] = false;
-      data["fitness"] = org->GetPhenotype().GetFitness();
-      data["metabolism"] = org->GetPhenotype().GetMerit().GetDouble();
-      data["gestation"] = org->GetPhenotype().GetGestationTime();
-      data["isViable"] = org->GetPhenotype().GetPrecalcIsViable();
-      
-      map<string,double> task_count;
-      cEnvironment& env = m_world->GetEnvironment();
-      for (int t=0; t<env.GetNumTasks(); t++){
-        cString task_name = env.GetTask(t).GetName();
-        task_count[task_name.GetData()] = org->GetPhenotype().GetLastCountForTask(t);
-      }
-      data["tasks"] = task_count;
-    }
-    
-    m_feedback.Data(data.dump().c_str());
+    WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
+    if (driver == nullptr)
+      return;
+    json data = driver->GetActiveCellData();
+
+        
+    PackageData(data, true);
     D_(D_ACTIONS, "cWebActionOrgDataByCellID::Process completed.");
   }
 }; // cWebActionPopulationStats
@@ -505,7 +484,7 @@ public:
         {"maxVal",max_val(it.second)}
       };
     }
-    m_feedback.Data(data.dump().c_str());
+    PackageData(data);
     D_(D_ACTIONS, "cWebActionGridData::Process completed.");
   }
 };
@@ -525,7 +504,7 @@ public:
   : cWebAction(world,args,fb)
   , m_working_dir("/working_dir")
   {
-    D_(D_FLOW, "In cWebActionImportExpr::cWebActionImportExpr");
+    D_(D_ACTIONS, "In cWebActionImportExpr::cWebActionImportExpr");
     if (m_json_args){
       json jargs = GetJSONArgs();
       if (contains(jargs,"files"))
@@ -538,14 +517,14 @@ public:
         }
       }
     }
-    D_(D_FLOW, "Done cWebActionImportExpr::cWebActionImportExpr");
+    D_(D_ACTIONS, "Done cWebActionImportExpr::cWebActionImportExpr");
   }
   
   static const cString GetDescription() { return "Arguments: [expr_name  \"{JSON-FORMATTED FILES}\"";}
   
   void Process(cAvidaContext& ctx)
   {
-    D_(D_FLOW | D_ACTIONS, "In cWebImportExpr::Process");
+    D_(D_ACTIONS, "In cWebImportExpr::Process");
     
     if (m_files.empty() || !m_files.is_array())
       return;
@@ -556,7 +535,7 @@ public:
     //If we're not amending what's already in the working directory,
     //the delete it and copy the default settings over
     if (!m_do_amend){
-      D_(D_FLOW, "cWebImport::Expr::Process NOT amending");
+      D_(D_ACTIONS, "cWebImport::Expr::Process NOT amending");
       if (Apto::FileSystem::IsFile(wdir)){
         Apto::FileSystem::RmFile(wdir);
       } else if (Apto::FileSystem::IsDir(wdir)){
@@ -596,7 +575,7 @@ public:
     if (driver == nullptr)
       return;
     driver->DoReset(m_working_dir);
-    D_(D_FLOW, "Done cWebImportExpr::Process");
+    D_(D_ACTIONS, "Done cWebImportExpr::Process");
     
   };
 };
@@ -717,7 +696,8 @@ class cWebActionExportExpr : public cWebAction
         retval["name"] = "exportExpr";
         retval["popName"] = m_pop_name;
         retval["files"] = JSONifyDir();
-        m_feedback.Data(retval.dump().c_str());
+        retval["sendImmediate"] = true;
+        PackageData(retval, true);
       }
       D_(D_ACTIONS, "cWebActionExportExpr::Process [Done]");
     }
@@ -746,25 +726,25 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    D_(D_FLOW, "In cWebActionSetUpdate::Process");
+    D_(D_ACTIONS, "In cWebActionSetUpdate::Process");
     if (Apto::FileSystem::IsFile(m_filename.GetData())){
-      D_(D_FLOW, m_filename + " file exists");
+      D_(D_ACTIONS, m_filename + " file exists");
       ifstream fin(m_filename.GetData());
       int update;
       fin >> update;
       if (!fin.bad()){
-        D_(D_FLOW, "Sucessfully read in update as " << update);
+        D_(D_ACTIONS, "Sucessfully read in update as " << update);
         fin.close();
         WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
         if (driver != nullptr){
-          D_(D_FLOW, "Notifying driver to change update to " << update);
+          D_(D_ACTIONS, "Notifying driver to change update to " << update);
           driver->GetWorld()->GetStats().SetCurrentUpdate(update);
           return;
         }
       }
       fin.close();
     }
-    D_(D_FLOW, "There was an error reading and setting the update from a file");
+    D_(D_ACTIONS, "There was an error reading and setting the update from a file");
     m_feedback.Error("cWebActionSetUpdate: unable to read update file.");
   }
 };

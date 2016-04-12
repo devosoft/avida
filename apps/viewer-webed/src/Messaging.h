@@ -17,6 +17,14 @@ using json = nlohmann::json;
 namespace Avida{
   namespace WebViewer{
     
+    
+  
+    bool contains(const json& j, const string& p)
+    {
+      return (j.find(p) != j.end());
+    }
+    
+    
     typedef std::uint32_t EMStringPtr;
     typedef nlohmann::json WebViewerMsg;
     typedef char* ReceivedMessage;
@@ -57,8 +65,15 @@ namespace Avida{
     
     void PostMessage(const WebViewerMsg& msg)
     {
-      D_(D_FLOW | D_MSG_OUT, "About to post message" << msg);
-      D_(D_MSG_OUT, "Message is: " << msg, 1);
+      D_(D_MSG_OUT | D_FLOW, "PostMessage [begin]");
+      if (contains(msg,"level")){
+        D_(D_MSG_OUT, "Message is of level: " << msg["level"] << endl);
+        D_(D_MSG_OUT, "Message is: " << msg["message"].dump() << endl);
+      } else if (contains(msg, "type") && msg["type"] == "data"){
+        D_(D_MSG_OUT, "Message is of type data.");
+        D_(D_MSG_OUT, "Message is: " << msg.dump());
+      }
+      
       // We're enforcing a rule that all messages
       // sent or received must be JSON objects.
       // In reality, emscripten requires these
@@ -70,7 +85,7 @@ namespace Avida{
                   }, 
                     msg.dump().c_str()
                   );
-      D_(D_FLOW | D_MSG_OUT, "Done posting message.");
+      D_(D_FLOW | D_MSG_OUT, "PostMessage [end]");
     }
     
     
@@ -160,10 +175,7 @@ namespace Avida{
       return n;
     }
     
-    bool contains(const json& j, const string& p)
-    {
-      return (j.find(p) != j.end());
-    }
+
     
   }  //WebViewer
 }  //Avida

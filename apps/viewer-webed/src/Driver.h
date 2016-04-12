@@ -1,6 +1,7 @@
 #ifndef Avida_WebViewer_Driver_h
 #define Avida_WebViewer_Driver_h
 
+#include "cEnvironment.h"
 #include "cStats.h"
 #include "cWorld.h"
 #include "cPopulation.h"
@@ -9,6 +10,9 @@
 #include "avida/core/WorldDriver.h"
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
+#include "avida/private/systematics/Genotype.h"
+#include "avida/private/systematics/Clade.h"
+#include "avida/private/systematics/CladeArbiter.h"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -23,6 +27,8 @@
 
 using namespace Avida;
 using json = nlohmann::json;
+
+typedef vector<json> CellData;
 
 namespace Avida{
   namespace WebViewer{
@@ -48,6 +54,7 @@ namespace Avida{
       cWorld* m_world;           //The world
       cAvidaContext* m_ctx;
       int active_cell_id;        //The GUI has the ability to select an active cell; the driver needs this information for some actions
+      CellData m_cell_data;
       
       
       void ProcessFeedback(bool send_data=false);  //Send messages to the GUI
@@ -57,6 +64,7 @@ namespace Avida{
       string JsonToEventFormat(const WebViewerMsg& msg);
       void TrySetUpdate();
       void TryExportExpr();
+      void CollectCellData();
       
     public:
       Driver(cWorld* world, cUserFeedback& feedback) { Driver::Setup(world, feedback); }
@@ -77,7 +85,9 @@ namespace Avida{
       bool ShouldPause() const { return m_paused && IsActive();}
       bool ShouldRun() const {return !m_paused && IsActive();}
       void DoRun() {m_paused = false;}
-      void ProcessEvents() {m_world->GetEvents(*m_ctx);  ProcessFeedback();}
+      void ProcessEvents() {m_world->GetEvents(*m_ctx);}
+      json GetActiveCellData();
+
       
       Avida::Feedback& Feedback()  {return m_feedback;}
       cWorld* GetWorld() { return m_world; }
@@ -105,11 +115,17 @@ namespace Avida{
     void Driver::ProcessFeedback(bool send_data)
     {
       D_(D_FLOW,"Processing Feedback");
-      Feedback::FeedbackEntries feedback = m_feedback.GetFeedback();
+      Feedback::FeedbackEntries& feedback = m_feedback.GetFeedback();
+      cerr << "There are " << feedback.size() << " messages in the queue." << endl;
+      for (auto it = feedback.begin(); it != feedback.end(); it++){
+        cerr << &(*it) << "<--" << it->GetMessage() << endl;
+      }
       for (auto it = feedback.begin(); it != feedback.end(); ){
         Feedback::FeedbackEntry entry = *it;
         Feedback::FeedbackType msg_type = entry.GetType();
         const std::string& msg = entry.GetMessage();
+        
+        cerr << &(*it) << endl;
         
         WebViewerMsg ret_msg;
         ret_msg["update"] = m_world->GetStats().GetUpdate();
@@ -139,13 +155,13 @@ namespace Avida{
             PostMessage(ret_msg);
             break;
           case Feedback::DATA:
-            if (send_data){
+            ret_msg = json::parse(msg);
+            if (send_data || 
+                (contains(ret_msg,"sendImmediate") && ret_msg["sendImmediate"].get<bool>())){
               D_(D_MSG_OUT, "Feedback message is type DATA");
               //Data messages will get sent directly with no userFeedback wrapper
-              ret_msg = json::parse(msg);
-              ret_msg["update"] = m_world->GetStats().GetUpdate();
               it = feedback.erase(it);
-              PostMessage(ret_msg);
+              PostMessage(ret_msg["data"]);
             } else {
               ++it;
             }
@@ -160,6 +176,7 @@ namespace Avida{
         }
         
       }
+      cerr << "There are " << feedback.size() << " messages in the queue after processing" << endl;
       D_(D_FLOW, "Feedback processing complete");
     }
     
@@ -225,11 +242,11 @@ namespace Avida{
     
     
     /*
-      A corner case using the stepUpdate system is that a 
-      freeze will occur on the following update.  Since this
-      should be a quick operation, we'll just automatically
-      freeze the laste update before we do the next one.
-    */
+     A corner case using the stepUpdate system is that a 
+     freeze will occur on the following update.  Since this
+     should be a quick operation, we'll just automatically
+     freeze the laste update before we do the next one.
+     */
     void Driver::TryExportExpr()
     {
       WebViewerMsg export_event = 
@@ -242,6 +259,71 @@ namespace Avida{
       WebViewerMsg ret_msg;
       ProcessAddEvent(export_event, ret_msg);
       ProcessEvents();
+    }
+    
+    
+    void Driver::CollectCellData()
+    {
+      m_cell_data.clear();
+      cPopulation& pop = m_world->GetPopulation();
+      for (int k=0; k < pop.GetSize(); k++)
+      {
+        const cOrganism* org = pop.GetCell(k).GetOrganism();
+        
+        WebViewerMsg data;
+        
+        if (org == nullptr){
+          data["genotypeName"] = "-";
+          data["fitness"] = NaN;
+          data["metabolism"] = NaN;
+          data["gestation"] = NaN;
+          data["age"] = NaN;
+          data["ancestor"] = NaN;
+          data["genome"] = "";
+          data["isEstimate"] = false;
+          data["tasks"] = {};
+          data["isViable"] = NaN;
+        } else {
+          // This breaks from the Mac version; we're going to use precalculated phenotypes to get this informatoin
+          Systematics::GenotypePtr gptr;
+          gptr.DynamicCastFrom(org->SystematicsGroup("genotype"));
+          data["genotypeName"] = gptr->Properties().Get("name").StringValue().Substring(4).GetData();
+          data["genome"] = gptr->Properties().Get("genome").StringValue().GetData();
+          data["age"] = org->GetPhenotype().GetAge();
+          Systematics::CladePtr cptr;
+          cptr.DynamicCastFrom(org->SystematicsGroup("clade"));
+          data["ancestor"] = (cptr == nullptr) ? "-" : json(cptr->Properties().Get("name").StringValue());
+          
+          data["isEstimate"] = false;
+          data["fitness"] = org->GetPhenotype().GetFitness();
+          data["metabolism"] = org->GetPhenotype().GetMerit().GetDouble();
+          data["gestation"] = org->GetPhenotype().GetGestationTime();
+          data["isViable"] = org->GetPhenotype().GetPrecalcIsViable();
+          
+          map<string,double> task_count;
+          cEnvironment& env = m_world->GetEnvironment();
+          for (int t=0; t<env.GetNumTasks(); t++){
+            cString task_name = env.GetTask(t).GetName();
+            task_count[task_name.GetData()] = org->GetPhenotype().GetLastCountForTask(t);
+          }
+          data["tasks"] = task_count;
+        }
+       
+        m_cell_data.push_back(data); 
+      }
+    }
+    
+    json Driver::GetActiveCellData()
+    {
+      json retval;
+      if (active_cell_id != -1)
+      {
+        if (m_cell_data.size() == 0){
+          CollectCellData();
+        }
+        retval = m_cell_data[active_cell_id];
+      }
+      return retval;
     }
     
     /*
@@ -266,16 +348,29 @@ namespace Avida{
           retval = ProcessAddEvent(msg, ret_msg);  //So try to add it.
           D_(D_MSG_IN, "Done processing message",1);
         } else if (msg["type"] == "stepUpdate"){
+          cerr << "Step Update" << endl;
+          D_(D_MSG_IN, "Message is stepUpdate",1);
+          
+          //Buffer previous update's population
+          //for immediate events
+          CollectCellData();
           TryExportExpr();
+          
+          //Send previous update's data
           ProcessFeedback(true);
+          
+          //Actually step the update
           StepUpdate();
+          retval = true;
+          D_(D_MSG_IN, "Done processing stepUpdate,1");
         } else if (msg["type"] == "sendData"){
           ProcessFeedback(true);
+          retval = true;
         }else {
           D_(D_MSG_IN, "Message is unknown type",1);
           ret_msg["message"] = "unknown type";  //We don't know what this message wants
-          
         }
+        ret_msg["success"] = retval;
         PostMessage(ret_msg);
         ProcessFeedback();
       }
@@ -365,6 +460,7 @@ namespace Avida{
       D_(D_MSG_IN | D_EVENTS, "Processing other events.",1);
       ProcessEvents();
       D_(D_MSG_IN | D_FLOW, "Done processing add event.",1);
+      cerr << DumpEventList() << endl;
       return ShouldReset();
     }
     
@@ -483,9 +579,11 @@ namespace Avida{
      */
     bool Driver::StepUpdate()
     {
+    
+
       
       //If we're paused or we're done, return that we're no longer running
-      if (m_paused || m_finished)
+      if (m_finished)
         return false;
       
       //Otherwise, let's get ready to do an update
@@ -508,7 +606,7 @@ namespace Avida{
       
       
       population.ProcessPreUpdate();
-      D_(D_FLOW, "Update: " << stats.GetUpdate(), 1);
+      D_(D_FLOW | D_STATUS, "Update: " << stats.GetUpdate(), 1);
       
       
       // Handle all data collection for previous update.
@@ -537,6 +635,7 @@ namespace Avida{
           }
         }
       }
+      
       
       ProcessFeedback();
       

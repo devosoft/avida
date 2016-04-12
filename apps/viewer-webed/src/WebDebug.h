@@ -23,7 +23,7 @@ using json = nlohmann::json;
 #define D_SEND_JSON 0
 
 //How detailed should our debug output be
-#define D_VERBOSITY 0
+#define D_VERBOSITY 1
 
 //Constants to define different types of debugging
 #define D_FLOW 1
@@ -42,7 +42,7 @@ using json = nlohmann::json;
 
 //#define DEBUG_MODE ( D_MSG_IN | D_STATUS | D_ACTIONS | D_EVENTS )
 
-#define DEBUG_MODE 0
+#define DEBUG_MODE (D_STATUS | D_MSG_IN | D_ACTIONS | D_MSG_OUT | D_EVENTS | D_FLOW)
 
 #ifdef NDEBUG 
 

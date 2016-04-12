@@ -119,7 +119,7 @@ namespace Avida {
       
       virtual void Clear() { m_entries.clear(); }
       
-      const FeedbackEntries& GetFeedback() const { return m_entries;}
+      FeedbackEntries& GetFeedback() { return m_entries;}
       
     };
   }
