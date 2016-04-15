@@ -90,6 +90,7 @@ public:
     retval["data"] = data;
     retval["sendImmediate"] = send_immediate;
     retval["data"]["update"] = m_world->GetStats().GetUpdate();
+    retval["data"]["type"] = "data";
     m_feedback.Data(retval.dump().c_str());
   }
 };
@@ -114,8 +115,7 @@ public:
     double ave_age = stats.GetAveCreatureAge();
     
     WebViewerMsg pop_data = {
-      {"type", "data"}
-      ,{"name", "webPopulationStats"}
+      {"name", "webPopulationStats"}
       ,{"update", update}
       ,{"ave_fitness", ave_fitness}
       ,{"ave_gestation_time", ave_gestation_time}
@@ -252,7 +252,6 @@ public:
     D_(D_ACTIONS, "Trace ready.", 1);
     vector<json> snapshots;
     WebViewerMsg retval = { 
-      {"type","data"},
       {"name","webOrgTraceBySequence"}
     };
     
@@ -338,9 +337,9 @@ public:
     WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
     if (driver == nullptr)
       return;
-    json data = driver->GetActiveCellData();
+    json data = driver->GetActiveCellData(m_cell_id);
 
-        
+    data["name"] = "webOrgDataByCellID";
     PackageData(data, true);
     D_(D_ACTIONS, "cWebActionOrgDataByCellID::Process completed.");
   }
@@ -420,7 +419,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     D_(D_ACTIONS, "cWebActionGridData::Process");
-    WebViewerMsg data = { {"type","data"}, {"name","webGridData"} };
+    WebViewerMsg data = {{"name","webGridData"}};
     
     //Reset our vectors
     fitness.resize(world_size, NaN);
@@ -692,7 +691,6 @@ class cWebActionExportExpr : public cWebAction
       }
       if (m_send_data){
         json retval;
-        retval["type"] = "data";
         retval["name"] = "exportExpr";
         retval["popName"] = m_pop_name;
         retval["files"] = JSONifyDir();

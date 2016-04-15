@@ -47,13 +47,13 @@ namespace Avida{
       bool m_finished;  //Driver is finished
       bool m_error;     //The driver has a critical error
       bool m_reset;     //The driver wants to reset when possible
+      bool m_has_stepped;  //Have we stepped an update yet?
       
       std::string m_reset_path;  //The path that contains configuration files for the next driver after the reset
       
       WebViewer::Feedback m_feedback;  //A buffer containing messages that need to be sent to the GUI
       cWorld* m_world;           //The world
       cAvidaContext* m_ctx;
-      int active_cell_id;        //The GUI has the ability to select an active cell; the driver needs this information for some actions
       CellData m_cell_data;
       
       
@@ -86,7 +86,7 @@ namespace Avida{
       bool ShouldRun() const {return !m_paused && IsActive();}
       void DoRun() {m_paused = false;}
       void ProcessEvents() {m_world->GetEvents(*m_ctx);}
-      json GetActiveCellData();
+      json GetActiveCellData(int cell_id);
 
       
       Avida::Feedback& Feedback()  {return m_feedback;}
@@ -114,21 +114,16 @@ namespace Avida{
      */
     void Driver::ProcessFeedback(bool send_data)
     {
-      D_(D_FLOW,"Processing Feedback");
+      D_(D_FLOW | D_MSG_OUT,"Processing Feedback");
       Feedback::FeedbackEntries& feedback = m_feedback.GetFeedback();
-      cerr << "There are " << feedback.size() << " messages in the queue." << endl;
-      for (auto it = feedback.begin(); it != feedback.end(); it++){
-        cerr << &(*it) << "<--" << it->GetMessage() << endl;
-      }
+      D_(D_MSG_OUT, "There are " << feedback.size() << " messages in the queue prior to processing.");
+
       for (auto it = feedback.begin(); it != feedback.end(); ){
         Feedback::FeedbackEntry entry = *it;
         Feedback::FeedbackType msg_type = entry.GetType();
         const std::string& msg = entry.GetMessage();
         
-        cerr << &(*it) << endl;
-        
         WebViewerMsg ret_msg;
-        ret_msg["update"] = m_world->GetStats().GetUpdate();
         switch(msg_type){
           case Feedback::ERROR:
             D_(D_MSG_OUT, "Feedback message is type ERROR");
@@ -156,9 +151,14 @@ namespace Avida{
             break;
           case Feedback::DATA:
             ret_msg = json::parse(msg);
+            if (ret_msg["data"].count("name")){
+              D_(D_MSG_OUT, "Message in data queue with name " << ret_msg["data"]["name"].get<string>());
+            } else {  
+              D_(D_MSG_OUT, "Message in data queue with unknown name.");
+            }
             if (send_data || 
                 (contains(ret_msg,"sendImmediate") && ret_msg["sendImmediate"].get<bool>())){
-              D_(D_MSG_OUT, "Feedback message is type DATA");
+              D_(D_MSG_OUT, "Dequing and sending message.");
               //Data messages will get sent directly with no userFeedback wrapper
               it = feedback.erase(it);
               PostMessage(ret_msg["data"]);
@@ -176,8 +176,8 @@ namespace Avida{
         }
         
       }
-      cerr << "There are " << feedback.size() << " messages in the queue after processing" << endl;
-      D_(D_FLOW, "Feedback processing complete");
+      D_(D_MSG_OUT, "There are " << feedback.size() << " messages in the queue after processing.");
+      D_(D_FLOW | D_MSG_OUT, "Feedback processing complete");
     }
     
     
@@ -194,6 +194,7 @@ namespace Avida{
       m_paused = false;
       m_finished = false;
       m_reset = false;
+      m_has_stepped = false;
       m_world = nullptr;
       m_ctx = nullptr;
       m_error = false;
@@ -211,13 +212,14 @@ namespace Avida{
         m_world = a_world;
         m_ctx = new cAvidaContext(this, m_world->GetRandom());
         m_world->SetDriver(this);
-        active_cell_id = -1;
         TrySetUpdate();
-        D_(D_EVENTS, endl << "EVENT LIST" << endl << DumpEventList() << endl << "^^^^^^^^^^" << endl,0);
+        D_(D_EVENTS, endl << "EVENT LIST BEFORE SETUP" << endl << DumpEventList() << endl << "^^^^^^^^^^" << endl,0);
         ProcessEvents();
+        D_(D_EVENTS, endl << "EVENT LIST AFTER" << endl << DumpEventList() << endl << "^^^^^^^^^^" << endl,0);
+
         D_(D_FLOW, "Driver setup successful.");
       }
-      ProcessFeedback();
+      ProcessFeedback(true);
     }
     
     /*
@@ -313,15 +315,26 @@ namespace Avida{
       }
     }
     
-    json Driver::GetActiveCellData()
+    json Driver::GetActiveCellData(int cell_id)
     {
       json retval;
-      if (active_cell_id != -1)
+      if (cell_id != -1)
       {
         if (m_cell_data.size() == 0){
           CollectCellData();
         }
-        retval = m_cell_data[active_cell_id];
+        retval = m_cell_data[cell_id];
+      }  else {
+        retval["genotypeName"] = "-";
+        retval["fitness"] = NaN;
+        retval["metabolism"] = NaN;
+        retval["gestation"] = NaN;
+        retval["age"] = NaN;
+        retval["ancestor"] = NaN;
+        retval["genome"] = "";
+        retval["isEstimate"] = false;
+        retval["tasks"] = {};
+        retval["isViable"] = NaN;
       }
       return retval;
     }
@@ -348,7 +361,6 @@ namespace Avida{
           retval = ProcessAddEvent(msg, ret_msg);  //So try to add it.
           D_(D_MSG_IN, "Done processing message",1);
         } else if (msg["type"] == "stepUpdate"){
-          cerr << "Step Update" << endl;
           D_(D_MSG_IN, "Message is stepUpdate",1);
           
           //Buffer previous update's population
@@ -372,7 +384,10 @@ namespace Avida{
         }
         ret_msg["success"] = retval;
         PostMessage(ret_msg);
-        ProcessFeedback();
+        if (m_has_stepped)
+          ProcessFeedback();
+        else
+          ProcessFeedback(true);
       }
       D_(D_FLOW | D_MSG_IN, "Done processing message",1);
       return !IsActive();
@@ -460,7 +475,6 @@ namespace Avida{
       D_(D_MSG_IN | D_EVENTS, "Processing other events.",1);
       ProcessEvents();
       D_(D_MSG_IN | D_FLOW, "Done processing add event.",1);
-      cerr << DumpEventList() << endl;
       return ShouldReset();
     }
     
@@ -580,7 +594,7 @@ namespace Avida{
     bool Driver::StepUpdate()
     {
     
-
+      m_has_stepped = true;
       
       //If we're paused or we're done, return that we're no longer running
       if (m_finished)

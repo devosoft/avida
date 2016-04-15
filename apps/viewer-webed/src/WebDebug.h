@@ -23,7 +23,7 @@ using json = nlohmann::json;
 #define D_SEND_JSON 0
 
 //How detailed should our debug output be
-#define D_VERBOSITY 1
+#define D_VERBOSITY 0
 
 //Constants to define different types of debugging
 #define D_FLOW 1
@@ -42,7 +42,7 @@ using json = nlohmann::json;
 
 //#define DEBUG_MODE ( D_MSG_IN | D_STATUS | D_ACTIONS | D_EVENTS )
 
-#define DEBUG_MODE (D_STATUS | D_MSG_IN | D_ACTIONS | D_MSG_OUT | D_EVENTS | D_FLOW)
+#define DEBUG_MODE 0
 
 #ifdef NDEBUG 
 
@@ -56,8 +56,11 @@ using json = nlohmann::json;
   do{\
     if ( ( (MODE) & (DEBUG_MODE) ) && (VERBOSITY <= D_VERBOSITY) )\
     {\
+      string fn(__FILE__);\
+      size_t pos = fn.rfind("/");\
+      fn = fn.substr(pos+1, string::npos);\
       if ( !D_SEND_JSON ){\
-        DEBUG_STREAM << std::endl << "[AVIDA] " << MSG << std::endl;\
+        DEBUG_STREAM << std::endl << "[AVIDA " << fn << "@" << __LINE__ << "]" << MSG << std::endl;\
       }\
     }\
   } while(0);

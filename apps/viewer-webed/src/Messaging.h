@@ -71,7 +71,7 @@ namespace Avida{
         D_(D_MSG_OUT, "Message is: " << msg["message"].dump() << endl);
       } else if (contains(msg, "type") && msg["type"] == "data"){
         D_(D_MSG_OUT, "Message is of type data.");
-        D_(D_MSG_OUT, "Message is: " << msg.dump());
+        D_(D_MSG_OUT, "Message is: " << msg.dump(),2);
       }
       
       // We're enforcing a rule that all messages
