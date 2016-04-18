@@ -36,7 +36,7 @@ using json = nlohmann::json;
 
 
 //Some variables to measure performance
-#define D_MEASURE_PERFORMANCE 1
+#define D_MEASURE_PERFORMANCE 0
 #define D_RUN_TIL_UPDATE 2500
 
 ////What should we be outputting for debug purposes?
