@@ -16,6 +16,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <chrono>
+#include <ctime>
 
 #include <emscripten.h>
 #include "Messaging.h"
@@ -48,6 +50,11 @@ namespace Avida{
       bool m_error;     //The driver has a critical error
       bool m_reset;     //The driver wants to reset when possible
       bool m_has_stepped;  //Have we stepped an update yet?
+      
+      
+      //Timer for performance
+      std::chrono::time_point<std::chrono::system_clock> m_start_t, m_end_t;
+      
       
       std::string m_reset_path;  //The path that contains configuration files for the next driver after the reset
       
@@ -91,7 +98,6 @@ namespace Avida{
       
       Avida::Feedback& Feedback()  {return m_feedback;}
       cWorld* GetWorld() { return m_world; }
-      DriverConfig* GetNextConfig() { return nullptr; }
       
       string DumpEventList();
       
@@ -315,6 +321,8 @@ namespace Avida{
       }
     }
     
+    
+    
     json Driver::GetActiveCellData(int cell_id)
     {
       json retval;
@@ -339,6 +347,8 @@ namespace Avida{
       return retval;
     }
     
+    
+    
     /*
      Handle a message that was sent to the driver.
      */
@@ -362,6 +372,17 @@ namespace Avida{
           D_(D_MSG_IN, "Done processing message",1);
         } else if (msg["type"] == "stepUpdate"){
           D_(D_MSG_IN, "Message is stepUpdate",1);
+          
+          if (D_MEASURE_PERFORMANCE){
+            if (!m_has_stepped){
+              m_start_t = std::chrono::system_clock::now();
+            } else if (m_world->GetStats().GetUpdate() == D_RUN_TIL_UPDATE) {
+              m_end_t = std::chrono::system_clock::now();
+              std::chrono::duration<double> elapsed = m_end_t - m_start_t;
+              std::cerr << "Elapsed time: " << elapsed.count() << " s" << std::endl;
+              DoReset("/");
+            }
+          }
           
           //Buffer previous update's population
           //for immediate events

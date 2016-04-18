@@ -448,7 +448,7 @@ public:
       gestation[i]  = phen.GetGestationTime();
       metabolism[i] = phen.GetMerit().GetDouble();
       ancestor[i]   = (cptr == nullptr) ? "-" : cptr->Properties().Get("name").StringValue().GetData();
-      for (int t = 0; t < task_names.size(); t++){
+      for (size_t t = 0; t < task_names.size(); t++){
         tasks[task_names[t]][i] = phen.GetLastCountForTask(t);          
       }
     }
@@ -538,7 +538,7 @@ public:
       if (Apto::FileSystem::IsFile(wdir)){
         Apto::FileSystem::RmFile(wdir);
       } else if (Apto::FileSystem::IsDir(wdir)){
-        Apto::FileSystem::RmDir(wdir);
+        Apto::FileSystem::RmDir(wdir,true);
       }
       
       //Create the directory
@@ -763,7 +763,23 @@ class cWebActionReset : public cWebAction
     void Process(cAvidaContext& ctx)
     {
       D_(D_ACTIONS, "cWebActionReset::Process");
+      
+      //Clean up our working and export directory
+      const char* wdir = "/working_dir";
+      if (Apto::FileSystem::IsFile(wdir)){
+        Apto::FileSystem::RmFile(wdir);
+      } else if (Apto::FileSystem::IsDir(wdir)){
+        Apto::FileSystem::RmDir(wdir, true);
+      }
+      const char* edir = "/export";
+      if (Apto::FileSystem::IsFile(edir)){
+        Apto::FileSystem::RmFile(edir);
+      } else if (Apto::FileSystem::IsDir(edir)){
+        Apto::FileSystem::RmDir(edir, true);
+      }
+      
       WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
+      
       if (driver != nullptr){
           driver->DoReset("/");
       } else {

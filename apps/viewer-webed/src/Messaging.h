@@ -138,7 +138,7 @@ namespace Avida{
       return_msg["start"] = 
         (received.count("start")) ? received["start"] : "now";
       return_msg["interval"] = 
-        (received.count("interval")) ? received["interval"] : "always";
+        (received.count("interval")) ? received["interval"] : "1";
       return_msg["end"] = 
         (received.count("end")) ? received["end"] : "";
       return_msg["singleton"] =

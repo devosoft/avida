@@ -34,7 +34,7 @@ namespace Avida {
       public:
         FeedbackEntry(const string& m, FeedbackType t) : fb_msg(m), fb_type(t) {}
         const std::string& GetMessage() const {return fb_msg;}
-        const FeedbackType GetType() const {return fb_type;}
+        FeedbackType GetType() const {return fb_type;}
         ostringstream& GetDebugStream() {return m_debug_stream;}
         
       };

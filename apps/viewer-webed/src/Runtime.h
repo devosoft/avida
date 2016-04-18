@@ -40,6 +40,22 @@
 
 namespace Avida {
   namespace WebViewer {
+  
+  
+    void TempWalkDirectory(const string& dir)
+    {
+      Apto::Array<Apto::String, Apto::Smart> entries;
+      if (!Apto::FileSystem::ReadDir(dir.c_str(), entries)){
+        return;
+      }
+      
+      cerr << "CONTENTS OF DIRECTORY: " << dir << endl;
+      for (int i = 0; i < entries.GetSize(); i++){
+        Apto::String it = entries[i];
+        string filename = string(it.GetData());
+        cerr << "\t" << filename << endl;
+      }
+    }
     
     void SyncFS(bool from_remote)
     {
@@ -119,6 +135,7 @@ namespace Avida {
      */
     Driver* SetupDriver(int argc, char* argv[], const string& path)
     {
+      //TempWalkDirectory(path);
       cAvidaConfig* cfg = new cAvidaConfig();
       
       if (Apto::FileSystem::ChDir(Apto::String(path.c_str()))){

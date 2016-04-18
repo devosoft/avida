@@ -34,15 +34,20 @@ using json = nlohmann::json;
 #define D_ACTIONS 32
 #define D_ERROR 64
 
+
+//Some variables to measure performance
+#define D_MEASURE_PERFORMANCE 1
+#define D_RUN_TIL_UPDATE 2500
+
 ////What should we be outputting for debug purposes?
 
 
 //#define DEBUG_MODE \
 //  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
-//#define DEBUG_MODE ( D_MSG_IN | D_STATUS | D_ACTIONS | D_EVENTS )
-
 #define DEBUG_MODE 0
+
+//#define DEBUG_MODE 0
 
 #ifdef NDEBUG 
 
@@ -59,7 +64,7 @@ using json = nlohmann::json;
       string fn(__FILE__);\
       size_t pos = fn.rfind("/");\
       fn = fn.substr(pos+1, string::npos);\
-      if ( !D_SEND_JSON ){\
+      if ( true ){\
         DEBUG_STREAM << std::endl << "[AVIDA " << fn << "@" << __LINE__ << "]" << MSG << std::endl;\
       }\
     }\
