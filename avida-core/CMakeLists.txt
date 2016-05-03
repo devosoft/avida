@@ -95,7 +95,7 @@ IF(UNIX)
     "-g ${COMPILER_WARNING_FLAGS} -DDEBUG"
     CACHE STRING "Flags used by the compiler during debug builds." FORCE)
   SET(CMAKE_CXX_FLAGS_MINSIZEREL
-    "-Os ${COMPILER_WARNING_FLAGS} -DNDEBUG"
+    "-Oz ${COMPILER_WARNING_FLAGS} -DNDEBUG"
     CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
   SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO
     "-O2 -g ${COMPILER_OPTIMIZATION_FLAGS} ${COMPILER_WARNING_FLAGS} -DDEBUG"

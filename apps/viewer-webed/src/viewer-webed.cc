@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
    
    //Initialize WebDriverActions separately to keep it out of avida-core library
    cActionLibrary* act_lib = &cActionLibrary::GetInstance();
-   RegisterWebDriverActions(act_lib);   
+   Actions::RegisterWebDriverActions(act_lib);   
    D_(D_STATUS, "Avida is globally initialized.");
    
    RuntimeLoop(argc, argv);
