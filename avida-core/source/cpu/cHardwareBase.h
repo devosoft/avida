@@ -30,6 +30,7 @@
 #include <cassert>
 #include <climits>
 #include <iostream>
+#include <algorithm>
 
 #include "cHardwareTracer.h"
 #include "cInstSet.h"

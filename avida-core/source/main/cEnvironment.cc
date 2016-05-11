@@ -48,6 +48,8 @@
 #include "cTaskEntry.h"
 #include "cWorld.h"
 
+#include <algorithm>
+
 using namespace Avida;
 
 

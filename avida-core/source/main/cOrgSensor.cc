@@ -27,6 +27,7 @@
 #include "cPopulationCell.h"
 #include "cResource.h"
 #include "cResourceCount.h"
+#include <algorithm>
 
 cOrgSensor::cOrgSensor(cWorld* world, cOrganism* in_organism)
 : m_world(world), m_organism(in_organism), m_res_lib(world->GetEnvironment().GetResourceLib())
