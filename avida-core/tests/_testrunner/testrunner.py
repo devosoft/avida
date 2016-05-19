@@ -31,6 +31,7 @@ import dircache
 import fnmatch
 import getopt
 import os
+import platform
 import shutil
 import string
 import subprocess
@@ -406,8 +407,10 @@ class cTest:
       self.app = settings['default_app']
     self.app = os.path.abspath(self.app)
     if not os.path.exists(self.app):
-      print "Error: Application (%s) not found" % self.app
-      sys.exit(-1)
+      self.app = self.app + ".exe"
+      if not os.path.exists(self.app):
+         print "Error: Application (%s) not found" % self.app
+         sys.exit(-1)
     if not os.path.isfile(self.app):
       print "Error: Application (%s) is not a file" % self.app
       sys.exit(-1)
@@ -511,9 +514,8 @@ class cTest:
       
     self.scm.deleteMetadata(rundir)
           
-
-    # Run test app, capturing output and exitcode
-    p = subprocess.Popen("cd %s; %s %s" % (rundir, self.app, self.args), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+    # Run test app, capturing output and exitcod
+    p = subprocess.Popen("%s %s" % (self.app, self.args), cwd=rundir, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     
     # Process output from app
     # Note: must at least swallow app output so that the process output buffer does not fill and block execution
@@ -839,8 +841,11 @@ class cTest:
     else:
       print "failed\n"
       if self.exitcode != 0:
-        print "exit code: %d" % os.WEXITSTATUS(self.exitcode)
-        print "term signal: %d" % os.WTERMSIG(self.exitcode)
+        if platform.system() == 'Windows':
+           print "exit code: %d" % self.exitcode
+        else:
+           print "exit code: %d" % os.WEXITSTATUS(self.exitcode)
+           print "term signal: %d" % os.WTERMSIG(self.exitcode)
       else:
         print "output variance(s):"
         for err in self.errors: print err
@@ -858,8 +863,11 @@ class cTest:
     else:
       message = "failed\n"
       if self.exitcode != 0:
-        message += "exit code: %d\n" % os.WEXITSTATUS(self.exitcode)
-        message += "term signal: %d\n" % os.WTERMSIG(self.exitcode)
+        if platform.system() == 'Windows':
+          message += "exit code %d\n" % self.exitcode
+        else:
+          message += "exit code: %d\n" % os.WEXITSTATUS(self.exitcode)
+          message += "term signal: %d\n" % os.WTERMSIG(self.exitcode)
       else:
         message += "output variance(s):\n"
         for err in self.errors: message += err + "\n"
