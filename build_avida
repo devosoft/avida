@@ -56,9 +56,26 @@ cd cbuild
 # @MRR June 2015
 
 
+if type cmake; then
+   echo "cmake found."
+else
+   echo "cmake was not found."
+   if [ -e ${HOME}/.profile ]; then
+      echo "Trying to load ${HOME}/.profile for cmake's path."
+      source ${HOME}/.profile
+   fi
+   if ! type cmake; then
+      echo "cmake is required to build avida."
+      exit 1
+   fi
+fi
+
+
 # Decide whether or not to use emscripten's cmake toolchain
 # and then build
+echo "--$1--"
 if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ] || [ "$1" ==  "avida-ed" ]; then
+   echo "Found an emscripten output."
    if [ -z "$EMSCRIPTEN" ]; then
       echo "Emscripten's environment variables are not properly set."
       echo "Attempting to use .profile to add (assuming emsdk_env.sh is called there.)"
@@ -86,8 +103,7 @@ if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ] || [ "$1" ==  "avida-ed" ]
    
    em_cmake_flags=" ${@:2} 
        -DEMS_AVIDA_EMBED_DIR=${EMS_EMBED_DIR} 
-       -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN}/cmake/Modules/Platform/Emscripten.cmake "
-
+       -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN}/cmake/Modules/Platform/Emscripten.cmake"
    # Only the viewer or the shell version should be built, exclusively
    if [ "$1" == "avida.js" ]; then
       em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=ON -DAVD_HTML=OFF -DAVD_ED=OFF"
