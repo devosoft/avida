@@ -220,7 +220,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_killed_targets      = in_phen.last_killed_targets;
   last_attacks             = in_phen.last_attacks;
   last_kills                = in_phen.last_kills;
-  precalc_is_viable        = 0;
+  precalc_is_viable        = in_phen.precalc_is_viable;
   last_sense_count         = in_phen.last_sense_count;
   last_fitness             = in_phen.last_fitness;            
   last_child_germline_propensity = in_phen.last_child_germline_propensity;
@@ -881,7 +881,6 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   last_killed_targets       = cur_killed_targets;
   last_attacks              = cur_attacks;
   last_kills                = cur_kills;
-  precalc_is_viable         = 0;
   last_top_pred_group_attack_count    = cur_top_pred_group_attack_count;
   last_sense_count          = cur_sense_count;
   last_child_germline_propensity = cur_child_germline_propensity;
@@ -1115,7 +1114,6 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   last_killed_targets       = cur_killed_targets;
   last_attacks              = cur_attacks;
   last_kills                = cur_kills;
-  precalc_is_viable         = 0;
   last_top_pred_group_attack_count    = cur_top_pred_group_attack_count;
   last_sense_count          = cur_sense_count;
   last_child_germline_propensity = cur_child_germline_propensity;

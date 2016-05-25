@@ -290,7 +290,7 @@ namespace Avida{
           data["genome"] = "";
           data["isEstimate"] = false;
           data["tasks"] = {};
-          data["isViable"] = NaN;
+          data["isViable"] = 0;
         } else {
           // This breaks from the Mac version; we're going to use precalculated phenotypes to get this informatoin
           Systematics::GenotypePtr gptr;
@@ -342,7 +342,7 @@ namespace Avida{
         retval["genome"] = "";
         retval["isEstimate"] = false;
         retval["tasks"] = {};
-        retval["isViable"] = NaN;
+        retval["isViable"] = 0;
       }
       return retval;
     }
@@ -365,7 +365,6 @@ namespace Avida{
         PostMessage(error_msg);
       } else {
         WebViewerMsg ret_msg = ReturnMessage(msg);
-        ret_msg["success"] = false;
         if (msg["type"] == "addEvent") {  //This message is requesting we add an Event
           D_(D_MSG_IN, "Message is addEvent type",1);
           retval = ProcessAddEvent(msg, ret_msg);  //So try to add it.
@@ -399,9 +398,10 @@ namespace Avida{
         } else if (msg["type"] == "sendData"){
           ProcessFeedback(true);
           retval = true;
-        }else {
+        } else {
           D_(D_MSG_IN, "Message is unknown type",1);
           ret_msg["message"] = "unknown type";  //We don't know what this message wants
+          retval = false;
         }
         ret_msg["success"] = retval;
         PostMessage(ret_msg);
