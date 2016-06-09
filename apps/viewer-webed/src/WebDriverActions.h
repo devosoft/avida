@@ -50,8 +50,8 @@ class cActionLibrary;
 using namespace Avida::WebViewer;
 
 namespace Actions{
-
-
+  
+  
   const char* WA_POP_STATS = "webPopulationStats";
   const char* WA_ORG_TRACE = "webOrgTraceBySequence";
   const char* WA_CELL_DATA = "webOrgDataByCellID";
@@ -61,13 +61,13 @@ namespace Actions{
   const char* WA_IMPORT_EXPR = "importExpr";
   const char* WA_SET_UPDATE = "setUpdate";
   const char* WA_RESET = "reset";
-
+  
   const int NO_SELECTION = -1;
-
-
-
-
-
+  
+  
+  
+  
+  
   class cWebAction : public cAction
   {
   protected:
@@ -108,10 +108,10 @@ namespace Actions{
       m_feedback.Data(retval.dump().c_str());
     }
   };
-
-
-
-
+  
+  
+  
+  
   class cWebActionPopulationStats : public cWebAction {
   public:
     cWebActionPopulationStats(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world, args, fb)
@@ -146,14 +146,14 @@ namespace Actions{
       D_(D_ACTIONS, "cWebActionPopulationStats::Process [completed]");
     }
   }; // cWebActionPopulationStats
-
-
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
+  
+  
   class cWebActionOrgTraceBySequence : public cWebAction
   {
     
@@ -277,12 +277,12 @@ namespace Actions{
       D_(D_ACTIONS, "cWebOrgTraceBySequence::Process completed");
     }
   };  //End cWebActionOrgTraceBySequence
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
   class cWebActionOrgDataByCellID : public cWebAction {
   private:
     int m_cell_id;
@@ -325,11 +325,11 @@ namespace Actions{
       D_(D_ACTIONS, "cWebActionOrgDataByCellID::Process completed.");
     }
   }; // cWebActionPopulationStats
-
-
-
-
-
+  
+  
+  
+  
+  
   class cWebActionGridData : public cWebAction {
   private:
     
@@ -468,9 +468,9 @@ namespace Actions{
       D_(D_ACTIONS, "cWebActionGridData::Process completed.");
     }
   };
-
-
-
+  
+  
+  
   class cWebActionInjectSequence : public cWebAction
   {
   private:
@@ -523,9 +523,9 @@ namespace Actions{
       D_(D_ACTIONS, "cWebActionInjectSequence::Process [Done]");
     }
   };
-
-
-
+  
+  
+  
   class cWebActionExportExpr : public cWebAction
   {
   private:
@@ -533,6 +533,48 @@ namespace Actions{
     string m_pop_name;
     bool m_save_files;
     bool m_send_data;
+    
+    void SaveFiles(cAvidaContext& ctx)
+    {
+      //Make way for a fresh directory
+      if (Apto::FileSystem::IsFile(m_export_dir.c_str())){
+        Apto::FileSystem::RmFile(m_export_dir.c_str());
+      } else if (Apto::FileSystem::IsDir(m_export_dir.c_str())){
+        Apto::FileSystem::RmDir(m_export_dir.c_str(), true);
+      }
+      
+      //Copy our files from the current working directory to the export directory
+      Apto::FileSystem::MkDir(m_export_dir.c_str());
+      vector<string> copy_files = {"avida.cfg", "environment.cfg", "events.cfg", "instset.cfg"};
+      for (auto file : copy_files){
+        string dst_file = m_export_dir + "/" + file;
+        Apto::FileSystem::CpFile(file.c_str(), dst_file.c_str());
+      }
+      
+      WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
+      if (driver != nullptr){
+        string m_pop_path = m_export_dir + "/detail.spop";
+        if (!driver->GetWorld()->GetPopulation().SavePopulation(m_pop_path.c_str(), true)){
+          m_feedback.Error("cWebActionExportExpr::Process is unable to save the population");
+          return;
+        };
+        string m_clade_path = m_export_dir + "/clade.ssg";
+        if (!driver->GetWorld()->GetPopulation().SaveStructuredSystematicsGroup("clade", m_clade_path.c_str())){
+          m_feedback.Error("cWebActionExportExpr::Process is unable to save clade information");
+        };
+        string m_events_path = m_export_dir + "/events.cfg";
+        std::ofstream fot(m_events_path.c_str());
+        if (!fot.good()){
+          m_feedback.Error("cWebActionExportExpr::Process is unable to write the events file");
+        } else {
+          fot << "u begin LoadPopulation detail.spop" << std::endl;
+          fot << "u begin LoadStructuredSystematicsGroup  role=clade:filename=clade.ssg" << std::endl;
+          fot.close();
+        }
+      } else {
+        m_feedback.Error("cWebActionExportExpr::Process cannot locate driver.");
+      }
+    }
     
     json JSONifyDir()
     {
@@ -593,47 +635,15 @@ namespace Actions{
     {
       D_(D_ACTIONS, "cWebActionExportExpr::Process saveFiles=" << m_save_files << "; sendData" << m_send_data);
       
+      
       if (m_save_files){
-        //Make way for a fresh directory
-        if (Apto::FileSystem::IsFile(m_export_dir.c_str())){
-          Apto::FileSystem::RmFile(m_export_dir.c_str());
-        } else if (Apto::FileSystem::IsDir(m_export_dir.c_str())){
-          Apto::FileSystem::RmDir(m_export_dir.c_str(), true);
-        }
-        
-        //Copy our files from the current working directory to the export directory
-        Apto::FileSystem::MkDir(m_export_dir.c_str());
-        vector<string> copy_files = {"avida.cfg", "environment.cfg", "events.cfg", "instset.cfg"};
-        for (auto file : copy_files){
-          string dst_file = m_export_dir + "/" + file;
-          Apto::FileSystem::CpFile(file.c_str(), dst_file.c_str());
-        }
-        
-        WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
-        if (driver != nullptr){
-          string m_pop_path = m_export_dir + "/detail.spop";
-          if (!driver->GetWorld()->GetPopulation().SavePopulation(m_pop_path.c_str(), true)){
-            m_feedback.Error("cWebActionExportExpr::Process is unable to save the population");
-            return;
-          };
-          string m_clade_path = m_export_dir + "/clade.ssg";
-          if (!driver->GetWorld()->GetPopulation().SaveStructuredSystematicsGroup("clade", m_clade_path.c_str())){
-            m_feedback.Error("cWebActionExportExpr::Process is unable to save clade information");
-          };
-          string m_events_path = m_export_dir + "/events.cfg";
-          std::ofstream fot(m_events_path.c_str());
-          if (!fot.good()){
-            m_feedback.Error("cWebActionExportExpr::Process is unable to write the events file");
-          } else {
-            fot << "u begin LoadPopulation detail.spop" << std::endl;
-            fot << "u begin LoadStructuredSystematicsGroup  role=clade:filename=clade.ssg" << std::endl;
-            fot.close();
-          }
-        } else {
-          m_feedback.Error("cWebActionExportExpr::Process cannot locate driver.");
-        }
+        SaveFiles(ctx);
       }
+      
       if (m_send_data){
+        if (!Apto::FileSystem::IsDir(m_export_dir.c_str())){
+          SaveFiles(ctx);
+        }
         json data = {
           {"popName", m_pop_name},
           {"files", JSONifyDir()}
@@ -643,12 +653,12 @@ namespace Actions{
       D_(D_ACTIONS, "cWebActionExportExpr::Process [Done]");
     }
   };
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
   class cWebActionImportExpr : public cWebAction
   {
   private:
@@ -736,17 +746,17 @@ namespace Actions{
       
     };
   };
-
-
-
-
-
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   class cWebActionSetUpdate : public cWebAction
   {
   private:
@@ -786,10 +796,10 @@ namespace Actions{
       m_feedback.Error("cWebActionSetUpdate: unable to read update file.");
     }
   };
-
-
-
-
+  
+  
+  
+  
   class cWebActionReset : public cWebAction
   {
   private:
@@ -830,8 +840,8 @@ namespace Actions{
       D_(D_ACTIONS, "cWebActionReset::Process [Done]");
     }
   };
-
-
+  
+  
   void RegisterWebDriverActions(cActionLibrary* action_lib)
   {
     action_lib->Register<cWebActionPopulationStats>(WA_POP_STATS);
@@ -845,6 +855,6 @@ namespace Actions{
     action_lib->Register<cWebActionReset>(WA_RESET);
     
   }
-
+  
 };
 #endif
