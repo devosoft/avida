@@ -474,6 +474,8 @@ private:
   bool Inst_CheckLyse(cAvidaContext& ctx);
   bool Inst_NopPre(cAvidaContext& ctx);
   bool Inst_NopPost(cAvidaContext& ctx);
+  bool Inst_Aggressive_SA(cAvidaContext& ctx);
+  bool Inst_Cooperative_SA(cAvidaContext& ctx);
   bool Inst_Kazi(cAvidaContext& ctx);
   bool Inst_Kazi1(cAvidaContext& ctx);
   bool Inst_Kazi2(cAvidaContext& ctx);

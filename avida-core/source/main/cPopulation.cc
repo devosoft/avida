@@ -2331,6 +2331,69 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
   // @SLG my prediction = 92% and, 28 get equals
 }
 
+void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance, int effect)
+{
+  //Overloaded kaboom that changes neighboring organism merit by effect (non-kin if negative, kin if positive)
+  m_world->GetStats().IncKaboom();
+  m_world->GetStats().AddHamDistance(distance);
+  cOrganism* organism = in_cell.GetOrganism();
+  Apto::String ref_genome = organism->GetGenome().Representation()->AsString();
+  int bgid = organism->SystematicsGroup("genotype")->ID();
+  
+  int radius = m_world->GetConfig().KABOOM_RADIUS.Get();
+  
+  for (int i = -1 * radius; i <= radius; i++) {
+    for (int j = -1 * radius; j <= radius; j++) {
+      cPopulationCell& death_cell = cell_array[GridNeighbor(in_cell.GetID(), world_x, world_y, i, j)];
+      
+      //do we actually have something to kill?
+      if (death_cell.IsOccupied() == false) continue;
+      
+      cOrganism* org_temp = death_cell.GetOrganism();
+      
+      if (distance == 0) {
+        int temp_id = org_temp->SystematicsGroup("genotype")->ID();
+        if (temp_id != bgid && effect < 0){
+          //Hurting competitors
+          cout << "Pre hurt " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
+          double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
+          org_temp->UpdateMerit(ctx, cur_merit+effect);
+          cout << "Post hurt " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
+          m_world->GetStats().IncKaboomKills();
+        }
+        else if (temp_id == bgid && effect > 0) {
+          //Helping kin
+          cout << "Pre help " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
+          double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
+          org_temp->UpdateMerit(ctx, cur_merit+effect);
+          cout << "Post help " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
+          m_world->GetStats().IncKaboomKills();
+        }
+
+      } else {
+        Apto::String genome_temp = org_temp->GetGenome().Representation()->AsString();
+        int diff = 0;
+        for (int i = 0; i < genome_temp.GetSize(); i++) if (genome_temp[i] != ref_genome[i]) diff++;
+        if (diff > distance && effect < 0){
+          m_world->GetStats().IncKaboomKills();
+          //Hurting competitors
+          double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
+          org_temp->UpdateMerit(ctx, cur_merit+effect);
+        }
+        else if (diff <= distance && effect > 0) {
+          //Helping kin
+          double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
+          org_temp->UpdateMerit(ctx, cur_merit+effect);
+          m_world->GetStats().IncKaboomKills();
+        }
+      }
+    }
+  }
+  KillOrganism(in_cell, ctx); 
+
+}
+
+
 
 void cPopulation::SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx)
 {

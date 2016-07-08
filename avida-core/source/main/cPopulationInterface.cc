@@ -463,6 +463,12 @@ void cPopulationInterface::Kaboom(int distance, cAvidaContext& ctx)
   m_world->GetPopulation().Kaboom(cell, ctx, distance); 
 }
 
+void cPopulationInterface::Kaboom(int distance, cAvidaContext& ctx, int effect)
+{
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
+  m_world->GetPopulation().Kaboom(cell, ctx, distance, effect);
+}
+
 void cPopulationInterface::SpawnDeme(cAvidaContext& ctx) 
 {
   // const int num_demes = m_world->GetPopulation().GetNumDemes();

@@ -132,7 +132,8 @@ public:
   void UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void Die(cAvidaContext& ctx); 
   void KillCellID(int target, cAvidaContext& ctx); 
-  void Kaboom(int distance, cAvidaContext& ctx); 
+  void Kaboom(int distance, cAvidaContext& ctx);
+  void Kaboom(int distance, cAvidaContext& ctx, int effect);
   void SpawnDeme(cAvidaContext& ctx); 
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);

@@ -178,7 +178,8 @@ public:
   bool MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id, int avatar_cell);
 
   // Specialized functionality
-  void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance=0); 
+  void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance=0);
+  void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance,int effect);
   void SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx); 
 
   // Deme-related methods

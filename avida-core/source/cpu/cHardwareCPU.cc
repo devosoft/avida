@@ -488,6 +488,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("check-lyse",	&cHardwareCPU::Inst_CheckLyse, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("nop-pre", &cHardwareCPU::Inst_NopPre, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("nop-post", &cHardwareCPU::Inst_NopPost, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("coop-SA", &cHardwareCPU::Inst_Cooperative_SA, INST_CLASS_OTHER, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("agg-SA", &cHardwareCPU::Inst_Aggressive_SA, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode",	&cHardwareCPU::Inst_Kazi, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode1", &cHardwareCPU::Inst_Kazi1, INST_CLASS_OTHER, nInstFlag::STALL),
     tInstLibEntry<tMethod>("explode2", &cHardwareCPU::Inst_Kazi2, INST_CLASS_OTHER, nInstFlag::STALL),
@@ -3791,6 +3793,28 @@ bool cHardwareCPU::Inst_NopPost(cAvidaContext& ctx)
   } else {
     return false;
   }
+}
+
+bool cHardwareCPU::Inst_Aggressive_SA(cAvidaContext& ctx){
+  m_organism->GetPhenotype().SetKaboomExecuted(true);
+  //we're outputting just to trigger reaction checks
+  m_organism->DoOutput(ctx, 0);
+  if (ctx.GetRandom().P(m_world->GetConfig().KABOOM_PROB.Get())){
+    m_organism->Kaboom(m_world->GetConfig().KABOOM_HAMMING.Get(), ctx, -5);
+    return true;
+    }
+  else return false;
+}
+
+bool cHardwareCPU::Inst_Cooperative_SA(cAvidaContext& ctx){
+  m_organism->GetPhenotype().SetKaboomExecuted(true);
+  //we're outputting just to trigger reaction checks
+  m_organism->DoOutput(ctx, 0);
+  if (ctx.GetRandom().P(m_world->GetConfig().KABOOM_PROB.Get())){
+    m_organism->Kaboom(m_world->GetConfig().KABOOM_HAMMING.Get(), ctx, 5);
+    return true;
+    }
+  else return false;
 }
 
 bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
