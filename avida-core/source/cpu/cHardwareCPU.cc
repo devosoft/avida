@@ -3801,9 +3801,8 @@ bool cHardwareCPU::Inst_Aggressive_SA(cAvidaContext& ctx){
   m_organism->DoOutput(ctx, 0);
   if (ctx.GetRandom().P(m_world->GetConfig().KABOOM_PROB.Get())){
     m_organism->Kaboom(m_world->GetConfig().KABOOM_HAMMING.Get(), ctx, -1 * m_world->GetConfig().KABOOM_EFFECT.Get());
-    return true;
     }
-  else return false;
+  return true;
 }
 
 bool cHardwareCPU::Inst_Cooperative_SA(cAvidaContext& ctx){
@@ -3812,9 +3811,8 @@ bool cHardwareCPU::Inst_Cooperative_SA(cAvidaContext& ctx){
   m_organism->DoOutput(ctx, 0);
   if (ctx.GetRandom().P(m_world->GetConfig().KABOOM_PROB.Get())){
     m_organism->Kaboom(m_world->GetConfig().KABOOM_HAMMING.Get(), ctx, m_world->GetConfig().KABOOM_EFFECT.Get());
-    return true;
     }
-  else return false;
+  return true;
 }
 
 bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)

@@ -2344,6 +2344,7 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
   
   for (int i = -1 * radius; i <= radius; i++) {
     for (int j = -1 * radius; j <= radius; j++) {
+
       cPopulationCell& death_cell = cell_array[GridNeighbor(in_cell.GetID(), world_x, world_y, i, j)];
       
       //do we actually have something to kill?
@@ -2357,7 +2358,10 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
           //Hurting competitors
           cout << "Pre hurt " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
           double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
-          org_temp->UpdateMerit(ctx, cur_merit+effect);
+          //Update the merit
+          double new_merit = cur_merit+effect;
+          if (new_merit <= 0) KillOrganism(death_cell, ctx);
+          else org_temp->UpdateMerit(ctx, new_merit);
           cout << "Post hurt " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
           m_world->GetStats().IncKaboomKills();
         }
@@ -2378,7 +2382,9 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
           m_world->GetStats().IncKaboomKills();
           //Hurting competitors
           double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
-          org_temp->UpdateMerit(ctx, cur_merit+effect);
+          double new_merit = cur_merit+effect;
+          if (new_merit <= 0) KillOrganism(death_cell, ctx);
+          else org_temp->UpdateMerit(ctx, new_merit);
         }
         else if (diff <= distance && effect > 0) {
           //Helping kin
