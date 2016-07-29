@@ -2356,20 +2356,20 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
         int temp_id = org_temp->SystematicsGroup("genotype")->ID();
         if (temp_id != bgid && effect < 0){
           //Hurting competitors
-          cout << "Pre hurt " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
+          
           double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
           //Update the merit
-          double new_merit = cur_merit+effect;
+          double new_merit = cur_merit/effect;
           if (new_merit <= 0) KillOrganism(death_cell, ctx);
           else org_temp->UpdateMerit(ctx, new_merit);
-          cout << "Post hurt " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
+          
           m_world->GetStats().IncKaboomKills();
         }
         else if (temp_id == bgid && effect > 0) {
           //Helping kin
           cout << "Pre help " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
           double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
-          org_temp->UpdateMerit(ctx, cur_merit+effect);
+          org_temp->UpdateMerit(ctx, cur_merit*effect);
           cout << "Post help " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
           m_world->GetStats().IncKaboomKills();
         }
@@ -2382,14 +2382,14 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
           m_world->GetStats().IncKaboomKills();
           //Hurting competitors
           double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
-          double new_merit = cur_merit+effect;
+          double new_merit = cur_merit/effect;
           if (new_merit <= 0) KillOrganism(death_cell, ctx);
           else org_temp->UpdateMerit(ctx, new_merit);
         }
         else if (diff <= distance && effect > 0) {
           //Helping kin
           double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
-          org_temp->UpdateMerit(ctx, cur_merit+effect);
+          org_temp->UpdateMerit(ctx, cur_merit*effect);
           m_world->GetStats().IncKaboomKills();
         }
       }
