@@ -2331,7 +2331,7 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
   // @SLG my prediction = 92% and, 28 get equals
 }
 
-void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance, int effect)
+void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance, double effect)
 {
   //Overloaded kaboom that changes neighboring organism merit by effect (non-kin if negative, kin if positive)
   m_world->GetStats().IncKaboom();
@@ -2354,18 +2354,18 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
       
       if (distance == 0) {
         int temp_id = org_temp->SystematicsGroup("genotype")->ID();
-        if (temp_id != bgid && effect < 0){
+        if (temp_id != bgid && effect < 1){
           //Hurting competitors
           
           double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
           //Update the merit
-          double new_merit = cur_merit/effect;
+          double new_merit = cur_merit*effect;
           if (new_merit <= 0) KillOrganism(death_cell, ctx);
           else org_temp->UpdateMerit(ctx, new_merit);
           
           m_world->GetStats().IncKaboomKills();
         }
-        else if (temp_id == bgid && effect > 0) {
+        else if (temp_id == bgid && effect > 1) {
           //Helping kin
           cout << "Pre help " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
           double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
@@ -2378,15 +2378,20 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
         Apto::String genome_temp = org_temp->GetGenome().Representation()->AsString();
         int diff = 0;
         for (int i = 0; i < genome_temp.GetSize(); i++) if (genome_temp[i] != ref_genome[i]) diff++;
-        if (diff > distance && effect < 0){
+        if (diff > distance && effect < 1){
           m_world->GetStats().IncKaboomKills();
           //Hurting competitors
+          cout << "before " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
           double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
-          double new_merit = cur_merit/effect;
-          if (new_merit <= 0) KillOrganism(death_cell, ctx);
-          else org_temp->UpdateMerit(ctx, new_merit);
+          double new_merit = cur_merit*effect;
+          cout << "effect is " << effect << endl;
+          cout << "new shoudl be " << new_merit << endl;
+          if (new_merit <= 0) {KillOrganism(death_cell, ctx); cout << "dead: " << death_cell.IsOccupied() << endl;}
+          else {org_temp->UpdateMerit(ctx, new_merit);
+          cout << "after " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;}
+          
         }
-        else if (diff <= distance && effect > 0) {
+        else if (diff <= distance && effect > 1) {
           //Helping kin
           double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
           org_temp->UpdateMerit(ctx, cur_merit*effect);

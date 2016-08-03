@@ -121,7 +121,7 @@ void cTestCPUInterface::Kaboom(int distance, cAvidaContext& ctx)
   // record the probability it used.
 }
 
-void cTestCPUInterface::Kaboom(int distance, cAvidaContext& ctx, int effect)
+void cTestCPUInterface::Kaboom(int distance, cAvidaContext& ctx, double effect)
 {
   (void) distance;
   // @CAO We should keep a note that the organism tried to explode, and

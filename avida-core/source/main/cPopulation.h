@@ -179,7 +179,7 @@ public:
 
   // Specialized functionality
   void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance=0);
-  void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance,int effect);
+  void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance,double effect);
   void SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx); 
 
   // Deme-related methods

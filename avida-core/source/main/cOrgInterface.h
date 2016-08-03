@@ -131,7 +131,7 @@ public:
   virtual void Die(cAvidaContext& ctx) = 0; 
   virtual void KillCellID(int target, cAvidaContext& ctx) = 0; 
   virtual void Kaboom(int distance, cAvidaContext& ctx) = 0;
-  virtual void Kaboom(int distance, cAvidaContext& ctx, int effect) = 0;
+  virtual void Kaboom(int distance, cAvidaContext& ctx, double effect) = 0;
   virtual void SpawnDeme(cAvidaContext& ctx) = 0; 
   virtual int ReceiveValue() = 0;
   virtual bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code) = 0;

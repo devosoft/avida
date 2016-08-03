@@ -463,7 +463,7 @@ void cPopulationInterface::Kaboom(int distance, cAvidaContext& ctx)
   m_world->GetPopulation().Kaboom(cell, ctx, distance); 
 }
 
-void cPopulationInterface::Kaboom(int distance, cAvidaContext& ctx, int effect)
+void cPopulationInterface::Kaboom(int distance, cAvidaContext& ctx, double effect)
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   m_world->GetPopulation().Kaboom(cell, ctx, distance, effect);
