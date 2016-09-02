@@ -5466,7 +5466,7 @@ void cAnalyze::AllComplexityBarriers(cString cur_string)
   // Take in two detail files to compare (or maybe a range and interval of the detail files for the whole run)
 
   //CHANGE THIS
-  int coalesence = 50000;
+  int coalesence = 10000;
 
   // LOAD
   cString first_file_update = cur_string.PopWord();
