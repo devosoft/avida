@@ -4640,7 +4640,7 @@ genotype_vector cAnalyze::GetSkeletons(cString cur_string, int max_knockouts=2)
     genotype->Recalculate(m_ctx);
     const double base_fitness = genotype->GetFitness();
     
-    const int max_line = genotype->GetLength();
+    int max_line = genotype->GetLength();
     
     const Genome& base_genome = genotype->GetGenome();
     ConstInstructionSequencePtr base_seq_p;
@@ -4794,16 +4794,17 @@ genotype_vector cAnalyze::GetSkeletons(cString cur_string, int max_knockouts=2)
     //Remove repeated null instructions
     //TODO: this doesn't seem to be working, set the seq/genome somehow??
     for (int line_num = 0; line_num < max_line; line_num++) {
-      if (mod_seq[line_num] == null_inst && mod_seq[line_num-1] == null_inst)
+      if (line_num < mod_seq.GetSize() && mod_seq[line_num] == null_inst && line_num > 0 && mod_seq[line_num-1] == null_inst)
       {
         mod_seq.Remove(line_num, 1);
         line_num -= 1;  
       }
-      if (mod_seq.GetSize() == 1){
-	break;
+      if (mod_seq.GetSize() == 1 || line_num >= mod_seq.GetSize()){
+        break;
       } 
     }
-    genotype->SetGenome(mod_genome);    
+    genotype->SetGenome(mod_genome);
+    
   }
   return genotypes;
 }
@@ -5457,6 +5458,150 @@ void cAnalyze::GetLargestSkeleton(cString cur_string){
   outfile.open("complexity_potential.csv", ios_base::app);
   outfile << file_update << "," << largest << endl;
   outfile.close();
+}
+
+void cAnalyze::ChangeDebugging(cString cur_string)
+{
+  //Take in two detail files to compare and spit out the skeletons that are being counted as changed
+  //CHANGE THIS
+  int coalesence = 10000;
+
+  // LOAD
+  cString first_file_update = cur_string.PopWord();
+  cString first_file = "detail-";
+  first_file += first_file_update;
+  first_file += ".spop";
+  
+  cString second_file_update = cur_string.PopWord();
+  cString second_file = "detail-";
+  second_file += second_file_update;
+  second_file += ".spop";
+  
+  genotype_vector previous_genotypes = GetSkeletons(first_file);
+  
+  // Figure out the coalescence time for each and try grabbing those detail files, throw error if they aren't there
+  int interval = atoi(second_file_update) - atoi(first_file_update);
+  int first_file_coalescence = atoi(first_file_update) - coalesence;
+  first_file_coalescence -= (first_file_coalescence % interval);
+
+  cString first_file_coalescence_name = "detail-";
+  //(cString)first_file_coalescence_name += to_string(first_file_coalescence).c_str();
+  stringstream ss;
+  ss << first_file_coalescence;
+  first_file_coalescence_name += ss.str().c_str();
+  first_file_coalescence_name += ".spop";
+
+  int second_file_coalescence = atoi(second_file_update) - coalesence;
+  second_file_coalescence -= (second_file_coalescence % interval);
+
+  genotype_vector current_coal_genotypes;
+  if (second_file_coalescence == atoi(first_file_update)){
+    current_coal_genotypes = previous_genotypes;
+  } else {
+    stringstream ss2;
+    ss2 << second_file_coalescence;
+    cString second_file_coalescence_name = "detail-";
+    second_file_coalescence_name += ss2.str().c_str();
+    second_file_coalescence_name += ".spop";
+    current_coal_genotypes = GetSkeletons(second_file_coalescence_name);
+  }
+
+  genotype_vector current_genotypes = GetSkeletons(second_file);
+  genotype_vector current_genotypes_backup = current_genotypes;
+  
+  // For both detail files (most recent) go through each genotype of live population, find its lineage ( in reverse chronological order)
+  lineage_vector current_lineages = MakeLineageVector(current_genotypes);
+  lineage_vector previous_lineages = MakeLineageVector(previous_genotypes);
+
+  genotype_vector previous_coal_genotypes = GetSkeletons(first_file_coalescence_name);
+
+  genotype_vector current_coal_genotypes_backup = current_coal_genotypes;
+
+  // Find lineage's most recent parent in the coalescnece time detail file and save to hash (skipping if it is already in the hash)
+
+  std::map<InstructionSequence, int> lineage1_map;
+
+  for (lineage_vector::iterator current_lineage = current_lineages.begin(); current_lineage != current_lineages.end(); ++current_lineage){
+
+    for (genotype_vector::iterator curr_genotype = current_lineage->begin(); curr_genotype != current_lineage->end(); ++curr_genotype)
+    {
+      const Genome& cur_genome = curr_genotype->GetGenome();
+      ConstInstructionSequencePtr cur_seq_p;
+      ConstGeneticRepresentationPtr cur_rep_p = cur_genome.Representation();
+      cur_seq_p.DynamicCastFrom(cur_rep_p);
+      const InstructionSequence& cur_seq = *cur_seq_p;
+      bool found = false;
+      
+      for (genotype_vector::iterator coal_genotype = current_coal_genotypes.begin(); coal_genotype != current_coal_genotypes.end(); ++coal_genotype)
+      {
+        if (coal_genotype->GetNumCPUs() > 0)
+        {
+          const Genome& coal_genome = coal_genotype->GetGenome();
+          ConstInstructionSequencePtr coal_seq_p;
+          ConstGeneticRepresentationPtr coal_rep_p = coal_genome.Representation();
+          coal_seq_p.DynamicCastFrom(coal_rep_p);
+          const InstructionSequence& coal_seq = *coal_seq_p;
+
+          if (cur_seq == coal_seq){
+            lineage1_map[coal_seq]++;
+            found = true;
+            break;
+          }
+        }
+      }
+      if (found) break;
+    }
+  }
+ 
+  // Same for second file
+  
+  std::map<InstructionSequence, int> lineage2_map;
+
+  for (std::vector<vector<cAnalyzeGenotype> >::iterator previous_lineage = previous_lineages.begin(); previous_lineage != previous_lineages.end(); ++previous_lineage){
+
+    for (std::vector<cAnalyzeGenotype>::iterator prev_genotype = previous_lineage->begin(); prev_genotype != previous_lineage->end(); ++prev_genotype)
+    {
+      const Genome& prev_genome = prev_genotype->GetGenome();
+      ConstInstructionSequencePtr prev_seq_p;
+      ConstGeneticRepresentationPtr prev_rep_p = prev_genome.Representation();
+      prev_seq_p.DynamicCastFrom(prev_rep_p);
+      const InstructionSequence& prev_seq = *prev_seq_p;
+      bool found = false;
+      
+      
+      for (std::vector<cAnalyzeGenotype>::iterator coal_genotype = previous_coal_genotypes.begin(); coal_genotype != previous_coal_genotypes.end(); ++coal_genotype)
+      {
+        if (coal_genotype->GetNumCPUs() > 0)
+        {
+          const Genome& coal_genome = coal_genotype->GetGenome();
+          ConstInstructionSequencePtr coal_seq_p;
+          ConstGeneticRepresentationPtr coal_rep_p = coal_genome.Representation();
+          coal_seq_p.DynamicCastFrom(coal_rep_p);
+          const InstructionSequence& coal_seq = *coal_seq_p;
+
+          if (prev_seq == coal_seq){
+            lineage2_map[coal_seq]++;
+            found = true;
+            break;
+          }
+        }
+      }
+      if (found) break;
+    }
+  }
+
+  
+  for (std::map<InstructionSequence, int>::iterator key_it = lineage1_map.begin(); key_it != lineage1_map.end(); ++key_it)
+  {
+    if (lineage2_map.count(key_it->first)==0)
+    {
+      ofstream change_outfile;
+      change_outfile.open("change_list.csv", ios_base::app);
+      change_outfile << key_it->first.AsString() << endl;
+      change_outfile.close();
+    }
+  }
+
 }
 
 //TODO: Refactor this. It is a monster. But it is a monster that
@@ -10942,6 +11087,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("CALC_SKELETON_DIVERSITY", &cAnalyze::ShannonDiversitySkeletons);
   AddLibraryDef("GET_LARGEST_SKELETON", &cAnalyze::GetLargestSkeleton);
   AddLibraryDef("ALL_COMPLEXITY_BARRIERS", &cAnalyze::AllComplexityBarriers);
+  AddLibraryDef("CHANGE_DEBUG", &cAnalyze::ChangeDebugging);
   AddLibraryDef("ANALYZE_POP_COMPLEXITY", &cAnalyze::AnalyzePopComplexity);
   AddLibraryDef("MAP_DEPTH", &cAnalyze::CommandMapDepth);
   // (Untested) AddLibraryDef("PAIRWISE_ENTROPY", &cAnalyze::CommandPairwiseEntropy); 
