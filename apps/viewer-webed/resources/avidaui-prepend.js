@@ -1,51 +1,47 @@
 /*
   The purpose of this javascript prepended code is to:
   (1) keep consistant state information about avida in order to...
-  (2) handle "file system" access rights and 
+  (2) handle "file system" access rights and
   (3) make sure that worker-spawners have appropriate state information, also
   (4) provide message passing features such as
   (5) queuing messages when Avida is actively running
   (6) passing messages directly when avida is in an inactive state, and finally
   (7) provide functionality for Avida to pass messages to worker-spawners
-  
+
   All function calls into and out of Avida handling messages will
   be points to strings of JSON objects.
 */
 
 var avida_running = 0;
 var msg_queue = [];
-var ports = { console:null, ui:null };
+var diagnostic_socket = null;
 
-//Checking to see if we can use a shared web worker
-if (false){
-  onconnect = function(msg){
-    var port = msg.port[0];
-    var to_queue;
-    if (msg.data['zsource'] == 'console'){
-      ports.console = port;
-      ports.console.onmessage = function(msg){
-        to_queue = msg.data;
-        port.postMessage(msg.data);
-        delete to_queue.zsource;
-        msg_queue.push(to_queue);
-      }
-    } else {
-      port.ui = port;
-      port.ui.onmessage = function(msg){
-        to_queue = msg.data;
-        msg_queue.push(to_queue);
-        if (ports.console !== null){
-          to_relay = msg.data;
-          msg.data.zsource = 'ui';
-          ports.console.postMessage(to_relay);
-        }
-      }
-    }
-  }
-} else {
-  onmessage = function(msg) {
+/*
+  Try to import external socketio client
+*/
+self.importScripts("https://cdn.socket.io/socket.io-1.4.5.js");
+
+if (io){
+  diagnostic_socket = io.connect('http://localhost:5000/avida');
+  diagnostic_socket.on('message', function(e) {
+      console.log('Received ' + e);
+  });
+  diagnostic_socket.on('connect', function(){
+    console.log('Socket connected');
+  });
+  diagnostic_socket.on('disconnect', function(){
+    console.log('Socket disconnected.');
+  });
+}
+
+/*
+  Handle incoming messages from parent
+*/
+onmessage = function(msg) {
     msg_queue.push(msg.data);
-  }
+    if (diagnostic_socket){
+      diagnostic_socket.emit('ui_msg', msg);
+    }
 }
 
 
@@ -81,16 +77,8 @@ function doPostMessage(msg_str) {
         break;
     }
   }
-  
-  //Relay information to the console interface if needed
-  if (false){
-    if (ports.ui !== null && msg.type !== 'debug'){
-      ports.ui.postMessage(json_msg);
-    }
-    if (ports.console !== null){
-      ports.ui.postMessage(json_msg);
-    }
-  } else {
-    postMessage(json_msg);
+  if (diagnostic_socket){
+    diagnostic_socket.emit('av_msg', json_msg);
   }
+  postMessage(json_msg);
 }
