@@ -12,7 +12,7 @@
   be points to strings of JSON objects.
 */
 
-var avida_running = 0;
+var avida_update = -1;
 var msg_queue = [];
 var diagnostic_socket = null;
 
@@ -34,14 +34,20 @@ if (io){
   });
 }
 
+function sendDiagMsg(msg_from, msg)
+{
+  if (diagnostic_socket != null){
+    msg['_update'] = avida_update;
+    diagnostic_socket.emit(msg_from, msg);
+  }
+}
+
 /*
   Handle incoming messages from parent
 */
 onmessage = function(msg) {
     msg_queue.push(msg.data);
-    if (diagnostic_socket){
-      diagnostic_socket.emit('ui_msg', msg);
-    }
+    sendDiagMsg('ui_msg', msg.data);
 }
 
 
@@ -63,22 +69,13 @@ function doGetMessage() {
 */
 function doPostMessage(msg_str) {
   var json_msg = JSON.parse(msg_str);
-  if (json_msg.key === 'AvidaStatus'){
-    switch (json_msg.Status){
-      case 'Paused':
-      case 'Finished':
-        avida_running = 0;
-        break;
-      case 'Running':
-        avida_running = 1;
-        break;
-      default:
-        throw 'Undefined Avida state';
-        break;
-    }
+  switch(json_msg.type){
+    case 'update':
+      avida_update = json_msg.update;
+      sendDiagMsg('av_msg', json_msg);
+      return;
+      break;
   }
-  if (diagnostic_socket){
-    diagnostic_socket.emit('av_msg', json_msg);
-  }
+  sendDiagMsg('av_msg', json_msg);
   postMessage(json_msg);
 }

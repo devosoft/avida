@@ -72,6 +72,7 @@ namespace Avida{
       void TrySetUpdate();
       void TryExportExpr();
       void CollectCellData();
+      void PostUpdate() ;
       
     public:
       Driver(cWorld* world, cUserFeedback& feedback) { Driver::Setup(world, feedback); }
@@ -110,6 +111,12 @@ namespace Avida{
     };
     
     
+    void Driver::PostUpdate()
+    {
+      int update = m_world->GetStats().GetUpdate();
+      json msg = {{"type","update"}, {"update",update}};
+      PostMessage(msg);
+    }
     
     /*
      The Feedback object contains messages that we want to send
@@ -226,6 +233,7 @@ namespace Avida{
         D_(D_FLOW, "Driver setup successful.");
       }
       ProcessFeedback(true);
+      PostUpdate();
     }
     
     /*
@@ -246,6 +254,7 @@ namespace Avida{
           m_feedback.Error("Unable to set update");
         }
       }
+      PostUpdate();
     }
     
     
@@ -638,6 +647,8 @@ namespace Avida{
       
       // Increment the Update.
       stats.IncCurrentUpdate();
+      PostUpdate();
+      
       
       
       population.ProcessPreUpdate();
