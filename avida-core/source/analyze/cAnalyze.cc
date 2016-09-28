@@ -5590,8 +5590,8 @@ void cAnalyze::ChangeDebugging(cString cur_string)
     }
   }
 
-  //ofstream change_outfile;
-  //change_outfile.open("change_list.csv", ios_base::app);
+  ofstream change_outfile;
+  change_outfile.open("change_list.csv", ios_base::app);
    //     change_outfile << key_it->first.AsString() << endl;
     //    change_outfile.close();
   for (std::map<InstructionSequence, int>::iterator key_it = lineage1_map.begin(); key_it != lineage1_map.end(); ++key_it)
@@ -5601,14 +5601,15 @@ void cAnalyze::ChangeDebugging(cString cur_string)
       //Go through and find the genotype that this instruction sequence came from
       for (genotype_vector::iterator curr_genotype = current_genotypes.begin(); curr_genotype != current_genotypes.end(); ++curr_genotype)
       {
-      cout << key_it->first.AsString() << " ";
+      
       const Genome& cur_genome = curr_genotype->GetGenome();
       ConstInstructionSequencePtr cur_seq_p;
       ConstGeneticRepresentationPtr cur_rep_p = cur_genome.Representation();
       cur_seq_p.DynamicCastFrom(cur_rep_p);
       const InstructionSequence& cur_seq = *cur_seq_p;
       if (cur_seq == key_it->first) {
-          cout << curr_genotype->GetUpdateBorn();
+        change_outfile << key_it->first.AsString() << " ";
+        change_outfile << curr_genotype->GetUpdateBorn() << endl;
         
         
         }
