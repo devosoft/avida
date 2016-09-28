@@ -2297,6 +2297,7 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
   cOrganism* organism = in_cell.GetOrganism();
   Apto::String ref_genome = organism->GetGenome().Representation()->AsString();
   int bgid = organism->SystematicsGroup("genotype")->ID();
+
   
   int radius = m_world->GetConfig().KABOOM_RADIUS.Get();
   
@@ -2338,9 +2339,19 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
   m_world->GetStats().AddHamDistance(distance);
   cOrganism* organism = in_cell.GetOrganism();
   Apto::String ref_genome = organism->GetGenome().Representation()->AsString();
-  int bgid = organism->SystematicsGroup("genotype")->ID();
+  Apto::String agg_inst = "Z";
+  Apto::String coop_inst = "Z";
   
+  if (effect < 1)
+  agg_inst = m_world->GetHardwareManager().GetInstSet(organism->GetGenome().Properties().Get("instset").StringValue()).GetInst("agg-SA").GetSymbol();
+  else
+  coop_inst = m_world->GetHardwareManager().GetInstSet(organism->GetGenome().Properties().Get("instset").StringValue()).GetInst("coop-SA").GetSymbol();
   int radius = m_world->GetConfig().KABOOM_RADIUS.Get();
+  
+  int sa_kin_count = 0;
+  int sa_notkin_count = 0;
+  int nsa_kin_count = 0;
+  int nsa_notkin_count = 0;
   
   for (int i = -1 * radius; i <= radius; i++) {
     for (int j = -1 * radius; j <= radius; j++) {
@@ -2352,33 +2363,34 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
       
       cOrganism* org_temp = death_cell.GetOrganism();
       
-      if (distance == 0) {
-        int temp_id = org_temp->SystematicsGroup("genotype")->ID();
-        if (temp_id != bgid && effect < 1){
-          //Hurting competitors
-          
-          double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
-          //Update the merit
-          double new_merit = cur_merit*effect;
-          if (new_merit <= 0) KillOrganism(death_cell, ctx);
-          else org_temp->UpdateMerit(ctx, new_merit);
-          
-          m_world->GetStats().IncKaboomKills();
-        }
-        else if (temp_id == bgid && effect > 1) {
-          //Helping kin
-          cout << "Pre help " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
-          double cur_merit = org_temp->GetPhenotype().GetMerit().GetDouble();
-          org_temp->UpdateMerit(ctx, cur_merit*effect);
-          cout << "Post help " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
-          m_world->GetStats().IncKaboomKills();
-        }
-
-      } else {
+      
         Apto::String genome_temp = org_temp->GetGenome().Representation()->AsString();
         int diff = 0;
-        for (int i = 0; i < genome_temp.GetSize(); i++) if (genome_temp[i] != ref_genome[i]) diff++;
+        bool sa_org = false;
+        for (int i = 0; i < genome_temp.GetSize(); i++) if (genome_temp[i] != ref_genome[i]){
+          diff++;
+          if (genome_temp[i] == agg_inst[0] || genome_temp[i] == coop_inst[0]) sa_org = true;
+        }
+      
+        //Is the SA org correctly ID'd by Hamming distance
+        if (sa_org && diff<=distance) {
+          //Correctly id'd as kin
+          sa_kin_count++;
+        } else if (sa_org && diff>distance){
+          //Org with SA inst considered not-kin
+          sa_notkin_count++;
+        } else if (!sa_org && diff<=distance) {
+          //Org without SA inst considered kin
+          nsa_kin_count++;
+        } else if (!sa_org && diff>distance) {
+          //Org without SA considered non-kin correctly
+          nsa_notkin_count++;
+        }
+      
+      
+      
         if (diff > distance && effect < 1){
+          
           m_world->GetStats().IncKaboomKills();
           //Hurting competitors
           cout << "before " << org_temp->GetPhenotype().GetMerit().GetDouble() << endl;
@@ -2397,9 +2409,13 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
           org_temp->UpdateMerit(ctx, cur_merit*effect);
           m_world->GetStats().IncKaboomKills();
         }
-      }
+      
     }
   }
+  m_world->GetStats().IncSAKin(sa_kin_count);
+  m_world->GetStats().IncSANotKin(sa_notkin_count);
+  m_world->GetStats().IncNSAKin(nsa_kin_count);
+  m_world->GetStats().IncNSANotKin(nsa_notkin_count);
   KillOrganism(in_cell, ctx); 
 
 }

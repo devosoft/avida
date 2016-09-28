@@ -219,6 +219,11 @@ private:
   int num_kabooms_pre;
   int num_kabooms_post;
   int num_kaboom_kills;
+  //The following four are for tracking whether orgs with the suicide instruction (sa) are id'd as kin by Hamming distance measure
+  int num_sa_kin;
+  int num_sa_notkin;
+  int num_nsa_kin;
+  int num_nsa_notkin;
   double sum_perc_lyse;
   double sum_cpu_cycles;
   Apto::Array<int> hd_list;
@@ -928,6 +933,10 @@ public:
   void IncKaboomPreDivide() { num_kabooms_pre++; }
   void IncKaboomPostDivide() { num_kabooms_post++; }
   void IncKaboomKills() {num_kaboom_kills++;}
+  void IncSAKin(int num) {num_sa_kin+=num;}
+  void IncSANotKin(int num) {num_sa_notkin+= num;}
+  void IncNSAKin(int num) {num_nsa_kin+=num;}
+  void IncNSANotKin(int num) {num_nsa_notkin+= num;}
   void AddHamDistance(int distance) { hd_list.Push(distance); }
   void PrintKaboom(const cString& filename);
   void IncPercLyse(double perc) {sum_perc_lyse += perc; }
