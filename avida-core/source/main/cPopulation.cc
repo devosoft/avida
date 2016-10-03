@@ -2355,7 +2355,7 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
   
   for (int i = -1 * radius; i <= radius; i++) {
     for (int j = -1 * radius; j <= radius; j++) {
-
+      if (i==0 && j==0) continue;
       cPopulationCell& death_cell = cell_array[GridNeighbor(in_cell.GetID(), world_x, world_y, i, j)];
       
       //do we actually have something to kill?
@@ -2367,8 +2367,8 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
         Apto::String genome_temp = org_temp->GetGenome().Representation()->AsString();
         int diff = 0;
         bool sa_org = false;
-        for (int i = 0; i < genome_temp.GetSize(); i++) if (genome_temp[i] != ref_genome[i]){
-          diff++;
+        for (int i = 0; i < genome_temp.GetSize(); i++){
+          if (genome_temp[i] != ref_genome[i]) diff++;
           if (genome_temp[i] == agg_inst[0] || genome_temp[i] == coop_inst[0]) sa_org = true;
         }
       
