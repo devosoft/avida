@@ -12,26 +12,44 @@
   be points to strings of JSON objects.
 */
 
-var avida_running = 0;
-var msg_queue = [];
-var diagnostic_socket = null;
+var avida_update = -1;  //Holds the current update as notified
+var msg_queue = [];     //Holds the current messages to send to avida
+var diagnostic_socket = null;  //Holds the diagnostic socket if available
+var enable_diagnostic_socket = true;  //Should an attempt be made to connect to the diagnostic socket?
 
 /*
   Try to import external socketio client
 */
 self.importScripts("https://cdn.socket.io/socket.io-1.4.5.js");
 
-if (io){
+if (io && enable_diagnostic_socket){
   diagnostic_socket = io.connect('http://localhost:5000/avida');
-  diagnostic_socket.on('message', function(e) {
-      console.log('Received ' + e);
-  });
   diagnostic_socket.on('connect', function(){
     console.log('Socket connected');
   });
   diagnostic_socket.on('disconnect', function(){
     console.log('Socket disconnected.');
   });
+  diagnostic_socket.on('ext_command', function(msg){
+    msg_queue.push(msg);
+    sendDiagMsg('av_ext_command', 'in', msg);
+  });
+}
+
+function sendDiagMsg(msg_from, io_type, data)
+{
+  if (enable_diagnostic_socket && diagnostic_socket != null){
+    msg = {
+            data:data,
+            meta:{
+                _tx_update:avida_update,
+                _from:msg_from,
+                _io_type:io_type
+            }
+          };
+    console.log(JSON.stringify(msg));
+    diagnostic_socket.emit('message', msg);
+  }
 }
 
 /*
@@ -39,9 +57,7 @@ if (io){
 */
 onmessage = function(msg) {
     msg_queue.push(msg.data);
-    if (diagnostic_socket){
-      diagnostic_socket.emit('ui_msg', msg);
-    }
+    sendDiagMsg('ui', 'in', msg.data);
 }
 
 
@@ -62,23 +78,19 @@ function doGetMessage() {
   pointer-to-string-to-json conversion occurs here.
 */
 function doPostMessage(msg_str) {
+  //console.log(msg_str);
   var json_msg = JSON.parse(msg_str);
-  if (json_msg.key === 'AvidaStatus'){
-    switch (json_msg.Status){
-      case 'Paused':
-      case 'Finished':
-        avida_running = 0;
-        break;
-      case 'Running':
-        avida_running = 1;
-        break;
-      default:
-        throw 'Undefined Avida state';
-        break;
-    }
+  switch(json_msg.type){
+    case 'update':
+      avida_update = json_msg.update;
+      sendDiagMsg('av_debug', 'out', json_msg);
+      return;
+      break;
+    case 'av_debug':
+      sendDiagMsg('av_debug', 'out', json_msg);
+      return;
+      break;
   }
-  if (diagnostic_socket){
-    diagnostic_socket.emit('av_msg', json_msg);
-  }
+  sendDiagMsg('av', 'out', json_msg);
   postMessage(json_msg);
 }
