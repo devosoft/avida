@@ -12,6 +12,8 @@
 #include <emscripten.h>
 #include <iostream>
 #include <string>
+#include <map>
+#include <sstream>
 #include "json.hpp"
 
 using json = nlohmann::json;
@@ -20,7 +22,7 @@ using json = nlohmann::json;
 #define DEBUG_STREAM std::cerr
 
 //Should we send debug information through the worker messaging interface?
-#define D_SEND_JSON 0
+#define D_SEND_JSON 1
 
 //How detailed should our debug output be
 #define D_VERBOSITY 0
@@ -40,14 +42,25 @@ using json = nlohmann::json;
 #define D_RUN_TIL_UPDATE 2500
 
 ////What should we be outputting for debug purposes?
+#define DEBUG_MODE \
+  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
 
-//#define DEBUG_MODE \
-//  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
-#define DEBUG_MODE 0
+const std::map<unsigned, string> debug_modes = {
+  {1,"FLOW"}, {2, "MSG_IN"}, {4, "MSG_OUT"}, {8, "STATUS"}, {16, "EVENTS"}, 
+  {32, "ACTIONS"}, {64, "ERROR"}
+};
 
-//#define DEBUG_MODE 0
+vector<string> GetDebugModes(unsigned m)
+{
+  vector<string> rv;
+  for (auto& kv : debug_modes){
+    if (m & kv.first) rv.push_back(kv.second);
+  }
+  return rv;
+}
+
 
 #ifdef NDEBUG 
 
@@ -57,23 +70,48 @@ using json = nlohmann::json;
 
   #define D_0(MODE, MSG) D_1(MODE, MSG, 0)
 
-  #define D_1(MODE, MSG, VERBOSITY)\
-  do{\
-    if ( ( (MODE) & (DEBUG_MODE) ) && (VERBOSITY <= D_VERBOSITY) )\
-    {\
-      string fn(__FILE__);\
-      size_t pos = fn.rfind("/");\
-      fn = fn.substr(pos+1, string::npos);\
-      if ( true ){\
+  #if D_SEND_JSON == 0
+    #define D_1(MODE, MSG, VERBOSITY)\
+    do{\
+      if ( ( (MODE) & (DEBUG_MODE) ) && (VERBOSITY <= D_VERBOSITY) )\
+      {\
+        string fn(__FILE__);\
+        size_t pos = fn.rfind("/");\
+        fn = fn.substr(pos+1, string::npos);\
         DEBUG_STREAM << std::endl << "[AVIDA " << fn << "@" << __LINE__ << "]" << MSG << std::endl;\
       }\
-    }\
-  } while(0);
+    } while(0);
+
+  #else
+    #define D_1(MODE, MSG, VERBOSITY)\
+    do{\
+      if ( ( (MODE) & (DEBUG_MODE) ) && (VERBOSITY <= D_VERBOSITY) )\
+      {\
+        string fn(__FILE__);\
+        size_t pos = fn.rfind("/");\
+        fn = fn.substr(pos+1, string::npos);\
+        std::ostringstream oss;\
+        oss << MSG;\
+        string s_msg = oss.str();\
+        json j_msg = {\
+          {"type","av_debug"},\
+          {"msg",s_msg},\
+          {"file",fn},\
+          {"line_number",__LINE__},\
+          {"function", __FUNCTION__},\
+          {"verbosity", VERBOSITY},\
+          {"mode", GetDebugModes(MODE)}\
+        };\
+        EM_ASM_ARGS({doPostMessage(Pointer_stringify($0));}, j_msg.dump().c_str());\
+      }\
+    \
+    }while(0);
+
+  #endif
   
   #define D_SELECT(_0, _1, FUNC, ...) FUNC
   
   #define D_(MODE, MSG, ...) D_SELECT(_0, ##__VA_ARGS__, D_1, D_0)(MODE, MSG, ##__VA_ARGS__)
-
 
 #endif  //NDEBUG
 

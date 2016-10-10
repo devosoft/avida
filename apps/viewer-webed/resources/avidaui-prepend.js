@@ -25,10 +25,8 @@ self.importScripts("https://cdn.socket.io/socket.io-1.4.5.js");
 if (io && enable_diagnostic_socket){
   diagnostic_socket = io.connect('http://localhost:5000/avida');
   diagnostic_socket.on('connect', function(){
-    console.log('Socket connected');
   });
   diagnostic_socket.on('disconnect', function(){
-    console.log('Socket disconnected.');
   });
   diagnostic_socket.on('ext_command', function(msg){
     msg_queue.push(msg);
@@ -47,18 +45,10 @@ function sendDiagMsg(msg_from, io_type, data)
                 _io_type:io_type
             }
           };
-    console.log(JSON.stringify(msg));
     diagnostic_socket.emit('message', msg);
   }
 }
 
-function sendDiagMsg(msg_from, msg)
-{
-  if (diagnostic_socket != null){
-    msg['_update'] = avida_update;
-    diagnostic_socket.emit(msg_from, msg);
-  }
-}
 
 /*
   Handle incoming messages from parent
@@ -86,7 +76,6 @@ function doGetMessage() {
   pointer-to-string-to-json conversion occurs here.
 */
 function doPostMessage(msg_str) {
-  //console.log(msg_str);
   var json_msg = JSON.parse(msg_str);
   switch(json_msg.type){
     case 'update':
