@@ -42,9 +42,10 @@ using json = nlohmann::json;
 #define D_RUN_TIL_UPDATE 2500
 
 ////What should we be outputting for debug purposes?
-#define DEBUG_MODE \
-  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
+//#define DEBUG_MODE \
+//  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
+#define DEBUG_MODE 0
 
 
 const std::map<unsigned, string> debug_modes = {
