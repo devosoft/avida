@@ -15,7 +15,7 @@
 var avida_update = -1;  //Holds the current update as notified
 var msg_queue = [];     //Holds the current messages to send to avida
 var diagnostic_socket = null;  //Holds the diagnostic socket if available
-var enable_diagnostic_socket = true;  //Should an attempt be made to connect to the diagnostic socket?
+var enable_diagnostic_socket = false;  //Should an attempt be made to connect to the diagnostic socket?
 
 /*
   Try to import external socketio client

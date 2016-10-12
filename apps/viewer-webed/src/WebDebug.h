@@ -22,7 +22,7 @@ using json = nlohmann::json;
 #define DEBUG_STREAM std::cerr
 
 //Should we send debug information through the worker messaging interface?
-#define D_SEND_JSON 1
+#define D_SEND_JSON 0
 
 //How detailed should our debug output be
 #define D_VERBOSITY 0
@@ -45,7 +45,7 @@ using json = nlohmann::json;
 //#define DEBUG_MODE \
 //  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
-#define DEBUG_MODE D_STATUS
+#define DEBUG_MODE 0
 
 
 const std::map<unsigned, string> debug_modes = {
