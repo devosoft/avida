@@ -45,7 +45,7 @@ using json = nlohmann::json;
 //#define DEBUG_MODE \
 //  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
-#define DEBUG_MODE 0
+#define DEBUG_MODE D_STATUS
 
 
 const std::map<unsigned, string> debug_modes = {
