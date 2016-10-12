@@ -336,13 +336,7 @@ namespace Actions{
     //Trying to keep data structures constructed
     //between Process events to see if there is
     //a speedup
-    int world_size;
-    vector<double> fitness;
-    vector<double> gestation;
-    vector<double> metabolism;
-    vector<string> ancestor;
     vector<string> task_names;
-    map<string, vector<double>> tasks;
     
     /*
      Need to use our own min/max_val functions
@@ -382,15 +376,8 @@ namespace Actions{
     {
       cPopulation& population = m_world->GetPopulation();
       cEnvironment& env = m_world->GetEnvironment();
-      int sz = population.GetSize();
-      world_size = sz;
-      fitness.resize(sz, NaN);
-      gestation.resize(sz, NaN);
-      metabolism.resize(sz, NaN);
-      ancestor.resize(sz, "-");
       for (int t=0; t<env.GetNumTasks(); t++){
         const string task_name = env.GetTask(t).GetName().GetData();
-        tasks[task_name] = vector<double>(sz,NaN);
         task_names.push_back(task_name);
       }
     }
@@ -403,23 +390,27 @@ namespace Actions{
       WebViewerMsg data;
       
       //Reset our vectors
-      fitness.resize(world_size, NaN);
-      gestation.resize(world_size, NaN);
-      metabolism.resize(world_size, NaN);
-      ancestor.resize(world_size, "-");
+      int world_size = m_world->GetPopulation().GetSize();
+      vector<double> fitness(world_size, NaN);
+      vector<double> gestation(world_size, NaN);
+      vector<double> metabolism(world_size, NaN);
+      vector<string> ancestor(world_size, "-");
+    
+      map<string, vector<double>> tasks;
       for (auto t : task_names){
-        tasks[t].resize(world_size,NaN);
+        tasks[t] = vector<double>(world_size,NaN);
       }
       
       
       cPopulation& pop = m_world->GetPopulation();
       for (int i=0; i < world_size; i++)
       {
+        if (!pop.GetCell(i).IsOccupied())
+          continue;
+        
         cPopulationCell& cell = pop.GetCell(i);
         cOrganism* org = cell.GetOrganism();
         
-        if (org == nullptr)
-          continue;
         
         Systematics::CladePtr cptr;
         cptr.DynamicCastFrom(org->SystematicsGroup("clade"));
@@ -428,7 +419,7 @@ namespace Actions{
         fitness[i]    = phen.GetFitness();
         gestation[i]  = phen.GetGestationTime();
         metabolism[i] = phen.GetMerit().GetDouble();
-        ancestor[i]   = (cptr == nullptr) ? "-" : cptr->Properties().Get("name").StringValue().GetData();
+        ancestor[i]   = (cptr == NULL) ? "-" : cptr->Properties().Get("name").StringValue().GetData();
         for (size_t t = 0; t < task_names.size(); t++){
           tasks[task_names[t]][i] = phen.GetLastCountForTask(t);          
         }

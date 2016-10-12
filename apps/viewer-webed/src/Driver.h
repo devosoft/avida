@@ -288,6 +288,7 @@ namespace Avida{
         const cOrganism* org = pop.GetCell(k).GetOrganism();
         
         WebViewerMsg data;
+        data["isOccupied"] = pop.GetCell(k).IsOccupied();
         
         if (!pop.GetCell(k).IsOccupied()){
           data["genotypeName"] = "-";
@@ -300,6 +301,7 @@ namespace Avida{
           data["isEstimate"] = false;
           data["tasks"] = {};
           data["isViable"] = 0;
+          
         } else {
           // This breaks from the Mac version; we're going to use precalculated phenotypes to get this informatoin
           Systematics::GenotypePtr gptr;
@@ -352,6 +354,7 @@ namespace Avida{
         retval["isEstimate"] = false;
         retval["tasks"] = {};
         retval["isViable"] = 0;
+        retval["isOccupied"] = false;
       }
       return retval;
     }
