@@ -289,7 +289,7 @@ namespace Avida{
         
         WebViewerMsg data;
         
-        if (org == nullptr){
+        if (!pop.GetCell(k).IsOccupied()){
           data["genotypeName"] = "-";
           data["fitness"] = NaN;
           data["metabolism"] = NaN;
