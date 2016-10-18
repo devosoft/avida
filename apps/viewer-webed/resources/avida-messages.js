@@ -62,8 +62,9 @@ onmessage = function(msg) {
 function doGetMessage() {
   if (msg_queue.length > 0){
     var msg = JSON.stringify(msg_queue.shift());
-    var buffer = _malloc(msg.length+1);
-    writeStringToMemory(msg,buffer);
+    var len = lengthBytesUTF8(msg) + 1;
+    var buffer = _malloc(len);
+    stringToUTF8(msg,buffer,len);
     return buffer;
   }
   return 0;
