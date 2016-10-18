@@ -81,8 +81,8 @@
 			buildConfigurationList = B4181DD71B94D19C0002B429 /* Build configuration list for PBXLegacyTarget "viewer-webed" */;
 			buildPhases = (
 			);
-			buildToolPath = "$(PROJECT_DIR)/../../build_avida";
-			buildWorkingDirectory = /Users/ruppmatt/devel/Avida/avida;
+			buildToolPath = ./build_avida;
+			buildWorkingDirectory = "$(PROJECT_DIR)/../../";
 			dependencies = (
 			);
 			name = "viewer-webed";
