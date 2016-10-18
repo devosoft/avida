@@ -1,0 +1,2 @@
+importScripts('avida-messages.js');
+

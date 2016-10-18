@@ -171,7 +171,7 @@ SET(CMAKE_CXX_FLAGS_RELEASE "")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WEB_FLAGS}")
 SET(CMAKE_EXE_LINKER_FLAGS 
      "${CMAKE_EXE_LINKER_FLAGS} \
-     --pre-js ${RESOURCES_DIR}/avidaui-prepend.js \
+     --pre-js ${RESOURCES_DIR}/prepend.js \
      --embed-file ${EMS_AVIDA_EMBED_DIR}@/ \
      -s ALLOW_MEMORY_GROWTH=1")
 
