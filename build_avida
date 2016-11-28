@@ -18,6 +18,32 @@ function add_line(){
    " ${file}
 }
 
+if [ $1 == "-h" ] || [ $1 == "--help" ] || [ $1 == "help" ]; then
+   echo "This is the avida build script."
+   echo
+   echo "Usage: build_avida [action | target] [build-options]"
+   echo
+   echo "Available actions:"
+   echo "   -h --help help    display this message"
+   echo "   clean             clean the build system"
+   echo "   setup-native      setup but don't build a native target."
+   echo "                     This is useful for setting up the build"
+   echo "                     system but want to configure some of its"
+   echo "                     properties before building the target."
+   echo "                     Use \"ccmake ..\" from the created cbuild"
+   echo "                     directory to configure build changes."
+   echo "                     This option is *not* available for builds"
+   echo "                     requiring emscripten."
+   echo 
+   echo "Available targets (applied when no actions are set):"
+   echo "   (none)            build avida without emscripten."
+   echo "   avida-js          (Emscripten) Build command-line version"
+   echo "                     of commmand line driver."
+   echo "   avida-ed-web      (Emscripten) Build the web version of AvidaED"
+   echo
+   echo "build-options are passed directly to the build system."
+   exit 0
+fi
 
 # Now let's get ready to build
 # By first updating our git modules and making
@@ -42,10 +68,6 @@ cd cbuild
 # of a CMakeLists.txt file.  It must be done on the commandline.  So,
 # instead of having a cmake option, we must use a wrapper script to configure
 # the build system for emscripten.
-# To build the javascript version of the console:
-#       ./build_avida avida.js
-# To build a web gui:
-#       ./build_avida avida.html
 #
 # Please note the comments on setting the configuration files below. 
 # They *must* be set prior to compilation.
@@ -73,9 +95,11 @@ fi
 
 # Decide whether or not to use emscripten's cmake toolchain
 # and then build
-echo "--$1--"
-if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ] || [ "$1" ==  "avida-ed" ]; then
-   echo "Found an emscripten output."
+if [ "$1" == "avida.js" ] || [ "$1" ==  "avida-ed-web" ]; then
+   echo
+   echo "-- Configuring for $1 --"
+   echo
+   echo "Found an emscripten target."
    if [ -z "$EMSCRIPTEN" ]; then
       echo "Emscripten's environment variables are not properly set."
       echo "Attempting to use .profile to add (assuming emsdk_env.sh is called there.)"
@@ -100,22 +124,40 @@ if [ "$1" == "avida.js" ] || [ "$1" == "avida.html" ] || [ "$1" ==  "avida-ed" ]
    if [ -z "${EMS_EMBED_DIR}" ]; then
       EMS_EMBED_DIR="../../avida-core/support/config"
    fi
-   
+
+
    em_cmake_flags=" ${@:2} 
        -DEMS_AVIDA_EMBED_DIR=${EMS_EMBED_DIR} 
        -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN}/cmake/Modules/Platform/Emscripten.cmake"
    # Only the viewer or the shell version should be built, exclusively
    if [ "$1" == "avida.js" ]; then
       em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=ON -DAVD_HTML=OFF -DAVD_ED=OFF"
-   elif [ "$1" == "avida.html" ]; then
-      em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=OFF -DAVD_HTML=ON -DAVD_ED=OFF"
-   elif [ "$1" == "avida-ed" ]; then
+   elif [ "$1" == "avida-ed-web" ]; then
       em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=OFF -DAVD_HTML=OFF -DAVD_ED=ON"
    fi
+   echo
+   echo
    cmake ${em_cmake_flags} ../
 
 else 
+   echo
+   echo "-- Configuring for a native build --"
+   echo
    cmake "$@" ../
+fi
+
+if [ $1 == "setup-native" ]; then
+   echo
+   echo
+   echo "Native setup complete.  Go to the cbuild directory listed above and use"
+   echo "   ccmake .."
+   echo "to configure the build setup."
+   echo 
+   echo "Once configured, the target(s) may be build and installed"
+   echo "using the make utility.  For example: "
+   echo "   make -j4 install"
+   echo "will use 4 compilation threads and install the target output."
+   exit 0
 fi
 
 # Now that we're all configured, make it and install
@@ -132,7 +174,7 @@ fi
 # configuration files and pre-load them into the virtual file system.
 # This post-processing applies to avida.html only at this time.
 if [ $? -eq 0 ]; then
-   if [ "$1" == "avida.html" ] || [ "$1" == "avida-ed" ]; then
+   if [ "$1" == "avida.html" ] || [ "$1" == "avida-ed-web" ]; then
       avida_js="work/avida.js"
       sed -i '' "s:\.\.\/\.\.\/bin\/avida.data:/avida.data:g" "${avida_js}" 
    fi
