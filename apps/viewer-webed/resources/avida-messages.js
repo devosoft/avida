@@ -20,7 +20,9 @@ var enable_diagnostic_socket = false;  //Should an attempt be made to connect to
 /*
   Try to import external socketio client
 */
-self.importScripts("https://cdn.socket.io/socket.io-1.4.5.js");
+if (enable_diagnostic_socket){
+   self.importScripts("https://cdn.socket.io/socket.io-1.4.5.js");
+}
 
 if (io && enable_diagnostic_socket){
   diagnostic_socket = io.connect('http://localhost:5000/avida');
@@ -51,11 +53,21 @@ function sendDiagMsg(msg_from, io_type, data)
 
 
 /*
+   Write received commands to the console using a compressed format.
+*/
+
+function logCommand(cmd)
+{
+   console.log(String.fromCharCode(2)+LZString.compressToBase64(cmd)+String.fromCharCode(3));
+}
+
+/*
   Handle incoming messages from parent
 */
 onmessage = function(msg) {
     msg_queue.push(msg.data);
     sendDiagMsg('ui', 'in', msg.data);
+    logCommand(msg.data)
 }
 
 

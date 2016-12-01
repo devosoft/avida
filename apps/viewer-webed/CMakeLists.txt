@@ -117,6 +117,8 @@ SET(JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/json/src)
 # Locate apto's headers
 SET(APTO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/apto/include)
 
+# Directory to lz-string's libs
+SET(LZSTRING_JS_DIR ${PROJECT_SOURCE_DIR}/libs/lz-string/libs)
 
 SET(AVIDAED_WEB_DIR ${PROJECT_SOURCE_DIR}/apps/viewer-webed/src)
 SET(
@@ -191,6 +193,7 @@ SET(BINARY_SUPPORT
    ${EXECUTABLE_OUTPUT_PATH}/avida.js.mem
    )
 INSTALL(DIRECTORY resources/ DESTINATION work)
+INSTALL(FILES ${LZSTRING_JS_DIR}/lz-string.js DESTINATION work)
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/libs/av_ui/ DESTINATION work)
 INSTALL_FILES(/work FILES ${BINARY_SUPPORT})
 

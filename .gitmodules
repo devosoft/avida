@@ -18,3 +18,6 @@
 [submodule "libs/pouchdbfs"]
 	path = libs/pouchdbfs
 	url = https://github.com/ruppmatt/pouchdbfs
+[submodule "libs/lz-string"]
+	path = libs/lz-string
+	url = https://github.com/ruppmatt/lz-string
