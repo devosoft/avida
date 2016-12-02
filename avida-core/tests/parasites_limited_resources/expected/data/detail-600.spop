@@ -1,7 +1,7 @@
 #filetype genotype_data
 #format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
 # Structured Population Save
-# Fri Jun 26 08:30:31 2015
+# Thu Dec  1 21:01:18 2016
 #  1: ID
 #  2: Source
 #  3: Source Args
