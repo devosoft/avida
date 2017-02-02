@@ -400,6 +400,7 @@ public:
   CONFIG_ADD_VAR(REQUIRED_REACTION, int, -1, "Reaction ID required for successful divide");
   CONFIG_ADD_VAR(IMMUNITY_REACTION, int, -1, "Reaction ID that provides immunity for successful divide");
   CONFIG_ADD_VAR(REQUIRE_SINGLE_REACTION, int, 0, "If set to 1, at least one reaction is required for a successful divide");
+  CONFIG_ADD_VAR(MAX_UNIQUE_TASK_COUNT, int, -1, "Division will fail if organism performs more than MAX_TASK_COUNT when MAX_TASK_COUNT >= 0");
   CONFIG_ADD_VAR(REQUIRED_BONUS, double, 0.0, "Required bonus to divide");
   CONFIG_ADD_VAR(REQUIRE_EXACT_COPY, int, 0, "Require offspring to be an exact copy (checked before divide mutations)");
   CONFIG_ADD_VAR(REQUIRED_RESOURCE, int, -1, "ID of resource required in organism's internal bins for successful\n  divide (resource not consumed)");
