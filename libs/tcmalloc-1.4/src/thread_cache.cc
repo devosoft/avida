@@ -476,8 +476,8 @@ void ThreadCache::RecomputePerThreadCacheSize() {
 
 void ThreadCache::Print(TCMalloc_Printer* out) const {
   for (unsigned int cl = 0; cl < kNumClasses; ++cl) {
-    out->printf("      %5" PRIuS " : %4" PRIuS " len; %4d lo; %4"PRIuS
-                " max; %4"PRIuS" overages;\n",
+    out->printf("      %5" PRIuS " : %4" PRIuS " len; %4d lo; %4" PRIuS
+                " max; %4" PRIuS " overages;\n",
                 Static::sizemap()->ByteSizeForClass(cl),
                 list_[cl].length(),
                 list_[cl].lowwatermark(),
@@ -492,8 +492,8 @@ void ThreadCache::PrintThreads(TCMalloc_Printer* out) {
     h->Print(out);
     actual_limit += h->max_size_;
   }
-  out->printf("ThreadCache overall: %"PRIuS ", unclaimed: %"PRIuS
-              ", actual: %"PRIuS"\n",
+  out->printf("ThreadCache overall: %" PRIuS ", unclaimed: %" PRIuS
+              ", actual: %" PRIuS "\n",
               overall_thread_cache_size_, unclaimed_cache_space_, actual_limit);
 }
 
