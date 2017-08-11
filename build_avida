@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-EMSCRIPTEN_APPS=("avida.js" "avida.html" "avida-ed")
+EMSCRIPTEN_APPS=("avida.js" "avida.html" "avida-ed-web")
 
 # This is ugly; thanks sed
 # This function adds a line at a particular location
@@ -18,7 +18,7 @@ function add_line(){
    " ${file}
 }
 
-if [ $1 == "-h" ] || [ $1 == "--help" ] || [ $1 == "help" ]; then
+if [ ! -z $1 ] && ( [ $1 == "-h" ] || [ $1 == "--help" ] || [ $1 == "help" ] ); then
    echo "This is the avida build script."
    echo
    echo "Usage: build_avida [action | target] [build-options]"
@@ -41,6 +41,8 @@ if [ $1 == "-h" ] || [ $1 == "--help" ] || [ $1 == "help" ]; then
    echo "                     of commmand line driver."
    echo "   avida-ed-web      (Emscripten) Build the web version of AvidaED"
    echo
+   echo "   avida-ed-web-wa   (WebAssembly) Build the web version of AvidaED"
+   echo
    echo "build-options are passed directly to the build system."
    exit 0
 fi
@@ -53,10 +55,11 @@ git submodule update
 
 # If we're envoking this from XCode, we get additional
 # arguments if not building (e.g. cleaning or rebuilding)
-if [ $1 == "clean" ]; then
+if [ ! -z $1 ] && [ $1 == "clean" ]; then
    rm -rf cbuild
    exit 0
-elif [ $1 == "install" ] || [ $1 == "installhdrs" ] || [ $1 == "installsrc" ]; then
+elif [ ! -z $1 ] && \
+   ( [ $1 == "install" ] || [ $1 == "installhdrs" ] || [ $1 == "installsrc" ] ); then
    echo "Xcode action $1 is not supported."
    exit 1
 fi
@@ -95,7 +98,7 @@ fi
 
 # Decide whether or not to use emscripten's cmake toolchain
 # and then build
-if [ "$1" == "avida.js" ] || [ "$1" ==  "avida-ed-web" ]; then
+if [ "$1" == "avida.js" ] || [ "$1" ==  "avida-ed-web" ] || [ "$1" == "avida-ed-web-wa" ]; then
    echo
    echo "-- Configuring for $1 --"
    echo
@@ -134,6 +137,8 @@ if [ "$1" == "avida.js" ] || [ "$1" ==  "avida-ed-web" ]; then
       em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=ON -DAVD_HTML=OFF -DAVD_ED=OFF"
    elif [ "$1" == "avida-ed-web" ]; then
       em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=OFF -DAVD_HTML=OFF -DAVD_ED=ON"
+   elif [ "$1" == "avida-ed-web-wa" ]; then
+      em_cmake_flags="${em_cmake_flags} -DAVD_CMDLINE=OFF -DAVD_HTML=OFF -DAVD_ED=ON -DWEB_ASM=ON"
    fi
    echo
    echo
@@ -146,7 +151,7 @@ else
    cmake "$@" ../
 fi
 
-if [ $1 == "setup-native" ]; then
+if [ -z $1 ] && [ $1 == "setup-native" ]; then
    echo
    echo
    echo "Native setup complete.  Go to the cbuild directory listed above and use"
@@ -161,7 +166,7 @@ if [ $1 == "setup-native" ]; then
 fi
 
 # Now that we're all configured, make it and install
-make -j 10 install
+make -j10 install
 build_exit=$?
 if [ "${build_exit}" -ne 0 ]; then
    echo "Build error error ${build_exit}"
