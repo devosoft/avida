@@ -121,18 +121,37 @@ namespace Actions{
     void Process(cAvidaContext& ctx){
       D_(D_ACTIONS, "cWebActionPopulationStats::Processs");
       const cStats& stats = m_world->GetStats();
-      int update = stats.GetUpdate();;
-      double ave_fitness = stats.GetAveFitness();;
-      double ave_gestation_time = stats.GetAveGestation();
-      double ave_metabolic_rate = stats.GetAveMerit();
+      int update = stats.GetUpdate();
+      
+      const cPopulation& pop = m_world->GetPopulation();
+      
+      //calculating fitness, gestation, metablism averages for only viable organisms. Excluding non-viable organisms
+      cDoubleSum fitness, gestation, metabolism;
+      for (int kk=0; kk < pop.GetLiveOrgList().GetSize(); kk++){
+        cOrganism* org = pop.GetLiveOrgList()[kk];
+        const cPhenotype& phen = org->GetPhenotype();
+
+        //@MRR Only works with pre-calculated organsims!   Needs to chagne when working with limited resources.
+        if ( org->GetPhenotype().GetPrecalcIsViable() > 0) {
+          fitness.Add( phen.GetFitness() );
+          gestation.Add( phen.GetGestationTime() );
+          metabolism.Add( phen.GetMerit().GetDouble() );
+        }
+      }
+      
       int org_count = stats.GetNumCreatures();
       double ave_age = stats.GetAveCreatureAge();
       
+      
+      
       WebViewerMsg pop_data = {
         {"update", update}
-        ,{"ave_fitness", ave_fitness}
-        ,{"ave_gestation_time", ave_gestation_time}
-        ,{"ave_metabolic_rate", ave_metabolic_rate}
+        //,{"ave_fitness", ave_fitness}
+        //,{"ave_gestation_time", ave_gestation_time}
+        //,{"ave_metabolic_rate", ave_metabolic_rate}
+        ,{"ave_fitness", fitness.Average()}
+        ,{"ave_gestation_time", gestation.Average()}
+        ,{"ave_metabolic_rate", metabolism.Average()}
         ,{"organisms", org_count}
         ,{"ave_age", ave_age}
       };

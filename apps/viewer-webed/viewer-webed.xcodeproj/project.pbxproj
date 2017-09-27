@@ -77,7 +77,7 @@
 /* Begin PBXLegacyTarget section */
 		B4181DD41B94D19C0002B429 /* viewer-webed */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "$(ACTION) avida-ed";
+			buildArgumentsString = "$(ACTION) avida-ed-web";
 			buildConfigurationList = B4181DD71B94D19C0002B429 /* Build configuration list for PBXLegacyTarget "viewer-webed" */;
 			buildPhases = (
 			);
