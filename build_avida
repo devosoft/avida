@@ -185,7 +185,11 @@ fi
 if [ $? -eq 0 ]; then
    if [ "$1" == "avida.html" ] || [ "$1" == "avida-ed-web" ]; then
       avida_js="work/avida.js"
-      sed -i '' "s:\.\.\/\.\.\/bin\/avida.data:/avida.data:g" "${avida_js}" 
+      avida_js_bak="${avida_js}.bak"
+      # Cannot use the -i option as it is not portable across platforms
+      # So, we have to create and move to path correct.
+      sed "s:\.\.\/\.\.\/bin\/avida.data:/avida.data:g" "${avida_js}" > "${avida_js_bak}"
+      mv -f "${avida_js_bak}" "${avida_js}"
    fi
 fi
 
