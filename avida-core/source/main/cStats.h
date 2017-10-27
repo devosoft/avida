@@ -774,6 +774,9 @@ public:
 
   const Apto::Array<int>& GetReactions() const { return m_reaction_last_count; }
   const Apto::Array<double> & GetResources() const { return resource_count; }
+  const Apto::Array<cString>& GetResourceNames() const { return resource_names; }
+  const Apto::Array<int>& GetResourceGeometries() const { return resource_geometry; }
+  const Apto::Array< Apto::Array<double> >& GetSpatialResourceCount() const {return spatial_res_count; }
 
   double GetAveReproRate() const  { return sum_repro_rate.Average(); }
 

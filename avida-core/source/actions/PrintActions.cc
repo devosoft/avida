@@ -58,6 +58,7 @@
 #include "cUserFeedback.h"
 #include "cParasite.h"
 #include "cBirthEntry.h"
+#include "nGeometry.h"
 
 #include <cmath>
 #include <cerrno>
@@ -244,19 +245,65 @@ class cActionPrintResourceData : public cAction
 {
 private:
   cString m_filename;
-  cString maps;
+  cString m_maps;
 public:
   cActionPrintResourceData(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
-    if (largs == "") m_filename = "resource.dat"; else m_filename = largs.PopWord();
-    if (largs == "") maps = "1"; else maps = largs.PopWord();
+    m_filename = (largs.GetSize()) ? largs.PopWord() :  "resource.dat";
+    m_maps = (largs.GetSize()) ? largs.PopWord() : "1"; 
   }
   static const cString GetDescription() { return "Arguments: [string fname=\"resource.dat\"]"; }
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().UpdateResStats(ctx);
-    m_world->GetStats().PrintResourceData(m_filename, maps);
+    m_world->GetStats().PrintResourceData(m_filename, m_maps);
+  }
+};
+
+
+class cActionPrintSpatialResources : public cAction
+{
+private:
+  cString m_filename;
+  bool m_first_run;
+public:
+
+  cActionPrintSpatialResources(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_first_run(true)
+  {
+    cString largs(args);
+    m_filename = (largs.GetSize()) ? largs.PopWord() :  "resources.dat";
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"resource.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateResStats(ctx);
+    const cStats& stats = m_world->GetStats();
+    
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
+
+    if (m_first_run){
+      df->WriteComment("Avida Spatial Resource Information");
+      df->WriteComment("Column 1 is the update");
+      df->WriteComment("Column 2 is the name of the resource");
+      df->WriteComment("The remaining columns are abundance of the named resource per cell");
+    }
+    df->WriteAnonymous(stats.GetUpdate());
+    
+    int world_size = m_world->GetPopulation().GetSize();
+    for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
+      int geometry = stats.GetResourceGeometries()[res_id];
+      if (geometry != nGeometry::GLOBAL && geometry != nGeometry::PARTIAL){
+        df->WriteAnonymous(stats.GetResourceNames()[res_id]);
+        for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){
+          df->OFStream() << stats.GetSpatialResourceCount()[res_id][cell_ndx];
+          if (cell_ndx < world_size-1){
+            df->OFStream() << " ";
+          }
+        }
+      }
+    }
+    df->Endl();
   }
 };
 
@@ -1625,8 +1672,8 @@ public:
   //This function may get called by outside classes to generate a histogram of log10 fitnesses;
   //max may be updated by this function if the range is not evenly divisible by the step
   static Apto::Array<int> MakeHistogram(const Apto::Array<cOrganism*>& orgs, const Apto::Array<Systematics::GroupPtr>& gens,
-                                   double min, double step, double& max, const cString& mode, cWorld* world,
-                                   cAvidaContext& ctx)
+                                        double min, double step, double& max, const cString& mode, cWorld* world,
+                                        cAvidaContext& ctx)
   {
     //Set up histogram; extra columns prepended (non-viable, < m_hist_fmin) and appended ( > f_hist_fmax)
     //If the bin size is not a multiple of the step size, the last bin is expanded to make it a multiple.
@@ -1800,8 +1847,8 @@ public:
   }
   
   static Apto::Array<int> MakeHistogram(const Apto::Array<cOrganism*>& orgs, const Apto::Array<Systematics::GroupPtr>& gens,
-                                   double min, double step, double& max, const cString& mode, cWorld* world,
-                                   cAvidaContext& ctx)
+                                        double min, double step, double& max, const cString& mode, cWorld* world,
+                                        cAvidaContext& ctx)
   {
     //Set up histogram; extra columns prepended (non-viable, < m_hist_fmin) and appended ( > f_hist_fmax)
     //If the bin size is not a multiple of the step size, the last bin is expanded to make it a multiple.
@@ -3139,7 +3186,7 @@ public:
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
     testcpu->PrintGenome(ctx, mg, con_name);
     
-        
+    
     cCPUTestInfo test_info;
     testcpu->TestGenome(ctx, test_info, mg);
     delete testcpu;
@@ -3182,90 +3229,90 @@ public:
 class cActionPrintEditDistance : public cAction {
 public:
   cActionPrintEditDistance(cWorld* world, const cString& args, Feedback&)
-	: cAction(world, args)
-	, m_sample_size(-1)
-	, m_filename("edit_distance.dat") {
+  : cAction(world, args)
+  , m_sample_size(-1)
+  , m_filename("edit_distance.dat") {
     cString largs(args);
-		if(largs.GetSize()) { m_sample_size = static_cast<unsigned int>(largs.PopWord().AsInt()); }
+    if(largs.GetSize()) { m_sample_size = static_cast<unsigned int>(largs.PopWord().AsInt()); }
     if(largs.GetSize()) {	m_filename = largs.PopWord();	}
   }
   
   static const cString GetDescription() { return "Arguments: [sample size [filename]]"; }
   
-	/*! Calculate our various edit distances.
-	 
-	 We have two different measures that we want to look at:
-	 1) population-wide genetic variance
-	 2) within-deme genetic variance	 
-	 */
+  /*! Calculate our various edit distances.
+   
+   We have two different measures that we want to look at:
+   1) population-wide genetic variance
+   2) within-deme genetic variance	 
+   */
   void Process(cAvidaContext& ctx) {
-		assert(m_world->GetPopulation().GetNumDemes() > 0);
+    assert(m_world->GetPopulation().GetNumDemes() > 0);
     
     Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-		
-		// within deme edit distance:
-		cDoubleSum within_deme_ed;
-		std::vector<cOrganism*> organisms;
-		organisms.reserve(m_world->GetPopulation().GetNumOrganisms());
-		
-		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-			cDeme& deme = m_world->GetPopulation().GetDeme(i);
-			for(int j=0; j<deme.GetSize(); ++j) {
-				cOrganism* org = deme.GetOrganism(j);
-				if(org != 0) {
-					organisms.push_back(org);
-				}
-			}
-			within_deme_ed.Add(average_edit_distance(organisms, ctx));
-			organisms.clear();
-		}
-		
-		// among deme edit distance:
-		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
-			cOrganism* org = m_world->GetPopulation().GetCell(i).GetOrganism();
-			if(org != 0) {
-				organisms.push_back(org);
-			}
-		}
-		double among_deme_ed = average_edit_distance(organisms, ctx);		
-		
-		df->Write(m_world->GetStats().GetUpdate(), "Update [update]");
-		df->Write(within_deme_ed.Average(), "Mean deme edit distance [deme]");
-		df->Write(among_deme_ed, "Mean population edit distance [population]");
-		df->Endl();
-	}
+    
+    // within deme edit distance:
+    cDoubleSum within_deme_ed;
+    std::vector<cOrganism*> organisms;
+    organisms.reserve(m_world->GetPopulation().GetNumOrganisms());
+    
+    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+      cDeme& deme = m_world->GetPopulation().GetDeme(i);
+      for(int j=0; j<deme.GetSize(); ++j) {
+        cOrganism* org = deme.GetOrganism(j);
+        if(org != 0) {
+          organisms.push_back(org);
+        }
+      }
+      within_deme_ed.Add(average_edit_distance(organisms, ctx));
+      organisms.clear();
+    }
+    
+    // among deme edit distance:
+    for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+      cOrganism* org = m_world->GetPopulation().GetCell(i).GetOrganism();
+      if(org != 0) {
+        organisms.push_back(org);
+      }
+    }
+    double among_deme_ed = average_edit_distance(organisms, ctx);		
+    
+    df->Write(m_world->GetStats().GetUpdate(), "Update [update]");
+    df->Write(within_deme_ed.Average(), "Mean deme edit distance [deme]");
+    df->Write(among_deme_ed, "Mean population edit distance [population]");
+    df->Endl();
+  }
   
 protected:
-	//! Calculate the average edit distance of the given container of organisms.
-	double average_edit_distance(std::vector<cOrganism*> organisms, cAvidaContext& ctx) {
-		std::random_shuffle(organisms.begin(), organisms.end(), ctx.GetRandom());
-		if(organisms.size() % 2) {
-			organisms.pop_back();
-		}
-		
-		unsigned int sample_pairs = organisms.size()/2;
-		if(m_sample_size > 0) {
-			sample_pairs = std::min(m_sample_size, sample_pairs);
-		}
-		
-		cDoubleSum edit_distance;
-		for(unsigned int i=0; i<sample_pairs; ++i) {
-			cOrganism* a = organisms.back();
-			organisms.pop_back();
-			cOrganism* b = organisms.back();
-			organisms.pop_back();
+  //! Calculate the average edit distance of the given container of organisms.
+  double average_edit_distance(std::vector<cOrganism*> organisms, cAvidaContext& ctx) {
+    std::random_shuffle(organisms.begin(), organisms.end(), ctx.GetRandom());
+    if(organisms.size() % 2) {
+      organisms.pop_back();
+    }
+    
+    unsigned int sample_pairs = organisms.size()/2;
+    if(m_sample_size > 0) {
+      sample_pairs = std::min(m_sample_size, sample_pairs);
+    }
+    
+    cDoubleSum edit_distance;
+    for(unsigned int i=0; i<sample_pairs; ++i) {
+      cOrganism* a = organisms.back();
+      organisms.pop_back();
+      cOrganism* b = organisms.back();
+      organisms.pop_back();
       
       ConstInstructionSequencePtr a_seq, b_seq;
       a_seq.DynamicCastFrom(a->GetGenome().Representation());
       b_seq.DynamicCastFrom(b->GetGenome().Representation());
-			edit_distance.Add(InstructionSequence::FindEditDistance(*a_seq, *b_seq));
-		}
-		
-		return edit_distance.Average();
-	}
-	
+      edit_distance.Add(InstructionSequence::FindEditDistance(*a_seq, *b_seq));
+    }
+    
+    return edit_distance.Average();
+  }
+  
 private:
-	unsigned int m_sample_size; //!< Number of pairs of organisms to sample for diversity calculation.
+  unsigned int m_sample_size; //!< Number of pairs of organisms to sample for diversity calculation.
   cString m_filename; //!< Filename in which to write the various edit distances.
 };
 
@@ -3809,7 +3856,7 @@ public:
         int task_sum = -1;
         int cell_num = i * pop->GetWorldX() + j;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
-	  task_sum = 0;
+          task_sum = 0;
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           cCPUTestInfo test_info;
           testcpu->TestGenome(ctx, test_info, organism->GetGenome());
@@ -3969,7 +4016,7 @@ class cActionDumpHostTaskGridComma : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpHostTaskGridComma(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -3986,7 +4033,7 @@ public:
     Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
     ofstream& fp = df->OFStream();
     cPopulation* pop = &m_world->GetPopulation();
-  
+    
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
     for (int j = 0; j < pop->GetWorldY(); j++) {
       for (int i = 0; i < pop->GetWorldX(); i++) {
@@ -4044,7 +4091,7 @@ public:
           if(organism->GetNumParasites() > 0)
           {
             cPhenotype& test_phenotype = organism->GetPhenotype();
-          
+            
             for (int k = 0; k < num_tasks; k++) {
               cString task_count_string = cStringUtil::Stringf("%d", test_phenotype.GetLastParasiteTaskCount()[k]);
               task_list += task_count_string;
@@ -4337,7 +4384,7 @@ public:
             parasite.DynamicCastFrom(parasites[0]);
             genome_seq = parasite->UnitGenome().Representation()->AsString();
             fp << genome_seq << endl;
-
+            
           }
         }
       }
@@ -4739,13 +4786,13 @@ public:
 
 class cActionPrintDemesTotalAvgEnergy : public cAction {
 public:
-	cActionPrintDemesTotalAvgEnergy(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
+  cActionPrintDemesTotalAvgEnergy(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
   
-	static const cString GetDescription() { return "No Arguments"; }
+  static const cString GetDescription() { return "No Arguments"; }
   
-	void Process(cAvidaContext& ctx) {
-		m_world->GetPopulation().PrintDemeTotalAvgEnergy(ctx); 
-	}
+  void Process(cAvidaContext& ctx) {
+    m_world->GetPopulation().PrintDemeTotalAvgEnergy(ctx); 
+  }
 };
 
 class cActionPrintDemeEnergySharingStats : public cAction
@@ -5288,6 +5335,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintNewTasksDataPlus>("PrintNewTasksDataPlus");
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
+  action_lib->Register<cActionPrintSpatialResources>("PrintSpatialResources");
   action_lib->Register<cActionPrintResourceLocData>("PrintResourceLocData");
   action_lib->Register<cActionPrintResWallLocData>("PrintResWallLocData");
   action_lib->Register<cActionPrintReactionData>("PrintReactionData");
@@ -5350,15 +5398,15 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
   
   action_lib->Register<cActionPrintDemeTestamentStats>("PrintDemeTestamentStats");
-	action_lib->Register<cActionPrintCurrentMeanDemeDensity>("PrintCurrentMeanDemeDensity");
+  action_lib->Register<cActionPrintCurrentMeanDemeDensity>("PrintCurrentMeanDemeDensity");
   
-	action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
-	action_lib->Register<cActionPrintCellData>("PrintCellData");
-	action_lib->Register<cActionPrintConsensusData>("PrintConsensusData");
-	action_lib->Register<cActionPrintSimpleConsensusData>("PrintSimpleConsensusData");
-	action_lib->Register<cActionPrintCurrentOpinions>("PrintCurrentOpinions");
-	action_lib->Register<cActionPrintOpinionsSetPerDeme>("PrintOpinionsSetPerDeme");
-	action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
+  action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
+  action_lib->Register<cActionPrintCellData>("PrintCellData");
+  action_lib->Register<cActionPrintConsensusData>("PrintConsensusData");
+  action_lib->Register<cActionPrintSimpleConsensusData>("PrintSimpleConsensusData");
+  action_lib->Register<cActionPrintCurrentOpinions>("PrintCurrentOpinions");
+  action_lib->Register<cActionPrintOpinionsSetPerDeme>("PrintOpinionsSetPerDeme");
+  action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
   action_lib->Register<cActionPrintCurrentMeanDemeDensity>("PrintCurrentMeanDemeDensity");
   
   action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
@@ -5371,7 +5419,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDetailedSynchronizationData>("PrintDetailedSynchronizationData");
   
   action_lib->Register<cActionPrintDonationStats>("PrintDonationStats");
-    
+  
   // kabooms output file
   action_lib->Register<cActionPrintKaboom>("PrintKaboom");
   action_lib->Register<cActionPrintQuorum>("PrintQuorum");
@@ -5438,7 +5486,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
   action_lib->Register<cActionPrintIntrinsicTaskSwitchingCostData>("PrintIntrinsicTaskSwitchingCostData");
   action_lib->Register<cActionPrintDenData>("PrintDenData");
-
+  
   
   //Coalescence Clade Actions
   action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
@@ -5509,7 +5557,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   //Dump Genotype Lists
   action_lib->Register<cActionDumpHostGenotypeList>("DumpHostGenotypeList");
   action_lib->Register<cActionDumpParasiteGenotypeList>("DumpParasiteGenotypeList");
-
+  
   
   action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");
   action_lib->Register<cActionPrintMigrationData>("PrintMigrationData");
@@ -5549,4 +5597,4 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   
   action_lib->Register<cActionPrintDominantData>("PrintDominantData");
   
-}
+};
