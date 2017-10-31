@@ -279,7 +279,7 @@ public:
   {
     m_world->GetPopulation().UpdateResStats(ctx);
     const cStats& stats = m_world->GetStats();
-    
+
     Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
 
     if (m_first_run){
@@ -287,9 +287,11 @@ public:
       df->WriteComment("Column 1 is the update");
       df->WriteComment("Column 2 is the name of the resource");
       df->WriteComment("The remaining columns are abundance of the named resource per cell");
+      df->FlushComments();
+      m_first_run = false;
     }
     df->WriteAnonymous(stats.GetUpdate());
-    
+
     int world_size = m_world->GetPopulation().GetSize();
     for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
       int geometry = stats.GetResourceGeometries()[res_id];
