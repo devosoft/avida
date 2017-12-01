@@ -268,7 +268,7 @@ private:
   cString m_filename;
   bool m_first_run;
 public:
-
+  
   cActionPrintSpatialResources(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_first_run(true)
   {
     cString largs(args);
@@ -279,9 +279,9 @@ public:
   {
     m_world->GetPopulation().UpdateResStats(ctx);
     const cStats& stats = m_world->GetStats();
-
+    
     Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-
+    
     if (m_first_run){
       df->WriteComment("Avida Spatial Resource Information");
       df->WriteComment("Column 1 is the update");
@@ -290,22 +290,22 @@ public:
       df->FlushComments();
       m_first_run = false;
     }
-    df->WriteAnonymous(stats.GetUpdate());
-
+    
     int world_size = m_world->GetPopulation().GetSize();
     for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
       int geometry = stats.GetResourceGeometries()[res_id];
       if (geometry != nGeometry::GLOBAL && geometry != nGeometry::PARTIAL){
+        df->WriteAnonymous(stats.GetUpdate());
         df->WriteAnonymous(stats.GetResourceNames()[res_id]);
         for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){
           df->OFStream() << stats.GetSpatialResourceCount()[res_id][cell_ndx];
           if (cell_ndx < world_size-1){
             df->OFStream() << " ";
-          }
+          } 
         }
+        df->Endl();
       }
     }
-    df->Endl();
   }
 };
 
@@ -753,7 +753,7 @@ public:
   }
   
   static const cString GetDescription() { return "Arguments: [string fname=\"killed_prey.dat\"]"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetStats().PrintKilledPreyFTData(m_filename);
@@ -1237,7 +1237,7 @@ public:
       bool already_used = false;
       
       if (!bg) break;
-
+      
       if (bg && ((bool)Apto::StrAs(bg->Properties().Get("threshold")) || i == 0)) {
         int last_birth_group_id = Apto::StrAs(bg->Properties().Get("last_group_id")); 
         int last_birth_cell = Apto::StrAs(bg->Properties().Get("last_birth_cell"));
@@ -1257,7 +1257,7 @@ public:
         cString filename(m_filename);
         if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->Properties().Get("name").StringValue());
         else filename = filename.Set(filename + "grp%d_ft%d", last_birth_group_id, last_birth_forager_type); 
-
+        
         // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
         Apto::RNG::AvidaRNG rng(0);
         cAvidaContext ctx2(&m_world->GetDriver(), rng);
@@ -1322,7 +1322,7 @@ public:
         cString filename(m_filename);
         if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->Properties().Get("name").StringValue());
         else filename = filename.Set(filename + ".ft%d_grp%d", last_birth_forager_type, last_birth_group_id); 
-
+        
         // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
         Apto::RNG::AvidaRNG rng(0);
         cAvidaContext ctx2(&m_world->GetDriver(), rng);
@@ -2192,8 +2192,8 @@ public:
     map< int, Apto::Array<Systematics::GroupPtr> >::iterator git = gen_map.begin();
     for (; oit != org_map.end(); oit++, git++) {
       Apto::Array<int> hist = cActionPrintRelativeFitnessHistogram::MakeHistogram( (oit->second), (git->second),
-                                                                             m_hist_fmin, m_hist_fstep, m_hist_fmax,
-                                                                             m_mode, m_world, ctx );
+                                                                                  m_hist_fmin, m_hist_fstep, m_hist_fmax,
+                                                                                  m_mode, m_world, ctx );
       if (first_run){  //Print header information if first time through
         first_run = false;
         fp << "# PrintCCladeFitnessHistogram" << endl << "# Bins: ";
@@ -2490,7 +2490,7 @@ public:
     Avida::Output::FilePtr df;
     if (ctx.GetAnalyzeMode()) df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)m_filename);
     else df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-
+    
     ofstream& fot = df->OFStream();  //Setup output file
     if (m_first_run == true){
       PrintHeader(fot);
