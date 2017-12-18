@@ -4310,6 +4310,7 @@ public:
     }
     
     Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
+    std::ofstream& fout = df->OFStream();
     
     if (first_time){
       df->WriteComment("First column is update, second column is reaction name, subsequent columns are individual cells");
@@ -4323,16 +4324,13 @@ public:
     cReactionLib& rlib = m_world->GetEnvironment().GetReactionLib();
     const int update = m_world->GetStats().GetUpdate();
     for (int react=0; react < rlib.GetSize(); react++){
-      df->WriteAnonymous(update);
-      df->WriteAnonymous(" ");
-      df->WriteAnonymous(rlib.GetReaction(react)->GetName());
+      fout << update << " " << rlib.GetReaction(react)->GetName();
       for (int cell=0; cell < pop.GetSize(); cell++){  
-        if (cell > pop.GetSize()-1) 
-          df->WriteAnonymous(" ");
+        fout << " ";
         if (!pop.GetCell(cell).IsOccupied())
-          df->WriteAnonymous(UNOCCUPIED);
+          fout << UNOCCUPIED;
         else
-          df->WriteAnonymous(pop.GetCell(cell).GetOrganism()->GetPhenotype().GetLastReactionCount()[react]);
+          fout << pop.GetCell(cell).GetOrganism()->GetPhenotype().GetLastReactionCount()[react];
       }
       df->Endl();
       df->Flush();
@@ -4374,7 +4372,7 @@ public:
     }
     
     Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-    
+    std::ofstream& fout = df->OFStream();
     if (first_time){
       df->WriteComment("First column is update, second column is reaction name, subsequent columns are individual cells");
       df->WriteComment("-1 for a reaction count indicates the cell is not occupied.");
@@ -4387,15 +4385,13 @@ public:
     cReactionLib& rlib = m_world->GetEnvironment().GetReactionLib();
     const int update = m_world->GetStats().GetUpdate();
     for (int react=0; react < rlib.GetSize(); react++){
-      df->WriteAnonymous(update);
-      df->WriteAnonymous(rlib.GetReaction(react)->GetName());
+      fout << update << " " << rlib.GetReaction(react)->GetName();
       for (int cell=0; cell < pop.GetSize(); cell++){  
-        if (cell > pop.GetSize()-1) 
-          df->WriteAnonymous(" ");
+        fout << " ";
         if (!pop.GetCell(cell).IsOccupied())
-          df->WriteAnonymous(UNOCCUPIED);
+          fout << UNOCCUPIED;
         else
-          df->WriteAnonymous(pop.GetCell(cell).GetOrganism()->GetPhenotype().GetCurReactionCount()[react]);
+          fout << pop.GetCell(cell).GetOrganism()->GetPhenotype().GetCurReactionCount()[react];
       }
       df->Endl();
       df->Flush();
