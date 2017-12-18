@@ -53,6 +53,8 @@
 #include "cPlasticPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
+#include "cReaction.h"
+#include "cReactionLib.h"
 #include "cStats.h"
 #include "cWorld.h"
 #include "cUserFeedback.h"
@@ -4272,6 +4274,140 @@ public:
   }
 };
 
+
+
+
+
+/*
+@MRR
+Using the phenotype information, print the number of time each reaction
+occured during the last gestation cyle
+*/
+class cActionPrintLastReactionCountGrid : public cAction
+{
+private:
+  cString m_filename;
+  bool first_time;
+  
+public:
+  cActionPrintLastReactionCountGrid(cWorld* world, const cString& args, Feedback&) : 
+    cAction(world, args)
+    , m_filename("")
+    , first_time(true)
+  {
+    cString largs(args);
+    m_filename = (largs.GetSize()) ? largs.PopWord() : "last-reaction-count.dat";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+  
+    if (ctx.GetAnalyzeMode()){
+      cerr << "cActionPrintLastReactionCount cannot be run in analyze mode.";
+      m_world->GetDriver().Abort(INVALID_CONFIG);
+    }
+    
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
+    
+    if (first_time){
+      df->WriteComment("First column is update, second column is reaction name, subsequent columns are individual cells");
+      df->WriteComment("-1 for a reaction count indicates the cell is not occupied.");
+      df->FlushComments();
+      first_time = false;
+    }
+    const int UNOCCUPIED = -1;
+    
+    cPopulation& pop = m_world->GetPopulation();
+    cReactionLib& rlib = m_world->GetEnvironment().GetReactionLib();
+    const int update = m_world->GetStats().GetUpdate();
+    for (int react=0; react < rlib.GetSize(); react++){
+      df->WriteAnonymous(update);
+      df->WriteAnonymous(" ");
+      df->WriteAnonymous(rlib.GetReaction(react)->GetName());
+      for (int cell=0; cell < pop.GetSize(); cell++){  
+        if (cell > pop.GetSize()-1) 
+          df->WriteAnonymous(" ");
+        if (!pop.GetCell(cell).IsOccupied())
+          df->WriteAnonymous(UNOCCUPIED);
+        else
+          df->WriteAnonymous(pop.GetCell(cell).GetOrganism()->GetPhenotype().GetLastReactionCount()[react]);
+      }
+      df->Endl();
+      df->Flush();
+    }
+  }
+};
+
+
+/*
+@MRR
+Using the phenotype information, print the number of time each reaction
+occured during the current gestation cycle.  This may be incomplete
+if the gestation cycle is still occuring.
+*/
+class cActionPrintCurrReactionCountGrid : public cAction
+{
+private:
+  cString m_filename;
+  bool first_time;
+  
+public:
+  cActionPrintCurrReactionCountGrid(cWorld* world, const cString& args, Feedback&) : 
+    cAction(world, args)
+    , m_filename("")
+    , first_time(true)
+  {
+    cString largs(args);
+    m_filename = (largs.GetSize()) ? largs.PopWord() : "curr-reaction-count.dat";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+  
+    if (ctx.GetAnalyzeMode()){
+      cerr << "cActionPrintLastReactionCount cannot be run in analyze mode.";
+      m_world->GetDriver().Abort(INVALID_CONFIG);
+    }
+    
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
+    
+    if (first_time){
+      df->WriteComment("First column is update, second column is reaction name, subsequent columns are individual cells");
+      df->WriteComment("-1 for a reaction count indicates the cell is not occupied.");
+      df->FlushComments();
+      first_time = false;
+    }
+    const int UNOCCUPIED = -1;
+    
+    cPopulation& pop = m_world->GetPopulation();
+    cReactionLib& rlib = m_world->GetEnvironment().GetReactionLib();
+    const int update = m_world->GetStats().GetUpdate();
+    for (int react=0; react < rlib.GetSize(); react++){
+      df->WriteAnonymous(update);
+      df->WriteAnonymous(rlib.GetReaction(react)->GetName());
+      for (int cell=0; cell < pop.GetSize(); cell++){  
+        if (cell > pop.GetSize()-1) 
+          df->WriteAnonymous(" ");
+        if (!pop.GetCell(cell).IsOccupied())
+          df->WriteAnonymous(UNOCCUPIED);
+        else
+          df->WriteAnonymous(pop.GetCell(cell).GetOrganism()->GetPhenotype().GetCurReactionCount()[react]);
+      }
+      df->Endl();
+      df->Flush();
+    }
+  }
+};
+
+
+
+
+
+
 class cActionDumpGenotypeGrid : public cAction
 {
 private:
@@ -5546,6 +5682,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpParasiteMigrationCounts>("DumpParasiteMigrationCounts"); 
   
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
+  action_lib->Register<cActionPrintLastReactionCountGrid>("PrintLastReactionCountGrid");
+  action_lib->Register<cActionPrintCurrReactionCountGrid>("PrintCurrReactionCountGrid");
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
   action_lib->Register<cActionDumpEnergyGrid>("DumpEnergyGrid");

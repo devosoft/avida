@@ -24,12 +24,90 @@
 #define cReactionRequisite_h
 
 #include <climits>
+#include <cassert>
 
 #ifndef tList_h
 #include "tList.h"
 #endif
 
 class cReaction;
+
+class cRequisiteCellBox {
+  private:
+    int m_x;
+    int m_y;
+    int m_width;
+    int m_height;
+  
+  //cRequisiteCellBox(); // Pre-C++11 style (put it in private)  the compiler still makes it, but no one can use it.
+  //cRequisiteCellBox() = delete; //C++11 and beyound style)
+  
+  //The compiler automatically will provide the ability to
+  /*
+  cRequisiteCellBox a_box;
+  cRequisiteCellBox b_box(a_box); //copy constructor   (also a move contructor)
+  cRequisiteCellBox c_box;
+  c_box = a_box; //operator=  the assignment operator
+  cRequisiteCellBox::~cRequisiteCellBox   //destructor
+  */
+  
+  /*
+  For today:
+  Add in the parser to the part of the code where requisites are read in
+  Actually add the cRequistieCellBox to the cRequisite
+  
+  Add in default constructor that initializes xx, yy, width, height to -1
+  Add in a public method to check if a cellID falls within hour cell box
+    cellID -> X-coordinate = cellID % WORLD_X
+    cellID -> Y-coordinate = cellID / WORLD_X
+    True if 
+    m_x != -1  assume that if true m_Y also not != -1
+    OR
+    [
+      m_y <= y-coordinate <= m_y + m_height
+      m_x <= x-coordinate <= m_x + m_width
+    ]
+  Thinking
+    bool InCellBox(int cell_id, int world_x, int world_y)
+      where we get world_x and world_y passed via the TestRequistie as well
+  
+  */
+  
+  public:
+  
+  //Add in default contructor
+  //We're adding it to make sure that nay requistie that is *not* a
+  //cellBox will not fail . . . will allow the requisite to be met
+  cRequisiteCellBox()
+  :   m_x(-1)
+  ,  m_y(-1)
+  ,  m_width(-1)
+  ,  m_height(-1)
+  {
+  }
+  
+  
+    cRequisiteCellBox(int xx, int yy, int width=1, int height=1)
+    : m_x(xx)
+    , m_y(yy)
+    , m_width(width)
+    , m_height(height)
+    {
+      assert(m_x >= 0 && m_y >= 0 && m_width > 0 && m_height > 0);
+    }
+  
+  
+    // method to see if cell is in box.
+    bool InCellBox(int cellID, int world_x, int world_y) {
+      if (0 > m_x  || 0 > m_y || 0 >= m_width || 0 >= m_height ) return true;
+      int cell_x = cellID % world_x;
+      int cell_y = cellID / world_y;
+      if (m_x <= cell_x && cell_x < m_x + m_width && m_y <= cell_y && cell_y < m_y + m_height) {
+        return true;
+      }
+      return false;
+    }
+};
 
 class cReactionRequisite
 {
@@ -44,6 +122,7 @@ private:
   int max_tot_reaction_count;
   int divide_only;
   int parasite_only;
+  cRequisiteCellBox cell_box;
 
 
   cReactionRequisite(const cReactionRequisite&); // @not_implemented
@@ -65,6 +144,7 @@ public:
   int GetMinTotReactionCount() const { return min_tot_reaction_count; }
   int GetMaxTotReactionCount() const { return max_tot_reaction_count; }
   int GetParasiteOnly() const { return parasite_only; }
+  cRequisiteCellBox GetCellBox() const {return cell_box; }
 
   void AddReaction(cReaction* in_reaction) {
     prior_reaction_list.PushRear(in_reaction);
@@ -80,7 +160,9 @@ public:
   void SetMinTotReactionCount(int min) { min_tot_reaction_count = min; }
   void SetMaxTotReactionCount(int max) { max_tot_reaction_count = max; }
   void SetParasiteOnly(int para) { parasite_only = para; }
-
+  void SetCellBox(int xx, int yy, int width, int height) {
+    cell_box = cRequisiteCellBox(xx, yy, width, height);   //So calling the non-default and opperator=; in c++11 and beyound it will be a move]
+  }
   /*
   added to satisfy Boost.Python; the semantics are fairly useless --
   equality of two references means that they refer to the same object.
