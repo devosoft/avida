@@ -1148,6 +1148,22 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
     double rand = m_world->GetRandom().GetDouble();
     interaction_fails = rand > prob_success;
   }
+  // 6: Parasite must perform at least one task (no specificity, but requires tasks performed).
+  if (infection_mechanism == 6) {
+      //handle skipping of first task
+      int start = 0;
+      if (m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get()) {
+          start += 1;
+      }
+    
+      //find if there is a parasite task that the host isn't doing
+      for (int i = start; i < host_task_counts.GetSize(); i++) {
+          if (parasite_task_counts[i] > 0) {
+              //inject should succeed if there is a matching task
+              interaction_fails = false;
+          }
+      }
+  }
   
   // TODO: Add other infection mechanisms -LZ
   // : Probabilistic infection based on overlap. (GFG)
