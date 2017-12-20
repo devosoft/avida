@@ -384,7 +384,7 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, Feed
         feedback.Error("cellbox requisite requires 0 < height+yy < WORLD_Y for 4th argument");
         return false;
       }
-
+      new_requisite->SetCellBox(xx, yy, width, height);
     }
     else {
       feedback.Error("unknown requisite variable '%s' in reaction '%s'",

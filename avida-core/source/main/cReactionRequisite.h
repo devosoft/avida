@@ -101,7 +101,7 @@ class cRequisiteCellBox {
     bool InCellBox(int cellID, int world_x, int world_y) {
       if (0 > m_x  || 0 > m_y || 0 >= m_width || 0 >= m_height ) return true;
       int cell_x = cellID % world_x;
-      int cell_y = cellID / world_y;
+      int cell_y = cellID / world_x;
       if (m_x <= cell_x && cell_x < m_x + m_width && m_y <= cell_y && cell_y < m_y + m_height) {
         return true;
       }
