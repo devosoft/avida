@@ -354,6 +354,38 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, Feed
       if (!AssertInputInt(var_value, "parasite_only", var_type, feedback)) return false;
       new_requisite->SetParasiteOnly(var_value.AsInt());
     }
+    else if (var_name == "cellbox") {   //<-- Added
+      //var_name is what came before the =
+      //var_value is what came after the =
+      // e.g. cell_box=[xx, yy, width, height]
+      //      var_name    var_value
+      //We need to parse the var_name into the xx, yy, width and height variables
+      //and eat the angle brackets and commas
+      //If the coordinates or the width or height are out of bounds use feedback to throw
+      //an error message to the user. This will abort the program.
+      int xx = (var_value.GetSize() > 0) ? var_value.Pop(',').AsInt() : -1;
+      int yy = (var_value.GetSize() > 0) ? var_value.Pop(',').AsInt() : -1;
+      int width = (var_value.GetSize() > 0) ? var_value.Pop(',').AsInt() : 1;
+      int height = (var_value.GetSize() > 0) ? var_value.AsInt() : 1;
+
+      if (0 > xx || xx >= m_world->GetConfig().WORLD_X.Get() ) {
+        feedback.Error("cellbox requisite requires 0 >= < xx < WORLD_X for first argument");
+        return false;
+      }
+      if (0 > yy || yy >= m_world->GetConfig().WORLD_Y.Get() ) {
+        feedback.Error("cellbox requisite requires 0 >= < yy < WORLD_Y for 2nd argument");
+        return false;
+      }
+      if (0>= width || width+xx >= m_world->GetConfig().WORLD_X.Get() ) {
+        feedback.Error("cellbox requisite requires 0 < width+xx < WORLD_X for 3rd argument");
+        return false;
+      }
+      if (0 >= height || height+yy  >= m_world->GetConfig().WORLD_Y.Get() ) {
+        feedback.Error("cellbox requisite requires 0 < height+yy < WORLD_Y for 4th argument");
+        return false;
+      }
+      new_requisite->SetCellBox(xx, yy, width, height);
+    }
     else {
       feedback.Error("unknown requisite variable '%s' in reaction '%s'",
                                     (const char*)var_name, (const char*)reaction->GetName());
@@ -1456,6 +1488,13 @@ bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_re
     // If the reaction is parasite only, check to see if we are a parasite
     if (cur_req->GetParasiteOnly()){
       if (!is_parasite) continue;}
+
+    if (!taskctx.GetOrganism() ||
+       ! cur_req->GetCellBox().InCellBox(taskctx.GetOrganism()->GetCellID(),
+                                         m_world->GetConfig().WORLD_X.Get(),
+                                         m_world->GetConfig().WORLD_Y.Get() )
+                                         )
+                                         continue;
 
     return true;
   }
