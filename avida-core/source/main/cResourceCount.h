@@ -34,10 +34,34 @@
 class cWorld;
 
 
+/*
+  @MRR January 2018
+
+  cResourceCount is the class responsible for resource accounting.
+  
+  Resources come in a variety of flavors: global, partial, traditionally spatial, and
+  gradient-spatial.  This handles the accountancy of all these resource types.  Demes 
+  also this class to keep track of their resources.
+  
+  All resources are added with a unique resource id (res_id).  This class contains a 
+  set of containers that use a resource's id as an index into these containers to 
+  retrieve the value of each property.  For example, resource_name[2] will give yield
+  the name of a resource with the resource id of 2.
+  
+  Not all resources may have properties fully defined in each container.  They will, however,
+  occupy a space at that index.  For example, a global resource will have a spatial resource
+  count (a set of resource abundances for each cell) available, but it may not be initialized
+  or return an undefined result.  
+  
+  It is up to the user of this class to make sure that calls to get or set values for properties
+  of a particular resource are sensicle.
+
+*/
+
 class cResourceCount
 {
 private:
-  mutable Apto::Array<cString> resource_name;
+  mutable Apto::Array<cString> resource_name;    // The name of each resource
   mutable Apto::Array<double> resource_initial;  // Initial quantity of each resource
   mutable Apto::Array<double> resource_count;  // Current quantity of each resource
   Apto::Array<double> decay_rate;      // Multiplies resource count at each step
@@ -58,6 +82,9 @@ private:
   mutable int m_spatial_update;
 
   void DoUpdates(cAvidaContext& ctx, bool global_only = false) const;         // Update resource count based on update time
+  
+  void DoNonSpatialUpdates(cAvidaContext& ctx, const int res_id, int num_steps) const;
+  void DoSpatialUpdates(cAvidaContext& ctx, const int res_id, int num_updates) const;
 
   // A few constants to describe update process...
   static const double UPDATE_STEP;   // Fraction of an update per step
@@ -150,7 +177,10 @@ public:
   void ReinitializeResources(cAvidaContext& ctx, double additional_resource);
   double GetInitialResourceValue(int resourceID) const { return resource_initial[resourceID]; }
   const cString& GetResName(int id) const { return resource_name[id]; }
-  bool IsSpatial(int id) const { return ((geometry[id] != nGeometry::GLOBAL) && (geometry[id] != nGeometry::PARTIAL)); }
+  bool IsSpatialResource(int res_id) const {
+    int geom = geometry[res_id];
+    return geom != nGeometry::GLOBAL && geom != nGeometry::PARTIAL; 
+  }
   int GetResourceByName(cString name) const;
   
   int GetCurrPeakX(cAvidaContext& ctx, int res_id) const;

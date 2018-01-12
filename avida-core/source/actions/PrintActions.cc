@@ -293,10 +293,13 @@ public:
       m_first_run = false;
     }
     
-    int world_size = m_world->GetPopulation().GetSize();
+    cPopulation& pop = m_world->GetPopulation();
+    const cResourceCount& res_count = pop.GetResourceCount();
+    int world_size = pop.GetSize();
+    
     for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
       int geometry = stats.GetResourceGeometries()[res_id];
-      if (geometry != nGeometry::GLOBAL && geometry != nGeometry::PARTIAL){
+      if (res_count.IsSpatialResource(res_id)){
         df->WriteAnonymous(stats.GetUpdate());
         df->WriteAnonymous(stats.GetResourceNames()[res_id]);
         for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){

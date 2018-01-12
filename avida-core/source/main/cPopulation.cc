@@ -4968,7 +4968,7 @@ void cPopulation::PrintDemeResource(cAvidaContext& ctx) {
     for(int j = 0; j < res.GetSize(); j++) {
       const char * tmp = res.GetResName(j);
       df->Write(res.Get(ctx, j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
-      if ((res.GetResourcesGeometry())[j] != nGeometry::GLOBAL && (res.GetResourcesGeometry())[j] != nGeometry::PARTIAL) {
+      if (res.IsSpatialResource(j)){
         PrintDemeSpatialResData(res, j, deme_id, ctx); 
       }
     }
@@ -4997,7 +4997,7 @@ void cPopulation::PrintDemeGlobalResources(cAvidaContext& ctx) {
     df->WriteBlockElement(deme_id, 0, num_res + 1);
     
     for(int r = 0; r < num_res; r++) {
-      if (!res.IsSpatial(r)) {
+      if (!res.IsSpatialResource(r)) {
         df->WriteBlockElement(res.Get(ctx, r), r + 1, num_res + 1);
       }
       
@@ -8590,7 +8590,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetHStep(), res->GetRStep(),
                            res->GetCStepX(), res->GetCStepY(),
                            res->GetUpdateDynamic(), res->GetPeakX(), res->GetPeakY(),
-                           res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(), 
+                           res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetOutflow(), 
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(), res->GetMoveResistance(),

@@ -1450,7 +1450,7 @@ double cDeme::GetShannonMutualInformation()
   }
 	
 //  shannon_sum /= log((double)m_num_active);
-  delete ptask_array;
+  delete[] ptask_array;
   return shannon_sum;
 }
 
