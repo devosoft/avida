@@ -20,6 +20,7 @@
  */
 
 #include "math.h"
+
 #include "EnvironmentActions.h"
 
 #include "cAction.h"
@@ -848,6 +849,49 @@ public:
   void Process(cAvidaContext&)
   {
     m_world->GetPopulation().SetResourceInflow(m_name, m_inflow);
+  }
+};
+
+/* Set up a periodic inflow based on a shifted cosine wave
+
+   To set the periodic function as the oritional input value * value between 0 and 1. Since sine varies from -1 to 1,
+   we need to shift the sine function by 1 divide by 2.
+   The base version will start at 0 by using cos, which is -1 at angle of pi. So cos(pi + update * 2pi/period )+1)/2
+ 
+   At a minum we need the name of the resource and the period in updates.
+*/
+
+class cActionSetPeriodicResourceInflow : public cAction
+{
+private:
+  cString m_name;
+  int m_period;
+  bool m_first;
+  double m_1st_inflow;
+  int m_start;
+  const double m_pi = 3.1415926535897932384626433832795;
+  
+public:
+  cActionSetPeriodicResourceInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_name(""), m_period(0), m_first(true)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_name = largs.PopWord();
+    if (largs.GetSize()) m_period = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <int period>"; }
+  
+  void Process(cAvidaContext&)
+  {
+    if (m_first) {
+      m_start = m_world->GetStats().GetUpdate();
+      cResource* resource = m_world->GetEnvironment().GetResourceLib().GetResource(m_name);
+      if (NULL != resource) m_1st_inflow = resource->GetInflow();
+      m_first = false;
+    }
+    double step = m_world->GetStats().GetUpdate() - m_start;
+    double inflow = m_1st_inflow * (cos(m_pi + step *2*m_pi/m_period) + 1)/2;
+    m_world->GetPopulation().SetResourceInflow(m_name, inflow);
   }
 };
 
@@ -1690,6 +1734,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetReactionTask>("SetReactionTask");
 
   action_lib->Register<cActionSetResourceInflow>("SetResourceInflow");
+  action_lib->Register<cActionSetPeriodicResourceInflow>("SetPeriodicResourceInflow");
   action_lib->Register<cActionSetResourceOutflow>("SetResourceOutflow");
   action_lib->Register<cActionSetDemeResourceInflow>("SetDemeResourceInflow");
   action_lib->Register<cActionSetDemeResourceOutflow>("SetDemeResourceOutflow");
