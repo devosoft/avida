@@ -57,6 +57,7 @@ namespace Avida {
   // --------------------------------------------------------------------------------------------------------------  
   
   enum AbortCondition {
+    GENERIC_ERROR = 1,
     INVALID_CONFIG = 2,
     IO_ERROR = 3,
     INTERNAL_ERROR = 50

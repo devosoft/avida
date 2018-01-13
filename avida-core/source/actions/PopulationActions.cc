@@ -105,18 +105,24 @@ public:
   {
     if (m_filename.GetSize() == 0) {
       cerr << "error: no organism file specified" << endl;
-      return;
+      m_world->GetDriver().Abort(AbortCondition::IO_ERROR);
     }
     GenomePtr genome;
     cUserFeedback feedback;
     genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
+        case cUserFeedback::UF_ERROR:    
+          cerr << "error: "; 
+          cerr << feedback.GetMessage(i) << endl;
+          m_world->GetDriver().Abort(AbortCondition::GENERIC_ERROR);
+          break;
+        case cUserFeedback::UF_WARNING:  
+          cerr << "warning: ";
+          cerr << feedback.GetMessage(i) << endl; 
+          break;
         default: break;
       };
-      cerr << feedback.GetMessage(i) << endl;
     }
     if (!genome) return;
     m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, false);
