@@ -347,52 +347,52 @@ void cPopulation::SetupCellGrid()
   }
   
   // What are the sizes of the demes that we're creating?
-  const int deme_size_x = world_x;
-  const int deme_size_y = world_y / num_demes;
-  const int deme_size = deme_size_x * deme_size_y;
+  m_deme_size_x = world_x;
+  m_deme_size_y = world_y / num_demes;
+  m_deme_size = m_deme_size_x * m_deme_size_y;
   deme_array.ResizeClear(num_demes);
   
   // Broken setting:
-  assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get() <= deme_size);
+  assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get() <= m_deme_size);
   
   // Setup the deme structures.
-  Apto::Array<int> deme_cells(deme_size);
+  Apto::Array<int> deme_cells(m_deme_size);
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-    for (int offset = 0; offset < deme_size; offset++) {
-      int cell_id = deme_id * deme_size + offset;
+    for (int offset = 0; offset < m_deme_size; offset++) {
+      int cell_id = deme_id * m_deme_size + offset;
       deme_cells[offset] = cell_id;
       cell_array[cell_id].SetDemeID(deme_id);
     }
-    deme_array[deme_id].Setup(deme_id, deme_cells, deme_size_x, m_world);
+    deme_array[deme_id].Setup(deme_id, deme_cells, m_deme_size_x, m_world);
   }
   
   // Setup the topology.
   // What we're doing here is chopping the cell_array up into num_demes pieces.
   // Note that having 0 demes (one population) is the same as having 1 deme.  Then
   // we send the cells that comprise each deme into the topology builder.
-  for (int i = 0; i < num_cells; i += deme_size) {
+  for (int i = 0; i < num_cells; i += m_deme_size) {
     // We're cheating here; we're using the random access nature of an iterator to index beyond the end of the cell_array.
     switch(geometry) {
       case nGeometry::GRID:
-        build_grid(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y);
+        build_grid(cell_array.Range(i, i + m_deme_size - 1), m_deme_size_x, m_deme_size_y);
         break;
       case nGeometry::TORUS:
-        build_torus(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y);
+        build_torus(cell_array.Range(i, i + m_deme_size - 1), m_deme_size_x, m_deme_size_y);
         break;
       case nGeometry::CLIQUE:
-        build_clique(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y);
+        build_clique(cell_array.Range(i, i + m_deme_size - 1), m_deme_size_x, m_deme_size_y);
         break;
       case nGeometry::HEX:
-        build_hex(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y);
+        build_hex(cell_array.Range(i, i + m_deme_size - 1), m_deme_size_x, m_deme_size_y);
         break;
       case nGeometry::LATTICE:
-        build_lattice(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y, 1);
+        build_lattice(cell_array.Range(i, i + m_deme_size - 1), m_deme_size_x, m_deme_size_y, 1);
         break;
       case nGeometry::RANDOM_CONNECTED:
-        build_random_connected_network(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y, m_world->GetRandom());
+        build_random_connected_network(cell_array.Range(i, i + m_deme_size - 1), m_deme_size_x, m_deme_size_y, m_world->GetRandom());
         break;
       case nGeometry::SCALE_FREE:
-        build_scale_free(cell_array.Range(i, i + deme_size - 1), m_world->GetConfig().SCALE_FREE_M.Get(),
+        build_scale_free(cell_array.Range(i, i + m_deme_size - 1), m_world->GetConfig().SCALE_FREE_M.Get(),
                          m_world->GetConfig().SCALE_FREE_ALPHA.Get(), m_world->GetConfig().SCALE_FREE_ZERO_APPEAL.Get(),
                          m_world->GetRandom());
         break;
@@ -403,28 +403,33 @@ void cPopulation::SetupCellGrid()
   
   BuildTimeSlicer();
   
+  SetupResources();
   
-  // Setup the resources...
-  const cResourceRegistry& resource_lib = environment.GetResourceLib();
+}
+
+
+void cPopulation::SetupResources()
+{
+  const cResourceRegistry& resource_reg = environment.GetResourceRegistry();
   int global_res_index = -1;
   int deme_res_index = -1;
   int num_deme_res = 0;
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) if (resource_lib.GetResource(i)->GetDemeResource()) num_deme_res++;
+  for (int i = 0; i < resource_reg.GetSize(); i++) if (resource_reg.GetResource(i)->GetDemeResource()) num_deme_res++;
   
-  cResourceCount tmp_res_count(resource_lib.GetSize() - num_deme_res);
+  cResourceCount tmp_res_count(resource_reg.GetSize() - num_deme_res);
   resource_count = tmp_res_count;
   resource_count.ResizeSpatialGrids(world_x, world_y);
   
   for(int i = 0; i < GetNumDemes(); i++) {
     cResourceCount tmp_deme_res_count(num_deme_res);
     GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
-    GetDeme(i).ResizeSpatialGrids(deme_size_x, deme_size_y);
+    GetDeme(i).ResizeSpatialGrids(m_deme_size_x, m_deme_size_y);
   }
   
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource* res = resource_lib.GetResource(i);
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource* res = resource_reg.GetResource(i);
     
     // check to see if this is the hgt resource:
     if (res->GetHGTMetabolize()) {
@@ -484,8 +489,6 @@ void cPopulation::SetupCellGrid()
     m_world->GetDriver().Feedback().Warning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
   }
 }
-
-
 
 void cPopulation::ResizeCellGrid(int x, int y)
 {
@@ -1420,7 +1423,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
             JoinGroup(in_organism, op);
           }
           else if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) {
-            op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResourceLib().GetSize() + 1);
+            op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResourceRegistry().GetSize() + 1);
             in_organism->SetOpinion(op);
             JoinGroup(in_organism, op);
           }
@@ -1964,51 +1967,51 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   }    
   
   // get the resource library
-  const cResourceRegistry& resource_lib = environment.GetResourceLib();
+  const cResourceRegistry& resource_reg = environment.GetResourceRegistry();
   
   bool has_path = false;
   bool has_hammer = false;
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (environment.HasPath() && resource_lib.GetResource(i)->IsPath() && GetCellResVal(ctx, dest_cell_id, i) > 0) has_path = true;
-    if (environment.HasHammer() && resource_lib.GetResource(i)->IsHammer() && GetCellResVal(ctx, dest_cell_id, i) > 0) has_hammer = true;
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    if (environment.HasPath() && resource_reg.GetResource(i)->IsPath() && GetCellResVal(ctx, dest_cell_id, i) > 0) has_path = true;
+    if (environment.HasHammer() && resource_reg.GetResource(i)->IsHammer() && GetCellResVal(ctx, dest_cell_id, i) > 0) has_hammer = true;
   }
   
   if (!has_path || has_hammer) {
     // test for death by predatory resource or injury ... not mutually exclusive
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->IsPredatory() || resource_lib.GetResource(i)->IsDeadly()) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->IsPredatory() || resource_reg.GetResource(i)->IsDeadly()) {
         // get the destination cell resource levels
         double dest_cell_resources = GetCellResVal(ctx, dest_cell_id, i);
         if (dest_cell_resources > 0) {
           // if you step on a predatory resource, we're going to try to kill you
-          if ((resource_lib.GetResource(i)->IsPredatory() && ctx.GetRandom().P(resource_lib.GetResource(i)->GetPredatorResOdds()))
-              || (resource_lib.GetResource(i)->IsDeadly() && ctx.GetRandom().P(resource_lib.GetResource(i)->GetDeathOdds()))) {
+          if ((resource_reg.GetResource(i)->IsPredatory() && ctx.GetRandom().P(resource_reg.GetResource(i)->GetPredatorResOdds()))
+              || (resource_reg.GetResource(i)->IsDeadly() && ctx.GetRandom().P(resource_reg.GetResource(i)->GetDeathOdds()))) {
             if (true_cell != -1) KillOrganism(GetCell(true_cell), ctx);
             else if (true_cell == -1) KillOrganism(src_cell, ctx);
             return false;
           }
         }
       }
-      if (resource_lib.GetResource(i)->GetDamage()) {
+      if (resource_reg.GetResource(i)->GetDamage()) {
         double dest_cell_resources = GetCellResVal(ctx, dest_cell_id, i);
-        if (dest_cell_resources > resource_lib.GetResource(i)->GetThreshold()) {
-          InjureOrg(ctx, GetCell(true_cell), resource_lib.GetResource(i)->GetDamage(), false);
+        if (dest_cell_resources > resource_reg.GetResource(i)->GetThreshold()) {
+          InjureOrg(ctx, GetCell(true_cell), resource_reg.GetResource(i)->GetDamage(), false);
         }
       }
     }
     // if any of the resources have resistance, find the id of the most resistant resource
     int steepest_hill = 0;
     double curr_resistance = 1.0;
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (!resource_lib.GetResource(i)->IsPath() && resource_lib.GetResource(i)->GetResistance() > curr_resistance) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (!resource_reg.GetResource(i)->IsPath() && resource_reg.GetResource(i)->GetResistance() > curr_resistance) {
         if (GetCellResVal(ctx, src_cell_id, i) != 0) {
-          curr_resistance = resource_lib.GetResource(i)->GetResistance();
+          curr_resistance = resource_reg.GetResource(i)->GetResistance();
           steepest_hill = i;
         }
       }
     }
     // apply the chance of move failing for the most resistant resource in this cell, if there is one
-    if (resource_lib.GetSize() && curr_resistance != 1) {
+    if (resource_reg.GetSize() && curr_resistance != 1) {
       if (GetCellResVal(ctx, src_cell_id, steepest_hill) > 0) {
         // we use resistance to determine chance of movement succeeding: 'resistance == # move instructions executed, on average, to move one step/cell'
         double chance_move_success = 1.0/curr_resistance;
@@ -2019,9 +2022,9 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     // movement fails if there are any barrier resources in the faced cell (unless the org is already on a barrier,
     // which would happen if we built a new barrier under an org and we need to let it get off)
     bool curr_is_barrier = false;
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
       // get the current cell resource levels
-      if (resource_lib.GetResource(i)->GetHabitat() == 2 && !resource_lib.GetResource(i)->IsPath()) {
+      if (resource_reg.GetResource(i)->GetHabitat() == 2 && !resource_reg.GetResource(i)->IsPath()) {
         if (GetCellResVal(ctx, src_cell_id, i) > 0) {
           curr_is_barrier = true;
           break;
@@ -2029,8 +2032,8 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
       }
     }
     if (!curr_is_barrier) {
-      for (int i = 0; i < resource_lib.GetSize(); i++) {
-        if (!resource_lib.GetResource(i)->IsPath() && resource_lib.GetResource(i)->GetHabitat() == 2 && resource_lib.GetResource(i)->GetResistance() != 0) {
+      for (int i = 0; i < resource_reg.GetSize(); i++) {
+        if (!resource_reg.GetResource(i)->IsPath() && resource_reg.GetResource(i)->GetHabitat() == 2 && resource_reg.GetResource(i)->GetResistance() != 0) {
           // fail if faced cell has this wall resource
           if (GetCellResVal(ctx, dest_cell_id, i) > 0) return false;
         }
@@ -7186,7 +7189,7 @@ void cPopulation::SetResource(cAvidaContext& ctx, int res_index, double new_leve
  */
 void cPopulation::SetResource(cAvidaContext& ctx, const cString res_name, double new_level)
 {
-  cResource* res = environment.GetResourceLib().GetResource(res_name);
+  cResource* res = environment.GetResourceRegistry().GetResource(res_name);
   if (res != NULL) SetResource(ctx, res->GetIndex(), new_level);
 }
 
@@ -7217,7 +7220,7 @@ void cPopulation::SetResourceOutflow(const cString res_name, double new_level)
  */
 void cPopulation::SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level)
 {
-  cResource* res = environment.GetResourceLib().GetResource(res_name);
+  cResource* res = environment.GetResourceRegistry().GetResource(res_name);
   if (res != NULL) {
     int num_demes = GetNumDemes();
     for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
@@ -8249,11 +8252,11 @@ void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int verbosity, c
 {
   (void)verbosity;
   
-  const cResourceRegistry & resource_lib = environment.GetResourceLib();
+  const cResourceRegistry & resource_reg = environment.GetResourceRegistry();
   int global_res_index = -1;
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource * res = resource_reg.GetResource(i);
     
     if (!res->GetDemeResource()) global_res_index++;
     
@@ -8273,11 +8276,11 @@ void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int verbosity, c
 
 void cPopulation::UpdateGradientPlatInflow(const cString res_name, const double inflow)
 {
-  const cResourceRegistry & resource_lib = environment.GetResourceLib();
+  const cResourceRegistry & resource_reg = environment.GetResourceRegistry();
   int global_res_index = -1;
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource * res = resource_reg.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetPlateauInflow(inflow);
@@ -8288,11 +8291,11 @@ void cPopulation::UpdateGradientPlatInflow(const cString res_name, const double 
 
 void cPopulation::UpdateGradientPlatOutflow(const cString res_name, const double outflow)
 {
-  const cResourceRegistry & resource_lib = environment.GetResourceLib();
+  const cResourceRegistry & resource_reg = environment.GetResourceRegistry();
   int global_res_index = -1;
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource * res = resource_reg.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetPlateauOutflow(outflow);
@@ -8303,11 +8306,11 @@ void cPopulation::UpdateGradientPlatOutflow(const cString res_name, const double
 
 void cPopulation::UpdateGradientConeInflow(const cString res_name, const double inflow)
 {
-  const cResourceRegistry & resource_lib = environment.GetResourceLib();
+  const cResourceRegistry & resource_reg = environment.GetResourceRegistry();
   int global_res_index = -1;
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource * res = resource_reg.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetConeInflow(inflow);
@@ -8318,11 +8321,11 @@ void cPopulation::UpdateGradientConeInflow(const cString res_name, const double 
 
 void cPopulation::UpdateGradientConeOutflow(const cString res_name, const double outflow)
 {
-  const cResourceRegistry & resource_lib = environment.GetResourceLib();
+  const cResourceRegistry & resource_reg = environment.GetResourceRegistry();
   int global_res_index = -1;
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource * res = resource_reg.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetConeOutflow(outflow);
@@ -8333,11 +8336,11 @@ void cPopulation::UpdateGradientConeOutflow(const cString res_name, const double
 
 void cPopulation::UpdateGradientInflow(const cString res_name, const double inflow)
 {
-  const cResourceRegistry & resource_lib = environment.GetResourceLib();
+  const cResourceRegistry & resource_reg = environment.GetResourceRegistry();
   int global_res_index = -1;
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource * res = resource_reg.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetGradientInflow(inflow);
@@ -8348,11 +8351,11 @@ void cPopulation::UpdateGradientInflow(const cString res_name, const double infl
 
 void cPopulation::SetGradPlatVarInflow(cAvidaContext& ctx, const cString res_name, const double mean, const double variance, const int type)
 {
-  const cResourceRegistry & resource_lib = environment.GetResourceLib();
+  const cResourceRegistry & resource_reg = environment.GetResourceRegistry();
   int global_res_index = -1;
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource * res = resource_reg.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       resource_count.SetGradPlatVarInflow(ctx, global_res_index, mean, variance, type);
@@ -8362,11 +8365,11 @@ void cPopulation::SetGradPlatVarInflow(cAvidaContext& ctx, const cString res_nam
 
 void cPopulation::SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob)
 {
-  const cResourceRegistry & resource_lib = environment.GetResourceLib();
+  const cResourceRegistry & resource_reg = environment.GetResourceRegistry();
   int global_res_index = -1;
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource* res = resource_lib.GetResource(i);
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource* res = resource_reg.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetPredatoryResource(odds, juvsper, detection_prob);
@@ -8380,11 +8383,11 @@ void cPopulation::SetPredatoryResource(const cString res_name, const double odds
 void cPopulation::SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow,
   const double outflow, const double lambda, const double theta, const int x, const int y, const int count)
 {
-  const cResourceRegistry & resource_lib = environment.GetResourceLib();
+  const cResourceRegistry & resource_reg = environment.GetResourceRegistry();
   int global_res_index = -1;
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource* res = resource_lib.GetResource(i);
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource* res = resource_reg.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       resource_count.SetProbabilisticResource(ctx, global_res_index, initial, inflow, outflow, lambda, theta, x, y, count);
@@ -8395,9 +8398,9 @@ void cPopulation::SetProbabilisticResource(cAvidaContext& ctx, const cString res
 
 void cPopulation::UpdateInflow(const cString& res_name, const double change)
 {
-  const cResourceRegistry & resource_lib = environment.GetResourceLib();  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource* res = resource_lib.GetResource(i);
+  const cResourceRegistry & resource_reg = environment.GetResourceRegistry();  
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource* res = resource_reg.GetResource(i);
     if (res->GetName() == res_name) {
       resource_count.SetInflow(res_name, resource_count.GetInflow(res_name) + change);
     }
@@ -8410,11 +8413,11 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
 {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
 
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   
   if (!hammer) {
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->IsPath()) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->IsPath()) {
         double dest_cell_resources = GetCellResVal(ctx, cell_id, i);
         if (dest_cell_resources > 0) return;
       }
@@ -8424,8 +8427,8 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
   const int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
   
   bool cell_has_den = false;
-  for (int j = 0; j < resource_lib.GetSize(); j++) {
-    if (resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) {
+  for (int j = 0; j < resource_reg.GetSize(); j++) {
+    if (resource_reg.GetResource(j)->GetHabitat() == 4 || resource_reg.GetResource(j)->GetHabitat() == 3) {
       if (GetCellResVal(ctx, cell_id, j) > 0) {
         cell_has_den = true;
         break;
@@ -8491,11 +8494,11 @@ void cPopulation::ExecuteDamagingResource(cAvidaContext& ctx, const int cell_id,
 {
   cPopulationCell& cell = GetCell(cell_id);
   
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   
   if (!hammer) {
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->IsPath()) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->IsPath()) {
         double dest_cell_resources = GetCellResVal(ctx, cell_id, i);
         if (dest_cell_resources > 0) return;
       }
@@ -8515,11 +8518,11 @@ void cPopulation::ExecuteDeadlyResource(cAvidaContext& ctx, const int cell_id, c
 {
   cPopulationCell& cell = GetCell(cell_id);
   
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   
   if (!hammer) {
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->IsPath()) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->IsPath()) {
         double dest_cell_resources = GetCellResVal(ctx, cell_id, i);
         if (dest_cell_resources > 0) return;
       }
@@ -8549,14 +8552,14 @@ void cPopulation::ExecuteDeadlyResource(cAvidaContext& ctx, const int cell_id, c
 }
 
 void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
-  const cResourceRegistry & resource_lib = environment.GetResourceLib();
+  const cResourceRegistry & resource_reg = environment.GetResourceRegistry();
   int global_res_index = -1;
   int deme_res_index = -1;
   int num_deme_res = 0;
   
   //setting size of global and deme-level resources
-  for(int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+  for(int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource * res = resource_reg.GetResource(i);
     if (res->GetDemeResource())
       num_deme_res++;
   }
@@ -8566,8 +8569,8 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
     GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
   }
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    cResource * res = resource_reg.GetResource(i);
     if (!res->GetDemeResource()) {
       global_res_index++;
       const double decay = 1.0 - res->GetOutflow();

@@ -88,17 +88,17 @@ void cTestCPU::InitResources(cAvidaContext& ctx, int res_method, cResourceHistor
     // be changed if LOAD_RESOURCES analyze command is called.  If there are
     // no resources in the environment or there is no environment, the list
     // is empty then the all resources will default to 0.0
-    m_res = &m_world->GetEnvironment().GetResourceLib().GetInitialResourceLevels();
+    m_res = &m_world->GetEnvironment().GetResourceRegistry().GetInitialResourceLevels();
   }
   
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  assert(resource_lib.GetSize() >= 0);
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
+  assert(resource_reg.GetSize() >= 0);
   
   // Set the resource count to zero by default
-  m_resource_count.SetSize(resource_lib.GetSize());
-  m_faced_cell_resource_count.SetSize(resource_lib.GetSize());
-  m_cell_resource_count.SetSize(resource_lib.GetSize());
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
+  m_resource_count.SetSize(resource_reg.GetSize());
+  m_faced_cell_resource_count.SetSize(resource_reg.GetSize());
+  m_cell_resource_count.SetSize(resource_reg.GetSize());
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
     m_resource_count.Set(ctx, i, 0.0);
     m_faced_cell_resource_count.Set(ctx, i, 0.0);
     m_cell_resource_count.Set(ctx, i, 0.0);
@@ -416,7 +416,7 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString fil
   	df->WriteComment(        "Resources Collected: Name\t\tTotal\t\tAvailable");
   	for (int i = 0; i < rbins_total.GetSize(); i++) {
   		df->WriteComment(c.Set("                %d : %s\t\t%f\t\t%f\t\t", i,
-  		                      static_cast<const char*>(env.GetResourceLib().GetResource(i)->GetName()),
+  		                      static_cast<const char*>(env.GetResourceRegistry().GetResource(i)->GetName()),
   		                      rbins_total[i], rbins_avail[i]));
   	}
   }

@@ -562,7 +562,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   }
   
   // Do the testing of tasks performed...
-  Apto::Array<double> avatar_res_change(m_world->GetEnvironment().GetResourceLib().GetSize());
+  Apto::Array<double> avatar_res_change(m_world->GetEnvironment().GetResourceRegistry().GetSize());
   avatar_res_change.SetAll(0.0);
 
   //  tArray<double> deme_res_change(deme_resource_count.GetSize());
@@ -805,10 +805,10 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     }
     if (habitat_required != -1) {
       bool has_req_res = false;
-      const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+      const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
       double resource_count = 0;
-      for (int i = 0; i < resource_lib.GetSize(); i ++) {
-        if (resource_lib.GetResource(i)->GetHabitat() == habitat_required) {
+      for (int i = 0; i < resource_reg.GetSize(); i ++) {
+        if (resource_reg.GetResource(i)->GetHabitat() == habitat_required) {
           if (!m_world->GetConfig().USE_AVATARS.Get()) resource_count = m_interface->GetResourceVal(ctx, i);
           else resource_count = m_interface->GetAVResourceVal(ctx, i);
           if (resource_count >= required_value) {

@@ -49,7 +49,7 @@ class cOrgSensor
   sOrgDisplay m_last_seen_display;
   bool m_has_seen_display;
 
-  const cResourceRegistry& m_res_lib;
+  const cResourceRegistry& m_res_reg;
   
   void ResetOrgSensor();
   

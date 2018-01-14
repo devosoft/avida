@@ -368,7 +368,7 @@ void cDeme::ProcessUpdate(cAvidaContext& ctx)
     if(event.IsActive() && event.GetDelay() < _age && _age <= event.GetDelay()+event.GetDuration()) {
       //remove energy from cells  (should be done with outflow, but this will work for now)
       int eventCell = event.GetNextEventCellID();
-      cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource("CELL_ENERGY");
+      cResource* res = m_world->GetEnvironment().GetResourceRegistry().GetResource("CELL_ENERGY");
       
       while(eventCell != -1) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(eventCell));
@@ -1272,7 +1272,7 @@ void cDeme::DoDemeOutput(cAvidaContext& ctx, int value)
   taskctx.SetTaskStates(&m_task_states);
 
   const cEnvironment& env = m_world->GetEnvironment();
-  const int num_resources = env.GetResourceLib().GetSize();
+  const int num_resources = env.GetResourceRegistry().GetSize();
   const int num_tasks = env.GetNumTasks();
   const int num_reactions = env.GetReactionLib().GetSize();
 

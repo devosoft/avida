@@ -3829,10 +3829,10 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
   
   cout << "creating map using resources at update: " << update << endl;
    
-  for (int i = 0; i < m_world->GetEnvironment().GetResourceLib().GetSize(); i++) {
+  for (int i = 0; i < m_world->GetEnvironment().GetResourceRegistry().GetSize(); i++) {
     
     // first have to find reaction that matches this resource, so compare names
-	  cString name = m_world->GetEnvironment().GetResourceLib().GetResource(i)->GetName();
+	  cString name = m_world->GetEnvironment().GetResourceRegistry().GetResource(i)->GetName();
 	  cReaction* react = NULL;
 	  for (int j = 0; j < m_world->GetEnvironment().GetReactionLib().GetSize(); j++) {
 		  if (m_world->GetEnvironment().GetReactionLib().GetReaction(j)->GetProcesses().GetPos(0)->GetResource()->GetName() == name) {

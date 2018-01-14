@@ -583,7 +583,7 @@ double cTaskLib::Task_Nand_ResourceDependent(cTaskContext& ctx) const
   const int logic_id = ctx.GetLogicId();
   if (!(logic_id == 63 || logic_id == 95 || logic_id == 119)) return 0.0;
 		
-  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
   const Apto::Array<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
   const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
@@ -608,7 +608,7 @@ double cTaskLib::Task_Nor_ResourceDependent(cTaskContext& ctx) const
   const int logic_id = ctx.GetLogicId();
   if (!(logic_id == 3 || logic_id == 5 || logic_id == 17))  return 0.0;
 	
-  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
   const Apto::Array<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
   const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
   
@@ -4113,7 +4113,7 @@ double cTaskLib::Task_XorMax(cTaskContext& ctx) const
   }    
   cReaction* found_reaction = m_world->GetEnvironment().GetReactionLib().GetReaction(ctx.GetTaskEntry()->GetID());
   if (found_reaction == NULL) return false;
-  m_world->GetEnvironment().ChangeResource(found_reaction, m_world->GetEnvironment().GetResourceLib().GetResource(max_res)->GetName());
+  m_world->GetEnvironment().ChangeResource(found_reaction, m_world->GetEnvironment().GetResourceRegistry().GetResource(max_res)->GetName());
   return Task_Xor(ctx);
 }
 

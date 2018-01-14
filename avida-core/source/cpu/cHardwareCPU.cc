@@ -2342,7 +2342,7 @@ bool cHardwareCPU::Inst_IfAboveResLevel(cAvidaContext& ctx)
 {
   const double resCrossoverLevel = 100;
   
-  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
   const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
   const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
   
@@ -2366,7 +2366,7 @@ bool cHardwareCPU::Inst_IfAboveResLevelEnd(cAvidaContext& ctx)
 {
   const double resCrossoverLevel = 100;
   
-  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
   
   const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
   const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
@@ -2391,7 +2391,7 @@ bool cHardwareCPU::Inst_IfNotAboveResLevel(cAvidaContext& ctx)
 {
   const double resCrossoverLevel = 100;
 	
-  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
   
   const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
   const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
@@ -2416,7 +2416,7 @@ bool cHardwareCPU::Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx)
 {
   const double resCrossoverLevel = 100;
   
-  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
   const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
   const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
   
@@ -4533,7 +4533,7 @@ bool cHardwareCPU::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   int reg_to_set = FindModifiedRegister(REG_BX);
   
   // get the resource library
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   
   // get the destination cell resource levels
   Apto::Array<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
@@ -4541,14 +4541,14 @@ bool cHardwareCPU::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
   // are there any barrier resources in the faced cell    
   for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) {
       GetRegister(reg_to_set) = 2;
       return true;
     }    
   }
   // if no barriers, are there any hills in the faced cell    
   for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) {
       GetRegister(reg_to_set) = 1;
       return true;
     }
@@ -8631,7 +8631,7 @@ bool cHardwareCPU::DoSensePheromoneGlobal(cAvidaContext& ctx, tRegisters REG_DEF
 {
   int reg_to_set = FindModifiedRegister(REG_DEFAULT);
   
-  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
   const Apto::Array<double>& resource_count_array = m_organism->GetOrgInterface().GetResources(ctx);
   const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	

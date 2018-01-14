@@ -3737,18 +3737,18 @@ public:
         const Apto::Array<double> res_count = m_world->GetPopulation().GetCellResources(j * m_world->GetPopulation().GetWorldX() + i, ctx);
         double max_resource = 0.0;    
         // get the resource library
-        const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+        const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
         // if more than one resource is available, return the resource with the most available in this spot 
         // (note that, with global resources, the GLOBAL total will evaluated)
         // we build regular resources on top of any hills, but replace any regular resources or hills with any walls or dens 
         double topo_height = 0.0;
         for (int h = 0; h < res_count.GetSize(); h++) {
-          int hab_type = resource_lib.GetResource(h)->GetHabitat();
+          int hab_type = resource_reg.GetResource(h)->GetHabitat();
           if ((res_count[h] > max_resource) && (hab_type != 1) && (hab_type !=2)) max_resource = res_count[h];
-          else if ((hab_type == 1 || hab_type == 4 || hab_type == 5) && res_count[h] > 0) topo_height = resource_lib.GetResource(h)->GetPlateau();
+          else if ((hab_type == 1 || hab_type == 4 || hab_type == 5) && res_count[h] > 0) topo_height = resource_reg.GetResource(h)->GetPlateau();
           // allow walls to trump everything else
           else if (hab_type == 2 && res_count[h] > 0) { 
-            topo_height = resource_lib.GetResource(h)->GetPlateau();
+            topo_height = resource_reg.GetResource(h)->GetPlateau();
             max_resource = 0.0;
             break;
           }
@@ -4843,9 +4843,9 @@ public:
       bool on_den = false;
       Apto::Array<double> res_count = m_world->GetPopulation().GetCellResources(loc, ctx);
       if (use_av) res_count = m_world->GetPopulation().GetCellResources(org->GetOrgInterface().GetAVCellID(), ctx);
-      const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+      const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
       for (int i = 0; i < res_count.GetSize(); i++) {
-        int hab_type = resource_lib.GetResource(i)->GetHabitat();
+        int hab_type = resource_reg.GetResource(i)->GetHabitat();
         if ((hab_type == 3 || hab_type == 4) && res_count[i] > 0) on_den = true;
       }
       

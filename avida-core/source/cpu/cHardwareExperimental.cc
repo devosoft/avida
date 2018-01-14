@@ -911,20 +911,20 @@ void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp
   else fp << m_organism->GetOrgInterface().GetAVFacing() << " ";
   if (!m_use_avatar) fp << m_organism->IsNeighborCellOccupied() << " ";  
   else fp << m_organism->GetOrgInterface().FacedHasAV() << " ";
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   Apto::Array<double> cell_resource_levels;
   if (!m_use_avatar) cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
   else cell_resource_levels = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
   int wall = 0;
   int hill = 0;
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 2) {
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 2) {
       double wall_level = 0.0;
       if (!m_use_avatar) wall_level = m_organism->GetOrgInterface().GetFacedResourceVal(ctx, i);
       else wall_level = m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, i);
       if (wall_level > 0) wall = 1;
     }
-    else if (resource_lib.GetResource(i)->GetHabitat() == 1) {
+    else if (resource_reg.GetResource(i)->GetHabitat() == 1) {
       double hill_level = 0.0;
       if (!m_use_avatar) hill_level = m_organism->GetOrgInterface().GetFacedResourceVal(ctx, i);
       else hill_level = m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, i);
@@ -1810,9 +1810,9 @@ bool cHardwareExperimental::Inst_IfNest(cAvidaContext& ctx) // Execute next if o
 {
   bool set_ok = false;
 
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) {
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 3 || resource_reg.GetResource(i)->GetHabitat() == 4) {
       double cell_res = 0.0;
       if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
       else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
@@ -3821,13 +3821,13 @@ bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
 {
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   
   const int req_reg = FindModifiedRegister(rBX);
   int res_sought = -1;
   // are you trying to sense a valid, non-hidden nest resource?
   const int res_req = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
-  if (res_req < resource_lib.GetSize() && res_req > 0 && resource_lib.GetResource(res_req)->GetHabitat() != 3) {
+  if (res_req < resource_reg.GetSize() && res_req > 0 && resource_reg.GetResource(res_req)->GetHabitat() != 3) {
     res_sought = res_req; 
   }
   
@@ -3840,8 +3840,8 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
   }
   // otherwise, we sum across all the food resources in the cell
   else {
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->GetHabitat() == 0 || resource_reg.GetResource(i)->GetHabitat() > 5) {
         if (!m_use_avatar) faced_res += (int) (m_organism->GetOrgInterface().GetFacedResourceVal(ctx, i));
         else if (m_use_avatar)  faced_res += (int) (m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, i));
       }
@@ -3862,7 +3862,7 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
 {
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   const int reg_used = FindModifiedRegister(rBX);
   
   int nest_id = m_threads[m_cur_thread].reg[reg_used].value;
@@ -3870,9 +3870,9 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
   
   // if invalid nop value, return the id of the first nest in the cell with val >= 1
   double cell_res = 0.0;
-  if (nest_id < 0 || nest_id >= resource_lib.GetSize() || !resource_lib.GetResource(nest_id)->IsNest()) {
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->IsNest()) {
+  if (nest_id < 0 || nest_id >= resource_reg.GetSize() || !resource_reg.GetResource(nest_id)->IsNest()) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->IsNest()) {
         if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
         if (cell_res >= 1) {
@@ -3899,7 +3899,7 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
   int res_sought = -1;
   // are you trying to sense a valid resource?
   const int res_req = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
-  if (res_req < m_world->GetEnvironment().GetResourceLib().GetSize() && res_req > 0) {  
+  if (res_req < m_world->GetEnvironment().GetResourceRegistry().GetSize() && res_req > 0) {  
     res_sought = res_req; 
   }
   
@@ -3923,7 +3923,7 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
     else if (!m_use_avatar)  {
       here = m_organism->GetOrgInterface().GetResources(ctx);
       faced = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
-      for (int i = 0; i < m_world->GetEnvironment().GetResourceLib().GetSize(); i++ ) {
+      for (int i = 0; i < m_world->GetEnvironment().GetResourceRegistry().GetSize(); i++ ) {
         res_amount += (int) here[i];
         faced_res += (int) faced[i];
       }
@@ -4224,7 +4224,7 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   int reg_to_set = FindModifiedRegister(rBX);
   
   // get the resource library
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   
   // get the destination cell resource levels
   Apto::Array<double> cell_res;
@@ -4234,21 +4234,21 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
   // simulated predator ahead
   for (int i = 0; i < cell_res.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 5 && cell_res[i] > 0) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 5 && cell_res[i] > 0) {
       setInternalValue(reg_to_set, 3, true);
       return true;
     }    
   }
   // are there any barrier resources in the faced cell    
   for (int i = 0; i < cell_res.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_res[i] > 0) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 2 && cell_res[i] > 0) {
       setInternalValue(reg_to_set, 2, true);
       return true;
     }    
   }
   // if no barriers, are there any hills in the faced cell    
   for (int i = 0; i < cell_res.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_res[i] > 0) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 1 && cell_res[i] > 0) {
       setInternalValue(reg_to_set, 1, true);
       return true;
     }
@@ -4605,7 +4605,7 @@ bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bo
   if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, bin_used);
   else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, bin_used);
 
-  Apto::Array<double> res_change(m_world->GetEnvironment().GetResourceLib().GetSize());
+  Apto::Array<double> res_change(m_world->GetEnvironment().GetResourceRegistry().GetSize());
   res_change.SetAll(0.0);
   double total = m_organism->GetRBinsTotal();
   double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
@@ -4613,9 +4613,9 @@ bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bo
   double res_consumed = 0.0;
   
   // Collect a unit or some ABSORB_RESOURCE_FRACTION
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   if (unit) {
-    double threshold = resource_lib.GetResource(bin_used)->GetThreshold();
+    double threshold = resource_reg.GetResource(bin_used)->GetThreshold();
     if (cell_res >= threshold) {
       res_consumed = threshold;
     }
@@ -4649,7 +4649,7 @@ bool cHardwareExperimental::FakeActualCollect(cAvidaContext& ctx, int bin_used, 
     if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, bin_used);
     else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, bin_used);
     
-    Apto::Array<double> res_change(m_world->GetEnvironment().GetResourceLib().GetSize());
+    Apto::Array<double> res_change(m_world->GetEnvironment().GetResourceRegistry().GetSize());
     res_change.SetAll(0.0);
     double total = m_organism->GetRBinsTotal();
     double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
@@ -4657,9 +4657,9 @@ bool cHardwareExperimental::FakeActualCollect(cAvidaContext& ctx, int bin_used, 
     double res_consumed = 0.0;
     
     // Collect a unit or some ABSORB_RESOURCE_FRACTION
-    const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
     if (unit) {
-        double threshold = resource_lib.GetResource(bin_used)->GetThreshold();
+        double threshold = resource_reg.GetResource(bin_used)->GetThreshold();
         if (cell_res >= threshold) {
             res_consumed = threshold;
         }
@@ -4693,13 +4693,13 @@ bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
   
   double cell_res = 0.0;
   int res_id = -1;
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   if (absorb_type == 1) {
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->GetHabitat() == 0 || resource_reg.GetResource(i)->GetHabitat() > 5) {
         if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
-        if (cell_res >= resource_lib.GetResource(i)->GetThreshold()) {
+        if (cell_res >= resource_reg.GetResource(i)->GetThreshold()) {
           res_id = i;
           break;
         }
@@ -4707,11 +4707,11 @@ bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
     }
   }
   else if (absorb_type == 2) {
-    for (int i = resource_lib.GetSize(); i > 0 ; i--) {
-      if (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() > 5) {
+    for (int i = resource_reg.GetSize(); i > 0 ; i--) {
+      if (resource_reg.GetResource(i - 1)->GetHabitat() == 0 || resource_reg.GetResource(i - 1)->GetHabitat() > 5) {
         if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i - 1);
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i - 1);
-        if (cell_res >= resource_lib.GetResource(i - 1)->GetThreshold()) {
+        if (cell_res >= resource_reg.GetResource(i - 1)->GetThreshold()) {
           res_id = i - 1;
           break;
         }
@@ -4746,16 +4746,16 @@ bool cHardwareExperimental::Inst_DepositResource(cAvidaContext& ctx)
   if (resource_amount > stored_res) resource_amount = (int)(stored_res);
   bool success = false;
   if (stored_res >= resource_amount && resource_amount > 0) {
-    const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
     // only allow deposits on dens
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 4) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->GetHabitat() == 4) {
         double cell_res = 0.0;
         if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
-        if (cell_res > resource_lib.GetResource(i)->GetThreshold()) {
+        if (cell_res > resource_reg.GetResource(i)->GetThreshold()) {
           m_organism->AddToRBin(resource_id, -1 * resource_amount);
-          Apto::Array<double> res_change(resource_lib.GetSize());
+          Apto::Array<double> res_change(resource_reg.GetSize());
           res_change.SetAll(0.0);
           res_change[resource_id] = resource_amount;
           if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
@@ -4782,16 +4782,16 @@ bool cHardwareExperimental::Inst_DepositSpecific(cAvidaContext& ctx)
   if (resource_amount > stored_spec) resource_amount = (int)(stored_spec);
   bool success = false;
   if (stored_spec >= resource_amount && resource_amount > 0) {
-    const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
     // only allow deposits on dens
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 4) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->GetHabitat() == 4) {
         double cell_res = 0.0;
         if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
-        if (cell_res > resource_lib.GetResource(i)->GetThreshold()) {
+        if (cell_res > resource_reg.GetResource(i)->GetThreshold()) {
           m_organism->AddToRBin(spec_res, -1 * resource_amount);
-          Apto::Array<double> res_change(resource_lib.GetSize());
+          Apto::Array<double> res_change(resource_reg.GetSize());
           res_change.SetAll(0.0);
           res_change[spec_res] = resource_amount;
           if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
@@ -4813,22 +4813,22 @@ bool cHardwareExperimental::Inst_DepositAllAsSpecific(cAvidaContext& ctx)
 {
   const int spec_res = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();    
   bool success = false;
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   // only allow deposits on dens
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 4) {
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 4) {
       double cell_res = 0.0;
       if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
       else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
-      if (cell_res > resource_lib.GetResource(i)->GetThreshold()) {
+      if (cell_res > resource_reg.GetResource(i)->GetThreshold()) {
         double total_deposit = 0.0;
-        for (int j = 0; j < resource_lib.GetSize(); j++) {
+        for (int j = 0; j < resource_reg.GetSize(); j++) {
           double resource_amount = m_organism->GetRBins()[j];
           m_organism->AddToRBin(j, -1 * resource_amount);
           total_deposit += resource_amount;
         }
         if (total_deposit > 0) {
-          Apto::Array<double> res_change(resource_lib.GetSize());
+          Apto::Array<double> res_change(resource_reg.GetSize());
           res_change.SetAll(0.0);
           res_change[spec_res] = total_deposit;
           if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
@@ -4856,14 +4856,14 @@ bool cHardwareExperimental::Inst_NopDepositSpecific(cAvidaContext& ctx)
   if (resource_amount > stored_spec) resource_amount = (int)(stored_spec);
   bool success = false;
   if (stored_spec >= resource_amount && resource_amount > 0) {
-    const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
     // only allow deposits on dens
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 4) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->GetHabitat() == 4) {
         double cell_res = 0.0;
         if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
-        if (cell_res > resource_lib.GetResource(i)->GetThreshold()) {
+        if (cell_res > resource_reg.GetResource(i)->GetThreshold()) {
           success = true;
           break;
         }
@@ -4883,14 +4883,14 @@ bool cHardwareExperimental::Inst_NopDepositResource(cAvidaContext& ctx)
   if (resource_amount > stored_res) resource_amount = (int)(stored_res);
   bool success = false;
   if (stored_res >= resource_amount && resource_amount > 0) {
-    const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
     // only allow deposits on dens
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 4) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->GetHabitat() == 4) {
         double cell_res = 0.0;
         if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
-        if (cell_res > resource_lib.GetResource(i)->GetThreshold()) {
+        if (cell_res > resource_reg.GetResource(i)->GetThreshold()) {
           success = true;
           break;
         }
@@ -4903,16 +4903,16 @@ bool cHardwareExperimental::Inst_NopDepositResource(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_NopDepositAllAsSpecific(cAvidaContext& ctx)
 {
   bool success = false;
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   // only allow deposits on dens
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 4) {
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 4) {
       double cell_res = 0.0;
       if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
       else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
-      if (cell_res > resource_lib.GetResource(i)->GetThreshold()) {
+      if (cell_res > resource_reg.GetResource(i)->GetThreshold()) {
         double total_deposit = 0.0;
-        for (int j = 0; j < resource_lib.GetSize(); j++) {
+        for (int j = 0; j < resource_reg.GetSize(); j++) {
           double resource_amount = m_organism->GetRBins()[j];
           total_deposit += resource_amount;
         }
@@ -4930,22 +4930,22 @@ bool cHardwareExperimental::Inst_Nop2DepositAllAsSpecific(cAvidaContext& ctx)
 {
   const int spec_res = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
   bool success = false;
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   // only allow deposits on dens
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 4) {
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 4) {
       double cell_res = 0.0;
       if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
       else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
-      if (cell_res > resource_lib.GetResource(i)->GetThreshold()) {
+      if (cell_res > resource_reg.GetResource(i)->GetThreshold()) {
         double total_deposit = 0.0;
-        for (int j = 0; j < resource_lib.GetSize(); j++) {
+        for (int j = 0; j < resource_reg.GetSize(); j++) {
           double resource_amount = m_organism->GetRBins()[j];
           m_organism->AddToRBin(j, -1 * resource_amount);
           // resource doesn't get added to total_deposit
         }
         if (total_deposit > 0) {
-          Apto::Array<double> res_change(resource_lib.GetSize());
+          Apto::Array<double> res_change(resource_reg.GetSize());
           res_change.SetAll(0.0);
           res_change[spec_res] = total_deposit;
           if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
@@ -4970,13 +4970,13 @@ bool cHardwareExperimental::Inst_Nop2CollectEdible(cAvidaContext& ctx)
   
   double cell_res = 0.0;
   int res_id = -1;
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   if (absorb_type == 1) {
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->GetHabitat() == 0 || resource_reg.GetResource(i)->GetHabitat() > 5) {
         if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
-        if (cell_res >= resource_lib.GetResource(i)->GetThreshold()) {
+        if (cell_res >= resource_reg.GetResource(i)->GetThreshold()) {
           res_id = i;
           break;
         }
@@ -4984,11 +4984,11 @@ bool cHardwareExperimental::Inst_Nop2CollectEdible(cAvidaContext& ctx)
     }
   }
   else if (absorb_type == 2) {
-    for (int i = resource_lib.GetSize(); i > 0 ; i--) {
-      if (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() > 5) {
+    for (int i = resource_reg.GetSize(); i > 0 ; i--) {
+      if (resource_reg.GetResource(i - 1)->GetHabitat() == 0 || resource_reg.GetResource(i - 1)->GetHabitat() > 5) {
         if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i - 1);
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i - 1);
-        if (cell_res >= resource_lib.GetResource(i - 1)->GetThreshold()) {
+        if (cell_res >= resource_reg.GetResource(i - 1)->GetThreshold()) {
           res_id = i - 1;
           break;
         }
@@ -5006,14 +5006,14 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
 {
   int absorb_type = m_world->GetConfig().MULTI_ABSORB_TYPE.Get();  
   int res_id = -1;
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   double cell_res = 0.0;
   if (absorb_type == 1) {
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5) {
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->GetHabitat() == 0 || resource_reg.GetResource(i)->GetHabitat() > 5) {
         if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
-        if (cell_res >= resource_lib.GetResource(i)->GetThreshold()) {
+        if (cell_res >= resource_reg.GetResource(i)->GetThreshold()) {
           res_id = i;
           break;
         }
@@ -5021,11 +5021,11 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
     }
   }
   else if (absorb_type == 2) {
-    for (int i = resource_lib.GetSize(); i > 0 ; i--) {
-      if (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() > 5) {
+    for (int i = resource_reg.GetSize(); i > 0 ; i--) {
+      if (resource_reg.GetResource(i - 1)->GetHabitat() == 0 || resource_reg.GetResource(i - 1)->GetHabitat() > 5) {
         if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i - 1);
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i - 1);
-        if (cell_res >= resource_lib.GetResource(i - 1)->GetThreshold()) {
+        if (cell_res >= resource_reg.GetResource(i - 1)->GetThreshold()) {
           res_id = i - 1;
           break;
         }
@@ -5039,7 +5039,7 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
     bool has_max = max > 0 ? true : false;
     double res_consumed = 0.0;
     
-    double threshold = resource_lib.GetResource(res_id)->GetThreshold();
+    double threshold = resource_reg.GetResource(res_id)->GetThreshold();
     if (cell_res >= threshold) res_consumed = threshold;
     else return false;
     
@@ -6468,9 +6468,9 @@ bool cHardwareExperimental::Inst_SetGuard(cAvidaContext& ctx)
 {
   bool set_ok = false;
   if (m_organism->GetPhenotype().GetTimeUsed() >= m_world->GetConfig().JUV_PERIOD.Get()) {
-    const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) {
+    const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
+    for (int i = 0; i < resource_reg.GetSize(); i++) {
+      if (resource_reg.GetResource(i)->GetHabitat() == 3 || resource_reg.GetResource(i)->GetHabitat() == 4) {
 	double cell_res = 0.0;
 	if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
 	else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
@@ -6499,9 +6499,9 @@ bool cHardwareExperimental::Inst_GetNumGuards(cAvidaContext& ctx)
 {
   int num_guards = 0;
   bool on_den = false;
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) {
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 3 || resource_reg.GetResource(i)->GetHabitat() == 4) {
       double cell_res = 0.0;
       if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
       else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
@@ -6528,9 +6528,9 @@ bool cHardwareExperimental::Inst_GetNumJuvs(cAvidaContext& ctx)
   int num_juvs = 0;
   int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
   bool on_den = false;
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  for (int i = 0; i < resource_lib .GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) {
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
+  for (int i = 0; i < resource_reg .GetSize(); i++) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 3 || resource_reg.GetResource(i)->GetHabitat() == 4) {
       double cell_res = 0.0;
       if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, i);
       else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
@@ -6953,9 +6953,9 @@ bool cHardwareExperimental::TestAttack(cAvidaContext& ctx)
   if (num_neighbors == 0) return false;
 
   // prevent killing on refuges
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetRefuge()) {
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    if (resource_reg.GetResource(i)->GetRefuge()) {
       if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedResourceVal(ctx, i) > 0) return false;
       else if (m_use_avatar == 2 && m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, i) > 0) return false;
     }

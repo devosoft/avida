@@ -60,7 +60,7 @@ private:
   cWorld* m_world;
   
   cMutationRates mut_rates;
-  cResourceRegistry resource_lib;
+  cResourceRegistry resource_reg;
   cReactionLib reaction_lib;
   cTaskLib m_tasklib;
 
@@ -120,11 +120,11 @@ public:
 
   
   int GetNumReactions() const { return reaction_lib.GetSize(); }
-  const cResourceRegistry& GetResourceLib() const { return resource_lib; }
+  const cResourceRegistry& GetResourceRegistry() const { return resource_reg; }
   const cReactionLib& GetReactionLib() const { return reaction_lib; }
   const cMutationRates& GetMutRates() const { return mut_rates; }
 
-  cResourceRegistry& GetResourceLib() { return resource_lib; }
+  cResourceRegistry& GetResourceRegistry() { return resource_reg; }
   cReactionLib& GetReactionLib() { return reaction_lib; }
   cMutationRates& GetMutRates() { return mut_rates; }
   

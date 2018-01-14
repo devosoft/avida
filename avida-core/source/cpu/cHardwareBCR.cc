@@ -774,15 +774,15 @@ void cHardwareBCR::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
   else fp << m_organism->GetOrgInterface().GetAVFacing() << " ";
   if (!m_use_avatar) fp << m_organism->IsNeighborCellOccupied() << " ";  
   else fp << m_organism->GetOrgInterface().FacedHasAV() << " ";
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   Apto::Array<double> cell_resource_levels;
   if (!m_use_avatar) cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
   else cell_resource_levels = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
   int wall = 0;
   int hill = 0;
   for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) wall = 1;
-    if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) hill = 1;
+    if (resource_reg.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) wall = 1;
+    if (resource_reg.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) hill = 1;
     if (hill == 1 && wall == 1) break;
   }
   fp << hill << " ";
@@ -2804,16 +2804,16 @@ bool cHardwareBCR::Inst_SenseNest(cAvidaContext& ctx)
   if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
   else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
   
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   const int reg_used = FindModifiedRegister(rBX);
   
   int nest_id = m_threads[m_cur_thread].reg[reg_used].value;
   int nest_val = 0;
   
   // if invalid nop value, return the id of the first nest in the cell with val >= 1
-  if (nest_id < 0 || nest_id >= resource_lib.GetSize() || !resource_lib.GetResource(nest_id)->IsNest()) {
+  if (nest_id < 0 || nest_id >= resource_reg.GetSize() || !resource_reg.GetResource(nest_id)->IsNest()) {
     for (int i = 0; i < cell_res.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->IsNest() && cell_res[i] >= 1) {
+      if (resource_reg.GetResource(i)->IsNest() && cell_res[i] >= 1) {
         nest_id = i;
         nest_val = (int) cell_res[i];
         break;
@@ -3319,7 +3319,7 @@ bool cHardwareBCR::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   int reg_to_set = FindModifiedRegister(rBX);
   
   // get the resource library
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   
   // get the destination cell resource levels
   Apto::Array<double> cell_res;
@@ -3329,21 +3329,21 @@ bool cHardwareBCR::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
   // simulated predator ahead
   for (int i = 0; i < cell_res.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 5 && cell_res[i] > 0) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 5 && cell_res[i] > 0) {
       setRegister(reg_to_set, 3, true);
       return true;
     }    
   }
   // are there any barrier resources in the faced cell    
   for (int i = 0; i < cell_res.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_res[i] > 0) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 2 && cell_res[i] > 0) {
       setRegister(reg_to_set, 2, true);
       return true;
     }    
   }
   // if no barriers, are there any hills in the faced cell    
   for (int i = 0; i < cell_res.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_res[i] > 0) {
+    if (resource_reg.GetResource(i)->GetHabitat() == 1 && cell_res[i] > 0) {
       setRegister(reg_to_set, 1, true);
       return true;
     }
@@ -3754,9 +3754,9 @@ bool cHardwareBCR::DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit)
   double res_consumed = 0.0;
   
   // Collect a unit or some ABSORB_RESOURCE_FRACTION
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   if (unit) {
-    double threshold = resource_lib.GetResource(bin_used)->GetThreshold();
+    double threshold = resource_reg.GetResource(bin_used)->GetThreshold();
     if (res_count[bin_used] >= threshold) {
       res_consumed = threshold;
     }
@@ -3864,11 +3864,11 @@ bool cHardwareBCR::testAttack(cAvidaContext& ctx)
   else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
   
   // prevent killing on refuges
-  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetRefuge()) {
-      if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedResourceVal(ctx, i) >= resource_lib.GetResource(i)->GetThreshold()) return false;
-      else if (m_use_avatar == 2 && m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, i) >= resource_lib.GetResource(i)->GetThreshold()) return false;
+  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
+  for (int i = 0; i < resource_reg.GetSize(); i++) {
+    if (resource_reg.GetResource(i)->GetRefuge()) {
+      if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedResourceVal(ctx, i) >= resource_reg.GetResource(i)->GetThreshold()) return false;
+      else if (m_use_avatar == 2 && m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, i) >= resource_reg.GetResource(i)->GetThreshold()) return false;
     }
   }
   return true;

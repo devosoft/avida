@@ -112,6 +112,9 @@ private:
   int num_top_pred_organisms;
   
   Apto::Array<cDeme> deme_array;            // Deme structure of the population.
+  int m_deme_size_x;
+  int m_deme_size_y;
+  int m_deme_size;
  
   // Outside interactions...
   bool sync_events;   // Do we need to sync up the event list with population?
@@ -450,6 +453,7 @@ public:
 
 private:
   void SetupCellGrid();
+  void SetupResources();
   void ClearCellGrid();
   void BuildTimeSlicer(); // Build the schedule object
   
