@@ -57,7 +57,7 @@
 		7023EC850C0A431B00362B9C /* cReactionResult.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872208F5E82D00FC65FE /* cReactionResult.cc */; };
 		7023EC860C0A431B00362B9C /* cResource.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872308F5E82D00FC65FE /* cResource.cc */; };
 		7023EC870C0A431B00362B9C /* cResourceCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872408F5E82D00FC65FE /* cResourceCount.cc */; };
-		7023EC880C0A431B00362B9C /* cResourceLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872508F5E82D00FC65FE /* cResourceLib.cc */; };
+		7023EC880C0A431B00362B9C /* cResourceRegistry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872508F5E82D00FC65FE /* cResourceRegistry.cc */; };
 		7023EC890C0A431B00362B9C /* cRunningAverage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0892108F7630100FC65FE /* cRunningAverage.cc */; };
 		7023EC8B0C0A431B00362B9C /* cSpatialCountElem.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */; };
 		7023EC8C0C0A431B00362B9C /* cSpatialResCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */; };
@@ -565,7 +565,7 @@
 		70B0871208F5E81000FC65FE /* cReactionResult.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cReactionResult.h; sourceTree = "<group>"; };
 		70B0871308F5E81000FC65FE /* cResource.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cResource.h; sourceTree = "<group>"; };
 		70B0871408F5E81000FC65FE /* cResourceCount.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cResourceCount.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		70B0871508F5E81000FC65FE /* cResourceLib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cResourceLib.h; sourceTree = "<group>"; };
+		70B0871508F5E81000FC65FE /* cResourceRegistry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cResourceRegistry.h; path = ../resources/cResourceRegistry.h; sourceTree = "<group>"; };
 		70B0871608F5E81000FC65FE /* cSpatialCountElem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSpatialCountElem.h; sourceTree = "<group>"; };
 		70B0871708F5E81000FC65FE /* cSpatialResCount.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSpatialResCount.h; sourceTree = "<group>"; };
 		70B0871B08F5E81000FC65FE /* cStats.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cStats.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -576,7 +576,7 @@
 		70B0872208F5E82D00FC65FE /* cReactionResult.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cReactionResult.cc; sourceTree = "<group>"; };
 		70B0872308F5E82D00FC65FE /* cResource.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cResource.cc; sourceTree = "<group>"; };
 		70B0872408F5E82D00FC65FE /* cResourceCount.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cResourceCount.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		70B0872508F5E82D00FC65FE /* cResourceLib.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cResourceLib.cc; sourceTree = "<group>"; };
+		70B0872508F5E82D00FC65FE /* cResourceRegistry.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = cResourceRegistry.cc; path = ../resources/cResourceRegistry.cc; sourceTree = "<group>"; };
 		70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpatialCountElem.cc; sourceTree = "<group>"; };
 		70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpatialResCount.cc; sourceTree = "<group>"; };
 		70B0872B08F5E82D00FC65FE /* cStats.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cStats.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -1334,6 +1334,27 @@
 			path = data;
 			sourceTree = "<group>";
 		};
+		B451611A200BAA3600B02422 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				4A587EEA1332B6590037A393 /* cGradientCount.cc */,
+				4A587EEB1332B6590037A393 /* cGradientCount.h */,
+				70B0872308F5E82D00FC65FE /* cResource.cc */,
+				70B0871308F5E81000FC65FE /* cResource.h */,
+				70B0872408F5E82D00FC65FE /* cResourceCount.cc */,
+				70B0871408F5E81000FC65FE /* cResourceCount.h */,
+				709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */,
+				709A1E540EB69DA6006090AF /* cResourceHistory.h */,
+				70B0872508F5E82D00FC65FE /* cResourceRegistry.cc */,
+				70B0871508F5E81000FC65FE /* cResourceRegistry.h */,
+				70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */,
+				70B0871608F5E81000FC65FE /* cSpatialCountElem.h */,
+				70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */,
+				70B0871708F5E81000FC65FE /* cSpatialResCount.h */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
 		DCC30C490762532C008F7A48 = {
 			isa = PBXGroup;
 			children = (
@@ -1353,6 +1374,7 @@
 		DCC30C670762539A008F7A48 /* source */ = {
 			isa = PBXGroup;
 			children = (
+				B451611A200BAA3600B02422 /* resources */,
 				707AEEEE09E80699001AEA89 /* actions */,
 				70422A1B091B141000A5E67F /* analyze */,
 				7061AB7F1358BD6F0000B036 /* core */,
@@ -1466,8 +1488,6 @@
 				70CA6EE608DB7F9E00068AC2 /* cGenomeUtil.h */,
 				70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */,
 				42490EFE0BE2472800318058 /* cGermline.h */,
-				4A587EEB1332B6590037A393 /* cGradientCount.h */,
-				4A587EEA1332B6590037A393 /* cGradientCount.cc */,
 				70B0864808F4972600FC65FE /* cLandscape.h */,
 				70B0865108F4974300FC65FE /* cLandscape.cc */,
 				D86E627014F6BA6600AE1489 /* cMigrationMatrix.h */,
@@ -1509,18 +1529,6 @@
 				70B0871108F5E81000FC65FE /* cReactionRequisite.h */,
 				70B0871208F5E81000FC65FE /* cReactionResult.h */,
 				70B0872208F5E82D00FC65FE /* cReactionResult.cc */,
-				70B0871308F5E81000FC65FE /* cResource.h */,
-				70B0872308F5E82D00FC65FE /* cResource.cc */,
-				70B0871408F5E81000FC65FE /* cResourceCount.h */,
-				70B0872408F5E82D00FC65FE /* cResourceCount.cc */,
-				709A1E540EB69DA6006090AF /* cResourceHistory.h */,
-				709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */,
-				70B0872508F5E82D00FC65FE /* cResourceLib.cc */,
-				70B0871508F5E81000FC65FE /* cResourceLib.h */,
-				70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */,
-				70B0871608F5E81000FC65FE /* cSpatialCountElem.h */,
-				70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */,
-				70B0871708F5E81000FC65FE /* cSpatialResCount.h */,
 				70310E690EDD09260044971B /* cStateGrid.h */,
 				70B0872B08F5E82D00FC65FE /* cStats.cc */,
 				70B0871B08F5E81000FC65FE /* cStats.h */,
@@ -1843,7 +1851,7 @@
 				7023EC860C0A431B00362B9C /* cResource.cc in Sources */,
 				7023EC870C0A431B00362B9C /* cResourceCount.cc in Sources */,
 				70D5B4F714F4009000D15FFD /* cResourceHistory.cc in Sources */,
-				7023EC880C0A431B00362B9C /* cResourceLib.cc in Sources */,
+				7023EC880C0A431B00362B9C /* cResourceRegistry.cc in Sources */,
 				70D5B4F214F4009000D15FFD /* cOrgSensor.cc in Sources */,
 				7023EC8B0C0A431B00362B9C /* cSpatialCountElem.cc in Sources */,
 				7023EC8C0C0A431B00362B9C /* cSpatialResCount.cc in Sources */,

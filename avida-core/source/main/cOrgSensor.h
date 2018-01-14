@@ -25,7 +25,7 @@
 #define cOrgSensor_h
 
 #include "cOrganism.h"
-#include "cResourceLib.h"
+#include "cResourceRegistry.h"
 #include "cWorld.h"
 
 struct sOrgDisplay 
@@ -49,7 +49,7 @@ class cOrgSensor
   sOrgDisplay m_last_seen_display;
   bool m_has_seen_display;
 
-  const cResourceLib& m_res_lib;
+  const cResourceRegistry& m_res_lib;
   
   void ResetOrgSensor();
   

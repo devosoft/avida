@@ -1,5 +1,5 @@
 /*
- *  cResourceLib.h
+ *  cResourceRegistry.h
  *  Avida
  *
  *  Called "resource_lib.hh" prior to 12/5/05.
@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef cResourceLib_h
-#define cResourceLib_h
+#ifndef cResourceRegistry_h
+#define cResourceRegistry_h
 
 #include "avida/core/Types.h"
 
@@ -30,19 +30,19 @@ class cResourceHistory;
 class cString;
 
 
-class cResourceLib
+class cResourceRegistry
 {
 private:
   Apto::Array<cResource*> m_resource_array;
   mutable cResourceHistory* m_initial_levels;
   int m_num_deme_resources;
   
-  cResourceLib(const cResourceLib&); // @not_implemented
-  cResourceLib& operator=(const cResourceLib&); // @not_implemented
+  cResourceRegistry(const cResourceRegistry&); // @not_implemented
+  cResourceRegistry& operator=(const cResourceRegistry&); // @not_implemented
   
 public:
-  cResourceLib() : m_initial_levels(NULL), m_num_deme_resources(0) { ; }
-  ~cResourceLib();
+  cResourceRegistry() : m_initial_levels(NULL), m_num_deme_resources(0) { ; }
+  ~cResourceRegistry();
 
   int GetSize() const { return m_resource_array.GetSize(); }
 

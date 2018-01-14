@@ -193,7 +193,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
+    cResourceRegistry & res_lib = m_world->GetEnvironment().GetResourceLib();
     for (int i=0; i < res_lib.GetSize(); i++)  {
       cResource* res = res_lib.GetResource(i);
       m_world->GetPopulation().SetResource(ctx, res->GetID(), 0.0);

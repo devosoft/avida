@@ -3737,7 +3737,7 @@ public:
         const Apto::Array<double> res_count = m_world->GetPopulation().GetCellResources(j * m_world->GetPopulation().GetWorldX() + i, ctx);
         double max_resource = 0.0;    
         // get the resource library
-        const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+        const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
         // if more than one resource is available, return the resource with the most available in this spot 
         // (note that, with global resources, the GLOBAL total will evaluated)
         // we build regular resources on top of any hills, but replace any regular resources or hills with any walls or dens 
@@ -4843,7 +4843,7 @@ public:
       bool on_den = false;
       Apto::Array<double> res_count = m_world->GetPopulation().GetCellResources(loc, ctx);
       if (use_av) res_count = m_world->GetPopulation().GetCellResources(org->GetOrgInterface().GetAVCellID(), ctx);
-      const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+      const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
       for (int i = 0; i < res_count.GetSize(); i++) {
         int hab_type = resource_lib.GetResource(i)->GetHabitat();
         if ((hab_type == 3 || hab_type == 4) && res_count[i] > 0) on_den = true;

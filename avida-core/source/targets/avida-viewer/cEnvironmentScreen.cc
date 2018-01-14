@@ -51,7 +51,7 @@ void cEnvironmentScreen::Draw(cAvidaContext& ctx)
 
 void cEnvironmentScreen::DrawResource()
 {
-  const cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry & res_lib = m_world->GetEnvironment().GetResourceLib();
   
   SetBoldColor(COLOR_WHITE);
   
@@ -130,7 +130,7 @@ void cEnvironmentScreen::Update(cAvidaContext& ctx)
 
 void cEnvironmentScreen::UpdateResource(cAvidaContext& ctx)
 {
-  const cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry & res_lib = m_world->GetEnvironment().GetResourceLib();
   const cReactionLib & rxn_lib = m_world->GetEnvironment().GetReactionLib();
   const int num_resources = m_world->GetPopulation().GetResources(ctx).GetSize();
   
@@ -193,7 +193,7 @@ void cEnvironmentScreen::UpdateResource(cAvidaContext& ctx)
 void cEnvironmentScreen::UpdateReaction(cAvidaContext& ctx)
 {
   const cReactionLib & rxn_lib = m_world->GetEnvironment().GetReactionLib();
-  const cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry & res_lib = m_world->GetEnvironment().GetResourceLib();
   const int num_reactions = m_world->GetStats().GetReactions().GetSize();
   
   // If we have no reactions, stop right here.
@@ -263,7 +263,7 @@ void cEnvironmentScreen::UpdateReaction(cAvidaContext& ctx)
 void cEnvironmentScreen::DoInput(cAvidaContext& ctx, int in_char)
 {
   int last_selection;
-  const cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry & res_lib = m_world->GetEnvironment().GetResourceLib();
   const cReactionLib & rxn_lib = m_world->GetEnvironment().GetReactionLib();
   SetBoldColor(COLOR_CYAN);
   

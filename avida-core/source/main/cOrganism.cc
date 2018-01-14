@@ -805,7 +805,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     }
     if (habitat_required != -1) {
       bool has_req_res = false;
-      const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+      const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
       double resource_count = 0;
       for (int i = 0; i < resource_lib.GetSize(); i ++) {
         if (resource_lib.GetResource(i)->GetHabitat() == habitat_required) {

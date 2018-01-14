@@ -1277,7 +1277,7 @@ public:
     if (m_world->GetConfig().USE_AVATARS.Get() <= 0) m_world->GetDriver().Feedback().Error("Den AttackDen requires use of avatars.");
     int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
     
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
     
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
@@ -1340,7 +1340,7 @@ public:
     if (m_world->GetConfig().USE_AVATARS.Get() <= 0) m_world->GetDriver().Feedback().Error("Den RaidDen requires use of avatars.");
     int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
     
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
     
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       cPopulationCell& cell = m_world->GetPopulation().GetCell(i);

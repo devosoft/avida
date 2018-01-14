@@ -36,7 +36,7 @@
 #include "cResource.h"
 #include "cResourceCount.h"
 #include "cResourceHistory.h"
-#include "cResourceLib.h"
+#include "cResourceRegistry.h"
 #include "cStringUtil.h"
 #include "cTestCPUInterface.h"
 #include "cWorld.h"
@@ -91,7 +91,7 @@ void cTestCPU::InitResources(cAvidaContext& ctx, int res_method, cResourceHistor
     m_res = &m_world->GetEnvironment().GetResourceLib().GetInitialResourceLevels();
   }
   
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
   assert(resource_lib.GetSize() >= 0);
   
   // Set the resource count to zero by default

@@ -774,7 +774,7 @@ void cHardwareBCR::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
   else fp << m_organism->GetOrgInterface().GetAVFacing() << " ";
   if (!m_use_avatar) fp << m_organism->IsNeighborCellOccupied() << " ";  
   else fp << m_organism->GetOrgInterface().FacedHasAV() << " ";
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
   Apto::Array<double> cell_resource_levels;
   if (!m_use_avatar) cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
   else cell_resource_levels = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
@@ -2804,7 +2804,7 @@ bool cHardwareBCR::Inst_SenseNest(cAvidaContext& ctx)
   if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
   else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
   
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int reg_used = FindModifiedRegister(rBX);
   
   int nest_id = m_threads[m_cur_thread].reg[reg_used].value;
@@ -3319,7 +3319,7 @@ bool cHardwareBCR::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   int reg_to_set = FindModifiedRegister(rBX);
   
   // get the resource library
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
   
   // get the destination cell resource levels
   Apto::Array<double> cell_res;
@@ -3754,7 +3754,7 @@ bool cHardwareBCR::DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit)
   double res_consumed = 0.0;
   
   // Collect a unit or some ABSORB_RESOURCE_FRACTION
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
   if (unit) {
     double threshold = resource_lib.GetResource(bin_used)->GetThreshold();
     if (res_count[bin_used] >= threshold) {
@@ -3864,7 +3864,7 @@ bool cHardwareBCR::testAttack(cAvidaContext& ctx)
   else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
   
   // prevent killing on refuges
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     if (resource_lib.GetResource(i)->GetRefuge()) {
       if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedResourceVal(ctx, i) >= resource_lib.GetResource(i)->GetThreshold()) return false;

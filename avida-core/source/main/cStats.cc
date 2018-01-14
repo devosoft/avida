@@ -1261,7 +1261,7 @@ void cStats::PrintSoloTaskSnapshot(const cString& filename, cAvidaContext& ctx)
     cOrganism* organism = pop[i];
     
     // create a test-cpu for the current creature and then test the creature using res level of 1 for each resource in the environment file
-    const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+    const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceLib();
     for (int k = 0; k < resLib.GetSize(); k++) {
       cCPUTestInfo test_info;
       cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
@@ -1589,7 +1589,7 @@ void cStats::PrintResourceLocData(const cString& filename, cAvidaContext& ctx)
   
   df->Write(m_update,   "Update");
   
-  const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceLib();
   for (int i = 0; i < resLib.GetSize(); i++) {
     if (resLib.GetResource(i)->GetGradient()) {
       df->Write(m_world->GetPopulation().GetCurrPeakX(ctx, i) + (m_world->GetPopulation().GetCurrPeakY(ctx, i) * m_world->GetConfig().WORLD_X.Get()), "CellID");
@@ -1612,7 +1612,7 @@ void cStats::PrintResWallLocData(const cString& filename, cAvidaContext& ctx)
   std::ofstream& fp = df->OFStream();
   fp << m_update << " ";
   
-  const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceLib();
   for (int i = 0; i < resLib.GetSize(); i++) {
     if (resLib.GetResource(i)->GetGradient() && resLib.GetResource(i)->GetHabitat() == 2) {
       Apto::Array<int>& cells = *(m_world->GetPopulation().GetWallCells(i));
@@ -4520,7 +4520,7 @@ void cStats::PrintDenData(const cString& filename) {
   
   int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
   
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceRegistry& resource_lib = m_world->GetEnvironment().GetResourceLib();
   
   int num_juvs = 0;
   int num_adults = 0;

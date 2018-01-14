@@ -240,7 +240,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cEnvironment.cc
   ${MAIN_DIR}/cEventList.cc
   ${MAIN_DIR}/cGenomeUtil.cc
-  ${MAIN_DIR}/cGradientCount.cc
   ${MAIN_DIR}/cLandscape.cc
   ${MAIN_DIR}/cMigrationMatrix.cc
   ${MAIN_DIR}/cMutationRates.cc
@@ -258,12 +257,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cReaction.cc
   ${MAIN_DIR}/cReactionLib.cc
   ${MAIN_DIR}/cReactionResult.cc
-  ${MAIN_DIR}/cResource.cc
-  ${MAIN_DIR}/cResourceCount.cc
-  ${MAIN_DIR}/cResourceHistory.cc
-  ${MAIN_DIR}/cResourceLib.cc
-  ${MAIN_DIR}/cSpatialCountElem.cc
-  ${MAIN_DIR}/cSpatialResCount.cc
   ${MAIN_DIR}/cStats.cc
   ${MAIN_DIR}/cTaskLib.cc
   ${MAIN_DIR}/cWorld.cc
@@ -272,6 +265,19 @@ SOURCE_GROUP(main FILES ${MAIN_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${MAIN_SOURCES})
 LIST(APPEND ALL_INC_DIRS ${MAIN_DIR})
 
+SET(RESOURCE_DIR ${PROJECT_SOURCE_DIR}/source/resources)
+SET(RESOURCE_SOURCES
+   ${RESOURCE_DIR}/cGradientCount.cc
+   ${RESOURCE_DIR}/cResource.cc
+   ${RESOURCE_DIR}/cResourceCount.cc
+   ${RESOURCE_DIR}/cResourceHistory.cc
+   ${RESOURCE_DIR}/cResourceRegistry.cc
+   ${RESOURCE_DIR}/cSpatialCountElem.cc
+   ${RESOURCE_DIR}/cSpatialResCount.cc
+)
+SOURCE_GROUP(resources FILES ${RESOURCE_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${RESOURCE_SOURCES})
+LIST(APPEND ALL_INC_DIRS ${RESOURCE_DIR})
 
 # The output directory
 SET(OUTPUT_DIR ${PROJECT_SOURCE_DIR}/source/output)

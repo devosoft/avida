@@ -1,5 +1,5 @@
 /*
- *  cResourceLib.cc
+ *  cResourceRegistry.cc
  *  Avida
  *
  *  Called "resource_lib.cc" prior to 12/5/05.
@@ -20,7 +20,7 @@
  *
  */
 
-#include "cResourceLib.h"
+#include "cResourceRegistry.h"
 
 #include "cResource.h"
 #include "cResourceHistory.h"
@@ -28,13 +28,13 @@
 using namespace std;
 
 
-cResourceLib::~cResourceLib()
+cResourceRegistry::~cResourceRegistry()
 {
   for (int i = 0; i < m_resource_array.GetSize(); i++) delete m_resource_array[i];
   delete m_initial_levels;
 }
 
-cResource* cResourceLib::AddResource(const cString& res_name)
+cResource* cResourceRegistry::AddResource(const cString& res_name)
 {
   if (m_initial_levels) return NULL; // Initial levels calculated, cannot add more resources
   
@@ -46,7 +46,7 @@ cResource* cResourceLib::AddResource(const cString& res_name)
   return new_resource;
 }
 
-cResource* cResourceLib::GetResource(const cString& res_name) const
+cResource* cResourceRegistry::GetResource(const cString& res_name) const
 {
   for (int i = 0; i < m_resource_array.GetSize(); i++) {
     if (m_resource_array[i]->GetName() == res_name) return m_resource_array[i];
@@ -56,7 +56,7 @@ cResource* cResourceLib::GetResource(const cString& res_name) const
 }
 
 
-const cResourceHistory& cResourceLib::GetInitialResourceLevels() const
+const cResourceHistory& cResourceRegistry::GetInitialResourceLevels() const
 {
   if (!m_initial_levels) {
     Apto::Array<double> levels(m_resource_array.GetSize());
@@ -69,7 +69,7 @@ const cResourceHistory& cResourceLib::GetInitialResourceLevels() const
 }
 
 
-bool cResourceLib::DoesResourceExist(const cString& res_name) 
+bool cResourceRegistry::DoesResourceExist(const cString& res_name) 
 {
   for (int i = 0; i < m_resource_array.GetSize(); i++) if (m_resource_array[i]->GetName() == res_name) return true;
   return false;
@@ -82,7 +82,7 @@ bool cResourceLib::DoesResourceExist(const cString& res_name)
  * Population resource counts include all non-deme resources, regardless of geometry.
  * Deme resource counts include all deme resources, regardless of geometry.
  */
-void cResourceLib::SetResourceIndex(cResource* res)
+void cResourceRegistry::SetResourceIndex(cResource* res)
 {
   bool is_deme = res->GetDemeResource();
   
