@@ -59,7 +59,18 @@ private:
   int m_load_traceq;
   
 public:
-  cActionLoadPopulation(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0), m_load_groups(0), m_load_birth_cells(0), m_load_avatars(0), m_load_rebirth(0), m_load_parent_dat(0), m_load_traceq(0)
+  cActionLoadPopulation(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_filename("")
+  , m_update(-1)
+  , m_cellid_offset(0)
+  , m_lineage_offset(0)
+  , m_load_groups(0)
+  , m_load_birth_cells(0)
+  , m_load_avatars(0)
+  , m_load_rebirth(0)
+  , m_load_parent_dat(0)
+  , m_load_traceq(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -93,7 +104,8 @@ class cActionLoadParasiteGenotypeList : public cAction
 private:
   cString m_filename;
 public:
-  cActionLoadParasiteGenotypeList(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args)
+  cActionLoadParasiteGenotypeList(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -113,7 +125,8 @@ class cActionLoadHostGenotypeList : public cAction
 private:
   cString m_filename;
 public:
-  cActionLoadHostGenotypeList(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args)
+  cActionLoadHostGenotypeList(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -138,8 +151,13 @@ private:
   bool m_save_rebirth;
   
 public:
-  cActionSavePopulation(cWorld* world, const cString& args, Feedback& feedback)
-    : cAction(world, args), m_filename(""), m_save_historic(true), m_save_group_info(false), m_save_avatars(false), m_save_rebirth(false)
+  cActionSavePopulation(cWorld* world, const cString& args, Feedback& fb)
+    : cAction(world, args, fb) 
+    , m_filename("") 
+    , m_save_historic(true)
+    , m_save_group_info(false)
+    , m_save_avatars(false)
+    , m_save_rebirth(false)
   {
     cArgSchema schema(':','=');
     
@@ -152,7 +170,7 @@ public:
     schema.AddEntry("save_avatars", 2, 0, 1, 0);
     schema.AddEntry("save_rebirth", 3, 0, 1, 0);
 
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    cArgContainer* argc = cArgContainer::Load(args, schema, fb);
     
     if (argc) {
       m_filename = argc->GetString(0);
@@ -183,7 +201,10 @@ private:
   cString m_role;
   
 public:
-  cActionLoadStructuredSystematicsGroup(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_filename(""), m_role("")
+  cActionLoadStructuredSystematicsGroup(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_filename("")
+  , m_role("")
   {
     cArgSchema schema(':','=');
     
@@ -191,7 +212,7 @@ public:
     schema.AddEntry("filename", 0, cArgSchema::SCHEMA_STRING);
     schema.AddEntry("role", 1, cArgSchema::SCHEMA_STRING);
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    cArgContainer* argc = cArgContainer::Load(args, schema, fb);
     
     if (argc) {
       m_filename = argc->GetString(0);
@@ -220,8 +241,10 @@ private:
   cString m_role;
 
 public:
-  cActionSaveStructuredSystematicsGroup(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_filename(""), m_role("")
+  cActionSaveStructuredSystematicsGroup(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_filename("")
+  , m_role("")
   {
     cArgSchema schema(':','=');
     
@@ -229,7 +252,7 @@ public:
     schema.AddEntry("filename", 0, "");
     schema.AddEntry("role", 0, cArgSchema::SCHEMA_STRING);
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    cArgContainer* argc = cArgContainer::Load(args, schema, fb);
     
     if (argc) {
       m_filename = argc->GetString(0);
@@ -256,15 +279,16 @@ private:
   cString m_filename;
   
 public:
-  cActionSaveFlameData(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_filename("")
+  cActionSaveFlameData(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_filename("")
   {
     cArgSchema schema(':','=');
     
     // String Entries
     schema.AddEntry("filename", 0, "flame_data");
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    cArgContainer* argc = cArgContainer::Load(args, schema, fb);
     
     if (args) {
       m_filename = argc->GetString(0);

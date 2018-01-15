@@ -22,15 +22,11 @@
 #ifndef cActionLibrary_h
 #define cActionLibrary_h
 
-#include "avida/core/Feedback.h"
-
 #include "cAction.h"
 #include "tObjectFactory.h"
 
 class cWorld;
 class cString;
-
-using namespace Avida;
 
 
 class cActionLibrary

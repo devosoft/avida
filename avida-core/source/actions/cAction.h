@@ -23,9 +23,12 @@
 #define cAction_h
 
 #include "cString.h"
+#include "avida/core/Feedback.h"
 
 class cAvidaContext;
 class cWorld;
+
+using namespace Avida;
 
 class cAction
 {
@@ -37,9 +40,15 @@ private:
 protected:
   cWorld* m_world;
   cString m_args;
+  Feedback& m_feedback;
   
 public:
-  cAction(cWorld* world, const cString& args) : m_world(world), m_args(args) { ; }
+  cAction(cWorld* world, const cString& args, Feedback& fb) 
+  : m_world(world)
+  , m_args(args)
+  , m_feedback(fb) 
+  { ; }
+  
   virtual ~cAction() { ; }
   
   const cString& GetArgs() const { return m_args; }
