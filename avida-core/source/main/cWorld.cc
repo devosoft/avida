@@ -172,7 +172,6 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback, const Apto::Map<Ap
   // If there were errors loading at this point, it is perilous to try to go further (pop depends on an instruction set)
   if (!success) return success;
   
-  
   // @MRR CClade Tracking
 //	if (m_conf->TRACK_CCLADES.Get() > 0)
 //		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
@@ -197,7 +196,7 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback, const Apto::Map<Ap
   
   // Setup Event List
   m_event_list = new cEventList(this);
-  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get(), m_working_dir, *feedback, defs)) {
+  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get(), m_working_dir, *feedback, defs)){
     if (feedback) feedback->Error("unable to load event file");
     success = false;
   }
@@ -222,6 +221,9 @@ void cWorld::GetEvents(cAvidaContext& ctx)
     m_pop->SetSyncEvents(false);
   }
   m_event_list->Process(ctx);
+  if (m_driver->Feedback().HasErrors()){
+    m_driver->Abort(AbortCondition::ACTION_ERROR);
+  }
 }
 
 int cWorld::GetNumResources()

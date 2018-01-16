@@ -53,6 +53,8 @@ public:
   
   const cString& GetArgs() const { return m_args; }
   
+  Feedback& GetFeedback() const { return m_feedback; }
+  
   virtual void Process(cAvidaContext& ctx) = 0;
 };
 

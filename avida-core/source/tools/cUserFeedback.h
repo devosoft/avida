@@ -27,6 +27,7 @@
 #include "cString.h"
 
 #include <cstdarg>
+#include <sstream>
 
 using namespace Avida;
 
@@ -66,6 +67,10 @@ public:
   void Warning(const char* fmt, ...);
   void Notify(const char* fmt, ...);
   
+  virtual bool HasMessages() { return GetNumMessages() > 0; }
+  virtual bool HasErrors() { return GetNumErrors() > 0; }
+  virtual bool HasWarnings() { return GetNumErrors() > 0; }
+  virtual bool HasNotices() { return GetNumNotifications() > 0; }
   
   int GetNumMessages() const { return m_entries.GetSize(); }
   int GetNumErrors() const { return m_errors; }
@@ -75,7 +80,11 @@ public:
   eFeedbackType GetMessageType(int i) const { return m_entries[i].ftype; }
   const cString& GetMessage(int i) const { return m_entries[i].message; }
   
+  void Clear();
+  
   inline void Append(const cUserFeedback& uf);
+  
+  cString ToString();
 };
 
 inline void cUserFeedback::Error(const char* fmt, ...)
@@ -110,6 +119,37 @@ inline void cUserFeedback::Append(const cUserFeedback& uf)
   m_entries.Resize(old_size + uf.m_entries.GetSize());
   
   for (int i = 0; i < uf.m_entries.GetSize(); i++) m_entries[old_size + i] = uf.m_entries[i];
+}
+
+void cUserFeedback::Clear()
+{
+  m_entries.ResizeClear(0);
+  m_warnings = 0;
+  m_errors = 0;
+}
+
+cString cUserFeedback::ToString(){
+  if (GetNumMessages() > 0){
+    std::ostringstream oss;
+    for (int k = 0; k < GetNumMessages(); k++){
+      sEntry& entry = m_entries[k];
+      switch (entry.ftype){
+        case UF_ERROR:
+          oss << "ERROR: ";
+          break;
+        case UF_WARNING:
+          oss << "WARNING: ";
+          break;
+        case UF_NOTIFICATION:
+          oss << "Note: ";
+          break;
+      }
+      oss << entry.message << std::endl; 
+    }
+    return oss.str().c_str();
+  }
+  return "";
+  
 }
 
 #endif

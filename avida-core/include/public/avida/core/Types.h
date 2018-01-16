@@ -60,6 +60,7 @@ namespace Avida {
     GENERIC_ERROR = 1,
     INVALID_CONFIG = 2,
     IO_ERROR = 3,
+    ACTION_ERROR = 4,
     INTERNAL_ERROR = 50
   };
   

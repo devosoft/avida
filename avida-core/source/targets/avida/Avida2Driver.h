@@ -28,6 +28,7 @@
 #include "avida/core/Feedback.h"
 #include "avida/core/Types.h"
 #include "avida/core/WorldDriver.h"
+#include "cUserFeedback.h"
 
 class cWorld;
 
@@ -46,6 +47,7 @@ protected:
     void Notify(const char* fmt, ...);
   } m_feedback;
   
+  
 public:
   Avida2Driver(cWorld* world, Avida::World* new_world);
   ~Avida2Driver();  
@@ -59,7 +61,7 @@ public:
   
   // Facilities
   Avida::Feedback& Feedback() { return m_feedback; }
-
+  
   // Callback
   void RegisterCallback(Avida::DriverCallback callback) { (void)callback; }
 };

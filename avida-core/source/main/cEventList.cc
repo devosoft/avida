@@ -58,6 +58,10 @@ bool cEventList::AddEvent(eTriggerType trigger, double start, double interval,
 {
   cAction* action = cActionLibrary::GetInstance().Create((const char*)name, m_world, args, feedback);
   
+  if (feedback.HasErrors()){
+    return false;
+  }
+  
   if (action != NULL) {
     cEventListEntry* entry = new cEventListEntry(action, name, trigger, start, interval, stop);
     
