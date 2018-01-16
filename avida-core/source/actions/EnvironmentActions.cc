@@ -55,8 +55,7 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    cResource* res = m_world->GetEnvironment().GetResourceRegistry().GetResource(m_res_name);
-    if (res != NULL) m_world->GetPopulation().UpdateResource(ctx, res->GetID(), m_res_count);
+    bool success = m_world->GetEnvironment().GetResourceRegistry().UpdateResource(ctx, m_res_name, m_res_count);
   }
 };
 

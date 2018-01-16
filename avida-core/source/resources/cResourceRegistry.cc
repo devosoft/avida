@@ -95,3 +95,65 @@ void cResourceRegistry::SetResourceIndex(cResource* res)
   }
 }
 
+
+
+
+void cResourceRegistry::UpdateResources(cAvidaContext& ctx, const Apto::Array<double> & res_change)
+{
+  m_resource_count.Modify(ctx, res_change);
+}
+
+void cResourceRegistry::UpdateResource(cAvidaContext& ctx, int res_index, double change)
+{
+  m_resource_count.Modify(ctx, res_index, change);
+}
+
+void cResourceRegistry::UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
+{
+  m_resource_count.ModifyCell(ctx, res_change, cell_id);
+}
+
+
+
+void cResourceRegistry::SetResource(cAvidaContext& ctx, int res_index, double new_level)
+{
+  m_resource_count.Set(ctx, res_index, new_level);
+}
+
+/* This version of SetResource takes the name of the resource.
+ * If a resource by this name does not exist, it does nothing.
+ * Otherwise, it sets the resource to the new level, 
+ * calling the index version of SetResource().
+ */
+void cResourceRegistry::SetResource(cAvidaContext& ctx, const cString res_name, double new_level)
+{
+  cResource* res = GetResource(res_name);
+  if (res != NULL) SetResource(ctx, res->GetIndex(), new_level);
+}
+
+/* This method sets the inflow of the named resource.
+ * It changes this value in the environment, then updates it in the
+ * actual population's resource count.
+ */
+void cResourceRegistry::SetResourceInflow(const cString res_name, double _inflow)
+{
+  cResource* found_resource = GetResource(res_name);
+  assert(found_resource);
+  found_resource->SetInflow(_inflow);
+  m_resource_count.SetInflow(res_name, _inflow);
+}
+
+/* This method sets the outflow of the named resource.
+ * It changes this value in the enviroment, then updates the
+ * decay rate in the resource count (to 1 - the given outflow, as 
+ * outflow is different than decay).
+ */
+void cResourceRegistry::SetResourceOutflow(const cString res_name, double _outflow)
+{
+  cResource* found_resource = GetResource(res_name);
+  assert(found_resource);
+  found_resource->SetInflow(_outflow);
+  m_resource_count.SetDecay(res_name, 1 - _outflow);
+}
+
+

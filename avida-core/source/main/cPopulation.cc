@@ -7157,62 +7157,11 @@ void cPopulation::InjectParasite(const cString& label, const InstructionSequence
 }
 
 
-void cPopulation::UpdateResources(cAvidaContext& ctx, const Apto::Array<double> & res_change)
-{
-  resource_count.Modify(ctx, res_change);
-}
-
-void cPopulation::UpdateResource(cAvidaContext& ctx, int res_index, double change)
-{
-  resource_count.Modify(ctx, res_index, change);
-}
-
-void cPopulation::UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
-{
-  resource_count.ModifyCell(ctx, res_change, cell_id);
-}
-
-void cPopulation::UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
+void cResourceRegistry::UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
 {
   GetDeme(GetCell(cell_id).GetDemeID()).ModifyDemeResCount(ctx, res_change, cell_id);
 }
 
-void cPopulation::SetResource(cAvidaContext& ctx, int res_index, double new_level)
-{
-  resource_count.Set(ctx, res_index, new_level);
-}
-
-/* This version of SetResource takes the name of the resource.
- * If a resource by this name does not exist, it does nothing.
- * Otherwise, it sets the resource to the new level, 
- * calling the index version of SetResource().
- */
-void cPopulation::SetResource(cAvidaContext& ctx, const cString res_name, double new_level)
-{
-  cResource* res = environment.GetResourceRegistry().GetResource(res_name);
-  if (res != NULL) SetResource(ctx, res->GetIndex(), new_level);
-}
-
-/* This method sets the inflow of the named resource.
- * It changes this value in the environment, then updates it in the
- * actual population's resource count.
- */
-void cPopulation::SetResourceInflow(const cString res_name, double new_level)
-{
-  environment.SetResourceInflow(res_name, new_level);
-  resource_count.SetInflow(res_name, new_level);
-}
-
-/* This method sets the outflow of the named resource.
- * It changes this value in the enviroment, then updates the
- * decay rate in the resource count (to 1 - the given outflow, as 
- * outflow is different than decay).
- */
-void cPopulation::SetResourceOutflow(const cString res_name, double new_level)
-{
-  environment.SetResourceOutflow(res_name, new_level);
-  resource_count.SetDecay(res_name, 1 - new_level);
-}
 
 /* This method sets a deme resource to the same level across
  * all demes.  If a resource by the given name does not exist,

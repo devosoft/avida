@@ -39,7 +39,7 @@ protected:
   cString m_args;
   
 public:
-  cAction(cWorld* world, const cString& args) : m_world(world), m_args(args) { ; }
+  cAction(cWorld* world, const cString& args) : m_world(world), m_args(args),  { ; }
   virtual ~cAction() { ; }
   
   const cString& GetArgs() const { return m_args; }

@@ -43,6 +43,7 @@
 #include "cReactionLib.h"
 #include "cReactionProcess.h"
 #include "cResource.h"
+#include "cResourceRegistry.h"
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
@@ -2344,9 +2345,10 @@ bool cHardwareCPU::Inst_IfAboveResLevel(cAvidaContext& ctx)
   
   const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
   const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
-  const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
+  const cResourceCount& resource_count = m_world->GetEnvironment().GetResourceRegistry().GetResourceCount();
   
-  if (resource_count.GetSize() == 0) assert(false); // change to: return false;
+  if (resource_count.GetSize() == 0) 
+    return false;
   
   double pher_amount = 0;
   cResource* res = resLib.GetResource("pheromone");

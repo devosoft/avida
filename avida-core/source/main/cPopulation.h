@@ -68,7 +68,6 @@ private:
   Apto::PriorityScheduler* m_scheduler;                // Handles allocation of CPU cycles
   Apto::Array<cPopulationCell> cell_array;  // Local cells composing the population
   Apto::Array<int> empty_cell_id_array;     // Used for PREFER_EMPTY birth methods
-  cResourceCount resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   //Keeps track of which organisms are in which group.
   Apto::Map<int, Apto::Array<cOrganism*, Apto::Smart> > m_group_list;
@@ -305,37 +304,15 @@ public:
   cDeme& GetDeme(int i) { return deme_array[i]; }
 
   cPopulationCell& GetCell(int in_num) { assert(in_num >=0); assert(in_num < cell_array.GetSize()); return cell_array[in_num]; }
-  const Apto::Array<double>& GetResources(cAvidaContext& ctx) const { return resource_count.GetResources(ctx); }
-  const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const { return resource_count.GetCellResources(cell_id, ctx); } 
-  const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const { return resource_count.GetFrozenResources(ctx, cell_id); }
-  double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const { return resource_count.GetFrozenCellResVal(ctx, cell_id, res_id); }
-  double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const { return resource_count.GetCellResVal(ctx, cell_id, res_id); }
-  const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }  
-  const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetCellResources( GetDeme(deme_id).GetRelativeCellID(cell_id), ctx ); } 
-  void TriggerDoUpdates(cAvidaContext& ctx) { resource_count.UpdateResources(ctx); }
-  const Apto::Array< Apto::Array<int> >& GetCellIdLists() const { return resource_count.GetCellIdLists(); }
-
-  int GetCurrPeakX(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakX(ctx, res_id); } 
-  int GetCurrPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakY(ctx, res_id); } 
-  int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const { return resource_count.GetFrozenPeakX(ctx, res_id); } 
-  int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetFrozenPeakY(ctx, res_id); } 
-  Apto::Array<int>* GetWallCells(int res_id) { return resource_count.GetWallCells(res_id); }
-
+  
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 
-  void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  void UpdateRandomResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  void UpdateResource(cAvidaContext& ctx, int id, double change);
-  void UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
+  
   void UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
   
-  void SetResource(cAvidaContext& ctx, int id, double new_level);
-  void SetResource(cAvidaContext& ctx, const cString res_name, double new_level);
-  double GetResource(cAvidaContext& ctx, int id) const { return resource_count.Get(ctx, id); }
-  cResourceCount& GetResourceCount() { return resource_count; }
-  void SetResourceInflow(const cString res_name, double new_level);
-  void SetResourceOutflow(const cString res_name, double new_level);
+  const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }  
   
+   
   void SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level);
   void SetSingleDemeResourceInflow(int deme_id, const cString res_name, double new_level);
   void SetDemeResourceInflow(const cString res_name, double new_level);

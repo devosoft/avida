@@ -51,9 +51,17 @@
 using namespace Avida;
 
 
-cEnvironment::cEnvironment(cWorld* world) : m_world(world) , m_tasklib(world),
-m_input_size(INPUT_SIZE_DEFAULT), m_output_size(OUTPUT_SIZE_DEFAULT), m_true_rand(false),
-m_use_specific_inputs(false), m_specific_inputs(), m_mask(0), m_hammers(false), m_paths(false)
+cEnvironment::cEnvironment(cWorld* world) 
+: m_world(world)
+, m_tasklib(world)
+, m_input_size(INPUT_SIZE_DEFAULT)
+, m_output_size(OUTPUT_SIZE_DEFAULT)
+, m_true_rand(false)
+, m_use_specific_inputs(false)
+, m_specific_inputs()
+, m_mask(0)
+, m_hammers(false)
+, m_paths(false)
 {
   mut_rates.Setup(world);
   if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) possible_group_ids.insert(m_world->GetConfig().DEFAULT_GROUP.Get());
@@ -657,6 +665,8 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
     }
   }
 
+  resource_reg.GetResourceCount().AddResource(new_resource);
+  
   return true;
 }
 
@@ -703,6 +713,7 @@ bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
       this_resource->SetYDiffuse(0.0);
       this_resource->SetYGravity(0.0);
       this_resource->SetDemeResource("false");
+      resource_reg.GetResourceCount.AddResource(this_resource);
     } else {
       this_resource = resource_reg.GetResource(name);
     }

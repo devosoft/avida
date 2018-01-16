@@ -31,6 +31,7 @@
 #include "tMatrix.h"
 #include "nGeometry.h"
 
+class cResource;
 class cWorld;
 
 
@@ -61,14 +62,12 @@ class cWorld;
 class cResourceCount
 {
 private:
-  mutable Apto::Array<cString> resource_name;    // The name of each resource
-  mutable Apto::Array<double> resource_initial;  // Initial quantity of each resource
+
+  Apto::Array<cResource*> m_resources;
+  
   mutable Apto::Array<double> resource_count;  // Current quantity of each resource
-  Apto::Array<double> decay_rate;      // Multiplies resource count at each step
-  Apto::Array<double> inflow_rate;     // An increment for resource at each step
   tMatrix<double> decay_precalc;  // Precalculation of decay values
   tMatrix<double> inflow_precalc; // Precalculation of inflow values
-  Apto::Array<int> geometry;           // Spatial layout of each resource
   mutable Apto::Array<cSpatialResCount* > spatial_resource_count;
   mutable Apto::Array<double> curr_grid_res_cnt;
   mutable Apto::Array< Apto::Array<double> > curr_spatial_res_cnt;
@@ -98,7 +97,10 @@ public:
 
   const cResourceCount& operator=(const cResourceCount&);
 
-  void SetSize(int num_resources);
+  //void SetSize(int num_resources);
+  
+  void AddResource(cResource* resource);
+  
   void SetCellResources(int cell_id, const Apto::Array<double> & res);
 
   void Setup(cWorld* world, const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,                      
@@ -160,25 +162,36 @@ public:
   const Apto::Array<double>& GetResources(cAvidaContext& ctx) const; 
   const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const;
   const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const;
+  
   double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const;
   double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const;
+  
   const Apto::Array<int>& GetResourcesGeometry() const;
-  int GetResourceGeometry(int res_id) const { return geometry[res_id]; }
+  int GetResourceGeometry(int res_id) const { return m_resources[res_id]->GetGeometry(); }
+  
   const Apto::Array<Apto::Array<double> >& GetSpatialRes(cAvidaContext& ctx);
   const Apto::Array<Apto::Array<int> >& GetCellIdLists() const { return cell_lists; }
+  
   void Modify(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void Modify(cAvidaContext& ctx, int id, double change);
   void ModifyCell(cAvidaContext& ctx, const Apto::Array<double> & res_change, int cell_id);
+  
   void Set(cAvidaContext& ctx, int id, double new_level);
+  
   double Get(cAvidaContext& ctx, int id) const;
+  
   void ResizeSpatialGrids(int in_x, int in_y);
+  
   cSpatialResCount GetSpatialResource(int id) { return *(spatial_resource_count[id]); }
+  
   const cSpatialResCount& GetSpatialResource(int id) const { return *(spatial_resource_count[id]); }
+  
   void ReinitializeResources(cAvidaContext& ctx, double additional_resource);
-  double GetInitialResourceValue(int resourceID) const { return resource_initial[resourceID]; }
-  const cString& GetResName(int id) const { return resource_name[id]; }
+  
+  double GetInitialResourceValue(int resourceID) const { return m_resources[resourceID]->GetInitial(); }
+  const cString& GetResName(int id) const { return m_resources[id]->GetName(); }
   bool IsSpatialResource(int res_id) const {
-    int geom = geometry[res_id];
+    int geom = m_resources[res_id]->GetGeometry();
     return geom != nGeometry::GLOBAL && geom != nGeometry::PARTIAL; 
   }
   int GetResourceByName(cString name) const;

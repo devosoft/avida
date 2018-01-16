@@ -97,18 +97,12 @@ void FlowMatter(cSpatialCountElem &elem1, cSpatialCountElem &elem2,
   elem2.delta += flowamt;
 }
 
-cResourceCount::cResourceCount(int num_resources)
-  : update_time(0.0)
-  , spatial_update_time(0.0)
-  , m_last_updated(0)
-  , m_spatial_update(0)
-{
-  if(num_resources > 0) {
-    SetSize(num_resources);
-  }
 
-  return;
+void cResourceCount::AddResource(cResource* res)
+{
+  m_resources.Push(res);
 }
+
 
 cResourceCount::cResourceCount(const cResourceCount &rc) {
   *this = rc;
@@ -117,15 +111,13 @@ cResourceCount::cResourceCount(const cResourceCount &rc) {
 }
 
 const cResourceCount &cResourceCount::operator=(const cResourceCount &rc) {
-  SetSize(rc.GetSize());
-  resource_name = rc.resource_name;
-  resource_initial = rc.resource_initial;  
+  
+  m_resources = rc.m_resources;
+  
+  
   resource_count = rc.resource_count;
-  decay_rate = rc.decay_rate;
-  inflow_rate = rc.inflow_rate;
   decay_precalc = rc.decay_precalc;
   inflow_precalc = rc.inflow_precalc;
-  geometry = rc.geometry;
   
   for (int i = 0; i < rc.spatial_resource_count.GetSize(); i++) { 
     *(spatial_resource_count[i]) = *(rc.spatial_resource_count[i]);
@@ -140,43 +132,43 @@ const cResourceCount &cResourceCount::operator=(const cResourceCount &rc) {
   return *this;
 }
 
-void cResourceCount::SetSize(int num_resources)
-{
-  resource_name.ResizeClear(num_resources);
-  resource_initial.ResizeClear(num_resources);
-  resource_count.ResizeClear(num_resources);
-  decay_rate.ResizeClear(num_resources);
-  inflow_rate.ResizeClear(num_resources);
-  if(num_resources > 0) {
-    decay_precalc.ResizeClear(num_resources, PRECALC_DISTANCE+1);
-    inflow_precalc.ResizeClear(num_resources, PRECALC_DISTANCE+1);
-  }
-  geometry.ResizeClear(num_resources);
-  
-  for (int i = 0; i < spatial_resource_count.GetSize(); i++) {
-    delete spatial_resource_count[i]; 
-  }
-  
-  spatial_resource_count.ResizeClear(num_resources);
-  
-  for(int i = 0; i < num_resources; i++){
-    spatial_resource_count[i] = new cSpatialResCount(); 
-  }
-    
-  curr_grid_res_cnt.ResizeClear(num_resources);
-  curr_spatial_res_cnt.ResizeClear(num_resources);
-  cell_lists.ResizeClear(num_resources);
-  resource_name.SetAll("");
-  resource_initial.SetAll(0.0);
-  resource_count.SetAll(0.0);
-  decay_rate.SetAll(0.0);
-  inflow_rate.SetAll(0.0);
-  decay_precalc.SetAll(1.0); // This is 1-inflow, so there should be no inflow by default, JEB
-  inflow_precalc.SetAll(0.0);
-  geometry.SetAll(nGeometry::GLOBAL);
-  curr_grid_res_cnt.SetAll(0.0);
-  //DO spacial resources need to be set to zero?
-}
+//void cResourceCount::SetSize(int num_resources)
+//{
+//  resource_name.ResizeClear(num_resources);
+//  resource_initial.ResizeClear(num_resources);
+//  resource_count.ResizeClear(num_resources);
+//  decay_rate.ResizeClear(num_resources);
+//  inflow_rate.ResizeClear(num_resources);
+//  if(num_resources > 0) {
+//    decay_precalc.ResizeClear(num_resources, PRECALC_DISTANCE+1);
+//    inflow_precalc.ResizeClear(num_resources, PRECALC_DISTANCE+1);
+//  }
+//  geometry.ResizeClear(num_resources);
+//  
+//  for (int i = 0; i < spatial_resource_count.GetSize(); i++) {
+//    delete spatial_resource_count[i]; 
+//  }
+//  
+//  spatial_resource_count.ResizeClear(num_resources);
+//  
+//  for(int i = 0; i < num_resources; i++){
+//    spatial_resource_count[i] = new cSpatialResCount(); 
+//  }
+//    
+//  curr_grid_res_cnt.ResizeClear(num_resources);
+//  curr_spatial_res_cnt.ResizeClear(num_resources);
+//  cell_lists.ResizeClear(num_resources);
+//  resource_name.SetAll("");
+//  resource_initial.SetAll(0.0);
+//  resource_count.SetAll(0.0);
+//  decay_rate.SetAll(0.0);
+//  inflow_rate.SetAll(0.0);
+//  decay_precalc.SetAll(1.0); // This is 1-inflow, so there should be no inflow by default, JEB
+//  inflow_precalc.SetAll(0.0);
+//  geometry.SetAll(nGeometry::GLOBAL);
+//  curr_grid_res_cnt.SetAll(0.0);
+//  //DO spacial resources need to be set to zero?
+//}
 
 cResourceCount::~cResourceCount()
 {
@@ -204,217 +196,217 @@ void cResourceCount::SetCellResources(int cell_id, const Apto::Array<double> & r
   }
 }
 
-void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& name, const double& initial, const double& inflow, const double& decay,                  
-                           const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
-                           const double& in_ydiffuse, const double& in_ygravity,
-                           const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
-                           const int& in_outflowX1, const int& in_outflowX2, const int& in_outflowY1, 
-                           const int& in_outflowY2, Apto::Array<cCellResource> *in_cell_list_ptr,
-                           Apto::Array<int> *in_cell_id_list_ptr, const int& verbosity_level,
-                           const int&,
-                           const double&, const double&, const double&,
-                           const double&, const double&,
-                           const double&, const double&,
-                           const double&, const double&,
-                           const double&, const double&,
-                           const double&, const double&,
-                           const double&, const double&,
-                           const int&, const int& in_peakx, const int& in_peaky,
-                           const int& in_height, const int& in_spread, const double& in_plateau, const int& in_decay,
-                           const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
-                           const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
-                           const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed, const int& in_move_resistance,
-                           const double& in_plateau_inflow, const double& in_plateau_outflow, const double& in_cone_inflow, const double& in_cone_outflow,
-                           const double& in_gradient_inflow, const int& in_is_plateau_common, const double& in_floor, const int& in_habitat, 
-                           const int& in_min_size, const int& in_max_size, const int& in_config, const int& in_count, const double& in_resistance,
-                           const double& in_damage, const double& in_death_odds, const int& in_path, const int& in_hammer, const double& in_init_plat, const double& in_threshold,
-                           const int& in_refuge, const bool& isgradient)
-{
-  (void)in_threshold;
-  (void)in_refuge;
-  (void)isgradient;
-  
-  assert(res_index >= 0 && res_index < resource_count.GetSize());
-  assert(initial >= 0.0);
-  assert(decay >= 0.0);
-  assert(inflow >= 0.0);
-  assert(spatial_resource_count[res_index]->GetSize() > 0);
-  int tempx = spatial_resource_count[res_index]->GetX();
-  int tempy = spatial_resource_count[res_index]->GetY();
-
-  cString geo_name;
-  if (in_geometry == nGeometry::GLOBAL) {
-    geo_name = "GLOBAL";
-  } else if (in_geometry == nGeometry::GRID) {
-    geo_name = "GRID";
-  } else if (in_geometry == nGeometry::TORUS) {
-    geo_name = "TORUS";
-  } else if (in_geometry == nGeometry::PARTIAL) {
-    geo_name = "PARTIAL";
-  }
-  else {
-    cerr << "[cResourceCount::Setup] Unknown resource geometry " << in_geometry << ".  Exiting.";
-    exit(2);
-  }
-
-
-  /* If the verbose flag is set print out information about resources */
-  verbosity = verbosity_level;
-  if (verbosity > VERBOSE_NORMAL) {
-    cout << "Setting up resource " << name
-         << "(" << geo_name 
-         << ") with initial quantity=" << initial
-         << ", decay=" << decay
-         << ", inflow=" << inflow
-         << endl;
-    if ((in_geometry == nGeometry::GRID) || (in_geometry == nGeometry::TORUS)) {
-      cout << "  Inflow rectangle (" << in_inflowX1 
-           << "," << in_inflowY1 
-           << ") to (" << in_inflowX2 
-           << "," << in_inflowY2 
-           << ")" << endl; 
-      cout << "  Outflow rectangle (" << in_outflowX1 
-           << "," << in_outflowY1 
-           << ") to (" << in_outflowX2 
-           << "," << in_outflowY2 
-           << ")" << endl;
-      cout << "  xdiffuse=" << in_xdiffuse
-           << ", xgravity=" << in_xgravity
-           << ", ydiffuse=" << in_ydiffuse
-           << ", ygravity=" << in_ygravity
-           << endl;
-    }   
-  }
-  
-
-  /* recource_count gets only the values for global resources */
-
-  resource_name[res_index] = name;
-  resource_initial[res_index] = initial;
-  if (in_geometry == nGeometry::GLOBAL) {
-    resource_count[res_index] = initial;
-    spatial_resource_count[res_index]->RateAll(0);
-  } 
-  else if (in_geometry == nGeometry::PARTIAL) {
-    resource_count[res_index]=initial;
-    
-    spatial_resource_count[res_index]->RateAll(0);
-    // want to set list of cell ids here
-    cell_lists[res_index].Resize(in_cell_id_list_ptr->GetSize());
-    for (int i = 0; i < in_cell_id_list_ptr->GetSize(); i++) {
-      cell_lists[res_index][i] = (*in_cell_id_list_ptr)[i]; 
-    }
-  }
-  else {
-    resource_count[res_index] = 0; 
-    if (isgradient) {
-      delete spatial_resource_count[res_index];
-      spatial_resource_count[res_index] = new cGradientCount(world, in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay,                                
-                                                             in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
-                                                             tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, 
-                                                             in_halo_width, in_halo_anchor_x, in_halo_anchor_y, in_move_speed, in_move_resistance,
-                                                             in_plateau_inflow, in_plateau_outflow, in_cone_inflow, in_cone_outflow,
-                                                             in_gradient_inflow, in_is_plateau_common, in_floor, in_habitat, 
-                                                             in_min_size, in_max_size, in_config, in_count, in_init_plat, in_threshold,
-                                                             in_damage, in_death_odds, in_path, in_hammer);
-      spatial_resource_count[res_index]->RateAll(0);
-    }
-    
-    else{
-      spatial_resource_count[res_index]->SetInitial(initial / spatial_resource_count[res_index]->GetSize());
-      spatial_resource_count[res_index]->RateAll(spatial_resource_count[res_index]->GetInitial());
-    }
-  }
-  spatial_resource_count[res_index]->StateAll();  
-  decay_rate[res_index] = decay;
-  inflow_rate[res_index] = inflow;
-  geometry[res_index] = in_geometry;
-  spatial_resource_count[res_index]->SetGeometry(in_geometry);
-  spatial_resource_count[res_index]->SetPointers();
-  spatial_resource_count[res_index]->SetCellList(in_cell_list_ptr);
-
-  double step_decay = pow(decay, UPDATE_STEP);
-  double step_inflow = inflow * UPDATE_STEP;
-  
-  decay_precalc(res_index, 0) = 1.0;
-  inflow_precalc(res_index, 0) = 0.0;
-  for (int i = 1; i <= PRECALC_DISTANCE; i++) {
-    decay_precalc(res_index, i)  = decay_precalc(res_index, i-1) * step_decay;
-    inflow_precalc(res_index, i) = inflow_precalc(res_index, i-1) * step_decay + step_inflow;
-  }
-  spatial_resource_count[res_index]->SetXdiffuse(in_xdiffuse);
-  spatial_resource_count[res_index]->SetXgravity(in_xgravity);
-  spatial_resource_count[res_index]->SetYdiffuse(in_ydiffuse);
-  spatial_resource_count[res_index]->SetYgravity(in_ygravity);
-  spatial_resource_count[res_index]->SetInflowX1(in_inflowX1);
-  spatial_resource_count[res_index]->SetInflowX2(in_inflowX2);
-  spatial_resource_count[res_index]->SetInflowY1(in_inflowY1);
-  spatial_resource_count[res_index]->SetInflowY2(in_inflowY2);
-  spatial_resource_count[res_index]->SetOutflowX1(in_outflowX1);
-  spatial_resource_count[res_index]->SetOutflowX2(in_outflowX2);
-  spatial_resource_count[res_index]->SetOutflowY1(in_outflowY1);
-  spatial_resource_count[res_index]->SetOutflowY2(in_outflowY2);
-}
-
-void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const int& res_id, const int& peakx, const int& peaky,
-                      const int& height, const int& spread, const double& plateau, const int& decay, 
-                      const int& max_x, const int& min_x, const int& max_y, const int& min_y, const double& move_a_scaler,
-                      const int& updatestep, const int& halo, const int& halo_inner_radius, const int& halo_width,
-                      const int& halo_anchor_x, const int& halo_anchor_y, const int& move_speed, const int& move_resistance,
-                      const double& plateau_inflow, const double& plateau_outflow, const double& cone_inflow, const double& cone_outflow,
-                      const double& gradient_inflow, const int& is_plateau_common, const double& floor, const int& habitat, 
-                      const int& min_size, const int& max_size, const int& config, const int& count, const double& resistance, 
-                      const double& damage,const double& death_odds, const int& path, const int& hammer,
-                      const double& plat_val, const double& threshold, const int& refuge)
-{
-  (void)world;
-  
-  assert(res_id >= 0 && res_id < resource_count.GetSize());
-  assert(spatial_resource_count[res_id]->GetSize() > 0);
-  int worldx = spatial_resource_count[res_id]->GetX();
-  int worldy = spatial_resource_count[res_id]->GetY();
-  
-  spatial_resource_count[res_id]->SetGradPeakX(peakx);
-  spatial_resource_count[res_id]->SetGradPeakY(peaky);
-  spatial_resource_count[res_id]->SetGradHeight(height);
-  spatial_resource_count[res_id]->SetGradSpread(spread);
-  spatial_resource_count[res_id]->SetGradPlateau(plateau);
-  spatial_resource_count[res_id]->SetGradInitialPlat(plat_val);
-  spatial_resource_count[res_id]->SetGradDecay(decay);
-  spatial_resource_count[res_id]->SetGradMaxX(max_x);
-  spatial_resource_count[res_id]->SetGradMaxY(max_y);
-  spatial_resource_count[res_id]->SetGradMinX(min_x);
-  spatial_resource_count[res_id]->SetGradMinY(min_y);
-  spatial_resource_count[res_id]->SetGradMoveScaler(move_a_scaler);
-  spatial_resource_count[res_id]->SetGradUpdateStep(updatestep);
-
-  spatial_resource_count[res_id]->SetGradIsHalo(halo);
-  spatial_resource_count[res_id]->SetGradHaloInnerRad(halo_inner_radius);
-  spatial_resource_count[res_id]->SetGradHaloWidth(halo_width);
-  spatial_resource_count[res_id]->SetGradHaloX(halo_anchor_x);
-  spatial_resource_count[res_id]->SetGradHaloY(halo_anchor_y);
-  spatial_resource_count[res_id]->SetGradMoveSpeed(move_speed);
-  spatial_resource_count[res_id]->SetGradMoveResistance(move_resistance);
-  spatial_resource_count[res_id]->SetGradPlatInflow(plateau_inflow);
-  spatial_resource_count[res_id]->SetGradPlatOutflow(plateau_outflow);
-  spatial_resource_count[res_id]->SetGradConeInflow(cone_inflow);
-  spatial_resource_count[res_id]->SetGradConeOutflow(cone_outflow);
-  spatial_resource_count[res_id]->SetGradientInflow(gradient_inflow);
-  spatial_resource_count[res_id]->SetGradPlatIsCommon(is_plateau_common);
-  spatial_resource_count[res_id]->SetGradFloor(floor);
-  spatial_resource_count[res_id]->SetGradHabitat(habitat);
-  spatial_resource_count[res_id]->SetGradMinSize(min_size);
-  spatial_resource_count[res_id]->SetGradMaxSize(max_size);
-  spatial_resource_count[res_id]->SetGradConfig(config);
-  spatial_resource_count[res_id]->SetGradCount(count);
-  spatial_resource_count[res_id]->SetGradResistance(resistance);
-  spatial_resource_count[res_id]->SetGradDamage(damage);
-  spatial_resource_count[res_id]->SetGradThreshold(threshold);
-  spatial_resource_count[res_id]->SetGradRefuge(refuge);
-  spatial_resource_count[res_id]->SetGradDeathOdds(death_odds);
-  
-  spatial_resource_count[res_id]->ResetGradRes(ctx, worldx, worldy);
-}
+//void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& name, const double& initial, const double& inflow, const double& decay,                  
+//                           const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
+//                           const double& in_ydiffuse, const double& in_ygravity,
+//                           const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
+//                           const int& in_outflowX1, const int& in_outflowX2, const int& in_outflowY1, 
+//                           const int& in_outflowY2, Apto::Array<cCellResource> *in_cell_list_ptr,
+//                           Apto::Array<int> *in_cell_id_list_ptr, const int& verbosity_level,
+//                           const int&,
+//                           const double&, const double&, const double&,
+//                           const double&, const double&,
+//                           const double&, const double&,
+//                           const double&, const double&,
+//                           const double&, const double&,
+//                           const double&, const double&,
+//                           const double&, const double&,
+//                           const int&, const int& in_peakx, const int& in_peaky,
+//                           const int& in_height, const int& in_spread, const double& in_plateau, const int& in_decay,
+//                           const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
+//                           const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
+//                           const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed, const int& in_move_resistance,
+//                           const double& in_plateau_inflow, const double& in_plateau_outflow, const double& in_cone_inflow, const double& in_cone_outflow,
+//                           const double& in_gradient_inflow, const int& in_is_plateau_common, const double& in_floor, const int& in_habitat, 
+//                           const int& in_min_size, const int& in_max_size, const int& in_config, const int& in_count, const double& in_resistance,
+//                           const double& in_damage, const double& in_death_odds, const int& in_path, const int& in_hammer, const double& in_init_plat, const double& in_threshold,
+//                           const int& in_refuge, const bool& isgradient)
+//{
+//  (void)in_threshold;
+//  (void)in_refuge;
+//  (void)isgradient;
+//  
+//  assert(res_index >= 0 && res_index < resource_count.GetSize());
+//  assert(initial >= 0.0);
+//  assert(decay >= 0.0);
+//  assert(inflow >= 0.0);
+//  assert(spatial_resource_count[res_index]->GetSize() > 0);
+//  int tempx = spatial_resource_count[res_index]->GetX();
+//  int tempy = spatial_resource_count[res_index]->GetY();
+//
+//  cString geo_name;
+//  if (in_geometry == nGeometry::GLOBAL) {
+//    geo_name = "GLOBAL";
+//  } else if (in_geometry == nGeometry::GRID) {
+//    geo_name = "GRID";
+//  } else if (in_geometry == nGeometry::TORUS) {
+//    geo_name = "TORUS";
+//  } else if (in_geometry == nGeometry::PARTIAL) {
+//    geo_name = "PARTIAL";
+//  }
+//  else {
+//    cerr << "[cResourceCount::Setup] Unknown resource geometry " << in_geometry << ".  Exiting.";
+//    exit(2);
+//  }
+//
+//
+//  /* If the verbose flag is set print out information about resources */
+//  verbosity = verbosity_level;
+//  if (verbosity > VERBOSE_NORMAL) {
+//    cout << "Setting up resource " << name
+//         << "(" << geo_name 
+//         << ") with initial quantity=" << initial
+//         << ", decay=" << decay
+//         << ", inflow=" << inflow
+//         << endl;
+//    if ((in_geometry == nGeometry::GRID) || (in_geometry == nGeometry::TORUS)) {
+//      cout << "  Inflow rectangle (" << in_inflowX1 
+//           << "," << in_inflowY1 
+//           << ") to (" << in_inflowX2 
+//           << "," << in_inflowY2 
+//           << ")" << endl; 
+//      cout << "  Outflow rectangle (" << in_outflowX1 
+//           << "," << in_outflowY1 
+//           << ") to (" << in_outflowX2 
+//           << "," << in_outflowY2 
+//           << ")" << endl;
+//      cout << "  xdiffuse=" << in_xdiffuse
+//           << ", xgravity=" << in_xgravity
+//           << ", ydiffuse=" << in_ydiffuse
+//           << ", ygravity=" << in_ygravity
+//           << endl;
+//    }   
+//  }
+//  
+//
+//  /* recource_count gets only the values for global resources */
+//
+//  resource_name[res_index] = name;
+//  resource_initial[res_index] = initial;
+//  if (in_geometry == nGeometry::GLOBAL) {
+//    resource_count[res_index] = initial;
+//    spatial_resource_count[res_index]->RateAll(0);
+//  } 
+//  else if (in_geometry == nGeometry::PARTIAL) {
+//    resource_count[res_index]=initial;
+//    
+//    spatial_resource_count[res_index]->RateAll(0);
+//    // want to set list of cell ids here
+//    cell_lists[res_index].Resize(in_cell_id_list_ptr->GetSize());
+//    for (int i = 0; i < in_cell_id_list_ptr->GetSize(); i++) {
+//      cell_lists[res_index][i] = (*in_cell_id_list_ptr)[i]; 
+//    }
+//  }
+//  else {
+//    resource_count[res_index] = 0; 
+//    if (isgradient) {
+//      delete spatial_resource_count[res_index];
+//      spatial_resource_count[res_index] = new cGradientCount(world, in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay,                                
+//                                                             in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
+//                                                             tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, 
+//                                                             in_halo_width, in_halo_anchor_x, in_halo_anchor_y, in_move_speed, in_move_resistance,
+//                                                             in_plateau_inflow, in_plateau_outflow, in_cone_inflow, in_cone_outflow,
+//                                                             in_gradient_inflow, in_is_plateau_common, in_floor, in_habitat, 
+//                                                             in_min_size, in_max_size, in_config, in_count, in_init_plat, in_threshold,
+//                                                             in_damage, in_death_odds, in_path, in_hammer);
+//      spatial_resource_count[res_index]->RateAll(0);
+//    }
+//    
+//    else{
+//      spatial_resource_count[res_index]->SetInitial(initial / spatial_resource_count[res_index]->GetSize());
+//      spatial_resource_count[res_index]->RateAll(spatial_resource_count[res_index]->GetInitial());
+//    }
+//  }
+//  spatial_resource_count[res_index]->StateAll();  
+//  decay_rate[res_index] = decay;
+//  inflow_rate[res_index] = inflow;
+//  geometry[res_index] = in_geometry;
+//  spatial_resource_count[res_index]->SetGeometry(in_geometry);
+//  spatial_resource_count[res_index]->SetPointers();
+//  spatial_resource_count[res_index]->SetCellList(in_cell_list_ptr);
+//
+//  double step_decay = pow(decay, UPDATE_STEP);
+//  double step_inflow = inflow * UPDATE_STEP;
+//  
+//  decay_precalc(res_index, 0) = 1.0;
+//  inflow_precalc(res_index, 0) = 0.0;
+//  for (int i = 1; i <= PRECALC_DISTANCE; i++) {
+//    decay_precalc(res_index, i)  = decay_precalc(res_index, i-1) * step_decay;
+//    inflow_precalc(res_index, i) = inflow_precalc(res_index, i-1) * step_decay + step_inflow;
+//  }
+//  spatial_resource_count[res_index]->SetXdiffuse(in_xdiffuse);
+//  spatial_resource_count[res_index]->SetXgravity(in_xgravity);
+//  spatial_resource_count[res_index]->SetYdiffuse(in_ydiffuse);
+//  spatial_resource_count[res_index]->SetYgravity(in_ygravity);
+//  spatial_resource_count[res_index]->SetInflowX1(in_inflowX1);
+//  spatial_resource_count[res_index]->SetInflowX2(in_inflowX2);
+//  spatial_resource_count[res_index]->SetInflowY1(in_inflowY1);
+//  spatial_resource_count[res_index]->SetInflowY2(in_inflowY2);
+//  spatial_resource_count[res_index]->SetOutflowX1(in_outflowX1);
+//  spatial_resource_count[res_index]->SetOutflowX2(in_outflowX2);
+//  spatial_resource_count[res_index]->SetOutflowY1(in_outflowY1);
+//  spatial_resource_count[res_index]->SetOutflowY2(in_outflowY2);
+//}
+//
+//void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const int& res_id, const int& peakx, const int& peaky,
+//                      const int& height, const int& spread, const double& plateau, const int& decay, 
+//                      const int& max_x, const int& min_x, const int& max_y, const int& min_y, const double& move_a_scaler,
+//                      const int& updatestep, const int& halo, const int& halo_inner_radius, const int& halo_width,
+//                      const int& halo_anchor_x, const int& halo_anchor_y, const int& move_speed, const int& move_resistance,
+//                      const double& plateau_inflow, const double& plateau_outflow, const double& cone_inflow, const double& cone_outflow,
+//                      const double& gradient_inflow, const int& is_plateau_common, const double& floor, const int& habitat, 
+//                      const int& min_size, const int& max_size, const int& config, const int& count, const double& resistance, 
+//                      const double& damage,const double& death_odds, const int& path, const int& hammer,
+//                      const double& plat_val, const double& threshold, const int& refuge)
+//{
+//  (void)world;
+//  
+//  assert(res_id >= 0 && res_id < resource_count.GetSize());
+//  assert(spatial_resource_count[res_id]->GetSize() > 0);
+//  int worldx = spatial_resource_count[res_id]->GetX();
+//  int worldy = spatial_resource_count[res_id]->GetY();
+//  
+//  spatial_resource_count[res_id]->SetGradPeakX(peakx);
+//  spatial_resource_count[res_id]->SetGradPeakY(peaky);
+//  spatial_resource_count[res_id]->SetGradHeight(height);
+//  spatial_resource_count[res_id]->SetGradSpread(spread);
+//  spatial_resource_count[res_id]->SetGradPlateau(plateau);
+//  spatial_resource_count[res_id]->SetGradInitialPlat(plat_val);
+//  spatial_resource_count[res_id]->SetGradDecay(decay);
+//  spatial_resource_count[res_id]->SetGradMaxX(max_x);
+//  spatial_resource_count[res_id]->SetGradMaxY(max_y);
+//  spatial_resource_count[res_id]->SetGradMinX(min_x);
+//  spatial_resource_count[res_id]->SetGradMinY(min_y);
+//  spatial_resource_count[res_id]->SetGradMoveScaler(move_a_scaler);
+//  spatial_resource_count[res_id]->SetGradUpdateStep(updatestep);
+//
+//  spatial_resource_count[res_id]->SetGradIsHalo(halo);
+//  spatial_resource_count[res_id]->SetGradHaloInnerRad(halo_inner_radius);
+//  spatial_resource_count[res_id]->SetGradHaloWidth(halo_width);
+//  spatial_resource_count[res_id]->SetGradHaloX(halo_anchor_x);
+//  spatial_resource_count[res_id]->SetGradHaloY(halo_anchor_y);
+//  spatial_resource_count[res_id]->SetGradMoveSpeed(move_speed);
+//  spatial_resource_count[res_id]->SetGradMoveResistance(move_resistance);
+//  spatial_resource_count[res_id]->SetGradPlatInflow(plateau_inflow);
+//  spatial_resource_count[res_id]->SetGradPlatOutflow(plateau_outflow);
+//  spatial_resource_count[res_id]->SetGradConeInflow(cone_inflow);
+//  spatial_resource_count[res_id]->SetGradConeOutflow(cone_outflow);
+//  spatial_resource_count[res_id]->SetGradientInflow(gradient_inflow);
+//  spatial_resource_count[res_id]->SetGradPlatIsCommon(is_plateau_common);
+//  spatial_resource_count[res_id]->SetGradFloor(floor);
+//  spatial_resource_count[res_id]->SetGradHabitat(habitat);
+//  spatial_resource_count[res_id]->SetGradMinSize(min_size);
+//  spatial_resource_count[res_id]->SetGradMaxSize(max_size);
+//  spatial_resource_count[res_id]->SetGradConfig(config);
+//  spatial_resource_count[res_id]->SetGradCount(count);
+//  spatial_resource_count[res_id]->SetGradResistance(resistance);
+//  spatial_resource_count[res_id]->SetGradDamage(damage);
+//  spatial_resource_count[res_id]->SetGradThreshold(threshold);
+//  spatial_resource_count[res_id]->SetGradRefuge(refuge);
+//  spatial_resource_count[res_id]->SetGradDeathOdds(death_odds);
+//  
+//  spatial_resource_count[res_id]->ResetGradRes(ctx, worldx, worldy);
+//}
 
 void cResourceCount::SetGradientPlatInflow(const int& res_id, const double& inflow) 
 {
