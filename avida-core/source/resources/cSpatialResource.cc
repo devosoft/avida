@@ -40,7 +40,7 @@ void cSpatialResourceAcct::SetupGeometry()
       m_cells[i].SetPtr(0, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
       m_cells[i].SetPtr(1, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
       m_cells[i].SetPtr(2, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
-      ii = num_cells-1-i;
+      ii = m_cells.GetSize()-1-i;
       m_cells[ii].SetPtr(4, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
       m_cells[ii].SetPtr(5, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
       m_cells[ii].SetPtr(6, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
@@ -68,14 +68,140 @@ void cSpatialResourceAcct::Update()
   int num_updates = m_stats_update - m_last_calc_update;
   for (int kk=0; kk < num_updates; kk++){
     //spatial_resource_count[res_id]->UpdateCount(ctx);  //Only for Gradient Resources
-    m_->Source(inflow_rate[res_id]);  
-    spatial_resource_count[res_id]->Sink(decay_rate[res_id]);   
-    if (spatial_resource_count[res_id]->GetCellListSize() > 0) {  // Only for CELL resources?
-      spatial_resource_count[res_id]->CellInflow();
-      spatial_resource_count[res_id]->CellOutflow();
+    Source(m_resource.m_inflow);  
+    Sink(m_resource.m_decay);   
+    if (m_resource.m_cell_list.GetSize() > 0) {  // Only for CELL resources?
+      CellInflow();
+      CellOutflow();
     }
-    spatial_resource_count[res_id]->FlowAll();
-    spatial_resource_count[res_id]->StateAll();
-    // BDB: resource_count[res_ndx] = spatial_resource_count[i]->SumAll();
+    FlowAll();
+    StateAll();
+  }
+}
+
+
+void cSpatialResourceAcct::FlowAll()
+{
+  if (m_resource.m_diffuse_x == 0 && m_resource.m_diffuse_y == 0
+      && m_resource.m_gravity_x == 0 && m_resource.m_gravity_y == 0)
+      return;
+
+  int     i,k,ii,xdist,ydist;
+  double  dist;
+ 
+  for (i = 0; i < m_cells.GetSize(); i++) {
+      
+    /* because flow is two way we must check only half the neighbors to 
+       prevent double flow calculations */
+
+    for (k = 3; k <= 6; k++) {
+      ii = m_cells[i].GetElemPtr(k);
+      xdist = m_cells[i].GetPtrXdist(k);
+      ydist = m_cells[i].GetPtrYdist(k);
+      dist = m_cells[i].GetPtrDist(k);
+      if (ii >= 0) {
+        FlowMatter(m_cells[i],m_cells[ii],
+          m_resource.m_diffuse_x, m_resource.m_diffuse_y,
+          m_resource.m_gravity_x, m_resource.m_gravity_y,
+          xdist, ydist, dist);
+      }
+    }
+  }
+}
+
+void cSpatialResourceAcct::StateAll()
+{
+  for (int i = 0; i < m_cells.GetSize(); i++) {
+      m_cells[i].State();
+  } 
+}
+
+void cSpatialResourceAcct::Source(double amount)
+{
+  
+  for (int b=0; b < m_resource.m_inflow_boxes.GetSize(); b++)
+  {
+    const cCellBox in_box = m_resource.m_inflow_boxes[b];
+    int inflowX1 = in_box.GetX();
+    int inflowX2 = inflowX1 + in_box.GetWidth();
+    int inflowY1 = in_box.GetY();
+    int inflowY2 = in_box.GetHeight();
+    double totalcells = (inflowY2 - inflowY1 + 1) * (inflowX2 - inflowX1 + 1) * 1.0;
+    amount /= totalcells;
+
+    for (int i = inflowY1; i <= inflowY2; i++) {
+      for (int j = inflowX1; j <= inflowX2; j++) {
+        int size_x = m_cells.GetSizeX();
+        int size_y = m_cells.GetSizeX();
+        int elem = 
+          (Mod(i,size_y) * size_x) + Mod(j,size_x);
+        Rate(elem,amount); 
+      }
+    }
+  }
+}
+
+void cSpatialResourceAcct::Rate(int cell_id, double ratein)
+{
+  if (cell_id >= 0 && cell_id < m_cells.GetSize()) {
+    m_cells[cell_id].Rate(ratein);
+  } else {
+    assert(false); // x not valid id
+  }
+}
+
+void cSpatialResourceAcct::Rate(int x, int y, double ratein)
+{ 
+  int size_x = m_cells.GetSizeX();
+  int size_y = m_cells.GetSizeY();
+  if (x >= 0 && x < m_size_x && y>= 0 && y < size_y) {
+    m_cells[y * size_x + x].Rate(ratein);
+  } else {
+    assert(false); // x or y not valid id
+  }
+}
+
+
+void cSpatialResourceAcct::CellOutflow()
+{
+  double deltaamount = 0.0;
+
+  const Apto::Array<cCellResource>& cell_list = m_resource.m_cell_list;
+  for (int i=0; i < cell_list.GetSize(); i++) {
+    const int cell_id = cell_list[i].GetCellID();
+    
+    /* Be sure the user entered a valid cell id or if the the program is loading
+       the resource for the testCPU that does not have a grid set up */
+       
+    if (cell_id >= 0 && cell_id < m_cells.GetSize()) {
+      deltaamount = Apto::Max(
+        (GetAmount(cell_id) * cell_list[i].GetOutflow()), 0.0);
+    }                     
+    Rate(cell_id, -deltaamount); 
+  }
+}
+
+void cSpatialResourceAcct::Sink(double decay)
+{
+  if (m_resource.m_outflow_boxes.GetSize() == 0)
+    return;
+  
+  int size_x = m_cells.GetSizeX();
+  int size_y = m_cells.GetSizeY();
+  for (int b=0; b < m_resource.m_outflow_boxes.GetSize(); b++)
+  {
+    cCellBox cbox = m_resource.m_outflow_boxes[b];
+    int outflowX1 = cbox.GetX();
+    int outflowX2 = outflowX1 + cbox.GetWidth();
+    int outflowY1 = cbox.GetY();
+    int outflowY2 = outflowY1 + cbox.GetHeight();
+    
+    for (int i = outflowY1; i <= outflowY2; i++) {
+      for (int j = outflowX1; j <= outflowX2; j++) {
+        int elem = (Mod(i,size_y) * size_x) + Mod(j,size_x);
+        double deltaamount = Apto::Max((GetAmount(elem) * (1.0 - decay)), 0.0);
+        Rate(elem,-deltaamount); 
+      }
+    }
   }
 }

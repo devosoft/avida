@@ -102,5 +102,14 @@ class cOffsetLinearGrid
       return m_array.GetSize();
     }
     
+    inline int GetSizeX() const
+    {
+      return m_size_x;
+    }
+    
+    inline int GetSizeY() const
+    {
+      return m_size_y;
+    }
 };
 #endif /* cOffsetLinearGrid_h */

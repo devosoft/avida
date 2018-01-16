@@ -37,35 +37,62 @@
 using namespace Avida;
 
 
-/* cGradientCount is designed to give moving peaks of resources. Peaks are <optionally> capped with plateaus. The slope of the peaks
-is height / distance. Consequently, when height = distance from center of peak, the value at that cell = 1. This was 
-designed this way because the organims used for this could only consume resources when the value is >= 1. Thus, height also 
-gives radius of 'edible' resources (aka the plateau). If plateaus are >1, you get sloped edges leading up to plateau 
-cylinders.
-  Spread gives the radius of the entire resource peak to the outside of the sloped edge. Organisms could detect resources 
-all along the spread, but only consume that portion on the plateau. Thus, spread - plateau = sense radius (smell) while 
-plateau = consumable radius (actual food).
-  Peaks move within the boundaries set by min/max x and y. If the plateau / edible portion of the peak hits the boundary, the peak 
+/* 
+cGradientCount is designed to give moving peaks of resources. Peaks are
+<optionally> capped with plateaus. The slope of the peaks is height /
+distance. Consequently, when height = distance from center of peak, the
+value at that cell = 1. This was designed this way because the organims
+used for this could only consume resources when the value is >= 1. Thus,
+height also gives radius of 'edible' resources (aka the plateau). If
+plateaus are >1, you get sloped edges leading up to plateau cylinders.
+
+Spread gives the radius of the entire resource peak to the outside of
+the sloped edge. Organisms could detect resources all along the
+spread, but only consume that portion on the plateau. Thus, spread -
+plateau = sense radius (smell) while plateau = consumable radius
+(actual food).
+
+Peaks move within the boundaries set by min/max x and y. If the
+plateau / edible portion of the peak hits the boundary, the peak
 'bounces' (sign of direction of movement changes).
-  Smoothness of the movement is controlled by move_a_scaler which is the A in eq1 in Morrison & DeJong 1999. A-values 
-need to be between 1 and 4. Values of 1 to ~3 give smooth movements. Larger values should yield chaotic moves. However, beyond 
-establishing that peaks don't move when the value = 1 and do move when the value > 1, the effects of A-values have not really been 
-evaluated.
-  If depletable (via reaction) peaks stop moving when they are first bitten.
-  Depletable peaks will be refreshed when either all edible portions (>=1) are consumed or when the decay timestep (in 
-updates) is reached, whichever comes first.
-  Once bitten, depletable peaks will not move again until refreshed.
-  Peak values are refreshed to match initial height, spread, and plateau, but for non-halo peaks, the placement of the 
-refreshed peak is random within the min/max x and y area. For halo peaks, the peak is currently refreshed at the SE 
-corner of the orbit.
-cGradientCount cannot access the random number generator at the very first update. Thus, it uses the DefaultContext initially.
-  We use movesign to determine direction of peak movement
-  First, to get smooth movements, for non-halo resources we only allow either the x or y direction change to be evaluated in 
- a single update. For halo resources, we only evaluate either the orbit or the direction in a given update.
-  Second, we then decide the change of direction based on the current direction, e.g. so that non-halo peak movesigns can't 'jump' 
-from -1 to 1, without first changing to 0
-  Finally, we only toy with movement direction when # updates since last change = updatestep.
- */
+
+Smoothness of the movement is controlled by move_a_scaler which is the
+A in eq1 in Morrison & DeJong 1999. A-values need to be between 1 and
+4. Values of 1 to ~3 give smooth movements. Larger values should yield
+chaotic moves. However, beyond establishing that peaks don't move when
+the value = 1 and do move when the value > 1, the effects of A-values
+have not really been evaluated.
+
+If depletable (via reaction) peaks stop moving when they are first
+bitten.
+
+Depletable peaks will be refreshed when either all edible portions
+(>=1) are consumed or when the decay timestep (in updates) is reached,
+whichever comes first.
+
+Once bitten, depletable peaks will not move again until refreshed.
+
+Peak values are refreshed to match initial height, spread, and
+plateau, but for non-halo peaks, the placement of the refreshed peak
+is random within the min/max x and y area. For halo peaks, the peak is
+currently refreshed at the SE corner of the orbit. cGradientCount
+cannot access the random number generator at the very first update.
+Thus, it uses the DefaultContext initially.
+
+We use movesign to determine direction of peak movement
+
+First, to get smooth movements, for non-halo resources we only allow
+either the x or y direction change to be evaluated in a single update.
+For halo resources, we only evaluate either the orbit or the direction
+in a given update.
+
+Second, we then decide the change of direction based on the current
+direction, e.g. so that non-halo peak movesigns can't 'jump' from -1
+to 1, without first changing to 0
+
+Finally, we only toy with movement direction when # updates since last
+change = updatestep.
+*/
 
 cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay, 
                                int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep,  

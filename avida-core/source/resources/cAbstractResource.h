@@ -98,6 +98,7 @@ class cRatedResource : public cAbstractResource
     double m_initial;
     double m_inflow;
     double m_outflow;
+    double m_decay;
     
     
   public:
@@ -106,8 +107,8 @@ class cRatedResource : public cAbstractResource
     
     void SetInitial(double initial) { m_initial = initial; }
     void SetInflow(double inflow) { m_inflow = inflow; }
-    void SetOutflow(double outflow) { m_outflow = outflow; }
-    void SetDecay(double decay) { m_outflow = 1.0 - decay; }
+    void SetOutflow(double outflow) { m_outflow = outflow; m_decay = 1.0 - outflow;}
+    void SetDecay(double decay) { m_outflow = 1.0 - decay; m_decay = decay;}
     
     double GetInitial() const { return m_initial; }
     double GetInflow() const { return m_inflow; }

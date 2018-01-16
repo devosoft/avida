@@ -11,6 +11,7 @@
 #include "cAbstractResource.h"
 #include "cAbstractResourceAcct.h"
 #include "cSpatialCountElem.h"
+#include "cCellResource.h"
 #include "nGeometry.h"
 
 class cSpatialResource : public cRatedResource
@@ -25,9 +26,13 @@ class cSpatialResource : public cRatedResource
   protected:
 
     int m_geometry;
+    double m_diffuse_x;
+    double m_diffuse_y;
+    double m_gravity_x;
+    double m_gravity_y;
     Apto::Array<cCellBox> m_inflow_boxes;
     Apto::Array<cCellBox> m_outflow_boxes;
-    
+    Apto::Array<cCellResource> m_cell_list;
   
   public:
     cSpatialResource(int id, const cString& name)
@@ -58,6 +63,10 @@ class cSpatialResource : public cRatedResource
     }
     
     ADD_RESOURCE_PROP(int, Geometry, m_geometry);
+    ADD_RESOURCE_PROP(double, XDiffuse, m_diffuse_x);
+    ADD_RESOURCE_PROP(double, YDiffuse, m_diffuse_y);
+    ADD_RESOURCE_PROP(double, XGravity, m_gravity_x);
+    ADD_RESOURCE_PROP(double, YGravity, m_gravity_y);
     
 };
 
@@ -80,7 +89,6 @@ class cSpatialResourceAcct : public cAbstractSpatialResourceAcct
     
     const cSpatialResource& m_resource;
     cOffsetLinearGrid<cSpatialCountElem> m_cells;
-    cCellList* m_cell_list;
     
     virtual void Update();
     
@@ -101,8 +109,6 @@ class cSpatialResourceAcct : public cAbstractSpatialResourceAcct
     }
     
     void SetupGeometry();
-    void SetCellList(cCellList* cell_list);
-    int GetCellListSize() const { return m_cell_list->GetSize(); }
     
     void SetInflow(int cell_id, double inflow) { m_cells(cell_id).Rate(inflow); }
     void SetInflow(int x, int y, double inflow) { m_cells(x,y).Rate(inflow); }
@@ -113,10 +119,18 @@ class cSpatialResourceAcct : public cAbstractSpatialResourceAcct
     void SetStateAll();
     
     void FlowAll();
-    void Source(double amount);
+    
+    void StateAll();
+    void State(int x);
+    void State(int x, int y);
+    
     void CellInflow();
-    void Sink(double decay);
+    void Source(double amount);
+    void Rate(int x, double ratein);
+    void Rate(int x, int y, double ratein);
+    
     void CellOutflow();
+    void Sink(double decay);
     void ResetResourceCounts();
 };
 

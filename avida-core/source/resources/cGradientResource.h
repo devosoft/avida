@@ -142,9 +142,126 @@ class cGradientResource : public cAbstractResource
 
 };
 
+class cWorld;
+class cPopulation;
+class cAvidaContext;
+
 class cGradientResourceAcct : public cAbstractResourceAcct
 {
+  protected:
+   cWorld* m_world;
+   cPopulation* m_pop;
   
+  // Internal Values
+  bool m_initial;
+  doublt m_initial_plat;
+  
+  double m_move_y_scaler;
+  
+  int m_counter;
+  int m_move_counter;
+  int m_topo_counter;
+  int m_movesignx;
+  int m_movesigny;
+  
+  int m_old_peakx;
+  int m_old_peaky;
+  
+  int m_halo_dir;
+  int m_changling;
+  bool m_just_reset;
+  double m_past_height;
+  double m_current_height;
+  double m_ave_plat_cell_loss;
+  double m_common_plat_height;
+  int m_skip_moves;
+  int m_skip_counter;
+  Apto::Array<double> m_plateau_array;
+  Apto::Array<int> m_plateau_cell_IDs;
+  Apto::Array<int> m_wall_cells;
+  
+  double m_mean_plat_inflow;
+  double m_var_plat_inflow;
+  
+  double m_pred_odds;
+  bool m_predator;
+  double m_death_odds;
+  bool m_deadly;
+  int m_path;
+  int m_hammer;
+  int m_guarded_juvs_per_adult;
+  
+  bool m_probabilistic;
+  Apto::Array<int> m_prob_res_cells;
+
+  int m_min_usedx;
+  int m_min_usedy;
+  int m_max_usedx;
+  int m_max_usedy;
+    
+public:
+  cGradientResourceAcct(cGradientResource& res, cWorld* world);
+  ~cGradientResourceAcct();
+
+  void UpdateCount(cAvidaContext& ctx);
+  
+  void SetGradInitialPlat(double plat_val);
+ 
+  void SetGradPlatVarInflow(cAvidaContext& ctx, double mean, double variance, int type);
+  
+  void SetPredatoryResource(double odds, int juvsper);
+  template<class T> void UpdatePredatoryRes(cAvidaContext& ctx);
+
+  void UpdateDamagingRes(cAvidaContext& ctx);
+  void SetDeadlyRes(double odds) { m_death_odds = odds; m_deadly = (m_death_odds != 0); }
+  void SetIsPath(bool path) { m_path = path; }
+  void UpdateDeadlyRes(cAvidaContext& ctx);
+  
+  void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells);
+  void BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells);
+  void UpdateProbabilisticRes();
+ 
+  void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
+  
+  Apto::Array<int>* GetWallCells() { return &m_wall_cells; }
+  int GetMinUsedX() { return m_min_usedx; }
+  int GetMinUsedY() { return m_min_usedy; }
+  int GetMaxUsedX() { return m_max_usedx; }
+  int GetMaxUsedY() { return m_max_usedy; }
+  
+private:
+  void fillinResourceValues();
+  void updatePeakRes(cAvidaContext& ctx);
+  void moveRes(cAvidaContext& ctx);
+  int setHaloOrbit(cAvidaContext& ctx, int current_orbit);
+  void setPeakMoveMovement(cAvidaContext& ctx);
+  void moveHaloPeak(int current_orbit);
+  void confirmHaloPeak();
+  void movePeak();
+  void generatePeak(cAvidaContext& ctx);
+  void getCurrentPlatValues();
+  void generateBarrier(cAvidaContext& ctx);
+  void generateHills(cAvidaContext& ctx);    
+  void updateBounds(int x, int y);
+  void resetUsedBounds();
+  void clearExistingProbRes();
+  
+  inline void setHaloDirection(cAvidaContext& ctx);
   
 };
+
+
+template<class T>
+void cGradientResource::UpdatePredatoryRes(cAvidaContext& ctx)
+{
+  // kill off up to 1 org per update within the predator radius (plateau area), 
+  //with prob of death for selected prey = m_pred_odds
+  if (m_predator) {
+    for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
+      if (Element(m_plateau_cell_IDs[i]).GetAmount() >= 1) {
+        T->ExecutePredatoryResource(ctx, m_plateau_cell_IDs[i], m_pred_odds, m_guarded_juvs_per_adult, m_hammer);
+      }
+    }
+  }
+}
 #endif /* cGradientResource_h */

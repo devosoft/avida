@@ -190,6 +190,8 @@
 		70FA3F84164425EB0003971F /* cHardwareBCR.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FA3F82164425EA0003971F /* cHardwareBCR.h */; };
 		70FA7AC8138C308000DC70D4 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		70FA7AC9138C308500DC70D4 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
+		B4483840200E56E0008E4298 /* cCellResource.cc in Sources */ = {isa = PBXBuildFile; fileRef = B448383E200E56E0008E4298 /* cCellResource.cc */; };
+		B4483841200E56E0008E4298 /* cCellResource.h in Headers */ = {isa = PBXBuildFile; fileRef = B448383F200E56E0008E4298 /* cCellResource.h */; };
 		B44EA53F200BFF69001A7273 /* cAbstractAccountant.cc in Sources */ = {isa = PBXBuildFile; fileRef = B44EA53D200BFF69001A7273 /* cAbstractAccountant.cc */; };
 		B44EA543200C0A57001A7273 /* cSpatialResource.cc in Sources */ = {isa = PBXBuildFile; fileRef = B44EA541200C0A57001A7273 /* cSpatialResource.cc */; };
 		B451611D200BD2B700B02422 /* cAbstractResource.cc in Sources */ = {isa = PBXBuildFile; fileRef = B451611C200BD2B700B02422 /* cAbstractResource.cc */; };
@@ -729,6 +731,8 @@
 		70FEF6371381CAB900A9D082 /* Manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
 		70FEF6381381CAB900A9D082 /* Provider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Provider.h; sourceTree = "<group>"; };
 		70FEF65D1382C48900A9D082 /* Manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Manager.cc; sourceTree = "<group>"; };
+		B448383E200E56E0008E4298 /* cCellResource.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cCellResource.cc; sourceTree = "<group>"; };
+		B448383F200E56E0008E4298 /* cCellResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cCellResource.h; sourceTree = "<group>"; };
 		B44EA53D200BFF69001A7273 /* cAbstractAccountant.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cAbstractAccountant.cc; sourceTree = "<group>"; };
 		B44EA53E200BFF69001A7273 /* cAbstractResourceAcct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cAbstractResourceAcct.h; sourceTree = "<group>"; };
 		B44EA541200C0A57001A7273 /* cSpatialResource.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cSpatialResource.cc; sourceTree = "<group>"; };
@@ -1379,6 +1383,8 @@
 				B4B94187200D2E0C0096D20A /* cGradientResource.cc */,
 				B4B94188200D2E0D0096D20A /* cGradientResource.h */,
 				B4B9418B200D66E30096D20A /* cOffsetLinearGrid.h */,
+				B448383E200E56E0008E4298 /* cCellResource.cc */,
+				B448383F200E56E0008E4298 /* cCellResource.h */,
 			);
 			path = resources;
 			sourceTree = "<group>";
@@ -1651,6 +1657,7 @@
 			files = (
 				70FA3F84164425EB0003971F /* cHardwareBCR.h in Headers */,
 				B4B9418A200D2E0D0096D20A /* cGradientResource.h in Headers */,
+				B4483841200E56E0008E4298 /* cCellResource.h in Headers */,
 				705E53D016A7102100392BA7 /* File.h in Headers */,
 				705E53D116A7102100392BA7 /* Manager.h in Headers */,
 				705E53D816A7109300392BA7 /* Types.h in Headers */,
@@ -1855,6 +1862,7 @@
 				70D5B4FA14F4009000D15FFD /* cBirthGlobalHandler.cc in Sources */,
 				70D5B4F014F4009000D15FFD /* cBirthGridLocalHandler.cc in Sources */,
 				70D5B4EF14F4009000D15FFD /* cBirthMateSelectHandler.cc in Sources */,
+				B4483840200E56E0008E4298 /* cCellResource.cc in Sources */,
 				70D5B4DE14F4009000D15FFD /* cBirthNeighborhoodHandler.cc in Sources */,
 				70D5B4EC14F4009000D15FFD /* cBirthSelectionHandler.cc in Sources */,
 				70D5B4F614F4009000D15FFD /* cContextPhenotype.cc in Sources */,

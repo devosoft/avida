@@ -125,10 +125,8 @@ public:
                  double cone_inflow, double cone_outflow, double gradient_inflow, int is_plateau_common, 
                  double floor, int habitat, int min_size, int max_size, int config, int count, 
                  double init_plat, double threshold, double damage, double death_odds, int path, int hammer);
-  ~cGradientCount();
 
   void UpdateCount(cAvidaContext& ctx);
-  void StateAll();
   
   void SetGradInitialPlat(double plat_val) { m_initial_plat = plat_val; m_initial = true; }
   void SetGradPeakX(int peakx) { m_peakx = peakx; }
