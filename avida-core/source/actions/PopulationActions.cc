@@ -88,7 +88,12 @@ private:
   double m_neutral_metric;
   cString m_trace_filename;
 public:
-  cActionInject(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInject(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_cell_id(0)
+  , m_merit(-1)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -159,7 +164,12 @@ private:
   int m_lineage_label;
   double m_neutral_metric;
 public:
-  cActionInjectRandom(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectRandom(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_cell_id(0)
+  , m_merit(-1)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
     cString largs(args);
     m_length = largs.PopWord().AsInt();
@@ -210,7 +220,12 @@ private:
   double m_neutral_metric;
   int m_sex;
 public:
-  cActionInjectAllRandomRepro(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0), m_sex(0)
+  cActionInjectAllRandomRepro(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_merit(-1)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
+  , m_sex(0)
   {
     cString largs(args);
     m_length = largs.PopWord().AsInt();
@@ -268,7 +283,11 @@ private:
   int m_lineage_label;
   double m_neutral_metric;
 public:
-  cActionInjectAll(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_merit(-1.0), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectAll(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_merit(-1.0)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
 
     cArgSchema schema(':','=');
@@ -282,7 +301,7 @@ public:
     
     schema.AddEntry("lineage_label", 0, 0);
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    cArgContainer* argc = cArgContainer::Load(args, schema, fb);
     
     if (argc) {
       m_filename = argc->GetString(0);
@@ -349,8 +368,13 @@ private:
   int m_lineage_label;
   double m_neutral_metric;
 public:
-  cActionInjectRange(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectRange(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_cell_start(0)
+  , m_cell_end(-1)
+  , m_merit(-1)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -423,8 +447,13 @@ private:
   int m_lineage_label;
   double m_neutral_metric;
 public:
-  cActionInjectSequence(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectSequence(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_cell_start(0)
+  , m_cell_end(-1)
+  , m_merit(-1)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
     cString largs(args);
     m_sequence = largs.PopWord();
@@ -480,8 +509,12 @@ private:
   int m_lineage_label;
   double m_neutral_metric;
 public:
-  cActionInjectWellMixed(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_cell_num(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectWellMixed(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_cell_num(0)
+  , m_merit(-1)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -566,8 +599,14 @@ private:
   
   
 public:
-  cActionInjectSequenceWithDivMutRate(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_div_mut_rate(0.0), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectSequenceWithDivMutRate(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_cell_start(0)
+  , m_cell_end(-1)
+  , m_merit(-1)
+  , m_div_mut_rate(0.0)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
     cString largs(args);
     m_sequence = largs.PopWord();
@@ -616,7 +655,15 @@ private:
   double m_neutral_metric;
   cString m_trace_filename;
 public:
-  cActionInjectGroup(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_group_id(m_world->GetConfig().DEFAULT_GROUP.Get()), m_forager_type(-1), m_trace(false),m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectGroup(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_cell_id(0)
+  , m_group_id(m_world->GetConfig().DEFAULT_GROUP.Get())
+  , m_forager_type(-1)
+  , m_trace(false)
+  , m_merit(-1)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -681,7 +728,10 @@ private:
   int m_cell_start;
   int m_cell_end;
 public:
-  cActionInjectParasite(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_start(0), m_cell_end(-1)
+  cActionInjectParasite(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_cell_start(0)
+  , m_cell_end(-1)
   {
     cString largs(args);
     m_filename = largs.PopWord();
@@ -729,7 +779,10 @@ private:
   int m_cell_start;
   int m_cell_end;
 public:
-  cActionInjectParasiteSequence(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_start(0), m_cell_end(-1)
+  cActionInjectParasiteSequence(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_cell_start(0)
+  , m_cell_end(-1)
   {
     cString largs(args);
     m_sequence = largs.PopWord();
@@ -797,8 +850,13 @@ private:
   int m_lineage_label;
   double m_neutral_metric;
 public:
-  cActionInjectParasitePair(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectParasitePair(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_cell_start(0)
+  , m_cell_end(-1)
+  , m_merit(-1)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
     cString largs(args);
     m_filename_genome = largs.PopWord();
@@ -866,7 +924,11 @@ private:
   int m_lineage_label;
   double m_neutral_metric;
 public:
-  cActionInjectDemes(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectDemes(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_merit(-1)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -941,7 +1003,12 @@ private:
   int m_lineage_label;
   double m_neutral_metric;
 public:
-  cActionInjectModuloDemes(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_mod_num(1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectModuloDemes(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_mod_num(1)
+  , m_merit(-1)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -1022,13 +1089,13 @@ private:
   double m_neutral_metric;
   
 public:
-  cActionInjectDemesFromNest(cWorld* world, const cString& args, Feedback&):
-  cAction(world, args),
-  m_num_orgs(1),
-  m_nest_cellid(0),
-  m_merit(-1),
-  m_lineage_label(0),
-  m_neutral_metric(0)
+  cActionInjectDemesFromNest(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_num_orgs(1)
+  , m_nest_cellid(0)
+  , m_merit(-1)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_num_orgs = largs.PopWord().AsInt();
@@ -1095,12 +1162,12 @@ private:
   double m_neutral_metric;
   
 public:
-  cActionInjectDemesRandom(cWorld* world, const cString& args, Feedback&):
-  cAction(world, args),
-  m_num_orgs(1),
-  m_merit(-1),
-  m_lineage_label(0),
-  m_neutral_metric(0)
+  cActionInjectDemesRandom(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_num_orgs(1)
+  , m_merit(-1)
+  , m_lineage_label(0)
+  , m_neutral_metric(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_num_orgs = largs.PopWord().AsInt();
@@ -1168,7 +1235,9 @@ class cActionKillProb : public cAction
 private:
   double m_killprob;
 public:
-  cActionKillProb(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_killprob(0.9)
+  cActionKillProb(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_killprob(0.9)
   {
     cString largs(args);
     if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
@@ -1197,7 +1266,9 @@ class cActionApplyBottleneck : public cAction
 private:
   int m_bottleneck_size;                                                                          
 public:
-  cActionApplyBottleneck(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_bottleneck_size(100)
+  cActionApplyBottleneck(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_bottleneck_size(100)
   {
     cString largs(args);                                                                        
     if (largs.GetSize()) m_bottleneck_size = largs.PopWord().AsInt();                           
@@ -1228,7 +1299,8 @@ class cActionKillDominantGenotype : public cAction
 private:
 
 public:
-  cActionKillDominantGenotype(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  cActionKillDominantGenotype(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
   {
     
   }
@@ -1263,7 +1335,10 @@ private:
   double m_killprob;
   int m_juvs_per;
 public:
-  cActionAttackDen(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_killprob(0.0), m_juvs_per(1)
+  cActionAttackDen(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_killprob(0.0)
+  , m_juvs_per(1)
   {
     cString largs(args);
     if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
@@ -1325,7 +1400,11 @@ private:
   int m_res_id;
   double m_units_per;
 public:
-  cActionRaidDen(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_loss(0.0), m_res_id(0), m_units_per(1.0)
+  cActionRaidDen(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_loss(0.0)
+  , m_res_id(0)
+  , m_units_per(1.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_loss = largs.PopWord().AsDouble();
@@ -1390,13 +1469,13 @@ private:
   bool applyAction;
   int updateSinceLastContextSwitch;
 public:
-  cActionKillFractionInSequence(cWorld* world, const cString& args, Feedback&) : 
-  cAction(world, args), 
-  m_killFraction(0.01), 
-  m_windowLength(1000), 
-  killIndex(0),
-  applyAction(true),
-  updateSinceLastContextSwitch(0)
+  cActionKillFractionInSequence(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb) 
+  , m_killFraction(0.01)
+  , m_windowLength(1000) 
+  , killIndex(0)
+  , applyAction(true)
+  , updateSinceLastContextSwitch(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_killFraction = largs.PopWord().AsDouble();
@@ -1452,11 +1531,11 @@ private:
   int killIndex;
   
 public:
-  cActionKillFractionInSequence_PopLimit(cWorld* world, const cString& args, Feedback&) : 
-  cAction(world, args), 
-  m_killFraction(0.01), 
-  m_popSize(1000),
-  killIndex(0)
+  cActionKillFractionInSequence_PopLimit(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_killFraction(0.01)
+  , m_popSize(1000)
+  , killIndex(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_killFraction = largs.PopWord().AsDouble();
@@ -1512,7 +1591,11 @@ private:
   cString m_inst;
   double m_limit;
 public:
-  cActionKillInstLimit(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_killprob(0.9), m_inst("nand"), m_limit(5)
+  cActionKillInstLimit(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_killprob(0.9)
+  , m_inst("nand")
+  , m_limit(5)
   {
     cString largs(args);
     if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
@@ -1573,7 +1656,12 @@ private:
 	cString m_inst2;
 	double m_limit;
 public:
-	cActionKillInstPair(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_killprob(0.9), m_inst1("nand"), m_inst2("nor"), m_limit(1)
+	cActionKillInstPair(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_killprob(0.9)
+  , m_inst1("nand")
+  , m_inst2("nor")
+  , m_limit(1)
 	{
 		cString largs(args);
 		if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
@@ -1627,7 +1715,7 @@ class cActionToggleRewardInstruction : public cAction
 {
 private:
 public:
-  cActionToggleRewardInstruction(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {}
+  cActionToggleRewardInstruction(cWorld* world, const cString& args, Feedback& fb) : cAction(world, args, fb) {}
   
   static const cString GetDescription() { return "No Arguments"; }
   
@@ -1651,7 +1739,9 @@ class cActionToggleFitnessValley : public cAction
 {
 private:
 public:
-  cActionToggleFitnessValley(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {}
+  cActionToggleFitnessValley(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb) 
+  {}
   
   static const cString GetDescription() { return "No Arguments"; }
   
@@ -1680,7 +1770,9 @@ class cActionKillRate : public cAction
 private:
   double m_killrate;
 public:
-  cActionKillRate(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_killrate(0.0)
+  cActionKillRate(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_killrate(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_killrate = largs.PopWord().AsDouble();
@@ -1718,7 +1810,12 @@ private:
   int m_x2;
   int m_y2;
 public:
-  cActionKillRectangle(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_x1(0), m_y1(0), m_x2(0), m_y2(0)
+  cActionKillRectangle(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_x1(0)
+  , m_y1(0)
+  , m_x2(0)
+  , m_y2(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_x1 = largs.PopWord().AsInt();
@@ -1795,7 +1892,7 @@ private:
   int m_size;
   int m_ignore_deads;
 public:
-  cActionSerialTransfer(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_size(1), m_ignore_deads(1)
+  cActionSerialTransfer(cWorld* world, const cString& args, Feedback& fb) : cAction(world, args, fb), m_size(1), m_ignore_deads(1)
   {
     cString largs(args);
     if (largs.GetSize()) m_size = largs.PopWord().AsInt();
@@ -1818,7 +1915,9 @@ private:
   double m_rate;
   
 public:
-  cActionSetMigrationRate(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_rate(0.0)
+  cActionSetMigrationRate(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_rate(0.0)
   {
     cString largs(args);
     if(largs.GetSize()) m_rate = largs.PopWord().AsDouble();
@@ -1850,7 +1949,12 @@ private:
   bool m_setconf;
   
 public:
-  cActionSetMutProb(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_prob(0.0), m_start(-1), m_end(-1), m_setconf(false)
+  cActionSetMutProb(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_prob(0.0)
+  , m_start(-1)
+  , m_end(-1)
+  , m_setconf(false)
   {
     cString mutstr("COPY_MUT");
     
@@ -2002,7 +2106,12 @@ private:
   bool m_setconf;
   
 public:
-  cActionModMutProb(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_prob(0.0), m_start(-1), m_end(-1), m_setconf(false)
+  cActionModMutProb(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_prob(0.0)
+  , m_start(-1)
+  , m_end(-1)
+  , m_setconf(false)
   {
     cString mutstr("COPY_MUT");
     
@@ -2175,7 +2284,10 @@ public:
 class cActionZeroMuts : public cAction
 {
 public:
-  cActionZeroMuts(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
+  cActionZeroMuts(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb) 
+  { ; }
+  
   static const cString GetDescription() { return "No Arguments"; }
   void Process(cAvidaContext&)
   {
@@ -2202,7 +2314,9 @@ public:
 /*! This action enables the tracking of all messages that are sent in each deme. */
 class cActionTrackAllMessages : public cAction {
 public:
-  cActionTrackAllMessages(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { }
+  cActionTrackAllMessages(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb) 
+  { }
 	
   static const cString GetDescription() { return "No Arguments"; }
 	
@@ -2236,7 +2350,9 @@ class cActionCompeteDemes : public cAction
 private:
   int m_type;
 public:
-  cActionCompeteDemes(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_type(1)
+  cActionCompeteDemes(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_type(1)
   {
     cString largs(args);
     if (largs.GetSize()) m_type = largs.PopWord().AsInt();
@@ -2262,7 +2378,10 @@ public:
   typedef std::map<int, std::set<int> > DataMap;
 	
 	//! Constructor.
-	cAssignRandomCellData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), _num_cells(0) {
+	cAssignRandomCellData(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , _num_cells(0) 
+  {
 		if(args.GetSize()) {
 			cString largs(args);
 			_num_cells = largs.PopWord().AsInt();
@@ -2381,7 +2500,10 @@ cAssignRandomCellData::DataMap cAssignRandomCellData::deme_to_id;
 class cAbstractCompeteDemes : public cAction {
 public:
   //! Constructor.
-  cAbstractCompeteDemes(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { }
+  cAbstractCompeteDemes(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb) 
+  { }
+  
   //! Destructor.
   virtual ~cAbstractCompeteDemes() { }
   
@@ -2431,8 +2553,9 @@ public:
 class cAbstractMonitoringCompeteDemes : public cAbstractCompeteDemes {
 public:
   //! Constructor.
-  cAbstractMonitoringCompeteDemes(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback), _compete_period(100)
+  cAbstractMonitoringCompeteDemes(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb)
+  , _compete_period(100)
   {
     if(args.GetSize()) {
       cString largs(args);
@@ -2482,8 +2605,8 @@ protected:
 class cActionCompeteDemesByNetwork : public cAbstractCompeteDemes {
 public:
 	//! Constructor.
-	cActionCompeteDemesByNetwork(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback)
+	cActionCompeteDemesByNetwork(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb)
   {
 	}
 	
@@ -2505,7 +2628,9 @@ public:
 class cActionMeasureDemeNetworks : public cAction {
 public:
 	//! Constructor.
-	cActionMeasureDemeNetworks(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
+	cActionMeasureDemeNetworks(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb) 
+  {
 	}
 	
 	//! Retrieve this class's description.
@@ -2535,8 +2660,8 @@ protected:
  */
 class cActionDistributeData : public cAbstractCompeteDemes {
 public:
-	cActionDistributeData(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback)
+	cActionDistributeData(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb)
   {
 		world->GetStats().AddMessagePredicate(&m_message_counter);
 	}
@@ -2579,8 +2704,8 @@ protected:
 
 class cActionDistributeDataEfficiently : public cActionDistributeData {
 public:
-	cActionDistributeDataEfficiently(cWorld* world, const cString& args, Feedback& feedback)
-  : cActionDistributeData(world, args, feedback)
+	cActionDistributeDataEfficiently(cWorld* world, const cString& args, Feedback& fb)
+  : cActionDistributeData(world, args, fb)
   {
 	}
 	
@@ -2611,8 +2736,8 @@ public:
 
 class cActionDistributeDataCheaply : public cActionDistributeData {
 public:
-	cActionDistributeDataCheaply(cWorld* world, const cString& args, Feedback& feedback)
-  : cActionDistributeData(world, args, feedback)
+	cActionDistributeDataCheaply(cWorld* world, const cString& args, Feedback& fb)
+  : cActionDistributeData(world, args, fb)
   {
 		m_world->GetConfig().DEME_NETWORK_TOPOLOGY_FITNESS.Set(4); // link length sum
 	}
@@ -2756,8 +2881,8 @@ public:
   typedef std::map<int, state> DemeState; //!< To support hold-times for consensus.	
   
   //! Constructor.
-  cActionIteratedConsensus(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractMonitoringCompeteDemes(world, args, feedback)
+  cActionIteratedConsensus(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractMonitoringCompeteDemes(world, args, fb)
   , _replace(1), _kill(1), _hold(1), _restrict_range(1), _dont_replace(0)
   {
     if(args.GetSize()) {
@@ -2928,7 +3053,11 @@ private:
  */
 class cActionReplaceFromGermline : public cAction {
 public:
-  cActionReplaceFromGermline(cWorld* world, const cString& args, Feedback&) : cAction(world, args), _p_kill(0.0), _update_cell_data(0) {
+  cActionReplaceFromGermline(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , _p_kill(0.0)
+  , _update_cell_data(0)
+  {
     cString largs(args);
     if(largs.GetSize()) {
       _p_kill = largs.PopWord().AsDouble();
@@ -2986,8 +3115,11 @@ class cActionCountOpinions : public cAbstractCompeteDemes, ConsensusSupport {
 public:
 	
 	//! Constructor.
-	cActionCountOpinions(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback), _desired(0), _mult(1), _side(0)
+	cActionCountOpinions(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb), 
+  _desired(0), 
+  _mult(1), 
+  _side(0)
   {
 		if(args.GetSize()) {
 			cString largs(args);
@@ -3088,8 +3220,8 @@ public:
 	typedef std::set<cOrganism::Opinion> opinion_set;
 	
 	//! Constructor.
-	cActionCountMultipleOpinions(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback)
+	cActionCountMultipleOpinions(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb)
   {
 		if(args.GetSize()) {
 			cString largs(args);
@@ -3150,8 +3282,10 @@ class cActionDemeBalanceTwoTasks : public cAbstractCompeteDemes {
 public:
 	
 	//! Constructor.
-	cActionDemeBalanceTwoTasks(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback), _min(0), _max(0)
+	cActionDemeBalanceTwoTasks(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb)
+  , _min(0)
+  , _max(0)
   {
 		if(args.GetSize()) {
 			cString largs(args);
@@ -3206,8 +3340,9 @@ class cActionDemeReactionDiversity : public cAbstractCompeteDemes {
 public:
 	
 	//! Constructor.
-	cActionDemeReactionDiversity(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback), _uniq_only(false)
+	cActionDemeReactionDiversity(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb),
+   _uniq_only(false)
   {
 		if(args.GetSize()) {
 			cString largs(args);
@@ -3269,8 +3404,8 @@ public:
 	
 	
 	//! Constructor.
-	cActionPhenotypeMatch(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback)
+	cActionPhenotypeMatch(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb)
   {
 		if(args.GetSize()) {
 			cString largs(args);
@@ -3346,8 +3481,8 @@ class cActionUnitFitness : public cAbstractCompeteDemes {
 public:
 	
 	//! Constructor.
-	cActionUnitFitness(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback)
+	cActionUnitFitness(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb)
   {
 	}
 	
@@ -3374,8 +3509,8 @@ private:
   int _task_num;	// the task num to use when calculating fitness,
   // defaults to 0 (the first task)
 public:
-  cActionCompeteDemesByTaskCount(cWorld* world, const cString& args, Feedback& feedback) 
-  : cAbstractCompeteDemes(world, args, feedback)
+  cActionCompeteDemesByTaskCount(cWorld* world, const cString& args, Feedback& fb) 
+  : cAbstractCompeteDemes(world, args, fb)
   {
     if (args.GetSize() > 0) {
       cString largs(args);
@@ -3403,7 +3538,8 @@ public:
 class cActionCompeteDemesByMerit : public cAbstractCompeteDemes
 {
 public:
-  cActionCompeteDemesByMerit(cWorld* world, const cString& args, Feedback& feedback) : cAbstractCompeteDemes(world, args, feedback)
+  cActionCompeteDemesByMerit(cWorld* world, const cString& args, Feedback& fb) 
+  : cAbstractCompeteDemes(world, args, fb)
   {
   }
   
@@ -3438,8 +3574,8 @@ private:
 	int _task_num;	// the task num to use when calculating fitness,
 	// defaults to 0 (the first task)
 public:
-	cActionCompeteDemesByTaskCountAndEfficiency(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback)
+	cActionCompeteDemesByTaskCountAndEfficiency(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb)
   {
   	cString largs(args);
     if (largs.GetSize() == 0) {
@@ -3481,8 +3617,8 @@ class cActionCompeteDemesByEnergyDistribution : public cAbstractCompeteDemes {
 private:
 	
 public:
-	cActionCompeteDemesByEnergyDistribution(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback)
+	cActionCompeteDemesByEnergyDistribution(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb)
   {
   }
 	~cActionCompeteDemesByEnergyDistribution() { ; }
@@ -3541,7 +3677,8 @@ public:
  */
 class cActionFlash : public cAction {
 public:
-	cActionFlash(cWorld* world, const cString& args, Feedback&): cAction(world, args) { }
+	cActionFlash(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb) { }
 	
 	//! Destructor.
 	virtual ~cActionFlash() { }
@@ -3571,8 +3708,8 @@ public:
 class cActionSynchronization : public cAbstractCompeteDemes {
 public:
   //! Constructor.
-  cActionSynchronization(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback) { ; }
+  cActionSynchronization(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb) { ; }
   
 	//! Destructor.
 	virtual ~cActionSynchronization() { }
@@ -3644,8 +3781,8 @@ protected:
 class cActionDesynchronization : public cActionSynchronization {
 public:
   //! Constructor.
-  cActionDesynchronization(cWorld* world, const cString& args, Feedback& feedback)
-  : cActionSynchronization(world, args, feedback)
+  cActionDesynchronization(cWorld* world, const cString& args, Feedback& fb)
+  : cActionSynchronization(world, args, fb)
   {
   }
   
@@ -3687,8 +3824,8 @@ public:
 class cAbstractCompeteDemes_AttackKillAndEnergyConserve : public cAbstractCompeteDemes {
 	
 public:
-	cAbstractCompeteDemes_AttackKillAndEnergyConserve(cWorld* world, const cString& args, Feedback& feedback)
-  : cAbstractCompeteDemes(world, args, feedback) { ; }
+	cAbstractCompeteDemes_AttackKillAndEnergyConserve(cWorld* world, const cString& args, Feedback& fb)
+  : cAbstractCompeteDemes(world, args, fb) { ; }
 	
 	static const cString GetDescription() { return "No Arguments"; }
   
@@ -3725,7 +3862,9 @@ class cActionReplicateDemes : public cAction
 private:
   int m_rep_trigger;
 public:
-  cActionReplicateDemes(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_rep_trigger(-1)
+  cActionReplicateDemes(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_rep_trigger(-1)
   {
     cString largs(args);
     cString in_trigger("full_deme");
@@ -3746,7 +3885,7 @@ public:
       cString err("Unknown replication trigger '");
       err += in_trigger;
       err += "' in ReplicatDemes action.";
-      feedback.Error(err);
+      fb.Error(err);
       m_rep_trigger = DEME_TRIGGER_UNKNOWN;
       return;
     }
@@ -3785,7 +3924,8 @@ class cActionDivideDemes : public cAction
 {
 private:
 public:
-  cActionDivideDemes(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  cActionDivideDemes(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
   {
     cString largs(args);
     // Nothing to do here yet....
@@ -3808,7 +3948,8 @@ public:
  */
 class cActionMixPopulation : public cAction {
 public:
-	cActionMixPopulation(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
+	cActionMixPopulation(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb) {
 	}
 	
 	static const cString GetDescription() { return "No arguments."; }
@@ -3826,7 +3967,8 @@ public:
 class cActionResetDemes : public cAction
 {
 public:
-  cActionResetDemes(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
+  cActionResetDemes(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb) { ; }
   
   static const cString GetDescription() { return "No Arguments"; }
   
@@ -3843,7 +3985,10 @@ private:
   int m_id1;
   int m_id2;
 public:
-  cActionCopyDeme(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_id1(0), m_id2(1)
+  cActionCopyDeme(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_id1(0)
+  , m_id2(1)
   {
     cString largs(args);
     if (largs.GetSize()) m_id1 = largs.PopWord().AsInt();
@@ -3863,7 +4008,8 @@ class cActionNewTrial : public cAction
 {
 private:
 public:
-  cActionNewTrial(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  cActionNewTrial(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
   {
     cString largs(args);
   }
@@ -3885,7 +4031,9 @@ private:
   int m_decay_percent;
   
 public:
-  cActionDecayPoints(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_decay_percent(0)
+  cActionDecayPoints(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_decay_percent(0)
   {
     cString largs(args);
     m_decay_percent = largs.PopWord().AsInt();
@@ -3915,7 +4063,10 @@ private:
   int m_type;
   int m_parents_survive;
 public:
-  cActionCompeteOrganisms(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_type(0), m_parents_survive(0)
+  cActionCompeteOrganisms(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_type(0)
+  , m_parents_survive(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_type = largs.PopWord().AsInt();
@@ -3949,7 +4100,11 @@ private:
   int m_min;
   int m_max;
 public:
-  cActionSeverGridCol(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+  cActionSeverGridCol(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_id(-1)
+  , m_min(0)
+  , m_max(-1)
   {
     cString largs(args);
     if (largs.GetSize()) m_id = largs.PopWord().AsInt();
@@ -4027,7 +4182,11 @@ private:
   int m_min;
   int m_max;
 public:
-  cActionSeverGridRow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+  cActionSeverGridRow(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_id(-1)
+  , m_min(0)
+  , m_max(-1)
   {
     cString largs(args);
     if (largs.GetSize()) m_id = largs.PopWord().AsInt();
@@ -4102,7 +4261,11 @@ private:
   int m_min;
   int m_max;
 public:
-  cActionJoinGridCol(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+  cActionJoinGridCol(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_id(-1)
+  , m_min(0)
+  , m_max(-1)
   {
     cString largs(args);
     if (largs.GetSize()) m_id = largs.PopWord().AsInt();
@@ -4178,7 +4341,11 @@ private:
   int m_min;
   int m_max;
 public:
-  cActionJoinGridRow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+  cActionJoinGridRow(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_id(-1)
+  , m_min(0)
+  , m_max(-1)
   {
     cString largs(args);
     if (largs.GetSize()) m_id = largs.PopWord().AsInt();
@@ -4244,7 +4411,12 @@ private:
   int m_b_x;
   int m_b_y;
 public:
-  cActionConnectCells(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_a_x(-1), m_a_y(-1), m_b_x(-1), m_b_y(-1)
+  cActionConnectCells(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_a_x(-1)
+  , m_a_y(-1)
+  , m_b_x(-1)
+  , m_b_y(-1)
   {
     cString largs(args);
     if (largs.GetSize()) m_a_x = largs.PopWord().AsInt();
@@ -4284,7 +4456,12 @@ private:
   int m_b_x;
   int m_b_y;
 public:
-  cActionDisconnectCells(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_a_x(-1), m_a_y(-1), m_b_x(-1), m_b_y(-1)
+  cActionDisconnectCells(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_a_x(-1)
+  , m_a_y(-1)
+  , m_b_x(-1)
+  , m_b_y(-1)
   {
     cString largs(args);
     if (largs.GetSize()) m_a_x = largs.PopWord().AsInt();
@@ -4322,7 +4499,10 @@ private:
   int id2;
   
 public:
-  cActionSwapCells(cWorld* world, const cString& args, Feedback&) : cAction(world, args), id1(-1), id2(-1)
+  cActionSwapCells(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , id1(-1)
+  , id2(-1)
   {
     cString largs(args);
     if (largs.GetSize()) id1 = largs.PopWord().AsInt();
@@ -4353,7 +4533,9 @@ private:
   int num_swaps;
   
 public:
-  cActionSwapRandomCells(cWorld* world, const cString& args, Feedback&) : cAction(world, args), num_swaps(-1)
+  cActionSwapRandomCells(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , num_swaps(-1)
   {
     cString largs(args);
     if (largs.GetSize()) num_swaps = largs.PopWord().AsInt();
@@ -4384,7 +4566,9 @@ private:
 	double threasholdValue;
 	
 public:
-  cActionPred_DemeResourceThresholdPredicate(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
+  cActionPred_DemeResourceThresholdPredicate(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb) 
+  {
     cString largs(args);
 		assert(largs.CountNumWords() == 3);
     if (largs.GetSize()) resourceName = largs.PopWord();
@@ -4414,7 +4598,10 @@ private:
   int m_times;
   
 public:
-  cActionPred_DemeEventMoveCenter(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_times(1) {
+  cActionPred_DemeEventMoveCenter(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_times(1) 
+  {
     cString largs(args);
     if (largs.GetSize()) m_times = largs.PopWord().AsInt();
   }
@@ -4438,7 +4625,10 @@ private:
   int m_times;
   
 public:
-  cActionPred_DemeEventMoveBetweenTargets(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_times(1) {
+  cActionPred_DemeEventMoveBetweenTargets(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_times(1) 
+  {
     cString largs(args);
     if (largs.GetSize()) m_times = largs.PopWord().AsInt();
   }
@@ -4462,7 +4652,10 @@ private:
   int m_numorgs;
   
 public:
-  cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_numorgs(1) {
+  cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_numorgs(1) 
+  {
     cString largs(args);
     if (largs.GetSize()) m_numorgs = largs.PopWord().AsInt();
   }
@@ -4493,7 +4686,10 @@ private:
   int m_numkills;
   double m_threshold;
 public:
-  cActionKillNBelowResourceThreshold(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_numkills(0), m_threshold(0)
+  cActionKillNBelowResourceThreshold(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_numkills(0)
+  , m_threshold(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_numkills = largs.PopWord().AsInt();
@@ -4563,7 +4759,12 @@ private:
   double m_threshold;
   double m_kill_density;
 public:
-  cActionKillWithinRadiusBelowResourceThreshold(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_numradii(0), m_radius(0), m_threshold(0.0), m_kill_density(1.0)
+  cActionKillWithinRadiusBelowResourceThreshold(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_numradii(0)
+  , m_radius(0)
+  , m_threshold(0.0)
+  , m_kill_density(1.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_numradii = largs.PopWord().AsInt();
@@ -4674,7 +4875,12 @@ private:
   double m_threshold;
   double m_kill_density;
 public:
-  cActionKillWithinRadiusMeanBelowResourceThreshold(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_numradii(0), m_radius(0), m_threshold(0.0), m_kill_density(1.0)
+  cActionKillWithinRadiusMeanBelowResourceThreshold(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_numradii(0)
+  , m_radius(0)
+  , m_threshold(0.0)
+  , m_kill_density(1.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_numradii = largs.PopWord().AsInt();
@@ -4816,7 +5022,11 @@ private:
   double m_threshold;
   cString m_adv_resname;
 public:
-  cActionKillMeanBelowThresholdPaintable(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_numradii(0), m_radius(0), m_threshold(0.0)
+  cActionKillMeanBelowThresholdPaintable(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_numradii(0)
+  , m_radius(0)
+  , m_threshold(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_numradii = largs.PopWord().AsInt();
@@ -4958,7 +5168,12 @@ private:
 	double m_threshold;
 	double m_kill_density;
 public:
-	cActionKillWithinRadiusBelowResourceThresholdTestAll(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_numradii(0), m_radius(0), m_threshold(0.0), m_kill_density(1.0)
+	cActionKillWithinRadiusBelowResourceThresholdTestAll(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_numradii(0)
+  , m_radius(0)
+  , m_threshold(0.0)
+  , m_kill_density(1.0)
 	{
 		cString largs(args);
 		if (largs.GetSize()) m_numradii = largs.PopWord().AsInt();
@@ -5055,7 +5270,9 @@ class cActionKillDemePercent : public cAction
 private:
   double m_pctkills;
 public:
-  cActionKillDemePercent(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_pctkills(0)
+  cActionKillDemePercent(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_pctkills(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_pctkills = largs.PopWord().AsDouble();
@@ -5122,7 +5339,8 @@ private:
 public:
   static const cString GetDescription() { return "Arguments: <int treatment age>+"; }
   
-  cActionSetDemeTreatmentAges(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  cActionSetDemeTreatmentAges(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
   {
     cString largs(args);
     while (largs.GetSize()) {
@@ -5163,7 +5381,8 @@ public:
 	static const cString GetDescription() { return "Arguments: <none>"; }
 	
 	//! Constructor.
-	cActionDiffuseHGTGenomeFragments(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
+	cActionDiffuseHGTGenomeFragments(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb) {
 	}
 	
 	//! Process this event.
@@ -5192,14 +5411,17 @@ public:
   static const cString GetDescription() { return "Arguments: (prob. of donation)"; }
   
   //! Constructor.
-  cActionAvidianConjugation(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_donation_p(-1.0) {
+  cActionAvidianConjugation(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_donation_p(-1.0) 
+  {
     cString largs(args);
     if(largs.GetSize()) {
       m_donation_p = largs.PopWord().AsDouble();
     } 
     
     if((m_donation_p < 0.0) || (m_donation_p > 1.0)) {
-      feedback.Error("Conjugate event must include probability of donation [0..1].");
+      fb.Error("Conjugate event must include probability of donation [0..1].");
     }
   }
   
@@ -5237,7 +5459,10 @@ private:
 public:
   static const cString GetDescription() { return "Arguments: <string resource name><double failure_percent>"; }
   
-  cActionMigrateDemes(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_thresh(0), m_numorgs(0)
+  cActionMigrateDemes(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_thresh(0)
+  , m_numorgs(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res = largs.PopWord();
@@ -5330,9 +5555,16 @@ private:
   bool m_print_reacs;
   
 public:
-  cActionPrintMiniTraces(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_random(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), 
-  m_print_genomes(true), m_print_reacs(false)
+  cActionPrintMiniTraces(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_random(false)
+  , m_save_dominants(false)
+  , m_save_groups(false)
+  , m_save_foragers(false)
+  , m_orgs_per(1)
+  , m_max_samples(0)
+  , m_print_genomes(true)
+  , m_print_reacs(false)
   {
     cArgSchema schema(':','=');
     
@@ -5346,7 +5578,7 @@ public:
     schema.AddEntry("print_genomes", 6, 0, 1, 1);
     schema.AddEntry("print_reacs", 7, 0, 1, 0);
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    cArgContainer* argc = cArgContainer::Load(args, schema, fb);
     
     if (args) {
       m_random = argc->GetInt(0);
@@ -5390,8 +5622,20 @@ private:
   bool m_print_reacs;
   
 public:
-  cActionPrintMicroTraces(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_random(false), m_rand_prey(false), m_rand_pred(false), m_next_prey(false), m_next_pred(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), m_print_genomes(true), m_print_reacs(false)
+  cActionPrintMicroTraces(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_random(false)
+  , m_rand_prey(false)
+  , m_rand_pred(false)
+  , m_next_prey(false)
+  , m_next_pred(false)
+  , m_save_dominants(false)
+  , m_save_groups(false)
+  , m_save_foragers(false)
+  , m_orgs_per(1)
+  , m_max_samples(0)
+  , m_print_genomes(true)
+  , m_print_reacs(false)
   {
     cArgSchema schema(':','=');
     
@@ -5409,7 +5653,7 @@ public:
     schema.AddEntry("print_genomes", 10, 0, 1, 0);
     schema.AddEntry("print_reacs", 11, 0, 1, 0);
     
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    cArgContainer* argc = cArgContainer::Load(args, schema, fb);
     
     if (args) {
       m_random = argc->GetInt(0);
@@ -5464,8 +5708,12 @@ private:
   bool m_print_reacs;
   
 public:
-  cActionLoadMiniTraceQ(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_filename(""), m_orgs_per(1), m_print_genomes(true), m_print_reacs(false)
+  cActionLoadMiniTraceQ(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
+  , m_filename("")
+  , m_orgs_per(1)
+  , m_print_genomes(true)
+  , m_print_reacs(false)
   {
     cArgSchema schema(':','=');
     
@@ -5475,7 +5723,7 @@ public:
     schema.AddEntry("print_genomes", 1, 0, 1, 1);
     schema.AddEntry("print_reacs", 2, 0, 1, 0);
 
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    cArgContainer* argc = cArgContainer::Load(args, schema, fb);
     
     if (args) {
       m_filename = argc->GetString(0);
@@ -5500,8 +5748,8 @@ class cActionPrintReproData : public cAction
 private:
   
 public:
-  cActionPrintReproData(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args)
+  cActionPrintReproData(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
   {
   }
   
@@ -5527,8 +5775,8 @@ class cActionPrintTopNavTrace : public cAction
 private:
   
 public:
-  cActionPrintTopNavTrace(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args)
+  cActionPrintTopNavTrace(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
   {
   }
   
@@ -5545,8 +5793,8 @@ class cActionPrintNavTrace : public cAction
 private:
   
 public:
-  cActionPrintNavTrace(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args)
+  cActionPrintNavTrace(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
   {
   }
   
@@ -5565,8 +5813,8 @@ class cActionFlushTopNavTrace : public cAction
 private:
   
 public:
-  cActionFlushTopNavTrace(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args)
+  cActionFlushTopNavTrace(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
   {
   }
   
@@ -5583,8 +5831,8 @@ class cActionRemovePredators : public cAction
 private:
   
 public:
-  cActionRemovePredators(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args)
+  cActionRemovePredators(cWorld* world, const cString& args, Feedback& fb)
+  : cAction(world, args, fb)
   {
   }
   
@@ -5609,7 +5857,8 @@ private:
 	cString m_inst_name;
 	double m_redundancy;
 public:
-	cActionSetRedundancy(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+	cActionSetRedundancy(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
 	{
 		cString largs(args);
 		m_inst_name = largs.PopWord();
@@ -5641,7 +5890,8 @@ private:
 	cString m_inst_name;
 	double m_prob;
 public:
-	cActionSetProbFail(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+	cActionSetProbFail(cWorld* world, const cString& args, Feedback& fb) 
+  : cAction(world, args, fb)
 	{
 		cString largs(args);
 		m_inst_name = largs.PopWord();

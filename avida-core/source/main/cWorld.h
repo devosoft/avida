@@ -67,6 +67,8 @@ protected:
   cMigrationMatrix* m_mig_mat;  
   WorldDriver* m_driver;
   
+  cUserFeedback m_queued_feedback;
+  
   Data::ManagerPtr m_data_mgr;
 
   Apto::RNG::AvidaRNG m_rng;
