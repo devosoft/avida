@@ -26,7 +26,9 @@ class cNonSpatialResource : public cRatedResource
   protected:
   
   public:
-    cNonSpatialResource(int id, const cString& name) : cRatedResource(id, name) {}
+    cNonSpatialResource(int id, const cString& name, Avida::Feedback& fb) 
+    : cRatedResource(id, name, fb) 
+    {}
     
     cString ToString() const
     {
@@ -69,7 +71,7 @@ class cNonSpatialResourceAcct : public cAbstractResourceAcct
     
     virtual double GetCellAbundance(int cell_id) const 
     { 
-      return (m_resource.IsPresent(cell_id, xx, yy)) ? m_current : 0.0; 
+      return (m_resource.IsPresent(cell_id)) ? m_current : 0.0; 
     }
     
     void Update();

@@ -10,6 +10,7 @@
 
 #include "cString.h"
 #include "cCellBox.h"
+#include "avida/core/Feedback.h"
 
 class cAbstractResoureAcct;
 class cNonSpatialResourceAcct;
@@ -37,6 +38,8 @@ class cAbstractResource
     cAbstractResource& operator=(const cAbstractResource&);
 
   protected:
+    Avida::Feedback& m_feedback;
+    
     int m_id;
     cString m_name;
     cCellBox m_cbox;
@@ -51,8 +54,9 @@ class cAbstractResource
     double m_prob_detect;
     
   public:
-    cAbstractResource(int id, const cString& name="")
-    : m_id(id)
+    cAbstractResource(int id, const cString& name, Avida::Feedback& fb)
+    : m_feedback(fb)
+    , m_id(id)
     , m_name(name)
     {}
     
@@ -102,8 +106,9 @@ class cRatedResource : public cAbstractResource
     
     
   public:
-    cRatedResource(int id, const cString& name="") 
-    : cAbstractResource(id, name) {};
+    cRatedResource(int id, const cString& name, Avida::Feedback& fb) 
+    : cAbstractResource(id, name, fb) 
+    {};
     
     void SetInitial(double initial) { m_initial = initial; }
     void SetInflow(double inflow) { m_inflow = inflow; }

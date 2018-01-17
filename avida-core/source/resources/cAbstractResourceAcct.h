@@ -17,7 +17,7 @@ typedef Apto::Array<double> cResourceGrid;
 
 
 class cAbstractResourceAcct
-{  
+{ 
   public:
     virtual double GetTotalAbundance() const = 0;
     virtual double GetCellAbundance(int cell_id) const = 0;
@@ -32,6 +32,8 @@ class cAbstractResourceAcct
 class cAbstractSpatialResourceAcct : public cAbstractResourceAcct
 {
   protected:
+    int m_world_size_x;
+    int m_world_size_y;
     int m_size_x;
     int m_size_y;
     cCellBox m_cellbox;
@@ -40,8 +42,10 @@ class cAbstractSpatialResourceAcct : public cAbstractResourceAcct
   
   public:
     cAbstractSpatialResourceAcct(int size_x, int size_y, const cCellBox& cellbox)
-    : m_size_x(size_x)
-    , m_size_y(size_y)
+    : m_world_size_x(size_x)
+    , m_world_size_y(size_y)
+    , m_size_x(cellbox.GetWidth())
+    , m_size_y(cellbox.GetHeight())
     , m_cellbox(cellbox)
     , m_abundance(size_x, size_y, cellbox, 0.0)
     {

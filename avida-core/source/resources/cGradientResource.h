@@ -10,6 +10,8 @@
 
 #include "cAbstractResource.h"
 #include "cAbstractResourceAcct.h"
+#include "cAvidaContext.h"
+#include "cSpatialCountElem.h"
 
 class cGradientResourceAcct;
 
@@ -18,11 +20,9 @@ class cGradientResource : public cAbstractResource
   friend cGradientResourceAcct;
   
   private:
-    cGradientResource();
-    cGradientResource(const cGradientResource&);
-    cGradientResource& operator=(const cGradientResource&);
 
   protected:
+    int m_geometry;
     int m_peaks; //JW
     double m_min_height; //JW
     double m_height_range; //JW
@@ -32,6 +32,7 @@ class cGradientResource : public cAbstractResource
     double m_ar; //JW
     double m_acx; //JW
     double m_acy; //JW
+    int m_update_step;
     double m_hstepscale; //JW
     double m_rstepscale; //JW
     double m_cstepscalex; //JW
@@ -51,13 +52,14 @@ class cGradientResource : public cAbstractResource
     int m_max_y;
     int m_min_x;
     int m_min_y;
-    double m_move_a_scalar;
+    double m_move_a_scaler;
     int m_updatestep; 
     int m_halo;
     int m_halo_inner_radius;
     int m_halo_width;
     int m_halo_anchor_x;
     int m_halo_anchor_y;
+    int m_skip_moves;
     int m_move_speed;
     int m_move_resistance;
     double m_plateau_inflow;
@@ -83,9 +85,11 @@ class cGradientResource : public cAbstractResource
 
     
   public:
-    cGradientResource(int id, const cString& name)
-    : cAbstractResource(id, name) {}
+    cGradientResource(int id, const cString& name, Avida::Feedback& fb)
+    : cAbstractResource(id, name, fb) 
+    {}
     
+    ADD_RESOURCE_PROP(int, Geometry, m_geometry);
     ADD_RESOURCE_PROP(int, Peaks, m_peaks);
     ADD_RESOURCE_PROP(double, MinHeight, m_min_height);
     ADD_RESOURCE_PROP(double, HeightRange, m_height_range);
@@ -95,6 +99,7 @@ class cGradientResource : public cAbstractResource
     ADD_RESOURCE_PROP(double, AR, m_ar);
     ADD_RESOURCE_PROP(double, ACX, m_acx);
     ADD_RESOURCE_PROP(double, ACY, m_acy);
+    ADD_RESOURCE_PROP(int, UpdateStep, m_update_step);
     ADD_RESOURCE_PROP(double, HStepScale, m_hstepscale);
     ADD_RESOURCE_PROP(double, RStepScale, m_rstepscale);
     ADD_RESOURCE_PROP(double, CStepScaleX, m_cstepscalex);
@@ -114,12 +119,12 @@ class cGradientResource : public cAbstractResource
     ADD_RESOURCE_PROP(int, MaxY, m_max_y);
     ADD_RESOURCE_PROP(int, MinX, m_min_x);
     ADD_RESOURCE_PROP(int, MinY, m_min_y);
-    ADD_RESOURCE_PROP(double, MoveAScalar, m_move_a_scalar);
-    ADD_RESOURCE_PROP(int, UpdateStep, m_updatestep);
+    ADD_RESOURCE_PROP(double, MoveAScalar, m_move_a_scaler);
     ADD_RESOURCE_PROP(int, Halo, m_halo);
     ADD_RESOURCE_PROP(int, HaloInnerRadius, m_halo_inner_radius);
     ADD_RESOURCE_PROP(int, HaloAnchorX, m_halo_anchor_x);
     ADD_RESOURCE_PROP(int, HaloAnchorY, m_halo_anchor_y);
+    ADD_RESOURCE_PROP(int, SkipMoves, m_skip_moves);
     ADD_RESOURCE_PROP(int, MoveSpeed, m_move_speed);
     ADD_RESOURCE_PROP(int, MoveResistance, m_move_resistance);
     ADD_RESOURCE_PROP(double, PlateauInflow, m_plateau_inflow);
@@ -137,7 +142,6 @@ class cGradientResource : public cAbstractResource
     ADD_RESOURCE_PROP(double, InitialPlateau, m_init_plat);
     ADD_RESOURCE_PROP(double, Threshold, m_threshold);
     ADD_RESOURCE_PROP(double, PredatorOdds, m_predator_odds);
-    ADD_RESOURCE_PROP(double, Damage, m_damage);
     ADD_RESOURCE_PROP(bool, IsPath, m_is_path);
 
 };
@@ -146,15 +150,26 @@ class cWorld;
 class cPopulation;
 class cAvidaContext;
 
-class cGradientResourceAcct : public cAbstractResourceAcct
+class cGradientResourceAcct : public cAbstractSpatialResourceAcct
 {
+
+  static int& m_update;
+  
+  static void Initialize(int& stats_update) { m_update = stats_update; }
+  
   protected:
-   cWorld* m_world;
-   cPopulation* m_pop;
+    cGradientResource& m_res;
+    cOffsetLinearGrid<cSpatialCountElem> m_cells;
+    cPopulation* m_pop;
   
   // Internal Values
+  int& m_peakx;
+  int& m_peaky;
+  bool m_modified;
+  int m_curr_peakx;
+  int m_curr_peaky;
   bool m_initial;
-  doublt m_initial_plat;
+  double m_initial_plat;
   
   double m_move_y_scaler;
   
@@ -166,6 +181,8 @@ class cGradientResourceAcct : public cAbstractResourceAcct
   
   int m_old_peakx;
   int m_old_peaky;
+  int m_curr_peak_x;
+  int m_curr_peak_y;
   
   int m_halo_dir;
   int m_changling;
@@ -187,6 +204,7 @@ class cGradientResourceAcct : public cAbstractResourceAcct
   bool m_predator;
   double m_death_odds;
   bool m_deadly;
+  double m_damage;  //Check
   int m_path;
   int m_hammer;
   int m_guarded_juvs_per_adult;
@@ -200,9 +218,10 @@ class cGradientResourceAcct : public cAbstractResourceAcct
   int m_max_usedy;
     
 public:
-  cGradientResourceAcct(cGradientResource& res, cWorld* world);
-  ~cGradientResourceAcct();
-
+  cGradientResourceAcct(cGradientResource& res, int size_x, int size_y, const cCellBox& cellbox,
+    cPopulation* pop);
+   
+    
   void UpdateCount(cAvidaContext& ctx);
   
   void SetGradInitialPlat(double plat_val);
@@ -210,16 +229,19 @@ public:
   void SetGradPlatVarInflow(cAvidaContext& ctx, double mean, double variance, int type);
   
   void SetPredatoryResource(double odds, int juvsper);
-  template<class T> void UpdatePredatoryRes(cAvidaContext& ctx);
+  template<class T> void UpdatePredatoryRes(cAvidaContext& ctx, T pop);
 
-  void UpdateDamagingRes(cAvidaContext& ctx);
+  template<class T> void UpdateDamagingRes(cAvidaContext& ctx, T pop);
+  
   void SetDeadlyRes(double odds) { m_death_odds = odds; m_deadly = (m_death_odds != 0); }
+  template<class T> void UpdateDeadlyRes(cAvidaContext& ctx, T pop);
+  
   void SetIsPath(bool path) { m_path = path; }
-  void UpdateDeadlyRes(cAvidaContext& ctx);
+  
   
   void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells);
-  void BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells);
-  void UpdateProbabilisticRes();
+  void BuildProbabilisticResource(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells);
+  void UpdateProbabilisticResource();
  
   void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
   
@@ -230,36 +252,64 @@ public:
   int GetMaxUsedY() { return m_max_usedy; }
   
 private:
-  void fillinResourceValues();
-  void updatePeakRes(cAvidaContext& ctx);
-  void moveRes(cAvidaContext& ctx);
-  int setHaloOrbit(cAvidaContext& ctx, int current_orbit);
-  void setPeakMoveMovement(cAvidaContext& ctx);
-  void moveHaloPeak(int current_orbit);
-  void confirmHaloPeak();
-  void movePeak();
-  void generatePeak(cAvidaContext& ctx);
-  void getCurrentPlatValues();
-  void generateBarrier(cAvidaContext& ctx);
-  void generateHills(cAvidaContext& ctx);    
-  void updateBounds(int x, int y);
-  void resetUsedBounds();
-  void clearExistingProbRes();
+  void FillInResourceValues();
+  void UpdatePeakRes(cAvidaContext& ctx);
+  void MoveRes(cAvidaContext& ctx);
+  int  SetHaloOrbit(cAvidaContext& ctx, int current_orbit);
+  void SetPeakMoveMovement(cAvidaContext& ctx);
+  void MoveHaloPeak(int current_orbit);
+  void ConfirmHaloPeak();
+  void MovePeak();
+  void GeneratePeak(cAvidaContext& ctx);
+  void GetCurrentPlatValues();
+  void GenerateBarrier(cAvidaContext& ctx);
+  void GenerateHills(cAvidaContext& ctx);    
+  void UpdateBounds(int x, int y);
+  void ResetUsedBounds();
+  void ClearExistingProbResource();
   
-  inline void setHaloDirection(cAvidaContext& ctx);
+  inline void SetHaloDirection(cAvidaContext& ctx);
   
 };
 
 
 template<class T>
-void cGradientResource::UpdatePredatoryRes(cAvidaContext& ctx)
+void cGradientResourceAcct::UpdatePredatoryRes(cAvidaContext& ctx, T pop)
 {
   // kill off up to 1 org per update within the predator radius (plateau area), 
   //with prob of death for selected prey = m_pred_odds
   if (m_predator) {
     for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
-      if (Element(m_plateau_cell_IDs[i]).GetAmount() >= 1) {
-        T->ExecutePredatoryResource(ctx, m_plateau_cell_IDs[i], m_pred_odds, m_guarded_juvs_per_adult, m_hammer);
+      if (m_cells(m_plateau_cell_IDs[i]).GetAmount() >= 1) {
+        pop->ExecutePredatoryResource(ctx, m_plateau_cell_IDs[i], m_pred_odds, m_guarded_juvs_per_adult, m_hammer);
+      }
+    }
+  }
+}
+
+template<class T>
+void cGradientResourceAcct::UpdateDamagingRes(cAvidaContext& ctx, T pop)
+{
+  // we don't call this for walls and hills because they never move
+  if (m_damage) {
+    for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
+      if (m_cells(m_plateau_cell_IDs[i]).GetAmount() >= m_res.m_threshold) {
+        // skip if initiating world and resources (cells don't exist yet)
+        if (ctx.HasDriver()) pop->ExecuteDamagingResource(ctx, m_plateau_cell_IDs[i], m_damage, m_hammer);
+      }
+    }
+  }
+}
+
+template<class T>
+void cGradientResourceAcct::UpdateDeadlyRes(cAvidaContext& ctx, T pop)
+{
+  // we don't call this for walls and hills because they never move
+  if (m_deadly) {
+    for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
+      if (m_cells(m_plateau_cell_IDs[i]).GetAmount() >= m_res.m_threshold) {
+        // skip if initiating world and resources (cells don't exist yet)
+        if (ctx.HasDriver()) pop->ExecuteDeadlyResource(ctx, m_plateau_cell_IDs[i], m_death_odds, m_hammer);
       }
     }
   }

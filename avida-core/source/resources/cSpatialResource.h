@@ -24,7 +24,6 @@ class cSpatialResource : public cRatedResource
     cSpatialResource& operator=(const cSpatialResource&);
   
   protected:
-
     int m_geometry;
     double m_diffuse_x;
     double m_diffuse_y;
@@ -35,8 +34,9 @@ class cSpatialResource : public cRatedResource
     Apto::Array<cCellResource> m_cell_list;
   
   public:
-    cSpatialResource(int id, const cString& name)
-    : cRatedResource(id, name) {}
+    cSpatialResource(int id, const cString& name, Avida::Feedback& fb)
+    : cRatedResource(id, name, fb) 
+    {}
     
     void AddInflowBox(int x1, int x2, int y1, int y2)
     {
@@ -73,9 +73,6 @@ class cSpatialResource : public cRatedResource
 
 class cSpatialResourceAcct : public cAbstractSpatialResourceAcct
 {
- 
-  public:
-    typedef Apto::Array< Apto::Array<int> > cCellList;
   
   protected:
      // A few constants to describe update process...
@@ -104,7 +101,7 @@ class cSpatialResourceAcct : public cAbstractSpatialResourceAcct
     cSpatialResourceAcct(cSpatialResource& res, int size_x, int size_y, const cCellBox& cellbox)
     : cAbstractSpatialResourceAcct(size_x, size_y, cellbox)
     , m_resource(res)
-    , m_cells(size_x, size_y, cellbox, cSpatialCountElem(res.m_initial))
+    , m_cells(size_x, size_y, cellbox, cSpatialCountElem(0.0))
     {
     }
     
