@@ -26,12 +26,14 @@
 #include "cResourceHistory.h"
 
 using namespace std;
-
+using namespace Avida::Resource;
 
 cResourceRegistry::~cResourceRegistry()
 {
-  for (int i = 0; i < m_resource_array.GetSize(); i++) delete m_resource_array[i];
-  delete m_initial_levels;
+  for (int k=0; k < m_resources.GetSize(); k++)
+  {
+    delete m_resources[k];
+  }
 }
 
 cResource* cResourceRegistry::AddResource(const cString& res_name)

@@ -8,8 +8,8 @@
 #ifndef cSpatialResource_h
 #define cSpatialResource_h
 
-#include "cAbstractResource.h"
-#include "cAbstractResourceAcct.h"
+#include "cResource.h"
+#include "cResourceAcct.h"
 #include "cSpatialCountElem.h"
 #include "cCellResource.h"
 #include "nGeometry.h"
@@ -32,11 +32,16 @@ class cSpatialResource : public cRatedResource
     Apto::Array<cCellBox> m_inflow_boxes;
     Apto::Array<cCellBox> m_outflow_boxes;
     Apto::Array<cCellResource> m_cell_list;
+    
+    cSpatialResourceAcct* m_accountant;
   
   public:
     cSpatialResource(int id, const cString& name, Avida::Feedback& fb)
     : cRatedResource(id, name, fb) 
+    , m_accountant(nullptr)
     {}
+    
+    virtual ~cSpatialResource() {}
     
     void AddInflowBox(int x1, int x2, int y1, int y2)
     {
@@ -67,6 +72,16 @@ class cSpatialResource : public cRatedResource
     ADD_RESOURCE_PROP(double, YDiffuse, m_diffuse_y);
     ADD_RESOURCE_PROP(double, XGravity, m_gravity_x);
     ADD_RESOURCE_PROP(double, YGravity, m_gravity_y);
+    
+    void AddAccountant(cSpatialResourceAcct* acct)
+    {
+      m_accountant = acct;
+    }
+    
+    cSpatialResourceAcct* GetAccountant()
+    {
+      return m_accountant;
+    }
     
 };
 

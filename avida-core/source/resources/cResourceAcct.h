@@ -5,8 +5,8 @@
 //  Created by Matthew Rupp on 1/14/18.
 //
 
-#ifndef cAbstractResAcct_h
-#define cAbstractResAcct_h
+#ifndef cResourceAcct_h
+#define cResourceAcct_h
 
 #include "cSpatialCountElem.h"
 #include "cOffsetLinearGrid.h"
@@ -21,6 +21,8 @@ class cAbstractResourceAcct
   public:
     virtual double GetTotalAbundance() const = 0;
     virtual double GetCellAbundance(int cell_id) const = 0;
+    virtual void AddResource(double amount) = 0;
+    virtual void ScaleResource(double scale) = 0;
     virtual double operator[](int cell_id) const = 0;
     virtual double operator()(int cell_id) const = 0;
     virtual double operator()(int x, int y) const = 0;
@@ -70,6 +72,24 @@ class cAbstractSpatialResourceAcct : public cAbstractResourceAcct
       return m_abundance[cell_id];
     }
     
+    virtual void AddResource(double amount)
+    {
+      double delta = amount / GetSize();
+      for (int k=0; k<GetSize(); k++)
+      {
+        m_abundance[k] = (m_abundance[k] + delta >= 0.0) ? m_abundance[k] + delta : 0.0;
+      }
+    }
+    
+    virtual void ScaleResource(double scale)
+    {
+      assert(scale > 0.0);
+      for (int k=0; k<GetSize(); k++)
+      {
+        m_abundance[k] *= m_abundance[k]*scale;
+      }
+    }
+    
     void SetCellAmount(int cell_id, double amount) 
     { 
       m_abundance(cell_id) = amount;  //Will the compiler chose the one with the reference?
@@ -85,6 +105,10 @@ class cAbstractSpatialResourceAcct : public cAbstractResourceAcct
       return m_abundance(x,y);
     }
     
+    inline int GetSize() const
+    {
+      return m_size_x * m_size_y;
+    }
 };
 
 #endif /* cAbstractAccountant_h */

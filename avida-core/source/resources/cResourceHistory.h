@@ -28,32 +28,36 @@ class cAvidaContext;
 class cResourceCount;
 class cString;
 
-
-class cResourceHistory
+namespace Avida
 {
-private:
-  struct sResourceHistoryEntry {
-    int update;
-    Apto::Array<double> values;
-  };
-  
-  Apto::Array<sResourceHistoryEntry> m_entries;
-  
-  
-  int getEntryForUpdate(int update, bool exact) const;
-  
-  
-  cResourceHistory(const cResourceHistory&); // @not_implemented
-  cResourceHistory& operator=(const cResourceHistory&); // @not_implemented
-  
-public:
-  cResourceHistory() { ; }
-  
-  bool GetResourceCountForUpdate(cAvidaContext& ctx, int update, cResourceCount& rc, bool exact = false) const;
-  bool GetResourceLevelsForUpdate(int update, Apto::Array<double>& levels, bool exact = false) const;
-  void AddEntry(int update, const Apto::Array<double>& values);
-  
-  bool LoadFile(const cString& filename, const cString& working_dir);
-};
-
+  namespace Resource
+  {
+    class cResourceHistory
+    {
+    private:
+      struct sResourceHistoryEntry {
+        int update;
+        Apto::Array<double> values;
+      };
+      
+      Apto::Array<sResourceHistoryEntry> m_entries;
+      
+      
+      int getEntryForUpdate(int update, bool exact) const;
+      
+      
+      cResourceHistory(const cResourceHistory&); // @not_implemented
+      cResourceHistory& operator=(const cResourceHistory&); // @not_implemented
+      
+    public:
+      cResourceHistory() { ; }
+      
+      bool GetResourceCountForUpdate(cAvidaContext& ctx, int update, cResourceCount& rc, bool exact = false) const;
+      bool GetResourceLevelsForUpdate(int update, Apto::Array<double>& levels, bool exact = false) const;
+      void AddEntry(int update, const Apto::Array<double>& values);
+      
+      bool LoadFile(const cString& filename, const cString& working_dir);
+    };
+  } //namespace Resource
+} //namespace Avida
 #endif

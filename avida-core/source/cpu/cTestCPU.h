@@ -26,7 +26,7 @@
 #include <fstream>
 
 #include "cString.h"
-#include "cResourceCount.h"
+#include "cResourceRegistry.h"
 #include "cCPUTestInfo.h"
 #include "cWorld.h"
 
@@ -62,10 +62,7 @@ private:
   int m_res_cpu_cycle_offset;
 
   // Actual CPU resources.
-  cResourceCount m_resource_count;
-  cResourceCount m_faced_cell_resource_count;
-  cResourceCount m_deme_resource_count;
-  cResourceCount m_cell_resource_count;
+  cResourceRegistry& m_res_reg;
     
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);

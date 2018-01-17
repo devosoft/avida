@@ -9,44 +9,12 @@
 #define cCellBox_h
 
 class cCellBox {
-private:
+
+protected:
   int m_x;
   int m_y;
   int m_width;
   int m_height;
-  
-  //cCellBox(); // Pre-C++11 style (put it in private)  the compiler still makes it, but no one can use it.
-  //cCellBox() = delete; //C++11 and beyound style)
-  
-  //The compiler automatically will provide the ability to
-  /*
-   cCellBox a_box;
-   cCellBox b_box(a_box); //copy constructor   (also a move contructor)
-   cCellBox c_box;
-   c_box = a_box; //operator=  the assignment operator
-   cCellBox::~cCellBox   //destructor
-   */
-  
-  /*
-   Add in the parser to the part of the code where requisites are read in
-   Actually add the cRequistieCellBox to the cRequisite
-   
-   Add in default constructor that initializes xx, yy, width, height to -1
-   Add in a public method to check if a cellID falls within hour cell box
-   cellID -> X-coordinate = cellID % WORLD_X
-   cellID -> Y-coordinate = cellID / WORLD_X
-   True if
-   m_x != -1  assume that if true m_Y also not != -1
-   OR
-   [
-   m_y <= y-coordinate <= m_y + m_height
-   m_x <= x-coordinate <= m_x + m_width
-   ]
-   Thinking
-   bool InCellBox(int cell_id, int world_x, int world_y)
-   where we get world_x and world_y passed via the TestRequistie as well
-   
-   */
   
 public:
   
@@ -59,6 +27,20 @@ public:
   ,  m_width(-1)
   ,  m_height(-1)
   {
+  }
+  
+  cCellBox(const cCellBox& _in)
+  {
+    (*this) = _in;
+  }
+  
+  cCellBox& operator=(const cCellBox& _in)
+  {
+    m_x = _in.m_x;
+    m_y = _in.m_y;
+    m_width = _in.m_width;
+    m_height = _in.m_height;
+    return *this;
   }
   
   cCellBox(int xx, int yy, int width=1, int height=1)
@@ -96,6 +78,60 @@ public:
   {
     return m_x >= 0 && m_y >= 0 && m_width > 0 && m_height > 0;
   }
+};
+
+
+class cOffsetCellBox : public cCellBox
+{
+  protected:
+    int m_size_x;
+    int m_size_y;
+  
+  public:
+    cOffsetCellBox()
+    : cCellBox(-1,-1,-1,-1)
+    , m_size_x(-1)
+    , m_size_y(-1)
+    {
+    }
+    
+    cOffsetCellBox(int size_x, int size_y, int x, int y, int width, int height)
+    : cCellBox(x,y,width,height)
+    , m_size_x(size_x)
+    , m_size_y(size_y)
+    {
+      assert(size_x > 0 && size_y > 0);
+    }
+    
+    cOffsetCellBox(const cOffsetCellBox& _in)
+    {
+      (*this) = _in;
+    }
+    
+    cOffsetCellBox& operator=(const cOffsetCellBox& _in)
+    {
+      cCellBox::operator=(_in);
+      m_size_x = _in.m_size_x;
+      m_size_y = _in.m_size_y;
+      return *this;
+    }
+    
+    bool InCellBox(int xx, int yy) const
+    {
+      if (!IsDefined())
+        return true;
+      
+      return (m_size_x + m_x <= xx && xx < m_size_x + m_x + m_width &&
+              m_size_y + m_y <= yy && yy < m_size_y + m_y + m_height) ? 
+              true : false;
+    }
+    
+    bool InCellBox(int cell_id) const
+    {
+      int xx = cell_id % m_size_x;
+      int yy = cell_id / m_size_x;
+      return InCellBox(xx,yy);
+    }
 };
 
 

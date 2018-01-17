@@ -8,8 +8,8 @@
 #ifndef cGradientResource_h
 #define cGradientResource_h
 
-#include "cAbstractResource.h"
-#include "cAbstractResourceAcct.h"
+#include "cResource.h"
+#include "cResourceAcct.h"
 #include "cAvidaContext.h"
 #include "cSpatialCountElem.h"
 
@@ -22,6 +22,9 @@ class cGradientResource : public cAbstractResource
   private:
 
   protected:
+  
+    cGradientResourceAcct m_accountant;
+  
     int m_geometry;
     int m_peaks; //JW
     double m_min_height; //JW
@@ -82,12 +85,16 @@ class cGradientResource : public cAbstractResource
     double m_predator_odds;
     bool m_predator;
     double m_guard_juvs_per;
+    bool m_is_path;
 
     
   public:
     cGradientResource(int id, const cString& name, Avida::Feedback& fb)
     : cAbstractResource(id, name, fb) 
+    , m_accountant(nullptr)
     {}
+    
+    virtual ~cGradientResource() {}
     
     ADD_RESOURCE_PROP(int, Geometry, m_geometry);
     ADD_RESOURCE_PROP(int, Peaks, m_peaks);

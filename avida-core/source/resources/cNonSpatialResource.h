@@ -10,8 +10,10 @@
 
 #include <sstream>
 
-#include "cAbstractResource.h"
-#include "cAbstractResourceAcct.h"
+#include "cResource.h"
+#include "cResourceAcct.h"
+
+
 
 
 class cNonSpatialResource : public cRatedResource
@@ -24,11 +26,15 @@ class cNonSpatialResource : public cRatedResource
     cNonSpatialResource& operator=(const cNonSpatialResource&);
     
   protected:
+    cNonSpatialResourceAcct* m_accountant;
   
   public:
     cNonSpatialResource(int id, const cString& name, Avida::Feedback& fb) 
     : cRatedResource(id, name, fb) 
+    , m_accountant(nullptr)
     {}
+  
+    virtual ~cNonSpatialResource() {}
     
     cString ToString() const
     {
@@ -39,14 +45,23 @@ class cNonSpatialResource : public cRatedResource
           << "outflow=" << m_outflow;
       return cString(sot.str().c_str());
     }
+    
+    virtual void AddAcctountant(cNonSpatialResourceAcct* acct)
+    {
+      m_accountant = acct;
+    }
+    
+    virtual cNonSpatialResourceAcct* GetAccountant()
+    {
+      return m_accountant;
+    }
+    
   
 };
 
 
 class cNonSpatialResourceAcct : public cAbstractResourceAcct
-{
-  friend cNonSpatialResource;
-  
+{  
   protected:
     
     const cNonSpatialResource& m_resource;
@@ -67,6 +82,8 @@ class cNonSpatialResourceAcct : public cAbstractResourceAcct
   
     cNonSpatialResourceAcct(const cNonSpatialResource& res);
     
+    virtual ~cNonSpatialResourceAcct() {}
+    
     double GetTotalAbundance() const { return m_current; }
     
     virtual double GetCellAbundance(int cell_id) const 
@@ -74,10 +91,22 @@ class cNonSpatialResourceAcct : public cAbstractResourceAcct
       return (m_resource.IsPresent(cell_id)) ? m_current : 0.0; 
     }
     
+    virtual void AddResource(double amount)
+    {
+      m_current = (m_current + amount >= 0.0) ? m_current+amount : 0.0;
+    }
+    
+    virtual void ScaleResource(double scale)
+    {
+      assert(scale > 0.0);
+      m_current = m_current * scale;
+    }
+    
     void Update();
     
     static void AddTime(double tt);
     
 };
+
 
 #endif /* cNonSpatialResource_hpp */

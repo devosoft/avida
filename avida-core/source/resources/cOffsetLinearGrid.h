@@ -36,7 +36,7 @@ class cOffsetLinearGrid
       assert(!cellbox.IsDefined() || \
         (cellbox.IsDefined() && size_y < cellbox.GetY() + cellbox.GetHeight()));
       
-      m_array.ResizeClear(cellbox.GetWidth(), cellbox.GetHeight());
+      m_array.ResizeClear(cellbox.GetWidth() * cellbox.GetHeight());
       m_array.SetAll(m_default_value);
     }
     

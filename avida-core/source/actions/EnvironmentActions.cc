@@ -36,6 +36,8 @@
 #include "cStats.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
+#include "cResourceRegistry.h"
+#include "cResourceAcct.h"
 
 class cActionInjectResource : public cAction
 {
@@ -55,7 +57,13 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    bool success = m_world->GetEnvironment().GetResourceRegistry().UpdateResource(ctx, m_res_name, m_res_count);
+    cResourceAcct* acct = m_world->GetEnvironment().GetResourceRegistry().GetResourceAcct(m_res_name);
+    if (acct != nullptr){
+      acct->AddResource(m_res_count);
+    } else {
+      //m_feedback.Error("cActionInjectResource: %s is not a resource.", m_res_name);
+    }
+    
   }
 };
 
@@ -235,10 +243,13 @@ public:
     for(int i=0; i<m_cell_list.GetSize(); i++)
     {
       int m_cell_id = m_cell_list[i];
+      
+      //@MRR:RES Spatial restriction
       Apto::Array<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, ctx);
       if ((res != NULL) && (res->GetID() < counts.GetSize()))
       {
         counts[res->GetID()] = m_res_count;
+        //@MRR:RES Spatial restriction
         m_world->GetPopulation().GetResourceCount().SetCellResources(m_cell_id, counts);
       }
     }
@@ -279,9 +290,11 @@ public:
     for(int i=0; i<m_cell_list.GetSize(); i++)
     {
       int m_cell_id = m_cell_list[i];
+      //@MRR:RES spatial restriction
       Apto::Array<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, ctx);
       if ((res != NULL) && (res->GetID() < counts.GetSize()))
       {
+        //@MRR:RES spatial restriction
         counts[res->GetID()] += m_res_count;
         m_world->GetPopulation().GetResourceCount().SetCellResources(m_cell_id, counts);
       }
@@ -348,7 +361,8 @@ public:
   
   void Process(cAvidaContext&)
   {
-    m_world->GetPopulation().UpdateGradientPlatInflow(m_res_name, m_inflow);        
+    m_world->GetEnvironment()\.GetResourceRegisty().GetGradientResourceAcct(m_res_name).SetPlateauInflow(m_inflow);
+    //@MRR:RES m_world->GetPopulation().UpdateGradientPlatInflow(m_res_name, m_inflow);        
   } 
 };
 

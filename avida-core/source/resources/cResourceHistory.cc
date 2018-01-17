@@ -25,6 +25,7 @@
 #include "cResourceCount.h"
 #include "cStringList.h"
 
+using namespace Avida::Resource;
 
 int cResourceHistory::getEntryForUpdate(int update, bool exact) const
 {
