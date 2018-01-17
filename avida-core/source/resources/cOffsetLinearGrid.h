@@ -55,6 +55,11 @@ class cOffsetLinearGrid
     }
     
     
+    void Clear()
+    {
+      m_array.SetAll(m_default_value);
+    }
+    
     inline T& operator[](int i)
     {
       int y = (i / m_size_x) - m_cellbox.GetY();

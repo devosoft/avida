@@ -172,7 +172,7 @@ void cGradientResourceAcct::BuildProbabilisticResource(cAvidaContext& ctx, doubl
 
   // only if theta == 1 do want want a 'hill' with resource for certain in the center
   if (theta == 0) {
-    m_cells[m_peaky * worldx + m_peakx].SetAmount(m_initial_plat);
+    m_abundance[m_peaky * worldx + m_peakx] = m_initial_plat;
     if (m_initial_plat > 0) UpdateBounds(m_peakx, m_peaky);
     if (m_res.m_plateau_outflow > 0 || m_res.m_plateau_inflow > 0) { 
       if (num_cells == -1) m_prob_res_cells.Push(m_peaky * worldx + m_peakx);
@@ -207,7 +207,7 @@ void cGradientResourceAcct::BuildProbabilisticResource(cAvidaContext& ctx, doubl
     double this_prob = (1/lambda) * (sqrt(2 / 3.14159)) * exp(-0.5 * pow(((cell_dist - theta) / lambda), 2));
     
     if (ctx.GetRandom().P(this_prob)) {
-      m_cells[cell_id].SetAmount(m_initial_plat);
+      m_abundance[cell_id] = m_initial_plat;
       if (m_initial_plat > 0) UpdateBounds(this_x, this_y);
       if (m_res.m_plateau_outflow > 0 || m_res.m_plateau_inflow > 0) {
         if (loop_once) m_prob_res_cells.Push(cell_id);
@@ -218,7 +218,7 @@ void cGradientResourceAcct::BuildProbabilisticResource(cAvidaContext& ctx, doubl
     }
     // just push this cell out of the way for this loop, but keep it around for next time
     else { 
-      m_cells[cell_id].SetAmount(0); 
+      m_abundance[cell_id] = 0.0; 
       cell_id_array.Swap(cell_idx, max_unused_idx--);
     }
 
@@ -235,9 +235,9 @@ void cGradientResourceAcct::UpdateProbabilisticResource()
 {
   if (m_res.m_plateau_outflow > 0 || m_res.m_plateau_inflow > 0) {
     for (int i = 0; i < m_prob_res_cells.GetSize(); i++) {
-      double curr_val = m_cells[m_prob_res_cells[i]].GetAmount();
+      double curr_val = m_abundance[m_prob_res_cells[i]];
       double amount = curr_val + m_res.m_plateau_inflow - (curr_val * m_res.m_plateau_outflow);
-      m_cells[m_prob_res_cells[i]].SetAmount(amount); 
+      m_abundance[m_prob_res_cells[i]] = amount; 
       if (amount > 0) UpdateBounds(m_prob_res_cells[i] % m_size_x, m_prob_res_cells[i] / m_size_x);
     }
   }
@@ -271,7 +271,7 @@ void cGradientResourceAcct::ResetGradRes(cAvidaContext& ctx, int world_x, int wo
   ResetUsedBounds();
   
   m_initial = true;
-  ResizeClear(m_size_x, m_size_y, m_res.m_geometry);
+  m_abundance.Clear();
   if (m_res.m_habitat == 2) {
     m_topo_counter = m_res.m_updatestep;
     GenerateBarrier(ctx);
@@ -402,7 +402,7 @@ void cGradientResourceAcct::FillInResourceValues()
               thisheight = 0;
             }
             else {
-              double past_height = m_cells[old_cell_y * m_size_x + old_cell_x].GetAmount(); 
+              double past_height = m_abundance[old_cell_y * m_size_x + old_cell_x]; 
               double newheight = past_height; 
               if (m_res.m_cone_inflow > 0 || m_res.m_cone_outflow > 0) 
                 newheight += m_res.m_cone_inflow - (past_height * m_res.m_cone_outflow);
@@ -415,7 +415,7 @@ void cGradientResourceAcct::FillInResourceValues()
           }
         }
       }
-      m_cells[jj * m_size_x + ii].SetAmount(thisheight);
+      m_abundance[jj * m_size_x + ii] = thisheight;
       if (thisheight > 0) UpdateBounds(ii, jj);
     }
   }         
@@ -440,7 +440,7 @@ void cGradientResourceAcct::UpdatePeakRes(cAvidaContext& ctx)
     int min_pos_y = std::max(m_peaky - m_res.m_spread - 1, 0);
     for (int ii = min_pos_x; ii < max_pos_x + 1; ii++) {
       for (int jj = min_pos_y; jj < max_pos_y + 1; jj++) {
-        if (m_cells[jj * m_size_x + ii].GetAmount() >= 1) {
+        if (m_abundance[jj * m_size_x + ii] >= 1) {
           has_edible = true;
           break;
         }
@@ -800,7 +800,7 @@ void cGradientResourceAcct::GetCurrentPlatValues()
       double find_plat_dist = temp_height / (thisdist + 1);
       if ((find_plat_dist >= 1 && m_res.m_plateau >= 0) || (m_res.m_plateau < 0 && thisdist == 0 && m_plateau_array.GetSize() > 0)) {
         double past_cell_height = m_plateau_array[plateau_cell];
-        double pre_move_height = m_cells[m_plateau_cell_IDs[plateau_cell]].GetAmount();  
+        double pre_move_height = m_abundance[m_plateau_cell_IDs[plateau_cell]];  
         if (pre_move_height < past_cell_height) {
           m_plateau_array[plateau_cell] = pre_move_height; 
           amount_devoured = amount_devoured + past_cell_height - pre_move_height;
@@ -824,13 +824,13 @@ void cGradientResourceAcct::GenerateBarrier(cAvidaContext& ctx)
     // clear any old resource
     if (m_wall_cells.GetSize()) {
       for (int i = 0; i < m_wall_cells.GetSize(); i++) {
-        m_cells[m_wall_cells[i]].SetAmount(0);
+        m_abundance[m_wall_cells[i]] = 0.0;
       }
     }
     else {
       for (int ii = 0; ii < m_size_x; ii++) {
         for (int jj = 0; jj < m_size_y; jj++) {
-          m_cells[jj * m_size_x + ii].SetAmount(0);
+          m_abundance[jj * m_size_x + ii] = 0.0;
         }
       }
     }
@@ -848,7 +848,7 @@ void cGradientResourceAcct::GenerateBarrier(cAvidaContext& ctx)
         start_randx = ctx.GetRandom().GetUInt(0, m_size_x);
         start_randy = ctx.GetRandom().GetUInt(0, m_size_y);  
       }
-      m_cells[start_randy * m_size_x + start_randx].SetAmount(m_res.m_plateau);
+      m_abundance[start_randy * m_size_x + start_randx] = m_res.m_plateau;
       // if (m_plateau > 0) updateBounds(start_randx, start_randy);
       UpdateBounds(start_randx, start_randy);
       m_wall_cells.Push(start_randy * m_size_x + start_randx);
@@ -942,12 +942,12 @@ void cGradientResourceAcct::GenerateBarrier(cAvidaContext& ctx)
                randy < (m_res.m_halo_anchor_y + m_res.m_halo_inner_radius) && 
                randx > (m_res.m_halo_anchor_x - m_res.m_halo_inner_radius) && 
                randy > (m_res.m_halo_anchor_y - m_res.m_halo_inner_radius)) || 
-              (m_res.m_config == 0 && m_cells[randy * m_size_x + randx].GetAmount())) {
+              (m_res.m_config == 0 && m_abundance[randy * m_size_x + randx])) {
             num_blocks --;
             count_block = false;
           }
           if (count_block) {
-            m_cells[randy * m_size_x + randx].SetAmount(m_res.m_plateau);
+            m_abundance[randy * m_size_x + randx] = m_res.m_plateau;
             if (m_res.m_plateau > 0) UpdateBounds(randx, randy);
             m_wall_cells.Push(randy * m_size_x + randx);
             if (place_corner) {
@@ -956,7 +956,7 @@ void cGradientResourceAcct::GenerateBarrier(cAvidaContext& ctx)
                      cornery < (m_res.m_halo_anchor_y + m_res.m_halo_inner_radius) && 
                      cornerx > (m_res.m_halo_anchor_x - m_res.m_halo_inner_radius) && 
                      cornery > (m_res.m_halo_anchor_y - m_res.m_halo_inner_radius))) ){
-                  m_cells[cornery * m_size_x + cornerx].SetAmount(m_res.m_plateau);
+                  m_abundance[cornery * m_size_x + cornerx] = m_res.m_plateau;
                   if (m_res.m_plateau > 0) UpdateBounds(cornerx, cornery);
                   m_wall_cells.Push(randy * m_size_x + randx);
                 }
@@ -996,14 +996,14 @@ void cGradientResourceAcct::GenerateHills(cAvidaContext& ctx)
     if (m_min_usedx == -1 || m_min_usedy == -1 || m_max_usedx == -1 || m_max_usedy == -1) {
       for (int ii = 0; ii < m_size_x; ii++) {
         for (int jj = 0; jj < m_size_y; jj++) {
-          m_cells[jj * m_size_x + ii].SetAmount(0);
+          m_abundance[jj * m_size_x + ii] = 0.0;
         }
       }
     }
     else {
       for (int ii = m_min_usedx; ii < m_max_usedx + 1; ii++) {
         for (int jj = m_min_usedy; jj < m_max_usedy + 1; jj++) {
-          m_cells[jj * m_size_x + ii].SetAmount(0);
+          m_abundance[jj * m_size_x + ii] = 0.0;
         }
       }
     }
@@ -1044,9 +1044,9 @@ void cGradientResourceAcct::GenerateHills(cAvidaContext& ctx)
           double thisdist = sqrt((double) (m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
           // only plot values when within set config radius & if no larger amount has already been plotted for another overlapping hill
           if ((thisdist <= rand_hill_radius) && 
-              (m_cells[jj * m_size_x + ii].GetAmount() <  m_res.m_plateau / (thisdist + 1))) {
+              (m_abundance[jj * m_size_x + ii] <  m_res.m_plateau / (thisdist + 1))) {
           thisheight = m_res.m_plateau / (thisdist + 1);
-          m_cells[jj * m_size_x + ii].SetAmount(thisheight);
+          m_abundance[jj * m_size_x + ii] = thisheight;
           if (thisheight > 0) UpdateBounds(ii, jj);
           }
         }
@@ -1079,7 +1079,7 @@ void cGradientResourceAcct::ClearExistingProbResource()
 {
   for (int x = m_min_usedx; x < m_max_usedx + 1; x ++) {
     for (int y = m_min_usedy; y < m_max_usedy + 1; y ++) {
-      m_cells[y * m_size_x + x].SetAmount(0);
+      m_abundance[y * m_size_x + x] = 0.0;
     }
   }
 }
