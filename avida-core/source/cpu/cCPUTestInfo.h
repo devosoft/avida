@@ -28,10 +28,11 @@
 #include "nHardware.h"
 #include "cHardwareTracer.h"
 #include "cMutationRates.h"
+#include "cResourceHistory.h"
 
 class cOrganism;
 class cPhenotype;
-class cResourceHistory;
+
 
 
 enum eTestCPUResourceMethod { RES_INITIAL = 0, RES_CONSTANT, RES_UPDATED_DEPLETABLE, RES_DYNAMIC, RES_LAST };  
@@ -70,7 +71,7 @@ private:
   
   // Information about how to handle resources
   eTestCPUResourceMethod m_res_method;
-  cResourceHistory* m_res;
+  cResourceHistory m_res;
   int m_res_update;
   int m_res_cpu_cycle_offset;
 
@@ -89,8 +90,13 @@ public:
   void UseManualInputs(Apto::Array<int> inputs) {use_manual_inputs = true; use_random_inputs = false; manual_inputs = inputs;}
   void ResetInputMode() {use_manual_inputs = false; use_random_inputs = false;}
   void SetTraceExecution(HardwareTracerPtr tracer) { m_tracer = tracer; }
-  void SetResourceOptions(int res_method = RES_INITIAL, cResourceHistory* res = NULL, int update = 0, int cpu_cycle_offset = 0)
-    { m_res_method = (eTestCPUResourceMethod)res_method; m_res = res; m_res_update = update; m_res_cpu_cycle_offset = cpu_cycle_offset; }
+  void SetResourceOptions(cResourceHistory res, int res_method = RES_INITIAL, int update = 0, int cpu_cycle_offset = 0)
+  { 
+    m_res_method = (eTestCPUResourceMethod)res_method; 
+    m_res = res; 
+    m_res_update = update; 
+    m_res_cpu_cycle_offset = cpu_cycle_offset; 
+  }
   
   void SetCurrentStateGridID(int sg) { m_cur_sg = sg; }
   cMutationRates& MutationRates() { return m_mut_rates; }

@@ -6,3 +6,16 @@
 //
 
 #include "cCellResource.h"
+
+cCellResource::cCellResource(const cCellResource& _res)
+: cRatedResource(_res)
+{
+  *this = _res;
+}
+
+cCellResource& cCellResource::operator=(const cCellResource& _res)
+{
+  this->RatedResource::operator=(_res);
+  m_cell_id = _res.m_cell_id;
+  return this;
+}

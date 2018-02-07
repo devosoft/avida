@@ -32,7 +32,7 @@
 using namespace std;
 
 
-cInitFile::cInitFile(const cString& filename, const cString& working_dir, Feedback& feedback,
+cInitFile::cInitFile(const cString& filename, const cString& working_dir, Avida::Feedback& feedback,
                      const Apto::Set<Apto::String>* custom_directives, const Apto::Map<Apto::String, Apto::String>* mappings)
 : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
@@ -43,7 +43,7 @@ cInitFile::cInitFile(const cString& filename, const cString& working_dir, Feedba
 }
 
 cInitFile::cInitFile(const cString& filename, const cString& working_dir, const Apto::Set<Apto::String>* custom_directives, const Apto::Map<Apto::String, Apto::String>* mappings)
-  : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
+: m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   if (mappings) initMappings(*mappings);
   Apto::Array<sLine*, Apto::Smart> lines;
@@ -52,7 +52,7 @@ cInitFile::cInitFile(const cString& filename, const cString& working_dir, const 
 }
 
 cInitFile::cInitFile(const cString& filename, const Apto::Map<Apto::String, Apto::String>& mappings, const cString& working_dir)
-  : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
+: m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   initMappings(mappings);
   Apto::Array<sLine*, Apto::Smart> lines;
@@ -62,7 +62,7 @@ cInitFile::cInitFile(const cString& filename, const Apto::Map<Apto::String, Apto
 
 
 cInitFile::cInitFile(istream& in_stream, const cString& working_dir)
-  : m_filename("(stream)"), m_found(false), m_opened(false), m_ftype("unknown")
+: m_filename("(stream)"), m_found(false), m_opened(false), m_ftype("unknown")
 {
   if (in_stream.good() == false) {
     m_feedback.Error("bad stream, unable to process.");
@@ -100,7 +100,7 @@ void cInitFile::initMappings(const Apto::Map<Apto::String, Apto::String>& mappin
 
 
 bool cInitFile::loadFile(const cString& filename, Apto::Array<sLine*, Apto::Smart>& lines, const cString& working_dir,
-                         const Apto::Set<Apto::String>* custom_directives, Feedback& feedback)
+                         const Apto::Set<Apto::String>* custom_directives, Avida::Feedback& feedback)
 {
   cString path = cString(Apto::FileSystem::GetAbsolutePath(Apto::String(filename), Apto::String(working_dir))); 
   cFile file(path);
@@ -112,7 +112,7 @@ bool cInitFile::loadFile(const cString& filename, Apto::Array<sLine*, Apto::Smar
   m_found = true;
   
   cStringList line_list;   // Create a list to load all of the lines into.
-
+  
   int linenum = 0;
   cString buf;
   while (!file.Eof() && file.ReadLine(buf)) {
@@ -138,7 +138,7 @@ bool cInitFile::loadFile(const cString& filename, Apto::Array<sLine*, Apto::Smar
 
 
 bool cInitFile::processCommand(cString cmdstr, Apto::Array<sLine*, Apto::Smart>& lines, const cString& filename, int linenum,
-                               const cString& working_dir, const Apto::Set<Apto::String>* custom_directives, Feedback& feedback)
+                               const cString& working_dir, const Apto::Set<Apto::String>* custom_directives, Avida::Feedback& feedback)
 {
   cString cmd = cmdstr.PopWord();
   
@@ -221,23 +221,23 @@ void cInitFile::postProcess(Apto::Array<sLine*, Apto::Smart>& lines)
   
   // We're going to handle this compression in multiple passes to make it
   // clean and easy.
-
+  
   const int num_lines = lines.GetSize();
-
+  
   // PASS 1: Remove all comments -- everything after a '#' sign -- and
   // compress all whitespace into a single space.
   for (int i = 0; i < num_lines; i++) {
     cString& cur_line = lines[i]->line;
-
+    
     // Remove all characters past a comment mark and reduce whitespace.
     int comment_pos = cur_line.Find('#');
     if (comment_pos >= 0) cur_line.Clip(comment_pos);
     cur_line.CompressWhitespace();
   }
-
+  
   // PASS 2: Merge each line ending with a continue marker '\' with the
   // next line.
-
+  
   int prev_line_id = -1;
   bool continued = false;
   for (int i = 0; i < num_lines; i++) {
@@ -247,7 +247,7 @@ void cInitFile::postProcess(Apto::Array<sLine*, Apto::Smart>& lines)
       lines[i]->line = "";
     }
     else prev_line_id = i;
-
+    
     // See if the prev_line is continued, and if it is, take care of it.
     cString& prev_line = lines[prev_line_id]->line;
     if (prev_line.GetSize() > 0 && prev_line[prev_line.GetSize() - 1] == '\\') {
@@ -256,9 +256,9 @@ void cInitFile::postProcess(Apto::Array<sLine*, Apto::Smart>& lines)
     }
     else continued = false;
   }
-
+  
   // PASS 3: Remove now-empty lines.
-
+  
   int next_id = 0;
   for (int i = 0; i < num_lines; i++) {
     // If we should keep this line, compact it.
@@ -271,7 +271,7 @@ void cInitFile::postProcess(Apto::Array<sLine*, Apto::Smart>& lines)
       next_id++;
     }
   }
-
+  
   // Resize the internal line structure and move the line structs to it
   m_lines.Resize(next_id);
   for (int i = 0; i < next_id; i++) m_lines[i] = lines[i];
@@ -319,12 +319,12 @@ Apto::SmartPtr<Apto::Map<Apto::String, Apto::String> > cInitFile::GetLineAsDict(
 bool cInitFile::Find(cString& in_string, const cString& keyword, int col) const
 {
   bool found = false;
-
+  
   // Loop through all of the lines looking for this keyword.  Start with
   // the actual file...
   for (int line_id = 0; line_id < m_lines.GetSize(); line_id++) {
     cString cur_string = m_lines[line_id]->line;
-
+    
     // If we found the keyword, return it and stop.    
     if (cur_string.GetWord(col) == keyword) {
       m_lines[line_id]->used = true;
@@ -332,7 +332,7 @@ bool cInitFile::Find(cString& in_string, const cString& keyword, int col) const
       found = true;
     }
   }
-
+  
   return found;    // Not Found...
 }
 
@@ -341,7 +341,7 @@ cString cInitFile::ReadString(const cString& name, cString def, bool warn_defaul
 {
   // See if we definately can't find the keyword.
   if (name == "") return def;
-
+  
   // Search for the keyword.
   cString cur_line;
   if (Find(cur_line, name, 0) == false) {
@@ -350,7 +350,7 @@ cString cInitFile::ReadString(const cString& name, cString def, bool warn_defaul
     }
     return def;
   }
-
+  
   // Pop off the keyword, and return the remainder of the line.
   cur_line.PopWord();
   return cur_line;
@@ -362,7 +362,7 @@ cString cInitFile::ReadString(const Apto::Array<cString>& names, cString def, bo
   const int num_names = names.GetSize();
   if (num_names == 0) return def;
   if (num_names == 1) return ReadString(names[0], def, warn_default);
-
+  
   // Search for the keyword.
   cString cur_line;
   bool found = false;
@@ -372,14 +372,14 @@ cString cInitFile::ReadString(const Apto::Array<cString>& names, cString def, bo
       break;
     }
   }
-
+  
   if (found == false) {
     if (warn_default) {
       m_feedback.Warning("%s not in '%s', defaulting to: %s", (const char*) names[0], (const char*)m_filename, (const char*)def);
     }
     return def;
   }
-
+  
   // Pop off the keyword, and return the remainder of the line.
   cur_line.PopWord();
   return cur_line;
@@ -389,7 +389,7 @@ cString cInitFile::ReadString(const Apto::Array<cString>& names, cString def, bo
 bool cInitFile::WarnUnused() const
 {
   bool found = false;
-
+  
   for (int i = 0; i < m_lines.GetSize(); i++) {
     if (m_lines[i]->used == false) {
       if (found == false) {

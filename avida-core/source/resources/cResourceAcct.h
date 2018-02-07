@@ -10,28 +10,30 @@
 
 #include "cSpatialCountElem.h"
 #include "cOffsetLinearGrid.h"
+#include "resources/Types.h"
 
 typedef Apto::Array<cSpatialCountElem> cCellElements;
 typedef Apto::Array<double> cResourceGrid;
 
 
 
-class cAbstractResourceAcct
+class cResourceAcct
 { 
   public:
-    virtual double GetTotalAbundance() const = 0;
-    virtual double GetCellAbundance(int cell_id) const = 0;
-    virtual void AddResource(double amount) = 0;
+    virtual ResAmount GetTotalAmount() const = 0;
+    virtual void SetTotalAmount(const ResAmount& ) = 0;
+    virtual ResAmount GetCellAmount(int cell_id) const = 0;
+    virtual void AddResource(ResAmount amount) = 0;
     virtual void ScaleResource(double scale) = 0;
-    virtual double operator[](int cell_id) const = 0;
-    virtual double operator()(int cell_id) const = 0;
-    virtual double operator()(int x, int y) const = 0;
+    virtual ResAmount operator[](int cell_id) const = 0;
+    virtual ResAmount operator()(int cell_id) const = 0;
+    virtual ResAmount operator()(int x, int y) const = 0;
     
     virtual void Update() = 0;
     
 };
 
-class cAbstractSpatialResourceAcct : public cAbstractResourceAcct
+class cAbstractSpatialResourceAcct : public cResourceAcct
 {
   protected:
     int m_world_size_x;
@@ -53,7 +55,7 @@ class cAbstractSpatialResourceAcct : public cAbstractResourceAcct
     {
     }
     
-    virtual double GetTotalAbundance() const
+    virtual ResAmount GetTotalAmount() const
     {
       double sum = 0.0;
       for (int k = 0; k < m_abundance.GetSize(); k++){
@@ -62,19 +64,23 @@ class cAbstractSpatialResourceAcct : public cAbstractResourceAcct
       return sum;
     }
     
-    double SumAll() const
+    virtual void SetTotalAmount(const ResAmount& val)
     {
-      return this->GetTotalAbundance();
+      ResAmount frac = val / m_abundance.GetSize();
+      for (int k = 0; k < m_abundance.GetSize(); k++){
+        m_abundance[k] = frac;
+      }
     }
+
     
-    virtual double GetAmount(int cell_id) const
+    virtual ResAmount GetCellAmount(int cell_id) const
     {
       return m_abundance[cell_id];
     }
     
-    virtual void AddResource(double amount)
+    virtual void AddResource(ResAmount amount)
     {
-      double delta = amount / GetSize();
+      ResAmount delta = amount / GetSize();
       for (int k=0; k<GetSize(); k++)
       {
         m_abundance[k] = (m_abundance[k] + delta >= 0.0) ? m_abundance[k] + delta : 0.0;
@@ -90,17 +96,17 @@ class cAbstractSpatialResourceAcct : public cAbstractResourceAcct
       }
     }
     
-    void SetCellAmount(int cell_id, double amount) 
+    void SetCellAmount(int cell_id, ResAmount amount) 
     { 
       m_abundance(cell_id) = amount;  //Will the compiler chose the one with the reference?
     }
     
-    virtual double operator[](int cell_id) const
+    virtual ResAmount operator[](int cell_id) const
     {
       return m_abundance[cell_id];
     }
     
-    virtual double operator()(int x, int y) const
+    virtual ResAmount operator()(int x, int y) const
     {
       return m_abundance(x,y);
     }

@@ -22,35 +22,15 @@
 #ifndef cUserFeedback_h
 #define cUserFeedback_h
 
-#include "avida/core/Feedback.h"
+#include "cBufferedFeedback.h"
 
 #include "cString.h"
 
 #include <cstdarg>
 #include <sstream>
 
-using namespace Avida;
-
-
-class cUserFeedback : public Feedback
+class cUserFeedback : public cBufferedFeedback
 {
-public:
-  enum eFeedbackType {
-    UF_ERROR,
-    UF_WARNING,
-    UF_NOTIFICATION
-  };
-  
-  
-private:
-  struct sEntry {
-    eFeedbackType ftype;
-    cString message;
-    
-    sEntry() { ; }
-    sEntry(eFeedbackType in_ftype, const cString& in_msg) : ftype(in_ftype), message(in_msg) { ; }
-    sEntry(eFeedbackType in_ftype, const char* fmt, va_list args) : ftype(in_ftype) { message.Set(fmt, args); }
-  };
   
   
   Apto::Array<sEntry, Apto::Smart> m_entries;
@@ -63,22 +43,42 @@ public:
   ~cUserFeedback() { ; }
   
   // Feedback Methods
-  void Error(const char* fmt, ...);
-  void Warning(const char* fmt, ...);
-  void Notify(const char* fmt, ...);
+  virtual void Error(const char* fmt, ...)
+  {
+    va_list args;
+    va_start(args, fmt);
+    m_entries.Push(sEntry(UF_ERROR, fmt, args));
+    va_end(args);
+    m_errors++;
+  }
   
-  virtual bool HasMessages() { return GetNumMessages() > 0; }
-  virtual bool HasErrors() { return GetNumErrors() > 0; }
-  virtual bool HasWarnings() { return GetNumErrors() > 0; }
-  virtual bool HasNotices() { return GetNumNotifications() > 0; }
+  virtual void Warning(const char* fmt, ...)
+  {
+    va_list args;
+    va_start(args, fmt);
+    m_entries.Push(sEntry(UF_WARNING, fmt, args));
+    va_end(args);
+    m_warnings++;
+    
+  }
   
-  int GetNumMessages() const { return m_entries.GetSize(); }
-  int GetNumErrors() const { return m_errors; }
-  int GetNumWarnings() const { return m_warnings; }
-  int GetNumNotifications() const { return m_entries.GetSize() - m_errors - m_warnings; }
   
-  eFeedbackType GetMessageType(int i) const { return m_entries[i].ftype; }
-  const cString& GetMessage(int i) const { return m_entries[i].message; }
+  virtual void Notify(const char* fmt, ...)
+  {
+    va_list args;
+    va_start(args, fmt);
+    m_entries.Push(sEntry(UF_NOTIFICATION, fmt, args));
+    va_end(args);
+  }
+  
+  
+  virtual int GetNumMessages() const { return m_entries.GetSize(); }
+  virtual int GetNumErrors() const { return m_errors; }
+  virtual int GetNumWarnings() const { return m_warnings; }
+  virtual int GetNumNotifications() const { return m_entries.GetSize() - m_errors - m_warnings; }
+  
+  virtual eFeedbackType GetMessageType(int k) const { return m_entries[k].ftype; }
+  virtual const cString& GetMessage(int k) const { return m_entries[k].message; }
   
   void Clear();
   
@@ -87,31 +87,7 @@ public:
   cString ToString();
 };
 
-inline void cUserFeedback::Error(const char* fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  m_entries.Push(sEntry(UF_ERROR, fmt, args));
-  va_end(args);
-  m_errors++;
-}
 
-inline void cUserFeedback::Warning(const char* fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  m_entries.Push(sEntry(UF_WARNING, fmt, args));
-  va_end(args);
-  m_warnings++;
-}
-
-inline void cUserFeedback::Notify(const char* fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  m_entries.Push(sEntry(UF_NOTIFICATION, fmt, args));
-  va_end(args);
-}
 
 inline void cUserFeedback::Append(const cUserFeedback& uf)
 {

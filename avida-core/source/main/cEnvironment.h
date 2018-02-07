@@ -32,13 +32,11 @@
 #include "cString.h"
 #include "cTaskLib.h"
 #include "tList.h"
+#include "avida/core/Feedback.h"
 
 #include <set>
 
 
-namespace Avida {
-  class Feedback;
-};
 class cContextPhenotype;
 class cContextReactionRequisite;
 class cAvidaContext;

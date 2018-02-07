@@ -8,6 +8,32 @@
 #include "cNonSpatialResource.h"
 
 
+cNonSpatialResource::cNonSpatialResource(const cNonSpatialResource& _res)
+: cRatedResource(_res)
+{
+  *this = _res;
+}
+
+cNonSpatialResource& cNonSpatialResource::operator=(const cNonSpatialResource& _res)
+{
+  this->cRatedResource::operator=(_res);
+  return *this;
+}
+
+ResDescr cNonSpatialResource::ToString() const
+{
+  std::ostringstream sot;
+  sot << "RESOURCE " << m_name << ":"
+  << "initial=" << m_initial << ":"
+  << "inflow=" << m_inflow << ":"
+  << "outflow=" << m_outflow;
+  return cString(sot.str().c_str());
+}
+
+
+
+
+
 const double cNonSpatialResourceAcct::UPDATE_STEP(1.0 / 10000.0);
 const double cNonSpatialResourceAcct::EPSILON (1.0e-15);
 const int cNonSpatialResourceAcct::PRECALC_DISTANCE(100);
@@ -17,7 +43,7 @@ cNonSpatialResourceAcct::cNonSpatialResourceAcct(const cNonSpatialResource& res)
 {
   double step_decay = pow(res.GetDecay(), UPDATE_STEP);
   double step_inflow = res.GetInflow() * UPDATE_STEP;
-
+  
   m_decay_precalc.Resize(PRECALC_DISTANCE);
   m_inflow_precalc.Resize(PRECALC_DISTANCE);
   m_decay_precalc[0] = 1.0;
@@ -49,3 +75,5 @@ void cNonSpatialResourceAcct::Update()
   m_current *= m_decay_precalc[num_steps];
   m_current += m_inflow_precalc[num_steps];
 }
+
+

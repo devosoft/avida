@@ -18,11 +18,6 @@ class cSpatialResource : public cRatedResource
 {
   friend cSpatialResourceAcct;
   
-  private:
-    cSpatialResource();
-    cSpatialResource(const cSpatialResource&);
-    cSpatialResource& operator=(const cSpatialResource&);
-  
   protected:
     int m_geometry;
     double m_diffuse_x;
@@ -33,13 +28,14 @@ class cSpatialResource : public cRatedResource
     Apto::Array<cCellBox> m_outflow_boxes;
     Apto::Array<cCellResource> m_cell_list;
     
-    cSpatialResourceAcct* m_accountant;
   
   public:
-    cSpatialResource(int id, const cString& name, Avida::Feedback& fb)
+    explicit cSpatialResource(int id, const cString& name, Avida::Feedback& fb)
     : cRatedResource(id, name, fb) 
-    , m_accountant(nullptr)
     {}
+    
+    cSpatialResource(const cSpatialResource&);
+    cSpatialResource& operator=(const cSpatialResource&);
     
     virtual ~cSpatialResource() {}
     
@@ -73,15 +69,6 @@ class cSpatialResource : public cRatedResource
     ADD_RESOURCE_PROP(double, XGravity, m_gravity_x);
     ADD_RESOURCE_PROP(double, YGravity, m_gravity_y);
     
-    void AddAccountant(cSpatialResourceAcct* acct)
-    {
-      m_accountant = acct;
-    }
-    
-    cSpatialResourceAcct* GetAccountant()
-    {
-      return m_accountant;
-    }
     
 };
 
@@ -144,6 +131,8 @@ class cSpatialResourceAcct : public cAbstractSpatialResourceAcct
     void CellOutflow();
     void Sink(double decay);
     void ResetResourceCounts();
+    
+    cString ToString() const {}
 };
 
 #endif /* cSpatialResourceAcct_h */

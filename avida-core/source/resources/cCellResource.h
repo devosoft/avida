@@ -17,14 +17,19 @@ class cCellResource : public cRatedResource
     int m_cell_id;
     
   public:
-    cCellResource(int cell_id, Avida::Feedback& fb)
+    explicit cCellResource(int cell_id, Avida::Feedback& fb)
     : cRatedResource(-1, "(cell)", fb)
     , m_cell_id(cell_id)
     {}
     
+    cCellResource(const cCellResource& _res);
+    cCellResource& operator=(const cCellResource& _res);
+    
     virtual ~cCellResource() {}
     
-    int GetCellID() const { return m_cell_id; }
+    ResID GetCellID() const { return m_cell_id; }
+    
+    virtual ResDescr ToString() const { return "Not implemented."; }
 };
 
 

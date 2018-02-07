@@ -29,7 +29,6 @@
 #include "cDeme.h"
 #include "cOrgInterface.h"
 #include "cPopulationInterface.h"
-#include "cResourceCount.h"
 #include "cString.h"
 #include "cWorld.h"
 #include "tList.h"
@@ -310,7 +309,7 @@ public:
   
   void UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
   
-  const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }  
+  //@MRR-R const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }  
   
    
   void SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level);

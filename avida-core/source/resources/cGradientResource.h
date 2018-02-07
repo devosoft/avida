@@ -19,12 +19,8 @@ class cGradientResource : public cAbstractResource
 {
   friend cGradientResourceAcct;
   
-  private:
-
   protected:
-  
-    cGradientResourceAcct m_accountant;
-  
+    
     int m_geometry;
     int m_peaks; //JW
     double m_min_height; //JW
@@ -81,18 +77,19 @@ class cGradientResource : public cAbstractResource
     double m_init_plat;
     double m_threshold;
     int m_refuge;
-    Apto::Array<int> cell_id_list;
     double m_predator_odds;
     bool m_predator;
-    double m_guard_juvs_per;
     bool m_is_path;
 
     
   public:
-    cGradientResource(int id, const cString& name, Avida::Feedback& fb)
+    explicit cGradientResource(int id, const cString& name, Avida::Feedback& fb)
     : cAbstractResource(id, name, fb) 
-    , m_accountant(nullptr)
     {}
+    
+    cGradientResource(const cGradientResource& _res);
+    cGradientResource& operator=(const cGradientResource& _res);
+    
     
     virtual ~cGradientResource() {}
     
@@ -151,6 +148,7 @@ class cGradientResource : public cAbstractResource
     ADD_RESOURCE_PROP(double, PredatorOdds, m_predator_odds);
     ADD_RESOURCE_PROP(bool, IsPath, m_is_path);
 
+    ResDescr ToString() const { return "Not Implemented"; }
 };
 
 class cWorld;

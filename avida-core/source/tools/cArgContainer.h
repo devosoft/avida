@@ -23,10 +23,7 @@
 #define cArgContainer_h
 
 #include "cString.h"
-
-namespace Avida {
-  class Feedback;
-};
+#include "avida/core/Feedback.h"
 
 class cArgSchema;
 template <class T> class tList;
@@ -49,7 +46,7 @@ private:
   cArgContainer& operator=(const cArgContainer&); // @not_implemented
   
 public:
-  static cArgContainer* Load(cString args, const cArgSchema& schema, Feedback& feedback);
+  static cArgContainer* Load(cString args, const cArgSchema& schema, Avida::Feedback& feedback);
   
   inline int GetInt(int i) const { return m_ints[i]; }
   inline double GetDouble(int i) const { return m_doubles[i]; }

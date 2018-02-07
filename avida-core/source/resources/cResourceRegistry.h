@@ -23,10 +23,10 @@
 #ifndef cResourceRegistry_h
 #define cResourceRegistry_h
 
-#include "avida/core/Feedback.h"
 #include "avida/core/Types.h"
 #include "cNonSpatialResource.h"
 
+#include <map>
 
 class cAvidaContext;
 class cResourceHistory;
@@ -42,72 +42,99 @@ class cCellResource;
 class cNonSpatialResource;
 class cSpatialResource;
 class cGradientResource;
-class Feedback;
-
-
-typedef int ResourceID;
 
 namespace Avida{
-  namespace Resource{
-    
-    class cResourceRegistry
-    {
-    protected:
-      
-      Avida::Feedback& m_feedback;
-      Apto::Array<cResource*> m_resources;  // We own these pointers
-      Apto::Map<cString, cResource*> m_name_map;
-      
-      void AddResource(cResource* res);
-      
-      cResourceRegistry(const cResourceRegistry&); // @not_implemented
-      cResourceRegistry& operator=(const cResourceRegistry&); // @not_implemented
-      
-    public:
-      cResourceRegistry(Avida::Feedback& fb) 
-      : m_feedback(fb) 
-      {}
-      
-      ~cResourceRegistry();
-      
-      int GetSize() const { return m_resources.GetSize(); }
-      
-      void AddResource(cCellResource* res);
-      void AddResource(cNonSpatialResource* nonspat_res);
-      void AddResource(cSpatialResource* spat_res);
-      void AddResource(cGradientResource* grad_res);
-      
-      cResource* GetResource(const cString& res_name) const;
-      inline cResource* GetResource(int id) const;
-      
-      cResourceAcct* GetResourceAcct(const cString& res_name);
-      cResourceAcct* GetResourceAcct(int res_id);
-      cSpatialResourceAcct* GetSpatialResoureAcct(const cString& res_name);
-      cSpatialResourceAcct* GetSpatialResoureAcct(int res_id);
-      cNonSpatialResourceAcct* GetNonSpatialResourceAcct(int res_id);
-      cNonSpatialResourceAcct* GetNonSpatialResourceAcct(const cString& res_name);
-      
-      bool DoesResourceExist(const cString& res_name) const;
-      
-      
-      double GetResourceAbundance(cAvidaContext& ctx, int res_id) const;
-      Apto::Array<double> GetResAbundances(cAvidaContext& ctx) const;
-      Apto::Array<double> GetResAbundances(cAvidaContext& ctx, int cell_id);
-      Apto::Array<double> GetFrozenResources(cAvidaContext& ctx, int cell_id) const;  
-      
-      
-      void TriggerDoUpdates(cAvidaContext& ctx); 
-      
-      //const Apto::Array< Apto::Array<int> >& GetCellIdLists() const; 
-      
-      
-      void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-      void UpdateRandomResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-      void UpdateResource(cAvidaContext& ctx, int id, double change);
-      void UpdateCellResources(cAvidaContext& ctx, 
-                               const Apto::Array<double>& res_change, const int cell_id);
-      
-    };
-  } //namespace Resource
-} //namespace Avida
+  class Feedback;
+}
+
+
+class cResourceRegistry
+{
+protected:
+  
+  Avida::Feedback& m_feedback;
+  
+  OwnedResources m_resource_ptrs;  // We own these pointers; they are unique_ptrs  
+  Resources m_resources;              // This and the following point to resources in m_resource_ptrs
+  NonSpatialResources m_ns_resources; // They do not need to be deleted.  They are provided for convenience.
+  SpatialResources m_sp_resources;    // <<
+  GradientResources m_gr_resources;   // <<
+  CellResources m_cl_resources;       // <<
+  
+  OwnedAccountants m_accountant_ptrs; // We own these pointers
+  ResourceAccts m_res_accts;          // This and the following point to resources in m_account_ptrs
+  NonSpatialResourceAccts m_ns_accts; // They do not need to be deleted.  They are provided for convenience.
+  SpatialResourceAccts m_sp_accts;    // <<
+  GradientResourceAccts m_gr_accts;   // <<
+  CellResourceAccts m_cl_accts;       // <<
+  
+  
+  std::map<ResName, cResource*> m_name_map;
+  
+  void AddResource(cResource* res);
+  
+
+public:
+  cResourceRegistry(Avida::Feedback& fb) 
+  : m_feedback(fb) 
+  {}
+  
+  cResourceRegistry(const cResourceRegistry&) = delete;
+  cResourceRegistry& operator=(const cResourceRegistry&) = delete;
+  
+  
+  ~cResourceRegistry();
+  
+  inline int GetSize() const { return m_resource_ptrs.size(); }
+  
+  //@MRR See https://scottmeyers.blogspot.co.uk/2014/07/should-move-only-types-ever-be-passed.html
+  // In short, we're transfering ownership with these methods.
+  void AddResource(std::unique_ptr<cCellResource>&& res);
+  void AddResource(std::unique_ptr<cNonSpatialResource>&& nonspat_res);
+  void AddResource(std::unique_ptr<cSpatialResource>&& spat_res);
+  void AddResource(std::unique_ptr<cGradientResource>&& grad_res);
+  
+  cResource* GetResource(const ResName& res_name);
+  cNonSpatialResource* GetNonSpatialResource(const ResName& res_name);
+  cSpatialResource* GetSpatialResource(const ResName& res_name);
+  cGradientResource* GetGradientResource(const ResName& res_name);
+  cCellResource* GetCellResource(const ResName& res_name);  
+  
+  Resources& GetResources()  { return m_resources; }
+  NonSpatialResources& GetNonSpatialResources()  { return m_ns_resources; }
+  SpatialResources& GetSpatialResources() { return m_sp_resources; }
+  GradientResources& GetGradientResources() { return m_gr_resources; }
+  CellResources& GetCellResources() { return m_cl_resources; }
+  
+  cResourceAcct* GetResourceAcct(const ResName& res_name);
+  cSpatialResourceAcct* GetSpatialResoureAcct(const ResName& res_name);
+  cNonSpatialResourceAcct* GetNonSpatialResourceAcct(const ResName& res_name);
+  cGradientResourceAcct* GetGradientResourceAcct(const ResName& res_name);
+  
+  bool DoesResourceExist(const ResName& res_name) const;
+  
+  
+  ResAmount GetResourceAmount(cAvidaContext& ctx, const ResName& res_name) const;
+  ResAmounts GetResAmounts(cAvidaContext& ctx) const;
+  ResAmounts GetResAmounts(cAvidaContext& ctx, int cell_id);
+  ResAmounts GetFrozenResAmounts(cAvidaContext& ctx, int cell_id) const;  
+  
+  
+  void TriggerDoUpdates(cAvidaContext& ctx); 
+  
+  //const Apto::Array< Apto::Array<int> >& GetCellIdLists() const; 
+  
+  
+  void UpdateResources(cAvidaContext& ctx, const ResAmounts& res_change);
+  void UpdateRandomResources(cAvidaContext& ctx, const ResAmounts& res_change);
+  void UpdateResource(cAvidaContext& ctx, ResID id, ResAmount change);
+  void UpdateCellResources(cAvidaContext& ctx, 
+                           const ResAmounts& res_change, const int cell_id);
+  
+  
+  // Resource History
+  cResourceHistory InitialHistory();
+  
+};
+
 #endif

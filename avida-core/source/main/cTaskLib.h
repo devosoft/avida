@@ -32,6 +32,7 @@ class cEnvReqs;
 class cString;
 class cWorld;
 
+using namespace Avida;
 
 class cTaskLib
 {
@@ -62,7 +63,7 @@ public:
 
   int GetSize() const { return task_array.GetSize(); }
 
-  cTaskEntry* AddTask(const cString& name, const cString& info, cEnvReqs& envreqs, Feedback& feedback);
+  cTaskEntry* AddTask(const cString& name, const cString& info, cEnvReqs& envreqs, Avida::Feedback& feedback);
   const cTaskEntry& GetTask(int id) const { return *(task_array[id]); }
   cTaskEntry * GetTaskReference(int id) { return task_array[id]; }
 
@@ -259,39 +260,39 @@ private:
   double Task_Fib10(cTaskContext& ctx) const;
   
   // Matching Tasks
-  void Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_MatchStr(cTaskContext& ctx) const;
-	void Load_MatchProdStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+	void Load_MatchProdStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_MatchProdStr(cTaskContext& ctx) const;
-  void Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_MatchNumber(cTaskContext& ctx) const;
 
   // Sequence Tasks
-  void Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_SortInputs(cTaskContext& ctx) const;
-  void Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_FibonacciSequence(cTaskContext& ctx) const;
 
   // Math Tasks
-  void Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_Mult(cTaskContext& ctx) const;
-  void Load_Div(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_Div(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_Div(cTaskContext& ctx) const;
-  void Load_Log(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_Log(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_Log(cTaskContext& ctx) const;
-  void Load_Log2(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_Log2(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_Log2(cTaskContext& ctx) const;
-  void Load_Log10(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_Log10(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_Log10(cTaskContext& ctx) const;
-  void Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_Sqrt(cTaskContext& ctx) const;
-  void Load_Sine(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_Sine(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_Sine(cTaskContext& ctx) const;
-  void Load_Cosine(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_Cosine(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_Cosine(cTaskContext& ctx) const;
 
   // Optimization Tasks
-  void Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_Optimize(cTaskContext& ctx) const;
   
   // Communication Tasks
@@ -317,32 +318,32 @@ private:
   double Task_EventKilled(cTaskContext& ctx) const;
 
   // State Grid Tasks
-  void Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_SGPathTraversal(cTaskContext& ctx) const;  
 	
 	// reputation
 	double Task_CreatePerfectStrings(cTaskContext& ctx) const; 
 	
 	// group formation 
-	void Load_FormSpatialGroup(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+	void Load_FormSpatialGroup(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
 	double Task_FormSpatialGroup(cTaskContext& ctx) const; 
-	void Load_FormSpatialGroupWithID(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+	void Load_FormSpatialGroupWithID(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
 	double Task_FormSpatialGroupWithID(cTaskContext& ctx) const; 
-	void Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+	void Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
 	double Task_LiveOnPatchRes(cTaskContext& ctx) const; 
 	
   // Feed Specific Tasks
-  void Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  void Load_ConsumeTargetEcho(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  void Load_ConsumeTargetNand(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  void Load_ConsumeTargetAnd(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  void Load_ConsumeTargetOrn(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  void Load_ConsumeTargetOr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  void Load_ConsumeTargetAndn(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  void Load_ConsumeTargetNor(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  void Load_ConsumeTargetXor(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  void Load_ConsumeTargetEqu(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-  void Load_MoveFT(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
+  void Load_ConsumeTargetEcho(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
+  void Load_ConsumeTargetNand(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
+  void Load_ConsumeTargetAnd(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
+  void Load_ConsumeTargetOrn(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
+  void Load_ConsumeTargetOr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
+  void Load_ConsumeTargetAndn(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
+  void Load_ConsumeTargetNor(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
+  void Load_ConsumeTargetXor(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
+  void Load_ConsumeTargetEqu(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
+  void Load_MoveFT(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_ConsumeTarget(cTaskContext& ctx) const;
   double Task_ConsumeTargetEcho(cTaskContext& ctx) const;
   double Task_ConsumeTargetNand(cTaskContext& ctx) const;
@@ -364,19 +365,19 @@ private:
 
   double Task_XorMax(cTaskContext& ctx) const;
 
-  void Load_CollectOddCell(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+  void Load_CollectOddCell(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
   double Task_CollectOddCell(cTaskContext& ctx) const;
 
   // String Matching Tasks
-	void Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+	void Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
 	double Task_AllOnes(cTaskContext& ctx) const;
-	void Load_RoyalRoad(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+	void Load_RoyalRoad(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
 	double Task_RoyalRoad(cTaskContext& ctx) const;
-	void Load_RoyalRoadWithDitches(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+	void Load_RoyalRoadWithDitches(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
 	double Task_RoyalRoadWithDitches(cTaskContext& ctx) const;
 	
 	// division of labor
-	void Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+	void Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs& envreqs, Avida::Feedback& feedback);
 	double Task_OpinionIs(cTaskContext& ctx) const;
 	
 

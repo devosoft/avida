@@ -26,16 +26,15 @@
 #include <fstream>
 
 #include "cString.h"
-#include "cResourceRegistry.h"
 #include "cCPUTestInfo.h"
-#include "cWorld.h"
+#include "resources/Types.h"
+#include "cResourceHistory.h"
 
 
 class cAvidaContext;
 class cBioGroup;
 class cInstSet;
-class cResourceCount;
-class cResourceHistory;
+class cWorld;
 
 using namespace Avida;
 
@@ -57,12 +56,15 @@ private:
   
   // Resource settings. Reinitialized from cCPUTestInfo on each test.
   eTestCPUResourceMethod m_res_method;
-  const cResourceHistory* m_res;
+  cResourceHistory m_res_history;
   int m_res_update;
   int m_res_cpu_cycle_offset;
 
   // Actual CPU resources.
-  cResourceRegistry& m_res_reg;
+  ResAmounts m_resource_abundances;
+  ResAmounts m_faced_cell_resource_abundances;
+  ResAmounts m_deme_resource_abundances;
+  ResAmounts m_cell_resource_abundances;
     
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
@@ -74,7 +76,7 @@ private:
   cTestCPU& operator=(const cTestCPU&); // @not_implemented
   
   // Internal methods for setting up and updating resources
-  void InitResources(cAvidaContext& ctx, int res_method = RES_INITIAL, cResourceHistory* res = NULL, int update = 0, int cpu_cycle_offset = 0);
+  void InitResources(cAvidaContext& ctx, cResourceHistory res_history, int res_method = RES_INITIAL, int update = 0, int cpu_cycle_offset = 0);
   void UpdateRandomResources(cAvidaContext& ctx, int cpu_cycles_used);
   void UpdateResources(cAvidaContext& ctx, int cpu_cycles_used);
   inline void SetResourceUpdate(cAvidaContext& ctx, int update, bool exact = true);
@@ -111,8 +113,8 @@ public:
   inline const Apto::Array< Apto::Array<int> >& GetCellIdLists();
   
   // Used by cTestCPUInterface to get/update resources
-  void ModifyResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  cResourceCount& GetResourceCount() { return m_resource_count; }
+  void ModifyResources(cAvidaContext& ctx, const ResAmounts& res_change);
+  ResAmounts& GetResourceCount() { return m_resource_abundances; }
   
   void SetSoloRes(int res_id, double res_amount) { m_test_solo_res = res_id; m_test_solo_res_lev = res_amount; }
 };
@@ -138,85 +140,80 @@ inline int cTestCPU::GetReceiveValue()
   return receive_array[cur_receive++];
 }
 
-inline const Apto::Array<double>& cTestCPU::GetResources(cAvidaContext& ctx)
+inline const ResAmounts& cTestCPU::GetResources(cAvidaContext& ctx)
 {
-  return m_resource_count.GetResources(ctx); 
+  return m_resource_abundances; 
 }
 
-inline double cTestCPU::GetResourceVal(cAvidaContext& ctx, int res_id)
+inline double cTestCPU::GetResourceVal(cAvidaContext& ctx, ResID res_id)
 {
-  const Apto::Array<double>& cell_res = m_cell_resource_count.GetResources(ctx);
-  return cell_res[res_id];
+  return m_resource_abundances[res_id];
 }
 
-inline const Apto::Array<double>& cTestCPU::GetFacedCellResources(cAvidaContext& ctx)
+inline const ResAmounts& cTestCPU::GetFacedCellResources(cAvidaContext& ctx)
 {
-  return m_faced_cell_resource_count.GetResources(ctx); 
+  return m_faced_cell_resource_abundances;
 }
  
-inline double cTestCPU::GetFacedResourceVal(cAvidaContext& ctx, int res_id)
+inline ResAmount cTestCPU::GetFacedResourceVal(cAvidaContext& ctx, ResID res_id)
 {
-  const Apto::Array<double>& faced_res = m_faced_cell_resource_count.GetResources(ctx);
-  return faced_res[res_id];
+  return m_faced_cell_resource_abundances[res_id];
 }
 
-inline const Apto::Array<double>& cTestCPU::GetAVFacedResources(cAvidaContext& ctx)
+inline const ResAmounts& cTestCPU::GetAVFacedResources(cAvidaContext& ctx)
 {
-  return m_faced_cell_resource_count.GetResources(ctx); 
+  return m_faced_cell_resource_abundances;
 }
 
-inline double cTestCPU::GetAVFacedResourceVal(cAvidaContext& ctx, int res_id)
+inline ResAmount cTestCPU::GetAVFacedResourceVal(cAvidaContext& ctx, ResID res_id)
 {
-  const Apto::Array<double>& faced_res = m_faced_cell_resource_count.GetResources(ctx);
-  return faced_res[res_id];
+  return m_faced_cell_resource_abundances[res_id];
 }
 
-inline const Apto::Array<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext& ctx)
+inline const ResAmounts& cTestCPU::GetDemeResources(int deme_id, cAvidaContext& ctx)
 {
-    return m_deme_resource_count.GetResources(ctx); 
+    return m_deme_resource_abundances; 
 }
 
-inline const Apto::Array<double>& cTestCPU::GetCellResources(int, cAvidaContext& ctx)
+inline const ResAmounts& cTestCPU::GetCellResources(int, cAvidaContext& ctx)
 {
-  return m_cell_resource_count.GetResources(ctx); 
+  return m_cell_resource_abundances; 
 }
 
-inline const Apto::Array<double>& cTestCPU::GetAVResources(cAvidaContext& ctx)
+inline const ResAmounts& cTestCPU::GetAVResources(cAvidaContext& ctx)
 {
-  return m_cell_resource_count.GetResources(ctx); 
+  return m_cell_resource_abundances; 
 }
 
-inline double cTestCPU::GetAVResourceVal(cAvidaContext& ctx, int res_id)
+inline ResAmount cTestCPU::GetAVResourceVal(cAvidaContext& ctx, ResID res_id)
 {
-  const Apto::Array<double>& cell_res = m_cell_resource_count.GetResources(ctx);
-  return cell_res[res_id];
+  return m_cell_resource_abundances[res_id];
 }
 
-inline const Apto::Array<double>& cTestCPU::GetFrozenResources(cAvidaContext& ctx, int cell_id)   
+inline const ResAmounts& cTestCPU::GetFrozenResources(cAvidaContext& ctx, ResID cell_id)   
 {
-  return m_cell_resource_count.GetResources(ctx); 
+  return m_cell_resource_abundances;
 }
 
-inline double cTestCPU::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
+inline ResAmount cTestCPU::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, ResID res_id)
 {
-  const Apto::Array<double>& cell_res = m_cell_resource_count.GetResources(ctx);
-  return cell_res[res_id];
+  return  m_cell_resource_abundances[res_id];
 }
 
-inline double cTestCPU::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
+inline ResAmount cTestCPU::GetCellResVal(cAvidaContext& ctx, int cell_id, ResID res_id)
 {
-  const Apto::Array<double>& cell_res = m_cell_resource_count.GetResources(ctx);
-  return cell_res[res_id];
+  return m_cell_resource_abundances[res_id];
 }
 
-inline const Apto::Array< Apto::Array<int> >& cTestCPU::GetCellIdLists()
+/*inline const Apto::Array< Apto::Array<int> >& cTestCPU::GetCellIdLists()
 {
 	return m_resource_count.GetCellIdLists();
 }
+*/
 
-inline void cTestCPU::SetResource(cAvidaContext& ctx, int id, double new_level)
+inline void cTestCPU::SetResource(cAvidaContext& ctx, ResID id, ResAmount new_level)
 {
-  m_resource_count.Set(ctx, id, new_level);
+  m_resource_abundances[id] = new_level;
 }
 
 #endif

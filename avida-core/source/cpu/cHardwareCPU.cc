@@ -28,6 +28,9 @@
 
 #include "avida/private/systematics/SexualAncestry.h"
 
+#include "resources/Types.h"
+#include "resources/cSpatialResource.h"
+
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
@@ -2343,6 +2346,8 @@ bool cHardwareCPU::Inst_IfAboveResLevel(cAvidaContext& ctx)
 {
   const double resCrossoverLevel = 100;
   
+  /*
+  @MRR-R
   const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
   const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
   const cResourceCount& resource_count = m_world->GetEnvironment().GetResourceRegistry().GetResourceCount();
@@ -2356,7 +2361,16 @@ bool cHardwareCPU::Inst_IfAboveResLevel(cAvidaContext& ctx)
   if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
     pher_amount += resource_count_array[res->GetID()];
   }
-	
+	*/
+ 
+  cResourceAcct* racct = m_world->GetEnvironment().GetResourceRegistry().GetResourceAcct("pheromone");
+  
+  if (racct == nullptr){
+    return false;
+  }
+  
+  ResAmount pher_amount = racct->GetCellAmount(GetOrganism()->GetCellID());
+  
   if (pher_amount > resCrossoverLevel) {
     getIP().Advance();
   }
@@ -2368,19 +2382,13 @@ bool cHardwareCPU::Inst_IfAboveResLevelEnd(cAvidaContext& ctx)
 {
   const double resCrossoverLevel = 100;
   
-  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
+  cResourceAcct* racct = m_world->GetEnvironment().GetResourceRegistry().GetResourceAcct("pheromone");
   
-  const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
-  const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
-	
-  if (resource_count.GetSize() == 0) assert(false); // change to: return false;
-	
-  double pher_amount = 0;
-  cResource* res = resLib.GetResource("pheromone");
-  
-  if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
-    pher_amount += resource_count_array[res->GetID()];
+  if (racct == nullptr){
+    return false;
   }
+  
+  ResAmount pher_amount = racct->GetCellAmount(GetOrganism()->GetCellID());
 	
   if (pher_amount > resCrossoverLevel) {
     Else_TopHalf();
@@ -2393,19 +2401,13 @@ bool cHardwareCPU::Inst_IfNotAboveResLevel(cAvidaContext& ctx)
 {
   const double resCrossoverLevel = 100;
 	
-  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
+  cResourceAcct* racct = m_world->GetEnvironment().GetResourceRegistry().GetResourceAcct("pheromone");
   
-  const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
-  const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
-  
-  if (resource_count.GetSize() == 0) assert(false); // change to: return false;
-	
-  double pher_amount = 0;
-  cResource* res = resLib.GetResource("pheromone");
-  
-  if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
-    pher_amount += resource_count_array[res->GetID()];
+  if (racct == nullptr){
+    return false;
   }
+  
+  ResAmount pher_amount = racct->GetCellAmount(GetOrganism()->GetCellID());
 	
   if (pher_amount <= resCrossoverLevel) {
     getIP().Advance();
@@ -2418,18 +2420,13 @@ bool cHardwareCPU::Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx)
 {
   const double resCrossoverLevel = 100;
   
-  const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
-  const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
-  const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
+  cResourceAcct* racct = m_world->GetEnvironment().GetResourceRegistry().GetResourceAcct("pheromone");
   
-  if (resource_count.GetSize() == 0) assert(false); // change to: return false;
-  
-  double pher_amount = 0;
-  cResource* res = resLib.GetResource("pheromone");
-  
-  if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
-    pher_amount += resource_count_array[res->GetID()];
+  if (racct == nullptr){
+    return false;
   }
+  
+  ResAmount pher_amount = racct->GetCellAmount(GetOrganism()->GetCellID());
   
   if (pher_amount <= resCrossoverLevel) {
     Else_TopHalf();

@@ -31,7 +31,6 @@
 #include "cMerit.h"
 #include "cDemeNetwork.h"
 #include "tBuffer.h"
-#include "cResourceCount.h"
 #include "cStringList.h"
 #include "cDoubleSum.h"
 
@@ -44,15 +43,19 @@ class cOrgMessagePredicate;
 class cDemePredicate;
 class cReactionResult; //@JJB**
 class cTaskState; //@JJB**
+class cResourceRegistry; //@MRR
+
 
 /*! Demes are groups of cells in the population that are somehow bound together
 as a unit.  The deme object is used from within cPopulation to manage these 
 groups. */
 
+
 class cDeme
 {
 private:
   cWorld* m_world;
+  cResourceRegistry* m_res_reg;
   int _id; //!< ID of this deme (position in cPopulation::deme_array).
   Apto::Array<int> cell_ids;
   int width; //!< Width of this deme.
@@ -115,7 +118,6 @@ private:
 
   cDeme(const cDeme&); // @not_implemented
   
-  cResourceCount deme_resource_count; //!< Resources available to the deme
   Apto::Array<int> energy_res_ids; //!< IDs of energy resources
   
   Apto::Array<cDemeCellEvent, Apto::Smart> cell_events;
@@ -260,21 +262,13 @@ public:
   //! Called when an organism living in a cell in this deme is about to be killed.
   void OrganismDeath(cPopulationCell& cell);
   
-  const cResourceCount& GetDemeResourceCount() const { return deme_resource_count; }
-  cResourceCount& GetDemeResources() { return deme_resource_count; }
-  void SetResource(cAvidaContext& ctx, int id, double new_level) { deme_resource_count.Set(ctx, id, new_level); }
-  double GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext& ctx) const;
-  void AdjustSpatialResource(cAvidaContext& ctx, int rel_cellid, int resource_id, double amount);
-  void AdjustResource(cAvidaContext& ctx, int resource_id, double amount);
-  void SetDemeResourceCount(const cResourceCount in_res) { deme_resource_count = in_res; }
-  void ResizeSpatialGrids(const int in_x, const int in_y) { deme_resource_count.ResizeSpatialGrids(in_x, in_y); }
-  void ModifyDemeResCount(cAvidaContext& ctx, const Apto::Array<double> & res_change, const int absolute_cell_id);
+  
   double GetCellEnergy(int absolute_cell_id, cAvidaContext& ctx) const; 
   double GetAndClearCellEnergy(int absolute_cell_id, cAvidaContext& ctx); 
   void GiveBackCellEnergy(int absolute_cell_id, double value, cAvidaContext& ctx); 
-  void SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world);                 
-  void UpdateDemeRes(cAvidaContext& ctx) { deme_resource_count.GetResources(ctx); } 
-  void Update(double time_step) { deme_resource_count.Update(time_step); }
+  
+  void Update(double time_step);
+  
   int GetRelativeCellID(int absolute_cell_id) const { return absolute_cell_id % GetSize(); } //!< assumes all demes are the same size
   int GetAbsoluteCellID(int relative_cell_id) const { return relative_cell_id + (_id * GetSize()); } //!< assumes all demes are the same size
 	

@@ -34,10 +34,11 @@
 #include "cPopulationCell.h"
 #include "cResource.h"
 #include "cStats.h"
-#include "cUserFeedback.h"
 #include "cWorld.h"
 #include "cResourceRegistry.h"
 #include "cResourceAcct.h"
+
+using namespace Avida;
 
 class cActionInjectResource : public cAction
 {
@@ -46,7 +47,7 @@ private:
   double m_res_count;
   
 public:
-  cActionInjectResource(cWorld* world, const cString& args, Feedback& fb) 
+  cActionInjectResource(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_res_count(0.0)
@@ -64,9 +65,8 @@ public:
     if (acct != nullptr){
       acct->AddResource(m_res_count);
     } else {
-      //m_feedback.Error("cActionInjectResource: %s is not a resource.", m_res_name);
+      m_feedback.Error("cActionInjectResource: '%s' is not a resource.", &m_res_name);
     }
-    
   }
 };
 
@@ -82,7 +82,7 @@ private:
   double m_res_count;
   
 public:
-  cActionInjectScaledResource(cWorld* world, const cString& args, Feedback& fb) 
+  cActionInjectScaledResource(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_res_count(0.0)
@@ -100,8 +100,12 @@ public:
     if (ave_merit <= 0.0) ave_merit = 1.0; // make sure that we don't get NAN's or negative numbers
     ave_merit /= m_world->GetConfig().AVE_TIME_SLICE.Get();
 
-    cResource* res = m_world->GetEnvironment().GetResourceRegistry().GetResource(m_res_name);
-    if (res != NULL) m_world->GetPopulation().UpdateResource(ctx, res->GetID(), (m_res_count / ave_merit));
+    cResourceAcct* acct = m_world->GetEnvironment().GetResourceRegistry().GetResourceAcct(m_res_name);
+    if (acct != nullptr){
+      acct->AddResource(m_res_count / ave_merit);
+    } else{
+      m_feedback.Error("cActionInjectScaledResource: '%s' is not a resource.", &m_res_name);
+    }
   }
 };
 
@@ -117,7 +121,7 @@ private:
   double m_res_percent;
   
 public:
-  cActionOutflowScaledResource(cWorld* world, const cString& args, Feedback& fb) 
+  cActionOutflowScaledResource(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_res_percent(0.0)
@@ -135,13 +139,15 @@ public:
     if (ave_merit <= 0.0) ave_merit = 1.0; // make sure that we don't get NAN's or negative numbers
     ave_merit /= m_world->GetConfig().AVE_TIME_SLICE.Get();
 
-    cResource* res = m_world->GetEnvironment().GetResourceRegistry().GetResource(m_res_name);
-    
-    double res_level = m_world->GetPopulation().GetResource(ctx, res->GetID());
-    double scaled_perc = 1 / (1 + ave_merit * (1 - m_res_percent) / m_res_percent);
-    res_level -= res_level * scaled_perc;
-    
-    if (res != NULL) m_world->GetPopulation().UpdateResource(ctx, res->GetID(), res_level);
+    cResourceAcct* acct = m_world->GetEnvironment().GetResourceRegistry().GetResourceAcct(m_res_name);
+    if (acct != nullptr){
+      double res_level = acct->GetTotalAbundance();
+      double scaled_perc = 1 / (1 + ave_merit * (1 - m_res_percent) / m_res_percent);
+      res_level -= res_level * scaled_perc;
+      acct->AddResource(res_level);
+    } else {
+      m_feedback.Error("cActionOutflowScaledResource: '%s' is not a resource.", &m_res_name);
+    }
   }
 };
 
@@ -154,7 +160,7 @@ private:
   double m_res_count;
   
 public:
-  cActionSetResource(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetResource(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_res_count(0.0)
@@ -168,7 +174,12 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SetResource(ctx, m_res_name, m_res_count);
+    cResourceAcct* acct = m_world->GetEnvironment().GetResourceRegistry().GetResourceAcct(m_res_name);
+    if (acct != nullptr){
+      acct->SetTotalAbundance(m_res_count);
+    } else {
+      m_feedback.Error("cActionSetResource: '%s' is not a resource.", &m_res_name);
+    }
   }
 };
 
@@ -181,7 +192,7 @@ class cActionSetDemeResource : public cAction
 		double m_res_count;
 		
 	public:
-		cActionSetDemeResource(cWorld* world, const cString& args, Feedback& fb) : cAction(world, args, fb), m_res_name(""), m_res_count(0.0)
+		cActionSetDemeResource(cWorld* world, const cString& args, Avida::Feedback& fb) : cAction(world, args, fb), m_res_name(""), m_res_count(0.0)
 		{
 			cString largs(args);
 			if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -203,7 +214,7 @@ class cZeroResources : public cAction
 private:
   
 public:
-  cZeroResources(cWorld* world, const cString& args, Feedback& fb) 
+  cZeroResources(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   {
     cString largs(args);
@@ -213,10 +224,9 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cResourceRegistry & res_reg = m_world->GetEnvironment().GetResourceRegistry();
+    cResourceRegistry& res_reg = m_world->GetEnvironment().GetResourceRegistry();
     for (int i=0; i < res_reg.GetSize(); i++)  {
-      cResource* res = res_reg.GetResource(i);
-      m_world->GetPopulation().SetResource(ctx, res->GetID(), 0.0);
+      res_reg.GetResourceAcct(i)->SetTotalAbundance(0.0);
     }
   }
 };
@@ -232,10 +242,12 @@ private:
   int m_res_id;
   
 public:
-  cActionSetCellResource(cWorld* world, const cString& args, Feedback& fb) 
-  : cAction(world, args, fb),
-   m_cell_list(0),
-    m_res_name(""), m_res_count(0.0)
+  cActionSetCellResource(cWorld* world, const cString& args, Avida::Feedback& fb) 
+  : cAction(world, args, fb)
+  , m_cell_list(0),
+  , m_res_name("")
+  , m_res_count(0.0)
+  , m_res_id(-1)
   {
     cString largs(args);
     if (largs.GetSize()) 
@@ -245,17 +257,27 @@ public:
     }
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
-    
-    cResource* res = m_world->GetEnvironment().GetResourceRegistry().GetResource(m_res_name);
-    assert(res);
-    m_res_id = res->GetID(); // Save the id so we don't have to do many string conversions
   }
 
   static const cString GetDescription() { return "Arguments: <int cell_id> <string res_name> <double res_count>"; }
 
   void Process(cAvidaContext& ctx)
   {
-    cResource* res = m_world->GetEnvironment().GetResourceRegistry().GetResource(m_res_id);
+    cResource* res = nullptr;
+    if (m_res_id < 0){
+      res = m_world->GetEnvironment().GetResourceRegistry().GetResource(m_res_name);
+      if (res != nullptr){
+        m_res_id = res->GetID();
+      }
+    } else {
+      res = m_world->GetEnvironment().GetResourceRegistry().GetResource(m_res_id);
+    }
+    
+    if (res == nullptr){
+      m_feedback.Error("cActionSetCellResource: '%s' is not a resource.)");
+      return;
+    }
+    
     for(int i=0; i<m_cell_list.GetSize(); i++)
     {
       int m_cell_id = m_cell_list[i];
@@ -282,7 +304,7 @@ private:
   int m_res_id;
   
 public:
-  cActionInjectCellResource(cWorld* world, const cString& args, Feedback& fb) 
+  cActionInjectCellResource(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_cell_list(0)
   , m_res_name("")
@@ -331,7 +353,7 @@ private:
   cString m_res_name;
   
 public:
-  cActionSetGradientResource(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetGradientResource(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , env_string("")
   {
@@ -347,13 +369,13 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cUserFeedback feedback;
+    cUserAvida::Feedback feedback;
     m_world->GetEnvironment().LoadLine(env_string, feedback);
     
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
+        case cUserAvida::Feedback::UF_ERROR:    cerr << "error: "; break;
+        case cUserAvida::Feedback::UF_WARNING:  cerr << "warning: "; break;
         default: break;
       };
       cerr << feedback.GetMessage(i) << endl;
@@ -370,7 +392,7 @@ private:
   double m_inflow;
   
 public:
-  cActionSetGradientPlatInflow(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetGradientPlatInflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_inflow(0.0)
@@ -398,7 +420,7 @@ private:
   double m_outflow;
   
 public:
-  cActionSetGradientPlatOutflow(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetGradientPlatOutflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_outflow(0.0)
@@ -425,7 +447,7 @@ private:
   double m_inflow;
   
 public:
-  cActionSetGradientConeInflow(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetGradientConeInflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_inflow(0.0)
@@ -452,7 +474,7 @@ private:
   double m_outflow;
   
 public:
-  cActionSetGradientConeOutflow(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetGradientConeOutflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_outflow(0.0)
@@ -479,7 +501,7 @@ private:
   double m_inflow;
   
 public:
-  cActionSetGradientInflow(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetGradientInflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_inflow(0.0)
@@ -508,7 +530,7 @@ private:
   int m_type;
   
 public:
-  cActionSetGradPlatVarInflow(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetGradPlatVarInflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_mean(0.0)
@@ -541,7 +563,7 @@ private:
   double m_detection_prob;
   
 public:
-  cActionSetPredatoryResource(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetPredatoryResource(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb), m_res_name(""), m_odds(0.0), m_juvs_per(0), m_detection_prob(0.0)
   {
     cString largs(args);
@@ -575,7 +597,7 @@ private:
   int m_count;
   
 public:
-  cActionSetProbabilisticResource(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetProbabilisticResource(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_initial(0.0)
@@ -634,7 +656,7 @@ private:
   double m_inflow_change;
   
 public:
-  cActionDecInflow(cWorld* world, const cString& args, Feedback& fb) 
+  cActionDecInflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_inflow_change(0.0)
@@ -661,7 +683,7 @@ private:
   double m_inflow_change;
   
 public:
-  cActionIncInflow(cWorld* world, const cString& args, Feedback& fb) 
+  cActionIncInflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_res_name("")
   , m_inflow_change(0.0)
@@ -688,7 +710,7 @@ private:
   cString env_string;
   
 public:
-  cActionChangeEnvironment(cWorld* world, const cString& args, Feedback& fb) 
+  cActionChangeEnvironment(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , env_string("")
   {
@@ -700,13 +722,13 @@ public:
   
   void Process(cAvidaContext&)
   {
-    cUserFeedback feedback;
+    cUserAvida::Feedback feedback;
     m_world->GetEnvironment().LoadLine(env_string, feedback);
 
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
-        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
+        case cUserAvida::Feedback::UF_ERROR:    cerr << "error: "; break;
+        case cUserAvida::Feedback::UF_WARNING:  cerr << "warning: "; break;
         default: break;
       };
       cerr << feedback.GetMessage(i) << endl;
@@ -728,7 +750,7 @@ private:
   double m_value;
   
 public:
-  cActionSetReactionValue(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetReactionValue(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_name("")
   , m_value(0.0)
@@ -754,7 +776,7 @@ private:
   double m_value;
   
 public:
-  cActionSetReactionValueMult(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetReactionValueMult(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_name("")
   , m_value(0.0)
@@ -780,7 +802,7 @@ private:
   cString m_inst;
   
 public:
-  cActionSetReactionInst(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetReactionInst(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_name("")
   , m_inst("")
@@ -805,7 +827,7 @@ private:
   int m_min_count;
   
 public:
-  cActionSetReactionMinTaskCount(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetReactionMinTaskCount(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_name("")
   , m_min_count(0)
@@ -830,7 +852,7 @@ private:
   int m_max_count;
   
 public:
-  cActionSetReactionMaxTaskCount(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetReactionMaxTaskCount(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_name("")
   , m_max_count(0)
@@ -855,7 +877,7 @@ private:
   int m_reaction_min_count;
   
 public:
-  cActionSetReactionMinCount(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetReactionMinCount(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_name("")
   , m_reaction_min_count(0)
@@ -880,7 +902,7 @@ private:
   int m_reaction_max_count;
   
 public:
-  cActionSetReactionMaxCount(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetReactionMaxCount(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_name("")
   , m_reaction_max_count(0)
@@ -905,7 +927,7 @@ private:
   cString m_task;
   
 public:
-  cActionSetReactionTask(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetReactionTask(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_name("")
   , m_task("")
@@ -921,7 +943,7 @@ public:
   {
     bool success = m_world->GetEnvironment().SetReactionTask(m_name, m_task);
     if (!success) {
-      m_world->GetDriver().Feedback().Error("SetReactionTask action failed");
+      m_world->GetDriver().Avida::Feedback().Error("SetReactionTask action failed");
       m_world->GetDriver().Abort(Avida::INTERNAL_ERROR);
     }
   }
@@ -934,7 +956,7 @@ private:
   double m_inflow;
   
 public:
-  cActionSetResourceInflow(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetResourceInflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb),
    m_name(""),
     m_inflow(0.0)
@@ -972,7 +994,7 @@ private:
   const double m_pi = 3.1415926535897932384626433832795;
   
 public:
-  cActionSetPeriodicResourceInflow(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetPeriodicResourceInflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_name("")
   , m_period(0)
@@ -1016,7 +1038,7 @@ class cActionSetDemeResourceInflow : public cAction
     double m_inflow;
     
   public:
-    cActionSetDemeResourceInflow(cWorld* world, const cString& args, Feedback& fb) 
+    cActionSetDemeResourceInflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
     : cAction(world, args, fb)
     , m_demeid(-1)
     , m_name("")
@@ -1049,7 +1071,7 @@ private:
   double m_outflow;
   
 public:
-  cActionSetResourceOutflow(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetResourceOutflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_name("")
   , m_outflow(0.0)
@@ -1086,7 +1108,7 @@ class cActionSetDemeResourceOutflow : public cAction
     double m_outflow;
     
   public:
-    cActionSetDemeResourceOutflow(cWorld* world, const cString& args, Feedback& fb) 
+    cActionSetDemeResourceOutflow(cWorld* world, const cString& args, Avida::Feedback& fb) 
     : cAction(world, args, fb)
     , m_demeid(-1)
     , m_name("")
@@ -1117,7 +1139,7 @@ private:
   Apto::Array<int> m_inputs;
   
 public:
-  cActionSetEnvironmentInputs(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetEnvironmentInputs(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_inputs()
   {
@@ -1165,7 +1187,7 @@ private:
   unsigned int m_mask;
   
 public:
-  cActionSetEnvironmentRandomMask(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetEnvironmentRandomMask(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_mask(0)
   {
@@ -1196,7 +1218,7 @@ private:
   int m_value;
   
 public:
-  cActionSetTaskArgInt(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetTaskArgInt(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_task(0)
   , m_arg(0)
@@ -1216,7 +1238,7 @@ public:
     if (m_task >= 0 && m_task < env.GetNumTasks()) {
       env.GetTask(m_task).GetArguments().SetInt(m_arg, m_value);
     } else {
-      m_world->GetDriver().Feedback().Error("Task specified in SetTaskArgInt action does not exist");
+      m_world->GetDriver().Avida::Feedback().Error("Task specified in SetTaskArgInt action does not exist");
       m_world->GetDriver().Abort(Avida::INTERNAL_ERROR);
     }
   }
@@ -1238,7 +1260,7 @@ private:
   cString m_global_res_name;
   
 public:
-  cActionMergeResourceAcrossDemes(cWorld* world, const cString& args, Feedback& fb) 
+  cActionMergeResourceAcrossDemes(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_deme_res_name("")
   , m_global_res_name("")
@@ -1305,7 +1327,7 @@ private:
 	cString m_res_name;
 
 public:
-	cActionSetSeasonalResource(cWorld* world, const cString& args, Feedback& fb)
+	cActionSetSeasonalResource(cWorld* world, const cString& args, Avida::Feedback& fb)
   : cAction(world, args, fb)
   , m_res_name("")
 	{
@@ -1334,7 +1356,7 @@ private:
 	double m_scale;
 		
 public:
-	cActionSetSeasonalResource1Kyears_1To_1(cWorld* world, const cString& args, Feedback& fb)
+	cActionSetSeasonalResource1Kyears_1To_1(cWorld* world, const cString& args, Avida::Feedback& fb)
   : cAction(world, args, fb)
   , m_res_name("")
   , m_scale(1.0)
@@ -1368,7 +1390,7 @@ private:
 	double m_scale;
 	
 public:
-	cActionSetSeasonalResource10Kyears_1To_1(cWorld* world, const cString& args, Feedback& fb)
+	cActionSetSeasonalResource10Kyears_1To_1(cWorld* world, const cString& args, Avida::Feedback& fb)
   : cAction(world, args, fb)
   , m_res_name("")
   , m_scale(1.0)
@@ -1408,7 +1430,7 @@ private:
   double initY;
 
 public:
-  cActionSetPeriodicResource(cWorld* world, const cString& args, Feedback& fb)
+  cActionSetPeriodicResource(cWorld* world, const cString& args, Avida::Feedback& fb)
   : cAction(world, args, fb)
   , m_res_name("")
   , amplitude(1.0)
@@ -1447,7 +1469,7 @@ private:
   int newValue;
 
 public:
-  cActionSetNumInstBefore0Energy(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetNumInstBefore0Energy(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , newValue(0)
   {
@@ -1471,7 +1493,7 @@ private:
   double m_value;
   
 public:
-  cActionSetTaskArgDouble(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetTaskArgDouble(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , m_task(0)
   , m_arg(0)
@@ -1491,7 +1513,7 @@ public:
     if (m_task >= 0 && m_task < env.GetNumTasks()) {
       env.GetTask(m_task).GetArguments().SetDouble(m_arg, m_value);
     } else {
-      m_world->GetDriver().Feedback().Error("Task specified in SetTaskArgDouble action does not exist");
+      m_world->GetDriver().Avida::Feedback().Error("Task specified in SetTaskArgDouble action does not exist");
       m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
     }
   }
@@ -1506,7 +1528,7 @@ private:
   cString m_value;
   
 public:
-  cActionSetTaskArgString(cWorld* world, const cString& args, Feedback& fb) : cAction(world, args, fb), m_task(0), m_arg(0), m_value("")
+  cActionSetTaskArgString(cWorld* world, const cString& args, Avida::Feedback& fb) : cAction(world, args, fb), m_task(0), m_arg(0), m_value("")
   {
     cString largs(args);
     if (largs.GetSize()) m_task = largs.PopWord().AsInt();
@@ -1522,7 +1544,7 @@ public:
     if (m_task >= 0 && m_task < env.GetNumTasks()) {
       env.GetTask(m_task).GetArguments().SetString(m_arg, m_value);
     } else {
-      m_world->GetDriver().Feedback().Error("Task specified in SetTaskArgString action does not exist");
+      m_world->GetDriver().Avida::Feedback().Error("Task specified in SetTaskArgString action does not exist");
       m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
     }
   }
@@ -1532,7 +1554,7 @@ class cActionSetOptimizeMinMax : public cAction
   {
     
   public:
-    cActionSetOptimizeMinMax(cWorld* world, const cString& args, Feedback& fb) 
+    cActionSetOptimizeMinMax(cWorld* world, const cString& args, Avida::Feedback& fb) 
     : cAction(world, args, fb) 
     { ; }
     
@@ -1576,7 +1598,7 @@ public:
   cString inputOutput;
 
 public:
-  cActionSetDemeIOGrid(cWorld* world, const cString& args, Feedback& fb)
+  cActionSetDemeIOGrid(cWorld* world, const cString& args, Avida::Feedback& fb)
   : cAction(world, args, fb)
   , cell_list(0)
   , inputOutput("none")
@@ -1619,7 +1641,7 @@ public:
 //private:
 //  Apto::Array<int> cell_list;
 //public:
-//  cActionSendOrgInterruptMessage(cWorld* world, const cString& args, Feedback&) :
+//  cActionSendOrgInterruptMessage(cWorld* world, const cString& args, Avida::Feedback&) :
 //    cAction(world, args)
 //  , cell_list(0)
 //  {
@@ -1634,7 +1656,7 @@ public:
 //private:
 //  Apto::Array<int> cell_list;
 //public:
-//  cActionSendAvatarsInterruptMessage(cWorld* world, const cString& args, Feedback&) :
+//  cActionSendAvatarsInterruptMessage(cWorld* world, const cString& args, Avida::Feedback&) :
 //    cAction(world, args)
 //  , cell_list(0)
 //  {
@@ -1652,7 +1674,7 @@ private:
   bool m_static_position;
   
 public:
-  cActionDelayedDemeEvent(cWorld* world, const cString& args, Feedback& fb)
+  cActionDelayedDemeEvent(cWorld* world, const cString& args, Avida::Feedback& fb)
   : cAction(world, args, fb)
   , m_x1(-1)
   , m_y1(-1)
@@ -1699,7 +1721,7 @@ private:
   bool m_static_position;
   
 public:
-  cActionDelayedDemeEventsPerSlots(cWorld* world, const cString& args, Feedback& fb)
+  cActionDelayedDemeEventsPerSlots(cWorld* world, const cString& args, Avida::Feedback& fb)
   : cAction(world, args, fb)
   , m_x1(-1)
   , m_y1(-1)
@@ -1744,7 +1766,7 @@ private:
 	double factionTreatable; // total number of unique event to create; they may overlab
 	
 public:
-	cActionSetFracDemeTreatable(cWorld* world, const cString& args, Feedback& fb) 
+	cActionSetFracDemeTreatable(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   , factionTreatable(0.0) 
   {
@@ -1772,7 +1794,7 @@ private:
     cString m_fname;
     
 public:
-    cActionSetMigrationMatrix(cWorld* world, const cString& args, Feedback& fb) 
+    cActionSetMigrationMatrix(cWorld* world, const cString& args, Avida::Feedback& fb) 
     : cAction(world, args, fb) 
     {
         cString largs(args);
@@ -1783,7 +1805,7 @@ public:
     
     void Process(cAvidaContext& ctx)
     {
-      cUserFeedback feedback;
+      cUserAvida::Feedback feedback;
       bool count_parasites = false;
       bool count_offspring = false;
       if(m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get() > 0.0)
@@ -1801,7 +1823,7 @@ private:
     double alter_amount;
     
 public:
-  cActionAlterMigrationConnection(cWorld* world, const cString& args, Feedback& fb) 
+  cActionAlterMigrationConnection(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb) 
   {
     cString largs(args);
@@ -1829,7 +1851,7 @@ private:
   cString m_value;
   
 public:
-  cActionSetConfig(cWorld* world, const cString& args, Feedback& fb) 
+  cActionSetConfig(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
   {
     cString largs(args);
@@ -1837,7 +1859,7 @@ public:
     if (largs.GetSize()) m_value = largs.PopWord();
     
     if (!m_world->GetConfig().HasEntry(m_cvar)) {
-      m_world->GetDriver().Feedback().Error("Config variable specified in SetConfig action exist");
+      m_world->GetDriver().Avida::Feedback().Error("Config variable specified in SetConfig action exist");
       m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
     }
   }

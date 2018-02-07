@@ -34,8 +34,6 @@
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cResource.h"
-#include "cResourceCount.h"
-#include "cResourceHistory.h"
 #include "cResourceRegistry.h"
 #include "cStringUtil.h"
 #include "cTestCPUInterface.h"
@@ -46,6 +44,7 @@
 
 using namespace std;
 using namespace AvidaTools;
+using namespace Avida::Resource;
 
 
 cTestCPU::cTestCPU(cAvidaContext& ctx, cWorld* world)
@@ -54,21 +53,21 @@ cTestCPU::cTestCPU(cAvidaContext& ctx, cWorld* world)
 	m_use_manual_inputs = false;
   m_test_solo_res = -1;
   m_test_solo_res_lev = 0;
-  InitResources(ctx);
+  InitResources(ctx, cResourceHistory());
 }  
 
  
-void cTestCPU::InitResources(cAvidaContext& ctx, int res_method, cResourceHistory* res, int update, int cpu_cycle_offset)
+void cTestCPU::InitResources(cAvidaContext& ctx, cResourceHistory resource_history, int res_method, int update, int cpu_cycle_offset)
 {  
   //FOR DEMES
-  m_deme_resource_count.SetSize(0);
+  m_deme_resource_abundances.ResizeClear(0);
 
   m_res_method = (eTestCPUResourceMethod)res_method;
   // Make sure it's valid
   if (res_method < 0 || res_method >= RES_LAST) m_res_method = RES_INITIAL;
   
   // Setup the resources...
-  m_res = res;
+  m_res_history = resource_history;
   m_res_cpu_cycle_offset = cpu_cycle_offset;
   m_res_update = update;
 
@@ -81,32 +80,31 @@ void cTestCPU::InitResources(cAvidaContext& ctx, int res_method, cResourceHistor
   // If they didn't send anything (usually during an avida run as opposed to analyze mode),
   // then we set up a static variable (or just point to it) that reflects the initial conditions of the run
   // from the environment file.  (JEB -- This code moved from cAnalyze::cAnalyze).
-  if (m_res_method == RES_INITIAL)
+  if (m_res_method == RES_INITIAL || resource_history.Empty())
   {
     // Initialize the time oriented resource list to be just the initial
     // concentrations of the resources in the environment.  This will only
     // be changed if LOAD_RESOURCES analyze command is called.  If there are
     // no resources in the environment or there is no environment, the list
     // is empty then the all resources will default to 0.0
-    m_res = &m_world->GetEnvironment().GetResourceRegistry().GetInitialResourceLevels();
+    m_res_history.AddEntry(0, m_world->GetEnvironment().GetResourceRegistry().GetInitialResourceLevels());
   }
   
   const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   assert(resource_reg.GetSize() >= 0);
   
   // Set the resource count to zero by default
-  m_resource_count.SetSize(resource_reg.GetSize());
-  m_faced_cell_resource_count.SetSize(resource_reg.GetSize());
-  m_cell_resource_count.SetSize(resource_reg.GetSize());
-  for (int i = 0; i < resource_reg.GetSize(); i++) {
-    m_resource_count.Set(ctx, i, 0.0);
-    m_faced_cell_resource_count.Set(ctx, i, 0.0);
-    m_cell_resource_count.Set(ctx, i, 0.0);
-  }
-    
+  m_resource_abundances.ResizeClear(resource_reg.GetSize());
+  m_resource_abundances.SetAll(0.0);  
+  m_faced_cell_resource_abundances.ResizeClear(resource_reg.GetSize());
+  m_faced_cell_resource_abundances.SetAll(0.0);
+  m_cell_resource_abundances.ResizeClear(resource_reg.GetSize());
+  m_cell_resource_abundances.ResizeClear(0.0);
+
+
   if (m_test_solo_res == -1) SetResourceUpdate(ctx, m_res_update, false);
   // Round down to the closest update to choose how to initialize resources
-  else m_resource_count.Set(ctx, m_test_solo_res, m_test_solo_res_lev);
+  else m_resource_abundances[m_test_solo_res] =  m_test_solo_res_lev;
 }
 
 void cTestCPU::UpdateResources(cAvidaContext& ctx, int cpu_cycles_used)
@@ -126,17 +124,23 @@ void cTestCPU::UpdateRandomResources(cAvidaContext& ctx, int cpu_cycles_used)
 inline void cTestCPU::SetResourceUpdate(cAvidaContext& ctx, int update, bool round_to_closest)
 {
   // No resources defined? -- you can't do this!
-  if (!m_res) return;
+  if (m_res_history.Empty()) return;
 
   m_res_update = update;
   
-  m_res->GetResourceCountForUpdate(ctx, update, m_resource_count, !round_to_closest);
+  m_res_history.GetResourceAbundances(update, m_resource_abundances, !round_to_closest);
 }
 
 void cTestCPU::ModifyResources(cAvidaContext& ctx, const Apto::Array<double>& res_change)
 {
   //We only let the testCPU modify the resources if we are using a DEPLETABLE option. @JEB
-  if (m_res_method >= RES_UPDATED_DEPLETABLE) m_resource_count.Modify(ctx, res_change);
+  if (m_res_method >= RES_UPDATED_DEPLETABLE){
+      for (int k = 0; k < m_resource_abundances.GetSize(); k++){
+        double amt = m_resource_abundances[k] + res_change[k];
+        m_resource_abundances[k] = (amt > 0.0) ? amt : 0.0;
+      }
+  }
+  
 }
 
 
@@ -158,7 +162,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
   cur_receive = 0;
 
   // Prepare the resources
-  InitResources(ctx, test_info.m_res_method, test_info.m_res, test_info.m_res_update, test_info.m_res_cpu_cycle_offset);
+  InitResources(ctx, test_info.m_res, test_info.m_res_method, test_info.m_res_update, test_info.m_res_cpu_cycle_offset);
 	
 	
   // This way of keeping track of time is only used to update resources...

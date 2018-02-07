@@ -22,12 +22,24 @@
 #include "cResourceHistory.h"
 
 #include "cInitFile.h"
-#include "cResourceCount.h"
 #include "cStringList.h"
 
-using namespace Avida::Resource;
 
-int cResourceHistory::getEntryForUpdate(int update, bool exact) const
+cResourceHistory::cResourceHistory(const cResourceHistory& _in)
+{
+  (*this) = _in;
+}
+
+cResourceHistory& cResourceHistory::operator=(const cResourceHistory& _in)
+{
+  Apto::Array<sResourceHistoryEntry> m_entries(_in.m_entries.GetSize());
+  for (int k=0; k < _in.m_entries.GetSize(); k++)
+    m_entries[k] = _in.m_entries[k];
+  return (*this);
+}
+
+
+int cResourceHistory::GetEntryForUpdate(int update, bool exact) const
 {
   int entry = -1;
   
@@ -41,33 +53,18 @@ int cResourceHistory::getEntryForUpdate(int update, bool exact) const
   } else {
     // Find the update that is closest to the born update, round down
     entry = 0;
-    for (; entry < m_entries.GetSize(); entry++) if (m_entries[entry].update > update) break;
-    if (entry > 0) entry--;
+    for (; entry < m_entries.GetSize(); entry++) 
+      if (m_entries[entry].update > update) break;
+      if (entry > 0) entry--;
   }
 
   return entry;
 }
 
-bool cResourceHistory::GetResourceCountForUpdate(cAvidaContext& ctx, int update, cResourceCount& rc, bool exact) const
-{
-  int entry = getEntryForUpdate(update, exact);
-  if (entry == -1) return false;
-      
-  for (int i = 0; i < rc.GetSize(); i++) {
-    if (entry >= m_entries.GetSize() || i >= m_entries[entry].values.GetSize()) {
-			rc.Set(ctx, i, 0.0);
-		}
-    else {
-			rc.Set(ctx, i, m_entries[entry].values[i]);
-		}
-  }
-  
-  return true;
-}
 
-bool cResourceHistory::GetResourceLevelsForUpdate(int update, Apto::Array<double>& levels, bool exact) const
+bool cResourceHistory::GetResourceAbundances(int update, ResAmounts& levels, bool exact) const
 {
-  int entry = getEntryForUpdate(update, exact);
+  int entry = GetEntryForUpdate(update, exact);
   if (entry == -1) return false;
   
   levels.Resize(m_entries[entry].values.GetSize());
@@ -79,7 +76,7 @@ bool cResourceHistory::GetResourceLevelsForUpdate(int update, Apto::Array<double
   return true;
 }
 
-void cResourceHistory::AddEntry(int update, const Apto::Array<double>& values)
+void cResourceHistory::AddEntry(int update, const ResAmounts& values)
 {
   // Note that this method does not currently validate that 'update' does not already exist as an entry
   // If this happens, incorrect resource levels may be returned upon retreival
@@ -95,23 +92,24 @@ bool cResourceHistory::LoadFile(const cString& filename, const cString& working_
   cInitFile file(filename, working_dir);
   
   if (!file.WasOpened()) {
-//    tConstListIterator<cString> err_it(file.GetErrors());
-//    const cString* errstr = NULL;
-//    while ((errstr = err_it.Next())) m_world->GetDriver().RaiseException(*errstr);
-//    m_world->GetDriver().RaiseFatalException(1, cString("Could not open instruction set '") + filename + "'.");
     return false;
   }
   
-  m_entries.Resize(file.GetNumLines());
   for (int line = 0; line < file.GetNumLines(); line++) {
     cStringList cur_line(file.GetLine(line));
     assert(cur_line.GetSize());
     
-    m_entries[line].update = cur_line.Pop().AsInt();
+    sResourceHistoryEntry entry;
+    if (cur_line.GetSize())
+      entry.update = cur_line.Pop().AsInt();
+    else
+      return false;
     
-    int num_values = cur_line.GetSize();
-    m_entries[line].values.Resize(num_values);
-    for (int i = 0; i < num_values; i++) m_entries[line].values[i] = cur_line.Pop().AsDouble();
+    while (cur_line.GetSize()){
+      entry.values.Push(cur_line.Pop().AsDouble());
+    }
+    
+    m_entries[line] = entry;
   }
   
   return true;

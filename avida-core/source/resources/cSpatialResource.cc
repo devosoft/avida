@@ -10,6 +10,28 @@
 
 using namespace AvidaTools;
 
+
+cSpatialResource::cSpatialResource(const cSpatialResource& _res)
+: cRatedResource(_res)
+{
+  *this = _res;
+}
+
+cSpatialResource& cSpatialResource::operator=(const cSpatialResource& _res)
+{
+  this->cRatedResource::operator=(_res);
+  m_geometry = _res.m_geometry;
+  m_diffuse_x = _res.m_diffuse_x;
+  m_diffuse_y = _res.m_diffuse_y;
+  m_gravity_x = _res.m_gravity_x;
+  m_gravity_y = _res.m_gravity_y;
+  m_inflow_boxes = _res.m_inflow_boxes;
+  m_outflow_boxes = _res.m_outflow_boxes;
+  m_cell_list = _res.m_cell_list;
+}
+
+
+
 void cSpatialResourceAcct::SetupGeometry()
 {
     /* Pointer 0 will point to the cell above and to the left the current cell

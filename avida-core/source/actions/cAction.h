@@ -40,11 +40,11 @@ private:
 protected:
   cWorld* m_world;
   cString m_args;
-  Feedback& m_feedback;
+  Avida::Feedback& m_feedback;
   
 public:
 
-  cAction(cWorld* world, const cString& args, Feedback& fb) 
+  cAction(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : m_world(world)
   , m_args(args)
   , m_feedback(fb) 

@@ -12,6 +12,77 @@
 #include <cmath>
 
 
+cGradientResource::cGradientResource(const cGradientResource& _res)
+: cAbstractResource(_res)
+{
+  *this = _res;
+}
+
+cGradientResource& cGradientResource::operator=(const cGradientResource& _res)
+{
+  #define cp(NAME) m_ ## NAME = _res.m_ ## NAME ;
+  cp(geometry);
+  cp(peaks);
+  cp(min_height);
+  cp(min_radius);
+  cp(radius_range);
+  cp(ah);
+  cp(ar);
+  cp(acx);
+  cp(acy);
+  cp(update_step);
+  cp(hstepscale);
+  cp(rstepscale);
+  cp(cstepscalex);
+  cp(cstepscaley);
+  cp(hstep);
+  cp(rstep);
+  cp(cstepx);
+  cp(cstepy);
+  cp(update_dynamic);
+  cp(peakx);
+  cp(peaky);
+  cp(height);
+  cp(spread);
+  cp(plateau);
+  cp(decay);
+  cp(max_x);
+  cp(max_y);
+  cp(min_x)
+  cp(min_y);
+  cp(move_a_scaler);
+  cp(updatestep);
+  cp(halo);
+  cp(halo_inner_radius);
+  cp(halo_width);
+  cp(halo_anchor_x);
+  cp(halo_anchor_y);
+  cp(skip_moves);
+  cp(move_speed);
+  cp(move_resistance);
+  cp(plateau_inflow);
+  cp(plateau_outflow);
+  cp(cone_inflow);
+  cp(cone_outflow);
+  cp(gradient_inflow);
+  cp(is_plateau_common)
+  cp(floor);
+  cp(habitat);
+  cp(min_size);
+  cp(max_size);
+  cp(config);
+  cp(count);
+  cp(resistance);
+  cp(threshold);
+  cp(refuge);
+  cp(predator_odds);
+  cp(predator);
+  cp(is_path);
+  #undef cp
+  return *this;
+}
+
+
 /* 
 cGradientResourceAcct is designed to give moving peaks of resources.
 Peaks are <optionally> capped with plateaus. The slope of the peaks is

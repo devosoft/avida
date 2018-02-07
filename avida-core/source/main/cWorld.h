@@ -22,6 +22,7 @@
 #ifndef cWorld_h
 #define cWorld_h
 
+#include "avida/core/Feedback.h"
 #include "avida/core/Types.h"
 #include "avida/data/Types.h"
 
@@ -29,6 +30,7 @@
 
 #include "cAvidaConfig.h"
 #include "cAvidaContext.h"
+
 
 #include <cassert>
 
@@ -66,8 +68,6 @@ protected:
   Apto::SmartPtr<cStats, Apto::InternalRCObject> m_stats;
   cMigrationMatrix* m_mig_mat;  
   WorldDriver* m_driver;
-  
-  cUserFeedback m_queued_feedback;
   
   Data::ManagerPtr m_data_mgr;
 

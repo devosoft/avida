@@ -24,10 +24,11 @@
 #define cInitFile_h
 
 #include "apto/core.h"
+#include "avida/core/Feedback.h"
 
 #include "cString.h"
 #include "cStringList.h"
-#include "cUserFeedback.h"
+
 
 #include <iostream>
 
@@ -39,7 +40,7 @@ private:
   cString m_filename;
   bool m_found;
   bool m_opened;
-  mutable cUserFeedback m_feedback;
+  Avida::Feedback& m_feedback;
   
   struct sLine {
     cString line;
@@ -65,15 +66,19 @@ private:
   
 
 public:
-  cInitFile(const cString& filename, const cString& working_dir, Feedback& feedback, const Apto::Set<Apto::String>* custom_directives = NULL, const Apto::Map<Apto::String, Apto::String>* mappings = NULL);
+
+  cInitFile(const cString& filename, const cString& working_dir, Avida::Feedback& feedback, const Apto::Set<Apto::String>* custom_directives = NULL, const Apto::Map<Apto::String, Apto::String>* mappings = NULL);
+  
   cInitFile(const cString& filename, const cString& working_dir, const Apto::Set<Apto::String>* custom_directives = NULL, const Apto::Map<Apto::String, Apto::String>* mappings = NULL);
+  
   cInitFile(const cString& filename, const Apto::Map<Apto::String, Apto::String>& mappings, const cString& working_dir);
+  
   cInitFile(std::istream& in_stream, const cString& working_dir);
+  
   ~cInitFile();
   
   bool WasFound() const { return m_found; }
   bool WasOpened() const { return m_opened; }
-  const cUserFeedback& GetFeedback() const { return m_feedback; }
   const Apto::Map<Apto::String, Apto::String>& GetCustomDirectives() const { return m_custom_directives; }
   
   void Save(const cString& in_filename = "");
@@ -145,9 +150,9 @@ public:
 private:
   void initMappings(const Apto::Map<Apto::String, Apto::String>& mappings);
   bool loadFile(const cString& filename, Apto::Array<sLine*, Apto::Smart>& lines, const cString& working_dir,
-                const Apto::Set<Apto::String>* custom_directives, Feedback& feedback);
+                const Apto::Set<Apto::String>* custom_directives, Avida::Feedback& feedback);
   bool processCommand(cString cmdstr, Apto::Array<sLine*, Apto::Smart>& lines, const cString& filename, int linenum,
-                      const cString& working_dir, const Apto::Set<Apto::String>* custom_directives, Feedback& feedback);
+                      const cString& working_dir, const Apto::Set<Apto::String>* custom_directives, Avida::Feedback& feedback);
   void postProcess(Apto::Array<sLine*, Apto::Smart>& lines);
 };
 

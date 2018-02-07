@@ -722,16 +722,19 @@
 		70FEF6371381CAB900A9D082 /* Manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
 		70FEF6381381CAB900A9D082 /* Provider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Provider.h; sourceTree = "<group>"; };
 		70FEF65D1382C48900A9D082 /* Manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Manager.cc; sourceTree = "<group>"; };
+		B411876D202A836700EEEE2B /* PtrUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PtrUtilities.h; sourceTree = "<group>"; };
 		B448383E200E56E0008E4298 /* cCellResource.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cCellResource.cc; sourceTree = "<group>"; };
 		B448383F200E56E0008E4298 /* cCellResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cCellResource.h; sourceTree = "<group>"; };
 		B44EA53D200BFF69001A7273 /* cResourceAcct.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cResourceAcct.cc; sourceTree = "<group>"; };
 		B44EA53E200BFF69001A7273 /* cResourceAcct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cResourceAcct.h; sourceTree = "<group>"; };
 		B44EA541200C0A57001A7273 /* cSpatialResource.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cSpatialResource.cc; sourceTree = "<group>"; };
 		B44EA542200C0A57001A7273 /* cSpatialResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cSpatialResource.h; sourceTree = "<group>"; };
+		B45127CB2017776300E7E69C /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		B451611B200BD02E00B02422 /* cResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cResource.h; sourceTree = "<group>"; };
 		B451611C200BD2B700B02422 /* cResource.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cResource.cc; sourceTree = "<group>"; };
 		B451611E200BD30700B02422 /* cNonSpatialResource.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cNonSpatialResource.cc; sourceTree = "<group>"; };
 		B451611F200BD30700B02422 /* cNonSpatialResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cNonSpatialResource.h; sourceTree = "<group>"; };
+		B456AED02010269900094002 /* cBufferedFeedback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cBufferedFeedback.h; sourceTree = "<group>"; };
 		B462B5C00FA0F47D00F379D1 /* cPhenPlastSummary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cPhenPlastSummary.h; sourceTree = "<group>"; };
 		B4B94187200D2E0C0096D20A /* cGradientResource.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cGradientResource.cc; sourceTree = "<group>"; };
 		B4B94188200D2E0D0096D20A /* cGradientResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cGradientResource.h; sourceTree = "<group>"; };
@@ -1370,6 +1373,7 @@
 				B4B9418B200D66E30096D20A /* cOffsetLinearGrid.h */,
 				B448383E200E56E0008E4298 /* cCellResource.cc */,
 				B448383F200E56E0008E4298 /* cCellResource.h */,
+				B45127CB2017776300E7E69C /* Types.h */,
 			);
 			path = resources;
 			sourceTree = "<group>";
@@ -1617,6 +1621,8 @@
 				70B08B8C08FB2E5500FC65FE /* tList.h */,
 				70B08B8D08FB2E5500FC65FE /* tMatrix.h */,
 				700E28CF0859FFD700CF158A /* tObjectFactory.h */,
+				B456AED02010269900094002 /* cBufferedFeedback.h */,
+				B411876D202A836700EEEE2B /* PtrUtilities.h */,
 			);
 			path = tools;
 			sourceTree = "<group>";
@@ -2037,6 +2043,8 @@
 		702442D80859E0B00059BD9B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2065,6 +2073,8 @@
 		702442D90859E0B00059BD9B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
