@@ -7,20 +7,18 @@
 #include <memory>
 #include <utility>
 
-void cResourceRegistry::AddResource(std::unique_ptr<cNonSpatialResource>&& res)
+void cResourceRegistry::AddResource(cNonSpatialResource* res)
 {
   assert(res);
   
   if (m_name_map.count(res->GetName()) == 0){
-    
     // Register our resource; m_resource_ptrs contains the only ownership
-    auto lres = res.get();
-    m_ns_resources.push_back(lres);
-    auto base_res = static_cast_ptr<cResource>(res);  //Must upcast explicitly
+    m_ns_resources.push_back(res);
+    auto base_res = std::unique_ptr<cResource>(res);
     m_resource_ptrs.push_back(std::move(base_res));
     
-    // Create and register our accountant; only m_
-    auto acct = std::unique_ptr<cNonSpatialResourceAcct>(new cNonSpatialResourceAcct(*lres));
+    // Register our accountant; m_accountant_ptrs contains the only ownership
+    auto acct = std::unique_ptr<cNonSpatialResourceAcct>(new cNonSpatialResourceAcct(*res));
     m_ns_accts.push_back(acct.get());
     auto base_acct = static_cast_ptr<cResourceAcct>(acct);
     m_accountant_ptrs.push_back(std::move(base_acct));
@@ -29,20 +27,18 @@ void cResourceRegistry::AddResource(std::unique_ptr<cNonSpatialResource>&& res)
   }
 }
 
-void cResourceRegistry::AddResource(std::unique_ptr<cSpatialResource>&& res)
+void cResourceRegistry::AddResource(cSpatialResource* res)
 {
   assert(res);
   
-  if (m_name_map.count(res->GetName()) == 0){
-    
+ if (m_name_map.count(res->GetName()) == 0){
     // Register our resource; m_resource_ptrs contains the only ownership
-    auto lres = res.get();
-    m_sp_resources.push_back(lres);
-    auto base_res = static_cast_ptr<cResource>(res);  //Must upcast explicitly
+    m_sp_resources.push_back(res);
+    auto base_res = std::unique_ptr<cResource>(res);
     m_resource_ptrs.push_back(std::move(base_res));
     
-    // Create and register our accountant; only m_
-    auto acct = std::unique_ptr<cSpatialResourceAcct>(new cSpatialResourceAcct(*lres));
+    // Register our accountant; m_accountant_ptrs contains the only ownership
+    auto acct = std::unique_ptr<cSpatialResourceAcct>(new cSpatialResourceAcct(*res));
     m_sp_accts.push_back(acct.get());
     auto base_acct = static_cast_ptr<cResourceAcct>(acct);
     m_accountant_ptrs.push_back(std::move(base_acct));
@@ -51,7 +47,7 @@ void cResourceRegistry::AddResource(std::unique_ptr<cSpatialResource>&& res)
   }
 }
 
-void cResourceRegistry::AddResource(std::unique_ptr< res)
+void cResourceRegistry::AddResource(cGradientResource* res)
 {
   
 }

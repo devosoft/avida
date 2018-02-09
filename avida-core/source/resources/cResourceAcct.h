@@ -78,6 +78,7 @@ class cAbstractSpatialResourceAcct : public cResourceAcct
       return m_abundance[cell_id];
     }
     
+    
     virtual void AddResource(ResAmount amount)
     {
       ResAmount delta = amount / GetSize();
@@ -102,6 +103,12 @@ class cAbstractSpatialResourceAcct : public cResourceAcct
     }
     
     virtual ResAmount operator[](int cell_id) const
+    {
+      return m_abundance[cell_id];
+    }
+    
+    
+    virtual ResAmount operator()(int cell_id) const
     {
       return m_abundance[cell_id];
     }

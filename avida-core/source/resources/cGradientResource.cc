@@ -13,7 +13,7 @@
 
 
 cGradientResource::cGradientResource(const cGradientResource& _res)
-: cAbstractResource(_res)
+: cResource(_res)
 {
   *this = _res;
 }

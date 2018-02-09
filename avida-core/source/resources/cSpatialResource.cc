@@ -30,18 +30,42 @@ cSpatialResource& cSpatialResource::operator=(const cSpatialResource& _res)
   m_cell_list = _res.m_cell_list;
 }
 
+void cSpatialResource::AddInflowBox(int x1, int x2, int y1, int y2)
+{
+  int width = abs(x2-x1) + 1;
+  int height = abs(y2-y1) + 1;
+  m_inflow_boxes.Push(cCellBox(x1,y1,width,height));
+}
+
+void cSpatialResource::AddOutflowBox(int x1, int x2, int y1, int y2)
+{
+  int width = abs(x2-x1) + 1;
+  int height = abs(y2-y1) + 1;
+  m_outflow_boxes.Push(cCellBox(x1,y1,width,height));
+}
+
+void cSpatialResource::AddInflowCellBox(const cCellBox& cbox)
+{
+  m_inflow_boxes.Push(cbox);
+}
+
+void cSpatialResource::AddOutflowCellBox(const cCellBox& cbox)
+{
+  m_outflow_boxes.Push(cbox);
+}
+
 
 
 void cSpatialResourceAcct::SetupGeometry()
 {
-    /* Pointer 0 will point to the cell above and to the left the current cell
-     and will go clockwise around the cell.                               */
-
+  /* Pointer 0 will point to the cell above and to the left the current cell
+   and will go clockwise around the cell.                               */
+  
   int     i,ii;
   double  SQRT2 = sqrt(2.0);
-
+  
   /* First treat all cells like they are in a torus */
-
+  
   for (i = 0; i < m_cells.GetSize(); i++) {
     m_cells[i].SetPtr(0 ,GridNeighbor(i, m_size_x, m_size_y, -1, -1), -1, -1, SQRT2);
     m_cells[i].SetPtr(1 ,GridNeighbor(i, m_size_x, m_size_y,  0, -1),  0, -1, 1.0);
@@ -52,33 +76,33 @@ void cSpatialResourceAcct::SetupGeometry()
     m_cells[i].SetPtr(6 ,GridNeighbor(i, m_size_x, m_size_y, -1, +1), -1, +1, SQRT2);
     m_cells[i].SetPtr(7 ,GridNeighbor(i, m_size_x, m_size_y, -1,  0), -1,  0, 1.0);
   }
- 
+  
   /* Fix links for top, bottom and sides for non-torus */
   
   if (m_resource.m_geometry == nGeometry::GRID) {
     /* Top and bottom */
-
+    
     for (i = 0; i < m_size_x; i++) {
-      m_cells[i].SetPtr(0, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
-      m_cells[i].SetPtr(1, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
-      m_cells[i].SetPtr(2, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
+      m_cells[i].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      m_cells[i].SetPtr(1, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      m_cells[i].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
       ii = m_cells.GetSize()-1-i;
-      m_cells[ii].SetPtr(4, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
-      m_cells[ii].SetPtr(5, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
-      m_cells[ii].SetPtr(6, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
+      m_cells[ii].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      m_cells[ii].SetPtr(5, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      m_cells[ii].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
     }
-
+    
     /* fix links for right and left sides */
-
+    
     for (i = 0; i < m_size_y; i++) {
       ii = i * m_size_x;    
-      m_cells[ii].SetPtr(0, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
-      m_cells[ii].SetPtr(7, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
-      m_cells[ii].SetPtr(6, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
+      m_cells[ii].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      m_cells[ii].SetPtr(7, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      m_cells[ii].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
       ii = ((i + 1) * m_size_x) - 1;
-      m_cells[ii].SetPtr(2, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
-      m_cells[ii].SetPtr(3, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
-      m_cells[ii].SetPtr(4, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE, cAbstractResource::NONE);
+      m_cells[ii].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      m_cells[ii].SetPtr(3, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      m_cells[ii].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
     }
   }
 }
@@ -106,16 +130,16 @@ void cSpatialResourceAcct::FlowAll()
 {
   if (m_resource.m_diffuse_x == 0 && m_resource.m_diffuse_y == 0
       && m_resource.m_gravity_x == 0 && m_resource.m_gravity_y == 0)
-      return;
-
+    return;
+  
   int     i,k,ii,xdist,ydist;
   double  dist;
- 
+  
   for (i = 0; i < m_cells.GetSize(); i++) {
-      
+    
     /* because flow is two way we must check only half the neighbors to 
-       prevent double flow calculations */
-
+     prevent double flow calculations */
+    
     for (k = 3; k <= 6; k++) {
       ii = m_cells[i].GetElemPtr(k);
       xdist = m_cells[i].GetPtrXdist(k);
@@ -123,9 +147,9 @@ void cSpatialResourceAcct::FlowAll()
       dist = m_cells[i].GetPtrDist(k);
       if (ii >= 0) {
         FlowMatter(m_cells[i],m_cells[ii],
-          m_resource.m_diffuse_x, m_resource.m_diffuse_y,
-          m_resource.m_gravity_x, m_resource.m_gravity_y,
-          xdist, ydist, dist);
+                   m_resource.m_diffuse_x, m_resource.m_diffuse_y,
+                   m_resource.m_gravity_x, m_resource.m_gravity_y,
+                   xdist, ydist, dist);
       }
     }
   }
@@ -134,7 +158,7 @@ void cSpatialResourceAcct::FlowAll()
 void cSpatialResourceAcct::StateAll()
 {
   for (int i = 0; i < m_cells.GetSize(); i++) {
-      m_cells[i].State();
+    m_cells[i].State();
   } 
 }
 
@@ -150,13 +174,13 @@ void cSpatialResourceAcct::Source(double amount)
     int inflowY2 = in_box.GetHeight();
     double totalcells = (inflowY2 - inflowY1 + 1) * (inflowX2 - inflowX1 + 1) * 1.0;
     amount /= totalcells;
-
+    
     for (int i = inflowY1; i <= inflowY2; i++) {
       for (int j = inflowX1; j <= inflowX2; j++) {
         int size_x = m_cells.GetSizeX();
         int size_y = m_cells.GetSizeX();
         int elem = 
-          (Mod(i,size_y) * size_x) + Mod(j,size_x);
+        (Mod(i,size_y) * size_x) + Mod(j,size_x);
         Rate(elem,amount); 
       }
     }
@@ -187,17 +211,17 @@ void cSpatialResourceAcct::Rate(int x, int y, double ratein)
 void cSpatialResourceAcct::CellOutflow()
 {
   double deltaamount = 0.0;
-
+  
   const Apto::Array<cCellResource>& cell_list = m_resource.m_cell_list;
   for (int i=0; i < cell_list.GetSize(); i++) {
     const int cell_id = cell_list[i].GetCellID();
     
     /* Be sure the user entered a valid cell id or if the the program is loading
-       the resource for the testCPU that does not have a grid set up */
-       
+     the resource for the testCPU that does not have a grid set up */
+    
     if (cell_id >= 0 && cell_id < m_cells.GetSize()) {
       deltaamount = Apto::Max(
-        (GetAmount(cell_id) * cell_list[i].GetOutflow()), 0.0);
+                              (GetAmount(cell_id) * cell_list[i].GetOutflow()), 0.0);
     }                     
     Rate(cell_id, -deltaamount); 
   }

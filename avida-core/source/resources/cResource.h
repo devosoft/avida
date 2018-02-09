@@ -1,12 +1,12 @@
 //
-//  cAbstractResource.h
+//  cResource.h
 //  Avida-Core
 //
 //  Created by Matthew Rupp on 1/14/18.
 //
 
-#ifndef cAbstractResource_h
-#define cAbstractResource_h
+#ifndef cResource_h
+#define cResource_h
 
 #include "cString.h"
 #include "cCellBox.h"
@@ -19,7 +19,7 @@ class cSpatialResourceAcct;
 class cGradientResourceAcct;
 
 
-class cAbstractResource
+class cResource
 {
 
   const static int NONE = -99;
@@ -48,7 +48,7 @@ class cAbstractResource
     bool m_is_collectable;
     
   public:
-    explicit cAbstractResource(ResID id, const ResName& name, Avida::Feedback& fb)
+    explicit cResource(ResID id, const ResName& name, Avida::Feedback& fb)
     : m_feedback(fb)
     , m_id(id)
     , m_name(name)
@@ -57,10 +57,10 @@ class cAbstractResource
     , m_is_collectable(false)
     {}
     
-    cAbstractResource(const cAbstractResource&);
-    cAbstractResource& operator=(const cAbstractResource&);
+    cResource(const cResource&);
+    cResource& operator=(const cResource&);
     
-    virtual ~cAbstractResource()
+    virtual ~cResource()
     {}
     
     ResID GetID() const { return m_id; }
@@ -69,10 +69,9 @@ class cAbstractResource
     void SetCellBox(const cOffsetCellBox& cbox) { m_cbox = cbox; }
     cOffsetCellBox GetCellBox() { return m_cbox; }
     
-    
-    ADD_RESOURCE_PROP(bool, AsDemeResource, m_is_deme_resource);
-    ADD_RESOURCE_PROP(bool, AsOrgResource, m_is_org_resource);
-    ADD_RESOURCE_PROP(bool, HGTMetabolize, m_hgt_metabolize);
+    ADD_RESOURCE_PROP(bool, IsDemeResource, m_is_deme_resource);
+    ADD_RESOURCE_PROP(bool, IsOrgResource, m_is_org_resource);
+    ADD_RESOURCE_PROP(bool, IsHGTMetabolize, m_hgt_metabolize);
     ADD_RESOURCE_PROP(bool, IsCollectable, m_is_collectable);
     
   
@@ -90,7 +89,7 @@ class cAbstractResource
 };
 
 
-class cRatedResource : public cAbstractResource
+class cRatedResource : public cResource
 {
   friend cNonSpatialResourceAcct;
   friend cSpatialResourceAcct;
@@ -105,7 +104,7 @@ class cRatedResource : public cAbstractResource
     
   public:
     explicit cRatedResource(ResID id, const ResName& name, Avida::Feedback& fb) 
-    : cAbstractResource(id, name, fb) 
+    : cResource(id, name, fb) 
     {};
     
     cRatedResource(const cRatedResource& _res);
@@ -124,4 +123,4 @@ class cRatedResource : public cAbstractResource
     ResRate GetDecay() const { return 1.0 - m_outflow; }
 };
 
-#endif /* cAbstractResource_h */
+#endif /* cResource_h */

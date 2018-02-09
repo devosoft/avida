@@ -17,11 +17,13 @@ class cSpatialResource;
 class cGradientResource;
 class cCellResource;
 
+
 class cResourceAcct;
 class cNonSpatialResourceAcct;
 class cSpatialResourceAcct;
 class cGradientResourceAcct;
 class cCellResourceAcct;
+class cResourceRegistry;
 
 using ResID = int;
 using ResName = cString;
@@ -46,5 +48,8 @@ using SpatialResourceAccts = std::vector<cSpatialResourceAcct*>;
 using GradientResourceAccts = std::vector<cGradientResourceAcct*>;
 using CellResourceAccts = std::vector<cCellResourceAcct*>;
 
+using DemeResRegistry = cResourceRegistry*;
+using GlobalResRegistry = cResourceRegistry*;
 
 #endif /* Types_h */
+

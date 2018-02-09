@@ -39,38 +39,23 @@ class cSpatialResource : public cRatedResource
     
     virtual ~cSpatialResource() {}
     
-    void AddInflowBox(int x1, int x2, int y1, int y2)
-    {
-      int width = abs(x2-x1) + 1;
-      int height = abs(y2-y1) + 1;
-      m_inflow_boxes.Push(cCellBox(x1,y1,width,height));
-    }
-    
-    void AddOutflowBox(int x1, int x2, int y1, int y2)
-    {
-      int width = abs(x2-x1) + 1;
-      int height = abs(y2-y1) + 1;
-      m_outflow_boxes.Push(cCellBox(x1,y1,width,height));
-    }
-    
-    void AddInflowCellBox(const cCellBox& cbox)
-    {
-      m_inflow_boxes.Push(cbox);
-    }
-    
-    void AddOutflowCellBox(const cCellBox& cbox)
-    {
-      m_outflow_boxes.Push(cbox);
-    }
+    void AddInflowBox(int x1, int x2, int y1, int y2);
+    void AddOutflowBox(int x1, int x2, int y1, int y2);
+   
+    void AddInflowCellBox(const cCellBox& cbox);
+    void AddOutflowCellBox(const cCellBox& cbox);
     
     ADD_RESOURCE_PROP(int, Geometry, m_geometry);
     ADD_RESOURCE_PROP(double, XDiffuse, m_diffuse_x);
     ADD_RESOURCE_PROP(double, YDiffuse, m_diffuse_y);
     ADD_RESOURCE_PROP(double, XGravity, m_gravity_x);
     ADD_RESOURCE_PROP(double, YGravity, m_gravity_y);
-    
-    
 };
+
+
+
+
+
 
 
 class cSpatialResourceAcct : public cAbstractSpatialResourceAcct
@@ -100,7 +85,7 @@ class cSpatialResourceAcct : public cAbstractSpatialResourceAcct
     }
     
     
-    cSpatialResourceAcct(cSpatialResource& res, int size_x, int size_y, const cCellBox& cellbox)
+    explicit cSpatialResourceAcct(cSpatialResource& res, int size_x, int size_y, const cCellBox& cellbox)
     : cAbstractSpatialResourceAcct(size_x, size_y, cellbox)
     , m_resource(res)
     , m_cells(size_x, size_y, cellbox, cSpatialCountElem(0.0))

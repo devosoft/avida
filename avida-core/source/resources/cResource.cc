@@ -1,5 +1,5 @@
 //
-//  cAbstractResource.cpp
+//  cResource.cpp
 //  avida-core (static)
 //
 //  Created by Matthew Rupp on 1/14/18.
@@ -8,13 +8,13 @@
 #include "cResource.h"
 
 
-cAbstractResource::cAbstractResource(const cAbstractResource& _res)
+cResource::cResource(const cResource& _res)
 : m_feedback(_res.m_feedback)
 {
   *this = _res;
 }
 
-cAbstractResource& cAbstractResource::operator=(const cAbstractResource& _res)
+cResource& cResource::operator=(const cResource& _res)
 {
   m_feedback = _res.m_feedback;
   m_id = _res.m_id;
@@ -28,14 +28,14 @@ cAbstractResource& cAbstractResource::operator=(const cAbstractResource& _res)
 }
 
 cRatedResource::cRatedResource(const cRatedResource& _res)
-: cAbstractResource(_res)
+: cResource(_res)
 {
   *this = _res;
 }
 
 cRatedResource& cRatedResource::operator=(const cRatedResource& _res)
 {
-  this->cAbstractResource::operator=(_res);
+  this->cResource::operator=(_res);
   m_initial = _res.m_initial;
   m_inflow = _res.m_inflow;
   m_outflow = _res.m_outflow;

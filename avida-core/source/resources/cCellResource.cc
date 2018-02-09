@@ -15,7 +15,7 @@ cCellResource::cCellResource(const cCellResource& _res)
 
 cCellResource& cCellResource::operator=(const cCellResource& _res)
 {
-  this->RatedResource::operator=(_res);
+  this->cRatedResource::operator=(_res);
   m_cell_id = _res.m_cell_id;
-  return this;
+  return *this;
 }

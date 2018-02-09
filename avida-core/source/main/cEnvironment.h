@@ -54,13 +54,23 @@ using namespace Avida;
 
 class cEnvironment
 {
+public:
+  using GlobalResRegistry = cResourceRegistry;
+  using DemeResRegistries = vector<cResourceRegistry>;
+
 private:
+
+  using KVResMap = map<cString, cString>;
+  
+  
   cWorld* m_world;
   
   cMutationRates mut_rates;
-  cResourceRegistry resource_reg;
   cReactionLib reaction_lib;
   cTaskLib m_tasklib;
+  
+  GlobalResRegistry m_global_resreg;
+  DemeResRegistries m_deme_resreg;
 
   int m_input_size;
   int m_output_size;
@@ -118,11 +128,13 @@ public:
 
   
   int GetNumReactions() const { return reaction_lib.GetSize(); }
-  const cResourceRegistry& GetResourceRegistry() const { return resource_reg; }
   const cReactionLib& GetReactionLib() const { return reaction_lib; }
   const cMutationRates& GetMutRates() const { return mut_rates; }
 
-  cResourceRegistry& GetResourceRegistry() { return resource_reg; }
+  cResource* FindResource(const ResName& name);
+  GlobalResRegistry& GetGlobalResRegistry() { return m_global_resreg; }
+  DemeResRegistries& GetDemeResRegistry() { return m_deme_resreg; }
+  
   cReactionLib& GetReactionLib() { return reaction_lib; }
   cMutationRates& GetMutRates() { return mut_rates; }
   
@@ -174,6 +186,9 @@ private:
   bool LoadReactionProcess(cReaction* reaction, cString desc, Feedback& feedback);
   bool LoadReactionRequisite(cReaction* reaction, cString desc, Feedback& feedback);
   bool LoadContextReactionRequisite(cReaction* reaction, cString desc, Feedback& feedback); 
+  
+
+  bool LoadResourceKeyValues(cString desc, const cString& res_name, KVResMap& kvmap, Feedback& feedback);
   bool LoadResource(cString desc, Feedback& feedback);
   bool LoadCell(cString desc, Feedback& feedback);
   bool LoadReaction(cString desc, Feedback& feedback);

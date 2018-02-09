@@ -195,6 +195,8 @@
 		B4516120200BD30700B02422 /* cNonSpatialResource.cc in Sources */ = {isa = PBXBuildFile; fileRef = B451611E200BD30700B02422 /* cNonSpatialResource.cc */; };
 		B4B94189200D2E0D0096D20A /* cGradientResource.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4B94187200D2E0C0096D20A /* cGradientResource.cc */; };
 		B4B9418A200D2E0D0096D20A /* cGradientResource.h in Headers */ = {isa = PBXBuildFile; fileRef = B4B94188200D2E0D0096D20A /* cGradientResource.h */; };
+		B4D7C038202B9F2D0006467C /* cResourceLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4D7C036202B9F2D0006467C /* cResourceLibrary.cc */; };
+		B4D7C039202B9F2D0006467C /* cResourceLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = B4D7C037202B9F2D0006467C /* cResourceLibrary.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -739,6 +741,8 @@
 		B4B94187200D2E0C0096D20A /* cGradientResource.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cGradientResource.cc; sourceTree = "<group>"; };
 		B4B94188200D2E0D0096D20A /* cGradientResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cGradientResource.h; sourceTree = "<group>"; };
 		B4B9418B200D66E30096D20A /* cOffsetLinearGrid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cOffsetLinearGrid.h; sourceTree = "<group>"; };
+		B4D7C036202B9F2D0006467C /* cResourceLibrary.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cResourceLibrary.cc; sourceTree = "<group>"; };
+		B4D7C037202B9F2D0006467C /* cResourceLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cResourceLibrary.h; sourceTree = "<group>"; };
 		B4FA25800C5EB6510086D4B5 /* cPhenPlastGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPhenPlastGenotype.h; sourceTree = "<group>"; };
 		B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPlasticPhenotype.cc; sourceTree = "<group>"; };
 		B4FA25820C5EB6510086D4B5 /* cPlasticPhenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPlasticPhenotype.h; sourceTree = "<group>"; };
@@ -1374,6 +1378,8 @@
 				B448383E200E56E0008E4298 /* cCellResource.cc */,
 				B448383F200E56E0008E4298 /* cCellResource.h */,
 				B45127CB2017776300E7E69C /* Types.h */,
+				B4D7C036202B9F2D0006467C /* cResourceLibrary.cc */,
+				B4D7C037202B9F2D0006467C /* cResourceLibrary.h */,
 			);
 			path = resources;
 			sourceTree = "<group>";
@@ -1646,6 +1652,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B4D7C039202B9F2D0006467C /* cResourceLibrary.h in Headers */,
 				70FA3F84164425EB0003971F /* cHardwareBCR.h in Headers */,
 				B4B9418A200D2E0D0096D20A /* cGradientResource.h in Headers */,
 				B4483841200E56E0008E4298 /* cCellResource.h in Headers */,
@@ -1820,6 +1827,7 @@
 				70D5B4DD14F4009000D15FFD /* PopulationActions.cc in Sources */,
 				70D5B4DC14F4009000D15FFD /* PrintActions.cc in Sources */,
 				B4516120200BD30700B02422 /* cNonSpatialResource.cc in Sources */,
+				B4D7C038202B9F2D0006467C /* cResourceLibrary.cc in Sources */,
 				70D5B4E014F4009000D15FFD /* SaveLoadActions.cc in Sources */,
 				7023EC3C0C0A431B00362B9C /* cAnalyze.cc in Sources */,
 				7023EC3D0C0A431B00362B9C /* cAnalyzeGenotype.cc in Sources */,

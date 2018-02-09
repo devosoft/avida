@@ -24,7 +24,6 @@
 #define cResourceRegistry_h
 
 #include "avida/core/Types.h"
-#include "cNonSpatialResource.h"
 
 #include <map>
 
@@ -87,13 +86,11 @@ public:
   
   inline int GetSize() const { return m_resource_ptrs.size(); }
   
-  //@MRR See https://scottmeyers.blogspot.co.uk/2014/07/should-move-only-types-ever-be-passed.html
-  // In short, we're transfering ownership with these methods.
-  void AddResource(std::unique_ptr<cCellResource>&& res);
-  void AddResource(std::unique_ptr<cNonSpatialResource>&& nonspat_res);
-  void AddResource(std::unique_ptr<cSpatialResource>&& spat_res);
-  void AddResource(std::unique_ptr<cGradientResource>&& grad_res);
-  
+  void AddResource(cNonSpatialResource* nonspat_res);
+  void AddResource(cSpatialResource* spat_res);
+  void AddResource(cGradientResource* grad_res);
+  void AddResource(cCellResource* res);
+    
   cResource* GetResource(const ResName& res_name);
   cNonSpatialResource* GetNonSpatialResource(const ResName& res_name);
   cSpatialResource* GetSpatialResource(const ResName& res_name);

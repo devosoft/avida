@@ -15,7 +15,7 @@
 
 class cGradientResourceAcct;
 
-class cGradientResource : public cAbstractResource
+class cGradientResource : public cResource
 {
   friend cGradientResourceAcct;
   
@@ -84,7 +84,7 @@ class cGradientResource : public cAbstractResource
     
   public:
     explicit cGradientResource(int id, const cString& name, Avida::Feedback& fb)
-    : cAbstractResource(id, name, fb) 
+    : cResource(id, name, fb) 
     {}
     
     cGradientResource(const cGradientResource& _res);
