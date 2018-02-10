@@ -30,7 +30,8 @@ using ResName = cString;
 using ResAmount = double;
 using ResRate = double;
 using ResDescr = cString;
-using ResAmounts = std::vector<ResAmount>;
+using CellResAmounts = std::vector<ResAmount>;
+using GlobalResAmounts = std::vector<ResAmount>;
 using SpatialResAmounts = std::vector< Apto::Array<ResAmount> >;
 
 

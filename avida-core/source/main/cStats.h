@@ -267,13 +267,13 @@ private:
   Apto::Array<double> m_reaction_last_add_reward;
   Apto::Array<int> m_reaction_exe_count;
 
-  Apto::Array<double> resource_count;
-  Apto::Array<int> resource_geometry;
-  Apto::Array< Apto::Array<double> > spatial_res_count;
+  //@MRR Apto::Array<double> resource_count;
+  //@MRR Apto::Array<int> resource_geometry;
+  //@MRR Apto::Array< Apto::Array<double> > spatial_res_count;
 
   Apto::Array<cString> task_names;
   Apto::Array<cString> reaction_names;
-  Apto::Array<cString> resource_names;
+  //Apto::Array<cString> resource_names;
 
   // --------  Resampling Stats  ---------
   int num_resamplings;
@@ -710,13 +710,13 @@ public:
   void IncReactionExeCount(int reaction, int count) { m_reaction_exe_count[reaction] += count; }
   void ZeroReactions();
 
-  void SetResources(const Apto::Array<double> &_in) { resource_count = _in; }
-  void SetResourcesGeometry(const Apto::Array<int> &_in) { resource_geometry = _in;}
-  void SetSpatialRes(const Apto::Array< Apto::Array<double> > &_in) { spatial_res_count = _in; }
+  //@MRR void SetResources(const Apto::Array<double> &_in) { resource_count = _in; }
+  //@MRR void SetResourcesGeometry(const Apto::Array<int> &_in) { resource_geometry = _in;}
+  //@MRR void SetSpatialRes(const Apto::Array< Apto::Array<double> > &_in) { spatial_res_count = _in; }
 
   void SetInstNames(const cString& inst_set, const Apto::Array<cString>& names) { m_is_inst_names_map[inst_set] = names; }
-  void SetReactionName(int id, const cString & name) { reaction_names[id] = name; }
-  void SetResourceName(int id, const cString & name) { resource_names[id] = name; }
+  //@MRR void SetReactionName(int id, const cString & name) { reaction_names[id] = name; }
+  //@MRR void SetResourceName(int id, const cString & name) { resource_names[id] = name; }
 
   void SetCompetitionTrialFitnesses(Apto::Array<double> _in) { avg_trial_fitnesses = _in; }
   void SetCompetitionFitnesses(double _in_avg, double _in_min, double _in_max, double _in_cp_avg, double _in_cp_min, double _in_cp_max)
@@ -773,10 +773,10 @@ public:
   double GetInternalTaskMaxLastQuality(int task_num) const { return task_internal_last_max_quality[task_num]; }
 
   const Apto::Array<int>& GetReactions() const { return m_reaction_last_count; }
-  const Apto::Array<double> & GetResources() const { return resource_count; }
-  const Apto::Array<cString>& GetResourceNames() const { return resource_names; }
-  const Apto::Array<int>& GetResourceGeometries() const { return resource_geometry; }
-  const Apto::Array< Apto::Array<double> >& GetSpatialResourceCount() const {return spatial_res_count; }
+  //const Apto::Array<double> & GetResources() const { return resource_count; }
+  //const Apto::Array<cString>& GetResourceNames() const { return resource_names; }
+  //const Apto::Array<int>& GetResourceGeometries() const { return resource_geometry; }
+  //const Apto::Array< Apto::Array<double> >& GetSpatialResourceCount() const {return spatial_res_count; }
 
   double GetAveReproRate() const  { return sum_repro_rate.Average(); }
 
@@ -889,10 +889,10 @@ public:
   void PrintCurrentReactionData(const cString& filename);
   void PrintReactionRewardData(const cString& filename);
   void PrintCurrentReactionRewardData(const cString& filename);
-  void PrintResourceData(const cString& filename, cString maps="1");
-  void PrintResourceLocData(const cString& filename, cAvidaContext& ctx);
-  void PrintResWallLocData(const cString& filename, cAvidaContext& ctx);
-  void PrintSpatialResData(const cString& filename, int i);
+  //void PrintResourceData(const cString& filename, cString maps="1");
+  //void PrintResourceLocData(const cString& filename, cAvidaContext& ctx);
+  //void PrintResWallLocData(const cString& filename, cAvidaContext& ctx);
+  //void PrintSpatialResData(const cString& filename, int i);
   void PrintTimeData(const cString& filename);
   void PrintDivideMutData(const cString& filename);
   void PrintMutationRateData(const cString& filename);
@@ -960,9 +960,9 @@ public:
   void IncPredSat(int cell_id);
   void PrintPredSatFracDump(const cString& filename);
 
-	void AddDemeResourceThresholdPredicate(cString& name);
-	void IncDemeResourceThresholdPredicate(cString& name);
-	void PrintDemeResourceThresholdPredicate(const cString& filename);
+	//void AddDemeResourceThresholdPredicate(cString& name);
+	//void IncDemeResourceThresholdPredicate(cString& name);
+	//void PrintDemeResourceThresholdPredicate(const cString& filename);
 
   void addOrgLocations(std::vector<std::pair<int, int> >);
   void PrintDemeRepOrgLocation(const cString& filename);

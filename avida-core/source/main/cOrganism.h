@@ -165,10 +165,10 @@ public:
   void SetCCladeLabel( int in_label ) { cclade_id = in_label; };  //@MRR
   int  GetCCladeLabel() const { return cclade_id; }
 
-  const Apto::Array<double>& GetRBins() const { return m_phenotype.GetCurRBinsAvail(); }
+  const CellResAmounts& GetRBins() const { return m_phenotype.GetCurRBinsAvail(); }
   double GetRBin(int index) { return m_phenotype.GetCurRBinAvail(index); }
   double GetRBinsTotal();
-  void SetRBins(const Apto::Array<double>& rbins_in);
+  void SetRBins(const CellResAmounts& rbins_in);
   void SetRBin(const int index, const double value);
   void AddToRBin(const int index, const double value);
   void IncCollectSpecCount(const int spec_id);

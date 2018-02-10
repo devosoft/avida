@@ -12,8 +12,8 @@
 #include "cOffsetLinearGrid.h"
 #include "resources/Types.h"
 
-typedef Apto::Array<cSpatialCountElem> cCellElements;
-typedef Apto::Array<double> cResourceGrid;
+using cCellElements =  Apto::Array<cSpatialCountElem>;
+using cResourceGrid = Apto::Array<ResAmount>;
 
 
 

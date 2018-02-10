@@ -283,7 +283,7 @@ public:
       int m_cell_id = m_cell_list[i];
       
       //@MRR:RES Spatial restriction
-      Apto::Array<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, ctx);
+      CellResAmounts counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, ctx);
       if ((res != NULL) && (res->GetID() < counts.GetSize()))
       {
         counts[res->GetID()] = m_res_count;
@@ -333,7 +333,7 @@ public:
     {
       int m_cell_id = m_cell_list[i];
       //@MRR:RES spatial restriction
-      Apto::Array<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, ctx);
+      CellResAmounts counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, ctx);
       if ((res != NULL) && (res->GetID() < counts.GetSize()))
       {
         //@MRR:RES spatial restriction

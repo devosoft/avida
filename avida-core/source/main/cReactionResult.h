@@ -28,11 +28,11 @@
 
 class cReactionResult {
 private:
-  Apto::Array<double> resources_consumed;
-  Apto::Array<double> resources_produced;
-  Apto::Array<double> resources_detected;  //Initialize to -1.0
-  Apto::Array<double> internal_resources_consumed;
-  Apto::Array<double> internal_resources_produced;
+  ResourceAmounts resources_consumed;
+  ResourceAmounts resources_produced;
+  ResourceAmounts resources_detected;  //Initialize to -1.0
+  ResourceAmounts internal_resources_consumed;
+  ResourceAmounts internal_resources_produced;
   Apto::Array<bool> tasks_done;
   Apto::Array<double> tasks_quality;
   Apto::Array<double> tasks_value;

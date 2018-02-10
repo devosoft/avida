@@ -4536,7 +4536,7 @@ void cStats::PrintDenData(const cString& filename) {
     cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
     if (!cell.HasAV()) continue;
     
-    Apto::Array<double> cell_res;
+    CellResourceAmounts cell_res;
     cell_res = m_world->GetPopulation().GetCellResources(i, m_world->GetDefaultContext());
     
     bool is_active = false;

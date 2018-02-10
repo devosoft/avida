@@ -379,7 +379,7 @@ void cDeme::ProcessUpdate(cAvidaContext& ctx)
             orgPhenotype.ReduceEnergy(orgPhenotype.GetStoredEnergy()*m_world->GetConfig().ATTACK_DECAY_RATE.Get());
           }
           //remove energy from cell... organism might not takeup all of a cell's energy
-          Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(eventCell, ctx);  // uses global cell_id; is this a problem
+          ResAmounts cell_resources = deme_resource_count.GetCellResources(eventCell, ctx);  // uses global cell_id; is this a problem
           cell_resources[res->GetID()] *= m_world->GetConfig().ATTACK_DECAY_RATE.Get();
           deme_resource_count.ModifyCell(ctx, cell_resources, eventCell);
         }
@@ -700,7 +700,7 @@ void cDeme::UpdateDemeMerit(cDeme& source) {
 }
 
 
-void cDeme::ModifyDemeResCount(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int absolute_cell_id) {
+void cDeme::ModifyDemeResCount(cAvidaContext& ctx, const CellResAmounts& res_change, const int absolute_cell_id) {
   // find relative cell_id in deme resource count
   const int relative_cell_id = GetRelativeCellID(absolute_cell_id);
   deme_resource_count.ModifyCell(ctx, res_change, relative_cell_id);
@@ -774,7 +774,7 @@ double cDeme::GetAndClearCellEnergy(int absolute_cell_id, cAvidaContext& ctx)
   
   double total_energy = 0.0;
   int relative_cell_id = GetRelativeCellID(absolute_cell_id);
-  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
+  CellResAmounts cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
   
   // sum all energy resources
   for (int i = 0; i < energy_res_ids.GetSize(); i++) {
@@ -796,7 +796,7 @@ void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value, cAvidaContext
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
   
   int relative_cell_id = GetRelativeCellID(absolute_cell_id);
-  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
+  CellResAmounts cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
   
   double amount_per_resource = value / energy_res_ids.GetSize();
   
@@ -1141,7 +1141,7 @@ void cDeme::AddPheromone(int absolute_cell_id, double value, cAvidaContext& ctx)
   //  cPopulation& pop = m_world->GetPopulation();
   
   int relative_cell_id = GetRelativeCellID(absolute_cell_id);
-  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
+  CellResAmounts cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
   
   for (int i = 0; i < deme_resource_count.GetSize(); i++) {
     if (strcmp(deme_resource_count.GetResName(i), "pheromone") == 0) {
@@ -1165,32 +1165,32 @@ void cDeme::AddPheromone(int absolute_cell_id, double value, cAvidaContext& ctx)
   
 } //End AddPheromone()
 
-double cDeme::GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext& ctx) const 
+ResAmount cDeme::GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext& ctx) const 
 {
   assert(rel_cellid >= 0);
   assert(rel_cellid < GetSize());
   assert(resource_id >= 0);
   assert(resource_id < deme_resource_count.GetSize());
   
-  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(rel_cellid, ctx);
+  CellResAmounts cell_resources = deme_resource_count.GetCellResources(rel_cellid, ctx);
   return cell_resources[resource_id];
 }
 
-void cDeme::AdjustSpatialResource(cAvidaContext& ctx, int rel_cellid, int resource_id, double amount)
+void cDeme::AdjustSpatialResource(cAvidaContext& ctx, int rel_cellid, int resource_id, ResAmount amount)
 {
   assert(rel_cellid >= 0);
   assert(rel_cellid < GetSize());
   assert(resource_id >= 0);
   assert(resource_id < deme_resource_count.GetSize());
   
-  Apto::Array<double> res_change;
+  CellResAmounts res_change;
   res_change.Resize(deme_resource_count.GetSize(), 0);
   res_change[resource_id] = amount;
   
   deme_resource_count.ModifyCell(ctx, res_change, rel_cellid);  
 }
 
-void cDeme::AdjustResource(cAvidaContext& ctx, int resource_id, double amount)
+void cDeme::AdjustResource(cAvidaContext& ctx, int resource_id, ResAmount amount)
 {
   double new_amount = deme_resource_count.Get(ctx, resource_id) + amount;
   deme_resource_count.Set(ctx, resource_id, new_amount);
@@ -1281,8 +1281,8 @@ void cDeme::DoDemeOutput(cAvidaContext& ctx, int value)
   cReactionResult& result = *m_reaction_result;
 
   // Not actually set up for deme's using resources during reactions
-  Apto::Array<double> res_in;
-  Apto::Array<double> rbins_in;
+  CellResAmounts res_in;
+  CellResAmounts rbins_in;
 
   // The environment, evaluates if a task and if a resulting reaction were completed
   bool found = env.TestOutput(ctx, result, taskctx, m_task_count, m_reaction_count, res_in, rbins_in);

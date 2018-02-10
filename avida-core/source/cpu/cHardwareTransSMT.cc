@@ -827,7 +827,7 @@ bool cHardwareTransSMT::DoCollect(cAvidaContext& ctx, bool env_remove, bool inte
 bool cHardwareTransSMT::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit)
 {
   // Set up res_change and max total
-  const Apto::Array<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
   Apto::Array<double> res_change(res_count.GetSize());
   res_change.SetAll(0.0);
   double total = m_organism->GetRBinsTotal();

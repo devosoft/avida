@@ -4293,7 +4293,7 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
 {
   // Returns the amount of a resource or resources 
   // specified by modifying NOPs into register BX
-  const Apto::Array<double> res_count = m_organism->GetOrgInterface().GetResources(ctx) +
+  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx) +
   m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID(), ctx); 
   
   // Arbitrarily set to BX since the conditional instructions use this directly.
@@ -4431,7 +4431,7 @@ bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid, cAvi
 {
   assert(resid >= 0);
 
-  const Apto::Array<double> res_count = m_organism->GetOrgInterface().GetResources(ctx) +
+  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx) +
   m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID(), ctx); 
 
   // Make sure we have the resource requested
@@ -4445,7 +4445,7 @@ bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid, cAvi
 
 bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx)
 {
-  const Apto::Array<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
   int reg_to_set = FindModifiedRegister(REG_BX);  
   double max_resource = 0.0;    
   // if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
@@ -4460,7 +4460,7 @@ bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
 {
-  const Apto::Array<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
   // check if this is a valid group
   if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
     int opinion = m_organism->GetOpinion().first;
@@ -4494,7 +4494,7 @@ bool cHardwareCPU::Inst_SenseNextResLevel(cAvidaContext& ctx)
   int register_value = GetRegister(nop_register);
   if (register_value == 0) return false;
   
-  const Apto::Array<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
   if (opinion == (num_groups - 1)) {
     if (register_value > 0) GetRegister(REG_BX) = (int) (res_count[1] * 100 + 0.5);
     else if (register_value < 0) GetRegister(REG_BX) = (int) (res_count[opinion - 1] * 100 + 0.5);
@@ -4512,7 +4512,7 @@ bool cHardwareCPU::Inst_SenseNextResLevel(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx) 
 {
-  const Apto::Array<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
   if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
     int opinion = m_organism->GetOpinion().first;
     int reg_to_set = FindModifiedRegister(REG_BX);
@@ -4535,7 +4535,7 @@ bool cHardwareCPU::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   
   // get the destination cell resource levels
-  Apto::Array<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
+  CellResAmounts cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
   
   // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
   // are there any barrier resources in the faced cell    
@@ -4649,8 +4649,8 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
 bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit, float nUnits)
 {
   // Set up res_change and max total
-  const Apto::Array<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
-  Apto::Array<double> res_change(res_count.GetSize());
+  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  CellResAmounts res_change(res_count.GetSize());
   res_change.SetAll(0.0);
   double total = m_organism->GetRBinsTotal();
   double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
@@ -4842,7 +4842,7 @@ bool cHardwareCPU::Inst_CollectSpecificRatio(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_IfResources(cAvidaContext& ctx)
 {
   // These are the current levels of resources at this cell:
-  const Apto::Array<double> resources = m_organism->GetOrgInterface().GetResources(ctx) +
+  const CellResAmounts resources = m_organism->GetOrgInterface().GetResources(ctx) +
   m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID(), ctx); 
   
   // Now we loop through the different reactions, checking to see if their
@@ -6161,7 +6161,7 @@ void cHardwareCPU::DoResourceDonatePercent(cAvidaContext& ctx, const int to_cell
   assert(frac_resource_given >= 0);
   assert(frac_resource_given <= 1);
   
-  const Apto::Array<double> &resources = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts &resources = m_organism->GetOrgInterface().GetResources(ctx);
   if (resource_id >= resources.GetSize()) return;
   
   const double amount = max(0.0, frac_resource_given * resources[resource_id]);
@@ -6179,8 +6179,8 @@ void cHardwareCPU::DoResourceDonateAmount(cAvidaContext& ctx, const int to_cell,
   assert(amount >= 0);
   assert(resource_id >= 0);
   
-  const Apto::Array<double> &src_resources = m_organism->GetOrgInterface().GetResources(ctx);
-  const Apto::Array<double> &dest_resources = m_world->GetPopulation().GetCellResources(to_cell, ctx);
+  const CellResAmounts &src_resources = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts &dest_resources = m_world->GetPopulation().GetCellResources(to_cell, ctx);
   
   assert(resource_id < src_resources.GetSize());
   assert(resource_id < dest_resources.GetSize());
@@ -6191,8 +6191,8 @@ void cHardwareCPU::DoResourceDonateAmount(cAvidaContext& ctx, const int to_cell,
   assert(decay >= 0);
   assert(decay <= 1);
   
-  Apto::Array<double> src_change;
-  Apto::Array<double> dest_change;
+  CellResAmounts src_change;
+  CellResAmounts dest_change;
   
   src_change.Resize(src_resources.GetSize(), 0);
   dest_change.Resize(dest_resources.GetSize(), 0);
@@ -6494,17 +6494,17 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
   
   if(m_organism->GetOrgInterface().HasOpinion(m_organism)) opinion = m_organism->GetOpinion().first; 
   
-  const Apto::Array<double> current_res = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts current_res = m_organism->GetOrgInterface().GetResources(ctx);
   double max_res = 0;
   for(int i = 0; i < actualNeighborhoodSize; i++) {
     m_organism->Rotate(ctx, 1);
-    Apto::Array<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
+    CellResAmounts faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
     if (faced_res[opinion] > max_res) max_res = faced_res[opinion];
   } 
   
   if (max_res > current_res[opinion]) {
     for(int i = 0; i < actualNeighborhoodSize; i++) {
-      Apto::Array<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
+      CellResAmounts faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
       if (faced_res[opinion] != max_res) m_organism->Rotate(ctx, 1);
     }
   }
@@ -7922,7 +7922,7 @@ bool cHardwareCPU::Inst_RegulateSpecificPromoters(cAvidaContext&)
 bool cHardwareCPU::Inst_SenseRegulate(cAvidaContext& ctx)
 {
   unsigned int bits = 0;
-  const Apto::Array<double> & res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts & res_count = m_organism->GetOrgInterface().GetResources(ctx);
   assert (res_count.GetSize() != 0);
   for (int i=0; i<m_world->GetConfig().PROMOTER_CODE_SIZE.Get(); i++) {
     int b = i % res_count.GetSize();
@@ -8402,7 +8402,7 @@ bool cHardwareCPU::DoSenseFacing(cAvidaContext& ctx, int conversion_method, doub
 
   // Returns the amount of a resource or resources 
   // specified by modifying NOPs into register BX
-  const Apto::Array<double> & res_count = m_world->GetPopulation().GetCellResources(faced_id, ctx);
+  const CellResAmounts & res_count = m_world->GetPopulation().GetCellResources(faced_id, ctx);
   
   // Arbitrarily set to BX since the conditional instructions use this directly.
   int reg_to_set = REG_BX;
@@ -8583,7 +8583,7 @@ bool cHardwareCPU::DoSensePheromone(cAvidaContext& ctx, int cellid)
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
   const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
-  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
+  CellResAmounts cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
   double pher_amount = 0;
   
   if (deme_resource_count.GetSize() == 0) return false;
@@ -8631,7 +8631,7 @@ bool cHardwareCPU::DoSensePheromoneGlobal(cAvidaContext& ctx, tRegisters REG_DEF
   int reg_to_set = FindModifiedRegister(REG_DEFAULT);
   
   const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
-  const Apto::Array<double>& resource_count_array = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts& resource_count_array = m_organism->GetOrgInterface().GetResources(ctx);
   const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
   if (resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -8707,7 +8707,7 @@ bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
-  Apto::Array<double> cell_resources;
+  CellResAmounts cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
       (ctx.GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
@@ -8765,7 +8765,7 @@ bool cHardwareCPU::Inst_ExploitForward5(cAvidaContext& ctx)
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
-  Apto::Array<double> cell_resources;
+  CellResAmounts cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
       (ctx.GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
@@ -8830,7 +8830,7 @@ bool cHardwareCPU::Inst_ExploitForward3(cAvidaContext& ctx)
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
-  Apto::Array<double> cell_resources;
+  CellResAmounts cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
       (ctx.GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
@@ -9061,7 +9061,7 @@ bool cHardwareCPU::Inst_SuperMove(cAvidaContext& ctx)
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   int relative_cell_id = deme.GetRelativeCellID(cellid);
-  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
+  CellResAmounts cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
   
   int cell_data;
   
@@ -9162,7 +9162,7 @@ bool cHardwareCPU::Inst_IfPheromone(cAvidaContext& ctx)
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
   const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
-  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
+  CellResAmounts cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
   
   if (deme_resource_count.GetSize() == 0) return false;
   
@@ -9196,7 +9196,7 @@ bool cHardwareCPU::Inst_IfNotPheromone(cAvidaContext& ctx)
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
   const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
-  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); 
+  CellResAmounts cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); 
   
   if (deme_resource_count.GetSize() == 0) return false;
   

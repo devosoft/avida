@@ -198,7 +198,7 @@ class cGradientResourceAcct : public cAbstractSpatialResourceAcct
   double m_common_plat_height;
   int m_skip_moves;
   int m_skip_counter;
-  Apto::Array<double> m_plateau_array;
+  Apto::Array<ResAmount> m_plateau_array;
   Apto::Array<int> m_plateau_cell_IDs;
   Apto::Array<int> m_wall_cells;
   

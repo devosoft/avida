@@ -1359,7 +1359,7 @@ public:
       
       if (!cell.HasAV()) continue;
       
-      Apto::Array<double> cell_res;
+      CellResAmounts cell_res;
       cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
@@ -1424,7 +1424,7 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
       
-      Apto::Array<double> cell_res;
+      CellResAmounts cell_res;
       cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
@@ -1441,7 +1441,7 @@ public:
           double guarded_res = num_guards * m_units_per;
           double unguarded_res = cell_res[m_res_id] - guarded_res;
           
-          Apto::Array<double> res_change(cell_res.GetSize());
+          CellResAmounts res_change(cell_res.GetSize());
           res_change.SetAll(0.0);
           res_change[m_res_id] = -1 * unguarded_res * m_loss;          
           m_world->GetPopulation().UpdateCellResources(ctx, res_change, i);

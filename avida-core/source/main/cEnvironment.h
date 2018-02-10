@@ -52,25 +52,40 @@ template <class T> class tBuffer;
 using namespace Avida;
 
 
+
+
+
 class cEnvironment
 {
-public:
-  using GlobalResRegistry = cResourceRegistry;
-  using DemeResRegistries = vector<cResourceRegistry>;
-
 private:
 
   using KVResMap = map<cString, cString>;
   
+  //For legacy inflow/outflow boxes
+  struct sFlowbox{
+    int x1;
+    int x2;
+    int y1;
+    int y2;
+    flowbox()
+    {
+      x1 = x2 = y1 = y2 = cResource::NONE;
+    }
+  }
   
+
+  using function<bool (const cString&)> = ResValCheckFunc;
+  using function<bool ()> = ResValSetFunc;
+  
+  static bool LoadResProp(cString& res_name, ResValCheckFunc& validate, ResValSetFunc& setter);
+
   cWorld* m_world;
   
   cMutationRates mut_rates;
   cReactionLib reaction_lib;
   cTaskLib m_tasklib;
   
-  GlobalResRegistry m_global_resreg;
-  DemeResRegistries m_deme_resreg;
+  cResourceLibrary m_res_library;
 
   int m_input_size;
   int m_output_size;
@@ -114,7 +129,7 @@ public:
 
   bool TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
                   const Apto::Array<int>& task_count, Apto::Array<int>& reaction_count,
-                  const Apto::Array<double>& resource_count, const Apto::Array<double>& rbins_count,
+                  const CellResAmounts& resource_count, const CellResAmounts& rbins_count,
                   bool is_parasite=false, cContextPhenotype* context_phenotype = 0) const;
 
   // Accessors
@@ -205,7 +220,7 @@ private:
   bool TestContextRequisites(const cReaction* cur_reaction, int task_count, 
                       const Apto::Array<int>& reaction_count, const bool on_divide = false) const;
   void DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list, 
-                   const Apto::Array<double>& resource_count, const Apto::Array<double>& rbin_count,
+                   const CellResAmounts& resource_count, const CellResAmounts& rbin_count,
                    const double task_quality, const double task_probability,
                    const int task_count, const int reaction_id, 
                    cReactionResult& result, cTaskContext& taskctx) const;

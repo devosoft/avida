@@ -101,15 +101,15 @@ public:
   int GetInputAt(int& input_pointer);
   void ResetInputs(cAvidaContext& ctx);
   const Apto::Array<int>& GetInputs() const;
-  const Apto::Array<double>& GetResources(cAvidaContext& ctx); 
-  double GetResourceVal(cAvidaContext& ctx, int res_id);
-  const Apto::Array<double>& GetFacedCellResources(cAvidaContext& ctx); 
-  double GetFacedResourceVal(cAvidaContext& ctx, int res_id);
-  const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
-  const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
-  const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
-  double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
-  double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
+  const CellResAmounts& GetResources(cAvidaContext& ctx); 
+  ResAmount GetResourceVal(cAvidaContext& ctx, int res_id);
+  const CellResAmounts& GetFacedCellResources(cAvidaContext& ctx); 
+  ResAmount GetFacedResourceVal(cAvidaContext& ctx, int res_id);
+  const CellResAmounts& GetDemeResources(int deme_id, cAvidaContext& ctx); 
+  const CellResAmounts& GetCellResources(int cell_id, cAvidaContext& ctx); 
+  const CellResAmounts& GetFrozenResources(cAvidaContext& ctx, int cell_id);
+  ResAmount GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
+  ResAmount GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
   const Apto::Array< Apto::Array<int> >& GetCellIdLists();
   
   int GetCurrPeakX(cAvidaContext& ctx, int res_id) { return 0; } 
@@ -119,10 +119,10 @@ public:
 
   cResourceCount* GetResourceCount() { return NULL; }
   void TriggerDoUpdates(cAvidaContext&) { }
-  void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  void UpdateRandomResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  void UpdateAVResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  void UpdateDemeResources(cAvidaContext&, const Apto::Array<double>&) { ; }
+  void UpdateResources(cAvidaContext& ctx, const ResAmount& res_change);
+  void UpdateRandomResources(cAvidaContext& ctx, const ACellResAmounts& res_change);
+  void UpdateAVResources(cAvidaContext& ctx, const CellResAmounts& res_change);
+  void UpdateDemeResources(cAvidaContext&, const CellResAmounts&) { ; }
   
   void Die(cAvidaContext& ctx) { ; } 
   void KillCellID(int target, cAvidaContext& ctx) { ; } 
@@ -265,10 +265,10 @@ public:
   Apto::Array<cOrganism*> GetFacedAVs(int av_num = 0);
   Apto::Array<cOrganism*> GetCellAVs(int cell_id, int av_num = 0);
   Apto::Array<cOrganism*> GetFacedPreyAVs(int av_num = 0);
-  const Apto::Array<double>& GetAVResources(cAvidaContext& ctx, int av_num = 0);
-  double GetAVResourceVal(cAvidaContext& ctx, int res_id, int av_num = 0);
-  const Apto::Array<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0);
-  double GetAVFacedResourceVal(cAvidaContext& ctx, int res_id, int av_num = 0);
+  const CellResAmounts& GetAVResources(cAvidaContext& ctx, int av_num = 0);
+  ResAmount GetAVResourceVal(cAvidaContext& ctx, int res_id, int av_num = 0);
+  const CellResAmounts& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0);
+  ResAmount GetAVFacedResourceVal(cAvidaContext& ctx, int res_id, int av_num = 0);
   void UpdateAVResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, int av_num = 0);
   
   void BeginSleep() { ; }

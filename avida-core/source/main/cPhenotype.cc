@@ -1491,8 +1491,8 @@ bool cPhenotype::TestInput(tBuffer<int>&, tBuffer<int>&)
 }
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
-                            const Apto::Array<double>& res_in, const Apto::Array<double>& rbins_in,
-                            Apto::Array<double>& res_change, Apto::Array<cString>& insts_triggered,
+                            const CellResAmounts& res_in, const CellResAmounts& rbins_in,
+                            CellResAmounts& res_change, Apto::Array<cString>& insts_triggered,
                             bool is_parasite, cContextPhenotype* context_phenotype)
 {
   assert(initialized == true);

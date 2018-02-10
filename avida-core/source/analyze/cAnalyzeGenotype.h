@@ -129,8 +129,8 @@ private:
   Apto::Array<double> task_qualities;
   Apto::Array<int> internal_task_counts;
   Apto::Array<double> internal_task_qualities;
-  Apto::Array<double> rbins_total;
-  Apto::Array<double> rbins_avail;
+  ResAmounts rbins_total;
+  ResAmounts rbins_avail;
   Apto::Array<int> collect_spec_counts;
   Apto::Array<int> m_env_inputs;
   int m_mating_type; //@CHC

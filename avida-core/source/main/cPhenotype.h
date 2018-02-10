@@ -117,14 +117,14 @@ private:
   Apto::Array<double> cur_task_quality;            // Average (total?) quality with which each task was performed
   Apto::Array<double> cur_task_value;              // Value with which this phenotype performs task
   Apto::Array<double> cur_internal_task_quality;   // Average (total?) quaility with which each task using internal resources was performed
-  Apto::Array<double> cur_rbins_total;             // Total amount of resources collected over the organism's life
-  Apto::Array<double> cur_rbins_avail;             // Amount of internal resources available
+  CellResAmounts cur_rbins_total;             // Total amount of resources collected over the organism's life
+  CellResAmounts cur_rbins_avail;             // Amount of internal resources available
   Apto::Array<int> cur_collect_spec_counts;        // How many times each nop-specification was used in a collect-type instruction
   Apto::Array<int> cur_reaction_count;             // Total times each reaction was triggered.
   Apto::Array<int> first_reaction_cycles;          // CPU cycles of first time reaction was triggered.
   Apto::Array<int> first_reaction_execs;            // Execution count at first time reaction was triggered (will be > cycles in parallel exec multithreaded orgs).
   Apto::Array<int> cur_stolen_reaction_count;      // Total counts of reactions stolen by predators.
-  Apto::Array<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
+  CellResAmounts cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   Apto::Array<int> cur_inst_count;                 // Instruction exection counter
   Apto::Array<int> cur_from_sensor_count;           // Use of inputs that originated from sensory data were used in execution of this instruction.
   Apto::Array< Apto::Array<int> > cur_group_attack_count;
@@ -134,7 +134,7 @@ private:
   int cur_kills;
   
   Apto::Array<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB
-  Apto::Array<double> sensed_resources;            // Resources which the organism has sensed; @JEB
+  CellResAmounts sensed_resources;            // Resources which the organism has sensed; @JEB
   Apto::Array<double> cur_task_time;               // Time at which each task was last performed; WRE 03-18-07
   Apto::Map<void*, cTaskState*> m_task_states;
   Apto::Array<double> cur_trial_fitnesses;         // Fitnesses of various trials.; @JEB
@@ -174,8 +174,8 @@ private:
   Apto::Array<double> last_task_quality;
   Apto::Array<double> last_task_value;
   Apto::Array<double> last_internal_task_quality;
-  Apto::Array<double> last_rbins_total;
-  Apto::Array<double> last_rbins_avail;
+  CellResAmounts last_rbins_total;
+  CellResAmounts last_rbins_avail;
   Apto::Array<int> last_collect_spec_counts;
   Apto::Array<int> last_reaction_count;
   Apto::Array<double> last_reaction_add_reward;
@@ -346,7 +346,7 @@ public:
   // Input and Output Reaction Tests
   bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
   bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
-                  const Apto::Array<double>& res_in, const Apto::Array<double>& rbins_in, Apto::Array<double>& res_change,
+                  const CellResAmounts& res_in, const CellResAmounts& rbins_in, CellResAmounts& res_change,
                   Apto::Array<cString>& insts_triggered, bool is_parasite=false, cContextPhenotype* context_phenotype = 0);
 
   // State saving and loading, and printing...
@@ -430,9 +430,9 @@ public:
   const Apto::Array<double> & GetCurTaskQuality() const { assert(initialized == true); return cur_task_quality; }
   const Apto::Array<double> & GetCurTaskValue() const { assert(initialized == true); return cur_task_value; }
   const Apto::Array<double> & GetCurInternalTaskQuality() const { assert(initialized == true); return cur_internal_task_quality; }
-  const Apto::Array<double>& GetCurRBinsTotal() const { assert(initialized == true); return cur_rbins_total; }
+  const CellResAmounts& GetCurRBinsTotal() const { assert(initialized == true); return cur_rbins_total; }
   double GetCurRBinTotal(int index) const { assert(initialized == true); return cur_rbins_total[index]; }
-  const Apto::Array<double>& GetCurRBinsAvail() const { assert(initialized == true); return cur_rbins_avail; }
+  const CellResAmounts& GetCurRBinsAvail() const { assert(initialized == true); return cur_rbins_avail; }
   double GetCurRBinAvail(int index) const { assert(initialized == true); return cur_rbins_avail[index]; }
 
   const Apto::Array<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
@@ -482,10 +482,10 @@ public:
   const Apto::Array<double>& GetLastTaskQuality() const { assert(initialized == true); return last_task_quality; }
   const Apto::Array<double>& GetLastTaskValue() const { assert(initialized == true); return last_task_value; }
   const Apto::Array<double>& GetLastInternalTaskQuality() const { assert(initialized == true); return last_internal_task_quality; }
-  const Apto::Array<double>& GetLastRBinsTotal() const { assert(initialized == true); return last_rbins_total; }
-  const Apto::Array<double>& GetLastRBinsAvail() const { assert(initialized == true); return last_rbins_avail; }
+  const CellResAmounts& GetLastRBinsTotal() const { assert(initialized == true); return last_rbins_total; }
+  const CellResAmounts& GetLastRBinsAvail() const { assert(initialized == true); return last_rbins_avail; }
   const Apto::Array<int>& GetLastReactionCount() const { assert(initialized == true); return last_reaction_count; }
-  const Apto::Array<double>& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
+  const CellResAmounts& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
   const Apto::Array<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
   const Apto::Array<int>& GetLastFromSensorInstCount() const { assert(initialized == true); return last_from_sensor_count; }
   const Apto::Array<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }
@@ -631,8 +631,8 @@ public:
   void ClearKaboomExecuted() {kaboom_executed = false;} //@AEJ
 
 
-  void SetCurRBinsAvail(const Apto::Array<double>& in_avail) { cur_rbins_avail = in_avail; }
-  void SetCurRbinsTotal(const Apto::Array<double>& in_total) { cur_rbins_total = in_total; }
+  void SetCurRBinsAvail(const CellResAmounts& in_avail) { cur_rbins_avail = in_avail; }
+  void SetCurRbinsTotal(const ACellResAmounts& in_total) { cur_rbins_total = in_total; }
   void SetCurRBinAvail(int index, double val) { cur_rbins_avail[index] = val; }
   void SetCurRBinTotal(int index, double val) { cur_rbins_total[index] = val; }
   void AddToCurRBinAvail(int index, double val) { cur_rbins_avail[index] += val; }

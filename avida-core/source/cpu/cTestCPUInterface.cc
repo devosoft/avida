@@ -54,47 +54,47 @@ const Apto::Array<int>& cTestCPUInterface::GetInputs() const
   return m_testcpu->GetInputs();
 }
 
-const Apto::Array<double>& cTestCPUInterface::GetResources(cAvidaContext& ctx)
+const CellResAmounts& cTestCPUInterface::GetResources(cAvidaContext& ctx)
 {
   return m_testcpu->GetResources(ctx); 
 }
 
-double cTestCPUInterface::GetResourceVal(cAvidaContext& ctx, int res_id)
+ResAmount cTestCPUInterface::GetResourceVal(cAvidaContext& ctx, int res_id)
 {
   return m_testcpu->GetResourceVal(ctx, res_id);
 }
 
-const Apto::Array<double>& cTestCPUInterface::GetFacedCellResources(cAvidaContext& ctx)
+const CellResAmounts& cTestCPUInterface::GetFacedCellResources(cAvidaContext& ctx)
 {
   return m_testcpu->GetFacedCellResources(ctx); 
 }
 
-double cTestCPUInterface::GetFacedResourceVal(cAvidaContext& ctx, int res_id)
+ResAmount cTestCPUInterface::GetFacedResourceVal(cAvidaContext& ctx, int res_id)
 {
   return m_testcpu->GetFacedResourceVal(ctx, res_id);
 }
 
-const Apto::Array<double>& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaContext& ctx)
+const CellResAmounts& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaContext& ctx)
 {
   return m_testcpu->GetDemeResources(deme_id, ctx); 
 }
 
-const Apto::Array<double>& cTestCPUInterface::GetCellResources(int cell_id, cAvidaContext& ctx)
+const CellResAmounts& cTestCPUInterface::GetCellResources(int cell_id, cAvidaContext& ctx)
 {
   return m_testcpu->GetCellResources(cell_id, ctx); 
 }
 
-const Apto::Array<double>& cTestCPUInterface::GetFrozenResources(cAvidaContext& ctx, int cell_id)
+const CellResAmounts& cTestCPUInterface::GetFrozenResources(cAvidaContext& ctx, int cell_id)
 {
   return m_testcpu->GetFrozenResources(ctx, cell_id); 
 }
 
-double cTestCPUInterface::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
+ResAmount cTestCPUInterface::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
 {
   return m_testcpu->GetFrozenCellResVal(ctx, cell_id, res_id);
 }
 
-double cTestCPUInterface::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
+ResAmount cTestCPUInterface::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
 {
   return m_testcpu->GetCellResVal(ctx, cell_id, res_id);
 }
@@ -104,12 +104,12 @@ const Apto::Array< Apto::Array<int> >& cTestCPUInterface::GetCellIdLists()
 	return m_testcpu->GetCellIdLists();
 }
 
-void cTestCPUInterface::UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change)
+void cTestCPUInterface::UpdateResources(cAvidaContext& ctx, const ResAmount& res_change)
 {
    m_testcpu->ModifyResources(ctx, res_change);
 }
 
-void cTestCPUInterface::UpdateRandomResources(cAvidaContext& ctx, const Apto::Array<double>& res_change)
+void cTestCPUInterface::UpdateRandomResources(cAvidaContext& ctx, const ResAmount& res_change)
 {
    m_testcpu->ModifyResources(ctx, res_change);
 }
@@ -182,22 +182,22 @@ const Apto::Array<double>& cTestCPUInterface::GetAVResources(cAvidaContext& ctx,
   return m_testcpu->GetAVResources(ctx);
 }
 
-double cTestCPUInterface::GetAVResourceVal(cAvidaContext& ctx, int res_id, int av_num)
+ResAmount cTestCPUInterface::GetAVResourceVal(cAvidaContext& ctx, int res_id, int av_num)
 {
   return m_testcpu->GetAVResourceVal(ctx, res_id);
 }
 
-const Apto::Array<double>& cTestCPUInterface::GetAVFacedResources(cAvidaContext& ctx, int av_num)
+const ResAmounts& cTestCPUInterface::GetAVFacedResources(cAvidaContext& ctx, int av_num)
 {
   return m_testcpu->GetAVFacedResources(ctx);
 }
 
-double cTestCPUInterface::GetAVFacedResourceVal(cAvidaContext& ctx, int res_id, int av_num)
+ResAmount cTestCPUInterface::GetAVFacedResourceVal(cAvidaContext& ctx, int res_id, int av_num)
 {
   return m_testcpu->GetAVFacedResourceVal(ctx, res_id);
 }
 
-void cTestCPUInterface::UpdateAVResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, int av_num)
+void cTestCPUInterface::UpdateAVResources(cAvidaContext& ctx, const ResAmounts& res_change, int av_num)
 {
   m_testcpu->ModifyResources(ctx, res_change);
 }

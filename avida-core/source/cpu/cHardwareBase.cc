@@ -1284,8 +1284,8 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const Instruct
     double fem_res_cost = m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE ? m_inst_set->GetFemResCost(cur_inst) : 0; 
     double res_req = res_cost + fem_res_cost;
 
-    const Apto::Array<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
-    Apto::Array<double> res_change(res_count.GetSize());
+    const CellResAmounts& res_count = m_organism->GetOrgInterface().GetResources(ctx);
+    ResAmounts res_change(res_count.GetSize());
     res_change.SetAll(0.0);
     
     const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
@@ -1369,8 +1369,8 @@ void cHardwareBase::SingleProcess_PayPostResCosts(cAvidaContext& ctx, const Inst
     double fem_res_cost = m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE ? m_inst_set->GetFemResCost(cur_inst) : 0; 
     double res_req = res_cost + fem_res_cost;
     
-    const Apto::Array<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
-    Apto::Array<double> res_change(res_count.GetSize());
+    const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
+    ResAmounts res_change(res_count.GetSize());
     res_change.SetAll(0.0);
     
     const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();

@@ -2302,7 +2302,7 @@ void cPopulation::InjureOrg(cAvidaContext& ctx, cPopulationCell& in_cell, double
   target->GetPhenotype().SetCurBonus(target_bonus - (target_bonus * injury));
   
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-    Apto::Array<double> target_bins = target->GetRBins();
+    CellResAmounts target_bins = target->GetRBins();
     for (int i = 0; i < target_bins.GetSize(); i++) {
       target->AddToRBin(i, -1 * (target_bins[i] * injury));
     }

@@ -131,7 +131,7 @@ inline void cTestCPU::SetResourceUpdate(cAvidaContext& ctx, int update, bool rou
   m_res_history.GetResourceAbundances(update, m_resource_abundances, !round_to_closest);
 }
 
-void cTestCPU::ModifyResources(cAvidaContext& ctx, const Apto::Array<double>& res_change)
+void cTestCPU::ModifyResources(cAvidaContext& ctx, const CellResAmounts& res_change)
 {
   //We only let the testCPU modify the resources if we are using a DEPLETABLE option. @JEB
   if (m_res_method >= RES_UPDATED_DEPLETABLE){
@@ -414,8 +414,8 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString fil
   		                      internal_task_count[i], internal_task_qual[i]));
   	}
   	
-  	const Apto::Array<double>& rbins_total = test_info.GetTestPhenotype().GetLastRBinsTotal();
-  	const Apto::Array<double>& rbins_avail = test_info.GetTestPhenotype().GetLastRBinsAvail();
+  	const CellResAmounts& rbins_total = test_info.GetTestPhenotype().GetLastRBinsTotal();
+  	const CellResAmounts& rbins_avail = test_info.GetTestPhenotype().GetLastRBinsAvail();
   	
   	df->WriteComment(        "Resources Collected: Name\t\tTotal\t\tAvailable");
   	for (int i = 0; i < rbins_total.GetSize(); i++) {

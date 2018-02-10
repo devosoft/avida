@@ -584,7 +584,7 @@ double cTaskLib::Task_Nand_ResourceDependent(cTaskContext& ctx) const
   if (!(logic_id == 63 || logic_id == 95 || logic_id == 119)) return 0.0;
 		
   const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
-  const Apto::Array<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
+  const GlobalResAmounts& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
   const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
   if (resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -609,7 +609,7 @@ double cTaskLib::Task_Nor_ResourceDependent(cTaskContext& ctx) const
   if (!(logic_id == 3 || logic_id == 5 || logic_id == 17))  return 0.0;
 	
   const cResourceRegistry& resLib = m_world->GetEnvironment().GetResourceRegistry();
-  const Apto::Array<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
+  const CellResAmounts& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
   const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
   
   //if (resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -4098,7 +4098,7 @@ double cTaskLib::Task_ConsumePublicGood(cTaskContext& ctx) const
 
 double cTaskLib::Task_XorMax(cTaskContext& ctx) const
 {
-  Apto::Array<double> cell_res;
+  CellResAmounts cell_res;
   if (!m_world->GetConfig().USE_AVATARS.Get()) cell_res = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
   else if (m_world->GetConfig().USE_AVATARS.Get()) cell_res = ctx.GetOrganism()->GetOrgInterface().GetAVResources(m_world->GetDefaultContext());
   

@@ -873,7 +873,7 @@ public:
     // ----- number of instructions available?
     const cInstSet& is = m_world->GetHardwareManager().GetInstSet((const char*)m_inst_set);
     
-    Apto::Array<int> inst_counts(is.GetSize());
+    ResAmounts inst_counts(is.GetSize());
     inst_counts.SetAll(0);
     
     //looping through all CPUs counting up instructions
@@ -3813,7 +3813,7 @@ public:
     
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-        const Apto::Array<double> res_count = m_world->GetPopulation().GetCellResources(j * m_world->GetPopulation().GetWorldX() + i, ctx);
+        const CellResAmounts res_count = m_world->GetPopulation().GetCellResources(j * m_world->GetPopulation().GetWorldX() + i, ctx);
         double max_resource = 0.0;    
         // get the resource library
         const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
@@ -4964,7 +4964,7 @@ public:
       
       //Find out if the organism is in a den:
       bool on_den = false;
-      Apto::Array<double> res_count = m_world->GetPopulation().GetCellResources(loc, ctx);
+      CellResAmounts res_count = m_world->GetPopulation().GetCellResources(loc, ctx);
       if (use_av) res_count = m_world->GetPopulation().GetCellResources(org->GetOrgInterface().GetAVCellID(), ctx);
       const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
       for (int i = 0; i < res_count.GetSize(); i++) {

@@ -912,7 +912,7 @@ void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp
   if (!m_use_avatar) fp << m_organism->IsNeighborCellOccupied() << " ";  
   else fp << m_organism->GetOrgInterface().FacedHasAV() << " ";
   const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
-  Apto::Array<double> cell_resource_levels;
+  CellResAmounts cell_resource_levels;
   if (!m_use_avatar) cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
   else cell_resource_levels = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
   int wall = 0;
@@ -2749,7 +2749,7 @@ bool cHardwareExperimental::Inst_RegulateSpecificPromoters(cAvidaContext&)
 bool cHardwareExperimental::Inst_SenseRegulate(cAvidaContext& ctx)
 {
   unsigned int bits = 0;
-  const Apto::Array<double> & res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts & res_count = m_organism->GetOrgInterface().GetResources(ctx);
   assert (res_count.GetSize() != 0);
   for (int i=0; i<m_world->GetConfig().PROMOTER_CODE_SIZE.Get(); i++)
   {
@@ -3337,7 +3337,7 @@ bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
   double max_res = 0;
   for(int i = 0; i < actualNeighborhoodSize; i++) {
     m_organism->Rotate(ctx, 1);
-    Apto::Array<double> faced_res;
+    CellResAmounts faced_res;
     if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
     else if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
     if (faced_res[group] > max_res) max_res = faced_res[group];
@@ -3345,7 +3345,7 @@ bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
   
   if (max_res > current_res) {
     for(int i = 0; i < actualNeighborhoodSize; i++) {
-      Apto::Array<double> faced_res;
+      CellResAmounts faced_res;
       if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
       else if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
       if (faced_res[group] != max_res) m_organism->Rotate(ctx, 1);
@@ -3804,7 +3804,7 @@ bool cHardwareExperimental::Inst_IfNotNeuronInputFacedHasOutputAV(cAvidaContext&
 
 bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
 {
-  Apto::Array<double> cell_res;
+  CellResAmounts cell_res;
   if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
   else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
   int reg_to_set = FindModifiedRegister(rBX);  
@@ -3914,8 +3914,8 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
     else if (m_use_avatar) faced_res = (int) (m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, res_sought));
   }
   else {
-    Apto::Array<double> faced;
-    Apto::Array<double> here;
+    CellResAmounts faced;
+    CellResAmounts here;
     if (m_use_avatar) {
       here = m_organism->GetOrgInterface().GetAVResources(ctx);
       faced = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
@@ -4227,7 +4227,7 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
   
   // get the destination cell resource levels
-  Apto::Array<double> cell_res;
+  CellResAmounts cell_res;
   if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
   else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
   
@@ -4605,7 +4605,7 @@ bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bo
   if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, bin_used);
   else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, bin_used);
 
-  Apto::Array<double> res_change(m_world->GetEnvironment().GetResourceRegistry().GetSize());
+  CellResAmounts res_change(m_world->GetEnvironment().GetResourceRegistry().GetSize());
   res_change.SetAll(0.0);
   double total = m_organism->GetRBinsTotal();
   double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
@@ -4649,7 +4649,7 @@ bool cHardwareExperimental::FakeActualCollect(cAvidaContext& ctx, int bin_used, 
     if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResourceVal(ctx, bin_used);
     else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, bin_used);
     
-    Apto::Array<double> res_change(m_world->GetEnvironment().GetResourceRegistry().GetSize());
+    CellResAmounts res_change(m_world->GetEnvironment().GetResourceRegistry().GetSize());
     res_change.SetAll(0.0);
     double total = m_organism->GetRBinsTotal();
     double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
@@ -4755,7 +4755,7 @@ bool cHardwareExperimental::Inst_DepositResource(cAvidaContext& ctx)
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
         if (cell_res > resource_reg.GetResource(i)->GetThreshold()) {
           m_organism->AddToRBin(resource_id, -1 * resource_amount);
-          Apto::Array<double> res_change(resource_reg.GetSize());
+          CellResAmounts res_change(resource_reg.GetSize());
           res_change.SetAll(0.0);
           res_change[resource_id] = resource_amount;
           if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
@@ -4791,7 +4791,7 @@ bool cHardwareExperimental::Inst_DepositSpecific(cAvidaContext& ctx)
         else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResourceVal(ctx, i);
         if (cell_res > resource_reg.GetResource(i)->GetThreshold()) {
           m_organism->AddToRBin(spec_res, -1 * resource_amount);
-          Apto::Array<double> res_change(resource_reg.GetSize());
+          CellResAmounts res_change(resource_reg.GetSize());
           res_change.SetAll(0.0);
           res_change[spec_res] = resource_amount;
           if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
@@ -4828,7 +4828,7 @@ bool cHardwareExperimental::Inst_DepositAllAsSpecific(cAvidaContext& ctx)
           total_deposit += resource_amount;
         }
         if (total_deposit > 0) {
-          Apto::Array<double> res_change(resource_reg.GetSize());
+          CellResAmounts res_change(resource_reg.GetSize());
           res_change.SetAll(0.0);
           res_change[spec_res] = total_deposit;
           if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
@@ -4945,7 +4945,7 @@ bool cHardwareExperimental::Inst_Nop2DepositAllAsSpecific(cAvidaContext& ctx)
           // resource doesn't get added to total_deposit
         }
         if (total_deposit > 0) {
-          Apto::Array<double> res_change(resource_reg.GetSize());
+          CellResAmounts res_change(resource_reg.GetSize());
           res_change.SetAll(0.0);
           res_change[spec_res] = total_deposit;
           if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
@@ -5055,7 +5055,7 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_GetResStored(cAvidaContext& ctx)
 {
   int resource_id = abs(GetRegister(FindModifiedRegister(rBX)));
-  Apto::Array<double> bins = m_organism->GetRBins();
+  CellResAmounts bins = m_organism->GetRBins();
   resource_id %= bins.GetSize();
   int out_reg = FindModifiedRegister(rBX);
   setInternalValue(out_reg, (int)(bins[resource_id]), true);
@@ -5064,7 +5064,7 @@ bool cHardwareExperimental::Inst_GetResStored(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_GetSpecificStored(cAvidaContext& ctx)
 {
-  Apto::Array<double> bins = m_organism->GetRBins();
+  CellResAmounts bins = m_organism->GetRBins();
   int out_reg = FindModifiedRegister(rBX);
   setInternalValue(out_reg, (int)(bins[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]), true);
   return true;
@@ -6222,7 +6222,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
     m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
     
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-      Apto::Array<double> target_bins = target->GetRBins();
+      CellResAmounts target_bins = target->GetRBins();
       for (int i = 0; i < target_bins.GetSize(); i++) {
         m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
         target->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
@@ -7133,7 +7133,7 @@ void cHardwareExperimental::ApplyKilledPreyResBins(cOrganism* target, sAttackReg
 {
   // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-    Apto::Array<double> target_bins = target->GetRBins();
+    CellResAmounts target_bins = target->GetRBins();
     for (int i = 0; i < target_bins.GetSize(); i++) {
       m_organism->AddToRBin(i, target_bins[i] * effic);
       if (effic > 0) target->AddToRBin(i, -1 * (target_bins[i] * effic));
@@ -7164,7 +7164,7 @@ void cHardwareExperimental::ApplySharedKilledPreyBonus(cOrganism* target, sAttac
 void cHardwareExperimental::ApplySharedKilledPreyResBins(cOrganism* target, sAttackReg& reg, double effic, cOrganism* org, double share)
 {
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-    Apto::Array<double> target_bins = target->GetRBins();
+    CellResAmounts target_bins = target->GetRBins();
     for (int i = 0; i < target_bins.GetSize(); i++) {
       double bin_amt = target_bins[i] * effic;
       org->AddToRBin(i, bin_amt * share);
@@ -7202,7 +7202,7 @@ void cHardwareExperimental::InjureOrg(cAvidaContext& ctx, cOrganism* target)
   target->GetPhenotype().SetCurBonus(target_bonus - (target_bonus * injury));
   
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-    Apto::Array<double> target_bins = target->GetRBins();
+    CellResAmounts target_bins = target->GetRBins();
     for (int i = 0; i < target_bins.GetSize(); i++) {
       target->AddToRBin(i, -1 * (target_bins[i] * injury));
     }
