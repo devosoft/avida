@@ -737,6 +737,7 @@
 		D7FB16D50ED62684002E939E /* cOrgMessage.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cOrgMessage.cc; sourceTree = "<group>"; };
 		D86E627014F6BA6600AE1489 /* cMigrationMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMigrationMatrix.h; sourceTree = "<group>"; };
 		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE754E93200A96010098EA51 /* cCellBox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cCellBox.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1591,6 +1592,7 @@
 				70B08B8C08FB2E5500FC65FE /* tList.h */,
 				70B08B8D08FB2E5500FC65FE /* tMatrix.h */,
 				700E28CF0859FFD700CF158A /* tObjectFactory.h */,
+				FE754E93200A96010098EA51 /* cCellBox.h */,
 			);
 			path = tools;
 			sourceTree = "<group>";

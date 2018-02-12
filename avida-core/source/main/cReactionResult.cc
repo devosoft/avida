@@ -63,6 +63,7 @@ void cReactionResult::ActivateReaction()
   germline_add = 0.0;
   germline_mult = 1.0;
   insts_triggered.Resize(0);
+  is_random_resource = false;
   lethal = false;
   sterilize = false;
   used_env_resource = true;
@@ -102,6 +103,12 @@ void cReactionResult::Detect(int id, double num)
 {
   ActivateReaction();
   resources_detected[id] += num;
+}
+
+void cReactionResult::SetRandomResource(bool flag)
+{
+  ActivateReaction();
+  is_random_resource = flag;
 }
 
 void cReactionResult::Lethal(bool flag)
@@ -213,6 +220,12 @@ double cReactionResult::GetInternalProduced(int id)
 {
   if (GetActive() == false) return 0.0;
   return internal_resources_produced[id];
+}
+
+bool cReactionResult::GetIsRandomResource()
+{
+  if (GetActive() == false) return false;
+  return is_random_resource;
 }
 
 bool cReactionResult::GetLethal()

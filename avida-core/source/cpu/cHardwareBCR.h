@@ -255,8 +255,8 @@ private:
   
   // Flags
   struct {
-    unsigned int m_cycle_count:16;
-    unsigned int m_last_output:16;
+    unsigned int m_cycle_count;
+    unsigned int m_last_output;
 
     unsigned int m_cur_uop:8;
 

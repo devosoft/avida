@@ -126,10 +126,12 @@ public:
   virtual cResourceCount* GetResourceCount() = 0;
   virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
   virtual void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
+  virtual void UpdateRandomResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
   virtual void UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
   virtual void Die(cAvidaContext& ctx) = 0; 
   virtual void KillCellID(int target, cAvidaContext& ctx) = 0; 
-  virtual void Kaboom(int distance, cAvidaContext& ctx) = 0; 
+  virtual void Kaboom(int distance, cAvidaContext& ctx) = 0;
+  virtual void Kaboom(int distance, cAvidaContext& ctx, double effect) = 0;
   virtual void SpawnDeme(cAvidaContext& ctx) = 0; 
   virtual int ReceiveValue() = 0;
   virtual bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code) = 0;

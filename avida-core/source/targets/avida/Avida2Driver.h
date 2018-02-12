@@ -44,6 +44,7 @@ protected:
     void Error(const char* fmt, ...);
     void Warning(const char* fmt, ...);
     void Notify(const char* fmt, ...);
+    void Data(const char* fmt, ...);
     void Clear();
   } m_feedback;
   

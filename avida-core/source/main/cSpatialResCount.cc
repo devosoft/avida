@@ -125,26 +125,26 @@ void cSpatialResCount::SetPointers()
     /* Top and bottom */
 
     for (i = 0; i < world_x; i++) {
-      grid[i].SetPtr(0, -99, -99, -99, -99.0);
-      grid[i].SetPtr(1, -99, -99, -99, -99.0);
-      grid[i].SetPtr(2, -99, -99, -99, -99.0);
+      grid[i].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[i].SetPtr(1, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[i].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
       ii = num_cells-1-i;
-      grid[ii].SetPtr(4, -99, -99, -99, -99.0);
-      grid[ii].SetPtr(5, -99, -99, -99, -99.0);
-      grid[ii].SetPtr(6, -99, -99, -99, -99.0);
+      grid[ii].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[ii].SetPtr(5, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[ii].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
     }
 
     /* fix links for right and left sides */
 
     for (i = 0; i < world_y; i++) {
       ii = i * world_x;    
-      grid[ii].SetPtr(0, -99, -99, -99, -99.0);
-      grid[ii].SetPtr(7, -99, -99, -99, -99.0);
-      grid[ii].SetPtr(6, -99, -99, -99, -99.0);
+      grid[ii].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[ii].SetPtr(7, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[ii].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
       ii = ((i + 1) * world_x) - 1;
-      grid[ii].SetPtr(2, -99, -99, -99, -99.0);
-      grid[ii].SetPtr(3, -99, -99, -99, -99.0);
-      grid[ii].SetPtr(4, -99, -99, -99, -99.0);
+      grid[ii].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[ii].SetPtr(3, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[ii].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
     }
   }
 }
@@ -278,7 +278,7 @@ double cSpatialResCount::GetAmount(int x) const {
   if (x >= 0 && x < grid.GetSize()) {
     return grid[x].GetAmount(); 
   } else {
-    return -99.9;
+    return cResource::NONE;
   }
 }
 
@@ -288,7 +288,7 @@ double cSpatialResCount::GetAmount(int x, int y) const {
   if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
     return grid[y*world_x + x].GetAmount(); 
   } else {
-    return -99.9;
+    return cResource::NONE;
   }
 }
 
@@ -392,7 +392,7 @@ void cSpatialResCount::Sink(double decay) const {
   int     i, j, elem;
   double  deltaamount;
 
-  if (outflowX1 == -99 || outflowY1 == -99 || outflowX2 == -99 || outflowY2 == -99) return;
+  if (outflowX1 == cResource::NONE || outflowY1 == cResource::NONE || outflowX2 == cResource::NONE || outflowY2 == cResource::NONE) return;
   
   for (i = outflowY1; i <= outflowY2; i++) {
     for (j = outflowX1; j <= outflowX2; j++) {

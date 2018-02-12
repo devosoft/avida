@@ -578,7 +578,6 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) PromoterTerminate(ctx);
   
   m_cycle_count++;
-  assert(m_cycle_count < 0x8000);
   phenotype.IncCPUCyclesUsed();
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
   

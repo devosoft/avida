@@ -259,6 +259,7 @@ public:
   void SetDepth(int _depth) { depth = _depth; }
   void SetCells(const cString& cells) { m_cells = cells; }
   void SetGestOffsets(const cString& gest_offsets) { m_gest_offsets = gest_offsets; }
+  void SetGenome(Genome& genome) {m_genome = genome;};
 
   void SetLength(int _length) { length = _length; }
   void SetCopyLength(int _length) { copy_length = _length; }
@@ -271,7 +272,6 @@ public:
   void SetParentDist(int _dist) { parent_dist = _dist; }
   void SetAncestorDist(int _dist) { ancestor_dist = _dist; }
   void SetLineageLabel(int _label) { lineage_label = _label; }
-
   void SetMatingType(int _mating_type) { m_mating_type = _mating_type; } //@CHC
   void SetMatePreference(int _mate_preference) { m_mate_preference = _mate_preference; } //@CHC
   void SetMatingDisplayA(int _mating_display_a) { m_mating_display_a = _mating_display_a; } //@CHC
@@ -294,6 +294,7 @@ public:
   cWorld* GetWorld() { return m_world; }
 
   Genome& GetGenome() { return m_genome; }
+
   const Genome& GetGenome() const { return m_genome; }
   const cString& GetName() const { return name; }
   const cString& GetAlignedSequence() const { return aligned_sequence; }

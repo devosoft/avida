@@ -47,6 +47,7 @@ private:
   double k_sub_m;        // k sub m variable needed for enzyme reaction
   cResource* product;    // Output resource.
   double conversion;     // Conversion factor.
+  bool is_random_resource; //whether the resource should be placed in a random cell
   double lethal;		 // Lethality of reaction
   bool sterilize; //!< Whether performance of this reaction sterilizes the organism.
   double deme_fraction; //!< Fraction of process reward that is applied to the organism's deme.
@@ -79,6 +80,7 @@ public:
     , k_sub_m(0.0)
     , product(NULL)
     , conversion(1.0)
+    , is_random_resource(false)
     , lethal(0)
     , sterilize(false)
     , deme_fraction(0.0)
@@ -104,6 +106,7 @@ public:
   double GetConversion() const { return conversion; }
   const cString& GetInst() const { return inst; }
   bool GetDepletable() const { return depletable; }
+  bool GetIsRandomResource() const {return is_random_resource;}
   double GetLethal() const { return lethal; }
   bool GetSterilize() const { return sterilize; }
   double GetDemeFraction() const { return deme_fraction; }
@@ -126,6 +129,7 @@ public:
   void SetConversion(double _in) { conversion = _in; }
   void SetInst(const cString& _in) { inst = _in; }
   void SetDepletable(bool _in) { depletable = _in; }
+  void SetRandomResource (bool _in) {is_random_resource = _in;}
   void SetLethal(double _in) { lethal = _in; }
   void SetSterile(int _in) { sterilize = _in; }
   void SetDemeFraction(double _in) { assert(_in>=0.0); assert(_in<=1.0); deme_fraction = _in; }

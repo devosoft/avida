@@ -280,7 +280,7 @@ public:
   // -------- General config options --------
   CONFIG_ADD_GROUP(GENERAL_GROUP, "General Settings");
   CONFIG_ADD_VAR(VERBOSITY, int, 1, "0 = No output at all\n1 = Normal output\n2 = Verbose output, detailing progress\n3 = High level of details, as available\n4 = Print Debug Information, as applicable");
-  CONFIG_ADD_VAR(RANDOM_SEED, int, -1, "Random number seed (-1 for based on time)");
+  CONFIG_ADD_VAR(RANDOM_SEED, int, -1, "Random number seed (<0 for based on time)");
   CONFIG_ADD_VAR(SPECULATIVE, bool, 1, "Enable speculative execution\n(pre-execute instructions that don't affect other organisms)");
   CONFIG_ADD_VAR(POPULATION_CAP, int, 0, "Carrying capacity in number of organisms (use 0 for no cap)");
   CONFIG_ADD_VAR(POP_CAP_ELDEST, int, 0, "Carrying capacity in number of organisms (use 0 for no cap). Will kill oldest organism in population, but still use birth method to place new offspring."); 
@@ -400,6 +400,7 @@ public:
   CONFIG_ADD_VAR(REQUIRED_REACTION, int, -1, "Reaction ID required for successful divide");
   CONFIG_ADD_VAR(IMMUNITY_REACTION, int, -1, "Reaction ID that provides immunity for successful divide");
   CONFIG_ADD_VAR(REQUIRE_SINGLE_REACTION, int, 0, "If set to 1, at least one reaction is required for a successful divide");
+  CONFIG_ADD_VAR(MAX_UNIQUE_TASK_COUNT, int, -1, "Division will fail if organism performs more than MAX_TASK_COUNT when MAX_TASK_COUNT >= 0");
   CONFIG_ADD_VAR(REQUIRED_BONUS, double, 0.0, "Required bonus to divide");
   CONFIG_ADD_VAR(REQUIRE_EXACT_COPY, int, 0, "Require offspring to be an exact copy (checked before divide mutations)");
   CONFIG_ADD_VAR(REQUIRED_RESOURCE, int, -1, "ID of resource required in organism's internal bins for successful\n  divide (resource not consumed)");
@@ -458,6 +459,8 @@ public:
   CONFIG_ADD_VAR(PARASITE_NO_COPY_MUT, int, 0, "Parasites do not get copy mutation rates");
   CONFIG_ADD_VAR(PARASITE_USE_GENOTYPE_FILE, int, 0, "Parasite Genotypes are loaded from a file rather than replicated from parent -- see LoadParasiteGenotypeList");
   CONFIG_ADD_VAR(HOST_USE_GENOTYPE_FILE, int, 0, "Host Genotypes are loaded from a file rather than replicated from parent -- see LoadHostGenotypeList");
+  
+  CONFIG_ADD_VAR(FULL_VERTICAL_TRANS, double, 0.0, "Determines if offspring of infected host is automatically infected. 0 for no, 1 for yes. If you want to keep parent infected as well, you need to set DIVIDE_METHOD to 2.");
 
 
   // -------- CPU Archetecture
@@ -575,6 +578,7 @@ public:
   CONFIG_ADD_GROUP(KABOOM_GROUP, "Kaboom");
   CONFIG_ADD_VAR(KABOOM_PROB, double, -1, "The probability (in decimal) that an explosion will occur when the instruction is encountered. -1 is default probability and allows the organism to change the probability.");
   CONFIG_ADD_VAR(KABOOM_RADIUS, int, 2, "Radius of all explosions (kaboom and kaboom5)");
+  CONFIG_ADD_VAR(KABOOM_EFFECT, int, 10, "Merit increased or decreased for surrounding kin or non-kin");
   CONFIG_ADD_VAR(KABOOM_HAMMING, int, 0, "Hamming distance of kaboom's threshold, set to -1 to have adjustable, default is 0 for clone altruists.");
   CONFIG_ADD_VAR(KABOOM1_HAMMING, int, 1, "Hamming distance of kaboom1's threshold, set to -1 to have adjustable, default is 1.");
   CONFIG_ADD_VAR(KABOOM2_HAMMING, int, 2, "Hamming distance of kaboom2's threshold, set to -1 to have adjustable, default is 2.");

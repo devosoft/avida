@@ -190,7 +190,7 @@ void cResourceCount::SetCellResources(int cell_id, const Apto::Array<double> & r
   assert(resource_count.GetSize() == res.GetSize());
 
   for (int i = 0; i < resource_count.GetSize(); i++) {
-     if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+     if (!IsSpatialResource(i)) {
         // Set global quantity of resource
     } else {
       spatial_resource_count[i]->SetCellAmount(cell_id, res[i]);
@@ -555,7 +555,7 @@ const Apto::Array<double> & cResourceCount::GetCellResources(int cell_id, cAvida
   DoUpdates(ctx);
               
   for (int i = 0; i < num_resources; i++) {
-     if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+     if (!IsSpatialResource(i)) {
          curr_grid_res_cnt[i] = resource_count[i];
     } else {
       curr_grid_res_cnt[i] = spatial_resource_count[i]->GetAmount(cell_id);
@@ -574,7 +574,7 @@ const Apto::Array<double> & cResourceCount::GetFrozenResources(cAvidaContext&, i
   int num_resources = resource_count.GetSize();
   
   for (int i = 0; i < num_resources; i++) {
-    if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+    if (!IsSpatialResource(i)) {
       curr_grid_res_cnt[i] = resource_count[i];
     } else {
       curr_grid_res_cnt[i] = spatial_resource_count[i]->GetAmount(cell_id);
@@ -586,8 +586,10 @@ const Apto::Array<double> & cResourceCount::GetFrozenResources(cAvidaContext&, i
 double cResourceCount::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const
 // This differs from GetFrozenCellResources by only pulling for res of interest.
 {
-  if (geometry[res_id] == nGeometry::GLOBAL || geometry[res_id]==nGeometry::PARTIAL) return resource_count[res_id];
-  else return spatial_resource_count[res_id]->GetAmount(cell_id);
+  if (!IsSpatialResource(res_id)) 
+    return resource_count[res_id];
+  else 
+    return spatial_resource_count[res_id]->GetAmount(cell_id);
 }
 
 double cResourceCount::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const
@@ -596,7 +598,7 @@ double cResourceCount::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id
   DoUpdates(ctx);
 
   double res_val = 0;
-  if (geometry[res_id] == nGeometry::GLOBAL || geometry[res_id]==nGeometry::PARTIAL) {
+  if (!IsSpatialResource(res_id)) {
     res_val = resource_count[res_id];
   } else {
     res_val = spatial_resource_count[res_id]->GetAmount(cell_id);
@@ -651,7 +653,7 @@ void cResourceCount::ModifyCell(cAvidaContext& ctx, const Apto::Array<double> & 
 
   DoUpdates(ctx);
   for (int i = 0; i < resource_count.GetSize(); i++) {
-  if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+  if (!IsSpatialResource(i)) {
         resource_count[i] += res_change[i];
       assert(resource_count[i] >= 0.0);
     } else {
@@ -672,25 +674,25 @@ void cResourceCount::ModifyCell(cAvidaContext& ctx, const Apto::Array<double> & 
   }
 }
 
-double cResourceCount::Get(cAvidaContext& ctx, int res_index) const
+double cResourceCount::Get(cAvidaContext& ctx, int res_id) const
 {
-  assert(res_index < resource_count.GetSize());
+  assert(res_id < resource_count.GetSize());
   DoUpdates(ctx);
-  if (geometry[res_index] == nGeometry::GLOBAL || geometry[res_index]==nGeometry::PARTIAL) {
-      return resource_count[res_index];
+  if (!IsSpatialResource(res_id)) {
+      return resource_count[res_id];
   } //else return spacial resource sum
-  return spatial_resource_count[res_index]->SumAll();
+  return spatial_resource_count[res_id]->SumAll();
 }
 
-void cResourceCount::Set(cAvidaContext& ctx, int res_index, double new_level)
+void cResourceCount::Set(cAvidaContext& ctx, int res_id, double new_level)
 {
-  assert(res_index < resource_count.GetSize());
+  assert(res_id < resource_count.GetSize());
   DoUpdates(ctx);
-  if (geometry[res_index] == nGeometry::GLOBAL || geometry[res_index]==nGeometry::PARTIAL) {
-     resource_count[res_index] = new_level;
+  if (!IsSpatialResource(res_id)) {
+     resource_count[res_id] = new_level;
   } else {
-    for(int i = 0; i < spatial_resource_count[res_index]->GetSize(); i++) {
-      spatial_resource_count[res_index]->SetCellAmount(i, new_level/spatial_resource_count[res_index]->GetSize());
+    for(int i = 0; i < spatial_resource_count[res_id]->GetSize(); i++) {
+      spatial_resource_count[res_id]->SetCellAmount(i, new_level/spatial_resource_count[res_id]->GetSize());
     }
   }
 }
@@ -750,56 +752,98 @@ int cResourceCount::GetMaxUsedY(int res_id)
   return spatial_resource_count[res_id]->GetMaxUsedY();
 }
 
-///// Private Methods /////////
+
+
 void cResourceCount::DoUpdates(cAvidaContext& ctx, bool global_only) const
 { 
+
+  
+  // GLOBAL AND PARTIAL CALCULATION VALUES ======================================
+  /*
+     UPDATE_STEP is the fraction of an update per calculation step
+     PRECALC_DISTANCE is how many steps to precalculate
+     EPSILON is the tolerance for roundoff errors
+     
+     update_time is the portion of an update remaining.  It's remainder will
+     get used in the next round of updating.
+     
+     Keep in mind that regardless of the type of resource, all resources
+     will have an inflow, outflow, initial, geometry, resource_count,
+     and spatial_resource_count (the latter even for global or partial resources,
+     it just is not used.)
+   */
+  
+  // Make sure that our fraction of an update remaining is greater than twice
+  // the roundoff error.
   assert(update_time >= -EPSILON);
-
-  // Determine how many update steps have progressed
-  int num_steps = (int) (update_time / UPDATE_STEP);
-
-  // Preserve remainder of update_time
+  // Determine how many resource steps we wish to process
+  const int num_steps = (int) (update_time / UPDATE_STEP);
+  
+  // Preserve remainder of update_time for use on the next DoUpdates as
+  // we may not get around to calculating them this round
   update_time -=  num_steps * UPDATE_STEP;
-
-
-  while (num_steps > PRECALC_DISTANCE) {
-    for (int i = 0; i < resource_count.GetSize(); i++) {
-      if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
-        resource_count[i] *= decay_precalc(i, PRECALC_DISTANCE);
-        resource_count[i] += inflow_precalc(i, PRECALC_DISTANCE);
-      }
-    }
-    num_steps -= PRECALC_DISTANCE;
-  }
-
-  for (int i = 0; i < resource_count.GetSize(); i++) {
-    if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
-      resource_count[i] *= decay_precalc(i, num_steps);
-      resource_count[i] += inflow_precalc(i, num_steps);
+  
+  
+  // SPATIAL CALCULATION VALUES ==================================
+  /*
+    For some reason we can calculate spatial resources over different update
+    ranges.  For the time being, everything seems to be set upon initialization
+    or in cPopulation's ProcessPreUpdate, which just passes the current update
+    
+    m_spatial_update is the current update we wish to calculate to
+    m_last_updated is the last update we calculated
+    num_spatial_updates is how many updates we wish to calculate
+  */
+  int num_spatial_updates = m_spatial_update - m_last_updated; 
+  
+  
+  // DO UPDATE FOR EACH RESOURCE ================================================
+  for (int res_id = 0; res_id < resource_count.GetSize(); res_id++) {
+    if (!IsSpatialResource(res_id)) {
+      DoNonSpatialUpdates(ctx, res_id, num_steps);
+    } else if (!global_only){
+      DoSpatialUpdates(ctx, res_id, num_spatial_updates);
     }
   }
   
-  if (global_only) return;
-
-  // If one (or more) complete update has occured update the spatial resources
-  while (m_spatial_update > m_last_updated) {
-    m_last_updated++;
-    for (int i = 0; i < resource_count.GetSize(); i++) {
-     if (geometry[i] != nGeometry::GLOBAL && geometry[i] != nGeometry::PARTIAL) {
-        spatial_resource_count[i]->UpdateCount(ctx);
-        spatial_resource_count[i]->Source(inflow_rate[i]);
-        spatial_resource_count[i]->Sink(decay_rate[i]);
-        if (spatial_resource_count[i]->GetCellListSize() > 0) {
-          spatial_resource_count[i]->CellInflow();
-          spatial_resource_count[i]->CellOutflow();
-        }
-        spatial_resource_count[i]->FlowAll();
-        spatial_resource_count[i]->StateAll();
-        // BDB: resource_count[i] = spatial_resource_count[i]->SumAll();
-      }
-    }
+  if (!global_only){
+    m_last_updated = m_spatial_update;
   }
 }
+
+void cResourceCount::DoNonSpatialUpdates(cAvidaContext& ctx, const int res_id, int num_steps) const
+{
+  // Calculate our entire PRECALC_DISTANCE intervals
+  while (num_steps > PRECALC_DISTANCE) {
+    resource_count[res_id] *= decay_precalc(res_id, PRECALC_DISTANCE);
+    resource_count[res_id] += inflow_precalc(res_id, PRECALC_DISTANCE);
+    num_steps -= PRECALC_DISTANCE;
+  }
+  
+  // Calculate our remaining number of steps
+  resource_count[res_id] *= decay_precalc(res_id, num_steps);
+  resource_count[res_id] += inflow_precalc(res_id, num_steps);
+}
+
+
+
+void cResourceCount::DoSpatialUpdates(cAvidaContext& ctx, const int res_id, int num_updates) const
+{
+  for (int kk=0; kk < num_updates; kk++){
+    spatial_resource_count[res_id]->UpdateCount(ctx);  //Only for Gradient Resources
+    spatial_resource_count[res_id]->Source(inflow_rate[res_id]);  
+    spatial_resource_count[res_id]->Sink(decay_rate[res_id]);   
+    if (spatial_resource_count[res_id]->GetCellListSize() > 0) {  // Only for CELL resources?
+      spatial_resource_count[res_id]->CellInflow();
+      spatial_resource_count[res_id]->CellOutflow();
+    }
+    spatial_resource_count[res_id]->FlowAll();
+    spatial_resource_count[res_id]->StateAll();
+    // BDB: resource_count[res_ndx] = spatial_resource_count[i]->SumAll();
+  }
+}
+
+
 
 void cResourceCount::ReinitializeResources(cAvidaContext& ctx, double additional_resource)
 {

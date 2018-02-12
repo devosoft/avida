@@ -24,12 +24,15 @@
 #define cReactionRequisite_h
 
 #include <climits>
+#include <cassert>
+#include "cCellBox.h"
 
 #ifndef tList_h
 #include "tList.h"
 #endif
 
 class cReaction;
+
 
 class cReactionRequisite
 {
@@ -44,6 +47,7 @@ private:
   int max_tot_reaction_count;
   int divide_only;
   int parasite_only;
+  cCellBox cell_box;
 
 
   cReactionRequisite(const cReactionRequisite&); // @not_implemented
@@ -65,6 +69,7 @@ public:
   int GetMinTotReactionCount() const { return min_tot_reaction_count; }
   int GetMaxTotReactionCount() const { return max_tot_reaction_count; }
   int GetParasiteOnly() const { return parasite_only; }
+  cCellBox GetCellBox() const {return cell_box; }
 
   void AddReaction(cReaction* in_reaction) {
     prior_reaction_list.PushRear(in_reaction);
@@ -80,7 +85,9 @@ public:
   void SetMinTotReactionCount(int min) { min_tot_reaction_count = min; }
   void SetMaxTotReactionCount(int max) { max_tot_reaction_count = max; }
   void SetParasiteOnly(int para) { parasite_only = para; }
-
+  void SetCellBox(int xx, int yy, int width, int height) {
+    cell_box = cCellBox(xx, yy, width, height);   //So calling the non-default and opperator=; in c++11 and beyound it will be a move]
+  }
   /*
   added to satisfy Boost.Python; the semantics are fairly useless --
   equality of two references means that they refer to the same object.
