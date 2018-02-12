@@ -62,7 +62,7 @@ int cResourceHistory::GetEntryForUpdate(int update, bool exact) const
 }
 
 
-bool cResourceHistory::GetResourceAbundances(int update, ResAmounts& levels, bool exact) const
+bool cResourceHistory::GetResourceAbundances(int update, GlobalResAmounts& levels, bool exact) const
 {
   int entry = GetEntryForUpdate(update, exact);
   if (entry == -1) return false;
@@ -76,7 +76,7 @@ bool cResourceHistory::GetResourceAbundances(int update, ResAmounts& levels, boo
   return true;
 }
 
-void cResourceHistory::AddEntry(int update, const ResAmounts& values)
+void cResourceHistory::AddEntry(int update, const GlobalResAmounts& values)
 {
   // Note that this method does not currently validate that 'update' does not already exist as an entry
   // If this happens, incorrect resource levels may be returned upon retreival

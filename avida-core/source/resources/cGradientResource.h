@@ -148,7 +148,7 @@ class cGradientResource : public cResource
     ADD_RESOURCE_PROP(double, PredatorOdds, m_predator_odds);
     ADD_RESOURCE_PROP(bool, IsPath, m_is_path);
 
-    ResDescr ToString() const { return "Not Implemented"; }
+    virtual ResDescr ToString() const override { return "Not Implemented"; }
 };
 
 class cWorld;
@@ -223,8 +223,8 @@ class cGradientResourceAcct : public cAbstractSpatialResourceAcct
   int m_max_usedy;
     
 public:
-  cGradientResourceAcct(cGradientResource& res, int size_x, int size_y, const cCellBox& cellbox,
-    cPopulation* pop);
+  cGradientResourceAcct(cGradientResource& res, int size_x, int size_y, 
+                            const cCellBox& cellbox, cPopulation* pop);
    
     
   void UpdateCount(cAvidaContext& ctx);
@@ -238,23 +238,25 @@ public:
 
   template<class T> void UpdateDamagingRes(cAvidaContext& ctx, T pop);
   
-  void SetDeadlyRes(double odds) { m_death_odds = odds; m_deadly = (m_death_odds != 0); }
+  inline void SetDeadlyRes(double odds);
   template<class T> void UpdateDeadlyRes(cAvidaContext& ctx, T pop);
   
   void SetIsPath(bool path) { m_path = path; }
   
   
-  void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells);
-  void BuildProbabilisticResource(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells);
+  void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, 
+                                double lambda, double theta, int x, int y, int num_cells);
+  void BuildProbabilisticResource(cAvidaContext& ctx, double lambda, double theta, 
+                                int x, int y, int num_cells);
   void UpdateProbabilisticResource();
  
   void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
   
-  Apto::Array<int>* GetWallCells() { return &m_wall_cells; }
-  int GetMinUsedX() { return m_min_usedx; }
-  int GetMinUsedY() { return m_min_usedy; }
-  int GetMaxUsedX() { return m_max_usedx; }
-  int GetMaxUsedY() { return m_max_usedy; }
+  inline Apto::Array<int>* GetWallCells() { return &m_wall_cells; }
+  inline int GetMinUsedX() const;
+  inline int GetMinUsedY() const;
+  inline int GetMaxUsedX() const;
+  inline int GetMaxUsedY() const;
   
 private:
   void FillInResourceValues();
@@ -276,6 +278,34 @@ private:
   inline void SetHaloDirection(cAvidaContext& ctx);
   
 };
+
+
+inline void cGradientResourceAcct::SetDeadlyRes(double odds) 
+{ 
+  m_death_odds = odds;
+  m_deadly = (m_death_odds != 0);
+}
+
+int cGradientResourceAcct::GetMinUsedX() const
+{ 
+  return m_min_usedx; 
+}
+
+int cGradientResourceAcct::GetMinUsedY() const
+{ 
+  return m_min_usedy; 
+}
+
+int cGradientResourceAcct::GetMaxUsedX() const
+{ 
+  return m_max_usedx; 
+}
+
+int cGradientResourceAcct::GetMaxUsedY() const
+{ 
+  return m_max_usedy;
+}
+
 
 
 template<class T>

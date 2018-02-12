@@ -25,6 +25,8 @@
 
 #include "cString.h"
 
+#include "Types.h"
+
 
 class cReactionResult {
 private:

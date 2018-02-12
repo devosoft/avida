@@ -24,6 +24,7 @@
 #define cResourceRegistry_h
 
 #include "avida/core/Types.h"
+#include "Types.h"
 
 #include <map>
 
@@ -84,7 +85,7 @@ public:
   
   ~cResourceRegistry();
   
-  inline int GetSize() const { return m_resource_ptrs.size(); }
+  inline int GetSize() const; 
   
   void AddResource(cNonSpatialResource* nonspat_res);
   void AddResource(cSpatialResource* spat_res);
@@ -112,9 +113,9 @@ public:
   
   
   ResAmount GetResourceAmount(cAvidaContext& ctx, const ResName& res_name) const;
-  ResAmounts GetResAmounts(cAvidaContext& ctx) const;
-  ResAmounts GetResAmounts(cAvidaContext& ctx, int cell_id);
-  ResAmounts GetFrozenResAmounts(cAvidaContext& ctx, int cell_id) const;  
+  GlobalResAmounts GetResAmounts(cAvidaContext& ctx) const;
+  CellResAmounts GetResAmounts(cAvidaContext& ctx, int cell_id);
+  CellResAmounts GetFrozenResAmounts(cAvidaContext& ctx, int cell_id) const;  
   
   
   void TriggerDoUpdates(cAvidaContext& ctx); 
@@ -122,16 +123,21 @@ public:
   //const Apto::Array< Apto::Array<int> >& GetCellIdLists() const; 
   
   
-  void UpdateResources(cAvidaContext& ctx, const ResAmounts& res_change);
-  void UpdateRandomResources(cAvidaContext& ctx, const ResAmounts& res_change);
+  void UpdateResources(cAvidaContext& ctx, const GlobalResAmounts& res_change);
+  void UpdateRandomResources(cAvidaContext& ctx, const GlobalResAmounts& res_change);
   void UpdateResource(cAvidaContext& ctx, ResID id, ResAmount change);
   void UpdateCellResources(cAvidaContext& ctx, 
-                           const ResAmounts& res_change, const int cell_id);
+                           const CellResAmounts& res_change, const int cell_id);
   
   
   // Resource History
   cResourceHistory InitialHistory();
   
 };
+
+inline int cResourceRegistry::GetSize() const
+{
+ return m_resource_ptrs.size(); 
+}
 
 #endif

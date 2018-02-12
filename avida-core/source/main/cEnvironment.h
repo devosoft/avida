@@ -146,9 +146,7 @@ public:
   const cReactionLib& GetReactionLib() const { return reaction_lib; }
   const cMutationRates& GetMutRates() const { return mut_rates; }
 
-  cResource* FindResource(const ResName& name);
-  GlobalResRegistry& GetGlobalResRegistry() { return m_global_resreg; }
-  DemeResRegistries& GetDemeResRegistry() { return m_deme_resreg; }
+  cResourceLib& GetResourceLib() { return m_resource_lib; }
   
   cReactionLib& GetReactionLib() { return reaction_lib; }
   cMutationRates& GetMutRates() { return mut_rates; }

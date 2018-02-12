@@ -32,12 +32,11 @@
 
 class cSpatialResCount
 {
-
 private:
 
   
   
-  Apto::Array<cSpatialCountElem> grid;
+  SpatialResGrid grid;
   double m_initial;
   double xdiffuse, ydiffuse;
   double xgravity, ygravity;

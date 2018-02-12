@@ -28,6 +28,8 @@
 
 #include "avida/systematics/Unit.h"
 
+#include "resources/Types.h"
+
 class cCPUTestInfo;
 class cTestCPU;
 

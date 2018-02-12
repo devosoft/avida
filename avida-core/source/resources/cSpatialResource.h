@@ -37,7 +37,7 @@ class cSpatialResource : public cRatedResource
     cSpatialResource(const cSpatialResource&);
     cSpatialResource& operator=(const cSpatialResource&);
     
-    virtual ~cSpatialResource() {}
+    virtual ~cSpatialResource() override {}
     
     void AddInflowBox(int x1, int x2, int y1, int y2);
     void AddOutflowBox(int x1, int x2, int y1, int y2);
@@ -45,15 +45,15 @@ class cSpatialResource : public cRatedResource
     void AddInflowCellBox(const cCellBox& cbox);
     void AddOutflowCellBox(const cCellBox& cbox);
     
+    //Property generation macro in cResource.h
     ADD_RESOURCE_PROP(int, Geometry, m_geometry);
     ADD_RESOURCE_PROP(double, XDiffuse, m_diffuse_x);
     ADD_RESOURCE_PROP(double, YDiffuse, m_diffuse_y);
     ADD_RESOURCE_PROP(double, XGravity, m_gravity_x);
     ADD_RESOURCE_PROP(double, YGravity, m_gravity_y);
+    
+    virtual ResDescr ToString() const override {return "Not Implemented.";};
 };
-
-
-
 
 
 
@@ -74,15 +74,12 @@ class cSpatialResourceAcct : public cAbstractSpatialResourceAcct
     const cSpatialResource& m_resource;
     cOffsetLinearGrid<cSpatialCountElem> m_cells;
     
-    virtual void Update();
+    virtual void Update() override;
     
   
   public:
   
-    static void Initialize(int& stats_update)
-    {
-      m_stats_update = stats_update;
-    }
+    static void Initialize(int& stats_update);
     
     
     explicit cSpatialResourceAcct(cSpatialResource& res, int size_x, int size_y, const cCellBox& cellbox)
@@ -94,12 +91,12 @@ class cSpatialResourceAcct : public cAbstractSpatialResourceAcct
     
     void SetupGeometry();
     
-    void SetInflow(int cell_id, double inflow) { m_cells(cell_id).Rate(inflow); }
-    void SetInflow(int x, int y, double inflow) { m_cells(x,y).Rate(inflow); }
+    void SetInflow(int cell_id, double inflow);
+    void SetInflow(int x, int y, double inflow);
     void SetInflowAll(double inflow);
     
-    void SetState(int cell_id) { m_cells(cell_id).State(); }
-    void SetState(int x, int y) { m_cells(x,y).State(); }
+    void SetState(int cell_id);
+    void SetState(int x, int y);
     void SetStateAll();
     
     void FlowAll();
@@ -116,8 +113,8 @@ class cSpatialResourceAcct : public cAbstractSpatialResourceAcct
     void CellOutflow();
     void Sink(double decay);
     void ResetResourceCounts();
-    
-    cString ToString() const {}
 };
+
+
 
 #endif /* cSpatialResourceAcct_h */

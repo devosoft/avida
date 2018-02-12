@@ -11,6 +11,8 @@
 using namespace AvidaTools;
 
 
+
+
 cSpatialResource::cSpatialResource(const cSpatialResource& _res)
 : cRatedResource(_res)
 {
@@ -28,6 +30,7 @@ cSpatialResource& cSpatialResource::operator=(const cSpatialResource& _res)
   m_inflow_boxes = _res.m_inflow_boxes;
   m_outflow_boxes = _res.m_outflow_boxes;
   m_cell_list = _res.m_cell_list;
+  return *this;
 }
 
 void cSpatialResource::AddInflowBox(int x1, int x2, int y1, int y2)
@@ -54,6 +57,14 @@ void cSpatialResource::AddOutflowCellBox(const cCellBox& cbox)
   m_outflow_boxes.Push(cbox);
 }
 
+
+
+
+
+void cSpatialResourceAcct::Initialize(int& stats_update)
+{
+  cSpatialResourceAcct::m_stats_update = stats_update;
+}
 
 
 void cSpatialResourceAcct::SetupGeometry()
@@ -105,6 +116,30 @@ void cSpatialResourceAcct::SetupGeometry()
       m_cells[ii].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
     }
   }
+}
+
+
+void cSpatialResourceAcct::SetInflow(int cell_id, double inflow)
+{ 
+  m_cells(cell_id).Rate(inflow); 
+}
+
+
+void cSpatialResourceAcct::SetInflow(int x, int y, double inflow) 
+{ 
+  m_cells(x,y).Rate(inflow); 
+}
+
+
+void cSpatialResourceAcct::SetState(int cell_id) 
+{ 
+  m_cells(cell_id).State(); 
+}
+
+
+void cSpatialResourceAcct::SetState(int x, int y) 
+{ 
+  m_cells(x,y).State(); 
 }
 
 

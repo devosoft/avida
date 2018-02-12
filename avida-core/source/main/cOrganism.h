@@ -28,6 +28,8 @@
 
 #include "avida/private/systematics/GenomeTestMetrics.h"
 
+#include "resources/Types.h"
+
 #include "cCPUMemory.h"
 #include "cMutationRates.h"
 #include "cPhenotype.h"

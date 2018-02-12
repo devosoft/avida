@@ -25,11 +25,11 @@ class cCellResource : public cRatedResource
     cCellResource(const cCellResource& _res);
     cCellResource& operator=(const cCellResource& _res);
     
-    virtual ~cCellResource() {}
+    virtual ~cCellResource() override {}
     
-    ResID GetCellID() const { return m_cell_id; }
+    inline ResID GetCellID() const { return m_cell_id; }
     
-    virtual ResDescr ToString() const { return "Not implemented."; }
+    virtual ResDescr ToString() const override { return "Not implemented."; }
 };
 
 

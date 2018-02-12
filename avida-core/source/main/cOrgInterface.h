@@ -32,6 +32,7 @@
 #define cOrgInterface_h
 
 #include "avida/systematics/Types.h"
+#include "resources/Types.h"
 
 namespace Avida {
   class Genome;

@@ -37,21 +37,80 @@ public:
   cSpatialCountElem();
   cSpatialCountElem(double initamount);
   
-  void Rate(double ratein) const { delta += ratein; }
-  void State() { amount += delta; delta = 0.0; }
-  double GetAmount() const { return amount; }
-  void SetAmount(double res) const { amount = res; }
+  inline void Rate(double ratein) const;
+  inline void State();
+  inline double GetAmount() const;
+  inline void SetAmount(double res) const;
   void SetPtr(int innum, int inelempt, int inxdist, int  inydist, double indist);
-  int GetElemPtr(int innum) { return elempt[innum]; }
-  int GetPtrXdist(int innum) { return xdist[innum]; }
-  int GetPtrYdist(int innum) { return ydist[innum]; }
-  double GetPtrDist(int innum) { return dist[innum]; }
-  friend void FlowMatter(cSpatialCountElem&, cSpatialCountElem&, double, double, double, double,
-                         int, int, double);
-  void SetInitial(double init) { initial = init; }
-  double GetInitial() { return initial; }
+  inline int GetElemPtr(int innum);
+  inline int GetPtrXdist(int innum);
+  inline int GetPtrYdist(int innum);
+  inline double GetPtrDist(int innum);
+  inline void SetInitial(double init);
+  inline double GetInitial();
   
-  inline void ResetResourceCount(double res_initial) { amount = res_initial + initial; }
+  inline void ResetResourceCount(double res_initial);
+  
+ friend void FlowMatter(cSpatialCountElem&, cSpatialCountElem&, double, double, double, double,
+                         int, int, double);
 };
+
+
+void cSpatialCountElem::Rate(double ratein) const 
+{ 
+  delta += ratein; 
+}
+
+
+inline void cSpatialCountElem::State() 
+{ 
+  amount += delta; delta = 0.0; 
+}
+
+inline double cSpatialCountElem::GetAmount() const 
+{ 
+  return amount; 
+}
+
+inline void cSpatialCountElem::SetAmount(double res) const 
+{ 
+  amount = res; 
+}
+
+inline int cSpatialCountElem::GetElemPtr(int innum) 
+{ 
+  return elempt[innum]; 
+}
+
+inline int cSpatialCountElem::GetPtrXdist(int innum) 
+{ 
+  return xdist[innum]; 
+}
+
+inline int cSpatialCountElem::GetPtrYdist(int innum) 
+{ 
+  return ydist[innum]; 
+}
+
+inline double cSpatialCountElem::GetPtrDist(int innum) 
+{ 
+  return dist[innum]; 
+}
+
+inline void cSpatialCountElem::SetInitial(double init)
+{ 
+  initial = init; 
+}
+
+inline double cSpatialCountElem::GetInitial() 
+{ 
+  return initial; 
+}
+
+inline void cSpatialCountElem::ResetResourceCount(double res_initial) 
+{ 
+  amount = res_initial + initial; 
+}
+
 
 #endif

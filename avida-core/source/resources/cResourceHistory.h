@@ -34,7 +34,7 @@ class cResourceHistory
   protected:
     struct sResourceHistoryEntry {
       int update;
-      ResAmounts values;
+      GlobalResAmounts values;
     };
     
   protected:
@@ -54,8 +54,8 @@ class cResourceHistory
     
     bool Empty() const { return m_entries.GetSize() == 0;}
     
-    bool GetResourceAbundances(int update, ResAmounts& levels, bool exact = false) const;
-    void AddEntry(int update, const ResAmounts& values);
+    bool GetResourceAbundances(int update, GlobalResAmounts& levels, bool exact = false) const;
+    void AddEntry(int update, const GlobalResAmounts& values);
     
     bool LoadFile(const cString& filename, const cString& working_dir);
   };

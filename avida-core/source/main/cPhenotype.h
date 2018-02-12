@@ -25,6 +25,8 @@
 
 #include "avida/core/InstructionSequence.h"
 
+#include "resources/Types.h"
+
 #include <fstream>
 
 #include "cMerit.h"
@@ -124,7 +126,7 @@ private:
   Apto::Array<int> first_reaction_cycles;          // CPU cycles of first time reaction was triggered.
   Apto::Array<int> first_reaction_execs;            // Execution count at first time reaction was triggered (will be > cycles in parallel exec multithreaded orgs).
   Apto::Array<int> cur_stolen_reaction_count;      // Total counts of reactions stolen by predators.
-  CellResAmounts cur_reaction_add_reward;     // Bonus change from triggering each reaction.
+  Apto::Array<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   Apto::Array<int> cur_inst_count;                 // Instruction exection counter
   Apto::Array<int> cur_from_sensor_count;           // Use of inputs that originated from sensory data were used in execution of this instruction.
   Apto::Array< Apto::Array<int> > cur_group_attack_count;
@@ -485,7 +487,7 @@ public:
   const CellResAmounts& GetLastRBinsTotal() const { assert(initialized == true); return last_rbins_total; }
   const CellResAmounts& GetLastRBinsAvail() const { assert(initialized == true); return last_rbins_avail; }
   const Apto::Array<int>& GetLastReactionCount() const { assert(initialized == true); return last_reaction_count; }
-  const CellResAmounts& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
+  const Apto::Array<double>& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
   const Apto::Array<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
   const Apto::Array<int>& GetLastFromSensorInstCount() const { assert(initialized == true); return last_from_sensor_count; }
   const Apto::Array<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }
@@ -632,7 +634,7 @@ public:
 
 
   void SetCurRBinsAvail(const CellResAmounts& in_avail) { cur_rbins_avail = in_avail; }
-  void SetCurRbinsTotal(const ACellResAmounts& in_total) { cur_rbins_total = in_total; }
+  void SetCurRbinsTotal(const CellResAmounts& in_total) { cur_rbins_total = in_total; }
   void SetCurRBinAvail(int index, double val) { cur_rbins_avail[index] = val; }
   void SetCurRBinTotal(int index, double val) { cur_rbins_total[index] = val; }
   void AddToCurRBinAvail(int index, double val) { cur_rbins_avail[index] += val; }
