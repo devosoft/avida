@@ -25,14 +25,18 @@ void cMerit::UpdateValue(double in_value)
 
   
   // Do not allow negative merits. If less than 1, set to 0.
-  if (in_value < 1.0) in_value = 0.0;
+  
+  // LZ --
+  // This doesn't work when you *heavily* punish organisms.
+  // Changed to < 0.0 instead of 1.0.
+  if (in_value < 0.0) in_value = 0.0;
 
   value = in_value;
   double mant = frexp(value, &bits);
 
   if (bits > max_bits)
     offset = bits - max_bits;
-  else
+  else  
     offset = 0;
 
   base = static_cast<unsigned int>(mant * exp.mult[bits - offset] * 2.0);

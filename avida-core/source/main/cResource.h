@@ -54,6 +54,9 @@ public:
 
 class cResource
 {
+public:
+  static const int NONE = -99;
+  
 private:
   cString name;
   int id;    // 0-based, order of appearance in environment file; resource library index

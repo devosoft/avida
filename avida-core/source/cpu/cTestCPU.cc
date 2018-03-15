@@ -116,6 +116,13 @@ void cTestCPU::UpdateResources(cAvidaContext& ctx, int cpu_cycles_used)
     SetResourceUpdate(ctx, m_res_update + 1, true);
 }
 
+void cTestCPU::UpdateRandomResources(cAvidaContext& ctx, int cpu_cycles_used)
+{
+  int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
+  if ((m_res_method >= RES_UPDATED_DEPLETABLE) && (cpu_cycles_used % ave_time_slice == 0))
+    SetResourceUpdate(ctx, m_res_update + 1, true);
+}
+
 inline void cTestCPU::SetResourceUpdate(cAvidaContext& ctx, int update, bool round_to_closest)
 {
   // No resources defined? -- you can't do this!

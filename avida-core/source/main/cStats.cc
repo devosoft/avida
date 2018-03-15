@@ -1548,7 +1548,7 @@ void cStats::PrintReactionExeData(const cString& filename)
 }
 
 
-void cStats::PrintResourceData(const cString& filename)
+void cStats::PrintResourceData(const cString& filename, cString maps)
 {
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   
@@ -1570,7 +1570,7 @@ void cStats::PrintResourceData(const cString& filename)
         sum_spa_resource += spatial_res_count[i][j];
       }
       df->Write(sum_spa_resource, resource_names[i] );
-      PrintSpatialResData(filename, i);
+      if(maps=="1") PrintSpatialResData(filename, i);
     } else {
       df->Write(resource_count[i], resource_names[i] );
     }
@@ -3717,6 +3717,7 @@ void cStats::PrintKaboom(const cString& filename)
 {
   
   float ave_perc_lyse = (float)sum_perc_lyse/(float)num_kabooms;
+  float ave_cpu_cycles = (float)sum_cpu_cycles/(float)num_kabooms;
   Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   df->WriteComment("The number of kabooms.");
   
@@ -3724,11 +3725,17 @@ void cStats::PrintKaboom(const cString& filename)
   df->Write(m_update, "Update [update]");
   
   df->Write(num_kabooms, "number of kabooms");
-  df->Write(num_kabooms_pre, "number of kabooms pre divide");
-  df->Write(num_kabooms_post, "number of kabooms pre divide");
+  //df->Write(num_kabooms_pre, "number of kabooms pre divide");
+  //df->Write(num_kabooms_post, "number of kabooms post divide");
   df->Write(num_kaboom_kills, "number of orgs killed by kabooms");
-  df->Write(ave_perc_lyse, "average probability of lyse explosions");
-  df->Write(hd_list, "hamming distances", "");
+  //df->Write(ave_perc_lyse, "average probability of lyse explosions");
+  //df->Write(ave_cpu_cycles, "average cpu cycles at time of lyse");
+  //df->Write(hd_list, "hamming distances", "");
+  df->Write(num_sa_kin, "Number of organisms with suicidal altruism inst considered kin");
+  df->Write(num_sa_notkin, "Number of organisms with suicidal altruism inst considered non-kin");
+  df->Write(num_nsa_kin, "Number of organisms without suicidal altruism inst considered kin");
+  df->Write(num_nsa_notkin, "Number of organisms without suicidal altruism inst considered non-kin");
+  
   
   df->Endl();
   hd_list.ResizeClear(0);
@@ -3737,6 +3744,11 @@ void cStats::PrintKaboom(const cString& filename)
   num_kabooms_pre=0;
   num_kabooms_post=0;
   sum_perc_lyse=0;
+  sum_cpu_cycles=0;
+  num_sa_kin=0;
+  num_sa_notkin=0;
+  num_nsa_kin=0;
+  num_nsa_notkin=0;
  
 }
 

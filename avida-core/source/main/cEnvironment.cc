@@ -213,6 +213,11 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedba
     else if (var_name == "inst") {
       new_process->SetInst(var_value);
     }
+    else if (var_name =="random") {
+      if (!AssertInputBool(var_value, "random", var_type, feedback))
+        return false;
+      new_process->SetRandomResource(var_value.AsInt());
+    }
     else if (var_name == "lethal") {
       if (!AssertInputDouble(var_value, "lethal", var_type, feedback))
         return false;
@@ -348,6 +353,38 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, Feed
     else if (var_name == "parasite_only") {
       if (!AssertInputInt(var_value, "parasite_only", var_type, feedback)) return false;
       new_requisite->SetParasiteOnly(var_value.AsInt());
+    }
+    else if (var_name == "cellbox") {   //<-- Added
+      //var_name is what came before the =
+      //var_value is what came after the =
+      // e.g. cell_box=[xx, yy, width, height]
+      //      var_name    var_value
+      //We need to parse the var_name into the xx, yy, width and height variables
+      //and eat the angle brackets and commas
+      //If the coordinates or the width or height are out of bounds use feedback to throw
+      //an error message to the user. This will abort the program.
+      int xx = (var_value.GetSize() > 0) ? var_value.Pop(',').AsInt() : -1;
+      int yy = (var_value.GetSize() > 0) ? var_value.Pop(',').AsInt() : -1;
+      int width = (var_value.GetSize() > 0) ? var_value.Pop(',').AsInt() : 1;
+      int height = (var_value.GetSize() > 0) ? var_value.AsInt() : 1;
+
+      if (0 > xx || xx >= m_world->GetConfig().WORLD_X.Get() ) {
+        feedback.Error("cellbox requisite requires 0 >= < xx < WORLD_X for first argument");
+        return false;
+      }
+      if (0 > yy || yy >= m_world->GetConfig().WORLD_Y.Get() ) {
+        feedback.Error("cellbox requisite requires 0 >= < yy < WORLD_Y for 2nd argument");
+        return false;
+      }
+      if (0>= width || width+xx >= m_world->GetConfig().WORLD_X.Get() ) {
+        feedback.Error("cellbox requisite requires 0 < width+xx < WORLD_X for 3rd argument");
+        return false;
+      }
+      if (0 >= height || height+yy  >= m_world->GetConfig().WORLD_Y.Get() ) {
+        feedback.Error("cellbox requisite requires 0 < height+yy < WORLD_Y for 4th argument");
+        return false;
+      }
+      new_requisite->SetCellBox(xx, yy, width, height);
     }
     else {
       feedback.Error("unknown requisite variable '%s' in reaction '%s'",
@@ -579,10 +616,10 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
 	 || (new_resource->GetInitial() > 0.0)
 	 || (new_resource->GetInflow() > 0.0)
 	 || (new_resource->GetOutflow() > 0.0)
-	 || (new_resource->GetInflowX1() != -99)
-	 || (new_resource->GetInflowX2() != -99)
-	 || (new_resource->GetInflowY1() != -99)
-	 || (new_resource->GetInflowY2() != -99)
+	 || (new_resource->GetInflowX1() != cResource::NONE)
+	 || (new_resource->GetInflowX2() != cResource::NONE)
+	 || (new_resource->GetInflowY1() != cResource::NONE)
+	 || (new_resource->GetInflowY2() != cResource::NONE)
 	 || (new_resource->GetXDiffuse() != 1.0)
 	 || (new_resource->GetXGravity() != 0.0)
 	 || (new_resource->GetYDiffuse() != 1.0)
@@ -600,16 +637,22 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
     // the user is interested only in one point and set the X/Y2's to the
     // same value as X/Y1's
 
-    if (new_resource->GetInflowX1()>-99 && new_resource->GetInflowX2()==-99){
+    if (new_resource->GetInflowX1() >= 0 && 
+        new_resource->GetInflowX2() == cResource::NONE){
       new_resource->SetInflowX2(new_resource->GetInflowX1());
     }
-    if (new_resource->GetInflowY1()>-99 && new_resource->GetInflowY2()==-99){
+    
+    if (new_resource->GetInflowY1()>=0 && 
+        new_resource->GetInflowY2()==cResource::NONE){
       new_resource->SetInflowY2(new_resource->GetInflowY1());
     }
-    if (new_resource->GetOutflowX1()>-99 && new_resource->GetOutflowX2()==-99) {
+    
+    if (new_resource->GetOutflowX1()>0 && 
+        new_resource->GetOutflowX2()==cResource::NONE) {
       new_resource->SetOutflowX2(new_resource->GetOutflowX1());
     }
-    if (new_resource->GetOutflowY1()>-99 && new_resource->GetOutflowY2()==-99) {
+    if (new_resource->GetOutflowY1()>0 && 
+        new_resource->GetOutflowY2()==cResource::NONE) {
       new_resource->SetOutflowY2(new_resource->GetOutflowY1());
     }
   }
@@ -647,14 +690,14 @@ bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
       this_resource->SetInflow(0.0);
       this_resource->SetOutflow(0.0);
       this_resource->SetGeometry("GRID");
-      this_resource->SetInflowX1(-99);
-      this_resource->SetInflowX2(-99);
-      this_resource->SetInflowY1(-99);
-      this_resource->SetInflowY2(-99);
-      this_resource->SetOutflowX1(-99);
-      this_resource->SetOutflowX2(-99);
-      this_resource->SetOutflowY1(-99);
-      this_resource->SetOutflowY2(-99);
+      this_resource->SetInflowX1(cResource::NONE);
+      this_resource->SetInflowX2(cResource::NONE);
+      this_resource->SetInflowY1(cResource::NONE);
+      this_resource->SetInflowY2(cResource::NONE);
+      this_resource->SetOutflowX1(cResource::NONE);
+      this_resource->SetOutflowX2(cResource::NONE);
+      this_resource->SetOutflowY1(cResource::NONE);
+      this_resource->SetOutflowY2(cResource::NONE);
       this_resource->SetXDiffuse(0.0);
       this_resource->SetXGravity(0.0);
       this_resource->SetYDiffuse(0.0);
@@ -1446,6 +1489,13 @@ bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_re
     if (cur_req->GetParasiteOnly()){
       if (!is_parasite) continue;}
 
+    if (!taskctx.GetOrganism() ||
+       ! cur_req->GetCellBox().InCellBox(taskctx.GetOrganism()->GetCellID(),
+                                         m_world->GetConfig().WORLD_X.Get(),
+                                         m_world->GetConfig().WORLD_Y.Get() )
+                                         )
+                                         continue;
+
     return true;
   }
 
@@ -1799,6 +1849,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       lethal = prob_lethal;
     }
 
+    result.SetRandomResource(cur_process->GetIsRandomResource());
     result.Lethal(lethal);
     result.Sterilize(cur_process->GetSterilize());
   }

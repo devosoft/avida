@@ -181,7 +181,8 @@ public:
   bool MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id, int avatar_cell);
 
   // Specialized functionality
-  void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance=0); 
+  void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance=0);
+  void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance,double effect);
   void SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx); 
 
   // Deme-related methods
@@ -323,6 +324,7 @@ public:
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
+  void UpdateRandomResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateResource(cAvidaContext& ctx, int id, double change);
   void UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
   void UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);

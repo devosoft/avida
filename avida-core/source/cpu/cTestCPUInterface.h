@@ -120,12 +120,14 @@ public:
   cResourceCount* GetResourceCount() { return NULL; }
   void TriggerDoUpdates(cAvidaContext&) { }
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
+  void UpdateRandomResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateAVResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateDemeResources(cAvidaContext&, const Apto::Array<double>&) { ; }
   
   void Die(cAvidaContext& ctx) { ; } 
   void KillCellID(int target, cAvidaContext& ctx) { ; } 
   void Kaboom(int distance, cAvidaContext& ctx);
+  void Kaboom(int distance, cAvidaContext& ctx, double effect);
   void SpawnDeme(cAvidaContext& ctx) { ; }
   cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - todo: receive message
   bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) { return false; } // @DMB - todo: validate message

@@ -355,9 +355,12 @@ private:
   double Task_ConsumeTargetEqu(cTaskContext& ctx) const;
   double Task_MoveFT(cTaskContext& ctx) const;
   
-  // Explosion Task
+  // Altruism Tasks
   double Task_Exploded(cTaskContext& ctx) const;
   double Task_Exploded2(cTaskContext& ctx) const;
+  double Task_ConsumePublicGood(cTaskContext& ctx) const;
+  double Task_AIDisplayCost(cTaskContext& ctx) const;
+  double Task_ProducePublicGood(cTaskContext& ctx) const;
 
   double Task_XorMax(cTaskContext& ctx) const;
 

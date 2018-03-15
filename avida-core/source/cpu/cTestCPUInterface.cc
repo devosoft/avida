@@ -109,7 +109,19 @@ void cTestCPUInterface::UpdateResources(cAvidaContext& ctx, const Apto::Array<do
    m_testcpu->ModifyResources(ctx, res_change);
 }
 
+void cTestCPUInterface::UpdateRandomResources(cAvidaContext& ctx, const Apto::Array<double>& res_change)
+{
+   m_testcpu->ModifyResources(ctx, res_change);
+}
+
 void cTestCPUInterface::Kaboom(int distance, cAvidaContext& ctx)
+{
+  (void) distance;
+  // @CAO We should keep a note that the organism tried to explode, and
+  // record the probability it used.
+}
+
+void cTestCPUInterface::Kaboom(int distance, cAvidaContext& ctx, double effect)
 {
   (void) distance;
   // @CAO We should keep a note that the organism tried to explode, and

@@ -219,7 +219,13 @@ private:
   int num_kabooms_pre;
   int num_kabooms_post;
   int num_kaboom_kills;
+  //The following four are for tracking whether orgs with the suicide instruction (sa) are id'd as kin by Hamming distance measure
+  int num_sa_kin;
+  int num_sa_notkin;
+  int num_nsa_kin;
+  int num_nsa_notkin;
   double sum_perc_lyse;
+  double sum_cpu_cycles;
   Apto::Array<int> hd_list;
   
   // Quorum threshold stats
@@ -768,6 +774,9 @@ public:
 
   const Apto::Array<int>& GetReactions() const { return m_reaction_last_count; }
   const Apto::Array<double> & GetResources() const { return resource_count; }
+  const Apto::Array<cString>& GetResourceNames() const { return resource_names; }
+  const Apto::Array<int>& GetResourceGeometries() const { return resource_geometry; }
+  const Apto::Array< Apto::Array<double> >& GetSpatialResourceCount() const {return spatial_res_count; }
 
   double GetAveReproRate() const  { return sum_repro_rate.Average(); }
 
@@ -880,7 +889,7 @@ public:
   void PrintCurrentReactionData(const cString& filename);
   void PrintReactionRewardData(const cString& filename);
   void PrintCurrentReactionRewardData(const cString& filename);
-  void PrintResourceData(const cString& filename);
+  void PrintResourceData(const cString& filename, cString maps="1");
   void PrintResourceLocData(const cString& filename, cAvidaContext& ctx);
   void PrintResWallLocData(const cString& filename, cAvidaContext& ctx);
   void PrintSpatialResData(const cString& filename, int i);
@@ -927,9 +936,14 @@ public:
   void IncKaboomPreDivide() { num_kabooms_pre++; }
   void IncKaboomPostDivide() { num_kabooms_post++; }
   void IncKaboomKills() {num_kaboom_kills++;}
+  void IncSAKin(int num) {num_sa_kin+=num;}
+  void IncSANotKin(int num) {num_sa_notkin+= num;}
+  void IncNSAKin(int num) {num_nsa_kin+=num;}
+  void IncNSANotKin(int num) {num_nsa_notkin+= num;}
   void AddHamDistance(int distance) { hd_list.Push(distance); }
   void PrintKaboom(const cString& filename);
   void IncPercLyse(double perc) {sum_perc_lyse += perc; }
+  void IncSumCPUs(int cpu_cycles) {sum_cpu_cycles += cpu_cycles; }
   
   //Quorum Sensing stats
   void IncDontExplode() {num_stop_explode++;}
