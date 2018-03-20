@@ -151,6 +151,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_src(src)
   , m_initial_genome(genome)
   , m_interface(NULL)
+  , m_res_interface(NULL)
   , m_lineage_label(-1)
   , m_lineage(NULL)
   , m_org_list_index(-1)
@@ -268,6 +269,11 @@ void cOrganism::SetOrgInterface(cAvidaContext& ctx, cOrgInterface* org_interface
   m_interface = org_interface;
   
   HardwareReset(ctx);
+}
+
+void cOrganism::SetResRegInterface(ResourceLibraryInterface* res_reg)
+{
+  m_res_interface = res_reg;
 }
 
 const cStateGrid& cOrganism::GetStateGrid() const { return m_world->GetEnvironment().GetStateGrid(m_cur_sg); }

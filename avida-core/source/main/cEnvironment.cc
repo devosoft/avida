@@ -507,8 +507,9 @@ bool cEnvironment::LoadResourceKeyValues(cString desc, const cString& res_name, 
 }
 
 
-static bool cEnvironment::LoadResProp(cString& res_name, ResValCheckFunc& validate, ResValSetFunc& setter)
+bool cEnvironment::LoadResProp(cString& res_name, ResValCheckFunc& validate, ResValSetFunc& setter)
 {
+  
   
 }
 
@@ -529,34 +530,32 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
     /* If resource does not already exist create it, however if it already
      exists (for instance was created as a cell resource) pull it out of
      the library and modify the existing values */
-    bool is_deme = (kvmap.count("deme")) ? kvmap["deme"].ToLower() == "true" : false;
     
-    if (!is_deme){
-      if (kvmap.count("geometry") == 0 || kvmap["geometry"] = "global"){
-        cNonSpatialResource* ns_res;
-        if (ns_res = m_res_library.GetGlobalRegistry().GetResource(res_name)){
-          ProcessRatedResource(
-        } else {
-          ns_res = new cNonSpatialResource(0, res_name, feedback);
-          //Process
-          m_res_library.AddResource(ns_res);
-        }
+    if (kvmap.count("geometry") == 0 || kvmap["geometry"] == "global"){
+      std::unique_ptr<cNonSpatialResource> ns_res;
+      if ( (ns_res = new GetNonSpatialResource(res_name)) ){
+        ProcessNonSpatialResource(kvmap, ns_res, feedback);
       } else {
-        cSpatialResource* sp_res;
-        if (sp_res = m_res_library.GetGlobalRegistry().GetResource(res_name)){
-          //Process
-        } else {
-          sp_res = new cNonSpatialResource(0, res_name, feedback);
-          //Process
-          m_res_library.AddResource(sp_res);
-        }
+        ns_res = new NonSpatialResource(res_name, feedback);
+        ProcessNonSpatialResource(kvmap, ns_res, feedback);
+        m_res_reg.AddResource(ns_res);
+      }
+    } else {
+      std::unique_ptr<cSpatialResource> sp_res;
+      if ( (sp_res = m_res_reg.GetSpatialResource(res_name)) ){
+        ProcessSpatialResource(kvmap, sp_res, feedback);
+      } else {
+        sp_res = m_res_reg.NewSpatialResource(res_name, feedback);
+        ProcessSpatialResource(kvmap, sp_res, feedback);
+        m_res_reg.AddResource(sp_res);
       }
     }
   }
 }
+}
 
 
-bool cEnvironment::ProcessBasicResource(const KVMap& kv, cResource* res, Feedback& fb)
+bool cEnvironment::ProcessBasicResource(KVResMap& kv, cResource* res, Feedback& fb)
 {
   if (var_name == "deme") {
     if (!new_resource->SetDemeResource( var_value )) {
@@ -579,7 +578,9 @@ bool cEnvironment::ProcessBasicResource(const KVMap& kv, cResource* res, Feedbac
   }
 }
 
-bool cEnvironment::ProcessRatedResource(const KVResMap& kv, cRatedResource* res, Feedback& fb)
+
+
+bool cEnvironment::ProcessRatedResource(KVResMap& kv, cRatedResource* res, Feedback& fb)
 {
   ProcessBasicResource(kv, res, fb);
   if (var_name == "inflow") {
@@ -598,13 +599,13 @@ bool cEnvironment::ProcessRatedResource(const KVResMap& kv, cRatedResource* res,
 }
 
 
-bool cEnvironment::ProcessNonSpatialResource(const KVResMap& kv, cNonSpatialResource* res, Feedback& fb)
+bool cEnvironment::ProcessNonSpatialResource(KVResMap& kv, cNonSpatialResource* res, Feedback& fb)
 {
   ProcessRatedResource(kv, res, fb);
 }
 
 
-bool cEnvironment::ProcessSpatialResource(const KVResMap& kv, cSpatialResource* res, Feedback& fb)
+bool cEnvironment::ProcessSpatialResource(KVResMap& kv, cSpatialResource* res, Feedback& fb)
 {
   if (!ProcessBasicResource(kv, res, fb))
     return false;;
@@ -617,12 +618,12 @@ bool cEnvironment::ProcessSpatialResource(const KVResMap& kv, cSpatialResource* 
   sFlowbox outflow;
   
   LoadResProp("xdiffuse", 
-    [&](bool){return AssertInputInt(it->second)}, [&](bool){return outflow.y2 = it->second.AsInt(), true;});
+              [&](bool){return AssertInputInt(it->second)}, [&](bool){return outflow.y2 = it->second.AsInt(), true;});
   
-    [&](){(AssertInputInt(it->second) ? outflow.y2 = it->second.AsInt(), true : false ; });
+  [&](){(AssertInputInt(it->second) ? outflow.y2 = it->second.AsInt(), true : false ; });
     
-  new_resource->SetXDiffuse( it->second.AsDouble()
-  
+    new_resource->SetXDiffuse( it->second.AsDouble() );
+    
     if ( (auto it = kv.find("geometry")) != kv.end() ) {
       if (it->second == 'grid' || it->second == 'torus'){
         res->SetGeometry(it->second);
@@ -634,156 +635,154 @@ bool cEnvironment::ProcessSpatialResource(const KVResMap& kv, cSpatialResource* 
     }
     
     if ( (auto it = kv.find("cells")) != kv.end() ) {
-    {
-      Apto::Array<int> cell_list = cStringUtil::ReturnArray(it->second);
-      res->SetCellIdList(cell_list);
-      kv.erase(it);
-    }
-    
-    if ( (auto it = kv.find("inflowx")) != kv.end() ) {
-      if (!AssertInputInt(it->second, "inflowx", var_type, feedback)) return false;
-      inflow.x1 = it->second.AsInt();
-      kv.erase(it);
-    }
-    if ( (auto it = kv.find("inflowx1")) != kv.end() ) {
-      if (!AssertInputInt(it->second, "inflowx1", var_type, feedback)) return false;
-      inflow.x1 = it->second.AsInt();
-      kv.erase(it);
-    }
-    if ( (auto it = kv.find("inflowx2")) != kv.end() ) {
-      if (!AssertInputInt(it->second, "inflowx2", var_type, feedback)) return false;
-      inflow.x2 = it->second.AsInt();
-      kv.erase(it);
-    } 
-    if ( (auto it = kv.find("inflowy")) != kv.end() ) {
-      if (!AssertInputInt(it->second, "inflowy", var_type, feedback)) return false;
-      inflow.y1 = it->second.AsInt();
-      kv.erase(it);
-    }
-    if ( (auto it = kv.find("inflowy1")) != kv.end() ) {
-      if (!AssertInputInt(it->second, "inflowy1", var_type, feedback)) return false;
-      inflow.y1 = it->second.AsInt();
-      kv.erase(it);
-    }
-    if ( (auto it = kv.find("inflowy2")) != kv.end() ) {
-      if (!AssertInputInt(it->second, "inflowy2", var_type, feedback)) return false;
-      inflow.y2 = it->second.AsInt();
-      kv.erase(it);
-    }
-    res->AddInflowBox(inflow.x1, inflow.x2, inflow.y1, inflow.y2);
-    
-    if ( (auto it = kv.find("outflowx")) != kv.end() ) {
-      if (!AssertInputInt(it->second, "outflowx", var_type, feedback)) return false;
-      outflow.x1 = it->second.AsInt();
-      kv.erase(it);
-    }
-    if ( (auto it = kv.find("outflowx1")) != kv.end() ) {
-      if (!AssertInputInt(it->second, "outflowx1", var_type, feedback)) return false;
-      outflow.x1 = it->second.AsInt();
-      kv.erase(it);
-    }
-    if ( (auto it = kv.find("outflowx2")) != kv.end() ) {
-      if (!AssertInputInt(it->second, "outflowx2", var_type, feedback)) return false;
-      outflow.x2 = it->second.AsInt();
-      kv.erase(it);
-    } 
-    if ( (auto it = kv.find("outflowy")) != kv.end() ) {
-      if (!AssertInputInt(it->second, "outflowy", var_type, feedback)) return false;
-      outflow.y1 = it->second.AsInt();
-      kv.erase(it);
-    }
-    if ( (auto it = kv.find("outflowy1")) != kv.end() ) {
-      if (!AssertInputInt(it->second, "outflowy1", var_type, feedback)) return false;
-      outflow.y1 = it->second.AsInt();
-      kv.erase(it);
-    }
-    if ( (auto it = kv.find("outflowy2")) != kv.end() ) {
-      if (!AssertInputInt(it->second, "outflowy2", var_type, feedback)) return false;
-      outflow.y2 = it->second.AsInt();
-      kv.erase(it);
-    }
-    res->AddOutflowBox(outflow.x1, outflow.x2, outflow.y1, outflow.y2);
-
-    
-    
-    if ( (auto it = kv.find("xdiffuse")) != kv.end() ) {
-      if (!AssertInputDouble(it->second, "xdiffuse", var_type, feedback)) return false;
-      new_resource->SetXDiffuse( it->second.AsDouble() );
-      kv.erase(it);
-    }
-    
-    if ( (auto it = kv.find("xgravity")) != kv.end() ) {
-      if (!AssertInputDouble(it->second, "xgravity", var_type, feedback)) return false;
-      new_resource->SetXGravity( it->second.AsDouble() );
-    }
-    else if (var_name == "ydiffuse") {
-      if (!AssertInputDouble(it->second, "ydiffuse", var_type, feedback)) return false;
-      new_resource->SetYDiffuse( it->second.AsDouble() );
-    }
-    else if (var_name == "ygravity") {
-      if (!AssertInputDouble(it->second, "ygravity", var_type, feedback)) return false;
-      new_resource->SetYGravity( it->second.AsDouble() );
-    } else if (var_name == "hgt") {
-      // this resource is for HGT -- corresponds to genome fragments present in cells.
-      if (!AssertInputBool(it->second, "hgt", var_type, feedback)) return false;
-      new_resource->SetHGTMetabolize(it->second.AsInt());
-    }
-  return true;
-}
-
-
-
-bool cEnvironment::ValidateSpatialResourceConfig(cSpatialResource* res)
-{
-  // Prevent misconfiguration of HGT:
-  
-  if (res->GetHGTMetabolize() &&
-      ( (new_resource->GetGeometry() != nGeometry::GLOBAL)
-       || (new_resource->GetInitial() > 0.0)
-       || (new_resource->GetInflow() > 0.0)
-       || (new_resource->GetOutflow() > 0.0)
-       || (new_resource->GetInflowX1() != cResource::NONE)
-       || (new_resource->GetInflowX2() != cResource::NONE)
-       || (new_resource->GetInflowY1() != cResource::NONE)
-       || (new_resource->GetInflowY2() != cResource::NONE)
-       || (new_resource->GetXDiffuse() != 1.0)
-       || (new_resource->GetXGravity() != 0.0)
-       || (new_resource->GetYDiffuse() != 1.0)
-       || (new_resource->GetYGravity() != 0.0)
-       || (new_resource->GetDemeResource() != false))) {
-        feedback.Error("misconfigured HGT resource: %s", (const char*)name);
-        return false;
+      {
+        Apto::Array<int> cell_list = cStringUtil::ReturnArray(it->second);
+        res->SetCellIdList(cell_list);
+        kv.erase(it);
       }
-  if (res->GetHGTMetabolize() && !m_world->GetConfig().ENABLE_HGT.Get()) {
-    feedback.Error("resource configured to use HGT, but HGT not enabled");
-    return false;
+      
+      if ( (auto it = kv.find("inflowx")) != kv.end() ) {
+        if (!AssertInputInt(it->second, "inflowx", var_type, feedback)) return false;
+        inflow.x1 = it->second.AsInt();
+        kv.erase(it);
+      }
+      if ( (auto it = kv.find("inflowx1")) != kv.end() ) {
+        if (!AssertInputInt(it->second, "inflowx1", var_type, feedback)) return false;
+        inflow.x1 = it->second.AsInt();
+        kv.erase(it);
+      }
+      if ( (auto it = kv.find("inflowx2")) != kv.end() ) {
+        if (!AssertInputInt(it->second, "inflowx2", var_type, feedback)) return false;
+        inflow.x2 = it->second.AsInt();
+        kv.erase(it);
+      } 
+      if ( (auto it = kv.find("inflowy")) != kv.end() ) {
+        if (!AssertInputInt(it->second, "inflowy", var_type, feedback)) return false;
+        inflow.y1 = it->second.AsInt();
+        kv.erase(it);
+      }
+      if ( (auto it = kv.find("inflowy1")) != kv.end() ) {
+        if (!AssertInputInt(it->second, "inflowy1", var_type, feedback)) return false;
+        inflow.y1 = it->second.AsInt();
+        kv.erase(it);
+      }
+      if ( (auto it = kv.find("inflowy2")) != kv.end() ) {
+        if (!AssertInputInt(it->second, "inflowy2", var_type, feedback)) return false;
+        inflow.y2 = it->second.AsInt();
+        kv.erase(it);
+      }
+      res->AddInflowBox(inflow.x1, inflow.x2, inflow.y1, inflow.y2);
+      
+      if ( (auto it = kv.find("outflowx")) != kv.end() ) {
+        if (!AssertInputInt(it->second, "outflowx", var_type, feedback)) return false;
+        outflow.x1 = it->second.AsInt();
+        kv.erase(it);
+      }
+      if ( (auto it = kv.find("outflowx1")) != kv.end() ) {
+        if (!AssertInputInt(it->second, "outflowx1", var_type, feedback)) return false;
+        outflow.x1 = it->second.AsInt();
+        kv.erase(it);
+      }
+      if ( (auto it = kv.find("outflowx2")) != kv.end() ) {
+        if (!AssertInputInt(it->second, "outflowx2", var_type, feedback)) return false;
+        outflow.x2 = it->second.AsInt();
+        kv.erase(it);
+      } 
+      if ( (auto it = kv.find("outflowy")) != kv.end() ) {
+        if (!AssertInputInt(it->second, "outflowy", var_type, feedback)) return false;
+        outflow.y1 = it->second.AsInt();
+        kv.erase(it);
+      }
+      if ( (auto it = kv.find("outflowy1")) != kv.end() ) {
+        if (!AssertInputInt(it->second, "outflowy1", var_type, feedback)) return false;
+        outflow.y1 = it->second.AsInt();
+        kv.erase(it);
+      }
+      if ( (auto it = kv.find("outflowy2")) != kv.end() ) {
+        if (!AssertInputInt(it->second, "outflowy2", var_type, feedback)) return false;
+        outflow.y2 = it->second.AsInt();
+        kv.erase(it);
+      }
+      res->AddOutflowBox(outflow.x1, outflow.x2, outflow.y1, outflow.y2);
+      
+      
+      
+      if ( (auto it = kv.find("xdiffuse")) != kv.end() ) {
+        if (!AssertInputDouble(it->second, "xdiffuse", var_type, feedback)) return false;
+        new_resource->SetXDiffuse( it->second.AsDouble() );
+        kv.erase(it);
+      }
+      
+      if ( (auto it = kv.find("xgravity")) != kv.end() ) {
+        if (!AssertInputDouble(it->second, "xgravity", var_type, feedback)) return false;
+        new_resource->SetXGravity( it->second.AsDouble() );
+      }
+      else if (var_name == "ydiffuse") {
+        if (!AssertInputDouble(it->second, "ydiffuse", var_type, feedback)) return false;
+        new_resource->SetYDiffuse( it->second.AsDouble() );
+      }
+      else if (var_name == "ygravity") {
+        if (!AssertInputDouble(it->second, "ygravity", var_type, feedback)) return false;
+        new_resource->SetYGravity( it->second.AsDouble() );
+      } else if (var_name == "hgt") {
+        // this resource is for HGT -- corresponds to genome fragments present in cells.
+        if (!AssertInputBool(it->second, "hgt", var_type, feedback)) return false;
+        new_resource->SetHGTMetabolize(it->second.AsInt());
+      }
+      return true;
+    }
   }
   
-  // If there are valid values for X/Y1's but not for X/Y2's assume that
-  // the user is interested only in one point and set the X/Y2's to the
-  // same value as X/Y1's
-  if (res->GetInflowX1() >= 0 && 
-      res->GetInflowX2() == cResource::NONE){
-    res->SetInflowX2(new_resource->GetInflowX1());
-  }
   
-  if (res->GetInflowY1()>=0 && 
-      res->GetInflowY2()==cResource::NONE){
-    res->SetInflowY2(new_resource->GetInflowY1());
-  }
-  
-  if (res->GetOutflowX1()>0 && 
-      res->GetOutflowX2()==cResource::NONE) {
-    res->SetOutflowX2(new_resource->GetOutflowX1());
-  }
-  if (res->GetOutflowY1()>0 && 
-      res->GetOutflowY2()==cResource::NONE) {
-    res->SetOutflowY2(new_resource->GetOutflowY1());
+  bool cEnvironment::ValidateSpatialResourceConfig(cSpatialResource* res)
+  {
+    // Prevent misconfiguration of HGT:
+    
+    if (res->GetHGTMetabolize() &&
+        ( (new_resource->GetGeometry() != nGeometry::GLOBAL)
+         || (new_resource->GetInitial() > 0.0)
+         || (new_resource->GetInflow() > 0.0)
+         || (new_resource->GetOutflow() > 0.0)
+         || (new_resource->GetInflowX1() != cResource::NONE)
+         || (new_resource->GetInflowX2() != cResource::NONE)
+         || (new_resource->GetInflowY1() != cResource::NONE)
+         || (new_resource->GetInflowY2() != cResource::NONE)
+         || (new_resource->GetXDiffuse() != 1.0)
+         || (new_resource->GetXGravity() != 0.0)
+         || (new_resource->GetYDiffuse() != 1.0)
+         || (new_resource->GetYGravity() != 0.0)
+         || (new_resource->GetDemeResource() != false))) {
+          feedback.Error("misconfigured HGT resource: %s", (const char*)name);
+          return false;
+        }
+    if (res->GetHGTMetabolize() && !m_world->GetConfig().ENABLE_HGT.Get()) {
+      feedback.Error("resource configured to use HGT, but HGT not enabled");
+      return false;
+    }
+    
+    // If there are valid values for X/Y1's but not for X/Y2's assume that
+    // the user is interested only in one point and set the X/Y2's to the
+    // same value as X/Y1's
+    if (res->GetInflowX1() >= 0 && 
+        res->GetInflowX2() == cResource::NONE){
+      res->SetInflowX2(new_resource->GetInflowX1());
+    }
+    
+    if (res->GetInflowY1()>=0 && 
+        res->GetInflowY2()==cResource::NONE){
+      res->SetInflowY2(new_resource->GetInflowY1());
+    }
+    
+    if (res->GetOutflowX1()>0 && 
+        res->GetOutflowX2()==cResource::NONE) {
+      res->SetOutflowX2(new_resource->GetOutflowX1());
+    }
+    if (res->GetOutflowY1()>0 && 
+        res->GetOutflowY2()==cResource::NONE) {
+      res->SetOutflowY2(new_resource->GetOutflowY1());
+    }
   }
 }
-
-
-
 
 
 bool cEnvironment::LoadCell(cString desc, Feedback& feedback)

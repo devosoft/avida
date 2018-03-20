@@ -40,6 +40,8 @@
 #include "apto/scheduler.h"
 #include "apto/stat/Accumulator.h"
 
+#include "resources/Utilties.h"
+
 #include "AvidaTools.h"
 
 #include "cAvidaContext.h"
@@ -57,7 +59,7 @@
 #include "cPhenotype.h"
 #include "cPopulationCell.h"
 #include "cResource.h"
-#include "cResourceCount.h"
+//#include "cResourceCount.h"
 #include "cStats.h"
 #include "cTestCPU.h"
 #include "cTopology.h"
@@ -410,6 +412,7 @@ void cPopulation::SetupCellGrid()
 
 void cPopulation::SetupResources()
 {
+  /*
   const cResourceRegistry& resource_reg = environment.GetResourceRegistry();
   int global_res_index = -1;
   int deme_res_index = -1;
@@ -488,6 +491,7 @@ void cPopulation::SetupResources()
   if (m_world->GetConfig().ENABLE_HGT.Get() && (m_hgt_resid == -1)) {
     m_world->GetDriver().Feedback().Warning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
   }
+  */
 }
 
 void cPopulation::ResizeCellGrid(int x, int y)
@@ -1316,6 +1320,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   assert(in_organism != NULL);
   
   in_organism->SetOrgInterface(ctx, new cPopulationInterface(m_world));
+  in_organism->SetResRegInterface(GetResRegInterface(m_world));
   
   // Update the contents of the target cell.
   KillOrganism(target_cell, ctx); 
@@ -8197,6 +8202,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
  middle of a run.  This is designed to work with cActionSetGradient Count */
 //JW
 
+/*
 void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int verbosity, cWorld* world, const cString res_name)
 {
   (void)verbosity;
@@ -8271,6 +8277,7 @@ void cPopulation::UpdateGradientConeInflow(const cString res_name, const double 
 void cPopulation::UpdateGradientConeOutflow(const cString res_name, const double outflow)
 {
   const cResourceRegistry & resource_reg = environment.GetResourceRegistry();
+  
   int global_res_index = -1;
   
   for (int i = 0; i < resource_reg.GetSize(); i++) {
@@ -8281,6 +8288,7 @@ void cPopulation::UpdateGradientConeOutflow(const cString res_name, const double
       resource_count.SetGradientConeOutflow(global_res_index, outflow);
     }
   } 
+  
 }
 
 void cPopulation::UpdateGradientInflow(const cString res_name, const double inflow)
@@ -8357,6 +8365,8 @@ void cPopulation::UpdateInflow(const cString& res_name, const double change)
   assert(resource_count.GetInflow(res_name) >= 0);
   if (resource_count.GetInflow(res_name) < 0) cout << "WARNING: update to inflow rate results in negative resource inflow!" << endl;
 }
+*/
+
 
 void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per, const bool hammer)
 {

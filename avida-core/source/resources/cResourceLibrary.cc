@@ -6,11 +6,12 @@
 //
 
 #include "cResourceLibrary.h"
-#include "cResourceRegistry.h"
 #include "cNonSpatialResource.h"
 #include "cSpatialResource.h"
 #include "cGradientResource.h"
 #include "cCellResource.h"
+
+using namespace Avida::Resource;
 
 cResourceLibrary::cResourceLibrary(int num_demes, Avida::Feedback& fb)
 {
@@ -48,14 +49,14 @@ void cResourceLibrary::AddResource(cSpatialResource* spat_res)
 
 
 
-void cResourceLibrary::AddResource(cGradientResource* grad_res)
+void cResourceLibrary::AddResource(cGradientResource* grad_res, cPopulation* pop)
 {
   if (grad_res->GetIsDemeResource()){
     for (auto& reg : m_deme_resreg){
-        reg->AddResource(grad_res);
+        reg->AddResource(grad_res, pop);
     }
   } else {
-    m_global_resreg->AddResource(grad_res);
+    m_global_resreg->AddResource(grad_res, pop);
   }
 }
 
@@ -73,14 +74,3 @@ void cResourceLibrary::AddResource(cCellResource* cell_res)
 
 
 
-bool cResourceLibrary::GlobalResourceExists(const ResName& res_name)
-{
-  return (m_global_resreg->GetResource(res_name) != nullptr);
-}
-
-
-
-bool cResourceLibrary::DemeResourceExists(const ResName& res_name)
-{
-  return (m_deme_resreg.size() > 0) ? m_deme_resreg[0]->GetResource(res_name) != nullptr : false;
-}

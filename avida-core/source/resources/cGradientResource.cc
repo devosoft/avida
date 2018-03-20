@@ -12,6 +12,15 @@
 #include <cmath>
 
 
+using namespace Avida::Resource;
+
+explicit cGradientResource(const cString& name, cOrgInterface& iface, Avida::Feedback& fb)
+: cResource(name, fb)
+{
+  m_acct = std::make_unique<cGradientResourceAcct>(*this, org_iface);
+}
+
+
 cGradientResource::cGradientResource(const cGradientResource& _res)
 : cResource(_res)
 {
@@ -20,7 +29,7 @@ cGradientResource::cGradientResource(const cGradientResource& _res)
 
 cGradientResource& cGradientResource::operator=(const cGradientResource& _res)
 {
-  #define cp(NAME) m_ ## NAME = _res.m_ ## NAME ;
+#define cp(NAME) m_ ## NAME = _res.m_ ## NAME ;
   cp(geometry);
   cp(peaks);
   cp(min_height);
@@ -78,80 +87,82 @@ cGradientResource& cGradientResource::operator=(const cGradientResource& _res)
   cp(predator_odds);
   cp(predator);
   cp(is_path);
-  #undef cp
+#undef cp
   return *this;
 }
 
 
 /* 
-cGradientResourceAcct is designed to give moving peaks of resources.
-Peaks are <optionally> capped with plateaus. The slope of the peaks is
-height / distance. Consequently, when height = distance from center of
-peak, the value at that cell = 1. This was designed this way because the
-organims used for this could only consume resources when the value is >=
-1. Thus, height also gives radius of 'edible' resources (aka the
-plateau). If plateaus are >1, you get sloped edges leading up to plateau
-cylinders.
-
-Spread gives the radius of the entire resource peak to the outside of
-the sloped edge. Organisms could detect resources all along the spread,
-but only consume that portion on the plateau. Thus, spread - plateau =
-sense radius (smell) while plateau = consumable radius (actual food).
-
-Peaks move within the boundaries set by min/max x and y. If the plateau
-/ edible portion of the peak hits the boundary, the peak 'bounces' (sign
-of direction of movement changes).
-
-Smoothness of the movement is controlled by move_a_scaler which is the A
-in eq1 in Morrison & DeJong 1999. A-values need to be between 1 and 4.
-Values of 1 to ~3 give smooth movements. Larger values should yield
-chaotic moves. However, beyond establishing that peaks don't move when
-the value = 1 and do move when the value > 1, the effects of A-values
-have not really been evaluated.
-
-If depletable (via reaction) peaks stop moving when they are first
-bitten.
-
-Depletable peaks will be refreshed when either all edible portions (>=1)
-are consumed or when the decay timestep (in updates) is reached,
-whichever comes first.
-
-Once bitten, depletable peaks will not move again until refreshed.
-
-Peak values are refreshed to match initial height, spread, and plateau,
-but for non-halo peaks, the placement of the refreshed peak is random
-within the min/max x and y area. For halo peaks, the peak is currently
-refreshed at the SE corner of the orbit. cGradientCount cannot access
-the random number generator at the very first update. Thus, it uses the
-DefaultContext initially.
-
-We use movesign to determine direction of peak movement
-
-First, to get smooth movements, for non-halo resources we only allow
-either the x or y direction change to be evaluated in a single update.
-For halo resources, we only evaluate either the orbit or the direction
-in a given update.
-
-Second, we then decide the change of direction based on the current
-direction, e.g. so that non-halo peak movesigns can't 'jump' from -1 to
-1, without first changing to 0
-
-Finally, we only toy with movement direction when # updates since last
-change = updatestep.
+ cGradientResourceAcct is designed to give moving peaks of resources.
+ Peaks are <optionally> capped with plateaus. The slope of the peaks is
+ height / distance. Consequently, when height = distance from center of
+ peak, the value at that cell = 1. This was designed this way because the
+ organims used for this could only consume resources when the value is >=
+ 1. Thus, height also gives radius of 'edible' resources (aka the
+ plateau). If plateaus are >1, you get sloped edges leading up to plateau
+ cylinders.
+ 
+ Spread gives the radius of the entire resource peak to the outside of
+ the sloped edge. Organisms could detect resources all along the spread,
+ but only consume that portion on the plateau. Thus, spread - plateau =
+ sense radius (smell) while plateau = consumable radius (actual food).
+ 
+ Peaks move within the boundaries set by min/max x and y. If the plateau
+ / edible portion of the peak hits the boundary, the peak 'bounces' (sign
+ of direction of movement changes).
+ 
+ Smoothness of the movement is controlled by move_a_scaler which is the A
+ in eq1 in Morrison & DeJong 1999. A-values need to be between 1 and 4.
+ Values of 1 to ~3 give smooth movements. Larger values should yield
+ chaotic moves. However, beyond establishing that peaks don't move when
+ the value = 1 and do move when the value > 1, the effects of A-values
+ have not really been evaluated.
+ 
+ If depletable (via reaction) peaks stop moving when they are first
+ bitten.
+ 
+ Depletable peaks will be refreshed when either all edible portions (>=1)
+ are consumed or when the decay timestep (in updates) is reached,
+ whichever comes first.
+ 
+ Once bitten, depletable peaks will not move again until refreshed.
+ 
+ Peak values are refreshed to match initial height, spread, and plateau,
+ but for non-halo peaks, the placement of the refreshed peak is random
+ within the min/max x and y area. For halo peaks, the peak is currently
+ refreshed at the SE corner of the orbit. cGradientCount cannot access
+ the random number generator at the very first update. Thus, it uses the
+ DefaultContext initially.
+ 
+ We use movesign to determine direction of peak movement
+ 
+ First, to get smooth movements, for non-halo resources we only allow
+ either the x or y direction change to be evaluated in a single update.
+ For halo resources, we only evaluate either the orbit or the direction
+ in a given update.
+ 
+ Second, we then decide the change of direction based on the current
+ direction, e.g. so that non-halo peak movesigns can't 'jump' from -1 to
+ 1, without first changing to 0
+ 
+ Finally, we only toy with movement direction when # updates since last
+ change = updatestep.
  */
 
-cGradientResourceAcct::cGradientResourceAcct(cGradientResource& res, int size_x, int size_y, const cCellBox& cellbox,
-    cPopulation* pop)
-    : cAbstractSpatialResourceAcct(size_x, size_y, cellbox)
-    , m_res(res)
-    , m_cells(size_x, size_y, cellbox, cSpatialCountElem())
-    , m_peakx(res.m_peakx)
-    , m_peaky(res.m_peaky)
-    , m_modified(false)
+cGradientResourceAcct::cGradientResourceAcct(cGradientResource& res, cPopulation* pop)
+: cAbstractSpatialResourceAcct(res)
+, m_res(res)
+, m_cells(cOffsetLinearGrid<cSpatialCountElem>(res.m_cbox, cSpatialCountElem()))
+, m_pop(pop)
+, m_size_x(res.m_cbox.GetWidth())
+, m_size_y(res.m_cbox.GetHeight())
+, m_peakx(res.m_peakx)
+, m_peaky(res.m_peaky)
+, m_modified(false)
 {
 }
 
-void cGradientResourceAcct::UpdateCount(cAvidaContext& ctx)
+void cGradientResourceAcct::Update(cAvidaContext& ctx)
 { 
   m_old_peakx = m_peakx;
   m_old_peaky = m_peaky;
@@ -207,7 +218,7 @@ void cGradientResourceAcct::SetPredatoryResource(double odds, int juvsper)
 
 
 void cGradientResourceAcct::SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow,
-    double outflow, double lambda, double theta, int x, int y, int num_cells)
+                                                     double outflow, double lambda, double theta, int x, int y, int num_cells)
 {
   m_probabilistic = true;
   m_initial_plat = initial;
@@ -219,7 +230,7 @@ void cGradientResourceAcct::SetProbabilisticResource(cAvidaContext& ctx, double 
 
 
 void cGradientResourceAcct::BuildProbabilisticResource(cAvidaContext& ctx, double lambda, double theta,
-    int x, int y, int num_cells)
+                                                       int x, int y, int num_cells)
 {
   if (m_min_usedx != -1) ClearExistingProbResource();
   ResetUsedBounds();
@@ -240,7 +251,7 @@ void cGradientResourceAcct::BuildProbabilisticResource(cAvidaContext& ctx, doubl
   else m_peaky = y;
   
   if (num_cells != -1) m_prob_res_cells.ResizeClear(num_cells);
-
+  
   // only if theta == 1 do want want a 'hill' with resource for certain in the center
   if (theta == 0) {
     m_abundance[m_peaky * worldx + m_peakx] = m_initial_plat;
@@ -292,7 +303,7 @@ void cGradientResourceAcct::BuildProbabilisticResource(cAvidaContext& ctx, doubl
       m_abundance[cell_id] = 0.0; 
       cell_id_array.Swap(cell_idx, max_unused_idx--);
     }
-
+    
     if (cells_used >= num_cells && !loop_once) break;
     if (max_unused_idx <= 0 && loop_once) break;
     if (max_idx <= 0) break;
@@ -327,7 +338,7 @@ void cGradientResourceAcct::ResetGradRes(cAvidaContext& ctx, int world_x, int wo
   }
   if (m_res.m_move_speed < 0) {
     m_res.m_skip_moves = std::abs(m_res.m_move_speed);
-   m_res. m_move_speed = 1;
+    m_res. m_move_speed = 1;
   }
   m_plateau_array.Resize(int(4 * m_res.m_height * m_res.m_height + 0.5));
   m_plateau_array.SetAll(0);
@@ -353,7 +364,7 @@ void cGradientResourceAcct::ResetGradRes(cAvidaContext& ctx, int world_x, int wo
   }
   else {
     GeneratePeak(ctx);
-    UpdateCount(ctx);
+    Update(ctx);
   }
   
   // set m_initial to false now that we have reset the resource
@@ -368,7 +379,7 @@ void cGradientResourceAcct::FillInResourceValues()
   int max_pos_y;
   int min_pos_y;
   ResetUsedBounds();
-
+  
   // if we are resetting a resource, we need to calculate new values for the whole world so we can wipe away any residue
   if (m_just_reset) {
     if (m_min_usedx == -1 || m_min_usedy == -1 || m_max_usedx == -1 || m_max_usedy == -1) {
@@ -391,7 +402,7 @@ void cGradientResourceAcct::FillInResourceValues()
     max_pos_y = std::min(m_peaky + m_res.m_spread + m_res.m_move_speed + 1, m_size_y - 1);
     min_pos_y = std::max(m_peaky - m_res.m_spread - m_res.m_move_speed - 1, 0);
   }
-
+  
   if (m_res.m_is_plateau_common == 1 && !m_just_reset && cGradientResourceAcct::m_update > 0) {
     // with common depletion, new peak height is not the plateau heights, but the delta in plateau heights applied to 
     // peak height from the last time
@@ -405,7 +416,7 @@ void cGradientResourceAcct::FillInResourceValues()
   else {
     m_current_height = m_res.m_height;
   }
-
+  
   int plateau_cell = 0;
   for (int ii = min_pos_x; ii < max_pos_x + 1; ii++) {
     for (int jj = min_pos_y; jj < max_pos_y + 1; jj++) {
@@ -458,7 +469,7 @@ void cGradientResourceAcct::FillInResourceValues()
           m_plateau_array[plateau_cell] = thisheight;
           m_plateau_cell_IDs[plateau_cell] = jj * m_size_x + ii;
           plateau_cell ++;
-         }
+        }
         // now apply any off-plateau inflow(s) and outflow
         else if (!is_plat_cell && (m_res.m_cone_inflow > 0 || m_res.m_cone_outflow > 0 || m_res.m_gradient_inflow > 0)) {
           if (!m_just_reset && cGradientResourceAcct::m_update > 0) {
@@ -522,26 +533,26 @@ void cGradientResourceAcct::UpdatePeakRes(cAvidaContext& ctx)
   // once a resource cone has been 'bitten', start the clock that counts down to when the entire peak will be
   // refreshed (carcass rots for only so long before disappearing)
   if (has_edible && m_modified && m_res.m_decay > 1) m_counter++;
-
+  
   if (has_edible && m_counter < m_res.m_decay && m_modified) {
     if (m_predator) UpdatePredatoryRes<cPopulation*>(ctx, m_pop);
     if (m_damage) UpdateDamagingRes<cPopulation*>(ctx, m_pop);
     if (m_deadly) UpdateDeadlyRes<cPopulation*>(ctx, m_pop);
     return;
   } 
-                   
+  
   // only update resource values at declared update timesteps if there is resource left in the cone
-
+  
   // before we move anything, if we have a depletable resource, we need to get the current plateau cell values
   if (m_res.m_decay == 1) GetCurrentPlatValues();
-
+  
   // When the counter matches decay, regenerate resource peak
   if (m_counter == m_res.m_decay) GeneratePeak(ctx);
   
   // if we are working with moving peaks, calculate the y-scaler
   if (m_res.m_move_a_scaler > 1) 
     m_move_y_scaler = m_res.m_move_a_scaler * m_move_y_scaler * (1 - m_move_y_scaler);   
-
+  
   // if working with moving resources, check if we are moving once per update or less frequently
   if (m_skip_counter == m_skip_moves) MoveRes(ctx);
   else m_skip_counter++;
@@ -552,8 +563,8 @@ void cGradientResourceAcct::UpdatePeakRes(cAvidaContext& ctx)
   if (m_res.m_move_a_scaler > 1 ||m_res. m_plateau_inflow != 0 || 
       m_res.m_plateau_outflow != 0 || m_res.m_cone_inflow != 0 || m_res.m_cone_outflow != 0 ||
       m_res.m_gradient_inflow != 0 || (m_res.m_move_a_scaler == 1 && m_just_reset)) 
-  FillInResourceValues();
-
+    FillInResourceValues();
+  
   if (m_predator) UpdatePredatoryRes<cPopulation*>(ctx, m_pop);
   if (m_damage) UpdateDamagingRes<cPopulation*>(ctx, m_pop);
   if (m_deadly) UpdateDeadlyRes<cPopulation*>(ctx, m_pop);
@@ -564,8 +575,8 @@ void cGradientResourceAcct::MoveRes(cAvidaContext& ctx)
 {
   // for halo peaks, find current orbit. Add 1 to distance to account for the anchor grid cell
   int current_orbit = 
-    std::max(std::abs(m_res.m_halo_anchor_x - m_peakx), std::abs(m_res.m_halo_anchor_y - m_peaky));
-
+  std::max(std::abs(m_res.m_halo_anchor_x - m_peakx), std::abs(m_res.m_halo_anchor_y - m_peaky));
+  
   // if we are working with moving resources and it's time to update direction
   if (m_move_counter == m_res.m_updatestep && m_res.m_move_a_scaler > 1) {
     m_move_counter = 1;
@@ -608,7 +619,7 @@ int cGradientResourceAcct::SetHaloOrbit(cAvidaContext& ctx, int current_orbit)
   // if halo width > the height of the halo resource, the resource will be bounded inside the halo but the orbit can vary within those bounds
   // halo's are actually square in avida because, at a given orbit, this keeps a constant distance (in number of steps and org would have to take)
   //    between the anchor point and any orbit
-
+  
   //choose to change orbit (0) or direction (1)
   int random_shift = ctx.GetRandom().GetUInt(0,2);
   // if changing orbit, choose to go in or out one orbit
@@ -616,7 +627,7 @@ int cGradientResourceAcct::SetHaloOrbit(cAvidaContext& ctx, int current_orbit)
   int temp_height = 0;
   if (m_res.m_plateau < 0) temp_height = 1;
   else temp_height = m_res.m_height;
-
+  
   if (random_shift == 0) {
     //do nothing unless there's room to change orbit
     if (m_res.m_halo_width > (temp_height * 2)) {
@@ -630,13 +641,13 @@ int cGradientResourceAcct::SetHaloOrbit(cAvidaContext& ctx, int current_orbit)
           m_res.m_halo_anchor_y + current_orbit - 1 >= m_size_y ||
           m_res.m_halo_anchor_x + current_orbit - 1 >= m_size_x ||
           m_res.m_halo_anchor_y - current_orbit + 1 < 0 ||
-         m_res. m_halo_anchor_x - current_orbit + 1 < 0) {
+          m_res. m_halo_anchor_x - current_orbit + 1 < 0) {
         orbit_shift *= -1;
         current_orbit += 2 * orbit_shift;
       }
       
       if (current_orbit < 0) current_orbit = std::abs(current_orbit); // went passed anchor origin to the other side
-
+      
       if (std::abs(m_res.m_halo_anchor_y - m_peaky) > std::abs(m_res.m_halo_anchor_x - m_peakx)) {
         m_peaky = (m_res.m_halo_anchor_y > m_peaky) ? m_old_peaky - orbit_shift : m_old_peaky + orbit_shift;
       }
@@ -710,7 +721,7 @@ void cGradientResourceAcct::MoveHaloPeak(int current_orbit)
 
 void cGradientResourceAcct::ConfirmHaloPeak()
 {
- // this function corrects for situations where a change in orbit and direction and changling at the same time caused the halo to jump out of it's orbital bounds
+  // this function corrects for situations where a change in orbit and direction and changling at the same time caused the halo to jump out of it's orbital bounds
   if (m_changling == 1) {
     int l_y_min = m_res.m_halo_anchor_y - m_res.m_halo_inner_radius - m_res.m_halo_width + m_res.m_height - 1;
     int l_y_max = m_res.m_halo_anchor_y - m_res.m_halo_inner_radius - m_res.m_height + 1;
@@ -793,7 +804,7 @@ void cGradientResourceAcct::GeneratePeak(cAvidaContext& ctx)
   if (!m_res.m_halo) {
     if (m_peakx == -1) m_peakx = rng.GetUInt(m_res.m_min_x + temp_height, m_res.m_max_x - temp_height + 1);
     if (m_peaky == -1) m_peaky = rng.GetUInt(m_res.m_min_y + temp_height, m_res.m_max_y - temp_height + 1);
-
+    
     if (m_res.m_move_a_scaler > 1) {
       // Get a random direction for movement on the x-axis
       m_movesignx = rng.GetInt(-1,2);
@@ -818,34 +829,34 @@ void cGradientResourceAcct::GeneratePeak(cAvidaContext& ctx)
       int chooseEW = rng.GetUInt(0,2);
       if (chooseEW == 0) {
         m_peakx = rng.GetUInt(
-          std::max(0, m_res.m_halo_anchor_x - m_res.m_halo_inner_radius - m_res.m_halo_width + temp_height + 1),
+                              std::max(0, m_res.m_halo_anchor_x - m_res.m_halo_inner_radius - m_res.m_halo_width + temp_height + 1),
                               m_res.m_halo_anchor_x - m_res.m_halo_inner_radius - temp_height);
       } else {
         m_peakx = rng.GetUInt(std::max(0, m_res.m_halo_anchor_x + m_res.m_halo_inner_radius + temp_height + 1),
                               m_res.m_halo_anchor_x + m_res.m_halo_inner_radius + m_res.m_halo_width - temp_height);
       }
       m_peaky = rng.GetUInt(
-                  std::max(0,m_res.m_halo_anchor_y - m_res.m_halo_inner_radius - m_res.m_halo_width + temp_height + 1),
+                            std::max(0,m_res.m_halo_anchor_y - m_res.m_halo_inner_radius - m_res.m_halo_width + temp_height + 1),
                             m_res.m_halo_anchor_y + m_res.m_halo_inner_radius + m_res.m_halo_width - temp_height);
     }
     else {
       int chooseNS = rng.GetUInt(0,2);
       if (chooseNS == 0) {
         m_peaky = rng.GetUInt(
-                  std::max(0, m_res.m_halo_anchor_y - m_res.m_halo_inner_radius - m_res.m_halo_width + temp_height + 1),
+                              std::max(0, m_res.m_halo_anchor_y - m_res.m_halo_inner_radius - m_res.m_halo_width + temp_height + 1),
                               m_res.m_halo_anchor_y - m_res.m_halo_inner_radius - temp_height);
       } else {
         m_peaky = rng.GetUInt(
-                  std::max(0, m_res.m_halo_anchor_y + m_res.m_halo_inner_radius + temp_height + 1),
+                              std::max(0, m_res.m_halo_anchor_y + m_res.m_halo_inner_radius + temp_height + 1),
                               m_res.m_halo_anchor_y + m_res.m_halo_inner_radius + m_res.m_halo_width - temp_height);
       }
       m_peakx = rng.GetUInt(
-                  std::max(0, m_res.m_halo_anchor_x - m_res.m_halo_inner_radius - m_res.m_halo_width + temp_height + 1),
+                            std::max(0, m_res.m_halo_anchor_x - m_res.m_halo_inner_radius - m_res.m_halo_width + temp_height + 1),
                             m_res.m_halo_anchor_x + m_res.m_halo_inner_radius + m_res.m_halo_width - temp_height);
     }
   }
   assert(m_peakx >= 0 && m_peaky >= 0 && m_peakx < m_size_x && m_peaky < m_size_y);
-
+  
   m_modified = false;
   m_counter = 0;
   m_skip_counter = 0;
@@ -923,7 +934,7 @@ void cGradientResourceAcct::GenerateBarrier(cAvidaContext& ctx)
       // if (m_plateau > 0) updateBounds(start_randx, start_randy);
       UpdateBounds(start_randx, start_randy);
       m_wall_cells.Push(start_randy * m_size_x + start_randx);
-
+      
       int randx = start_randx;
       int randy = start_randy;
       int prev_blockx = randx;
@@ -931,7 +942,7 @@ void cGradientResourceAcct::GenerateBarrier(cAvidaContext& ctx)
       int cornerx = prev_blockx;
       int cornery = prev_blocky;
       bool place_corner = false;
-
+      
       // decide the size of the current barrier
       int rand_block_count = ctx.GetRandom().GetUInt(m_res.m_min_size, m_res.m_max_size + 1);
       // for vertical or horizontal wall building, pick a random direction once for the whole wall
@@ -1024,9 +1035,9 @@ void cGradientResourceAcct::GenerateBarrier(cAvidaContext& ctx)
             if (place_corner) {
               if (cornery < m_size_y && cornery >= 0 && cornerx < m_size_x && cornerx >= 0) {
                 if ( ! ((cornerx < (m_res.m_halo_anchor_x + m_res.m_halo_inner_radius) && 
-                     cornery < (m_res.m_halo_anchor_y + m_res.m_halo_inner_radius) && 
-                     cornerx > (m_res.m_halo_anchor_x - m_res.m_halo_inner_radius) && 
-                     cornery > (m_res.m_halo_anchor_y - m_res.m_halo_inner_radius))) ){
+                         cornery < (m_res.m_halo_anchor_y + m_res.m_halo_inner_radius) && 
+                         cornerx > (m_res.m_halo_anchor_x - m_res.m_halo_inner_radius) && 
+                         cornery > (m_res.m_halo_anchor_y - m_res.m_halo_inner_radius))) ){
                   m_abundance[cornery * m_size_x + cornerx] = m_res.m_plateau;
                   if (m_res.m_plateau > 0) UpdateBounds(cornerx, cornery);
                   m_wall_cells.Push(randy * m_size_x + randx);
@@ -1078,7 +1089,7 @@ void cGradientResourceAcct::GenerateHills(cAvidaContext& ctx)
         }
       }
     }
-
+    
     Apto::Random& rng = ctx.GetRandom();
     // generate number hills equal to count
     for (int i = 0; i < m_res.m_count; i++) {
@@ -1107,7 +1118,7 @@ void cGradientResourceAcct::GenerateHills(cAvidaContext& ctx)
       int min_pos_x = std::max(m_peakx - rand_hill_radius - 1, 0);
       int max_pos_y = std::min(m_peaky + rand_hill_radius + 1, m_size_y - 1);
       int min_pos_y = std::max(m_peaky - rand_hill_radius - 1, 0);
-
+      
       // look to place new cell values within a box around the hill center
       for (int ii = min_pos_x; ii < max_pos_x + 1; ii++) {
         for (int jj = min_pos_y; jj < max_pos_y + 1; jj++) {
@@ -1116,9 +1127,9 @@ void cGradientResourceAcct::GenerateHills(cAvidaContext& ctx)
           // only plot values when within set config radius & if no larger amount has already been plotted for another overlapping hill
           if ((thisdist <= rand_hill_radius) && 
               (m_abundance[jj * m_size_x + ii] <  m_res.m_plateau / (thisdist + 1))) {
-          thisheight = m_res.m_plateau / (thisdist + 1);
-          m_abundance[jj * m_size_x + ii] = thisheight;
-          if (thisheight > 0) UpdateBounds(ii, jj);
+            thisheight = m_res.m_plateau / (thisdist + 1);
+            m_abundance[jj * m_size_x + ii] = thisheight;
+            if (thisheight > 0) UpdateBounds(ii, jj);
           }
         }
       }
@@ -1167,6 +1178,48 @@ inline void cGradientResourceAcct::SetHaloDirection(cAvidaContext& ctx)
     case 0: m_halo_dir = -1; break;
     case 1: m_halo_dir = 1; break;
     default: m_halo_dir = 0; break;
+  }
+}
+
+
+void cGradientResourceAcct::UpdatePredatoryRes(cAvidaContext& ctx)
+{
+  // kill off up to 1 org per update within the predator radius (plateau area), 
+  //with prob of death for selected prey = m_pred_odds
+  if (m_predator) {
+    for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
+      if (m_cells(m_plateau_cell_IDs[i]).GetAmount() >= 1) {
+        m_pop->ExecutePredatoryResource(ctx, m_plateau_cell_IDs[i], m_pred_odds, m_guarded_juvs_per_adult, m_hammer);
+      }
+    }
+  }
+}
+
+
+void cGradientResourceAcct::UpdateDamagingRes(cAvidaContext& ctx)
+{
+  // we don't call this for walls and hills because they never move
+  if (m_damage) {
+    for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
+      if (m_cells(m_plateau_cell_IDs[i]).GetAmount() >= m_res.m_threshold) {
+        // skip if initiating world and resources (cells don't exist yet)
+        m_pop->ExecuteDamagingResource(ctx, m_plateau_cell_IDs[i], m_damage, m_hammer);
+      }
+    }
+  }
+}
+
+
+void cGradientResourceAcct::UpdateDeadlyRes(cAvidaContext& ctx)
+{
+  // we don't call this for walls and hills because they never move
+  if (m_deadly) {
+    for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
+      if (m_cells(m_plateau_cell_IDs[i]).GetAmount() >= m_res.m_threshold) {
+        // skip if initiating world and resources (cells don't exist yet)
+        m_pop->ExecuteDeadlyResource(ctx, m_plateau_cell_IDs[i], m_death_odds, m_hammer);
+      }
+    }
   }
 }
 

@@ -237,17 +237,17 @@ class cActionSetCellResource : public cAction
 {
 private:
   Apto::Array<int> m_cell_list;
-  cString m_res_name;
+  ResName m_res_name;
   double m_res_count;
-  int m_res_id;
+  cSpatialResourceAcct* m_sp_res_acct;
   
 public:
   cActionSetCellResource(cWorld* world, const cString& args, Avida::Feedback& fb) 
   : cAction(world, args, fb)
-  , m_cell_list(0),
+  , m_cell_list(0)
   , m_res_name("")
   , m_res_count(0.0)
-  , m_res_id(-1)
+  , m_sp_res_acct(nullptr)
   {
     cString largs(args);
     if (largs.GetSize()) 
@@ -263,17 +263,12 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    cResource* res = nullptr;
-    if (m_res_id < 0){
-      res = m_world->GetEnvironment().GetResourceRegistry().GetResource(m_res_name);
-      if (res != nullptr){
-        m_res_id = res->GetID();
-      }
-    } else {
-      res = m_world->GetEnvironment().GetResourceRegistry().GetResource(m_res_id);
+    if (m_sp_res_acct == nullptr){
+      m_sp_res_acct = 
+        m_world->GetEnvironment().GetResLib().GetGlobalResReg().GetSpatialResAcct(m_res_name);
     }
     
-    if (res == nullptr){
+    if (m_sp_res_acct == nullptr){
       m_feedback.Error("cActionSetCellResource: '%s' is not a resource.)");
       return;
     }
@@ -281,12 +276,9 @@ public:
     for(int i=0; i<m_cell_list.GetSize(); i++)
     {
       int m_cell_id = m_cell_list[i];
+      m_sp_res_acct
       
-      //@MRR:RES Spatial restriction
-      CellResAmounts counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, ctx);
-      if ((res != NULL) && (res->GetID() < counts.GetSize()))
-      {
-        counts[res->GetID()] = m_res_count;
+      counts[res->GetID()] = m_res_count;
         //@MRR:RES Spatial restriction
         m_world->GetPopulation().GetResourceCount().SetCellResources(m_cell_id, counts);
       }

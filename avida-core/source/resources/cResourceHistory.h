@@ -29,35 +29,39 @@
 class cAvidaContext;
 class cString;
 
-class cResourceHistory
-  {
-  protected:
-    struct sResourceHistoryEntry {
-      int update;
-      GlobalResAmounts values;
+namespace Avida {
+  namespace Resource {
+    
+    class cResourceHistory
+    {
+    protected:
+      struct sResourceHistoryEntry {
+        int update;
+        TotalResAmounts values;
+      };
+      
+    protected:
+      
+      Apto::Array<sResourceHistoryEntry> m_entries;
+      int GetEntryForUpdate(int update, bool exact) const;
+      
+    public:
+      cResourceHistory()
+      { ; }
+      
+      cResourceHistory(const cResourceHistory&);
+      cResourceHistory& operator=(const cResourceHistory&);
+      
+      bool Empty() const { return m_entries.GetSize() == 0;}
+      
+      bool GetResourceAbundances(int update, TotalResAmounts& levels, bool exact = false) const;
+      void AddEntry(int update, const TotalResAmounts& values);
+      
+      bool LoadFile(const cString& filename, const cString& working_dir);
     };
     
-  protected:
     
-    Apto::Array<sResourceHistoryEntry> m_entries;
-    int GetEntryForUpdate(int update, bool exact) const;
-    
-    
-    
-    
-  public:
-    cResourceHistory()
-    { ; }
-    
-    cResourceHistory(const cResourceHistory&);
-    cResourceHistory& operator=(const cResourceHistory&);
-    
-    bool Empty() const { return m_entries.GetSize() == 0;}
-    
-    bool GetResourceAbundances(int update, GlobalResAmounts& levels, bool exact = false) const;
-    void AddEntry(int update, const GlobalResAmounts& values);
-    
-    bool LoadFile(const cString& filename, const cString& working_dir);
-  };
+  }
+}
 
 #endif

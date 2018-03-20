@@ -24,6 +24,7 @@
 #include "cInitFile.h"
 #include "cStringList.h"
 
+using namespace Avida::Resource;
 
 cResourceHistory::cResourceHistory(const cResourceHistory& _in)
 {
@@ -62,13 +63,13 @@ int cResourceHistory::GetEntryForUpdate(int update, bool exact) const
 }
 
 
-bool cResourceHistory::GetResourceAbundances(int update, GlobalResAmounts& levels, bool exact) const
+bool cResourceHistory::GetResourceAbundances(int update, TotalResAmounts& levels, bool exact) const
 {
   int entry = GetEntryForUpdate(update, exact);
   if (entry == -1) return false;
   
-  levels.Resize(m_entries[entry].values.GetSize());
-  for (int i = 0; i < levels.GetSize(); i++) {
+  levels.resize(m_entries[entry].values.size());
+  for (size_t i = 0; i < levels.size(); i++) {
     if (entry >= m_entries.GetSize()) levels[i] = 0.0;
     else levels[i] = m_entries[entry].values[i];
   }
@@ -76,7 +77,7 @@ bool cResourceHistory::GetResourceAbundances(int update, GlobalResAmounts& level
   return true;
 }
 
-void cResourceHistory::AddEntry(int update, const GlobalResAmounts& values)
+void cResourceHistory::AddEntry(int update, const TotalResAmounts& values)
 {
   // Note that this method does not currently validate that 'update' does not already exist as an entry
   // If this happens, incorrect resource levels may be returned upon retreival
@@ -106,7 +107,7 @@ bool cResourceHistory::LoadFile(const cString& filename, const cString& working_
       return false;
     
     while (cur_line.GetSize()){
-      entry.values.Push(cur_line.Pop().AsDouble());
+      entry.values.push_back(cur_line.Pop().AsDouble());
     }
     
     m_entries[line] = entry;

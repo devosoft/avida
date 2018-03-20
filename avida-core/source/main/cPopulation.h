@@ -307,7 +307,7 @@ public:
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 
   
-  void UpdateDemeCellResources(cAvidaContext& ctx, const ACellResAmounts& res_change, const int cell_id);
+  void UpdateDemeCellResources(cAvidaContext& ctx, const Resource::CellResAmounts& res_change, const int cell_id);
   
   //@MRR-R const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }  
   

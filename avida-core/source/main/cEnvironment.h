@@ -28,13 +28,14 @@
 
 #include "cMutationRates.h"
 #include "cReactionLib.h"
-#include "cResourceRegistry.h"
+#include "cResourceLibrary.h"
 #include "cString.h"
 #include "cTaskLib.h"
 #include "tList.h"
 #include "avida/core/Feedback.h"
 
 #include <set>
+#include <functional>
 
 
 class cContextPhenotype;
@@ -57,9 +58,14 @@ using namespace Avida;
 
 class cEnvironment
 {
+public:
+  const static int NONE = -99;
+  
 private:
 
   using KVResMap = map<cString, cString>;
+  
+  
   
   //For legacy inflow/outflow boxes
   struct sFlowbox{
@@ -67,15 +73,15 @@ private:
     int x2;
     int y1;
     int y2;
-    flowbox()
+    sFlowbox()
     {
-      x1 = x2 = y1 = y2 = cResource::NONE;
+      x1 = x2 = y1 = y2 = cEnvironment::NONE;
     }
-  }
+  };
   
 
-  using function<bool (const cString&)> = ResValCheckFunc;
-  using function<bool ()> = ResValSetFunc;
+  using ResValCheckFunc = function<bool (const cString&)>;
+  using ResValSetFunc = function<bool (const cString&)>;
   
   static bool LoadResProp(cString& res_name, ResValCheckFunc& validate, ResValSetFunc& setter);
 
@@ -85,7 +91,7 @@ private:
   cReactionLib reaction_lib;
   cTaskLib m_tasklib;
   
-  cResourceLibrary m_res_library;
+  Resource::cResourceLibrary m_res_lib;
 
   int m_input_size;
   int m_output_size;
@@ -129,7 +135,7 @@ public:
 
   bool TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
                   const Apto::Array<int>& task_count, Apto::Array<int>& reaction_count,
-                  const CellResAmounts& resource_count, const CellResAmounts& rbins_count,
+                  const Resource::CellResAmounts& resource_count, const Resource::CellResAmounts& rbins_count,
                   bool is_parasite=false, cContextPhenotype* context_phenotype = 0) const;
 
   // Accessors
@@ -144,12 +150,14 @@ public:
   
   int GetNumReactions() const { return reaction_lib.GetSize(); }
   const cReactionLib& GetReactionLib() const { return reaction_lib; }
-  const cMutationRates& GetMutRates() const { return mut_rates; }
-
-  cResourceLib& GetResourceLib() { return m_resource_lib; }
-  
   cReactionLib& GetReactionLib() { return reaction_lib; }
+
+  const cMutationRates& GetMutRates() const { return mut_rates; }
   cMutationRates& GetMutRates() { return mut_rates; }
+
+  const Resource::cResourceLibrary& GetResLib() const { return m_res_lib; }
+  Resource::cResourceLibrary& GetResLib() { return m_res_lib; }
+  
   
   int GetNumStateGrids() const { return m_state_grids.GetSize(); }
   const cStateGrid& GetStateGrid(int sg) const { return *m_state_grids[sg]; }  
@@ -202,6 +210,11 @@ private:
   
 
   bool LoadResourceKeyValues(cString desc, const cString& res_name, KVResMap& kvmap, Feedback& feedback);
+  bool ProcessBasicResource(KVResMap& kv, Resource::cResource* res, Feedback& fb);
+  bool ProcessRatedResource(KVResMap& kv, Resource::cRatedResource* res, Feedback& fb);
+  bool ProcessNonSpatialResource(KVResMap& kv, Resource::cNonSpatialResource* res, Feedback& fb);
+  bool ProcessSpatialResource(KVResMap& kv, Resource::cSpatialResource* res, Feedback& fb);
+  
   bool LoadResource(cString desc, Feedback& feedback);
   bool LoadCell(cString desc, Feedback& feedback);
   bool LoadReaction(cString desc, Feedback& feedback);
@@ -218,7 +231,7 @@ private:
   bool TestContextRequisites(const cReaction* cur_reaction, int task_count, 
                       const Apto::Array<int>& reaction_count, const bool on_divide = false) const;
   void DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list, 
-                   const CellResAmounts& resource_count, const CellResAmounts& rbin_count,
+                   const Resource::CellResAmounts& resource_count, const Resource::CellResAmounts& rbin_count,
                    const double task_quality, const double task_probability,
                    const int task_count, const int reaction_id, 
                    cReactionResult& result, cTaskContext& taskctx) const;

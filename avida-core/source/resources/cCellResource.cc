@@ -6,16 +6,27 @@
 //
 
 #include "cCellResource.h"
+#include <string>
+
+
+
+cCellResource::cCellResource(int cell_id)
+: m_cell_id(cell_id)
+{
+}
+    
 
 cCellResource::cCellResource(const cCellResource& _res)
-: cRatedResource(_res)
+: cAnonymousRatedResource(_res)
 {
   *this = _res;
 }
 
 cCellResource& cCellResource::operator=(const cCellResource& _res)
 {
-  this->cRatedResource::operator=(_res);
+  cAnonymousRatedResource::operator=(_res);
   m_cell_id = _res.m_cell_id;
   return *this;
 }
+
+

@@ -29,6 +29,7 @@
 #include "avida/private/systematics/GenomeTestMetrics.h"
 
 #include "resources/Types.h"
+#include "resources/ResourceLibraryInterface.h"
 
 #include "cCPUMemory.h"
 #include "cMutationRates.h"
@@ -72,6 +73,7 @@ private:
   Apto::Array<Systematics::UnitPtr> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   cOrgInterface* m_interface;             // Interface back to the population.
+  Resource::ResourceLibraryInterface* m_res_interface;  // Interface to the resource registry (not-owned)
   int m_id;                               // unique id for each org, is just the number it was born
   int m_lineage_label;                    // a lineages tag; inherited unchanged in offspring
   cLineage* m_lineage;                    // A lineage descriptor... (different from label)
@@ -158,6 +160,10 @@ public:
   const cOrgInterface& GetOrgInterface() const { assert(m_interface); return *m_interface; }
   cOrgInterface& GetOrgInterface() { assert(m_interface); return *m_interface; }
   void SetOrgInterface(cAvidaContext& ctx, cOrgInterface* org_interface);
+  
+  Resource::ResourceLibraryInterface* GetResInterface(){ assert(m_res_interface); return m_res_interface; }
+  void SetResInterface(Resource::ResourceLibraryInterface* res_reg) { m_res_interface = res_reg; }
+
 
   void SetLineageLabel(int in_label) { m_lineage_label = in_label; }
   int GetLineageLabel() const { return m_lineage_label; }  
@@ -167,10 +173,10 @@ public:
   void SetCCladeLabel( int in_label ) { cclade_id = in_label; };  //@MRR
   int  GetCCladeLabel() const { return cclade_id; }
 
-  const CellResAmounts& GetRBins() const { return m_phenotype.GetCurRBinsAvail(); }
+  const Resource::CellResAmounts& GetRBins() const { return m_phenotype.GetCurRBinsAvail(); }
   double GetRBin(int index) { return m_phenotype.GetCurRBinAvail(index); }
   double GetRBinsTotal();
-  void SetRBins(const CellResAmounts& rbins_in);
+  void SetRBins(const Resource::CellResAmounts& rbins_in);
   void SetRBin(const int index, const double value);
   void AddToRBin(const int index, const double value);
   void IncCollectSpecCount(const int spec_id);

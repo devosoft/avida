@@ -9,28 +9,29 @@
 #define cCellResource_h
 
 #include "cResource.h"
-#include "cResourceAcct.h"
 
-class cCellResource : public cRatedResource
-{
-  protected:
-    int m_cell_id;
-    
-  public:
-    explicit cCellResource(int cell_id, Avida::Feedback& fb)
-    : cRatedResource(-1, "(cell)", fb)
-    , m_cell_id(cell_id)
-    {}
-    
-    cCellResource(const cCellResource& _res);
-    cCellResource& operator=(const cCellResource& _res);
-    
-    virtual ~cCellResource() override {}
-    
-    inline ResID GetCellID() const { return m_cell_id; }
-    
-    virtual ResDescr ToString() const override { return "Not implemented."; }
-};
+namespace Avida {
+  namespace Resource {
+    class cCellResource : public cAnonymousRatedResource
+    {
+      
+    protected:
+      int m_cell_id;
+      
+    public:
+      
+      explicit cCellResource(int cell_id);
+      cCellResource(const cCellResource& _res);
+      cCellResource& operator=(const cCellResource& _res);
+      
+      virtual ~cCellResource() override {}
+      
+      inline ResID GetCellID() const { return m_cell_id; }
+      
+    };
+  }
+}
+
 
 
 

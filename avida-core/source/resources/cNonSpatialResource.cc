@@ -6,7 +6,17 @@
 //
 
 #include "cNonSpatialResource.h"
+#include <memory>
 
+using namespace Avida::Resource;
+
+
+cNonSpatialResource::cNonSpatialResource(ResID res_id, const cString& name, 
+                                   const cOffsetCellBox& cbox, Avida::Feedback& fb)
+ : cRatedResource(res_id, name, fb)
+ {
+  m_acct = std::make_unique<cNonSpatialResourceAcct>(*this);
+ }
 
 cNonSpatialResource::cNonSpatialResource(const cNonSpatialResource& _res)
 : cRatedResource(_res)
@@ -31,7 +41,16 @@ ResDescr cNonSpatialResource::ToString() const
 }
 
 
+cResourceAcct* cNonSpatialResource::GetBasicAcct() const 
+{
+  return m_acct.get();
+}
 
+
+cNonSpatialResourceAcct* cNonSpatialResource::GetFullAcct() const
+{
+  return m_acct.get();
+}
 
 
 const double cNonSpatialResourceAcct::UPDATE_STEP(1.0 / 10000.0);
@@ -62,7 +81,7 @@ void cNonSpatialResourceAcct::AddTime(double tt)
   m_update_time -= m_calc_steps * UPDATE_STEP;
 }
 
-void cNonSpatialResourceAcct::Update()
+void cNonSpatialResourceAcct::Update(cAvidaContext& ctx)
 {
   int num_steps = m_calc_steps;
   while (num_steps > PRECALC_DISTANCE) {

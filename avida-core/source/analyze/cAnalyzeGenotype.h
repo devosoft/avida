@@ -129,8 +129,8 @@ private:
   Apto::Array<double> task_qualities;
   Apto::Array<int> internal_task_counts;
   Apto::Array<double> internal_task_qualities;
-  ResAmounts rbins_total;
-  ResAmounts rbins_avail;
+  Resource::ResAmounts rbins_total;
+  Resource::ResAmounts rbins_avail;
   Apto::Array<int> collect_spec_counts;
   Apto::Array<int> m_env_inputs;
   int m_mating_type; //@CHC
@@ -448,13 +448,13 @@ public:
   cString DescEnvInput(int input_id) const { return cStringUtil::Stringf("task.%d", input_id); }
   
   double GetRBinTotal(int resource_id) const {
-    if (resource_id >= rbins_total.GetSize()) return -1;
+    if (resource_id >= (int)rbins_total.size()) return -1;
     return rbins_total[resource_id];
   }
   cString DescRTot(int resource_id) const { return cStringUtil::Stringf("Resource %d Total", resource_id);}
   
   double GetRBinAvail(int resource_id) const {
-    if (resource_id >= rbins_avail.GetSize()) return -1;
+    if (resource_id >= (int)rbins_avail.size()) return -1;
     return rbins_avail[resource_id];
   }
   cString DescRAvail(int resource_id) const { return cStringUtil::Stringf("Resource %d Available", resource_id);}

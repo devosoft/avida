@@ -109,26 +109,27 @@ public:
   virtual int GetInputAt(int& input_pointer) = 0;
   virtual void ResetInputs(cAvidaContext& ctx) = 0;
   virtual const Apto::Array<int>& GetInputs() const = 0;
-  virtual const CellResAmounts& GetResources(cAvidaContext& ctx) = 0; 
-  virtual ResAmount GetResourceVal(cAvidaContext& ctx, int res_id) = 0;
-  virtual const CellResAmounts& GetFacedCellResources(cAvidaContext& ctx) = 0; 
-  virtual ResAmount GetFacedResourceVal(cAvidaContext& ctx, int res_id) = 0;
-  virtual const CellResAmounts& GetDemeResources(int deme_id, cAvidaContext& ctx) = 0; 
-  virtual const CellResAmounts GetCellResources(int cell_id, cAvidaContext& ctx) = 0; 
-  virtual ResAmount GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) = 0;
-  virtual ResAmount GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) = 0;
-  virtual const CellResAmounts& GetFrozenResources(cAvidaContext& ctx, int cell_id) = 0;
-  virtual const Apto::Array< Apto::Array<int> >& GetCellIdLists() = 0; 
-
-  virtual int GetCurrPeakX(cAvidaContext& ctx, int res_id) = 0;
-  virtual int GetCurrPeakY(cAvidaContext& ctx, int res_id) = 0;
-  virtual int GetFrozenPeakX(cAvidaContext& ctx, int res_id) = 0; 
-  virtual int GetFrozenPeakY(cAvidaContext& ctx, int res_id) = 0;
-  virtual cResourceCount* GetResourceCount() = 0;
-  virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
-  virtual void UpdateResources(cAvidaContext& ctx, const CellResAmounts& res_change) = 0;
-  virtual void UpdateRandomResources(cAvidaContext& ctx, const CellResAmounts& amounts) = 0;
-  virtual void UpdateDemeResources(cAvidaContext& ctx, const CellResAmounts& res_change) = 0;
+  
+  //virtual const CellResAmounts& GetResources(cAvidaContext& ctx) = 0; 
+  //virtual ResAmount GetResourceVal(cAvidaContext& ctx, int res_id) = 0;
+  //virtual const CellResAmounts& GetFacedCellResources(cAvidaContext& ctx) = 0; 
+  //virtual ResAmount GetFacedResourceVal(cAvidaContext& ctx, int res_id) = 0;
+  //virtual const CellResAmounts& GetDemeResources(int deme_id, cAvidaContext& ctx) = 0; 
+  //virtual const CellResAmounts& GetCellResources(int cell_id, cAvidaContext& ctx) = 0; 
+  //virtual ResAmount GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) = 0;
+  //virtual ResAmount GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) = 0;
+  //virtual const CellResAmounts& GetFrozenResources(cAvidaContext& ctx, int cell_id) = 0;
+  //virtual const Apto::Array< Apto::Array<int> >& GetCellIdLists() = 0; 
+  //virtual int GetCurrPeakX(cAvidaContext& ctx, int res_id) = 0;
+  //virtual int GetCurrPeakY(cAvidaContext& ctx, int res_id) = 0;
+  //virtual int GetFrozenPeakX(cAvidaContext& ctx, int res_id) = 0; 
+  //virtual int GetFrozenPeakY(cAvidaContext& ctx, int res_id) = 0;
+  //virtual cResourceCount* GetResourceCount() = 0;
+  //virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
+  //virtual void UpdateResources(cAvidaContext& ctx, const CellResAmounts& res_change) = 0;
+  //virtual void UpdateRandomResources(cAvidaContext& ctx, const CellResAmounts& amounts) = 0;
+  //virtual void UpdateDemeResources(cAvidaContext& ctx, const CellResAmounts& res_change) = 0;
+  
   virtual void Die(cAvidaContext& ctx) = 0; 
   virtual void KillCellID(int target, cAvidaContext& ctx) = 0; 
   virtual void Kaboom(int distance, cAvidaContext& ctx) = 0;
@@ -249,14 +250,24 @@ public:
   virtual Apto::Array<cOrganism*> GetFacedAVs(int av_num = 0) = 0;
   virtual Apto::Array<cOrganism*> GetCellAVs(int av_cell_id, int av_num=0) =0;
   virtual Apto::Array<cOrganism*> GetFacedPreyAVs(int av_num = 0) = 0;
-  virtual const CellResAmounts& GetAVResources(cAvidaContext& ctx, int av_num = 0) = 0;
-  virtual ResAmount GetAVResourceVal(cAvidaContext& ctx, int res_id, int av_num = 0) = 0;
-  virtual const CellResAmounts& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0) = 0;
-  virtual ResAmount GetAVFacedResourceVal(cAvidaContext& ctx, int res_id, int av_num = 0) = 0;
-  virtual void UpdateAVResources(cAvidaContext& ctx, const CellResAmounts& res_change, int av_num = 0) = 0;
+  
+  //virtual const CellResAmounts& GetAVResources(cAvidaContext& ctx, int av_num = 0) = 0;
+  //virtual ResAmount GetAVResourceVal(cAvidaContext& ctx, int res_id, int av_num = 0) = 0;
+  //virtual const CellResAmounts& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0) = 0;
+  //virtual ResAmount GetAVFacedResourceVal(cAvidaContext& ctx, int res_id, int av_num = 0) = 0;
+  //virtual void UpdateAVResources(cAvidaContext& ctx, const CellResAmounts& res_change, int av_num = 0) = 0;
 
   virtual void BeginSleep() = 0;
   virtual void EndSleep() = 0;
+  
+  
+  // Gradient Resource Interfaces with the Population 
+  virtual void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, 
+                                        const double pred_odds, const int juvs_per, const bool hammer) = 0;
+                                        
+  virtual void ExecuteDeadlyResource(cAvidaContext& ctx, const int cell_id, const double odds, const bool hammer) = 0;
+  
+  virtual void ExecuteDamagingResource(cAvidaContext& ctx, const int cell_id, const double damage, const bool hammer) = 0;
 };
 
 #endif

@@ -10,33 +10,33 @@
 
 #include "cCellBox.h"
 
+/*
+  An OffsetLinearGrid stores information that may be a subset of an entire grid.
+  
+  From the outside-user, an offset linear grid appears to occupy an entire grid,
+  however data may be stored for a particular subregion only, with a default value
+  being returned for data that exists outside of that subregion.
+*/
+
 template<class T>
 class cOffsetLinearGrid
 { 
   protected:
-    int m_size_x;
-    int m_size_y;
-    cCellBox m_cellbox;
-    T m_default_value;
-    Apto::Array<T> m_array;
+    cOffsetCellBox m_cellbox;  //Describes where in the entire grid data is collected
+    T m_default_value;         //The default value to return when data is requested outside of 
+                               //the cell box
+    Apto::Array<T> m_array;    //The array storing the data in a linearized manner
     
+    int LinearNdx(int x, int y);  // Transform global x and y into a linear lookup index
     
-  
+      
   public:
-    cOffsetLinearGrid(int size_x, int size_y, const cCellBox& cellbox,
-        const T& default_value)
-    : m_size_x(size_x)
-    , m_size_y(size_y)
-    , m_cellbox(cellbox)
+    cOffsetLinearGrid(const cOffsetCellBox& cbox, const T& default_value)
+    : m_cellbox(cbox)
     , m_default_value(default_value)
     {
-      assert(!cellbox.IsDefined() || \
-        (cellbox.IsDefined() && size_x < cellbox.GetX() + cellbox.GetWidth()));
-      
-      assert(!cellbox.IsDefined() || \
-        (cellbox.IsDefined() && size_y < cellbox.GetY() + cellbox.GetHeight()));
-      
-      m_array.ResizeClear(cellbox.GetWidth() * cellbox.GetHeight());
+      assert(m_cellbox.IsDefined());
+      m_array.ResizeClear(std::abs(cbox.GetWidth()) * std::abs(cbox.GetHeight()));
       m_array.SetAll(m_default_value);
     }
     
@@ -49,8 +49,6 @@ class cOffsetLinearGrid
     {
       m_array = _in.m_array;
       m_cellbox = _in.m_cellbox;
-      m_size_x = _in.m_size_x;
-      m_size_y = _in.m_size_y;
       return *this;
     }
     
@@ -60,10 +58,13 @@ class cOffsetLinearGrid
       m_array.SetAll(m_default_value);
     }
     
+    /*
+      The index i in this case refers to a cellID in the global sense.
+    */
     inline T& operator[](int i)
     {
-      int y = (i / m_size_x) - m_cellbox.GetY();
-      int x = (i % m_size_x) - m_cellbox.GetX();
+      int y =  i / m_cellbox.GetSizeX();
+      int x =  i % m_cellbox.GetSizeY();
       return (*this)(x,y);
     }
     
@@ -72,19 +73,24 @@ class cOffsetLinearGrid
       return (*this)[i];
     }
     
+    /*
+      The x and y-coordinates here are relative to the gobal grid
+    */
     inline T& operator()(int x, int y)
     {
-      if ( y < 0 || y >= m_size_y || x < 0 || x >= m_size_x)
+      if (!m_cellbox.InCellBox(x,y))
         return m_default_value;
-        
-      int j = y * m_size_x + x;
-      return m_array[j];
+      
+      int ndx = LinearNdx(x,y);
+      assert(ndx > 0 && ndx < m_array.GetSize());
+      return m_array[ndx];
     }
+    
     
     inline T operator[](int i) const
     {
-      int y = (i / m_size_x) - m_cellbox.GetY();
-      int x = (i % m_size_x) - m_cellbox.GetX();
+      int y =  i / m_cellbox.GetSizeX();
+      int x =  i % m_cellbox.GetSizeY();
       return (*this)(x,y);
     }
     
@@ -95,26 +101,47 @@ class cOffsetLinearGrid
     
     inline T operator()(int x, int y) const
     {
-      if ( y < 0 || y >= m_size_y || x < 0 || x >= m_size_x)
+      if (!m_cellbox.InCellBox(x,y))
         return m_default_value;
         
-      int j = y * m_size_x + x;
-      return m_array[j];
+      int ndx = LinearNdx(x,y);
+      assert(ndx > 0 && ndx < m_array.GetSize());
+      return m_array[ndx];
     }
+    
+    
+    cOffsetCellBox GetOCellBox() const 
+    {
+      return m_cellbox;
+    }
+    
+    
+    inline int LinearNdx(int x, int y) const
+    {
+      if (!m_cellbox.InCellBox(x,y)){
+        return -1;
+      } else{
+        int x_offset = (x - m_cellbox.GetX()) % m_cellbox.GetSizeX();
+        int y_offset = (y - m_cellbox.GetY()) % m_cellbox.GetSizeY();
+        int ndx = y_offset * std::abs(m_cellbox.GetWidth()) + x_offset;
+        return ndx;
+      }
+    }
+    
+    inline int GetHeight() const
+    {
+      return m_cellbox.GetHeight();
+    }
+    
+    inline int GetWidth() const
+    {
+      return m_cellbox.GetWidth();
+    }
+    
     
     inline int GetSize() const
     {
-      return m_array.GetSize();
-    }
-    
-    inline int GetSizeX() const
-    {
-      return m_size_x;
-    }
-    
-    inline int GetSizeY() const
-    {
-      return m_size_y;
+      return m_cellbox.GetWidth() * m_cellbox.GetHeight();
     }
 };
 #endif /* cOffsetLinearGrid_h */

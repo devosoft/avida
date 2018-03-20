@@ -2363,13 +2363,14 @@ bool cHardwareCPU::Inst_IfAboveResLevel(cAvidaContext& ctx)
   }
 	*/
  
-  cResourceAcct* racct = m_world->GetEnvironment().GetResourceRegistry().GetResourceAcct("pheromone");
-  
-  if (racct == nullptr){
+  const char* res_name = "pheromone";
+    
+  if (!m_organism->GetResInterface()->GetGlobalResReg()->DoesResourceExist(res_name)){
     return false;
   }
   
-  ResAmount pher_amount = racct->GetCellAmount(GetOrganism()->GetCellID());
+  Resource::CellResAmount pher_amount = 
+    m_organism->GetResInterface()->GetGlobalResReg()->GetResAmount(res_name, GetOrganism()->GetCellID());
   
   if (pher_amount > resCrossoverLevel) {
     getIP().Advance();
@@ -2378,17 +2379,18 @@ bool cHardwareCPU::Inst_IfAboveResLevel(cAvidaContext& ctx)
   return true;
 }
 
+
 bool cHardwareCPU::Inst_IfAboveResLevelEnd(cAvidaContext& ctx)
 {
   const double resCrossoverLevel = 100;
+  const char* res_name = "pheromone";
   
-  cResourceAcct* racct = m_world->GetEnvironment().GetResourceRegistry().GetResourceAcct("pheromone");
-  
-  if (racct == nullptr){
+  if (!m_organism->GetResInterface()->GetGlobalResReg()->DoesResourceExist(res_name)){
     return false;
   }
   
-  ResAmount pher_amount = racct->GetCellAmount(GetOrganism()->GetCellID());
+  Resource::CellResAmount pher_amount = 
+    m_organism->GetResInterface()->GetGlobalResReg()->GetResAmount(res_name, GetOrganism()->GetCellID());
 	
   if (pher_amount > resCrossoverLevel) {
     Else_TopHalf();
@@ -2400,15 +2402,14 @@ bool cHardwareCPU::Inst_IfAboveResLevelEnd(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_IfNotAboveResLevel(cAvidaContext& ctx)
 {
   const double resCrossoverLevel = 100;
-	
-  cResourceAcct* racct = m_world->GetEnvironment().GetResourceRegistry().GetResourceAcct("pheromone");
+	const char* res_name = "pheromone";
   
-  if (racct == nullptr){
+  if (!m_organism->GetResInterface()->GetGlobalResReg()->DoesResourceExist(res_name)){
     return false;
   }
   
-  ResAmount pher_amount = racct->GetCellAmount(GetOrganism()->GetCellID());
-	
+  Resource::CellResAmount pher_amount = 
+    m_organism->GetResInterface()->GetGlobalResReg()->GetResAmount(res_name, GetOrganism()->GetCellID());	
   if (pher_amount <= resCrossoverLevel) {
     getIP().Advance();
   }
@@ -2419,15 +2420,15 @@ bool cHardwareCPU::Inst_IfNotAboveResLevel(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx)
 {
   const double resCrossoverLevel = 100;
+  const char* res_name = "pheromone";
   
-  cResourceAcct* racct = m_world->GetEnvironment().GetResourceRegistry().GetResourceAcct("pheromone");
-  
-  if (racct == nullptr){
+  if (!m_organism->GetResInterface()->GetGlobalResReg()->DoesResourceExist(res_name)){
     return false;
   }
   
-  ResAmount pher_amount = racct->GetCellAmount(GetOrganism()->GetCellID());
-  
+  Resource::CellResAmount pher_amount = 
+    m_organism->GetResInterface()->GetGlobalResReg()->GetResAmount(res_name, GetOrganism()->GetCellID());
+    
   if (pher_amount <= resCrossoverLevel) {
     Else_TopHalf();
   }
@@ -4293,24 +4294,25 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
 {
   // Returns the amount of a resource or resources 
   // specified by modifying NOPs into register BX
-  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx) +
-  m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID(), ctx); 
+  const int cell_id = m_organism->GetCellID();
+  const int deme_id = m_organism->GetOrgInterface().GetDemeID();
+  Resource::CellResAmounts all_res = m_organism->GetResInterface()->GetGlobalAndDemeResAmounts(cell_id, deme_id);
   
   // Arbitrarily set to BX since the conditional instructions use this directly.
   int reg_to_set = REG_BX;
   
   // There are no resources, return
-  if (res_count.GetSize() == 0) return false;
+  if (all_res.size() == 0) return false;
   
   // Only recalculate logs if these values have changed
-  static int last_num_resources = 0;
+  static unsigned last_num_resources = 0;
   static int max_label_length = 0;
   int num_nops = GetInstSet().GetNumNops();
   
-  if ((last_num_resources != res_count.GetSize()))
+  if ((last_num_resources != all_res.size()))
   {
-    max_label_length = (int) ceil(log((double)res_count.GetSize())/log((double)num_nops));
-    last_num_resources = res_count.GetSize();
+    max_label_length = (int) ceil(log((double)all_res.size())/log((double)num_nops));
+    last_num_resources = all_res.size();
   }
   
   // Convert modifying NOPs to the index of the resource.
@@ -4340,26 +4342,26 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
     end_label.AddNop(num_nops-1);
   }
   
-  int start_index = start_label.AsInt(num_nops);
-  int   end_index =   end_label.AsInt(num_nops);
+  unsigned start_index = start_label.AsInt(num_nops);
+  unsigned   end_index =   end_label.AsInt(num_nops);
   
   // If the label refers to ONLY resources that 
   // do not exist, then the operation fails
-  if (start_index >= res_count.GetSize()) return false;
+  if (start_index >= all_res.size()) return false;
   
   // Otherwise sum all valid resources that it might refer to
   // (this will only be ONE if the label was of the maximum length).
   int resource_result = 0;
   double dresource_result = 0;
-  for (int i = start_index; i <= end_index; i++) {
+  for (unsigned i = start_index; i <= end_index; i++) {
     // if it's a valid resource
-    if (i < res_count.GetSize()) {
+    if (i < all_res.size()) {
       if (conversion_method == 0) { // Log
         // for log, add together and then take log
-        dresource_result += (double) res_count[i];
+        dresource_result += (double) all_res[i];
       }
       else if (conversion_method == 1) { // Addition of multiplied resource amount
-        int add_amount = (int) (res_count[i] * base);
+        int add_amount = (int) (all_res[i] * base);
         // Do some range checking to make sure we don't overflow
         resource_result = (INT_MAX - resource_result <= add_amount) ? INT_MAX : resource_result + add_amount;
       }
@@ -4431,11 +4433,14 @@ bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid, cAvi
 {
   assert(resid >= 0);
 
-  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx) +
-  m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID(), ctx); 
+  //const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx) +
+  //m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID(), ctx); 
 
+  const int deme_id = m_organism->GetOrgInterface().GetDemeID();
+  Resource::CellResAmounts res_count = m_organism->GetResInterface()->GetGlobalAndDemeResAmounts(cell_id, deme_id);
+ 
   // Make sure we have the resource requested
-  if (resid >= res_count.GetSize()) return false;
+  if (resid >= (int)res_count.size()) return false;
   
   GetRegister(reg_to_set) = (int) res_count[resid];
   
@@ -4445,11 +4450,14 @@ bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid, cAvi
 
 bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx)
 {
-  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  //@MRR Original does not consider deme resources
+  //const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  const int cell_id = m_organism->GetCellID();
+  const Resource::CellResAmounts res_count = m_organism->GetResInterface()->GetGlobalResReg()->GetResAmounts(cell_id);
   int reg_to_set = FindModifiedRegister(REG_BX);  
   double max_resource = 0.0;    
   // if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
-  for (int i = 0; i < res_count.GetSize(); i++) {
+  for (unsigned i = 0; i < res_count.size(); i++) {
     if (res_count[i] > max_resource) {
       max_resource = res_count[i];
       GetRegister(reg_to_set) = i;
@@ -4460,7 +4468,9 @@ bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
 {
-  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  //@MRR Original does not consider deme resources
+  const int cell_id = m_organism->GetCellID();
+  const Resource::CellResAmounts res_count = m_organism->GetResInterface()->GetGlobalResReg()->GetResAmounts(cell_id);
   // check if this is a valid group
   if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
     int opinion = m_organism->GetOpinion().first;
@@ -4484,7 +4494,10 @@ bool cHardwareCPU::Inst_SenseNextResLevel(cAvidaContext& ctx)
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 2) return false;
   int opinion = m_organism->GetOpinion().first;
   
-  const int num_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
+  //@MRR original does not consider deme resources
+  //const int num_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
+  const int num_groups = m_organism->GetResInterface()->GetGlobalResReg()->GetSize();
+   
   if (num_groups <= 2) return false;
   
   // If not nop-modified, fails to execute.
@@ -4494,7 +4507,9 @@ bool cHardwareCPU::Inst_SenseNextResLevel(cAvidaContext& ctx)
   int register_value = GetRegister(nop_register);
   if (register_value == 0) return false;
   
-  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts res_count = m_organism->GetResInterface()->GetGlobalResReg()->GetResAmounts(m_organism->GetCellID());
+  //const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  
   if (opinion == (num_groups - 1)) {
     if (register_value > 0) GetRegister(REG_BX) = (int) (res_count[1] * 100 + 0.5);
     else if (register_value < 0) GetRegister(REG_BX) = (int) (res_count[opinion - 1] * 100 + 0.5);
@@ -4512,11 +4527,14 @@ bool cHardwareCPU::Inst_SenseNextResLevel(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx) 
 {
-  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  //const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  const CellResAmounts res_count = m_organism->GetResInterface()->GetGlobalResReg()->GetResAmounts(m_organism->GetCellID());
   if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
     int opinion = m_organism->GetOpinion().first;
     int reg_to_set = FindModifiedRegister(REG_BX);
-    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
+    int faced_cell = m_organism->GetOrgInterface().GetFacedCellID();
+    //ResAmount faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
+    ResAmount faced_res = m_organism->GetResInterface()->GetGlobalResReg()->GetResAmounts(faced_cell)[opinion];
     // return % change
     int res_diff = 0;
     if (res_count[opinion] == 0) res_diff = (int) faced_res;
@@ -4532,22 +4550,28 @@ bool cHardwareCPU::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   int reg_to_set = FindModifiedRegister(REG_BX);
   
   // get the resource library
-  const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
+  //const cResourceRegistry& resource_reg = m_world->GetEnvironment().GetResourceRegistry();
+  
   
   // get the destination cell resource levels
-  CellResAmounts cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
+  //CellResAmounts cell_resource_levels = m_organis->GetOrgInterface().GetFacedCellResources(ctx);
+  int faced_cell = m_organism->GetOrgInterface().GetFacedCellID();
+  Resource::ResAmounts cell_res_levels = 
+      m_organism->GetResInterface()->GetGlobalResReg()->GetGradResAmounts(faced_cell);
+  Resource::HabitatValues habitats = 
+      m_organism->GetResInterface()->GetGlobalResReg()->GetGradResHabitats(faced_cell);
   
   // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
   // are there any barrier resources in the faced cell    
-  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
-    if (resource_reg.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) {
+  for (int i = 0; i < (int) cell_res_levels.size(); i++) {
+    if (habitats[i] == 2 && cell_res_levels[i] > 0) {
       GetRegister(reg_to_set) = 2;
       return true;
     }    
   }
   // if no barriers, are there any hills in the faced cell    
-  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
-    if (resource_reg.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) {
+  for (int i = 0; i < (int) cell_res_levels.size(); i++) {
+    if (habitats[i] == 1 && cell_res_levels[i] > 0) {
       GetRegister(reg_to_set) = 1;
       return true;
     }
@@ -4576,7 +4600,8 @@ bool cHardwareCPU::Inst_SenseFacedHabitat(cAvidaContext& ctx)
  */
 int cHardwareCPU::FindModifiedResource(cAvidaContext& ctx, int& spec_id)
 {
-  int num_resources = m_organism->GetOrgInterface().GetResources(ctx).GetSize(); 
+  //int num_resources = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
+  int num_resources = m_organism->GetResInterface()->GetGlobalResReg()->GetSize(); 
   
   //if there are no resources, translation cannot be successful; return false
   if (num_resources <= 0)
@@ -4649,9 +4674,13 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
 bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit, float nUnits)
 {
   // Set up res_change and max total
-  const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
-  CellResAmounts res_change(res_count.GetSize());
-  res_change.SetAll(0.0);
+  // @MRR Original does not work in demes or spatial resources, either.
+  // const CellResAmounts res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  // CellResAmounts res_change(res_count.GetSize());
+  // res_change.SetAll(0.0);
+  
+  const Resource::TotalResAmounts res_count = m_organism->GetResInterface()->GetGlobalResReg()->GetResAmounts();
+  Resource::ResAmounts res_change(res_count.size(), 0.0);
   double total = m_organism->GetRBinsTotal();
   double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
   
@@ -4690,7 +4719,9 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
   }
 
   // Update resource counts to reflect res_change
-  m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
+  //m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
+  const int cell_id = m_organism->GetCellID();
+  m_organism->GetResInterface()->GetGlobalResReg()->ModifyCellResources(ctx, cell_id, res_change);
   return true;
 }
 

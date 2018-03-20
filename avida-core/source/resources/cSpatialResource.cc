@@ -144,7 +144,7 @@ void cSpatialResourceAcct::SetState(int x, int y)
 
 
 
-void cSpatialResourceAcct::Update()
+void cSpatialResourceAcct::Update(cAvidaContext& ctx)
 {
   int num_updates = m_stats_update - m_last_calc_update;
   for (int kk=0; kk < num_updates; kk++){
@@ -212,8 +212,8 @@ void cSpatialResourceAcct::Source(double amount)
     
     for (int i = inflowY1; i <= inflowY2; i++) {
       for (int j = inflowX1; j <= inflowX2; j++) {
-        int size_x = m_cells.GetSizeX();
-        int size_y = m_cells.GetSizeX();
+        int size_x = m_cells.GetHeight();
+        int size_y = m_cells.GetWidth();
         int elem = 
         (Mod(i,size_y) * size_x) + Mod(j,size_x);
         Rate(elem,amount); 
@@ -233,8 +233,8 @@ void cSpatialResourceAcct::Rate(int cell_id, double ratein)
 
 void cSpatialResourceAcct::Rate(int x, int y, double ratein)
 { 
-  int size_x = m_cells.GetSizeX();
-  int size_y = m_cells.GetSizeY();
+  int size_x = m_cells.GetWidth();
+  int size_y = m_cells.GetHeight();
   if (x >= 0 && x < m_size_x && y>= 0 && y < size_y) {
     m_cells[y * size_x + x].Rate(ratein);
   } else {
@@ -256,7 +256,7 @@ void cSpatialResourceAcct::CellOutflow()
     
     if (cell_id >= 0 && cell_id < m_cells.GetSize()) {
       deltaamount = Apto::Max(
-                              (GetAmount(cell_id) * cell_list[i].GetOutflow()), 0.0);
+                              ( (*this)(cell_id) * cell_list[i].GetOutflow()), 0.0);
     }                     
     Rate(cell_id, -deltaamount); 
   }
@@ -267,8 +267,8 @@ void cSpatialResourceAcct::Sink(double decay)
   if (m_resource.m_outflow_boxes.GetSize() == 0)
     return;
   
-  int size_x = m_cells.GetSizeX();
-  int size_y = m_cells.GetSizeY();
+  int size_x = m_cells.GetWidth();
+  int size_y = m_cells.GetHeight();
   for (int b=0; b < m_resource.m_outflow_boxes.GetSize(); b++)
   {
     cCellBox cbox = m_resource.m_outflow_boxes[b];
@@ -280,7 +280,7 @@ void cSpatialResourceAcct::Sink(double decay)
     for (int i = outflowY1; i <= outflowY2; i++) {
       for (int j = outflowX1; j <= outflowX2; j++) {
         int elem = (Mod(i,size_y) * size_x) + Mod(j,size_x);
-        double deltaamount = Apto::Max((GetAmount(elem) * (1.0 - decay)), 0.0);
+        double deltaamount = Apto::Max( (*this)(elem) * (1.0 - decay), 0.0);
         Rate(elem,-deltaamount); 
       }
     }
