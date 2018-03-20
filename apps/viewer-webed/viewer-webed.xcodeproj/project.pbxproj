@@ -9,9 +9,6 @@
 /* Begin PBXFileReference section */
 		B40C9CD11BE7BD6D00F22C20 /* DriverConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DriverConfig.h; path = src/DriverConfig.h; sourceTree = "<group>"; };
 		B40EAE7E1BBC81AF005BFA85 /* WebDebug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = WebDebug.h; path = src/WebDebug.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		B4181DDF1B94EB2C0002B429 /* avida-adaptor.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = "avida-adaptor.js"; path = "resources/avida-adaptor.js"; sourceTree = "<group>"; };
-		B4181DE01B94EB2C0002B429 /* avidaui-prepend.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = "avidaui-prepend.js"; path = "resources/avidaui-prepend.js"; sourceTree = "<group>"; };
-		B4181DE11B94EB2C0002B429 /* test.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = test.html; path = resources/test.html; sourceTree = "<group>"; };
 		B4181DE21B94EB420002B429 /* avida.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = avida.cfg; path = config/avida.cfg; sourceTree = "<group>"; };
 		B4181DE31B94EB420002B429 /* default-heads.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "default-heads.org"; path = "config/default-heads.org"; sourceTree = "<group>"; };
 		B4181DE41B94EB420002B429 /* environment.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = environment.cfg; path = config/environment.cfg; sourceTree = "<group>"; };
@@ -23,6 +20,8 @@
 		B478A2FD1B98A00E0023242C /* Runtime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Runtime.h; path = src/Runtime.h; sourceTree = "<group>"; };
 		B478A2FE1BA0BB5A0023242C /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		B4C475821BB321AD000E054C /* WebDriverActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebDriverActions.h; path = src/WebDriverActions.h; sourceTree = "<group>"; };
+		FE796069205B33DB009ED44A /* prepend.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = prepend.js; path = resources/prepend.js; sourceTree = "<group>"; };
+		FE79606A205B33DB009ED44A /* avida-messages.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "avida-messages.js"; path = "resources/avida-messages.js"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -65,9 +64,8 @@
 		B4181DDE1B94EAD20002B429 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B4181DDF1B94EB2C0002B429 /* avida-adaptor.js */,
-				B4181DE01B94EB2C0002B429 /* avidaui-prepend.js */,
-				B4181DE11B94EB2C0002B429 /* test.html */,
+				FE79606A205B33DB009ED44A /* avida-messages.js */,
+				FE796069205B33DB009ED44A /* prepend.js */,
 			);
 			name = Resources;
 			sourceTree = "<group>";

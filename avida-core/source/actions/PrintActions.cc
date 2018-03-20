@@ -281,19 +281,38 @@ class cActionPrintSpatialResources : public cAction
 private:
   cString m_filename;
   bool m_first_run;
+
+// cWorld world is avida world object (traditional)
+// args can be one of three things.
+//   position dependent array of valuses; white space delemented - can be used anywhere.
+//   args schema used in some new actions; Avida-ED-web has not really used it.
+//     key:value - can be broken into individual components with key value pairs in several format
+//   Avida-ED-web only; if it begins with unit seperator <character code 31> and it is in Web driver actions
+//     then args is a serialized json object.
+// Feedback is away to communicate back to the user what has happend.
+//   used inside of these actions if something has gone wrong. In Avida-ED-web it is a away to send stuff to av_ui.
+// cAction - a pure virtual class. The process method must be filled in. This is a way of enforcing an interface.
+//   avida uses virtual classes a lot.
+// m_first_run must be intialilzed.
+//
+// cActionPrintSpatialResources is a child of cAction
 public:
-  
-  cActionPrintSpatialResources(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_first_run(true)
+    cActionPrintSpatialResources(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_first_run(true)
   {
     cString largs(args);
     m_filename = (largs.GetSize()) ? largs.PopWord() :  "resources.dat";
   }
   static const cString GetDescription() { return "Arguments: [string fname=\"resource.dat\"]"; }
+  
+  // most of work
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().UpdateResStats(ctx);
-    const cStats& stats = m_world->GetStats();
+    m_world->GetPopulation().UpdateResStats(ctx);  //Synchronize copies of information about resources.
+    const cStats& stats = m_world->GetStats();     //will hold copy of stats that we print out.
     
+    // GetNewWOrld is an instance of World which is part of the facet system, not fully implemented.
+    // df is a special avida file pointer
+    // uses avida file manager to do all the error checking related to opening a file; will stay opend till closed
     Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
     
     if (m_first_run){
@@ -312,18 +331,20 @@ public:
     for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
       int geometry = stats.GetResourceGeometries()[res_id];
       if (res_count.IsSpatialResource(res_id)){
+        // WriteAnonymouse - write a value and put a space after it.
         df->WriteAnonymous(stats.GetUpdate());
         df->WriteAnonymous(stats.GetResourceNames()[res_id]);
         for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){
-          df->OFStream() << stats.GetSpatialResourceCount()[res_id][cell_ndx];
+          df->OFStream() << stats.GetSpatialResourceCount()[res_id][cell_ndx]; // write to the stream
           if (cell_ndx < world_size-1){
             df->OFStream() << " ";
           } 
         }
-        df->Endl();
+        df->Endl();  //End line AND flushes the stream. Different from just a "\n" which does not flush stream.
+        // send out to stream;
       }
     }
-  }
+  }  //end of Process
 };
 
 class cActionPrintResourceLocData : public cAction
@@ -4607,7 +4628,7 @@ public:
     }
     
     Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-    std::ofstream& fout = df->OFStream();
+    std::ostream& fout = df->OFStream();
     
     if (first_time){
       df->WriteComment("First column is update, second column is reaction name, subsequent columns are individual cells");
@@ -4669,7 +4690,7 @@ public:
     }
     
     Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-    std::ofstream& fout = df->OFStream();
+    std::ostream& fout = df->OFStream();
     if (first_time){
       df->WriteComment("First column is update, second column is reaction name, subsequent columns are individual cells");
       df->WriteComment("-1 for a reaction count indicates the cell is not occupied.");
