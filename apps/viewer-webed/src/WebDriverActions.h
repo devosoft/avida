@@ -48,6 +48,7 @@ class cActionLibrary;
 
 
 using namespace Avida::WebViewer;
+using namespace std;
 
 namespace Actions{
   
@@ -56,6 +57,7 @@ namespace Actions{
   const char* WA_ORG_TRACE = "webOrgTraceBySequence";
   const char* WA_CELL_DATA = "webOrgDataByCellID";
   const char* WA_GRID_DATA = "webGridData";
+  const char* WA_SPAT_RES = "spatialResourceGrid";
   const char* WA_INJECT_SEQ = "webInjectSequence";
   const char* WA_EXPORT_EXPR = "exportExpr";
   const char* WA_IMPORT_EXPR = "importExpr";
@@ -110,117 +112,60 @@ namespace Actions{
   };
   
   
-  //----------------------------- cWebActionPrintSpatialResources ------------------------------------------------------
+  //----------------------------- cWebActionPrintSpatialResources ---------------------------------------------------
   // fb is feedback
-//  class cWebActionPrintSpatialResources : public cWebAction {
-//  public:
-//    cWebActionPopulationStats(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world, args, fb)
-//    {
-//    }
-//    static const cString GetDescription() { return "no arguments"; }
-//
-//  // most of work
-//  void Process(cAvidaContext& ctx)
-//  {
-//    m_world->GetPopulation().UpdateResStats(ctx);  //Synchronize copies of information about resources.
-//    const cStats& stats = m_world->GetStats();     //will hold copy of stats that we print out.
-//
-//    // GetNewWOrld is an instance of World which is part of the facet system, not fully implemented.
-//    // df is a special avida file pointer
-//    // uses avida file manager to do all the error checking related to opening a file; will stay opend till closed
-//    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename);
-//
-//    if (m_first_run){
-//      df->WriteComment("Avida Spatial Resource Information");
-//      df->WriteComment("Column 1 is the update");
-//      df->WriteComment("Column 2 is the name of the resource");
-//      df->WriteComment("The remaining columns are abundance of the named resource per cell");
-//      df->FlushComments();
-//      m_first_run = false;
-//    }
-//
-//    cPopulation& pop = m_world->GetPopulation();
-//    const cResourceCount& res_count = pop.GetResourceCount();
-//    int world_size = pop.GetSize();
-//
-//    for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
-//      int geometry = stats.GetResourceGeometries()[res_id];
-//      if (res_count.IsSpatialResource(res_id)){
-//        // WriteAnonymouse - write a value and put a space after it.
-//        df->WriteAnonymous(stats.GetUpdate());
-//        df->WriteAnonymous(stats.GetResourceNames()[res_id]);
-//        for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){
-//          df->OFStream() << stats.GetSpatialResourceCount()[res_id][cell_ndx]; // write to the stream
-//          if (cell_ndx < world_size-1){
-//            df->OFStream() << " ";
-//          }
-//        }
-//        df->Endl();  //End line AND flushes the stream. Different from just a "\n" which does not flush stream.
-//        // send out to stream;
-//
-//              //WebViewerMsg = json;
-//      WebViewerMsg pop_data = {
-//        {"update", update}
-//        ,{"data", fitness.Average()}
-//        ,{"ave_gestation_time", gestation.Average()}
-//        ,{"ave_metabolic_rate", metabolism.Average()}
-//        ,{"organisms", org_count}
-//        ,{"ave_age", ave_age}
-//      };
-//
-//      }
-//    }
-//  }  //end of Process
-//
-//
-//    void Process_posStats(cAvidaContext& ctx){
-//      D_(D_ACTIONS, "cWebActionPopulationStats::Processs");
-//      const cStats& stats = m_world->GetStats();
-//      int update = stats.GetUpdate();
-//
-//      const cPopulation& pop = m_world->GetPopulation();
-//
-//      //calculating fitness, gestation, metablism averages for only viable organisms. Excluding non-viable organisms
-//      cDoubleSum fitness, gestation, metabolism;
-//      for (int kk=0; kk < pop.GetLiveOrgList().GetSize(); kk++){
-//        cOrganism* org = pop.GetLiveOrgList()[kk];
-//        const cPhenotype& phen = org->GetPhenotype();
-//
-//        //@MRR Only works with pre-calculated organsims!   Needs to chagne when working with limited resources.
-//        if ( org->GetPhenotype().GetPrecalcIsViable() > 0) {
-//          fitness.Add( phen.GetFitness() );
-//          gestation.Add( phen.GetGestationTime() );
-//          metabolism.Add( phen.GetMerit().GetDouble() );
-//        }
-//      }
-//
-//      int org_count = stats.GetNumCreatures();
-//      double ave_age = stats.GetAveCreatureAge();
-//
-//
-//      //WebViewerMsg = json;
-//      WebViewerMsg pop_data = {
-//        {"update", update}
-//        //,{"ave_fitness", ave_fitness}
-//        //,{"ave_gestation_time", ave_gestation_time}
-//        //,{"ave_metabolic_rate", ave_metabolic_rate}
-//        ,{"ave_fitness", fitness.Average()}
-//        ,{"ave_gestation_time", gestation.Average()}
-//        ,{"ave_metabolic_rate", metabolism.Average()}
-//        ,{"organisms", org_count}
-//        ,{"ave_age", ave_age}
-//      };
-//
-//      cEnvironment& env = m_world->GetEnvironment();
-//      for (int t=0; t< env.GetNumTasks(); t++){
-//        pop_data[string(env.GetTask(t).GetName().GetData())] =
-//        stats.GetTaskLastCount(t);
-//      }
-//      PackageData(WA_POP_STATS, pop_data);
-//      D_(D_ACTIONS, "cWebActionPopulationStats::Process [completed]");
-//    }
-//  }; // cWebActionPopulationStats
-//
+  class cWebActionPrintSpatialResources : public cWebAction {
+  public:
+    cWebActionPrintSpatialResources(cWorld* world, const cString& args, Avida::Feedback& fb)
+        : cWebAction(world, args, fb)
+    {
+    }
+    static const cString GetDescription() { return "no arguments"; }
+
+  // most of work
+  void Process(cAvidaContext& ctx)
+  {
+    D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process" );
+    //map<string, vector<double> > res_data;
+    m_world->GetPopulation().UpdateResStats(ctx);  //Synchronize copies of information about resources.
+    const cStats& stats = m_world->GetStats();     //will hold copy of stats that we print out.
+
+    // initalizing stuff used in the for loop through all the spatial resources
+    vector<json> res_jlist;
+    cPopulation& pop = m_world->GetPopulation();
+    const cResourceCount& res_count = pop.GetResourceCount();
+    int world_size = pop.GetSize();
+
+    for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
+      if (res_count.IsSpatialResource(res_id)){
+        vector<double> res_data;
+        string res_name = stats.GetResourceNames()[res_id].GetData();
+        for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){
+          res_data.push_back(stats.GetSpatialResourceCount()[res_id][cell_ndx]);
+        }
+        auto result = minmax_element(res_data.begin(), res_data.end());
+        // add to json object
+        json res_j;
+        res_j["name"] = res_name;
+        res_j["minVal"] = *result.first;   //first and second are pointers and to get the value just dereference
+        res_j["maxVal"] = *result.second;
+        res_j["data"] = res_data;
+        res_jlist.push_back(res_j);
+      }
+    }  //end of for loop for each resource
+    
+        //WebViewerMsg means the same as json;
+    WebViewerMsg getSpatialResources = {
+      {"update", stats.GetUpdate()}
+      ,{"resources", res_jlist}
+    }; //end of webmessage
+
+    PackageData(WA_SPAT_RES, getSpatialResources);
+    D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process [completed]");
+
+  }  //end of Process
+}; // cWebActionPopulationStats
+
   
   
   //----------------------------- cWebActionPopulationStats ------------------------------------------------------
@@ -965,6 +910,7 @@ namespace Actions{
   
   void RegisterWebDriverActions(cActionLibrary* action_lib)
   {
+    action_lib->Register<cWebActionPrintSpatialResources>(WA_SPAT_RES);
     action_lib->Register<cWebActionPopulationStats>(WA_POP_STATS);
     action_lib->Register<cWebActionOrgTraceBySequence>(WA_ORG_TRACE);
     action_lib->Register<cWebActionOrgDataByCellID>(WA_CELL_DATA);
