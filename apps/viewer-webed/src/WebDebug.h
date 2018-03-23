@@ -19,15 +19,27 @@
 using json = nlohmann::json;
 
 //If we're sending it as a stream, which stream should we use?
+// std::cerr shows up in javascript console
 #define DEBUG_STREAM std::cerr
 
 //Should we send debug information through the worker messaging interface?
+// 0 send to DEBUG_STREAM
+// 1 send to messaging system with av_ui - will need to do more changes
 #define D_SEND_JSON 0
 
-//How detailed should our debug output be
+//How detailed should our debug output be (sets level of detail)
+// 0 minium amount of text
+// 3 lots of text hard to wade through
 #define D_VERBOSITY 0
 
 //Constants to define different types of debugging
+// D_FLOW: program internal flow (how did I get here?)
+// D_MSG_IN: input messages
+// D_MSG_OUT: output messages
+// D_STATUS: avida-core system status (e.g. driver, world, etc.)
+// D_EVENTS: relating to the *scheduling* of actions
+// D_ACTIONS: relating to the actions themselves
+// D_ERROR: generic error output (e.g. print something before a crash when debugging)
 #define D_FLOW 1
 #define D_MSG_IN 2
 #define D_MSG_OUT 4
@@ -37,7 +49,7 @@ using json = nlohmann::json;
 #define D_ERROR 64
 
 
-//Some variables to measure performance
+//Some variables to measure performance; not used since handshaking started.
 #define D_MEASURE_PERFORMANCE 0
 #define D_RUN_TIL_UPDATE 2500
 
@@ -45,6 +57,12 @@ using json = nlohmann::json;
 //#define DEBUG_MODE \
 //  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
+// #define DEBUG_MODE \
+//  (D_FLOW | D_STATUS | D_EVENTS | D_MSG_IN | D_ACTIONS)
+
+// this defines the level; when set to 0 no debug statements are sent
+// edit the line above with the correct subset or-ed together to get what you want
+// and comment out setting to zero.
 #define DEBUG_MODE 0
 
 

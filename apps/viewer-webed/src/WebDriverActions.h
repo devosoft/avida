@@ -229,6 +229,7 @@ namespace Actions{
   
   
   
+  //----------------------------- cWebActionOrgTraceBySequence  ------------------------------------------------------
   class cWebActionOrgTraceBySequence : public cWebAction
   {
     
@@ -404,7 +405,7 @@ namespace Actions{
   
   
   
-  
+  //----------------------------- cWebActionGridData ------------------------------------------------------
   class cWebActionGridData : public cWebAction {
   private:
     
@@ -445,6 +446,53 @@ namespace Actions{
       return max;
     }
     
+    //Temp code to test spatical resource data
+    vector<double> getSpatRes(cAvidaContext& ctx)
+    {
+      vector<double> res_data;
+      D_(D_ACTIONS, "cWebActionGridData::getSpatRes" );
+      //map<string, vector<double> > res_data;
+      m_world->GetPopulation().UpdateResStats(ctx);  //Synchronize copies of information about resources.
+      const cStats& stats = m_world->GetStats();     //will hold copy of stats that we print out.
+      
+      // initalizing stuff used in the for loop through all the spatial resources
+      vector<json> res_jlist;
+      cPopulation& pop = m_world->GetPopulation();
+      const cResourceCount& res_count = pop.GetResourceCount();
+      int world_size = pop.GetSize();
+      
+      for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
+        if (res_count.IsSpatialResource(res_id)){
+          res_data.clear();
+          string res_name = stats.GetResourceNames()[res_id].GetData();
+          for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){
+            res_data.push_back(stats.GetSpatialResourceCount()[res_id][cell_ndx]);
+          }
+          return res_data;
+          auto result = minmax_element(res_data.begin(), res_data.end());
+          // add to json object
+          json res_j;
+          res_j["name"] = res_name;
+          res_j["minVal"] = *result.first;   //first and second are pointers and to get the value just dereference
+          res_j["maxVal"] = *result.second;
+          res_j["data"] = res_data;
+          res_jlist.push_back(res_j);
+        }
+      }  //end of for loop for each resource
+      
+      //WebViewerMsg means the same as json;
+      WebViewerMsg getSpatialResources = {
+        {"update", stats.GetUpdate()}
+        ,{"resources", res_jlist}
+      }; //end of webmessage
+      
+      PackageData(WA_SPAT_RES, getSpatialResources);
+      D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process [completed]");
+      
+      return res_data;
+    }  //end of Process
+    //end of temp code to test spatial resource process.
+    
     
   public:
     cWebActionGridData(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world,args,fb)
@@ -476,7 +524,6 @@ namespace Actions{
         tasks[t] = vector<double>(world_size,NaN);
       }
       
-      
       cPopulation& pop = m_world->GetPopulation();
       for (int i=0; i < world_size; i++)
       {
@@ -485,7 +532,6 @@ namespace Actions{
         
         cPopulationCell& cell = pop.GetCell(i);
         cOrganism* org = cell.GetOrganism();
-        
         
         Systematics::CladePtr cptr;
         cptr.DynamicCastFrom(org->SystematicsGroup("clade"));
@@ -500,6 +546,10 @@ namespace Actions{
         }
       }
       
+      //temp for test Spatial Resource data
+      vector<double> resource(world_size, NaN);
+      resource = getSpatRes(ctx);
+      if (resource.empty()) resource = gestation;
       
       data["fitness"] = { 
         {"data",fitness}, 
@@ -511,16 +561,23 @@ namespace Actions{
         {"minVal",min_val(metabolism)}, 
         {"maxVal",max_val(metabolism)} 
       };
-      data["gestation"] = {
-        {"data",gestation}, 
-        {"minVal",min_val(gestation)}, 
-        {"maxVal",max_val(gestation)} 
-      };
+//      data["gestation"] = {
+//        {"data",gestation},
+//        {"minVal",min_val(gestation)},
+//        {"maxVal",max_val(gestation)}
+//      };
       
       data["ancestor"] = {
         {"data", ancestor}
       };
-      
+
+      //This is for testing only. It only works with one resource.
+      data["gestation"] = {
+        {"data",resource},
+        {"minVal",min_val(resource)},
+        {"maxVal",max_val(resource)}
+      };
+
       for (auto it : tasks){
         data[it.first] = {
           {"data",it.second},

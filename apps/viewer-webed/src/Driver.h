@@ -110,7 +110,23 @@ namespace Avida{
       
     };
     
-    
+//----------------------------------------------------------------------------------------------------------------
+// the stuff below this EXCEPT THE LAST 2 "}" could be in the *.cc file.
+// in the cc file you need two lines at the top of the file
+// all other include lines are in the Driver.h file
+//
+//     #include "Driver.h"
+//     using namespace Avida::WebViewer;   // all web driver stuff in that namespace to
+//                                         // keep separate from the rest of avida
+//
+// We also need to modify CMakeList.txt for this project (viewer-webed)   in the file system: Apps/viewer-webed
+//
+// but do NOT do this because we had problems with WebDebug.h getting inclued more than once.
+//   probaby because both Driver.o and viewer-webed.cc got built, but we did not have a webDebuger.cc or
+//   there is no webDebugger.o.   So need to split webDebugger, before Driver is split.
+//   GetDebugModes  was the problem function within webDebugger.h.   The implementation details got included twice.
+//----------------------------------------------------------------------------------------------------------------
+
     void Driver::PostUpdate()
     {
       int update = m_world->GetStats().GetUpdate();
