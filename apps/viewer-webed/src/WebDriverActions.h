@@ -185,7 +185,7 @@ namespace Actions{
       
       //calculating fitness, gestation, metablism averages for only viable organisms. Excluding non-viable organisms
       cDoubleSum fitness, gestation, metabolism;
-      
+      int viables;
       //Calculations on ancestor clade subset only
       map<string, cDoubleSum> fitness_byclade, gestation_byclade, metabolism_byclade;
       map<string, int> organisms_byclade, viables_byclade;
@@ -211,6 +211,7 @@ namespace Actions{
           double org_fitness = phen.GetFitness();
           double org_metabolism = phen.GetMerit().GetDouble();
           double org_gestation = phen.GetGestationTime();
+          viables++;
           
           fitness.Add( org_fitness );
           metabolism.Add( org_metabolism );
@@ -245,6 +246,7 @@ namespace Actions{
         ,{"ave_metabolic_rate", metabolism.Average()}
         ,{"organisms", org_count}
         ,{"ave_age", ave_age}
+        ,{"viables", viables}
       };
       
       //Gather clade information in a manner for transmission
@@ -508,36 +510,25 @@ namespace Actions{
       vector<json> res_jlist;
       cPopulation& pop = m_world->GetPopulation();
       const cResourceCount& res_count = pop.GetResourceCount();
+      cerr << "pop.GetResourceCount().GetSize = " << pop.GetResourceCount().GetSize() << endl;
       int world_size = pop.GetSize();
-      
+      cerr << "world_size = "  << world_size << endl;
+      cerr << "stats.GetResources().GetSize() " << stats.GetResources().GetSize() << endl;
       for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
+        cerr << "isSpacial = " << res_count.IsSpatialResource(res_id) << endl;
         if (res_count.IsSpatialResource(res_id)){
           res_data.clear();
           string res_name = stats.GetResourceNames()[res_id].GetData();
           for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){
             res_data.push_back(stats.GetSpatialResourceCount()[res_id][cell_ndx]);
           }
+          cerr << "res_data was built !!!!!! \n";
           return res_data;
-          auto result = minmax_element(res_data.begin(), res_data.end());
-          // add to json object
-          json res_j;
-          res_j["name"] = res_name;
-          res_j["minVal"] = *result.first;   //first and second are pointers and to get the value just dereference
-          res_j["maxVal"] = *result.second;
-          res_j["data"] = res_data;
-          res_jlist.push_back(res_j);
         }
       }  //end of for loop for each resource
       
       //WebViewerMsg means the same as json;
-      WebViewerMsg getSpatialResources = {
-        {"update", stats.GetUpdate()}
-        ,{"resources", res_jlist}
-      }; //end of webmessage
-      
-      PackageData(WA_SPAT_RES, getSpatialResources);
-      D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process [completed]");
-      
+      cerr << "res data not built" << endl;
       return res_data;
     }  //end of Process
     //end of temp code to test spatial resource process.
@@ -598,7 +589,9 @@ namespace Actions{
       //temp for test Spatial Resource data
       vector<double> resource(world_size, NaN);
       resource = getSpatRes(ctx);
+      cerr << "resource.empty = " << resource.empty() << endl;
       if (resource.empty()) resource = gestation;
+      cerr << "size of resource is " << resource.size() << endl;
       
       data["fitness"] = { 
         {"data",fitness}, 
@@ -610,23 +603,19 @@ namespace Actions{
         {"minVal",min_val(metabolism)}, 
         {"maxVal",max_val(metabolism)} 
       };
-      //      data["gestation"] = {
-      //        {"data",gestation},
-      //        {"minVal",min_val(gestation)},
-      //        {"maxVal",max_val(gestation)}
-      //      };
-      
+      cerr << "after assign metabolism" << endl;
       data["ancestor"] = {
         {"data", ancestor}
       };
-      
+      cerr << "before assign gestation" << endl;
       //This is for testing only. It only works with one resource.
       data["gestation"] = {
         {"data",resource},
         {"minVal",min_val(resource)},
         {"maxVal",max_val(resource)}
       };
-      
+      cerr << "data after gestation is" << endl << data.dump() << endl;
+      cerr << "after gestatin assignment" << endl;
       for (auto it : tasks){
         data[it.first] = {
           {"data",it.second},
@@ -635,7 +624,9 @@ namespace Actions{
         };
       }
       
+      cerr << "after assing tasks" << endl;
       PackageData(WA_GRID_DATA, data);
+      cerr << "after PackageData" << endl;
       
       D_(D_ACTIONS, "cWebActionGridData::Process completed.");
     }

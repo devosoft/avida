@@ -57,13 +57,13 @@ using json = nlohmann::json;
 //#define DEBUG_MODE \
 //  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
-// #define DEBUG_MODE \
-//  (D_FLOW | D_STATUS | D_EVENTS | D_MSG_IN | D_ACTIONS)
+ #define DEBUG_MODE \
+  (D_FLOW | D_MSG_OUT | D_EVENTS | D_MSG_IN | D_ACTIONS)
 
 // this defines the level; when set to 0 no debug statements are sent
 // edit the line above with the correct subset or-ed together to get what you want
 // and comment out setting to zero.
-#define DEBUG_MODE 0
+// #define DEBUG_MODE 0
 
 
 const std::map<unsigned, string> debug_modes = {
