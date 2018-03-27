@@ -117,55 +117,55 @@ namespace Actions{
   class cWebActionPrintSpatialResources : public cWebAction {
   public:
     cWebActionPrintSpatialResources(cWorld* world, const cString& args, Avida::Feedback& fb)
-        : cWebAction(world, args, fb)
+    : cWebAction(world, args, fb)
     {
     }
     static const cString GetDescription() { return "no arguments"; }
-
-  // most of work
-  void Process(cAvidaContext& ctx)
-  {
-    D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process" );
-    //map<string, vector<double> > res_data;
-    m_world->GetPopulation().UpdateResStats(ctx);  //Synchronize copies of information about resources.
-    const cStats& stats = m_world->GetStats();     //will hold copy of stats that we print out.
-
-    // initalizing stuff used in the for loop through all the spatial resources
-    vector<json> res_jlist;
-    cPopulation& pop = m_world->GetPopulation();
-    const cResourceCount& res_count = pop.GetResourceCount();
-    int world_size = pop.GetSize();
-
-    for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
-      if (res_count.IsSpatialResource(res_id)){
-        vector<double> res_data;
-        string res_name = stats.GetResourceNames()[res_id].GetData();
-        for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){
-          res_data.push_back(stats.GetSpatialResourceCount()[res_id][cell_ndx]);
-        }
-        auto result = minmax_element(res_data.begin(), res_data.end());
-        // add to json object
-        json res_j;
-        res_j["name"] = res_name;
-        res_j["minVal"] = *result.first;   //first and second are pointers and to get the value just dereference
-        res_j["maxVal"] = *result.second;
-        res_j["data"] = res_data;
-        res_jlist.push_back(res_j);
-      }
-    }  //end of for loop for each resource
     
-        //WebViewerMsg means the same as json;
-    WebViewerMsg getSpatialResources = {
-      {"update", stats.GetUpdate()}
-      ,{"resources", res_jlist}
-    }; //end of webmessage
-
-    PackageData(WA_SPAT_RES, getSpatialResources);
-    D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process [completed]");
-
-  }  //end of Process
-}; // cWebActionPopulationStats
-
+    // most of work
+    void Process(cAvidaContext& ctx)
+    {
+      D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process" );
+      //map<string, vector<double> > res_data;
+      m_world->GetPopulation().UpdateResStats(ctx);  //Synchronize copies of information about resources.
+      const cStats& stats = m_world->GetStats();     //will hold copy of stats that we print out.
+      
+      // initalizing stuff used in the for loop through all the spatial resources
+      vector<json> res_jlist;
+      cPopulation& pop = m_world->GetPopulation();
+      const cResourceCount& res_count = pop.GetResourceCount();
+      int world_size = pop.GetSize();
+      
+      for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
+        if (res_count.IsSpatialResource(res_id)){
+          vector<double> res_data;
+          string res_name = stats.GetResourceNames()[res_id].GetData();
+          for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){
+            res_data.push_back(stats.GetSpatialResourceCount()[res_id][cell_ndx]);
+          }
+          auto result = minmax_element(res_data.begin(), res_data.end());
+          // add to json object
+          json res_j;
+          res_j["name"] = res_name;
+          res_j["minVal"] = *result.first;   //first and second are pointers and to get the value just dereference
+          res_j["maxVal"] = *result.second;
+          res_j["data"] = res_data;
+          res_jlist.push_back(res_j);
+        }
+      }  //end of for loop for each resource
+      
+      //WebViewerMsg means the same as json;
+      WebViewerMsg getSpatialResources = {
+        {"update", stats.GetUpdate()}
+        ,{"resources", res_jlist}
+      }; //end of webmessage
+      
+      PackageData(WA_SPAT_RES, getSpatialResources);
+      D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process [completed]");
+      
+    }  //end of Process
+  }; // cWebActionPopulationStats
+  
   
   
   //----------------------------- cWebActionPopulationStats ------------------------------------------------------
@@ -185,21 +185,54 @@ namespace Actions{
       
       //calculating fitness, gestation, metablism averages for only viable organisms. Excluding non-viable organisms
       cDoubleSum fitness, gestation, metabolism;
+      
+      //Calculations on ancestor clade subset only
+      map<string, cDoubleSum> fitness_byclade, gestation_byclade, metabolism_byclade;
+      map<string, int> organisms_byclade, viables_byclade;
+      
       for (int kk=0; kk < pop.GetLiveOrgList().GetSize(); kk++){
+        
         cOrganism* org = pop.GetLiveOrgList()[kk];
         const cPhenotype& phen = org->GetPhenotype();
-
+        
+        //Grab the organism's clade information
+        Systematics::CladePtr cptr;
+        cptr.DynamicCastFrom(org->SystematicsGroup("clade"));
+        string clade = cptr->Properties().Get("name").StringValue().GetData();
+        
+        //If we haven't found it as a viable, add the clade
+        if (organisms_byclade.find(clade) == organisms_byclade.end()){
+          organisms_byclade[clade] = 0;
+        }
+        organisms_byclade[clade]++;
+        
         //@MRR Only works with pre-calculated organsims!   Needs to chagne when working with limited resources.
         if ( org->GetPhenotype().GetPrecalcIsViable() > 0) {
-          fitness.Add( phen.GetFitness() );
-          gestation.Add( phen.GetGestationTime() );
-          metabolism.Add( phen.GetMerit().GetDouble() );
-        }
-      }
+          double org_fitness = phen.GetFitness();
+          double org_metabolism = phen.GetMerit().GetDouble();
+          double org_gestation = phen.GetGestationTime();
+          
+          fitness.Add( org_fitness );
+          metabolism.Add( org_metabolism );
+          gestation.Add( org_gestation );
+          
+          //Using fitness_byclade as a proxy for every other viable byclade 
+          //stat... add a new cDoubleSum to each category if it isn't present
+          if (fitness_byclade.find(clade) == fitness_byclade.end()){
+            fitness_byclade[clade] = cDoubleSum();
+            metabolism_byclade[clade] = cDoubleSum();
+            gestation_byclade[clade] = cDoubleSum();
+            viables_byclade[clade] = 0;
+          }
+          fitness_byclade[clade].Add(org_fitness);
+          metabolism_byclade[clade].Add(org_metabolism);
+          gestation_byclade[clade].Add(org_gestation);
+          viables_byclade[clade]++;
+        } //End collection of viable stats
+      } //End iteration of live organism list
       
       int org_count = stats.GetNumCreatures();
       double ave_age = stats.GetAveCreatureAge();
-      
       
       //WebViewerMsg = json;
       WebViewerMsg pop_data = {
@@ -214,6 +247,22 @@ namespace Actions{
         ,{"ave_age", ave_age}
       };
       
+      //Gather clade information in a manner for transmission
+      json byclade;  //Will hold all by_clade data, which itself
+                     //contains objects keyed by clade name
+      for (auto clade_pr : organisms_byclade)  //organisms since its a superset to viables
+      {
+        string clade = clade_pr.first;  //first is the clade name; second is the data
+        map<string, double> clade_data; //map our data into stat -> value map
+        clade_data["fitness"] = fitness_byclade[clade].Average();
+        clade_data["gestation"] = gestation_byclade[clade].Average();
+        clade_data["metabolism"] = metabolism_byclade[clade].Average();
+        clade_data["organisms"] = organisms_byclade[clade];
+        clade_data["viables"] = viables_byclade[clade];
+        byclade[clade] = clade_data;  //byclade[clade] -> object of stats keyed to value
+      }
+      pop_data["by_clade"] = byclade;  //add by_cldae to our output object
+      
       cEnvironment& env = m_world->GetEnvironment();
       for (int t=0; t< env.GetNumTasks(); t++){
         pop_data[string(env.GetTask(t).GetName().GetData())] =
@@ -224,7 +273,7 @@ namespace Actions{
     }
   }; // cWebActionPopulationStats
   
-
+  
   
   
   
@@ -518,7 +567,7 @@ namespace Actions{
       vector<double> gestation(world_size, NaN);
       vector<double> metabolism(world_size, NaN);
       vector<string> ancestor(world_size, "-");
-    
+      
       map<string, vector<double>> tasks;
       for (auto t : task_names){
         tasks[t] = vector<double>(world_size,NaN);
@@ -561,23 +610,23 @@ namespace Actions{
         {"minVal",min_val(metabolism)}, 
         {"maxVal",max_val(metabolism)} 
       };
-//      data["gestation"] = {
-//        {"data",gestation},
-//        {"minVal",min_val(gestation)},
-//        {"maxVal",max_val(gestation)}
-//      };
+      //      data["gestation"] = {
+      //        {"data",gestation},
+      //        {"minVal",min_val(gestation)},
+      //        {"maxVal",max_val(gestation)}
+      //      };
       
       data["ancestor"] = {
         {"data", ancestor}
       };
-
+      
       //This is for testing only. It only works with one resource.
       data["gestation"] = {
         {"data",resource},
         {"minVal",min_val(resource)},
         {"maxVal",max_val(resource)}
       };
-
+      
       for (auto it : tasks){
         data[it.first] = {
           {"data",it.second},
