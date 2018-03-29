@@ -1452,18 +1452,21 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 
 void cPopulation::PrecalculatePhenotype(cAvidaContext& ctx, cOrganism* org, const cPopulationCell& target_cell)
 {
-    cCPUTestInfo test_info;
-    Apto::SmartPtr<cTestCPU> test_cpu(m_world->GetHardwareManager().CreateTestCPU(ctx));
-    test_info.UseManualInputs(target_cell.GetInputs()); // Test using what the environment will be
-    Genome mg(org->GetGenome().HardwareType(),
-              org->GetGenome().Properties(),
-              GeneticRepresentationPtr(new InstructionSequence(org->GetHardware().GetMemory())));
-    test_cpu->TestGenome(ctx, test_info, mg);  // Use the true genome
-    const cPhenotype& test_phen = test_info.GetTestPhenotype();
+  cCPUTestInfo test_info;
+  Apto::SmartPtr<cTestCPU> test_cpu(m_world->GetHardwareManager().CreateTestCPU(ctx));
+  test_info.UseManualInputs(target_cell.GetInputs()); // Test using what the environment will be
+  Genome mg(org->GetGenome().HardwareType(),
+            org->GetGenome().Properties(),
+            GeneticRepresentationPtr(new InstructionSequence(org->GetHardware().GetMemory())));
+  test_cpu->TestGenome(ctx, test_info, mg);  // Use the true genome
+  const cPhenotype& test_phen = test_info.GetTestPhenotype();
   
-    //TODO: Really we should be using some kind of copy constructor
-    //or setup method like we do when an organism divides in order
-    //to get all fields setup.
+  //TODO: Really we should be using some kind of copy constructor
+  //or setup method like we do when an organism divides in order
+  //to get all fields setup.
+  
+  // 1 is the normal precalculation mode
+  if (1 == m_world->GetConfig().PRECALC_PHENOTYPE.Get() ) {
     org->GetPhenotype().SetMerit(test_phen.GetMerit());
     org->GetPhenotype().SetGestationTime(test_phen.GetGestationTime());
     org->GetPhenotype().SetTestCPUInstCount(test_phen.GetLastInstCount());
@@ -1471,8 +1474,17 @@ void cPopulation::PrecalculatePhenotype(cAvidaContext& ctx, cOrganism* org, cons
     org->GetPhenotype().SetLastTaskQuality(test_phen.GetLastTaskQuality());
     org->GetPhenotype().SetLastTaskValue(test_phen.GetLastTaskValue());
     org->GetPhenotype().SetPrecalcIsViable( (test_info.IsViable() ? 1 : -1) );
-
     org->GetPhenotype().SetFitness(org->GetPhenotype().GetMerit().CalcFitness(org->GetPhenotype().GetGestationTime()));
+  }
+  // 2 for when resources are used, but not sensed
+  else if (2 == m_world->GetConfig().PRECALC_PHENOTYPE.Get() ) {
+    org->GetPhenotype().SetGestationTime(test_phen.GetGestationTime());
+    org->GetPhenotype().SetTestCPUInstCount(test_phen.GetLastInstCount());
+    org->GetPhenotype().SetLastTaskCount(test_phen.GetLastTaskCount());
+    org->GetPhenotype().SetLastTaskQuality(test_phen.GetLastTaskQuality());
+    org->GetPhenotype().SetLastTaskValue(test_phen.GetLastTaskValue());
+    org->GetPhenotype().SetPrecalcIsViable( (test_info.IsViable() ? 1 : -1) );
+  }
 }
 
 

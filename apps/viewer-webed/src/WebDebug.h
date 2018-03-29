@@ -23,9 +23,9 @@ using json = nlohmann::json;
 #define DEBUG_STREAM std::cerr
 
 //Should we send debug information through the worker messaging interface?
-// 0 send to DEBUG_STREAM
-// 1 send to messaging system with av_ui - will need to do more changes
-#define D_SEND_JSON 0
+// 0 send to DEBUG_STREAM shows up in json console in web browser.
+// 1 send to messaging system with AEDBridge - will need to do more changes
+#define D_SEND_JSON 1
 
 //How detailed should our debug output be (sets level of detail)
 // 0 minium amount of text
@@ -57,14 +57,13 @@ using json = nlohmann::json;
 //#define DEBUG_MODE \
 //  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
- #define DEBUG_MODE \
+#define DEBUG_MODE \
   (D_FLOW | D_MSG_OUT | D_EVENTS | D_MSG_IN | D_ACTIONS)
 
 // this defines the level; when set to 0 no debug statements are sent
 // edit the line above with the correct subset or-ed together to get what you want
 // and comment out setting to zero.
 // #define DEBUG_MODE 0
-
 
 const std::map<unsigned, string> debug_modes = {
   {1,"FLOW"}, {2, "MSG_IN"}, {4, "MSG_OUT"}, {8, "STATUS"}, {16, "EVENTS"}, 
@@ -79,6 +78,7 @@ vector<string> GetDebugModes(unsigned m)
   }
   return rv;
 }
+
 
 
 #ifdef NDEBUG 

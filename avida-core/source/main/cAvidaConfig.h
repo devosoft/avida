@@ -560,7 +560,7 @@ public:
   CONFIG_ADD_VAR(THREAD_SLICING_METHOD, int, 0, "Formula for allocating CPU cycles across threads in an organism\n  (num_threads-1) * THREAD_SLICING_METHOD + 1\n0 = One thread executed per time slice.\n1 = All threads executed each time slice.\n");
   CONFIG_ADD_VAR(NO_CPU_CYCLE_TIME, int, 0, "Don't count each CPU cycle as part of gestation time\n");
   CONFIG_ADD_VAR(MAX_LABEL_EXE_SIZE, int, 1, "Max nops marked as executed when labels are used");
-  CONFIG_ADD_VAR(PRECALC_PHENOTYPE, int, 0, "0 = Disabled\n 1 = Assign precalculated merit, gestation time, fitness, and task counts at birth (unlimited resources only)");
+  CONFIG_ADD_VAR(PRECALC_PHENOTYPE, int, 0, "0 = Disabled\n 1 = Assign precalculated merit, gestation time, fitness, and task counts at birth (unlimited resources only; 2 = for when resources are used, but not sensed; does not set merit or fitness)");
   CONFIG_ADD_VAR(GENOTYPE_PHENPLAST_CALC, int, 100, "Number of times to test a genotype's\nplasticity during runtime.");
   
 

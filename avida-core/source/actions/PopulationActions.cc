@@ -1850,6 +1850,7 @@ public:
   }
 };
 
+//----------------------------------------------------------------------------- cActionSetMutProb --
 class cActionSetMutProb : public cAction
 {
 private:
@@ -2001,6 +2002,192 @@ public:
     }
   }
 };
+//------------------------------------------------------------------------- end cActionSetMutProb --
+
+//-------------------------------------------------------------------------- cActionSetMutBoxProb --
+class cActionSetMutBoxProb : public cAction
+{
+private:
+  enum {
+    POINT,
+    C_MUT, C_INS, C_DEL, C_UNIFORM, C_SLIP,
+    DS_MUT, DS_INS, DS_DEL, DS_UNIFORM, DS_SLIP,
+    D1_MUT, D1_INS, D1_DEL, D1_UNIFORM, D1_SLIP,
+    P_MUT, P_INS, P_DEL, DEATH, PNT_MUT, PNT_INS, PNT_DEL,
+    I_MUT, I_INS, I_DEL
+  } m_mut_type;
+  
+  double m_prob;
+  int m_posx;
+  int m_posy;
+  int m_sizex;
+  int m_sizey;
+  bool m_setconf;
+  
+public:
+  cActionSetMutBoxProb(cWorld* world, const cString& args, Feedback&) :
+               cAction(world, args), m_prob(0.0), m_posx(-1), m_posy(-1), m_sizex(1), m_sizey(1), m_setconf(false)
+  {
+    cString mutstr("COPY_MUT");
+    
+    cString largs(args);
+    if (largs.GetSize()) mutstr = largs.PopWord().ToUpper();
+    if (largs.GetSize()) m_prob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_posx = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_posy = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_sizex = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_sizey = largs.PopWord().AsInt();
+
+    
+    if (mutstr == "POINT") m_mut_type = POINT;
+    
+    else if (mutstr == "COPY_MUT") m_mut_type = C_MUT;
+    else if (mutstr == "COPY_INS") m_mut_type = C_INS;
+    else if (mutstr == "COPY_DEL") m_mut_type = C_DEL;
+    else if (mutstr == "COPY_UNIFORM") m_mut_type = C_UNIFORM;
+    else if (mutstr == "COPY_SLIP") m_mut_type = C_SLIP;
+    
+    else if (mutstr == "DIV_MUT") m_mut_type = DS_MUT;
+    else if (mutstr == "DIV_INS") m_mut_type = DS_INS;
+    else if (mutstr == "DIV_DEL") m_mut_type = DS_DEL;
+    else if (mutstr == "DIV_UNIFORM") m_mut_type = DS_UNIFORM;
+    else if (mutstr == "DIV_SLIP") m_mut_type = DS_SLIP;
+    
+    else if (mutstr == "DIVIDE_MUT") m_mut_type = D1_MUT;
+    else if (mutstr == "DIVIDE_INS") m_mut_type = D1_INS;
+    else if (mutstr == "DIVIDE_DEL") m_mut_type = D1_DEL;
+    else if (mutstr == "DIVIDE_UNIFORM") m_mut_type = D1_UNIFORM;
+    else if (mutstr == "DIVIDE_SLIP") m_mut_type = D1_SLIP;
+    
+    else if (mutstr == "PARENT_MUT") m_mut_type = P_MUT;
+    else if (mutstr == "PARENT_INS") m_mut_type = P_INS;
+    else if (mutstr == "PARENT_DEL") m_mut_type = P_DEL;
+    else if (mutstr == "DEATH") m_mut_type = DEATH;
+    else if (mutstr == "POINT_MUT") m_mut_type = PNT_MUT;
+    else if (mutstr == "POINT_INS") m_mut_type = PNT_INS;
+    else if (mutstr == "POINT_DEL") m_mut_type = PNT_DEL;
+    else if (mutstr == "INJECT_MUT") m_mut_type = I_MUT;
+    else if (mutstr == "INJECT_INS") m_mut_type = I_INS;
+    else if (mutstr == "INJECT_DEL") m_mut_type = I_DEL;
+    
+    int worldx = m_world->GetPopulation().GetWorldX();
+    int worldy = m_world->GetPopulation().GetWorldY();
+    if (0 == m_sizex) m_sizex = 1;
+    if (0 == m_sizey) m_sizey = 1;
+    if (m_sizex > worldx) m_sizex = worldx;
+    if (m_sizey > worldy) m_sizey = worldy;
+    if (m_posx > worldx) m_posx = m_posx % worldx;
+    if (m_posy > worldy) m_posy = m_posy % worldy;
+
+    if (m_posx < 0 || m_posy < 0) {
+      m_setconf = true;
+      m_posx = 0;
+      m_posy = 0;
+      m_sizex = m_world->GetPopulation().GetWorldX();
+      m_sizey = m_world->GetPopulation().GetWorldY();
+    }
+    //if size is negative it points in the opposite direction. Modify so only one version.
+    if (m_sizex < 0) {
+      m_posx = (m_posx + m_sizex) % worldx;
+      m_sizex = abs(m_sizex);
+    }
+    if (m_sizey < 0) {
+      m_posy = (m_posy + m_sizey) % worldy;
+      m_sizey = abs(m_sizey);
+    }
+  }
+  
+  static const cString GetDescription() { return
+     "Arguments: [string mut_type='COPY_MUT'] [double prob=0.0] [int posx=-1] [int posy=-1] [int sizex=1] [int sizey=1]"; }
+  
+  void Process(cAvidaContext&)
+  {
+    if (m_setconf) {
+      switch (m_mut_type) {
+        case POINT: m_world->GetConfig().POINT_MUT_PROB.Set(m_prob); break;
+          
+        case C_MUT: m_world->GetConfig().COPY_MUT_PROB.Set(m_prob); break;
+        case C_INS: m_world->GetConfig().COPY_INS_PROB.Set(m_prob); break;
+        case C_DEL: m_world->GetConfig().COPY_DEL_PROB.Set(m_prob); break;
+        case C_UNIFORM: m_world->GetConfig().COPY_UNIFORM_PROB.Set(m_prob); break;
+        case C_SLIP: m_world->GetConfig().COPY_SLIP_PROB.Set(m_prob); break;
+          
+        case DS_MUT: m_world->GetConfig().DIV_MUT_PROB.Set(m_prob); break;
+        case DS_INS: m_world->GetConfig().DIV_INS_PROB.Set(m_prob); break;
+        case DS_DEL: m_world->GetConfig().DIV_DEL_PROB.Set(m_prob); break;
+        case DS_UNIFORM: m_world->GetConfig().DIV_UNIFORM_PROB.Set(m_prob); break;
+        case DS_SLIP: m_world->GetConfig().DIV_SLIP_PROB.Set(m_prob); break;
+          
+        case D1_MUT: m_world->GetConfig().DIVIDE_MUT_PROB.Set(m_prob); break;
+        case D1_INS: m_world->GetConfig().DIVIDE_INS_PROB.Set(m_prob); break;
+        case D1_DEL: m_world->GetConfig().DIVIDE_DEL_PROB.Set(m_prob); break;
+        case D1_UNIFORM: m_world->GetConfig().DIVIDE_UNIFORM_PROB.Set(m_prob); break;
+        case D1_SLIP: m_world->GetConfig().DIVIDE_SLIP_PROB.Set(m_prob); break;
+          
+        case P_MUT: m_world->GetConfig().PARENT_MUT_PROB.Set(m_prob); break;
+        case P_INS: m_world->GetConfig().PARENT_INS_PROB.Set(m_prob); break;
+        case P_DEL: m_world->GetConfig().PARENT_DEL_PROB.Set(m_prob); break;
+        case DEATH: m_world->GetConfig().DEATH_PROB.Set(m_prob); break;
+        case PNT_MUT: m_world->GetConfig().POINT_MUT_PROB.Set(m_prob); break;
+        case PNT_INS: m_world->GetConfig().POINT_INS_PROB.Set(m_prob); break;
+        case PNT_DEL: m_world->GetConfig().POINT_DEL_PROB.Set(m_prob); break;
+        case I_MUT: m_world->GetConfig().INJECT_MUT_PROB.Set(m_prob); break;
+        case I_INS: m_world->GetConfig().INJECT_INS_PROB.Set(m_prob); break;
+        case I_DEL: m_world->GetConfig().INJECT_DEL_PROB.Set(m_prob); break;
+        default:
+          return;
+      }
+    }
+    
+    int worldx = m_world->GetPopulation().GetWorldX();
+    int worldy = m_world->GetPopulation().GetWorldY();
+    vector<int> index;
+    for (int iy = 0; iy < m_sizey; iy++) {
+      for (int ix = 0; ix < m_sizex; ix++) {
+        int xx = (m_posx + ix) % worldx;
+        int yy = (m_posy + iy) % worldy;
+        int ndx = yy * worldx + xx;
+        index.push_back(ndx);
+      }
+    }
+    
+    switch (m_mut_type) {
+        
+      case C_MUT: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyMutProb(m_prob); break;
+      case C_INS: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyInsProb(m_prob); break;
+      case C_DEL: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyDelProb(m_prob); break;
+      case C_UNIFORM: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyUniformProb(m_prob); break;
+      case C_SLIP: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetCopySlipProb(m_prob); break;
+        
+      case DS_MUT: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetDivMutProb(m_prob); break;
+      case DS_INS: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetDivInsProb(m_prob); break;
+      case DS_DEL: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetDivDelProb(m_prob); break;
+      case DS_UNIFORM: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetDivUniformProb(m_prob); break;
+      case DS_SLIP: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetDivSlipProb(m_prob); break;
+        
+      case D1_MUT: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideMutProb(m_prob); break;
+      case D1_INS: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideInsProb(m_prob); break;
+      case D1_DEL: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideDelProb(m_prob); break;
+      case D1_UNIFORM: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideUniformProb(m_prob); break;
+      case D1_SLIP: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideSlipProb(m_prob); break;
+        
+      case P_MUT: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(m_prob); break;
+      case P_INS: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetParentInsProb(m_prob); break;
+      case P_DEL: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetParentDelProb(m_prob); break;
+      case DEATH: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetDeathProb(m_prob); break;
+      case PNT_MUT: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetPointMutProb(m_prob); break;
+      case PNT_INS: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetPointInsProb(m_prob); break;
+      case PNT_DEL: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetPointDelProb(m_prob); break;
+      case I_MUT: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectMutProb(m_prob); break;
+      case I_INS: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectInsProb(m_prob); break;
+      case I_DEL: for (int i:index) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectDelProb(m_prob); break;
+      default:
+      return;
+    }
+  }
+};
+//---------------------------------------------------------------------- end cActionSetMutBoxProb --
+
 
 class cActionModMutProb : public cAction
 {
@@ -5723,6 +5910,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   
   action_lib->Register<cActionSetMigrationRate>("SetMigrationRate");
   action_lib->Register<cActionSetMutProb>("SetMutProb");
+  action_lib->Register<cActionSetMutBoxProb>("SetMutBoxProb");
   action_lib->Register<cActionModMutProb>("ModMutProb");
   action_lib->Register<cActionZeroMuts>("ZeroMuts");
 	
