@@ -103,12 +103,11 @@ void cSpatialResCount::SetPointers()
   /* Pointer 0 will point to the cell above and to the left the current cell
      and will go clockwise around the cell.                               */
 
-  int     i,ii;
   double  SQRT2 = sqrt(2.0);
 
   /* First make all cells disconnected */
   
-  for (i = 0; i < GetSize(); i++) {
+  for (int i = 0; i < GetSize(); i++) {
     grid[i].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
     grid[i].SetPtr(1, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
     grid[i].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
@@ -123,15 +122,15 @@ void cSpatialResCount::SetPointers()
   /* Next, make the cell box region a torus */
   for (int yy = 0; yy < cbox.GetHeight(); yy++){
     for (int xx = 0; xx < cbox.GetWidth(); xx++){
-      int cell_id = cbox.GetWorldX() * cbox.GetY() + cbox.GetX();
-      grid[cell_id].SetPtr(0 ,GridNeighbor(i, world_x, world_y, -1, -1), -1, -1, SQRT2);
-      grid[cell_id].SetPtr(1 ,GridNeighbor(i, world_x, world_y,  0, -1),  0, -1, 1.0);
-      grid[cell_id].SetPtr(2 ,GridNeighbor(i, world_x, world_y, +1, -1), +1, -1, SQRT2);
-      grid[cell_id].SetPtr(3 ,GridNeighbor(i, world_x, world_y, +1,  0), +1,  0, 1.0);
-      grid[cell_id].SetPtr(4 ,GridNeighbor(i, world_x, world_y, +1, +1), +1, +1, SQRT2);
-      grid[cell_id].SetPtr(5 ,GridNeighbor(i, world_x, world_y,  0, +1),  0, +1, 1.0);
-      grid[cell_id].SetPtr(6 ,GridNeighbor(i, world_x, world_y, -1, +1), -1, +1, SQRT2);
-      grid[cell_id].SetPtr(7 ,GridNeighbor(i, world_x, world_y, -1,  0), -1,  0, 1.0);
+      int cell_id = (cbox.GetWorldX() * (cbox.GetY() + yy)) + cbox.GetX();
+      grid[cell_id].SetPtr(0 ,GridNeighbor(cell_id, world_x, world_y, -1, -1), -1, -1, SQRT2);
+      grid[cell_id].SetPtr(1 ,GridNeighbor(cell_id, world_x, world_y,  0, -1),  0, -1, 1.0);
+      grid[cell_id].SetPtr(2 ,GridNeighbor(cell_id, world_x, world_y, +1, -1), +1, -1, SQRT2);
+      grid[cell_id].SetPtr(3 ,GridNeighbor(cell_id, world_x, world_y, +1,  0), +1,  0, 1.0);
+      grid[cell_id].SetPtr(4 ,GridNeighbor(cell_id, world_x, world_y, +1, +1), +1, +1, SQRT2);
+      grid[cell_id].SetPtr(5 ,GridNeighbor(cell_id, world_x, world_y,  0, +1),  0, +1, 1.0);
+      grid[cell_id].SetPtr(6 ,GridNeighbor(cell_id, world_x, world_y, -1, +1), -1, +1, SQRT2);
+      grid[cell_id].SetPtr(7 ,GridNeighbor(cell_id, world_x, world_y, -1,  0), -1,  0, 1.0);
       }
   }
  
@@ -155,7 +154,7 @@ void cSpatialResCount::SetPointers()
     /* fix links for right and left sides */
     int col_left = cbox.GetX();
     int col_right = cbox.GetX() + cbox.GetWidth() - 1;
-    for (int yy = 0; yy < cbox.GetWorldY(); yy++) {
+    for (int yy = 0; yy < cbox.GetHeight(); yy++) {
       int cell_left = (cbox.GetY() + yy) * cbox.GetWorldX() + col_left;
       int cell_right = (cbox.GetY() + yy) * cbox.GetWorldX() + col_right;
       grid[cell_left].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
