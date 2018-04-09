@@ -61,6 +61,8 @@ class cWorld;
 class cResourceCount
 {
 private:
+  Apto::Array<cWorldCellBox> resource_cellbox; //Where in the grid is this resource available?
+  
   mutable Apto::Array<cString> resource_name;    // The name of each resource
   mutable Apto::Array<double> resource_initial;  // Initial quantity of each resource
   mutable Apto::Array<double> resource_count;  // Current quantity of each resource
@@ -125,7 +127,7 @@ public:
      const double& in_gradient_inflow, const int& in_is_plateau_common, const double& in_floor, const int& in_habitat, 
      const int& in_min_size, const int& in_max_size, const int& in_config, const int& in_count, const double& in_resistance, 
      const double& in_damage, const double& in_death_odds, const int& in_path, const int& in_hammer,
-     const double& in_init_plat, const double& in_threshold, const int& in_refuge, const bool& isgradient
+     const double& in_init_plat, const double& in_threshold, const int& in_refuge, const bool& isgradient, const cWorldCellBox& cbox
 	   ); 
   
   void SetGradientCount(cAvidaContext& ctx, cWorld* world, const int& res_id, const int& peakx, const int& peaky,

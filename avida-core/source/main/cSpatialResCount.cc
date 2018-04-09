@@ -32,8 +32,8 @@ using namespace AvidaTools;
 /* Setup a single spatial resource with known flows */
 
 cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry, double inxdiffuse, double inydiffuse,
-                                   double inxgravity, double inygravity)
-: grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
+                                   double inxgravity, double inygravity, cWorldCellBox _cbox)
+:  grid(inworld_x * inworld_y), cbox(_cbox), m_initial(0.0), m_modified(false)
 {
   int i;
  
@@ -54,8 +54,8 @@ cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry,
 
 /* Setup a single spatial resource using default flow amounts  */
 
-cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry)
-: grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
+cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry, cWorldCellBox _cbox)
+:  grid(inworld_x * inworld_y), cbox(_cbox), m_initial(0.0), m_modified(false)
 {
   int i;
  
@@ -106,45 +106,64 @@ void cSpatialResCount::SetPointers()
   int     i,ii;
   double  SQRT2 = sqrt(2.0);
 
-  /* First treat all cells like they are in a torus */
-
+  /* First make all cells disconnected */
+  
   for (i = 0; i < GetSize(); i++) {
-    grid[i].SetPtr(0 ,GridNeighbor(i, world_x, world_y, -1, -1), -1, -1, SQRT2);
-    grid[i].SetPtr(1 ,GridNeighbor(i, world_x, world_y,  0, -1),  0, -1, 1.0);
-    grid[i].SetPtr(2 ,GridNeighbor(i, world_x, world_y, +1, -1), +1, -1, SQRT2);
-    grid[i].SetPtr(3 ,GridNeighbor(i, world_x, world_y, +1,  0), +1,  0, 1.0);
-    grid[i].SetPtr(4 ,GridNeighbor(i, world_x, world_y, +1, +1), +1, +1, SQRT2);
-    grid[i].SetPtr(5 ,GridNeighbor(i, world_x, world_y,  0, +1),  0, +1, 1.0);
-    grid[i].SetPtr(6 ,GridNeighbor(i, world_x, world_y, -1, +1), -1, +1, SQRT2);
-    grid[i].SetPtr(7 ,GridNeighbor(i, world_x, world_y, -1,  0), -1,  0, 1.0);
+    grid[i].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+    grid[i].SetPtr(1, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+    grid[i].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+    grid[i].SetPtr(3, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+    grid[i].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+    grid[i].SetPtr(5, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+    grid[i].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+    grid[i].SetPtr(7, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+  }
+  
+  
+  /* Next, make the cell box region a torus */
+  for (int yy = 0; yy < cbox.GetHeight(); yy++){
+    for (int xx = 0; xx < cbox.GetWidth(); xx++){
+      int cell_id = cbox.GetWorldX() * cbox.GetY() + cbox.GetX();
+      grid[cell_id].SetPtr(0 ,GridNeighbor(i, world_x, world_y, -1, -1), -1, -1, SQRT2);
+      grid[cell_id].SetPtr(1 ,GridNeighbor(i, world_x, world_y,  0, -1),  0, -1, 1.0);
+      grid[cell_id].SetPtr(2 ,GridNeighbor(i, world_x, world_y, +1, -1), +1, -1, SQRT2);
+      grid[cell_id].SetPtr(3 ,GridNeighbor(i, world_x, world_y, +1,  0), +1,  0, 1.0);
+      grid[cell_id].SetPtr(4 ,GridNeighbor(i, world_x, world_y, +1, +1), +1, +1, SQRT2);
+      grid[cell_id].SetPtr(5 ,GridNeighbor(i, world_x, world_y,  0, +1),  0, +1, 1.0);
+      grid[cell_id].SetPtr(6 ,GridNeighbor(i, world_x, world_y, -1, +1), -1, +1, SQRT2);
+      grid[cell_id].SetPtr(7 ,GridNeighbor(i, world_x, world_y, -1,  0), -1,  0, 1.0);
+      }
   }
  
   /* Fix links for top, bottom and sides for non-torus */
   
   if (geometry == nGeometry::GRID) {
     /* Top and bottom */
-
-    for (i = 0; i < world_x; i++) {
-      grid[i].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[i].SetPtr(1, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[i].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      ii = num_cells-1-i;
-      grid[ii].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[ii].SetPtr(5, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[ii].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+    int row_top = cbox.GetY();
+    int row_bottom = row_top+cbox.GetHeight()-1;
+    for (int xx = 0; xx < cbox.GetWidth(); xx++){
+      int top_cell = row_top * cbox.GetWorldX() + xx;
+      int bottom_cell = row_bottom * cbox.GetWorldX() + xx;
+      grid[top_cell].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[top_cell].SetPtr(1, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[top_cell].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[bottom_cell].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[bottom_cell].SetPtr(5, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[bottom_cell].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
     }
-
+    
     /* fix links for right and left sides */
-
-    for (i = 0; i < world_y; i++) {
-      ii = i * world_x;    
-      grid[ii].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[ii].SetPtr(7, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[ii].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      ii = ((i + 1) * world_x) - 1;
-      grid[ii].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[ii].SetPtr(3, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[ii].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+    int col_left = cbox.GetX();
+    int col_right = cbox.GetX() + cbox.GetWidth() - 1;
+    for (int yy = 0; yy < cbox.GetWorldY(); yy++) {
+      int cell_left = (cbox.GetY() + yy) * cbox.GetWorldX() + col_left;
+      int cell_right = (cbox.GetY() + yy) * cbox.GetWorldX() + col_right;
+      grid[cell_left].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_left].SetPtr(7, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_left].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_right].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_right].SetPtr(3, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_right].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
     }
   }
 }
@@ -433,5 +452,10 @@ void cSpatialResCount::SetCellAmount(int cell_id, double res)
 
 void cSpatialResCount::ResetResourceCounts()
 {
-  for (int i = 0; i < grid.GetSize(); i++) grid[i].ResetResourceCount(m_initial);
+  for (int yy = 0; yy < cbox.GetHeight(); yy++){
+    for (int xx = 0; xx < cbox.GetWidth(); xx++){
+      int cell_id = (cbox.GetY() + yy) * cbox.GetWorldX() + xx;
+        grid[cell_id].ResetResourceCount(m_initial);
+    }
+  }
 }

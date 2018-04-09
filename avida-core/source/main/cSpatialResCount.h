@@ -33,11 +33,12 @@
 class cSpatialResCount
 {
 
-private:
+protected:
 
   
   
   Apto::Array<cSpatialCountElem> grid;
+  cWorldCellBox cbox;
   double m_initial;
   double xdiffuse, ydiffuse;
   double xgravity, ygravity;
@@ -52,10 +53,10 @@ private:
   
 public:
   cSpatialResCount();
-  cSpatialResCount(int inworld_x, int inworld_y, int ingeometry);
+  cSpatialResCount(int inworld_x, int inworld_y, int ingeometry, cWorldCellBox cbox);
   cSpatialResCount(int inworld_x, int inworld_y, int ingeometry, 
                    double inxdiffuse, double inydiffuse,
-                   double inxgravity, double inygravity);
+                   double inxgravity, double inygravity, cWorldCellBox cbox);
   virtual ~cSpatialResCount();
   
   void ResizeClear(int inworld_x, int inworld_y, int ingeometry);

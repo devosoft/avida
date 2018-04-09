@@ -118,6 +118,7 @@ cResourceCount::cResourceCount(const cResourceCount &rc) {
 
 const cResourceCount &cResourceCount::operator=(const cResourceCount &rc) {
   SetSize(rc.GetSize());
+  resource_cellbox = rc.resource_cellbox;
   resource_name = rc.resource_name;
   resource_initial = rc.resource_initial;  
   resource_count = rc.resource_count;
@@ -142,6 +143,7 @@ const cResourceCount &cResourceCount::operator=(const cResourceCount &rc) {
 
 void cResourceCount::SetSize(int num_resources)
 {
+  resource_cellbox.Resize(num_resources);
   resource_name.ResizeClear(num_resources);
   resource_initial.ResizeClear(num_resources);
   resource_count.ResizeClear(num_resources);
@@ -228,7 +230,7 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
                            const double& in_gradient_inflow, const int& in_is_plateau_common, const double& in_floor, const int& in_habitat, 
                            const int& in_min_size, const int& in_max_size, const int& in_config, const int& in_count, const double& in_resistance,
                            const double& in_damage, const double& in_death_odds, const int& in_path, const int& in_hammer, const double& in_init_plat, const double& in_threshold,
-                           const int& in_refuge, const bool& isgradient)
+                           const int& in_refuge, const bool& isgradient, const cWorldCellBox& cbox)
 {
   (void)in_threshold;
   (void)in_refuge;
@@ -242,6 +244,7 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
   int tempx = spatial_resource_count[res_index]->GetX();
   int tempy = spatial_resource_count[res_index]->GetY();
 
+  
   cString geo_name;
   if (in_geometry == nGeometry::GLOBAL) {
     geo_name = "GLOBAL";
@@ -288,7 +291,7 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
   
 
   /* recource_count gets only the values for global resources */
-
+  resource_cellbox[res_index] = cbox;
   resource_name[res_index] = name;
   resource_initial[res_index] = initial;
   if (in_geometry == nGeometry::GLOBAL) {
@@ -556,9 +559,9 @@ const Apto::Array<double> & cResourceCount::GetCellResources(int cell_id, cAvida
               
   for (int i = 0; i < num_resources; i++) {
      if (!IsSpatialResource(i)) {
-         curr_grid_res_cnt[i] = resource_count[i];
+         curr_grid_res_cnt[i] = (resource_cellbox[i].InCellBox(cell_id)) ? resource_count[i] : 0.0;
     } else {
-      curr_grid_res_cnt[i] = spatial_resource_count[i]->GetAmount(cell_id);
+      curr_grid_res_cnt[i] = (resource_cellbox[i].InCellBox(cell_id)) ? spatial_resource_count[i]->GetAmount(cell_id)  : 0.0;
     }
   }
   return curr_grid_res_cnt;
@@ -575,9 +578,9 @@ const Apto::Array<double> & cResourceCount::GetFrozenResources(cAvidaContext&, i
   
   for (int i = 0; i < num_resources; i++) {
     if (!IsSpatialResource(i)) {
-      curr_grid_res_cnt[i] = resource_count[i];
+      curr_grid_res_cnt[i] = (resource_cellbox[i].InCellBox(cell_id)) ? resource_count[i] : 0.0;
     } else {
-      curr_grid_res_cnt[i] = spatial_resource_count[i]->GetAmount(cell_id);
+      curr_grid_res_cnt[i] = (resource_cellbox[i].InCellBox(cell_id)) ? spatial_resource_count[i]->GetAmount(cell_id) : 0.0;
     }
   }
   return curr_grid_res_cnt;
@@ -587,9 +590,9 @@ double cResourceCount::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int 
 // This differs from GetFrozenCellResources by only pulling for res of interest.
 {
   if (!IsSpatialResource(res_id)) 
-    return resource_count[res_id];
+    return (resource_cellbox[res_id].InCellBox(cell_id)) ? resource_count[res_id] : 0.0;
   else 
-    return spatial_resource_count[res_id]->GetAmount(cell_id);
+    return (resource_cellbox[res_id].InCellBox(cell_id)) ?  spatial_resource_count[res_id]->GetAmount(cell_id) : 0.0;
 }
 
 double cResourceCount::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const
@@ -599,9 +602,9 @@ double cResourceCount::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id
 
   double res_val = 0;
   if (!IsSpatialResource(res_id)) {
-    res_val = resource_count[res_id];
+    res_val = (resource_cellbox[res_id].InCellBox(cell_id)) ? resource_count[res_id] : 0.0;
   } else {
-    res_val = spatial_resource_count[res_id]->GetAmount(cell_id);
+    res_val = (resource_cellbox[res_id].InCellBox(cell_id)) ? spatial_resource_count[res_id]->GetAmount(cell_id) : 0.0;
   }
   return res_val;
 }
