@@ -32,11 +32,11 @@ using namespace AvidaTools;
 /* Setup a single spatial resource with known flows */
 
 cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry, double inxdiffuse, double inydiffuse,
-                                   double inxgravity, double inygravity, cWorldCellBox _cbox)
-:  grid(inworld_x * inworld_y), cbox(_cbox), m_initial(0.0), m_modified(false)
+                                   double inxgravity, double inygravity)
+:  grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
 {
   int i;
- 
+  
   xdiffuse = inxdiffuse;
   ydiffuse = inydiffuse;
   xgravity = inxgravity;
@@ -54,11 +54,11 @@ cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry,
 
 /* Setup a single spatial resource using default flow amounts  */
 
-cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry, cWorldCellBox _cbox)
-:  grid(inworld_x * inworld_y), cbox(_cbox), m_initial(0.0), m_modified(false)
+cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry)
+:  grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
 {
   int i;
- 
+  
   xdiffuse = 1.0;
   ydiffuse = 1.0;
   xgravity = 0.0;
@@ -70,8 +70,8 @@ cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry,
   for (i = 0; i < GetSize(); i++) {
     cSpatialCountElem tmpelem;
     grid[i] = tmpelem;
-   } 
-   SetPointers();
+  } 
+  SetPointers();
 }
 
 cSpatialResCount::cSpatialResCount() : m_initial(0.0), xdiffuse(1.0), ydiffuse(1.0), xgravity(0.0), ygravity(0.0), m_modified(false)
@@ -82,29 +82,30 @@ cSpatialResCount::cSpatialResCount() : m_initial(0.0), xdiffuse(1.0), ydiffuse(1
 cSpatialResCount::~cSpatialResCount() { ; }
 
 
-void cSpatialResCount::ResizeClear(int inworld_x, int inworld_y, int ingeometry)
+void cSpatialResCount::ResizeClear(int inworld_x, int inworld_y, int ingeometry, cWorldCellBox incbox)
 {
   int i;
- 
+  
   grid.ResizeClear(inworld_x * inworld_y); 
   world_x = inworld_x;
   world_y = inworld_y;
   geometry = ingeometry;
+  cbox = incbox;
   num_cells = world_x * world_y;
   for (i = 0; i < GetSize(); i++) {
     cSpatialCountElem tmpelem;
     grid[i] = tmpelem;
-   } 
-   SetPointers();
+  } 
+  SetPointers();
 }
 
 void cSpatialResCount::SetPointers()
 {
   /* Pointer 0 will point to the cell above and to the left the current cell
-     and will go clockwise around the cell.                               */
-
+   and will go clockwise around the cell.                               */
+  
   double  SQRT2 = sqrt(2.0);
-
+  
   /* First make all cells disconnected */
   
   for (int i = 0; i < GetSize(); i++) {
@@ -119,10 +120,21 @@ void cSpatialResCount::SetPointers()
   }
   
   
-  /* Next, make the cell box region a torus */
+  cerr << "pos_x: " << cbox.GetX() << " "
+       << "pos_y: " << cbox.GetY() << " "
+       << "width: " << cbox.GetWidth() << " "
+       << "height: " << cbox.GetHeight() << endl;
+  /* Next, connect all the cells*/
   for (int yy = 0; yy < cbox.GetHeight(); yy++){
     for (int xx = 0; xx < cbox.GetWidth(); xx++){
-      int cell_id = (cbox.GetWorldX() * (cbox.GetY() + yy)) + cbox.GetX();
+      int cell_id = (cbox.GetWorldX() * (cbox.GetY() + yy)) + cbox.GetX() + xx;
+      
+      // Cell Grid Ptr layout
+      // 0 1 2
+      // 7   3
+      // 6 5 4
+      
+      //Initially assuming normal 8-way connections for each cell
       grid[cell_id].SetPtr(0 ,GridNeighbor(cell_id, world_x, world_y, -1, -1), -1, -1, SQRT2);
       grid[cell_id].SetPtr(1 ,GridNeighbor(cell_id, world_x, world_y,  0, -1),  0, -1, 1.0);
       grid[cell_id].SetPtr(2 ,GridNeighbor(cell_id, world_x, world_y, +1, -1), +1, -1, SQRT2);
@@ -131,60 +143,96 @@ void cSpatialResCount::SetPointers()
       grid[cell_id].SetPtr(5 ,GridNeighbor(cell_id, world_x, world_y,  0, +1),  0, +1, 1.0);
       grid[cell_id].SetPtr(6 ,GridNeighbor(cell_id, world_x, world_y, -1, +1), -1, +1, SQRT2);
       grid[cell_id].SetPtr(7 ,GridNeighbor(cell_id, world_x, world_y, -1,  0), -1,  0, 1.0);
-      }
-  }
- 
-  /* Fix links for top, bottom and sides for non-torus */
-  
-  if (geometry == nGeometry::GRID) {
-    /* Top and bottom */
-    int row_top = cbox.GetY();
-    int row_bottom = row_top+cbox.GetHeight()-1;
-    for (int xx = 0; xx < cbox.GetWidth(); xx++){
-      int top_cell = row_top * cbox.GetWorldX() + xx;
-      int bottom_cell = row_bottom * cbox.GetWorldX() + xx;
-      grid[top_cell].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[top_cell].SetPtr(1, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[top_cell].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[bottom_cell].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[bottom_cell].SetPtr(5, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[bottom_cell].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-    }
-    
-    /* fix links for right and left sides */
-    int col_left = cbox.GetX();
-    int col_right = cbox.GetX() + cbox.GetWidth() - 1;
-    for (int yy = 0; yy < cbox.GetHeight(); yy++) {
-      int cell_left = (cbox.GetY() + yy) * cbox.GetWorldX() + col_left;
-      int cell_right = (cbox.GetY() + yy) * cbox.GetWorldX() + col_right;
-      grid[cell_left].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[cell_left].SetPtr(7, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[cell_left].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[cell_right].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[cell_right].SetPtr(3, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-      grid[cell_right].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      
+      if (geometry == nGeometry::GRID){
+        if (yy == 0){  // Top row has no connections in 0 1 2
+          grid[cell_id].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+          grid[cell_id].SetPtr(1, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+          grid[cell_id].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+        }
+        if (yy == cbox.GetHeight()-1){  // Bottom row has no connections in 6 5 4
+          grid[cell_id].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+          grid[cell_id].SetPtr(5, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+          grid[cell_id].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+        }
+        if (xx == 0){  // Left column has no connections on 0 7 6
+          grid[cell_id].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+          grid[cell_id].SetPtr(7, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+          grid[cell_id].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+        }
+        if (xx == cbox.GetWidth()-1)  // right column has no connections on 2 3 4
+        {
+          grid[cell_id].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+          grid[cell_id].SetPtr(3, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+          grid[cell_id].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+        }
+      } // End GRID
+      else {  // TORUS
+      
+        const int row_up = cbox.GetY() + ((yy - 1) % cbox.GetHeight());
+        const int row_down = cbox.GetY() + ((yy+1) % cbox.GetHeight());
+        const int col_left = cbox.GetX() + ((xx-1) % cbox.GetWidth());
+        const int col_right = cbox.GetX() + ((xx+1) % cbox.GetWidth());
+        const int row_cur = cbox.GetY( )+ yy;
+        const int col_cur = cbox.GetX() + xx; 
+        /*   0 1 2
+             7   3
+             6 5 4
+        */
+        
+        const int c_0 = row_up * cbox.GetWorldX() + col_left;
+        const int c_1 = row_up * cbox.GetWorldX() + col_cur;
+        const int c_2 = row_up * cbox.GetWorldX() + col_right;
+        const int c_7 = row_cur * cbox.GetWorldX() + col_left;
+        const int c_3 = row_cur * cbox.GetWorldX() + col_right;
+        const int c_6 = row_down * cbox.GetWorldX() + col_left;
+        const int c_5 = row_down * cbox.GetWorldX() + col_cur;
+        const int c_4 = row_down * cbox.GetWorldX() + col_right;
+        
+        if (yy == 0){
+        // Top row connections on 0 1 2
+          grid[cell_id].SetPtr(0, c_0, -1, -1, SQRT2);
+          grid[cell_id].SetPtr(1, c_1,  0, -1, 1.0);
+          grid[cell_id].SetPtr(2, c_2, +1, -1, SQRT2);
+        }
+        if (yy == cbox.GetHeight()-1){  // Bottom row connections on 6 5 4
+          grid[cell_id].SetPtr(6, c_6, -1, +1, SQRT2);
+          grid[cell_id].SetPtr(5, c_5,  0, +1, 1.0);
+          grid[cell_id].SetPtr(4, c_4, +1, +1, SQRT2);
+        }
+        if (xx == 0){  // 
+          grid[cell_id].SetPtr(0, c_0, -1, -1, SQRT2);
+          grid[cell_id].SetPtr(7, c_7, -1,  0, 1.0);
+          grid[cell_id].SetPtr(6, c_6, -1, +1, SQRT2);
+        }
+        if (xx == cbox.GetWidth()-1)  // right column has no connections on 2 3 4
+        {
+          grid[cell_id].SetPtr(2, c_2, +1, +1, SQRT2);
+          grid[cell_id].SetPtr(3, c_3, +1,  0, 1.0);
+          grid[cell_id].SetPtr(4, c_4, +1, -1, SQRT2);
+        }
+      }  // End TORUS
     }
   }
 }
 
-
 void cSpatialResCount::CheckRanges()
 {
-
+  
   // Check that the x, y ranges of the inflow and outflow rectangles 
   // are valid
-
+  
   /* check range of inputs */
-
+  
   if (inflowX1 < 0) { 
     inflowX1 = 0; 
   } else if (inflowX1 > world_x) { 
     inflowX1 = world_x; 
   }
   if (inflowX2 < 0) { 
-     inflowX2 = 0; 
+    inflowX2 = 0; 
   } else if (inflowX2 > world_x) { 
-     inflowX2 = world_x; 
+    inflowX2 = world_x; 
   }
   if (inflowY1 < 0) { 
     inflowY1 = 0; 
@@ -196,21 +244,21 @@ void cSpatialResCount::CheckRanges()
   } else if (inflowY2 > world_y) { 
     inflowY2 = world_y; 
   }
-
+  
   /* allow for rectangles that cross over the zero X or zero Y boundry */
-
+  
   if (inflowX2 < inflowX1) { inflowX2 += world_x; }
   if (inflowY2 < inflowY1) { inflowY2 += world_y; }
-
+  
   if (outflowX1 < 0) { 
     outflowX1 = 0; 
   } else if (outflowX1 > world_x) { 
     outflowX1 = world_x; 
   }
   if (outflowX2 < 0) { 
-     outflowX2 = 0; 
+    outflowX2 = 0; 
   } else if (outflowX2 > world_x) { 
-     outflowX2 = world_x; 
+    outflowX2 = world_x; 
   }
   if (outflowY1 < 0) { 
     outflowY1 = 0; 
@@ -222,12 +270,12 @@ void cSpatialResCount::CheckRanges()
   } else if (outflowY2 > world_y) { 
     outflowY2 = world_y; 
   }
-
+  
   /* allow for rectangles that cross over the zero X or zero Y boundry */
-
+  
   if (outflowX2 < outflowX1) { outflowX2 += world_x; }
   if (outflowY2 < outflowY1) { outflowY2 += world_y; }
-
+  
 }
 
 /* Set all the individual cells to their initial values */
@@ -238,8 +286,8 @@ void cSpatialResCount::SetCellList(Apto::Array<cCellResource>* in_cell_list_ptr)
     int cell_id = (*cell_list_ptr)[i].GetId();
     
     /* Be sure the user entered a valid cell id or if the the program is loading
-       the resource for the testCPU that does not have a grid set up */
-       
+     the resource for the testCPU that does not have a grid set up */
+    
     if (cell_id >= 0 && cell_id <= grid.GetSize()) {
       Rate((*cell_list_ptr)[i].GetId(), (*cell_list_ptr)[i].GetInitial());
       State((*cell_list_ptr)[i].GetId());
@@ -269,8 +317,8 @@ void cSpatialResCount::Rate(int x, int y, double ratein) const {
 }
 
 /* Fold the rate variable into the resource state for one element using 
-   the array index */
-   
+ the array index */
+
 void cSpatialResCount::State(int x) { 
   if (x >= 0 && x < grid.GetSize()) {
     grid[x].State();
@@ -280,8 +328,8 @@ void cSpatialResCount::State(int x) {
 }
 
 /* Fold the rate variable into the resource state for one element using 
-   the x,y coordinate */
-   
+ the x,y coordinate */
+
 void cSpatialResCount::State(int x, int y) { 
   if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
     grid[y*world_x + x].State();
@@ -311,39 +359,39 @@ double cSpatialResCount::GetAmount(int x, int y) const {
 }
 
 void cSpatialResCount::RateAll(double ratein) {
-
+  
   int i;
- 
+  
   for (i = 0; i < num_cells; i++) {
     grid[i].Rate(ratein);
   } 
 }
 
 /* For each cell in the grid add the changes stored in the rate variable
-   with the total of the resource */
+ with the total of the resource */
 
 void cSpatialResCount::StateAll() {
-
+  
   int i;
- 
+  
   for (i = 0; i < num_cells; i++) {
     grid[i].State();
   } 
 }
 
 void cSpatialResCount::FlowAll() {
-
+  
   // @JEB save time if diffusion and gravity off...
   if ((xdiffuse == 0.0) && (ydiffuse == 0.0) && (xgravity == 0.0) && (ygravity == 0.0)) return;
-
+  
   int     i,k,ii,xdist,ydist;
   double  dist;
- 
+  
   for (i = 0; i < num_cells; i++) {
-      
+    
     /* because flow is two way we must check only half the neighbors to 
-       prevent double flow calculations */
-
+     prevent double flow calculations */
+    
     for (k = 3; k <= 6; k++) {
       ii = grid[i].GetElemPtr(k);
       xdist = grid[i].GetPtrXdist(k);
@@ -360,10 +408,10 @@ void cSpatialResCount::FlowAll() {
 /* Total up all the resources in each cell */
 
 double cSpatialResCount::SumAll() const{
-
+  
   int i;
   double sum = 0.0;
-
+  
   for (i = 0; i < num_cells; i++) {
     sum += GetAmount(i);
   } 
@@ -371,15 +419,15 @@ double cSpatialResCount::SumAll() const{
 }
 
 /* Take a given amount of resource and spread it among all the cells in the 
-   inflow rectange */
+ inflow rectange */
 
 void cSpatialResCount::Source(double amount) const {
   int     i, j, elem;
   double  totalcells;
-
+  
   totalcells = (inflowY2 - inflowY1 + 1) * (inflowX2 - inflowX1 + 1) * 1.0;
   amount /= totalcells;
-
+  
   for (i = inflowY1; i <= inflowY2; i++) {
     for (j = inflowX1; j <= inflowX2; j++) {
       elem = (Mod(i,world_y) * world_x) + Mod(j,world_x);
@@ -395,8 +443,8 @@ void cSpatialResCount::CellInflow() const {
     const int cell_id = (*cell_list_ptr)[i].GetId();
     
     /* Be sure the user entered a valid cell id or if the the program is loading
-       the resource for the testCPU that does not have a grid set up */
-       
+     the resource for the testCPU that does not have a grid set up */
+    
     if (cell_id >= 0 && cell_id < grid.GetSize()) {
       Rate(cell_id, (*cell_list_ptr)[i].GetInflow());
     }
@@ -406,10 +454,10 @@ void cSpatialResCount::CellInflow() const {
 /* Take away a give percentage of a resource from outflow rectangle */
 
 void cSpatialResCount::Sink(double decay) const {
-
+  
   int     i, j, elem;
   double  deltaamount;
-
+  
   if (outflowX1 == cResource::NONE || outflowY1 == cResource::NONE || outflowX2 == cResource::NONE || outflowY2 == cResource::NONE) return;
   
   for (i = outflowY1; i <= outflowY2; i++) {
@@ -424,15 +472,15 @@ void cSpatialResCount::Sink(double decay) const {
 /* Take away a give percentage of a resource from individual cells */
 
 void cSpatialResCount::CellOutflow() const {
-
+  
   double deltaamount = 0.0;
-
+  
   for (int i=0; i < cell_list_ptr->GetSize(); i++) {
     const int cell_id = (*cell_list_ptr)[i].GetId();
     
     /* Be sure the user entered a valid cell id or if the the program is loading
-       the resource for the testCPU that does not have a grid set up */
-       
+     the resource for the testCPU that does not have a grid set up */
+    
     if (cell_id >= 0 && cell_id < grid.GetSize()) {
       deltaamount = Apto::Max((GetAmount(cell_id) * (*cell_list_ptr)[i].GetOutflow()), 0.0);
     }                     
@@ -454,7 +502,7 @@ void cSpatialResCount::ResetResourceCounts()
   for (int yy = 0; yy < cbox.GetHeight(); yy++){
     for (int xx = 0; xx < cbox.GetWidth(); xx++){
       int cell_id = (cbox.GetY() + yy) * cbox.GetWorldX() + xx;
-        grid[cell_id].ResetResourceCount(m_initial);
+      grid[cell_id].ResetResourceCount(m_initial);
     }
   }
 }

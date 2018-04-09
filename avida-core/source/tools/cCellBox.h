@@ -67,7 +67,6 @@ public:
   , m_width(width)
   , m_height(height)
   {
-    assert(m_x >= 0 && m_y >= 0 && m_width > 0 && m_height > 0);
   }
   
   cCellBox(const cCellBox& cbox)

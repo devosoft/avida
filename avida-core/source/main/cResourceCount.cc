@@ -333,6 +333,7 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
   inflow_rate[res_index] = inflow;
   geometry[res_index] = in_geometry;
   spatial_resource_count[res_index]->SetGeometry(in_geometry);
+  spatial_resource_count[res_index]->SetCellBox(cbox);
   spatial_resource_count[res_index]->SetPointers();
   spatial_resource_count[res_index]->SetCellList(in_cell_list_ptr);
 
@@ -703,7 +704,7 @@ void cResourceCount::Set(cAvidaContext& ctx, int res_id, double new_level)
 void cResourceCount::ResizeSpatialGrids(int in_x, int in_y)
 {
   for (int i = 0; i < resource_count.GetSize(); i++) {
-    spatial_resource_count[i]->ResizeClear(in_x, in_y, geometry[i]);
+    spatial_resource_count[i]->ResizeClear(in_x, in_y, geometry[i], resource_cellbox[i]);
     curr_spatial_res_cnt[i].Resize(in_x * in_y);
   }
 }

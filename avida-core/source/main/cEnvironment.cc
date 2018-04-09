@@ -495,13 +495,16 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
     
     const int world_x = m_world->GetConfig().WORLD_X.Get();
     const int world_y = m_world->GetConfig().WORLD_Y.Get();
+    cerr << "world_x: " << world_x << "world_y: " << world_y << endl;
+    cWorldCellBox wcbox(world_x, world_y, 0, 0, world_x, world_y);  //By default, encompass the entire world
+
     
     while (cur_resource.GetSize() != 0) {
       cString var_entry = cur_resource.Pop(':');
       cString var_name;
       cString var_value;
       const cString var_type = cStringUtil::Stringf("resource '%s'", static_cast<const char*>(name));
-      cWorldCellBox wcbox(world_x, world_y, 0, 0, world_x, world_y);  //By default, encompass the entire world
+      
       
       // Parse this entry.
       if (!ParseSetting(var_entry, var_name, var_value, var_type, feedback)) {
@@ -611,13 +614,17 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
         int height = var_value.Pop(',').AsInt();
         //TODO: Validate
         wcbox = cWorldCellBox(world_x, world_y, xpos, ypos, width, height);
-        new_resource->SetCellBox(wcbox);
       }
       else {
         feedback.Error("unknown variable '%s' in resource '%s'", (const char*)var_name, (const char*)name);
         return false;
       }
     }
+    new_resource->SetCellBox(wcbox);
+    cerr << "pos_x: " << wcbox.GetX() << " "
+       << "pos_y: " << wcbox.GetY() << " "
+       << "width: " << wcbox.GetWidth() << " "
+       << "height: " << wcbox.GetHeight() << endl;
     
     // Now that all geometry, etc. information is known, give the resource an index
     // within its own type
