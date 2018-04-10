@@ -562,7 +562,7 @@ const Apto::Array<double> & cResourceCount::GetCellResources(int cell_id, cAvida
      if (!IsSpatialResource(i)) {
          curr_grid_res_cnt[i] = (resource_cellbox[i].InCellBox(cell_id)) ? resource_count[i] : 0.0;
     } else {
-      curr_grid_res_cnt[i] = (resource_cellbox[i].InCellBox(cell_id)) ? spatial_resource_count[i]->GetAmount(cell_id)  : 0.0;
+      curr_grid_res_cnt[i] = (true) ? spatial_resource_count[i]->GetAmount(cell_id)  : 0.0;
     }
   }
   return curr_grid_res_cnt;
@@ -581,7 +581,7 @@ const Apto::Array<double> & cResourceCount::GetFrozenResources(cAvidaContext&, i
     if (!IsSpatialResource(i)) {
       curr_grid_res_cnt[i] = (resource_cellbox[i].InCellBox(cell_id)) ? resource_count[i] : 0.0;
     } else {
-      curr_grid_res_cnt[i] = (resource_cellbox[i].InCellBox(cell_id)) ? spatial_resource_count[i]->GetAmount(cell_id) : 0.0;
+      curr_grid_res_cnt[i] = (true) ? spatial_resource_count[i]->GetAmount(cell_id) : 0.0;
     }
   }
   return curr_grid_res_cnt;
@@ -593,7 +593,7 @@ double cResourceCount::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int 
   if (!IsSpatialResource(res_id)) 
     return (resource_cellbox[res_id].InCellBox(cell_id)) ? resource_count[res_id] : 0.0;
   else 
-    return (resource_cellbox[res_id].InCellBox(cell_id)) ?  spatial_resource_count[res_id]->GetAmount(cell_id) : 0.0;
+    return (true) ?  spatial_resource_count[res_id]->GetAmount(cell_id) : 0.0;
 }
 
 double cResourceCount::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const
@@ -605,7 +605,7 @@ double cResourceCount::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id
   if (!IsSpatialResource(res_id)) {
     res_val = (resource_cellbox[res_id].InCellBox(cell_id)) ? resource_count[res_id] : 0.0;
   } else {
-    res_val = (resource_cellbox[res_id].InCellBox(cell_id)) ? spatial_resource_count[res_id]->GetAmount(cell_id) : 0.0;
+    res_val = (true) ? spatial_resource_count[res_id]->GetAmount(cell_id) : 0.0;
   }
   return res_val;
 }

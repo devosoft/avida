@@ -121,9 +121,9 @@ void cSpatialResCount::SetPointers()
   
   
   cerr << "pos_x: " << cbox.GetX() << " "
-       << "pos_y: " << cbox.GetY() << " "
-       << "width: " << cbox.GetWidth() << " "
-       << "height: " << cbox.GetHeight() << endl;
+  << "pos_y: " << cbox.GetY() << " "
+  << "width: " << cbox.GetWidth() << " "
+  << "height: " << cbox.GetHeight() << endl;
   /* Next, connect all the cells*/
   for (int yy = 0; yy < cbox.GetHeight(); yy++){
     for (int xx = 0; xx < cbox.GetWidth(); xx++){
@@ -143,77 +143,98 @@ void cSpatialResCount::SetPointers()
       grid[cell_id].SetPtr(5 ,GridNeighbor(cell_id, world_x, world_y,  0, +1),  0, +1, 1.0);
       grid[cell_id].SetPtr(6 ,GridNeighbor(cell_id, world_x, world_y, -1, +1), -1, +1, SQRT2);
       grid[cell_id].SetPtr(7 ,GridNeighbor(cell_id, world_x, world_y, -1,  0), -1,  0, 1.0);
-      
-      if (geometry == nGeometry::GRID){
-        if (yy == 0){  // Top row has no connections in 0 1 2
-          grid[cell_id].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-          grid[cell_id].SetPtr(1, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-          grid[cell_id].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-        }
-        if (yy == cbox.GetHeight()-1){  // Bottom row has no connections in 6 5 4
-          grid[cell_id].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-          grid[cell_id].SetPtr(5, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-          grid[cell_id].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-        }
-        if (xx == 0){  // Left column has no connections on 0 7 6
-          grid[cell_id].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-          grid[cell_id].SetPtr(7, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-          grid[cell_id].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-        }
-        if (xx == cbox.GetWidth()-1)  // right column has no connections on 2 3 4
-        {
-          grid[cell_id].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-          grid[cell_id].SetPtr(3, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-          grid[cell_id].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
-        }
-      } // End GRID
-      else {  // TORUS
-      
-        const int row_up = cbox.GetY() + ((yy - 1) % cbox.GetHeight());
-        const int row_down = cbox.GetY() + ((yy+1) % cbox.GetHeight());
-        const int col_left = cbox.GetX() + ((xx-1) % cbox.GetWidth());
-        const int col_right = cbox.GetX() + ((xx+1) % cbox.GetWidth());
-        const int row_cur = cbox.GetY( )+ yy;
-        const int col_cur = cbox.GetX() + xx; 
-        /*   0 1 2
-             7   3
-             6 5 4
-        */
-        
-        const int c_0 = row_up * cbox.GetWorldX() + col_left;
-        const int c_1 = row_up * cbox.GetWorldX() + col_cur;
-        const int c_2 = row_up * cbox.GetWorldX() + col_right;
-        const int c_7 = row_cur * cbox.GetWorldX() + col_left;
-        const int c_3 = row_cur * cbox.GetWorldX() + col_right;
-        const int c_6 = row_down * cbox.GetWorldX() + col_left;
-        const int c_5 = row_down * cbox.GetWorldX() + col_cur;
-        const int c_4 = row_down * cbox.GetWorldX() + col_right;
-        
-        if (yy == 0){
-        // Top row connections on 0 1 2
-          grid[cell_id].SetPtr(0, c_0, -1, -1, SQRT2);
-          grid[cell_id].SetPtr(1, c_1,  0, -1, 1.0);
-          grid[cell_id].SetPtr(2, c_2, +1, -1, SQRT2);
-        }
-        if (yy == cbox.GetHeight()-1){  // Bottom row connections on 6 5 4
-          grid[cell_id].SetPtr(6, c_6, -1, +1, SQRT2);
-          grid[cell_id].SetPtr(5, c_5,  0, +1, 1.0);
-          grid[cell_id].SetPtr(4, c_4, +1, +1, SQRT2);
-        }
-        if (xx == 0){  // 
-          grid[cell_id].SetPtr(0, c_0, -1, -1, SQRT2);
-          grid[cell_id].SetPtr(7, c_7, -1,  0, 1.0);
-          grid[cell_id].SetPtr(6, c_6, -1, +1, SQRT2);
-        }
-        if (xx == cbox.GetWidth()-1)  // right column has no connections on 2 3 4
-        {
-          grid[cell_id].SetPtr(2, c_2, +1, +1, SQRT2);
-          grid[cell_id].SetPtr(3, c_3, +1,  0, 1.0);
-          grid[cell_id].SetPtr(4, c_4, +1, -1, SQRT2);
-        }
-      }  // End TORUS
     }
   }
+  
+  /* Deal with TOP edges */
+  for (int xx = 0; xx < cbox.GetWidth(); xx++)
+  {
+    int y_top = cbox.GetY();
+    int y_bot = cbox.GetY() + cbox.GetHeight() - 1;
+    int offset_x = cbox.GetX() + xx;
+    
+    if (geometry == nGeometry::GRID){
+      // Top row has no connections for 0 1 2
+      int cell_id = (y_top * cbox.GetWorldX()) + offset_x;
+      grid[cell_id].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_id].SetPtr(1, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_id].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      
+      // Bottom row has no connections in 6 5 4
+      cell_id = (y_bot * cbox.GetWorldX()) + offset_x;
+      grid[cell_id].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_id].SetPtr(5, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_id].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+    } else {  //Geometry TORUS
+      const int row_up   = cbox.GetY() + cbox.GetHeight()-1;  // wrap to bottom
+      const int row_down = cbox.GetY();  // wrap to top
+      const int col_left = cbox.GetX() + cbox.GetWidth() -1;  //wrap to right
+      const int col_right = cbox.GetX();  //wrap to left
+      const int col_cur = cbox.GetX() + xx;
+      
+      const int c_0 = row_up * cbox.GetWorldX() + col_left;
+      const int c_1 = row_up * cbox.GetWorldX() + col_cur;
+      const int c_2 = row_up * cbox.GetWorldX() + col_right;
+      const int c_6 = row_down * cbox.GetWorldX() + col_left;
+      const int c_5 = row_down * cbox.GetWorldX() + col_cur;
+      const int c_4 = row_down * cbox.GetWorldX() + col_right;
+      
+      // Top row connections on 0 1 2
+      int cell_id = (y_top * cbox.GetWorldX()) + offset_x;
+      grid[cell_id].SetPtr(0, c_0, -1, -1, SQRT2);
+      grid[cell_id].SetPtr(1, c_1,  0, -1, 1.0);
+      grid[cell_id].SetPtr(2, c_2, +1, -1, SQRT2);
+      
+      // Bottom row connections on 6 5 4
+      cell_id = (y_bot * cbox.GetWorldX()) + offset_x;
+      grid[cell_id].SetPtr(6, c_6, -1, +1, SQRT2);
+      grid[cell_id].SetPtr(5, c_5,  0, +1, 1.0);
+      grid[cell_id].SetPtr(4, c_4, +1, +1, SQRT2);
+    }
+  }  // End top/bottom edge modification
+  
+  // Deal with LEFT and RIGHT edges
+  for (int yy = 0; yy < cbox.GetHeight(); yy++){
+    
+    if (geometry == nGeometry::GRID){
+      // left column has no connections on 0 7 6
+      int cell_id = (cbox.GetY()+yy) * cbox.GetWorldX() + cbox.GetX();
+      grid[cell_id].SetPtr(0, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_id].SetPtr(7, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_id].SetPtr(6, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      
+      // right column has no connections on 2 3 4
+      cell_id = (cbox.GetY()+yy) * cbox.GetWorldX() + cbox.GetX() + cbox.GetWidth() - 1;
+      grid[cell_id].SetPtr(2, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_id].SetPtr(3, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+      grid[cell_id].SetPtr(4, cResource::NONE, cResource::NONE, cResource::NONE, cResource::NONE);
+    } else {  // TORUS
+      const int row_up = cbox.GetY() + cbox.GetHeight() - 1;  //wrap to bottom
+      const int row_down = cbox.GetY();  //wrap to top
+      const int col_left = cbox.GetX() + cbox.GetWidth() - 1;  //wrap to right
+      const int col_right = cbox.GetX();  //wrap to left
+      const int row_cur = cbox.GetY() + yy;
+      
+      const int c_0 = row_up * cbox.GetWorldX() + col_left;
+      const int c_2 = row_up * cbox.GetWorldX() + col_right;
+      const int c_7 = row_cur * cbox.GetWorldX() + col_left;
+      const int c_3 = row_cur * cbox.GetWorldX() + col_right;
+      const int c_6 = row_down * cbox.GetWorldX() + col_left;
+      const int c_4 = row_down * cbox.GetWorldX() + col_right;
+      
+      // Connections on 0 7 6 
+      int cell_id = (cbox.GetY()+yy) * cbox.GetWorldX() + cbox.GetX();
+      grid[cell_id].SetPtr(0, c_0, -1, -1, SQRT2);
+      grid[cell_id].SetPtr(7, c_7, -1,  0, 1.0);
+      grid[cell_id].SetPtr(6, c_6, -1, +1, SQRT2);
+      
+      // Connections on 2 3 4
+      cell_id = (cbox.GetY()+yy) * cbox.GetWorldX() + cbox.GetX() + cbox.GetWidth() - 1;
+      grid[cell_id].SetPtr(2, c_2, +1, -1, SQRT2);
+      grid[cell_id].SetPtr(3, c_3, +1,  0, 1.0);
+      grid[cell_id].SetPtr(4, c_4, +1, +1, SQRT2);
+    }  // End TORUS
+  } // End left/right edge modification
 }
 
 void cSpatialResCount::CheckRanges()
