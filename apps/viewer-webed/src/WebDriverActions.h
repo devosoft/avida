@@ -61,6 +61,7 @@ namespace Actions{
   const char* WA_INJECT_SEQ = "webInjectSequence";
   const char* WA_EXPORT_EXPR = "exportExpr";
   const char* WA_IMPORT_EXPR = "importExpr";
+  const char* WA_IMPORT_MDISH = "importMultiDish";
   const char* WA_SET_UPDATE = "setUpdate";
   const char* WA_RESET = "reset";
   
@@ -112,7 +113,7 @@ namespace Actions{
   };
   
   
-  //----------------------------- cWebActionPrintSpatialResources ---------------------------------------------------
+  //------------------------------------------------------------- cWebActionPrintSpatialResources --
   // fb is feedback
   class cWebActionPrintSpatialResources : public cWebAction {
   public:
@@ -168,7 +169,7 @@ namespace Actions{
   
   
   
-  //----------------------------- cWebActionPopulationStats ------------------------------------------------------
+  //------------------------------------------------------------------- cWebActionPopulationStats --
   // fb is feedback
   class cWebActionPopulationStats : public cWebAction {
   public:
@@ -275,12 +276,7 @@ namespace Actions{
     }
   }; // cWebActionPopulationStats
   
-  
-  
-  
-  
-  
-  //----------------------------- cWebActionOrgTraceBySequence  ------------------------------------------------------
+  //--------------------------------------------------------------- cWebActionOrgTraceBySequence  --
   class cWebActionOrgTraceBySequence : public cWebAction
   {
     
@@ -325,7 +321,6 @@ namespace Actions{
       for (auto it = s.Functions().Begin(); it.Next();)
         functions[it.Get()->Value1().GetData()] = *(it.Get()->Value2());
       j["functions"] = functions;
-      
       
       std::vector<std::map<string,int>> jumps;
       for (auto it = s.Jumps().Begin(); it.Next();){
@@ -405,11 +400,7 @@ namespace Actions{
     }
   };  //End cWebActionOrgTraceBySequence
   
-  
-  
-  
-  
-  
+  //-------------------------------------------------------------------- WebActionOrgDataByCellID --
   class cWebActionOrgDataByCellID : public cWebAction {
   private:
     int m_cell_id;
@@ -452,11 +443,9 @@ namespace Actions{
       D_(D_ACTIONS, "cWebActionOrgDataByCellID::Process completed.");
     }
   }; // cWebActionPopulationStats
-  
-  
-  
-  
-  //----------------------------- cWebActionGridData ------------------------------------------------------
+  //---------------------------------------------------------------- end WebActionOrgDataByCellID --
+
+  //-------------------------------------------------------------------------- cWebActionGridData --
   class cWebActionGridData : public cWebAction {
   private:
     
@@ -622,7 +611,8 @@ namespace Actions{
       D_(D_ACTIONS, "cWebActionGridData::Process completed.");
     }
   };
-  
+  //---------------------------------------------------------------------- end cWebActionGridData --
+
   
   
   class cWebActionInjectSequence : public cWebAction
@@ -808,11 +798,7 @@ namespace Actions{
     }
   };
   
-  
-  
-  
-  
-  
+  //------------------------------------------------------------------------ cWebActionImportExpr --
   class cWebActionImportExpr : public cWebAction
   {
   private:
@@ -900,17 +886,116 @@ namespace Actions{
       
     };
   };
+  //-------------------------------------------------------------------- end cWebActionImportExpr --
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+  //  action_lib->Register<cWebActionImportMultiDish>(WA_IMPORT_MDISH);
+  //------------------------------------------------------------------- cWebActionImportMultiDish --
+  class cWebActionImportMultiDish : public cWebAction
+  {
+  private:
+    json m_files, m_subdishes;
+    string m_working_dir;
+    bool m_do_amend;
+    
+    // All the functions to convert a multi-dish into a world (populated dish)
+    
+    
+    // end of functions to convert a multi-dish into a workd (populated dish)
+    
+  public:
+    cWebActionImportMultiDish(cWorld* world, const cString& args, Avida::Feedback& fb)
+    : cWebAction(world,args,fb)
+    , m_working_dir("/working_dir")
+    {
+      D_(D_ACTIONS, "In cWebActionImportExpr::cWebActionImportMultiDish");
+      if (m_json_args){
+        json jargs = GetJSONArgs();
+        if (contains(jargs,"superDishFiles"))
+          m_files = jargs["superDishFiles"];
+        if (contains(jargs,"subDishes"))
+          m_subdishes = jargs["subDishes"];
+        m_do_amend = false;
+        if (contains(jargs,"amend")){
+          string do_amend = jargs["amend"].get<string>();
+          if (do_amend == "true"){
+            m_do_amend = true;
+          }
+        }
+      }
+      D_(D_ACTIONS, "Done cWebActionImportExpr::cWebActionImportMultiDish");
+    }
+    
+    static const cString GetDescription() { return "Arguments: [expr_name  \"{JSON-FORMATTED FILES}\"";}
+    
+    void Process(cAvidaContext& ctx)
+    {
+      D_(D_ACTIONS, "In cWebImportExpr::Process");
+      
+      if (m_files.empty() || !m_files.is_array())
+        return;
+      
+      const char* const wdir = m_working_dir.c_str();
+      
+      
+      //If we're not amending what's already in the working directory,
+      //the delete it and copy the default settings over
+      if (!m_do_amend){
+        D_(D_ACTIONS, "cWebImport::Expr::Process NOT amending");
+        if (Apto::FileSystem::IsFile(wdir)){
+          Apto::FileSystem::RmFile(wdir);
+        } else if (Apto::FileSystem::IsDir(wdir)){
+          Apto::FileSystem::RmDir(wdir,true);
+        }
+        
+        //Create the directory
+        Apto::FileSystem::MkDir(m_working_dir.c_str());
+        
+        //Copy default files
+        vector<string> copy_files = {"/avida.cfg", "/default-heads.org", "/environment.cfg", "/events.cfg", "/instset.cfg"};
+        for (auto f : copy_files){ 
+          D_(D_ACTIONS, "cWebImport::Expr::Process copying default file to working dir: " << f,1);
+          string dst = m_working_dir + f;
+          Apto::FileSystem::CpFile(f.c_str(), dst.c_str());
+        }
+      }
+      
+      //Convert multi-dish to a normal populated dish
+       json multiDish;
+       json world;
+       //world = proccessMultiDish(multiDish);
+       //use world below instead of j_args
+      
+      //Add the files
+      if (contains(world,"files"))
+        m_files = world["files"];
+
+      for (auto it = m_files.begin(); it != m_files.end(); ++it){
+        const json& j_file = *it;
+        if (contains(j_file,"name") && j_file["name"].is_string()){
+          string fn = j_file["name"].get<string>();
+          string path =  m_working_dir + "/" + fn;
+          ofstream fot(path.c_str(), std::ofstream::out | std::ofstream::trunc);
+          if (fot.is_open() && fot.good() && contains(j_file,"data") && j_file["data"].is_string())
+          {
+            D_(D_ACTIONS, "Writing file from message: " + path,1);
+            D_(D_ACTIONS, j_file["data"].get<string>() << endl << "^^^^^^^^^^^^^^^^^^^",2);
+            fot << j_file["data"].get<string>();
+          }
+          fot.close();
+        }
+      }
+      
+      WebViewer::Driver* driver = dynamic_cast<WebViewer::Driver*>(&ctx.Driver());
+      if (driver == nullptr)
+        return;
+      driver->DoReset(m_working_dir);
+      D_(D_ACTIONS, "Done cWebImportExpr::Process");
+      
+    };
+  };
+  //--------------------------------------------------------------- end cWebActionImportMultiDish --
+
+  //------------------------------------------------------------------------- cWebActionSetUpdate --
   class cWebActionSetUpdate : public cWebAction
   {
   private:
@@ -950,7 +1035,8 @@ namespace Actions{
       m_feedback.Error("cWebActionSetUpdate: unable to read update file.");
     }
   };
-  
+  //--------------------------------------------------------------------- end cWebActionSetUpdate --
+
   
   
   
@@ -1006,6 +1092,7 @@ namespace Actions{
     action_lib->Register<cWebActionInjectSequence>(WA_INJECT_SEQ);
     action_lib->Register<cWebActionExportExpr>(WA_EXPORT_EXPR);
     action_lib->Register<cWebActionImportExpr>(WA_IMPORT_EXPR);
+    action_lib->Register<cWebActionImportMultiDish>(WA_IMPORT_MDISH);
     action_lib->Register<cWebActionSetUpdate>(WA_SET_UPDATE);
     action_lib->Register<cWebActionReset>(WA_RESET);
     
