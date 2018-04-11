@@ -120,10 +120,6 @@ void cSpatialResCount::SetPointers()
   }
   
   
-  cerr << "pos_x: " << cbox.GetX() << " "
-  << "pos_y: " << cbox.GetY() << " "
-  << "width: " << cbox.GetWidth() << " "
-  << "height: " << cbox.GetHeight() << endl;
   /* Next, connect all the cells*/
   for (int yy = 0; yy < cbox.GetHeight(); yy++){
     for (int xx = 0; xx < cbox.GetWidth(); xx++){

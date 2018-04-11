@@ -495,7 +495,6 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
     
     const int world_x = m_world->GetConfig().WORLD_X.Get();
     const int world_y = m_world->GetConfig().WORLD_Y.Get();
-    cerr << "world_x: " << world_x << "world_y: " << world_y << endl;
     cWorldCellBox wcbox(world_x, world_y, 0, 0, world_x, world_y);  //By default, encompass the entire world
 
     
@@ -621,10 +620,7 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
       }
     }
     new_resource->SetCellBox(wcbox);
-    cerr << "pos_x: " << wcbox.GetX() << " "
-       << "pos_y: " << wcbox.GetY() << " "
-       << "width: " << wcbox.GetWidth() << " "
-       << "height: " << wcbox.GetHeight() << endl;
+
     
     // Now that all geometry, etc. information is known, give the resource an index
     // within its own type
