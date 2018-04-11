@@ -919,7 +919,7 @@ void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
   resetUsedBounds();
   
   m_initial = true;
-  ResizeClear(worldx, worldy, m_geometry);
+  ResizeClear(worldx, worldy, m_geometry, cWorldCellBox(world_x, world_y, 0, 0, world_x, world_y));
   if (m_habitat == 2) {
     m_topo_counter = m_updatestep;
     generateBarrier(ctx);

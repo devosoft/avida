@@ -28,15 +28,17 @@
 #include "cAvidaContext.h"
 #include "cSpatialCountElem.h"
 #include "cResource.h"
+#include <vector>
 
 
 class cSpatialResCount
 {
 
-private:
+protected:
 
   
   
+  cWorldCellBox cbox;
   Apto::Array<cSpatialCountElem> grid;
   double m_initial;
   double xdiffuse, ydiffuse;
@@ -58,7 +60,7 @@ public:
                    double inxgravity, double inygravity);
   virtual ~cSpatialResCount();
   
-  void ResizeClear(int inworld_x, int inworld_y, int ingeometry);
+  void ResizeClear(int inworld_x, int inworld_y, int ingeometry, cWorldCellBox cbox);
   void SetPointers();
   void CheckRanges();
   void SetCellList(Apto::Array<cCellResource> *in_cell_list_ptr);
@@ -84,6 +86,7 @@ public:
   void SetCellAmount(int cell_id, double res);
   void SetInitial(double initial) { m_initial = initial; }
   double GetInitial() const { return m_initial; }
+  void SetCellBox(cWorldCellBox in_cbox) { cbox = in_cbox; }
   void SetGeometry(int in_geometry) { geometry = in_geometry; }
   void SetXdiffuse(double in_xdiffuse) { xdiffuse = in_xdiffuse; }
   void SetXgravity(double in_xgravity) { xgravity = in_xgravity; }

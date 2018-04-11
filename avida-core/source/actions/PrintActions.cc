@@ -276,6 +276,57 @@ public:
 };
 
 
+class cActionPrintSpatialResourceElements : public cAction
+{
+  private:
+    cString m_filename;
+    bool m_first_run;
+  
+  public:
+  cActionPrintSpatialResourceElements(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_first_run(true)
+  {
+    cString largs(args);
+    m_filename = (largs.GetSize()) ? largs.PopWord() : "grid_elements.dat";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"grid_elements.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)m_filename); 
+    
+    if (m_first_run){
+      df->WriteComment("Avida Spatial Resource Grid Elements");
+      df->FlushComments();
+      m_first_run = false;
+    }
+    
+    cPopulation& pop = m_world->GetPopulation();
+    const cStats& stats = m_world->GetStats();
+    const cResourceCount& res_count = pop.GetResourceCount();
+    for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
+      if (res_count.IsSpatialResource(res_id)){
+        for (int cell_id = 0; cell_id < pop.GetSize(); cell_id++){
+          for (int pos = 0; pos < 8; pos++){
+            auto sp_count = res_count.GetSpatialResource(res_id);
+            auto sp_elem = sp_count.Element(cell_id);
+            df->Write(res_count.GetResName(res_id), "resource_name");
+            df->Write(cell_id, "cell_id");
+            df->Write(pos, "position");
+            df->Write(sp_elem.GetElemPtr(pos), "points_to");
+            df->Write(sp_elem.GetPtrDist(pos), "dist");
+            df->Write(sp_elem.GetPtrXdist(pos), "x_dist");
+            df->Write(sp_elem.GetPtrYdist(pos), "y_dist");
+            df->Endl();
+          }
+        }
+      }
+    }
+  }
+
+};
+
 class cActionPrintSpatialResources : public cAction
 {
 private:
@@ -5787,6 +5838,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintNewTasksDataPlus>("PrintNewTasksDataPlus");
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
+  action_lib->Register<cActionPrintSpatialResourceElements>("PrintSpatialResourceElements");
   action_lib->Register<cActionPrintSpatialResources>("PrintSpatialResources");
   action_lib->Register<cActionPrintResourceLocData>("PrintResourceLocData");
   action_lib->Register<cActionPrintResWallLocData>("PrintResWallLocData");

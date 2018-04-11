@@ -26,6 +26,7 @@
 #define cResource_h
 
 #include "cString.h"
+#include "cCellBox.h"
 
 
 /*! class to hold resource information for individual cells (mini-chemostats) */
@@ -58,6 +59,7 @@ public:
   static const int NONE = -99;
   
 private:
+  cWorldCellBox cbox;
   cString name;
   int id;    // 0-based, order of appearance in environment file; resource library index
   int index; // 0-based, order of appearance of THIS TYPE of resource in environment file; resource count index
@@ -154,6 +156,7 @@ public:
   cResource(const cString& _name, int _id);
   ~cResource() { ; }
 
+  const cWorldCellBox& GetCellBox() {return cbox;}
   const cString & GetName() const { return name; }
   int GetID() const { return id; }
   int GetIndex() const { return index; }
@@ -244,6 +247,7 @@ public:
 	bool GetHGTMetabolize() const { return hgt_metabolize; }
   bool GetCollectable() { return collectable; }
 
+  void SetCellBox(const cWorldCellBox& _cbox) { cbox = _cbox; }
   void SetIndex(int _index) { if (index < 0) index = _index; } // can only be assigned once
   void SetInitial(double _initial) { initial = _initial; }
   void SetInflow (double _inflow ) { inflow  = _inflow; }
