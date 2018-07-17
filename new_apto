@@ -1,6 +1,6 @@
 [submodule "libs/apto"]
 	path = libs/apto
-	url = git://programerror.com/apto.git
+	url = https://github.com/dmbryson/apto.git
 [submodule "documentation"]
 	path = documentation
 	url = https://github.com/devosoft/avida.wiki.git
