@@ -99,6 +99,8 @@ void cSpatialResCount::ResizeClear(int inworld_x, int inworld_y, int ingeometry,
   SetPointers();
 }
 
+//@DJB make the grid consistent with either GRID or TORUS how we manipulate to make cellbox work
+// starts out disconnected; connects and then deals with edges
 void cSpatialResCount::SetPointers()
 {
   /* Pointer 0 will point to the cell above and to the left the current cell
@@ -120,10 +122,10 @@ void cSpatialResCount::SetPointers()
   }
   
   
-  cerr << "pos_x: " << cbox.GetX() << " "
-  << "pos_y: " << cbox.GetY() << " "
-  << "width: " << cbox.GetWidth() << " "
-  << "height: " << cbox.GetHeight() << endl;
+  // cerr << "pos_x: " << cbox.GetX() << " "
+  // << "pos_y: " << cbox.GetY() << " "
+  // << "width: " << cbox.GetWidth() << " "
+  // << "height: " << cbox.GetHeight() << endl;
   /* Next, connect all the cells*/
   for (int yy = 0; yy < cbox.GetHeight(); yy++){
     for (int xx = 0; xx < cbox.GetWidth(); xx++){

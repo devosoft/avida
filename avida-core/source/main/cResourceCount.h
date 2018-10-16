@@ -61,6 +61,9 @@ class cWorld;
 class cResourceCount
 {
 private:
+  // @DJB all of the properties of all of the resources are in these arrays. So that there is an
+  // entry for every resource in every array even if that resource does not have that property.
+  // not a good system, but what we have
   Apto::Array<cWorldCellBox> resource_cellbox; //Where in the grid is this resource available?
   
   mutable Apto::Array<cString> resource_name;    // The name of each resource

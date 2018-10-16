@@ -556,10 +556,11 @@ const Apto::Array<double> & cResourceCount::GetCellResources(int cell_id, cAvida
 {
   int num_resources = resource_count.GetSize();
 
-  DoUpdates(ctx);
+  DoUpdates(ctx);  //update to current "time"
               
   for (int i = 0; i < num_resources; i++) {
      if (!IsSpatialResource(i)) {
+         //check to see if it in the cell box; if not don't include
          curr_grid_res_cnt[i] = (resource_cellbox[i].InCellBox(cell_id)) ? resource_count[i] : 0.0;
     } else {
       curr_grid_res_cnt[i] = (true) ? spatial_resource_count[i]->GetAmount(cell_id)  : 0.0;
@@ -842,7 +843,7 @@ void cResourceCount::DoSpatialUpdates(cAvidaContext& ctx, const int res_id, int 
       spatial_resource_count[res_id]->CellOutflow();
     }
     spatial_resource_count[res_id]->FlowAll();
-    spatial_resource_count[res_id]->StateAll();
+    spatial_resource_count[res_id]->StateAll();  //done  - do clean up if needed
     // BDB: resource_count[res_ndx] = spatial_resource_count[i]->SumAll();
   }
 }

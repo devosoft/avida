@@ -35,11 +35,11 @@ class cSpatialResCount
 {
 
 protected:
-
-  
-  
   cWorldCellBox cbox;
-  Apto::Array<cSpatialCountElem> grid;
+  Apto::Array<cSpatialCountElem> grid;  //@DJB where the info about a resource cell
+                                        // (abundance, inflow, outflow, neighbors, topology, how resources connected
+                                        // everything about spatial resources is here
+                                        // everything updates and makes this consistant
   double m_initial;
   double xdiffuse, ydiffuse;
   double xgravity, ygravity;

@@ -613,6 +613,8 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
         int width = var_value.Pop(',').AsInt();
         int height = var_value.Pop(',').AsInt();
         //TODO: Validate
+        // look at stuff from 'else if (var_name == "cellbox")' can copy that form to validate.
+        // near line 357
         wcbox = cWorldCellBox(world_x, world_y, xpos, ypos, width, height);
       }
       else {
@@ -621,10 +623,10 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
       }
     }
     new_resource->SetCellBox(wcbox);
-    cerr << "pos_x: " << wcbox.GetX() << " "
-       << "pos_y: " << wcbox.GetY() << " "
-       << "width: " << wcbox.GetWidth() << " "
-       << "height: " << wcbox.GetHeight() << endl;
+ //   cerr << "pos_x: " << wcbox.GetX() << " "
+ //      << "pos_y: " << wcbox.GetY() << " "
+ //      << "width: " << wcbox.GetWidth() << " "
+ //      << "height: " << wcbox.GetHeight() << endl;
     
     // Now that all geometry, etc. information is known, give the resource an index
     // within its own type
@@ -680,7 +682,9 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
   
   return true;
 }
+//--------------------------------------------------------------------------- end of LoadResource --
 
+//------------------------------------------------------------------------ cEnvironment::loadCell --
 bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
 
 /*****************************************************************************
@@ -690,6 +694,16 @@ bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
  
  where options are initial, inflow and outflow
  *****************************************************************************/
+ // done on a per cell basis, but list each cell as index into the linear representation of the world
+ // to do a "box" need to list cell from each line.
+ // example: 10x10 world could have 4 to 8; then 14 to 18, then 24 to 28 etc.
+ // the cells are "disconnnected" only if they fall outside the cell box of an existing spatial resource
+ // so the resources do not flow between cells.
+ //
+ // this will work for
+ //     Resource of Geometry (parameter of Resource) of [global toris or grid] ;
+ //     Cell   (modifiies a spatial resource or creates a grid type of spatial resource)
+ //             remember that cell does not do integrity checks
 
 {
   if (desc.GetSize() == 0) {
@@ -698,6 +712,9 @@ bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
   }
   
   cResource* this_resource;
+  int world_x = m_world->GetConfig().WORLD_X.Get();
+  int world_y = m_world->GetConfig().WORLD_Y.Get();
+  cWorldCellBox wcbox(world_x, world_y, 0,0, world_x, world_y);
   while (desc.GetSize() > 0) {
     cString cur_resource = desc.PopWord();
     const cString name = cur_resource.Pop(':');
@@ -724,6 +741,7 @@ bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
       this_resource->SetYDiffuse(0.0);
       this_resource->SetYGravity(0.0);
       this_resource->SetDemeResource("false");
+      this_resource->SetCellBox(wcbox);
     } else {
       this_resource = resource_lib.GetResource(name);
     }
@@ -777,7 +795,9 @@ bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
   
   return true;
 }
-
+//-------------------------------------------------------------------- end cEnvironment::loadCell --
+//@DJB  cell box acts as a flow restrictor. If a resource is put in a cell that is outside the box
+// it will not flow
 bool cEnvironment::LoadReaction(cString desc, Feedback& feedback)
 {
   // Make sure this reaction has a description...
@@ -852,6 +872,8 @@ bool cEnvironment::LoadReaction(cString desc, Feedback& feedback)
   return true;
 }
 
+//------------------------------------------------------------ cEnvironment::LoadGradientResource --
+// @DJB LoadGradientResource works but has no concept of cellbox
 bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback) 
 {
   if (desc.GetSize() == 0) {

@@ -53,7 +53,7 @@ public:
   //Add in default contructor
   //We're adding it to make sure that nay requistie that is *not* a
   //cellBox will not fail . . . will allow the requisite to be met
-  cCellBox()
+    cCellBox()
   :   m_x(-1)
   ,  m_y(-1)
   ,  m_width(-1)
@@ -117,7 +117,8 @@ public:
   }
 };
 
-
+//@DJB  cell box acts as a flow restrictor. If a resource is put in a cell that is outside the box
+// it will not flow
 class cWorldCellBox : public cCellBox
 {
 protected:

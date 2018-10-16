@@ -21,6 +21,9 @@
  *
  */
 
+ //@DJB special case of spatial resources put does not obey normal grid relationships
+ //Avida-ED does not use
+
 #ifndef cGradientCount_h
 #define cGradientCount_h
 

@@ -861,6 +861,7 @@ public:
    At a minum we need the name of the resource and the period in updates.
 */
 
+//------------------------------------------------------------- cActionSetPeriodicResourceInflow --
 class cActionSetPeriodicResourceInflow : public cAction
 {
 private:
@@ -894,6 +895,8 @@ public:
     m_world->GetPopulation().SetResourceInflow(m_name, inflow);
   }
 };
+//--------------------------------------------------------- end  cActionSetPeriodicResourceInflow --
+
 
 /* Set the inflow of a given deme.  Currently only works for global (deme) resources.
  

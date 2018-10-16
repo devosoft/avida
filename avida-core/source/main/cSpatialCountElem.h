@@ -29,9 +29,14 @@
 class cSpatialCountElem
 {
 private:
-  mutable double amount, delta, initial;
-  Apto::Array<int> elempt, xdist, ydist;
-  Apto::Array<double> dist;
+  mutable double amount, delta, initial;  //@DJB how much have, delta - cache difference before a flow; what was initial for the run
+  Apto::Array<int> elempt, xdist, ydist;  //each 8 elements long. these are the cells arround me
+                                          // 0 1 2  elempt = cell ID at that location
+                                          // 7 _ 3  xdist = how far away in x dim (-1, 0, 1)
+                                          // 6 5 4  ydist = how far away in y dim (-1, 0, 1)
+  Apto::Array<double> dist;    // dist sqrt(2), 1, or 0  0 is itself
+                               // every thing about dist can be special values -99 or cResource::NONE = -99
+                               // arbitrary numbar that means no neighbor in that position
   
 public:
   cSpatialCountElem();

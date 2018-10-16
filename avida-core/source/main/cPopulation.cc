@@ -319,7 +319,7 @@ void cPopulation::ClearCellGrid()
   delete m_scheduler; m_scheduler = NULL;
 }
 
-
+//-------------------------------------------------------------------- cPopulation::SetupCellGrid --
 void cPopulation::SetupCellGrid()
 {
   int num_demes = m_world->GetConfig().NUM_DEMES.Get();
@@ -422,7 +422,7 @@ void cPopulation::SetupCellGrid()
     GetDeme(i).ResizeSpatialGrids(deme_size_x, deme_size_y);
   }
   
-  
+  // setting up resource accounting
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     cResource* res = resource_lib.GetResource(i);
     
@@ -434,10 +434,13 @@ void cPopulation::SetupCellGrid()
       }
       m_hgt_resid = i;
     }
-    
+
+      //@DJB: sets up accounting system
+    // NON-DemeResources
     if (!res->GetDemeResource()) {
       global_res_index++;
       const double decay = 1.0 - res->GetOutflow();
+      
       resource_count.Setup(m_world, global_res_index, res->GetName(), res->GetInitial(),
                            res->GetInflow(), decay,
                            res->GetGeometry(), res->GetXDiffuse(),
@@ -467,6 +470,11 @@ void cPopulation::SetupCellGrid()
                            res->GetDeathOdds(), res->IsPath(), res->IsHammer(), res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient(), res->GetCellBox()
                            ); 
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
+      
+      //@DJB initiallizes DemeResources
+      // all orgamisms are within a deme when demes are used.
+      // demes always enabled, but usually a deme of one and everyone in the same deme.
+      // the effect of deme resources and cellboxes is unknown.
     } else if (res->GetDemeResource()) {
       deme_res_index++;
       for(int j = 0; j < GetNumDemes(); j++) {
@@ -484,6 +492,7 @@ void cPopulation::SetupCellGrid()
     m_world->GetDriver().Feedback().Warning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
   }
 }
+//---------------------------------------------------------------- end cPopulation::SetupCellGrid --
 
 
 

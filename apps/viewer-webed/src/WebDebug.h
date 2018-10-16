@@ -30,7 +30,7 @@ using json = nlohmann::json;
 //How detailed should our debug output be (sets level of detail)
 // 0 minium amount of text
 // 3 lots of text hard to wade through
-#define D_VERBOSITY 1
+#define D_VERBOSITY 0
 
 //Constants to define different types of debugging
 // D_FLOW: program internal flow (how did I get here?)
@@ -56,14 +56,15 @@ using json = nlohmann::json;
 ////What should we be outputting for debug purposes?
 //#define DEBUG_MODE \
 //  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
+//  (D_MSG_OUT | D_EVENTS | D_MSG_IN | D_STATUS | D_ACTIONS)
 
 #define DEBUG_MODE \
-  (D_FLOW | D_MSG_OUT | D_EVENTS | D_MSG_IN | D_ACTIONS | D_STATUS)
+  (D_FLOW | D_MSG_IN | D_MSG_OUT | D_STATUS | D_EVENTS | D_ACTIONS | D_ERROR)
 
 // this defines the level; when set to 0 no debug statements are sent
 // edit the line above with the correct subset or-ed together to get what you want
 // and comment out setting to zero.
-//#define DEBUG_MODE 0
+// #define DEBUG_MODE 0
 
 const std::map<unsigned, string> debug_modes = {
   {1,"FLOW"}, {2, "MSG_IN"}, {4, "MSG_OUT"}, {8, "STATUS"}, {16, "EVENTS"}, 
