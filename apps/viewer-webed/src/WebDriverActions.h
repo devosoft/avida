@@ -865,6 +865,7 @@ namespace Actions{
       }
       
       //Add the files
+      D_(D_ACTIONS, "cWebImport::Expr::Before adding files");
       for (auto it = m_files.begin(); it != m_files.end(); ++it){
         const json& j_file = *it;
         if (contains(j_file,"name") && j_file["name"].is_string()){
@@ -891,6 +892,8 @@ namespace Actions{
   };
   //-------------------------------------------------------------------- end cWebActionImportExpr --
   
+  
+  //  Broken; does not work;
   //  action_lib->Register<cWebActionImportMultiDish>(WA_IMPORT_MDISH);
   //------------------------------------------------------------------- cWebActionImportMultiDish --
   class cWebActionImportMultiDish : public cWebAction

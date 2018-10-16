@@ -30,7 +30,7 @@ using json = nlohmann::json;
 //How detailed should our debug output be (sets level of detail)
 // 0 minium amount of text
 // 3 lots of text hard to wade through
-#define D_VERBOSITY 0
+#define D_VERBOSITY 3
 
 //Constants to define different types of debugging
 // D_FLOW: program internal flow (how did I get here?)
