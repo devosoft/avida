@@ -516,11 +516,35 @@ namespace Actions{
           }
           //cerr << "res_data was built !!!!!! \n";
           return res_data;
+
+          // begin of section added from "incremental commit working adding resource grid for testin commit acef212e7143fe9db1d9e1fb18fc6533004ef250"
+          auto result = minmax_element(res_data.begin(), res_data.end());
+          // add to json object
+          json res_j;
+          res_j["name"] = res_name;
+          res_j["minVal"] = *result.first;   //first and second are pointers and to get the value just dereference
+          res_j["maxVal"] = *result.second;
+          res_j["data"] = res_data;
+          res_jlist.push_back(res_j);
+          // end of section added from "incremental commit working adding resource grid for testin commit acef212e7143fe9db1d9e1fb18fc6533004ef250"
+
         }
       }  //end of for loop for each resource
       
       //WebViewerMsg means the same as json;
-    //cerr << "res data not built" << endl;
+      //cerr << "res data not built" << endl;
+
+      // begin of section added from "incremental commit working adding resource grid for testin commit acef212e7143fe9db1d9e1fb18fc6533004ef250"
+      WebViewerMsg getSpatialResources = {
+        {"update", stats.GetUpdate()}
+        ,{"resources", res_jlist}
+      }; //end of webmessage
+      
+      PackageData(WA_SPAT_RES, getSpatialResources);
+      D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process [completed]");
+
+      // end of section added from "incremental commit working adding resource grid for testin commit acef212e7143fe9db1d9e1fb18fc6533004ef250"
+
       return res_data;
     }  //end of Process
     //end of temp code to test spatial resource process.
@@ -581,8 +605,9 @@ namespace Actions{
       //temp for test Spatial Resource data
       vector<double> resource(world_size, NaN);
       resource = getSpatRes(ctx);
-      if (resource.empty()) resource = gestation;
-      
+      if (resource.empty()) {
+        vector<double> resource(world_size, 0);
+      }
       data["fitness"] = { 
         {"data",fitness}, 
         {"minVal",min_val(fitness)}, 
@@ -597,6 +622,12 @@ namespace Actions{
         {"data", ancestor}
       };
       data["gestation"] = {
+        {"data",gestation},
+        {"minVal",min_val(gestation)},
+        {"maxVal",max_val(gestation)}
+      };
+      //This is for testing only. It only works with one resource.
+      data["resource"] = {
         {"data",resource},
         {"minVal",min_val(resource)},
         {"maxVal",max_val(resource)}
