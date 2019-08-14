@@ -1257,6 +1257,47 @@ public:
   }
 };
 
+
+class cActionProbKillSequence : public cAction
+{
+private:
+  cString m_sequence;
+  double m_killprob;
+  
+public:
+  cActionProbKillSequence(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_killprob(0.9)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_sequence = largs.PopWord();
+    if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string sequence> [double probability=0.9]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const Apto::Array<cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    Apto::Array<int, Apto::Smart> doomed_orgs;
+    
+    const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+    HashPropertyMap props;
+    cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
+    Genome arg_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence)));
+    
+    
+    
+    for (int i = 0; i < live_orgs.GetSize(); i++) {
+      //if (live_orgs[i]->SystematicsGroup("genotype")->ID() == dom_id) doomed_orgs.Push(live_orgs[i]->GetCellID());
+      if (live_orgs[i]->GetGenome() == arg_genome & ctx.GetRandom().P(m_killprob)) doomed_orgs.Push(live_orgs[i]->GetCellID());
+    }
+    cPopulation& pop = m_world->GetPopulation();
+    
+    for (int j=0; j < doomed_orgs.GetSize(); j++) {
+      pop.KillOrganism(ctx, doomed_orgs[j]);
+    }
+  }
+};
+
 class cActionAttackDen : public cAction
 {
 private:
@@ -5687,9 +5728,10 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillInstLimit>("KillInstLimit");
   action_lib->Register<cActionKillInstPair>("KillInstPair");
   action_lib->Register<cActionKillProb>("KillProb");
-  action_lib->Register<cActionKillProb>("KillProb");
   action_lib->Register<cActionApplyBottleneck>("ApplyBottleneck");
   action_lib->Register<cActionKillDominantGenotype>("KillDominantGenotype");
+  action_lib->Register<cActionProbKillSequence>("KillProbSequence");
+  
   action_lib->Register<cActionAttackDen>("AttackDen");
   action_lib->Register<cActionRaidDen>("RaidDen");
   action_lib->Register<cActionKillFractionInSequence>("KillFractionInSequence");

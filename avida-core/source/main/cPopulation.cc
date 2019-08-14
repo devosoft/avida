@@ -6885,6 +6885,8 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
   int u_cell_id = 0;
   for (int gen_i = 0; gen_i < genotypes.GetSize(); gen_i++) {
     sTmpGenotype& tmp = genotypes[gen_i];
+    //LZ: Tracked down bug in parasite migration here.
+    
     // otherwise, we insert as many organisms as we need
     for (int cell_i = 0; cell_i < tmp.num_cpus; cell_i++) {
       int cell_id = 0;
