@@ -51,7 +51,7 @@ cResource* cResourceLib::GetResource(const cString& res_name) const
   for (int i = 0; i < m_resource_array.GetSize(); i++) {
     if (m_resource_array[i]->GetName() == res_name) return m_resource_array[i];
   }
-  cerr << "Error: Unknown resource '" << res_name << "'." << endl;
+  // cerr << "Error: Unknown resource '" << res_name << "'." << endl;
   return NULL;
 }
 

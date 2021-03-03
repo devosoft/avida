@@ -636,7 +636,7 @@ public:
         case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
         default: break;
       };
-      cerr << feedback.GetMessage(i) << endl;
+      cerr << "cerr:cActionChangeEnvironment " << feedback.GetMessage(i) << endl;
     }
 
     m_world->GetPopulation().UpdateResourceCount(m_world->GetVerbosity(), m_world);          

@@ -624,7 +624,7 @@ inline void cPopulation::AdjustSchedule(const cPopulationCell& cell, const cMeri
 }
 
 
-
+//---------------------------------------------------------------------- cPopulation::ActivateOffspring --
 // Activate the child, given information from the parent.
 // Return true if parent lives through this process.
 bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism)
@@ -972,7 +972,9 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT && parent_alive && m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get()) TestForMiniTrace(parent_organism);
   return parent_alive;
 }
+//------------------------------------------------------------------ end cPopulation::ActivateOffspring --
 
+//------------------------------------------------------------------ cPopulation::cPopulation::UpdateQs --
 void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
 {
   // yank the org out of any current trace queues, as appropriate (i.e. if dead (==!reproduced) or if reproduced and splitting on divide)
@@ -1012,7 +1014,9 @@ void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
     }
   }
 }
+//--------------------------------------------------------------------------- end cPopulation::UpdateQs --
 
+//------------------------------------------------------------- cPopulation::TestForParasiteInteraction --
 bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host)
 {
   //default to failing the interaction
@@ -1169,10 +1173,11 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
       return false;
     }
   }
-
   return true;
 }
+//--------------------------------------------------------- end cPopulation::TestForParasiteInteraction --
 
+//----------------------------------------------------------------------- cPopulation::ActivateParasite --
 bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code)
 {
   assert(parent != NULL);
@@ -1298,7 +1303,9 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
   
   return true;
 }
+//------------------------------------------------------------------- end cPopulation::ActivateParasite --
 
+//----------------------------------------------------------------------- cPopulation::ActivateOrganism --
 bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group, bool is_inject)
 {
   assert(in_organism != NULL);
@@ -1318,7 +1325,6 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     PrecalculatePhenotype(ctx, in_organism, target_cell);
     
   // Update the archive...
-  
   
   // Initialize the time-slice for this new organism.
   AdjustSchedule(target_cell, in_organism->GetPhenotype().GetMerit());
@@ -1456,9 +1462,9 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   }
   return org_survived;
 }
+//------------------------------------------------------------------ end cPopulation::ActivateOrganism --
 
-
-
+//----------------------------------------------------------------- cPopulation::PrecalculatePhenotype --
 void cPopulation::PrecalculatePhenotype(cAvidaContext& ctx, cOrganism* org, const cPopulationCell& target_cell)
 {
   cCPUTestInfo test_info;
@@ -1495,9 +1501,9 @@ void cPopulation::PrecalculatePhenotype(cAvidaContext& ctx, cOrganism* org, cons
     org->GetPhenotype().SetPrecalcIsViable( (test_info.IsViable() ? 1 : -1) );
   }
 }
+//----------------------------------------------------------------- cPopulation::PrecalculatePhenotype --
 
-
-
+//---------------------------------------------------------------------- cPopulation::TestForMiniTrace --
 void cPopulation::TestForMiniTrace(cOrganism* in_organism) 
 {
   // if the org's genotype is on our to do list, setup the trace and remove the instance of the genotype from the list
@@ -1512,7 +1518,9 @@ void cPopulation::TestForMiniTrace(cOrganism* in_organism)
     }
   }
 }
+//------------------------------------------------------------------ end cPopulation::TestForMiniTrace --
 
+//------------------------------------------------------------------------ cPopulation::SetupMiniTrace --
 void cPopulation::SetupMiniTrace(cOrganism* in_organism)
 {
   const int target = in_organism->GetParentFT();
@@ -1532,7 +1540,9 @@ void cPopulation::SetupMiniTrace(cOrganism* in_organism)
     PrintMiniTraceGenome(in_organism, gen_file);
   }
 }
+//------------------------------------------------------------------------ cPopulation::SetupMiniTrace --
 
+//------------------------------------------------------------------ cPopulation::PrintMiniTraceGenome --
 void cPopulation::PrintMiniTraceGenome(cOrganism* in_organism, cString& filename)
 {
   // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
@@ -1543,7 +1553,9 @@ void cPopulation::PrintMiniTraceGenome(cOrganism* in_organism, cString& filename
   testcpu->PrintGenome(ctx2, Genome(in_organism->SystematicsGroup("genotype")->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate());
   delete testcpu;
 }
+//-------------------------------------------------------------- end cPopulation::PrintMiniTraceGenome --
 
+//--------------------------------------------------------------------- cPopulation::SetMiniTraceQueue --
 void cPopulation::SetMiniTraceQueue(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool print_reacs, const bool use_micro)
 {
   minitrace_queue.Resize(0);
@@ -1552,7 +1564,9 @@ void cPopulation::SetMiniTraceQueue(Apto::Array<int, Apto::Smart> new_queue, con
   print_mini_trace_reacs = print_reacs;
   use_micro_traces = use_micro;
 }
+//------------------------------------------------------------------end cPopulation::SetMiniTraceQueue --
 
+//--------------------------------------------------------------------- cPopulation::AppendMiniTraces --
 void cPopulation::AppendMiniTraces(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool print_reacs, const bool use_micro)
 {
   for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]); 
@@ -1560,7 +1574,9 @@ void cPopulation::AppendMiniTraces(Apto::Array<int, Apto::Smart> new_queue, cons
   print_mini_trace_reacs = print_reacs;
   use_micro_traces = use_micro;
 }
+//----------------------------------------------------------------- end cPopulation::AppendMiniTraces --
 
+//----------------------------------------------------------------------- cPopulation::LoadMiniTraceQ --
 void cPopulation::LoadMiniTraceQ(const cString& filename, int orgs_per, bool print_genomes, bool print_reacs)
 {
   cInitFile input_file(filename, m_world->GetWorkingDir());
@@ -1632,7 +1648,9 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomTraceQ(int max_samples)
   } 
   return bg_id_list;
 }
+//------------------------------------------------------------------- end cPopulation::LoadMiniTraceQ --
 
+//------------------------------------------------------------------ cPopulation::SetRandomPreyTraceQ --
 Apto::Array<int, Apto::Smart> cPopulation::SetRandomPreyTraceQ(int max_samples)
 {
   // randomly sample (w/ replacement) bgs in pop
@@ -1662,7 +1680,9 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomPreyTraceQ(int max_samples)
   } 
   return bg_id_list;
 }
+//-------------------------------------------------------------- end cPopulation::SetRandomPreyTraceQ --
 
+//------------------------------------------------------------------ cPopulation::SetRandomPredTraceQ --
 Apto::Array<int, Apto::Smart> cPopulation::SetRandomPredTraceQ(int max_samples)
 {
   // randomly sample (w/ replacement) bgs in pop
@@ -1692,7 +1712,9 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomPredTraceQ(int max_samples)
   } 
   return bg_id_list;
 }
+//-------------------------------------------------------------- end cPopulation::SetRandomPredTraceQ --
 
+//-------------------------------------------------------------------------- cPopulation::SetNextPreyQ --
 void cPopulation::SetNextPreyQ(int num_prey, bool print_genomes, bool print_reacs, bool use_micro)
 {
   m_next_prey_q = num_prey;
@@ -1701,6 +1723,7 @@ void cPopulation::SetNextPreyQ(int num_prey, bool print_genomes, bool print_reac
   use_micro_traces = use_micro;
 }
 
+//-------------------------------------------------------------------------- cPopulation::SetNextPredQ --
 void cPopulation::SetNextPredQ(int num_pred, bool print_genomes, bool print_reacs, bool use_micro)
 {
   m_next_pred_q = num_pred;
@@ -1709,6 +1732,7 @@ void cPopulation::SetNextPredQ(int num_pred, bool print_genomes, bool print_reac
   use_micro_traces = use_micro;
 }
 
+//----------------------------------------------------------------------------- cPopulation::SetTraceQ --
 Apto::Array<int, Apto::Smart> cPopulation::SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples)
 {
   // setup the genotype 'list' which will be checked in activateorg
@@ -1927,7 +1951,9 @@ Apto::Array<int, Apto::Smart> cPopulation::SetTraceQ(int save_dominants, int sav
   }
   return bg_id_list;
 }
+//------------------------------------------------------------------------- end cPopulation::SetTraceQ --
 
+//------------------------------------------------------------------- cPopulation::GetFormedGroupArray --
 Apto::Array<int> cPopulation::GetFormedGroupArray()
 {
   Apto::Array<int> group_ids;
@@ -1941,6 +1967,7 @@ Apto::Array<int> cPopulation::GetFormedGroupArray()
   return group_ids;
 }
 
+//---------------------------------------------------------------------------- cPopulation::SetTopNavQ --
 void cPopulation::SetTopNavQ()
 {
   topnav_q.Resize(live_org_list.GetSize());
@@ -1950,12 +1977,14 @@ void cPopulation::SetTopNavQ()
   }
 }
 
-void cPopulation::AppendRecordReproQ(cOrganism* new_org) 
+//-------------------------------------------------------------------- cPopulation::AppendRecordReproQ --
+void cPopulation::AppendRecordReproQ(cOrganism* new_org)
 { 
   repro_q.Push(new_org); 
   new_org->GetHardware().SetReproTrace(true); 
 }
 
+//------------------------------------------------------------------------ cPopulation::MoveOrganisms --
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian
 // movement that cannot be directly handled in cHardwareCPU.cc
 bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id, int true_cell)
@@ -2140,8 +2169,10 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   }
   return true;
 }
+//-------------------------------------------------------------------- end cPopulation::MoveOrganisms --
 
-// Kill Random Organism in Group (But Not Self)!! 
+//----------------------------------------------------------------------- cPopulation::KillGroupMember --
+// Kill Random Organism in Group (But Not Self)!!
 void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *org)
 {
   //Check to make sure we are not killing self!
@@ -2157,7 +2188,9 @@ void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *o
   int cell_id = m_group_list[group_id][index]->GetCellID();
   KillOrganism(cell_array[cell_id], ctx); 
 }
+//------------------------------------------------------------------- end cPopulation::KillGroupMember --
 
+//------------------------------------------------------------------------ cPopulation::AttackFacedOrg --
 // Attack organism faced by this one, if there is an organism in front.
 void cPopulation::AttackFacedOrg(cAvidaContext& ctx, int loser)
 {
@@ -2165,6 +2198,7 @@ void cPopulation::AttackFacedOrg(cAvidaContext& ctx, int loser)
   KillOrganism(loser_cell, ctx); 
 }
 
+//-------------------------------------------------------------------------- cPopulation::KillRandPred --
 void cPopulation::KillRandPred(cAvidaContext& ctx, cOrganism* org)
 {
   cOrganism* org_to_kill = org;
@@ -2185,6 +2219,7 @@ void cPopulation::KillRandPred(cAvidaContext& ctx, cOrganism* org)
   if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
 }
 
+//-------------------------------------------------------------------------- cPopulation::KillRandPrey --
 void cPopulation::KillRandPrey(cAvidaContext& ctx, cOrganism* org)
 {
   cOrganism* org_to_kill = org;
@@ -2205,6 +2240,7 @@ void cPopulation::KillRandPrey(cAvidaContext& ctx, cOrganism* org)
   if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
 }
 
+//--------------------------------------------------------------------------- cPopulation::GetRandPrey --
 cOrganism* cPopulation::GetRandPrey(cAvidaContext& ctx, cOrganism* org)
 {
   cOrganism* target_org = org;
@@ -2224,7 +2260,9 @@ cOrganism* cPopulation::GetRandPrey(cAvidaContext& ctx, cOrganism* org)
   }
   return target_org;
 }
+//----------------------------------------------------------------------- end cPopulation::GetRandPrey --
 
+//-------------------------------------------------------------------------- cPopulation::KillOrganism --
 void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
 {
   // do we actually have something to kill?
@@ -2263,7 +2301,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
     }
   }
   
-  
   // Update count statistics...
   num_organisms--;
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
@@ -2297,7 +2334,9 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   // Alert the scheduler that this cell has a 0 merit.
   AdjustSchedule(in_cell, cMerit(0));
 }
+//---------------------------------------------------------------------- end cPopulation::KillOrganism --
 
+//----------------------------------------------------------------------------- cPopulation::InjureOrg --
 void cPopulation::InjureOrg(cAvidaContext& ctx, cPopulationCell& in_cell, double injury, bool ding_reacs)
 {
   if (injury == 0) return;
@@ -2323,8 +2362,10 @@ void cPopulation::InjureOrg(cAvidaContext& ctx, cPopulationCell& in_cell, double
     }
   }
 }
+//------------------------------------------------------------------------- end cPopulation::InjureOrg --
 
-void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance) 
+//------------------------------------------------------------------------------ cPopulation::Kaboom 3 --
+void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance)
 {
   m_world->GetStats().IncKaboom();
   m_world->GetStats().AddHamDistance(distance);
@@ -2365,7 +2406,9 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
   KillOrganism(in_cell, ctx); 
   // @SLG my prediction = 92% and, 28 get equals
 }
+//-------------------------------------------------------------------------- end cPopulation::Kaboom 3 --
 
+//------------------------------------------------------------------------------ cPopulation::Kaboom 4 --
 void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance, double effect)
 {
   //Overloaded kaboom that changes neighboring organism merit by effect (non-kin if negative, kin if positive)
@@ -2420,9 +2463,7 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
           //Org without SA considered non-kin correctly
           nsa_notkin_count++;
         }
-      
-      
-      
+
         if (diff > distance && effect < 1){
           
           m_world->GetStats().IncKaboomKills();
@@ -2443,19 +2484,18 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
           org_temp->UpdateMerit(ctx, cur_merit*effect);
           m_world->GetStats().IncKaboomKills();
         }
-      
+
     }
   }
   m_world->GetStats().IncSAKin(sa_kin_count);
   m_world->GetStats().IncSANotKin(sa_notkin_count);
   m_world->GetStats().IncNSAKin(nsa_kin_count);
   m_world->GetStats().IncNSANotKin(nsa_notkin_count);
-  KillOrganism(in_cell, ctx); 
-
+  KillOrganism(in_cell, ctx);
 }
+//------------------------------------------------------------------------------ cPopulation::Kaboom 4 --
 
-
-
+//---------------------------------------------------------------------------- cPopulation::KSwapCells --
 void cPopulation::SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx)
 {
   // Sanity checks: Don't process if the cells are the same
@@ -6232,7 +6272,7 @@ void cPopulation::UpdateMaleFemaleOrgStats(cAvidaContext& ctx)
 void cPopulation::UpdateResStats(cAvidaContext& ctx) 
 {
   cStats& stats = m_world->GetStats();
-  stats.SetResources(resource_count.GetResources(ctx)); 
+  stats.SetResources(resource_count.GetResources(ctx));
   stats.SetSpatialRes(resource_count.GetSpatialRes(ctx)); 
   stats.SetResourcesGeometry(resource_count.GetResourcesGeometry()); 
 }

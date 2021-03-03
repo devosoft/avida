@@ -45,7 +45,9 @@ public:
   ~cResourceLib();
 
   int GetSize() const { return m_resource_array.GetSize(); }
-
+  
+  Apto::Array<cResource*> GetResourceData() const { return m_resource_array; }
+  
   cResource* AddResource(const cString& res_name);
   cResource* GetResource(const cString& res_name) const;
   inline cResource* GetResource(int id) const { return m_resource_array[id]; }

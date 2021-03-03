@@ -495,7 +495,7 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
     
     const int world_x = m_world->GetConfig().WORLD_X.Get();
     const int world_y = m_world->GetConfig().WORLD_Y.Get();
-    cerr << "world_x: " << world_x << "world_y: " << world_y << endl;
+    cerr << "cerr:cEnvironment::LoadResource: world_x= " << world_x << "; world_y= " << world_y << endl;
     cWorldCellBox wcbox(world_x, world_y, 0, 0, world_x, world_y);  //By default, encompass the entire world
 
     

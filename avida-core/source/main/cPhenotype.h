@@ -88,10 +88,10 @@ private:
   int copied_size;          // Instructions copied into genome.
   int executed_size;        // Instructions executed from genome.
   int gestation_time;       // CPU cycles to produce offspring (or be produced),
-                            // including additional time costs of some instructions.
+                           // including additional time costs of some instructions.
   int gestation_start;      // Total instructions executed at last divide.
-  double fitness;           // Relative effective replication rate...
-  double div_type;          // Type of the divide command used
+  double fitness;            // Relative effective replication rate...
+  double div_type;           // Type of the divide command used
 
   // 2. These are "in progress" variables, updated as the organism operates
   double cur_bonus;                           // Current Bonus
@@ -201,6 +201,8 @@ private:
 
   // 4. Records from this organism's life...
   int num_divides_failed; //Number of failed divide events @LZ
+  // @WRE DEBUG_EAR 2021-01-01 num_divides looks like it should be able to be used as
+  // a condition for whether to pass on fitness and merit values to Avida-ED.
   int num_divides;       // Total successful divides organism has produced.
   int generation;        // Number of birth events to original ancestor.
   int cpu_cycles_used;   // Total CPU cycles consumed. @JEB
@@ -505,6 +507,7 @@ public:
   const Apto::Array<int>& GetLastCollectSpecCounts() const { assert(initialized == true); return last_collect_spec_counts; }
   int GetLastCollectSpecCount(int spec_id) const { assert(initialized == true); return last_collect_spec_counts[spec_id]; }
 
+  // @WRE DEBUG_EAR 2021-01-01 Use getter GetNumDivides for retrieving num_divdies elsewhere.
   int GetNumDivides() const { assert(initialized == true); return num_divides;}
   int GetNumDivideFailed() const { assert(initialized == true); return num_divides_failed;}
 

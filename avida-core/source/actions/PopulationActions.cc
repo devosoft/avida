@@ -384,7 +384,7 @@ public:
           case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
           default: break;
         };
-        cerr << feedback.GetMessage(i) << endl;
+        cerr << "cerr:cActionInjectRange: "<< feedback.GetMessage(i) << endl;
       }
       if (!genome) return;
       for (int i = m_cell_start; i < m_cell_end; i++) {

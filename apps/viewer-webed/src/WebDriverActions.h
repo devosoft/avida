@@ -6,6 +6,12 @@
 //  Copyright (c) 2015 MSU. All rights reserved.
 //
 
+// 2021-02-24
+// gestation of 0 is 'did not reproduce'
+// Javascript 'false'
+// Metabolism should never be below 46, 47?
+// 
+
 #ifndef viewer_webed_WebDriverActions_h
 #define viewer_webed_WebDriverActions_h
 
@@ -36,12 +42,14 @@ class cActionLibrary;
 
 
 #include "apto/core/FileSystem.h"
+#include "avida/core/Types.h"
 
 #include "cEnvironment.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
 #include "cWorld.h"
 #include "cStats.h"
+#include "cResourceLib.h"
 
 #include "Driver.h"
 #include "WebDebug.h"
@@ -115,66 +123,70 @@ namespace Actions{
     }
   };
   
-  
-  //------------------------------------------------------------- cWebActionPrintSpatialResources --
-  // fb is feedback
-  class cWebActionPrintSpatialResources : public cWebAction {
-  public:
-    cWebActionPrintSpatialResources(cWorld* world, const cString& args, Avida::Feedback& fb)
-    : cWebAction(world, args, fb)
-    {
-    }
-    static const cString GetDescription() { return "no arguments"; }
-    
-    // most of work
-    void Process(cAvidaContext& ctx)
-    {
-      D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process" );
-      //map<string, vector<double> > res_data;
-      m_world->GetPopulation().UpdateResStats(ctx);  //Synchronize copies of information about resources.
-      const cStats& stats = m_world->GetStats();     //will hold copy of stats that we print out.
-      
-      // initalizing stuff used in the for loop through all the spatial resources
-      vector<json> res_jlist;
-      cPopulation& pop = m_world->GetPopulation();
-      const cResourceCount& res_count = pop.GetResourceCount();
-      int world_size = pop.GetSize();
-      
-      for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
-        if (res_count.IsSpatialResource(res_id)){
-          vector<double> res_data;
-          string res_name = stats.GetResourceNames()[res_id].GetData();
-          for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){
-            res_data.push_back(stats.GetSpatialResourceCount()[res_id][cell_ndx]);
-          }
-          auto result = minmax_element(res_data.begin(), res_data.end());
-          // add to json object
-          json res_j;
-          res_j["name"] = res_name;
-          res_j["minVal"] = *result.first;   //first and second are pointers and to get the value just dereference
-          res_j["maxVal"] = *result.second;
-          res_j["data"] = res_data;
-          res_jlist.push_back(res_j);
-        }
-      }  //end of for loop for each resource
-      
-      //WebViewerMsg means the same as json;
-      WebViewerMsg getSpatialResources = {
-        {"update", stats.GetUpdate()}
-        ,{"resources", res_jlist}
-      }; //end of webmessage
-      
-      PackageData(WA_SPAT_RES, getSpatialResources);
-      D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process [completed]");
-      
-    }  //end of Process
-  }; // cWebActionPopulationStats
-  
-  
-  
+
+ 
   //------------------------------------------------------------------- cWebActionPopulationStats --
   // fb is feedback
   class cWebActionPopulationStats : public cWebAction {
+  private:
+    //Code to get all resource data
+    std::map<std::string, double> getAllRes(cAvidaContext& ctx)
+    {
+      int tmpNum;
+    
+      vector<double> res_data;
+      D_(D_ACTIONS, "cWebActionPopulationStats::getAllRes" );
+
+      m_world->GetPopulation().UpdateResStats(ctx);  //Synchronize copies of information about resources.
+      const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+      const cReactionLib & reaction_lib = m_world->GetEnvironment().GetReactionLib();
+      const int num_reactions = m_world->GetStats().GetReactions().GetSize();const cStats& stats = m_world->GetStats();     //will hold copy of stats that we print out.
+
+      cPopulation& pop = m_world->GetPopulation();
+      const cResourceCount& res_count = pop.GetResourceCount();
+      //cerr << "pop.GetResourceCount().GetSize = " << pop.GetResourceCount().GetSize() << endl;
+      int world_size = pop.GetSize();
+      //cerr << "world_size = "  << world_size << endl;
+      //cerr << "stats.GetResources().GetSize() " << stats.GetResources().GetSize() << endl;
+
+      // initalizing stuff used in the for loop through all the spatial resources
+      vector<json> res_jlist;
+      
+      //initalize dictionary of vectors to hold resource data for each of the logic funcions
+      vector<string> logic_fn = {"not", "nan", "and", "orn", "oro", "ant", "nor", "xor", "equ"};
+
+      std::map<std::string, double> resMap = {
+        //{ 'A', '1' },
+        //{ 'B', '2' },
+        //{ 'C', '3' }
+      };
+      
+      json gdata;
+      std::map<std::string, double> resMap3;
+      std::string resName = "";
+      std::string res3 = "";
+      double resValue = 0.0;
+      for(int j=0; j < resource_lib.GetSize(); j++) {
+        
+        resName = resource_lib.GetResource(j)->GetName();
+        // res3 = resName.Clip(3); // First 3 characters only
+        res3 = resName.substr(0,3); // First 3 characters only
+        resValue = m_world->GetPopulation().GetResources(ctx)[j];
+        resMap.insert({res3, resValue}); // = addToMap(resMap, resName, resValue);
+        //resMap = addToMap(resMap3, res3, resValue);
+        
+      }
+      
+      for (auto it = resMap.begin(); it != resMap.end(); ++it) {
+        std::cout << it->first << ", " << it->second << '\n';
+      }
+
+
+      return resMap;
+    }  //end of Process
+    //end of temp code build spatial resource data
+
+
   public:
     cWebActionPopulationStats(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world, args, fb)
     {
@@ -189,7 +201,10 @@ namespace Actions{
       
       //calculating fitness, gestation, metablism averages for only viable organisms. Excluding non-viable organisms
       cDoubleSum fitness, gestation, metabolism;
-      int viables;
+      int viables, withoffspring;
+      viables = 0;
+      withoffspring = 0;
+
       //Calculations on ancestor clade subset only
       map<string, cDoubleSum> fitness_byclade, gestation_byclade, metabolism_byclade;
       map<string, int> organisms_byclade, viables_byclade;
@@ -210,31 +225,37 @@ namespace Actions{
         }
         organisms_byclade[clade]++;
         
-        //@MRR Only works with pre-calculated organsims!   Needs to chagne when working with limited resources.
+        //@MRR Only works with pre-calculated organsims!   Needs to change when working with limited resources.
         if ( org->GetPhenotype().GetPrecalcIsViable() > 0) {
           double org_fitness = phen.GetFitness();
           double org_metabolism = phen.GetMerit().GetDouble();
           double org_gestation = phen.GetGestationTime();
           viables++;
           
-          fitness.Add( org_fitness );
-          metabolism.Add( org_metabolism );
-          gestation.Add( org_gestation );
+          // 2021-02-27 @WRE Restrict report of numbers to just the ones that
+          // have offspring & merit via actual process.
+          if (0 < phen.GetNumDivides()) {
+            fitness.Add( org_fitness );
+            metabolism.Add( org_metabolism );
+            gestation.Add( org_gestation );
+            withoffspring++;
           
-          //Using fitness_byclade as a proxy for every other viable byclade 
-          //stat... add a new cDoubleSum to each category if it isn't present
-          if (fitness_byclade.find(clade) == fitness_byclade.end()){
-            fitness_byclade[clade] = cDoubleSum();
-            metabolism_byclade[clade] = cDoubleSum();
-            gestation_byclade[clade] = cDoubleSum();
-            viables_byclade[clade] = 0;
-          }
-          fitness_byclade[clade].Add(org_fitness);
-          metabolism_byclade[clade].Add(org_metabolism);
-          gestation_byclade[clade].Add(org_gestation);
-          viables_byclade[clade]++;
+            //Using fitness_byclade as a proxy for every other viable byclade
+            //stat... add a new cDoubleSum to each category if it isn't present
+            if (fitness_byclade.find(clade) == fitness_byclade.end()){
+              fitness_byclade[clade] = cDoubleSum();
+              metabolism_byclade[clade] = cDoubleSum();
+              gestation_byclade[clade] = cDoubleSum();
+              viables_byclade[clade] = 0;
+            }
+            fitness_byclade[clade].Add(org_fitness);
+            metabolism_byclade[clade].Add(org_metabolism);
+            gestation_byclade[clade].Add(org_gestation);
+            viables_byclade[clade]++;
+          } // End collecton of organism with offspring stats
         } //End collection of viable stats
       } //End iteration of live organism list
+      
       
       int org_count = stats.GetNumCreatures();
       double ave_age = stats.GetAveCreatureAge();
@@ -251,6 +272,7 @@ namespace Actions{
         ,{"organisms", org_count}
         ,{"ave_age", ave_age}
         ,{"viables", viables}
+        ,{"with_offspring", withoffspring}
       };
       
       //Gather clade information in a manner for transmission
@@ -268,7 +290,25 @@ namespace Actions{
         byclade[clade] = clade_data;  //byclade[clade] -> object of stats keyed to value
       }
       pop_data["by_clade"] = byclade;  //add by_cldae to our output object
-      
+
+      /*
+      //Gather global resource info
+      json globalres;  //Will hold all global resource data, which itself
+                     //contains objects keyed by resource name
+      for (auto resource_pr : alldata)  //organisms since its a superset to viables
+      {
+        string gkey = resource_pr.first;  //first is the resource name; second is the amount
+        map<string, double> resource_data; //map our data into stat -> value map
+        resource_data[gkey] = alldata[gkey];
+        globalres[gkey] = resource_data;  //byclade[clade] -> object of stats keyed to value
+      }
+      */
+      // Call to get global resources. Spatial resources will have values == 0.
+      std::map<std::string, double> alldata = getAllRes(ctx);
+      //pop_data["globalResourceAmount"] = globalres;  //add by_cldae to our output object
+      // @WRE 2021-02-02 json objects can directly insert std::map objects.
+      pop_data["globalResourceAmount"] = alldata;  //add global resource info our output object
+
       cEnvironment& env = m_world->GetEnvironment();
       for (int t=0; t< env.GetNumTasks(); t++){
         pop_data[string(env.GetTask(t).GetName().GetData())] =
@@ -457,10 +497,7 @@ namespace Actions{
     //a speedup
     vector<string> task_names;
     
-    /*
-     Need to use our own min/max_val functions
-     because of nans.
-     */
+    //Need to use our own min/max_val functions because of nans.
     double min_val(const vector<double>& vec)
     {
       if (vec.empty())
@@ -489,12 +526,13 @@ namespace Actions{
       return max;
     }
     
-    //Temp code to test spatical resource data
-    vector<double> getSpatRes(cAvidaContext& ctx)
+    //Look at class cActionPrintSpatialResources for more info about the dataformat and use in event statement
+    //Code to get spatial resource data
+    map<string, vector<double>> getSpatRes(cAvidaContext& ctx)
     {
       vector<double> res_data;
       D_(D_ACTIONS, "cWebActionGridData::getSpatRes" );
-      //map<string, vector<double> > res_data;
+
       m_world->GetPopulation().UpdateResStats(ctx);  //Synchronize copies of information about resources.
       const cStats& stats = m_world->GetStats();     //will hold copy of stats that we print out.
       
@@ -506,18 +544,46 @@ namespace Actions{
       int world_size = pop.GetSize();
       //cerr << "world_size = "  << world_size << endl;
       //cerr << "stats.GetResources().GetSize() " << stats.GetResources().GetSize() << endl;
+      
+      //initalize dictionary of vectors to hold resource data for each of the logic funcions
+      vector<string> logic_fn = {"not", "nan", "and", "orn", "oro", "ant", "nor", "xor", "equ"};
+      map<string, vector<double>>  vdata;
+      for (int ii=0; ii< logic_fn.size(); ii++) {
+        vdata[logic_fn[ii]].clear();
+      };
+      string lname = "---";
+
+      int ii = 0;
       for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
         //cerr << "isSpacial = " << res_count.IsSpatialResource(res_id) << endl;
         if (res_count.IsSpatialResource(res_id)){
+          ii++;
           res_data.clear();
           string res_name = stats.GetResourceNames()[res_id].GetData();
           for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){
             res_data.push_back(stats.GetSpatialResourceCount()[res_id][cell_ndx]);
           }
           //cerr << "res_data was built !!!!!! \n";
-          return res_data;
+          //return res_data;   //With this line present, only the fist resource is returned.
+                               // also this requiers a return type of vector<double>
 
-          // begin of section added from "incremental commit working adding resource grid for testin commit acef212e7143fe9db1d9e1fb18fc6533004ef250"
+          //cerr << "Data for " << res_name << " is below:" << endl;
+          //int max = (16 > world_size) ? 16 : world_size;
+          //for (int jj = 0; jj<max; jj++){
+          //  cerr << res_data[jj] << ", ";
+          //}
+          // res_name and res_data for one of possible many has been populated
+          //cerr << endl;
+          
+          lname = res_name.substr(0,3);
+          if (vdata[lname].size() < world_size) {vdata[lname] = res_data;}
+          else {
+            for (int ii=0; ii < world_size; ii++) {
+              vdata[lname][ii] += res_data[ii];
+            }
+          };
+          
+          //used when only reporting one resource
           auto result = minmax_element(res_data.begin(), res_data.end());
           // add to json object
           json res_j;
@@ -526,30 +592,33 @@ namespace Actions{
           res_j["maxVal"] = *result.second;
           res_j["data"] = res_data;
           res_jlist.push_back(res_j);
-          // end of section added from "incremental commit working adding resource grid for testin commit acef212e7143fe9db1d9e1fb18fc6533004ef250"
-
+          //cerr << "name=" <<  res_name << "; min=" << res_j["minVal"] << "; max=" << res_j["maxVal"];
         }
       }  //end of for loop for each resource
       
       //WebViewerMsg means the same as json;
       //cerr << "res data not built" << endl;
 
+      // This section is needed if buidling a separate message for resource data
+      // now resource data is included as part of grid data.
       // begin of section added from "incremental commit working adding resource grid for testin commit acef212e7143fe9db1d9e1fb18fc6533004ef250"
-      WebViewerMsg getSpatialResources = {
-        {"update", stats.GetUpdate()}
-        ,{"resources", res_jlist}
-      }; //end of webmessage
+      //WebViewerMsg getSpatialResources = {
+      //  {"update", stats.GetUpdate()}
+      //  ,{"resources", res_jlist}
+      //}; //end of webmessage
       
-      PackageData(WA_SPAT_RES, getSpatialResources);
-      D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process [completed]");
-
+      //PackageData(WA_SPAT_RES, getSpatialResources);
+      //D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process [completed]");
       // end of section added from "incremental commit working adding resource grid for testin commit acef212e7143fe9db1d9e1fb18fc6533004ef250"
+      // end of section for separate resource message
 
-      return res_data;
+      return vdata;
     }  //end of Process
-    //end of temp code to test spatial resource process.
+    //end of temp code build spatial resource data
     
-    
+
+
+
   public:
     cWebActionGridData(cWorld* world, const cString& args, Avida::Feedback& fb) : cWebAction(world,args,fb)
     {
@@ -567,12 +636,13 @@ namespace Actions{
     {
       D_(D_ACTIONS, "cWebActionGridData::Process");
       WebViewerMsg data;
-      
+      //D_(D_FLOW | D_MSG_OUT, "cWebActionGridData::Process start");
       //Reset our vectors
       int world_size = m_world->GetPopulation().GetSize();
       vector<double> fitness(world_size, NaN);
       vector<double> gestation(world_size, NaN);
       vector<double> metabolism(world_size, NaN);
+      vector<double> offspring(world_size, NaN);
       vector<string> ancestor(world_size, "-");
       
       map<string, vector<double>> tasks;
@@ -592,22 +662,47 @@ namespace Actions{
         Systematics::CladePtr cptr;
         cptr.DynamicCastFrom(org->SystematicsGroup("clade"));
         
+	// @WRE: 2021-01-01 Tracking down issue with reporting metabolism. DEBUG_EAR
+	// Can we get an indication of whether an organism has reproduced yet?
+	// Approach 1: Just tie merit report to whether an offspring has been produced.
+	// Approach 2: Add 'number of offspring produced' to information returned.
+
         cPhenotype& phen = org->GetPhenotype();
-        fitness[i]    = phen.GetFitness();
         gestation[i]  = phen.GetGestationTime();
-        metabolism[i] = phen.GetMerit().GetDouble();
+	// @WRE original metabolism/merit is simple
+        // metabolism[i] = phen.GetMerit().GetDouble();
+	// Change this to only come through when offspring has been made
+	offspring[i] = phen.GetNumDivides();
+	if (0 < offspring[i]) {
+    fitness[i]    = phen.GetFitness();
+	  metabolism[i] = phen.GetMerit().GetDouble();
+	} else {
+	  // @WRE No offspring, set something different here.
+	  metabolism[i] = 0.0; // phen.GetMerit().GetDouble();
+    fitness[i]    = 0.0;
+	}
         ancestor[i]   = (cptr == NULL) ? "-" : cptr->Properties().Get("name").StringValue().GetData();
         for (size_t t = 0; t < task_names.size(); t++){
           tasks[task_names[t]][i] = phen.GetLastCountForTask(t);          
         }
       }
       
-      //temp for test Spatial Resource data
-      vector<double> resource(world_size, NaN);
-      resource = getSpatRes(ctx);
-      if (resource.empty()) {
-        vector<double> resource(world_size, 0);
-      }
+      // Spatial resource data
+      map<string, vector<double>> rdata = getSpatRes(ctx);
+
+      //Vector of resources
+      //if (!resource_j.empty()) {
+      //  data["resources"] = resource_j;
+      //}
+
+      //temp for test Spatial Resource data, used when did demo with only one resource.
+      //vector<double> resource(world_size, NaN);
+      //resource = getSpatRes(ctx);
+      
+      //if (resource.empty()) {
+      //  vector<double> resource(world_size, 0);
+      //}
+      data["codeversion"] = "with_rdata_loop";
       data["fitness"] = { 
         {"data",fitness}, 
         {"minVal",min_val(fitness)}, 
@@ -626,29 +721,49 @@ namespace Actions{
         {"minVal",min_val(gestation)},
         {"maxVal",max_val(gestation)}
       };
-      //This is for testing only. It only works with one resource.
-      data["resource"] = {
-        {"data",resource},
-        {"minVal",min_val(resource)},
-        {"maxVal",max_val(resource)}
+      data["offspring"] = {
+        {"data",offspring},
+        {"minVal",min_val(offspring)},
+        {"maxVal",max_val(offspring)}
       };
-      for (auto it : tasks){
-        data[it.first] = {
+      //This is for testing only. It only works with one resource.
+      //data["resource"] = {
+      //  {"data",resource},
+      //  {"minVal",min_val(resource)},
+      //  {"maxVal",max_val(resource)}
+      //};
+      
+      string rname;
+      for (auto it : rdata){
+        rname = "r" + it.first;
+        data[rname] = {
           {"data",it.second},
           {"minVal",min_val(it.second)},
           {"maxVal",max_val(it.second)}
         };
-      }
+      };
+
+      for (auto it : tasks){
+        data[it.first] = {
+          {"data",it.second},
+          {"minVal",min_val(it.second)},
+          {"maxVal",max_val(it.second)} //,
+          // {"test", 1}
+        };
+      };
       
+      //data['completed'] = 'True';
       PackageData(WA_GRID_DATA, data);
       
       D_(D_ACTIONS, "cWebActionGridData::Process completed.");
-    }
+      //D_(D_FLOW | D_MSG_OUT, "cWebActionGridData::Process done.");
+
+    };
   };
   //---------------------------------------------------------------------- end cWebActionGridData --
 
   
-  
+  //-------------------------------------------------------------------- cWebActionInjectSequence --
   class cWebActionInjectSequence : public cWebAction
   {
   private:
@@ -701,9 +816,10 @@ namespace Actions{
       D_(D_ACTIONS, "cWebActionInjectSequence::Process [Done]");
     }
   };
+  //---------------------------------------------------------------- end cWebActionInjectSequence --
   
-  
-  
+
+  //------------------------------------------------------------------------ cWebActionExportExpr --
   class cWebActionExportExpr : public cWebAction
   {
   private:
@@ -831,6 +947,8 @@ namespace Actions{
       D_(D_ACTIONS, "cWebActionExportExpr::Process [Done]");
     }
   };
+  //-------------------------------------------------------------------- end cWebActionExportExpr --
+  
   
   //------------------------------------------------------------------------ cWebActionImportExpr --
   class cWebActionImportExpr : public cWebAction
@@ -1512,8 +1630,62 @@ namespace Actions{
   //--------------------------------------------------------------------- end cWebActionSetUpdate --
 
   
+  //------------------------------------------------------------- cWebActionPrintSpatialResources --
+  // fb is feedback
+  class cWebActionPrintSpatialResources : public cWebAction {
+  public:
+    cWebActionPrintSpatialResources(cWorld* world, const cString& args, Avida::Feedback& fb)
+    : cWebAction(world, args, fb)
+    {
+    }
+    static const cString GetDescription() { return "no arguments"; }
+    
+    // most of work
+    void Process(cAvidaContext& ctx)
+    {
+      D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process" );
+      //map<string, vector<double> > res_data;
+      m_world->GetPopulation().UpdateResStats(ctx);  //Synchronize copies of information about resources.
+      const cStats& stats = m_world->GetStats();     //will hold copy of stats that we print out.
+      
+      // initalizing stuff used in the for loop through all the spatial resources
+      vector<json> res_jlist;
+      cPopulation& pop = m_world->GetPopulation();
+      const cResourceCount& res_count = pop.GetResourceCount();
+      int world_size = pop.GetSize();
+      
+      for (int res_id=0; res_id < stats.GetResources().GetSize(); res_id++){
+        if (res_count.IsSpatialResource(res_id)){
+          vector<double> res_data;
+          string res_name = stats.GetResourceNames()[res_id].GetData();
+          for (int cell_ndx=0; cell_ndx < world_size; cell_ndx++){
+            res_data.push_back(stats.GetSpatialResourceCount()[res_id][cell_ndx]);
+          }
+          auto result = minmax_element(res_data.begin(), res_data.end());
+          // add to json object
+          json res_j;
+          res_j["name"] = res_name;
+          res_j["minVal"] = *result.first;   //first and second are pointers and to get the value just dereference
+          res_j["maxVal"] = *result.second;
+          res_j["data"] = res_data;
+          res_jlist.push_back(res_j);
+        }
+      }  //end of for loop for each resource
+      
+      //WebViewerMsg means the same as json;
+      WebViewerMsg getSpatialResources = {
+        {"update", stats.GetUpdate()}
+        ,{"resources", res_jlist}
+      }; //end of webmessage
+      
+      PackageData(WA_SPAT_RES, getSpatialResources);
+      D_(D_ACTIONS, "cWebActionPrintSpatialResources::Process [completed]");
+      
+    }  //end of Process
+  }; // end cWebActionPrintSpatialResources
   
-  
+  //------------------------------------------------------------------------- cWebActionReset --
+
   class cWebActionReset : public cWebAction
   {
   private:

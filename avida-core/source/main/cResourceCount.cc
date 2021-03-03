@@ -489,7 +489,7 @@ int cResourceCount::GetResourceCountID(const cString& res_name)
     for (int i = 0; i < resource_name.GetSize(); i++) {
       if (resource_name[i] == res_name) return i;
     }
-    cerr << "Error: Unknown resource '" << res_name << "'." << endl;
+    // cerr << "Error: Unknown resource '" << res_name << "'." << endl;
     return -1;
 }
 

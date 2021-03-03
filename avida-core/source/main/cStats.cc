@@ -1547,36 +1547,7 @@ void cStats::PrintReactionExeData(const cString& filename)
   df->Endl();
 }
 
-
-void cStats::PrintResourceData(const cString& filename, cString maps)
-{
-  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
-  
-  df->WriteComment("Avida resource data");
-  df->WriteTimeStamp();
-  df->WriteComment("First column gives the current update, all further columns give the quantity");
-  df->WriteComment("of the particular resource at that update.");
-  
-  df->Write(m_update,   "Update");
-  
-  // Check for spatial resources if they exist total up the resource in each
-  // cell and print that total.  Also call the routine to print the individual
-  // maps for each spatial resource
-  
-  for (int i = 0; i < resource_count.GetSize(); i++) {
-    if (resource_geometry[i] != nGeometry::GLOBAL && resource_geometry[i] != nGeometry::PARTIAL) {
-      double sum_spa_resource = 0;
-      for (int j = 0; j < spatial_res_count[i].GetSize(); j++) {
-        sum_spa_resource += spatial_res_count[i][j];
-      }
-      df->Write(sum_spa_resource, resource_names[i] );
-      if(maps=="1") PrintSpatialResData(filename, i);
-    } else {
-      df->Write(resource_count[i], resource_names[i] );
-    }
-  }
-  df->Endl();
-}
+//PrintResourceData was here
 
 void cStats::PrintResourceLocData(const cString& filename, cAvidaContext& ctx)
 {
@@ -1625,6 +1596,38 @@ void cStats::PrintResWallLocData(const cString& filename, cAvidaContext& ctx)
   fp << endl;
 }
 
+//--------------------------------------------------------------------------------------- PrintResourceData --
+void cStats::PrintResourceData(const cString& filename, cString maps)
+{
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  
+  df->WriteComment("Avida resource data");
+  df->WriteTimeStamp();
+  df->WriteComment("First column gives the current update, all further columns give the quantity");
+  df->WriteComment("of the particular resource at that update.");
+  
+  df->Write(m_update,   "Update");
+  
+  // Check for spatial resources if they exist total up the resource in each
+  // cell and print that total.  Also call the routine to print the individual
+  // maps for each spatial resource
+  
+  for (int i = 0; i < resource_count.GetSize(); i++) {
+    if (resource_geometry[i] != nGeometry::GLOBAL && resource_geometry[i] != nGeometry::PARTIAL) {
+      double sum_spa_resource = 0;
+      for (int j = 0; j < spatial_res_count[i].GetSize(); j++) {
+        sum_spa_resource += spatial_res_count[i][j];
+      }
+      df->Write(sum_spa_resource, resource_names[i] );
+      if(maps=="1") PrintSpatialResData(filename, i);
+    } else {
+      df->Write(resource_count[i], resource_names[i] );
+    }
+  }
+  df->Endl();
+}
+
+//--------------------------------------------------------------------------------------- PrintSpatialResData --
 void cStats::PrintSpatialResData(const cString& filename, int i)
 {
   
@@ -1650,6 +1653,7 @@ void cStats::PrintSpatialResData(const cString& filename, int i)
   df->Flush();
 }
 
+//--------------------------------------------------------------------------------------- PrintCellVisitsData --
 // @WRE: Added method for printing out visit data
 void cStats::PrintCellVisitsData(const cString&)
 {

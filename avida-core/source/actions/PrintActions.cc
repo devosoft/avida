@@ -254,27 +254,7 @@ POP_OUT_FILE(PrintPhenotypeStatus,     phenotype_status.dat);
 POP_OUT_FILE(PrintDemeTestamentStats,  deme_testament.dat  );
 POP_OUT_FILE(PrintCurrentMeanDemeDensity,  deme_currentMeanDensity.dat  );
 
-
-class cActionPrintResourceData : public cAction
-{
-private:
-  cString m_filename;
-  cString m_maps;
-public:
-  cActionPrintResourceData(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
-  {
-    cString largs(args);
-    m_filename = (largs.GetSize()) ? largs.PopWord() :  "resource.dat";
-    m_maps = (largs.GetSize()) ? largs.PopWord() : "1"; 
-  }
-  static const cString GetDescription() { return "Arguments: [string fname=\"resource.dat\"]"; }
-  void Process(cAvidaContext& ctx)
-  {
-    m_world->GetPopulation().UpdateResStats(ctx);
-    m_world->GetStats().PrintResourceData(m_filename, m_maps);
-  }
-};
-
+//cActionPrintResourceData was here
 
 class cActionPrintSpatialResourceElements : public cAction
 {
@@ -327,6 +307,28 @@ class cActionPrintSpatialResourceElements : public cAction
 
 };
 
+//--------------------------------------------------------------------------------------- PrintSpatialResData --
+class cActionPrintResourceData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_maps;
+public:
+  cActionPrintResourceData(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    cString largs(args);
+    m_filename = (largs.GetSize()) ? largs.PopWord() :  "resource.dat";
+    m_maps = (largs.GetSize()) ? largs.PopWord() : "1";
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"resource.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetStats().PrintResourceData(m_filename, m_maps);
+  }
+};
+
+//--------------------------------------------------------------------------------------- PrintCellVisitsData --
 class cActionPrintSpatialResources : public cAction
 {
 private:
@@ -341,7 +343,7 @@ private:
 //   Avida-ED-web only; if it begins with unit seperator <character code 31> and it is in Web driver actions
 //     then args is a serialized json object.
 // Feedback is away to communicate back to the user what has happend.
-//   used inside of these actions if something has gone wrong. In Avida-ED-web it is a away to send stuff to av_ui.
+//   used inside of these actions if something has gone wrong. In Avida-ED-web it is a away to send stuff to Avida-ED user interface
 // cAction - a pure virtual class. The process method must be filled in. This is a way of enforcing an interface.
 //   avida uses virtual classes a lot.
 // m_first_run must be intialilzed.
@@ -398,6 +400,7 @@ public:
   }  //end of Process
 };
 
+//--------------------------------------------------------------------------------------- cActionPrintResourceLocData --
 class cActionPrintResourceLocData : public cAction
 {
 private:

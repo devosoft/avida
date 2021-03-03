@@ -164,7 +164,6 @@ SET(WEB_FLAGS
    -s DEMANGLE_SUPPORT=1\
    -s EMTERPRETIFY=1\
    -s EMTERPRETIFY_ASYNC=1\
-   -s WASM=0\
    -s EMTERPRETIFY_WHITELIST=${EMS_EMTERPRETIFY_WHITELIST}\
    -s ASSERTIONS=0\
    -DDEBUG "
@@ -190,14 +189,6 @@ ADD_EXECUTABLE(avida
 
 INSTALL_TARGETS(/work avida)
 
-# when using emscripten sdk-tag-1.38.15-64bit the avida.js.mem is not being 
-# build we were NOT using web-assembly with sdk-1.37.18-64bit which is what 
-# was on the #2015 mac the original emscripten was using the asm.js virtual
-# machine. That was replaced with web assembly technology built into the 
-# browser. But we are not changing to web assembly now. We would have 
-# to re-write web-workers etc. So to use sdk-tag-1.38.15-64bit we need the 
-# flag  -s WASM=0\ that is included above
-#
 SET(BINARY_SUPPORT
    ${EXECUTABLE_OUTPUT_PATH}/avida.js.mem
    )

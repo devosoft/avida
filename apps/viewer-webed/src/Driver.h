@@ -334,6 +334,7 @@ namespace Avida{
           data["metabolism"] = org->GetPhenotype().GetMerit().GetDouble();
           data["gestation"] = org->GetPhenotype().GetGestationTime();
           data["isViable"] = org->GetPhenotype().GetPrecalcIsViable();
+          data["offspring"] = org->GetPhenotype().GetNumDivides();
           
           map<string,double> task_count;
           cEnvironment& env = m_world->GetEnvironment();
