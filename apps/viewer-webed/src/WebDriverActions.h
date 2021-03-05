@@ -78,10 +78,6 @@ namespace Actions{
   
   const int NO_SELECTION = -1;
   
-  
-  
-  
-  
   class cWebAction : public cAction
   {
   protected:
@@ -201,6 +197,7 @@ namespace Actions{
       
       //calculating fitness, gestation, metablism averages for only viable organisms. Excluding non-viable organisms
       cDoubleSum fitness, gestation, metabolism;
+      cDoubleSum repro_fitness, repro_gestation, repro_metabolism;
       int viables, withoffspring;
       viables = 0;
       withoffspring = 0;
@@ -230,29 +227,35 @@ namespace Actions{
           double org_fitness = phen.GetFitness();
           double org_metabolism = phen.GetMerit().GetDouble();
           double org_gestation = phen.GetGestationTime();
+          if (0.0 != org_gestation){
+            org_fitness = org_metabolism / org_gestation;
+          }
           viables++;
           
           // 2021-02-27 @WRE Restrict report of numbers to just the ones that
           // have offspring & merit via actual process.
           if (0 < phen.GetNumDivides()) {
-            fitness.Add( org_fitness );
-            metabolism.Add( org_metabolism );
-            gestation.Add( org_gestation );
+            repro_fitness.Add( org_fitness );
+            repro_metabolism.Add( org_metabolism );
+            repro_gestation.Add( org_gestation );
             withoffspring++;
-          
-            //Using fitness_byclade as a proxy for every other viable byclade
-            //stat... add a new cDoubleSum to each category if it isn't present
-            if (fitness_byclade.find(clade) == fitness_byclade.end()){
-              fitness_byclade[clade] = cDoubleSum();
-              metabolism_byclade[clade] = cDoubleSum();
-              gestation_byclade[clade] = cDoubleSum();
-              viables_byclade[clade] = 0;
-            }
-            fitness_byclade[clade].Add(org_fitness);
-            metabolism_byclade[clade].Add(org_metabolism);
-            gestation_byclade[clade].Add(org_gestation);
-            viables_byclade[clade]++;
-          } // End collecton of organism with offspring stats
+          }
+          fitness.Add( org_fitness );
+          metabolism.Add( org_metabolism );
+          gestation.Add( org_gestation );
+        
+          //Using fitness_byclade as a proxy for every other viable byclade
+          //stat... add a new cDoubleSum to each category if it isn't present
+          if (fitness_byclade.find(clade) == fitness_byclade.end()){
+            fitness_byclade[clade] = cDoubleSum();
+            metabolism_byclade[clade] = cDoubleSum();
+            gestation_byclade[clade] = cDoubleSum();
+            viables_byclade[clade] = 0;
+          }
+          fitness_byclade[clade].Add(org_fitness);
+          metabolism_byclade[clade].Add(org_metabolism);
+          gestation_byclade[clade].Add(org_gestation);
+          viables_byclade[clade]++;
         } //End collection of viable stats
       } //End iteration of live organism list
       
@@ -269,6 +272,9 @@ namespace Actions{
         ,{"ave_fitness", fitness.Average()}
         ,{"ave_gestation_time", gestation.Average()}
         ,{"ave_metabolic_rate", metabolism.Average()}
+        ,{"ave_repro_fitness", repro_fitness.Average()}
+        ,{"ave_repro_gestation_time", repro_gestation.Average()}
+        ,{"ave_repro_metabolic_rate", repro_metabolism.Average()}
         ,{"organisms", org_count}
         ,{"ave_age", ave_age}
         ,{"viables", viables}
@@ -673,7 +679,8 @@ namespace Actions{
         // metabolism[i] = phen.GetMerit().GetDouble();
 	// Change this to only come through when offspring has been made
 	offspring[i] = phen.GetNumDivides();
-	if (0 < offspring[i]) {
+	//if (0 < offspring[i]) {
+  if (0 <= offspring[i]) {
     fitness[i]    = phen.GetFitness();
 	  metabolism[i] = phen.GetMerit().GetDouble();
 	} else {
@@ -681,6 +688,10 @@ namespace Actions{
 	  metabolism[i] = 0.0; // phen.GetMerit().GetDouble();
     fitness[i]    = 0.0;
 	}
+  if ((0.0 != fitness[i]) && (0.0 != gestation[i])){
+    fitness[i] = metabolism[i] / gestation[i];
+  }
+ 
         ancestor[i]   = (cptr == NULL) ? "-" : cptr->Properties().Get("name").StringValue().GetData();
         for (size_t t = 0; t < task_names.size(); t++){
           tasks[task_names[t]][i] = phen.GetLastCountForTask(t);          
@@ -948,7 +959,6 @@ namespace Actions{
     }
   };
   //-------------------------------------------------------------------- end cWebActionExportExpr --
-  
   
   //------------------------------------------------------------------------ cWebActionImportExpr --
   class cWebActionImportExpr : public cWebAction

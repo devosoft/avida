@@ -33,7 +33,7 @@ namespace Avida{
     const WebViewerMsg MSG_READY = {
       {"type", "userFeedback"},
       {"level", "notification"},
-      {"message", "ready"}
+      {"message", "ready: 2021_305_0107"}
     };
     
     const WebViewerMsg MSG_DRIVER_PAUSED = {

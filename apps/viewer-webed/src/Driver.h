@@ -333,6 +333,12 @@ namespace Avida{
           data["fitness"] = org->GetPhenotype().GetFitness();
           data["metabolism"] = org->GetPhenotype().GetMerit().GetDouble();
           data["gestation"] = org->GetPhenotype().GetGestationTime();
+          
+          // @WRE 2021-03-05 Fixing bad fitness values
+          if (0.0 != double(data["gestation"])){
+            data["fitness"] = double(data["metabolism"]) / double(data["gestation"]);
+          }
+          
           data["isViable"] = org->GetPhenotype().GetPrecalcIsViable();
           data["offspring"] = org->GetPhenotype().GetNumDivides();
           
