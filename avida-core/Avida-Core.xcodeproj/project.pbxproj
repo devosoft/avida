@@ -103,8 +103,6 @@
 		7049F3730A66AD7E00640512 /* default-transsmt.org in Create work dir */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
 		704C6298160CA62F004E9B25 /* cMigrationMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704C6297160CA62F004E9B25 /* cMigrationMatrix.cc */; };
 		704C629A160CA668004E9B25 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
-		704C629E160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 704C629C160CA6CC004E9B25 /* libtcmalloc-1.4.a */; };
-		704C629F160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 704C629C160CA6CC004E9B25 /* libtcmalloc-1.4.a */; };
 		704C62A0160CA6D9004E9B25 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
 		705B103D1073AEF1002242E6 /* default-heads-sex.org in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10321073AC1F002242E6 /* default-heads-sex.org */; };
 		705B103E1073AEF1002242E6 /* default-heads.org in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10331073AC1F002242E6 /* default-heads.org */; };
@@ -753,7 +751,6 @@
 				7038248C14DC3C92003C6901 /* libncurses.5.4.dylib in Frameworks */,
 				7038248B14DC3C8F003C6901 /* libapto.a in Frameworks */,
 				7038248D14DC3C95003C6901 /* (null) in Frameworks */,
-				704C629F160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -770,7 +767,6 @@
 			files = (
 				70FA7AC8138C308000DC70D4 /* libavida-core.a in Frameworks */,
 				70FA7AC9138C308500DC70D4 /* libviewer-core.a in Frameworks */,
-				704C629E160CA6CC004E9B25 /* libtcmalloc-1.4.a in Frameworks */,
 				704C62A0160CA6D9004E9B25 /* libapto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
