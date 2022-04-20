@@ -1189,7 +1189,16 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
   // Quick check for empty parasites
   if (injected_code.GetSize() == 0) return false;
   
-  
+  // Get parent parasite
+  Apto::SmartPtr<cParasite, Apto::InternalRCObject> parent_parasite;
+  parent_parasite.DynamicCastFrom(parent);
+
+  // Do not activate the parasite if the size of its genome is different from that of its parent
+  if(m_world->GetConfig().PARASITE_GENOME_SIZE_AS_PARENT.Get() == 1 && parent_parasite != NULL) {
+    if (parent_parasite->GetSeqSize() != injected_code.GetSize()) {
+      return false;
+    }
+  }
   // Pull the host cell
   const int host_id = host->GetOrgInterface().GetCellID();
   assert(host_id >= 0 && host_id < cell_array.GetSize());
@@ -1266,8 +1275,8 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
   {
     //mutate virulence
     // m_world->GetConfig().PARASITE_VIRULENCE.Get()
-    Apto::SmartPtr<cParasite, Apto::InternalRCObject> parent_parasite;
-    parent_parasite.DynamicCastFrom(parent);
+    //Apto::SmartPtr<cParasite, Apto::InternalRCObject> parent_parasite;
+    //parent_parasite.DynamicCastFrom(parent);
     double oldVir = parent_parasite->GetVirulence();
     
     //default to not mutating
@@ -7149,6 +7158,9 @@ void cPopulation::InjectParasite(const cString& label, const InstructionSequence
   
   //default to configured parasite virulence
   parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
+
+  // set genome sequence size
+  parasite->SetSeqSize(injected_code.GetSize());
   
   if (target_organism->ParasiteInfectHost(parasite)) {
     Systematics::Manager::Of(m_world->GetNewWorld())->ClassifyNewUnit(parasite);

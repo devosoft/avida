@@ -462,6 +462,8 @@ public:
   
   CONFIG_ADD_VAR(FULL_VERTICAL_TRANS, double, 0.0, "Determines if offspring of infected host is automatically infected. 0 for no, 1 for yes. If you want to keep parent infected as well, you need to set DIVIDE_METHOD to 2.");
 
+  CONFIG_ADD_VAR(PARASITE_GENOME_SIZE_AS_PARENT, int, 0, "Change this value to 1 to make the genome size of the parasite's offspring equal to that of its parent");
+
 
   // -------- CPU Archetecture
   CONFIG_ADD_GROUP(ARCHETECTURE_GROUP, "Details on how CPU should work");
