@@ -603,6 +603,7 @@ SET(CFG_FILES
   ${CFG_FILES_DIR}/instset-transsmt.cfg
   ${CFG_FILES_DIR}/default-heads.org
   ${CFG_FILES_DIR}/default-heads-sex.org
-  ${CFG_FILES_DIR}/default-transsmt.org 
+  ${CFG_FILES_DIR}/default-transsmt-host.org
+  ${CFG_FILES_DIR}/default-transsmt-parasite.org
 )
 INSTALL_FILES(/work FILES ${CFG_FILES})
