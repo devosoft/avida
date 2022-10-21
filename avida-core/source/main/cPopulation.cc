@@ -3288,10 +3288,17 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     (*pgrp)[0] = germline_genotype;
     
     Systematics::GroupPtr new_germline_genotype = germline_genotype->ClassifyNewUnit(unit, pgrp);
-    source_deme.ReplaceGermline(new_germline_genotype);
+    
+    //LZ 2022
+    //This resets the source deme with the new germline genotype, which should only happen when the divide method is 0
+    if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 0) {
+      source_deme.ReplaceGermline(new_germline_genotype);
+      SeedDeme(source_deme, new_germline_genotype, Systematics::Source(Systematics::DUPLICATION, "germline"), ctx);
+    }
+
     target_deme.ReplaceGermline(new_germline_genotype);
-    SeedDeme(source_deme, new_germline_genotype, Systematics::Source(Systematics::DUPLICATION, "germline"), ctx); 
-    SeedDeme(target_deme, new_germline_genotype, Systematics::Source(Systematics::DUPLICATION, "germline"), ctx); 
+    SeedDeme(target_deme, new_germline_genotype, Systematics::Source(Systematics::DUPLICATION, "germline"), ctx);
+    
     new_germline_genotype->RemoveUnit();
   } else {
     // Not using germlines; things are much simpler.  Seed the target from the source.
