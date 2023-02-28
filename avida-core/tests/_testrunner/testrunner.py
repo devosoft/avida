@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 #  Copyright 2007-2011 David Michael Bryson, all rights reserved.
 #  http://programerror.com/software/testrunner
@@ -25,7 +25,7 @@
 #
 
 
-import ConfigParser
+import configparser
 import difflib
 import dircache
 import fnmatch
@@ -170,7 +170,7 @@ Usage: %(_testrunner_name)s [options] [testname ...]
     --version
       Show version information.
 """ % settings
-    print usagestr
+    print(usagestr)
 # } // End of usage()
 
 
@@ -204,13 +204,13 @@ long = no                ; Is this test a long test?
 ; them with %(variable_name)s.  For example see 'app' above.
 ;
 """
-    sk = settings.keys()
+    sk = list(settings.keys())
     sk.sort()
     for set in sk:
         if set[0] != "_":
             test_list += "; %s \n" % set
     test_list += ";--- End Test Configuration File ---"
-    print test_list
+    print(test_list)
 # } // End of sample_test_list()
 
 
@@ -226,7 +226,7 @@ See the supplied license for details.
 
 http://www.programerror.com/software/testrunner
 """ % (TESTRUNNER_VERSION, TESTRUNNER_COPYRIGHT)
-    print versionstr
+    print(versionstr)
 # } // End of version()
 
 
@@ -248,7 +248,7 @@ class SCMWrapper_Git:
         global settings
         self.cmd = settings["git"]
         self.submodule = settings["git_submodule"]
-        print self.submodule
+        print(self.submodule)
 
     def goSubmodule(self):
         if self.submodule != "":
@@ -309,7 +309,7 @@ class SCMWrapper_SVN:
         self.metadir = settings["svnmetadir"]
 
         if not os.path.exists(self.metadir):
-            print "Warning: Current directory does not appear to be a SVN working copy"
+            print("Warning: Current directory does not appear to be a SVN working copy")
 
     def getVersionString(self, path):
         rev = "exported"
@@ -344,7 +344,7 @@ class SCMWrapper_SVN:
         return True
 
     def removeDirectory(self, dir):
-        print "Error: SVN does not currently support directory removal"
+        print("Error: SVN does not currently support directory removal")
         return False
 
 
@@ -383,12 +383,12 @@ class cTest:
         self.tdir = tdir
         self.scm = settings["scm"]
 
-        if settings.has_key("skip-tests"):
+        if "skip-tests" in settings:
             self.skip = True
         else:
             self.skip = False
 
-        self.cfg = ConfigParser.ConfigParser(settings)
+        self.cfg = configparser.ConfigParser(settings, inline_comment_prefixes=('#', ';'))
         self.cfg.read([os.path.join(tdir, TEST_LIST)])
 
         expectdir = os.path.join(tdir, EXPECTDIR)
@@ -403,7 +403,7 @@ class cTest:
         else:
             self.has_perf_base = False
 
-        if self.has_perf_base and settings.has_key("_reset_perf_base"):
+        if self.has_perf_base and "_reset_perf_base" in settings:
             try:
                 rev = self.scm.getVersionString(self.tdir)
                 oname = "perf-%s-reset-%s" % (
@@ -411,21 +411,21 @@ class cTest:
 
                 shutil.move(os.path.join(perfdir, PERF_BASE),
                             os.path.join(perfdir, oname))
-                print "%s : performance baseline reset" % name
+                print("%s : performance baseline reset" % name)
             except (IOError, OSError, shutil.Error):
                 pass
 
         # Load the App for the test and check that it exists
         try:
-            self.app = self.cfg.get('main', 'app', False, settings)
+            self.app = self.cfg.get('main', 'app', raw=False, vars=settings)
         except:
             self.app = settings['default_app']
         self.app = os.path.abspath(self.app)
         if not os.path.exists(self.app):
-            print "Error: Application (%s) not found" % self.app
+            print("Error: Application (%s) not found" % self.app)
             sys.exit(-1)
         if not os.path.isfile(self.app):
-            print "Error: Application (%s) is not a file" % self.app
+            print("Error: Application (%s) is not a file" % self.app)
             sys.exit(-1)
 
         self.args = self.getConfig("main", "args", "")
@@ -454,7 +454,7 @@ class cTest:
     def getConfig(self, sect, opt, default):
         global settings
         try:
-            return self.cfg.get(sect, opt, False, settings)
+            return self.cfg.get(sect, opt, raw=False, vars=settings)
         except:
             return default
     # } // End of cTest::getConfig()
@@ -496,9 +496,9 @@ class cTest:
             self.disabled = True
             return
 
-        if settings.has_key("_reset_expected"):
+        if "_reset_expected" in settings:
             if not self.scm.removeDirectory(expectdir):
-                print "Error: unable to remove expected directory for reset"
+                print("Error: unable to remove expected directory for reset")
                 self.success = False
                 return
             self.has_expected = False
@@ -516,9 +516,9 @@ class cTest:
         # Create test directory and populate with config
         try:
             shutil.copytree(confdir, rundir)
-        except (IOError, OSError), e:
-            print "Error: unable to create run dir"
-            print "  -- root cause: %s" % e
+        except (IOError, OSError) as e:
+            print("Error: unable to create run dir")
+            print("  -- root cause: %s" % e)
             self.success = False
             return
 
@@ -531,10 +531,10 @@ class cTest:
         # Process output from app
         # Note: must at least swallow app output so that the process output
         # buffer does not fill and block execution
-        if settings.has_key("_verbose"):
-            print
+        if "_verbose" in settings:
+            print()
         for line in p.stdout:
-            if settings.has_key("_verbose"):
+            if "_verbose" in settings:
                 sys.stdout.write("%s output: %s" % (self.name, line))
                 sys.stdout.flush()
 
@@ -582,16 +582,16 @@ class cTest:
             for file in files:
                 path = os.path.abspath(os.path.join(root, file))
                 key = path[len(rundir) + 1:]  # remove confdir from path
-                if expectstruct.has_key(key):
+                if key in expectstruct:
                     # string[] getStippedLines(string filename) {
                     def getStrippedLines(filename):
-                        fp = open(filename, "U")
+                        fp = open(filename, "r")
                         filelines = fp.readlines()
                         fp.close()
 
                         retlines = []
                         for line in filelines:
-                            line = string.lstrip(line)
+                            line = line.lstrip()
                             if len(line) != 0 and line[0] != "#":
                                 retlines.append(line)
                         return retlines
@@ -610,7 +610,7 @@ class cTest:
                         for line in diff:
                             if line[0] != ' ':
                                 expectstruct[key][2] = cTest.DONOTMATCH
-                                if settings.has_key("show-diff"):
+                                if "show-diff" in settings:
                                     expectstruct[key][2] += "\n\n"
                                     for l in diff:
                                         expectstruct[key][2] += l
@@ -628,7 +628,7 @@ class cTest:
 
                     expectstruct[key][1] = match
 
-        for key in expectstruct.keys():
+        for key in list(expectstruct.keys()):
             entry = expectstruct[key]
             if not entry[1]:
                 self.errors.append("%s : %s" % (key, entry[2]))
@@ -795,7 +795,7 @@ class cTest:
                     fp.flush()
                     fp.close()
                 except (IOError, OSError, shutil.Error):
-                    print "Warning: error updating '%s' performance baseline" % self.name
+                    print("Warning: error updating '%s' performance baseline" % self.name)
             self.presult = "exceeded"
 
         # Print output on all tests
@@ -823,15 +823,15 @@ class cTest:
 
         try:
             shutil.copytree(rundir, expectdir)
-        except (IOError, OSError), e:
+        except (IOError, OSError) as e:
             return False
 
-        for cfile in self.confstruct.keys():
+        for cfile in list(self.confstruct.keys()):
             try:
                 os.remove(os.path.join(expectdir, cfile))
-            except OSError, e:
-                print "Warning: failed to remove conf file (%s) from expected" % cfile
-                print "  -- root cause: %s" % e
+            except OSError as e:
+                print("Warning: failed to remove conf file (%s) from expected" % cfile)
+                print("  -- root cause: %s" % e)
         try:
             shutil.rmtree(rundir, True)  # Clean up test directory
         except (IOError, OSError):
@@ -844,29 +844,29 @@ class cTest:
     # bool cTest::reportConsistencyResults() {
     def reportConsistencyResults(self):
         global settings
-        print "%s :" % self.name,
+        print("%s :" % self.name, end=' ')
         if self.success:
             if self.has_expected:
-                print self.result
+                print(self.result)
             else:
                 if self.handleNewExpected():
                     if settings["mode"] == "slave":
-                        print "skipped (no expected results)"
+                        print("skipped (no expected results)")
                     else:
-                        print "new expected results generated"
+                        print("new expected results generated")
                 else:
-                    print "unable to process new expected results"
+                    print("unable to process new expected results")
                     self.success = False
         else:
-            print "failed\n"
+            print("failed\n")
             if self.exitcode != 0:
-                print "exit code: %d" % os.WEXITSTATUS(self.exitcode)
-                print "term signal: %d" % os.WTERMSIG(self.exitcode)
+                print("exit code: %d" % os.WEXITSTATUS(self.exitcode))
+                print("term signal: %d" % os.WTERMSIG(self.exitcode))
             else:
-                print "output variance(s):"
+                print("output variance(s):")
                 for err in self.errors:
-                    print err
-            print "\n"
+                    print(err)
+            print("\n")
 
         return self.success
     # } // End of cTest::reportConsistencyResults()
@@ -892,7 +892,7 @@ class cTest:
 
     # bool cTest::reportPerformanceResults() {
     def reportPerformanceResults(self):
-        print "%s : %s" % (self.name, self.presult)
+        print("%s : %s" % (self.name, self.presult))
         return self.psuccess
     # } // End of cTest::reportPerformanceResults()
 
@@ -904,18 +904,18 @@ class cTest:
     # void cTest::describe() {
     def describe(self):
         if self.has_expected:
-            print "  ",
+            print("  ", end=' ')
         else:
-            print " *",
+            print(" *", end=' ')
         if self.consistency_enabled:
-            print "c",
+            print("c", end=' ')
         else:
-            print " ",
+            print(" ", end=' ')
         if self.performance_enabled:
-            print "p ",
+            print("p ", end=' ')
         else:
-            print "  ",
-        print self.name
+            print("  ", end=' ')
+        print(self.name)
     # } // End of cTest::describe()
 
 # } // End of class cTest
@@ -934,10 +934,10 @@ def runConsistencyTests(alltests, dolongtests):
             tests.append(test)
 
     if len(tests) == 0:
-        print "No Consistency Tests Available (or Specified)."
+        print("No Consistency Tests Available (or Specified).")
         return (0, 0, 0)
 
-    print "\nRunning Consistency Tests:\n"
+    print("\nRunning Consistency Tests:\n")
 
     # Run Tests
     sem = threading.BoundedSemaphore(settings["cpus"])
@@ -993,10 +993,10 @@ def runPerformanceTests(alltests, dolongtests, force, saveresults):
                 tests.append(test)
 
     if len(tests) == 0:
-        print "No Performance Tests Available (or Specified)."
+        print("No Performance Tests Available (or Specified).")
         return (0, 0, 0)
 
-    print "\nRunning Performance Tests:\n"
+    print("\nRunning Performance Tests:\n")
 
     # Run Tests
     ti = 0
@@ -1037,7 +1037,7 @@ def main(argv):
     scriptdir = os.path.abspath(os.path.dirname(argv[0]))
 
     # Read Configuration File
-    cfg = ConfigParser.ConfigParser(settings)
+    cfg = configparser.ConfigParser(settings, inline_comment_prefixes=('#', ';'))
     cfg.read([os.path.join(scriptdir, "testrunner.cfg")])
 
     # getConfig - embedded function to wrap loading configuration settings w/defaults
@@ -1046,7 +1046,7 @@ def main(argv):
     def getConfig(sect, opt, default):
         try:
             global settings
-            val = cfg.get(sect, opt, False, settings)
+            val = cfg.get(sect, opt, raw=False, vars=settings)
             return val
         except:
             return default
@@ -1174,14 +1174,14 @@ def main(argv):
     settings["testdir"] = testdir
 
     # Re-read Configuration File with filled settings
-    cfg = ConfigParser.ConfigParser(settings)
+    cfg = configparser.ConfigParser(settings, inline_comment_prefixes=('#', ';'))
     cfg.read([os.path.join(scriptdir, "testrunner.cfg")])
 
     # Load the default app to test
     try:
         settings["default_app"] = os.path.abspath(cfg.get("main", "app"))
     except:
-        print "Warning: No default app configured"
+        print("Warning: No default app configured")
 
     if settings["scm"] == "git":
         settings["scm"] = SCMWrapper_Git()
@@ -1190,11 +1190,11 @@ def main(argv):
     elif settings["scm"] == "none":
         settings["scm"] = SCMWrapper_None()
     else:
-        print "Error: Unsupported SCM '%s'" % (settings["scm"])
+        print("Error: Unsupported SCM '%s'" % (settings["scm"]))
         return -1
 
     # Load in all tests
-    print "Reading Test Configurations:\n"
+    print("Reading Test Configurations:\n")
     tests = []
 
     prefix_filter = ["."]
@@ -1258,7 +1258,7 @@ def main(argv):
             disabled += pdisabled
             fail += pfail
 
-        if settings.has_key("xml_report"):
+        if "xml_report" in settings:
             f = open(settings["xml_report"], "w")
             f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
             f.write("<testsuites tests=\"%d\" failures=\"%d\" disabled=\"%d\" errors=\"0\" time=\"0\" name=\"AllTests\">\n" % (
@@ -1313,16 +1313,16 @@ def main(argv):
             pass
 
         if fail == 0:
-            print "\nAll tests passed."
+            print("\nAll tests passed.")
             return 0
         else:
             if disabled != 0:
-                print "\n%d of %d tests failed (%d disabled)." % (fail, fail + disabled + success, disabled)
+                print("\n%d of %d tests failed (%d disabled)." % (fail, fail + disabled + success, disabled))
             else:
-                print "\n%d of %d tests failed." % (fail, fail + success)
+                print("\n%d of %d tests failed." % (fail, fail + success))
             return fail
     except (KeyboardInterrupt):
-        print "\nInterrupted... Terminanting Tests."
+        print("\nInterrupted... Terminanting Tests.")
 
 # } // End of main()
 
