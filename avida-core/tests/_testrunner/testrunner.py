@@ -935,7 +935,7 @@ def runConsistencyTests(alltests, dolongtests):
 
     if len(tests) == 0:
         print "No Consistency Tests Available (or Specified)."
-        return (0, 0)
+        return (0, 0, 0)
 
     print "\nRunning Consistency Tests:\n"
 
@@ -994,7 +994,7 @@ def runPerformanceTests(alltests, dolongtests, force, saveresults):
 
     if len(tests) == 0:
         print "No Performance Tests Available (or Specified)."
-        return (0, 0)
+        return (0, 0, 0)
 
     print "\nRunning Performance Tests:\n"
 
