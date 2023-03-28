@@ -4,7 +4,7 @@
 args = -a                
 
 app = %(default_app)s            ; Application path to test
-nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
+nonzeroexit = require    ; Exit code handling (disallow, allow, or require)
                          ;  disallow - treat non-zero exit codes as failures
                          ;  allow - all exit codes are acceptable
                          ;  require - treat zero exit codes as failures, useful
