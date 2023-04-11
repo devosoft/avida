@@ -37,7 +37,7 @@
  *
  * The cPhenotype object contains a general description of all the
  * phenotypic characteristics an organism has displayed.  That is, it
- * monitors all of the organisms behaviors.
+ * monitors all of the organism's behaviors.
  *
  * After a phenotype is created in organism and organism within a population,
  * it must have either SetupOffspring() or SetupInject() run on it to prime
