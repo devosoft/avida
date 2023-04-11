@@ -49,7 +49,7 @@ class cPopulationCell
 private:
   cWorld* m_world;
 
-  cOrganism* m_organism;                    // The occupent of this cell.
+  cOrganism* m_organism;                    // The occupant of this cell.
   cHardwareBase* m_hardware;
 
   tList<cPopulationCell> m_connections;  // A list of neighboring cells.
