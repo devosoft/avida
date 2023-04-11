@@ -32,7 +32,7 @@
  still a within deme issue.  However, this class mitigates the problem somewhat
  when using more than one deme!
 
- Yes, I know we're not *suppose* to reuse code -- DEAL
+ Yes, I know we're not *supposed* to reuse code -- DEAL
 */
 
 //get the next CPU cycle, awarded to the next populated deme and cycled in a round-robin fashion
@@ -54,7 +54,7 @@ int cDemeProbSchedule::GetNextID()
       // calculate the offset
       int offset = curr_deme * deme_size;
       
-      // get the within postion of the node whos corresponding cell will get the CPU cycle
+      // get the within postion of the node whose corresponding cell will get the CPU cycle
       const double position = m_rng->GetDouble(chart[curr_deme]->GetTotalWeight());
 
       // return the adjusted ID of the cell to get the CPU cycle
