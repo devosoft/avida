@@ -32,7 +32,7 @@
  still a within deme issue.  However, this class mitigates the problem somewhat
  when using more than one deme!
 
- Yes, I know we're not *suppose* to reuse code -- DEAL
+ Yes, I know we're not *supposed* to reuse code -- DEAL
 */
 
 //get the next CPU cycle, awarded probabistically to a deme based on population with non-zero merits
