@@ -44,7 +44,7 @@ int cProbDemeProbSchedule::GetNextID()
   //calculate the offset
   int offset = curr_deme * deme_size;
   
-  // get the within postion of the node whos corresponding cell will get the CPU cycle
+  // get the within postion of the node whose corresponding cell will get the CPU cycle
   const double position = m_rng->GetDouble(chart[curr_deme]->GetTotalWeight());
   
   // return the adjusted ID of the cell to get the CPU cycle
