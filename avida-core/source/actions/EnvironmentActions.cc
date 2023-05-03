@@ -1639,7 +1639,8 @@ public:
         count_parasites = true;
       if(m_world->GetConfig().DEMES_MIGRATION_RATE.Get() > 0.0)
         count_offspring = true;
-      assert(m_world->GetMigrationMatrix().Load(m_world->GetPopulation().GetNumDemes(), m_fname, m_world->GetWorkingDir(),count_parasites,count_offspring,true,feedback));
+      const auto ret = m_world->GetMigrationMatrix().Load(m_world->GetPopulation().GetNumDemes(), m_fname, m_world->GetWorkingDir(),count_parasites,count_offspring,true,feedback);
+      assert(ret);
     }
 };
 
@@ -1666,7 +1667,8 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    assert(m_world->GetMigrationMatrix().AlterConnectionWeight(from_deme, to_deme, alter_amount));
+    const auto ret = m_world->GetMigrationMatrix().AlterConnectionWeight(from_deme, to_deme, alter_amount);
+    assert(ret);
   }
 };
 

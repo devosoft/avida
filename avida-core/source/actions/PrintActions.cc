@@ -4162,6 +4162,31 @@ public:
   }
 };
 
+// useful for testing to confirm migration values read in
+class cActionPrintMigrationMatrix : public cAction
+{
+private:
+  cString m_filename;
+
+public:
+  cActionPrintMigrationMatrix(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("migration_matrix.%d.dat", m_world->GetStats().GetUpdate());
+    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), (const char*)filename);
+    ofstream& fp = df->OFStream();
+
+    cMigrationMatrix* mig_mat = &m_world->GetMigrationMatrix();
+    mig_mat->Print(fp);
+  }
+};
+
 class cActionDumpOffspringMigrationCounts : public cAction
 {
 private:
@@ -5677,9 +5702,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpHostTaskGridComma>("DumpHostTaskGridComma");
   action_lib->Register<cActionDumpParasiteTaskGridComma>("DumpParasiteTaskGridComma");
   action_lib->Register<cActionDumpParasiteVirulenceGrid>("DumpParasiteVirulenceGrid");
-  action_lib->Register<cActionDumpOffspringMigrationCounts>("DumpOffspringMigrationCounts"); 
-  action_lib->Register<cActionDumpParasiteMigrationCounts>("DumpParasiteMigrationCounts"); 
-  
+  action_lib->Register<cActionPrintMigrationMatrix>("PrintMigrationMatrix");
+  action_lib->Register<cActionDumpOffspringMigrationCounts>("DumpOffspringMigrationCounts");
+  action_lib->Register<cActionDumpParasiteMigrationCounts>("DumpParasiteMigrationCounts");
+
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
   action_lib->Register<cActionPrintLastReactionCountGrid>("PrintLastReactionCountGrid");
   action_lib->Register<cActionPrintCurrReactionCountGrid>("PrintCurrReactionCountGrid");

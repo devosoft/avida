@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Michigan State University. All rights reserved.
 //
 
+#include <iostream>
+
 #include "cMigrationMatrix.h"
 
 #include "avida/core/Feedback.h"
@@ -145,14 +147,14 @@ bool cMigrationMatrix::Load(const int num_demes, const cString& filename, const 
   return true;
 }
 
-void cMigrationMatrix::Print(){
+void cMigrationMatrix::Print(std::ostream& os){
     for(int row = 0; row < m_migration_matrix.GetSize(); row++){
         for(int col = 0; col < m_migration_matrix[row].GetSize(); col++){
-            std::cout << m_migration_matrix[row][col];
+            os << m_migration_matrix[row][col];
             if(col + 1 < m_migration_matrix[row].GetSize())
-                std::cout << ",";
+                os << ",";
         }
-        std::cout << std::endl;
+        os << std::endl;
     }
 };
 
