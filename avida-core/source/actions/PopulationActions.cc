@@ -849,8 +849,6 @@ public:
  Parameters:
  filename (string):
  The filename of the genotype to load.
- cell ID (integer) default: 0
- The grid-point into which the organism should be placed.
  merit (double) default: -1
  The initial merit of the organism. If set to -1, this is ignored.
  lineage label (integer) default: 0
