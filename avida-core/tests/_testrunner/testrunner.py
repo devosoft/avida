@@ -234,11 +234,11 @@ http://www.programerror.com/software/testrunner
 # int med(int[] seq) {
 def med(seq):
     seq.sort()
-    idx = len(seq) / 2
+    idx = len(seq) // 2
     if len(seq) % 2 == 1:
         return seq[idx]
     else:
-        return (seq[idx] + seq[idx - 1]) / 2
+        return (seq[idx] + seq[idx - 1]) // 2
 # } // End of med()
 
 
