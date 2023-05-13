@@ -1,10 +1,23 @@
 #!/bin/sh
 
+set -e
+
 git submodule init
 git submodule update
 
-mkdir -p cbuild
-cd cbuild
-cmake "$@" ../
-make -j 10 install
+do_build() {
+  (
+    mkdir -p cbuild
+    cd cbuild
+    cmake "$@" ../
+    make -j 10 install
+  )
+}
 
+do_build || {
+    echo "build failed, trying again with backtrace support disabled"
+    # If the command fails, set the environment variable and try again
+    export AVIDA_DISABLE_BACKTRACE=1
+    rm -rf cbuild
+    do_build
+}

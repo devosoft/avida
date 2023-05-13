@@ -4,3 +4,6 @@
 [submodule "documentation"]
 	path = documentation
 	url = https://github.com/devosoft/avida.wiki.git
+[submodule "libs/backward-cpp"]
+	path = libs/backward-cpp
+	url = https://github.com/bombela/backward-cpp.git
