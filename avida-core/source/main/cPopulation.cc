@@ -32,6 +32,7 @@
 #include "avida/systematics/Arbiter.h"
 #include "avida/systematics/Group.h"
 #include "avida/systematics/Manager.h"
+#include "avida/systematics/Unit.h"
 
 #include "avida/private/systematics/GenomeTestMetrics.h"
 #include "avida/private/systematics/Genotype.h"
@@ -65,7 +66,9 @@
 
 #include "cHardwareCPU.h"
 
+#include <cstdlib>
 #include <fstream>
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <numeric>
@@ -6673,15 +6676,32 @@ public:
   Apto::Array<double> parent_merit;
   Apto::Array<bool> parent_teacher;
   Apto::Array<int> parent_ft;
-  
+
+  Systematics::Source source{Systematics::TransmissionType::UNKNOWN, "", true};
   Systematics::GroupPtr bg;
   
   
   inline sTmpGenotype() : id_num(-1), props(NULL) { ; }
-  inline bool operator<(const sTmpGenotype& rhs) const { return id_num > rhs.id_num; }
-  inline bool operator>(const sTmpGenotype& rhs) const { return id_num < rhs.id_num; }
-  inline bool operator<=(const sTmpGenotype& rhs) const { return id_num >= rhs.id_num; }
-  inline bool operator>=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
+  inline bool operator<(const sTmpGenotype& rhs) const {
+    if (source.transmission_type == rhs.source.transmission_type) {
+      return id_num > rhs.id_num;
+    } else {
+      return source.transmission_type == Systematics::TransmissionType::DIVISION || source.transmission_type == Systematics::TransmissionType::UNKNOWN;
+    }
+  }
+  inline bool operator>(const sTmpGenotype& rhs) const {
+    if (source.transmission_type == rhs.source.transmission_type) {
+      return id_num < rhs.id_num;
+    } else {
+      return source.transmission_type != Systematics::TransmissionType::DIVISION && source.transmission_type != Systematics::TransmissionType::UNKNOWN;
+    }
+  }
+  inline bool operator<=(const sTmpGenotype& rhs) const {
+    return !(*this > rhs);
+  }
+  inline bool operator>=(const sTmpGenotype& rhs) const {
+    return !(*this < rhs);
+  }
 };
 
 bool cPopulation::LoadGenotypeList(const cString& filename, cAvidaContext& ctx, Apto::Array<GeneticRepresentationPtr>& list_obj)
@@ -6753,6 +6773,13 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       while (cellstr.GetSize()) tmp.cells.Push(cellstr.Pop(',').AsInt());
       assert(tmp.cells.GetSize() == tmp.num_cpus);
     }
+
+    // Process systematics source
+    assert(tmp.props->Has("src") && tmp.props->Has("src_args"));
+    tmp.source = Systematics::Source(
+      tmp.props->Get("src"),
+      (const char*)filename
+    );
     
     // Process gestation time offsets
     if (!load_rebirth) {
@@ -6850,8 +6877,9 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       assert(tmp.avatar_cells.GetSize() == 0 || tmp.avatar_cells.GetSize() == tmp.num_cpus);
     }
   }
-  
-  // Sort genotypes in descending order according to their id_num
+
+  // Sort genotypes in descending order according to their id_num,
+  // with parasites last
   Apto::QSort(genotypes);
   
   Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
@@ -6908,7 +6936,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       
       assert(tmp.bg->Properties().Has("genome"));
       Genome mg(tmp.bg->Properties().Get("genome"));
-      cOrganism* new_organism = new cOrganism(m_world, ctx, mg, -1, Systematics::Source(Systematics::DIVISION, (const char*)filename, true));
+      cOrganism* new_organism = new cOrganism(m_world, ctx, mg, -1, tmp.source);
       
       // Setup the phenotype...
       cPhenotype& phenotype = new_organism->GetPhenotype();
@@ -6968,6 +6996,28 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       // Setup the child's mutation rates.  Since this organism is being injected
       // and has no parent, we should always take the rate from the environment.
       new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
+
+      // handle parasite
+      const bool is_parasite = (
+        tmp.source.transmission_type == Systematics::TransmissionType::VERTICAL
+        || tmp.source.transmission_type == Systematics::TransmissionType::HORIZONTAL
+      );
+      if (is_parasite) {
+        if (!cell_array[cell_id].IsOccupied()) {
+          std::cerr << "Loaded parasite before or without host!" << std::endl;
+          std::abort();
+        }
+
+        ConstInstructionSequencePtr seq;
+        seq.DynamicCastFrom(mg.Representation());
+
+        InjectParasite(
+          static_cast<const char*>(tmp.source.arguments), // cString label,
+          *seq, // const InstructionSequence& injected_code,
+          cell_id // int cell_id
+        );
+        continue;
+      }
       
       // Activate the organism in the population...
       bool org_survived = false;
