@@ -24,7 +24,7 @@ jobs:
       run: |
         choco install cmake
         choco install git
-        choco install python --version 3.9
+        choco install python
         refreshenv
     - name: Set up MSVC environment
       run: |
