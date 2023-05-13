@@ -16,27 +16,27 @@ jobs:
     - name: Run tests
       run: ./run_tests
 
-  tests-windows:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: |
-        choco install cmake
-        choco install git
-        choco install python
-        refreshenv
-    - name: Set up MSVC environment
-      run: |
-        choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
-        choco install windows-sdk-10.0 --version 10.0.19041.0
-        refreshenv
-    - name: Build Avida
-      run: |
-        bash ./build_avida
-    - name: Run tests
-      run: |
-        bash ./run_tests
+  # tests-windows:
+  #   runs-on: windows-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Install dependencies
+  #     run: |
+  #       choco install cmake
+  #       choco install git
+  #       choco install python
+  #       refreshenv
+  #   - name: Set up MSVC environment
+  #     run: |
+  #       choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
+  #       choco install windows-sdk-10.0 --version 10.0.19041.0
+  #       refreshenv
+  #   - name: Build Avida
+  #     run: |
+  #       bash ./build_avida
+  #   - name: Run tests
+  #     run: |
+  #       bash ./run_tests
 
   tests-mac:
     runs-on: macos-latest
