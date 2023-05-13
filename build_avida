@@ -6,10 +6,12 @@ git submodule init
 git submodule update
 
 do_build() {
+  (
     mkdir -p cbuild
     cd cbuild
     cmake "$@" ../
     make -j 10 install
+  )
 }
 
 do_build || {
