@@ -13,6 +13,7 @@ do_build() {
 }
 
 do_build || {
+    echo "build failed, trying again with backtrace support disabled"
     # If the command fails, set the environment variable and try again
     export AVIDA_DISABLE_BACKTRACE=1
     rm -rf cbuild
