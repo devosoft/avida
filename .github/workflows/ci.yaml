@@ -23,6 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         choco install cmake
+        choco install git
         choco install python --version 3.9
         refreshenv
     - name: Set up MSVC environment
@@ -32,10 +33,10 @@ jobs:
         refreshenv
     - name: Build Avida
       run: |
-        ./build_avida
+        bash ./build_avida
     - name: Run tests
       run: |
-        ./run_tests
+        bash ./run_tests
 
   tests-mac:
     runs-on: macos-latest
