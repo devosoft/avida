@@ -6777,9 +6777,11 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     // Process systematics source
     assert(tmp.props->Has("src") && tmp.props->Has("src_args"));
     tmp.source = Systematics::Source(
-      "ext",  // mark all deserialized genotypes as external
+      tmp.props->Get("src"),
       tmp.props->Get("src_args")
     );
+    // mark all deserialized genotypes as external
+    tmp.source.external = true;
     
     // Process gestation time offsets
     if (!load_rebirth) {
