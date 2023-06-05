@@ -6780,8 +6780,9 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       tmp.props->Get("src"),
       tmp.props->Get("src_args")
     );
-    // mark all deserialized genotypes as external
-    tmp.source.external = true;
+    // mark all deserialized genotypes as internal
+    // because we have a record of them in the spop file
+    tmp.source.external = false;
     
     // Process gestation time offsets
     if (!load_rebirth) {
