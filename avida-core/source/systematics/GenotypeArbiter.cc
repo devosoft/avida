@@ -95,17 +95,11 @@ void Avida::Systematics::GenotypeArbiter::PerformUpdate(Context&, Update current
     for (int i = 0; i < HASH_SIZE; i++) {
       Apto::List<GenotypePtr, Apto::SparseVector>::Iterator list_it(m_active_hash[i].Begin());
       while (list_it.Next() != NULL) if ((*list_it.Get())->IsThreshold()) (*list_it.Get())->UpdateReset();
-    }
+    }    
   }
 
   Apto::List<GenotypePtr, Apto::SparseVector>::Iterator list_it(m_historic.Begin());
-  while (list_it.Next() != NULL) {
-    if (
-      list_it.Get()
-      && *list_it.Get()
-      && !(*list_it.Get())->ReferenceCount()
-    ) removeGenotype(*list_it.Get());
-  }
+  while (list_it.Next() != NULL) if (!(*list_it.Get())->ReferenceCount()) removeGenotype(*list_it.Get());
 }
 
 void Avida::Systematics::GenotypeArbiter::PrintListStatus()
