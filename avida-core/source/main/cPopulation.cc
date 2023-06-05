@@ -6777,7 +6777,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     // Process systematics source
     assert(tmp.props->Has("src") && tmp.props->Has("src_args"));
     tmp.source = Systematics::Source(
-      tmp.props->Get("src"),
+      "ext",  // mark all deserialized genotypes as external
       tmp.props->Get("src_args")
     );
     
