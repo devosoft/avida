@@ -6778,7 +6778,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     assert(tmp.props->Has("src") && tmp.props->Has("src_args"));
     tmp.source = Systematics::Source(
       tmp.props->Get("src"),
-      (const char*)filename
+      tmp.props->Get("src_args")
     );
     
     // Process gestation time offsets
