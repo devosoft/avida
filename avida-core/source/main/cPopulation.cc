@@ -6948,8 +6948,6 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         lineage_label = tmp.lineage_labels[cell_i] + lineage_offset;
       }
       
-      assert(tmp.bg->Properties().Has("genome"));
-      Genome mg(tmp.bg->Properties().Get("genome"));
       // handle parasite
       const bool is_parasite = (
         tmp.source.transmission_type == Systematics::TransmissionType::VERTICAL
@@ -6961,16 +6959,18 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           std::abort();
         }
 
-        ConstInstructionSequencePtr seq;
-        seq.DynamicCastFrom(mg.Representation());
-
+        const InstructionSequence seq(
+          static_cast<const char*>(tmp.props->Get("sequence"))
+        );
         InjectParasite(
           static_cast<const char*>(tmp.source.arguments), // cString label,
-          *seq, // const InstructionSequence& injected_code,
+          seq, // const InstructionSequence& injected_code,
           cell_id // int cell_id
         );
         continue;
       }
+      assert(tmp.bg->Properties().Has("genome"));
+      Genome mg(tmp.bg->Properties().Get("genome"));
       cOrganism* new_organism = new cOrganism(m_world, ctx, mg, -1, tmp.source);
       
       // Setup the phenotype...
