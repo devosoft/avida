@@ -6780,9 +6780,14 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       tmp.props->Get("src"),
       tmp.props->Get("src_args")
     );
-    // mark all deserialized genotypes as internal
-    // because we have a record of them in the spop file
-    tmp.source.external = false;
+    const bool is_parasite = (
+      tmp.source.transmission_type == Systematics::TransmissionType::VERTICAL
+      || tmp.source.transmission_type == Systematics::TransmissionType::HORIZONTAL
+    );
+    if (is_parasite) {
+      tmp.source.external = true;
+      tmp.source.arguments = filename;
+    }
     
     // Process gestation time offsets
     if (!load_rebirth) {
