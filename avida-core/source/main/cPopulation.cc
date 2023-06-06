@@ -6786,7 +6786,11 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     );
     if (is_parasite) {
       tmp.source.external = true;
-      tmp.source.arguments = filename;
+      tmp.source.arguments = (
+        tmp.props->Get("src_args")
+        + ":"
+        + tmp.props->Get("id")
+      );
     }
     
     // Process gestation time offsets
