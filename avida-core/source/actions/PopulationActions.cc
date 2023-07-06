@@ -680,23 +680,31 @@ private:
   cString m_label;
   int m_cell_start;
   int m_cell_end;
+  int m_cell_stride;
+  int m_only_if_parasites_extinct;
 public:
-  cActionInjectParasite(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_start(0), m_cell_end(-1)
+  cActionInjectParasite(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_cell_stride(1), m_only_if_parasites_extinct(0)
   {
     cString largs(args);
     m_filename = largs.PopWord();
     m_label = largs.PopWord();
     if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
     if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_cell_stride = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_only_if_parasites_extinct = largs.PopWord().AsInt();
     
     if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
   }
   
-  static const cString GetDescription() { return "Arguments: <string filename> <string label> [int cell_start=0] [int cell_end=-1]"; }
+  static const cString GetDescription() { return "Arguments: <string filename> <string label> [int cell_start=0] [int cell_end=-1] [int cell_stride=1] [int only_if_parasites_extinct=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
-    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
+    if (m_only_if_parasites_extinct && m_world->GetStats().GetNumParasites()) {
+      return;
+    }
+
+    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end || m_cell_stride <= 0) {
       ctx.Driver().Feedback().Warning("InjectParasite has invalid range!");
     } else {
       GenomePtr genome;
@@ -713,7 +721,7 @@ public:
       if (!genome) return;
       ConstInstructionSequencePtr seq;
       seq.DynamicCastFrom(genome->Representation());
-      for (int i = m_cell_start; i < m_cell_end; i++) {
+      for (int i = m_cell_start; i < m_cell_end; i+=m_cell_stride) {
         m_world->GetPopulation().InjectParasite(m_label, *seq, i);
       }
       m_world->GetPopulation().SetSyncEvents(true);
