@@ -1238,9 +1238,15 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
       hw.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
   //Handle host specific injection
-  if(TestForParasiteInteraction(host, target_organism) == false)
-    return false;
-  
+  const bool parasite_interaction = TestForParasiteInteraction(host, target_organism);
+  if (m_world->GetConfig().LOG_PARASITE_INJECTIONS.Get()) {
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "parasite_injection.dat");
+    cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d", m_world->GetStats().GetUpdate(), target_organism->GetDemeID(), target_organism->GetCellID(), parasite_interaction);
+    df->WriteRaw(UpdateStr);
+  }
+
+  if(parasite_interaction == false) return false;
+
   
   // Attempt actual parasite injection
   // LZ - use parasige_genotype_list for the GenRepPtr instead IF Config says to
