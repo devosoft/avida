@@ -507,6 +507,7 @@ public:
   CONFIG_ADD_VAR(DEMES_PARASITE_MIGRATION_RATE, double, 0.0, "Probability of a parasite migrating to a different deme"); 
   CONFIG_ADD_VAR(DEMES_MIGRATION_METHOD, int, 0, "Which demes can an offspring land in when it migrates?\n0 = Any other deme\n1 = Eight neighboring demes\n2 = Two adjacent demes in list\n3 = Proportional based on the number of points\n4 = Use the weight matrix specified in MIGRATION_FILE");
   CONFIG_ADD_VAR(DEMES_NUM_X, int, 0, "Simulated number of demes in X dimension. Used only for migration. ");
+  CONFIG_ADD_VAR(DEMES_PARTITION_INTERVAL, int, 0, "Restrict deme replication to within partitions of DEMES_PARTITION_INTERVAL consecutive deme ids. No restriction if 0. Partition size cannot be smaller than two. Does not affect migration.");
   CONFIG_ADD_VAR(DEMES_SEED_METHOD, int, 0, "Deme seeding method.\n0 = Maintain old consistency\n1 = New method using genotypes");
   CONFIG_ADD_VAR(DEMES_DIVIDE_METHOD, int, 0, "Deme divide method. Only works with DEMES_SEED_METHOD 1\n0 = Replace source and target demes\n1 = Replace target deme, reset source deme to founders\n2 = Replace target deme, leave source deme unchanged\n3 = Replace the target deme, and reset the number of resources consumed by the source deme.\n4 = Replace the target deme,  reset the number of resources consumed by the source deme, and kill the germ line organisms of the source deme");
   CONFIG_ADD_VAR(DEMES_DEFAULT_GERMLINE_PROPENSITY, double, 0.0, "Default germline propensity of organisms in deme.\nFor use with DEMES_DIVIDE_METHOD 2.");
