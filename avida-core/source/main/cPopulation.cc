@@ -3097,6 +3097,33 @@ void cPopulation::ReplicateDeme(cDeme& source_deme, cAvidaContext& ctx)
   
   // Pick a target deme to replicate to, making sure that
   // we don't try to replicate over ourself, i.e. DEMES_REPLACE_PARENT 0
+  const int partition_interval = m_world->GetConfig().DEMES_PARTITION_INTERVAL.Get();
+  const int source_partition_begin = (
+    partition_interval
+    ? (source_deme.GetDemeID() / partition_interval) * partition_interval
+    : 0
+  );
+  const int source_partition_end = (
+    partition_interval
+    ? source_partition_begin + partition_interval
+    : GetNumDemes()
+  );
+  const int partition_size = source_partition_end - source_partition_begin;
+  if (source_partition_end - source_partition_begin < 2) {
+    ctx.Driver().Feedback().Error("Partitions must have at least two demes.");
+    ctx.Driver().Feedback().Error(
+      "Partition interval is %d.", partition_interval
+    );
+    ctx.Driver().Feedback().Error(
+      "There are %d demes in partition.", partition_size
+    );
+    ctx.Driver().Feedback().Error(
+      "Partition begins at %d and ends at %d.",
+      source_partition_begin,
+      source_partition_end
+    );
+    ctx.Driver().Abort(Avida::INVALID_CONFIG);
+  }
   
   int target_id = -1;
   if (m_world->GetConfig().DEMES_PREFER_EMPTY.Get()) {
@@ -3104,7 +3131,7 @@ void cPopulation::ReplicateDeme(cDeme& source_deme, cAvidaContext& ctx)
     //@JEB -- use empty_cell_id_array to hold empty demes
     //so we don't have to allocate a list
     int num_empty = 0;
-    for (int i=0; i<GetNumDemes(); i++) {
+    for (int i=source_partition_begin; i<source_partition_end; i++) {
       if (GetDeme(i).IsEmpty()) {
         empty_cell_id_array[num_empty] = i;
         num_empty++;
@@ -3120,7 +3147,8 @@ void cPopulation::ReplicateDeme(cDeme& source_deme, cAvidaContext& ctx)
     target_id = source_deme.GetID();
     const int num_demes = GetNumDemes();
     while(target_id == source_deme.GetID()) {
-      target_id = ctx.GetRandom().GetUInt(num_demes);
+      const int target_pos = ctx.GetRandom().GetUInt(partition_size);
+      target_id = source_partition_begin + target_pos;
     }
   }
   
