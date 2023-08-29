@@ -21,15 +21,21 @@
 
 #include "SaveLoadActions.h"
 
+#include "avida/output/File.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cArgContainer.h"
 #include "cArgSchema.h"
+#include "cHardwareManager.h"
+#include "cInitFile.h"
+#include "cInstSet.h"
 #include "cPopulation.h"
 #include "cStats.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
 
+#include <cassert>
 #include <iostream>
 
 
@@ -176,6 +182,104 @@ public:
 };
 
 
+class cActionSaveGermlines : public cAction
+{
+private:
+  cString m_filename;
+
+public:
+  cActionSaveGermlines(cWorld* world, const cString& args, Feedback& feedback)
+    : cAction(world, args), m_filename("")
+  {
+    cArgSchema schema(':','=');
+
+    // String Entries
+    schema.AddEntry("filename", 0, "detailgermlines");
+
+    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+
+    if (argc) {
+      m_filename = argc->GetString(0);
+    }
+
+    delete argc;
+  }
+
+  static const cString GetDescription() { return "Arguments: [string filename='detailgermlines']"; }
+
+  void Process(cAvidaContext&) {
+    int update = m_world->GetStats().GetUpdate();
+    cString filename = cStringUtil::Stringf("%s-%d.sgerm", (const char*)m_filename, update);
+    Apto::String file_path((const char*)filename);
+    Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), file_path);
+    df->SetFileType("germline_data");
+    df->WriteComment("Mode 1 Germline Save");
+    df->WriteTimeStamp();
+    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+      cDeme& deme = m_world->GetPopulation().GetDeme(i);
+      auto& germline = deme.GetGermline();
+      if (germline.Size()) {
+        const auto& genome = germline.GetLatest();
+        df->Write(i, "Deme ID", "deme_id");
+        genome.LegacySave(Apto::GetInternalPtr(df));
+        df->Endl();
+      }
+
+    }
+  }
+};
+
+
+class cActionLoadGermlines : public cAction
+{
+private:
+  cString m_filename;
+
+public:
+  cActionLoadGermlines(cWorld* world, const cString& args, Feedback& feedback)
+    : cAction(world, args), m_filename("")
+  {
+    cArgSchema schema(':','=');
+
+    // String Entries
+    schema.AddEntry("filename", 0, "detailgermlines");
+
+    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+
+    if (argc) {
+      m_filename = argc->GetString(0);
+    }
+
+    delete argc;
+  }
+
+  static const cString GetDescription() { return "Arguments: [string filename='detailgermlines']"; }
+
+  void Process(cAvidaContext& ctx) {
+    cInitFile input_file(
+      m_filename,
+      m_world->GetWorkingDir(),
+      ctx.Driver().Feedback()
+    );
+    assert(input_file.WasOpened());
+
+    for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
+      auto file_props = input_file.GetLineAsDict(line_id);
+      const int deme_id = Apto::StrAs(file_props->Get("deme_id"));
+      const auto genome_sequence = Apto::StrAs(file_props->Get("sequence"));
+
+      HashPropertyMap seq_props;
+      const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+      cHardwareManager::SetupPropertyMap(seq_props, (const char*)is.GetInstSetName());
+      Genome genome(is.GetHardwareType(), seq_props, GeneticRepresentationPtr(new InstructionSequence((const char*)genome_sequence)));
+
+      auto& germline = m_world->GetPopulation().GetDeme(deme_id).GetGermline();
+      germline.Add(genome);
+    }
+  }
+};
+
+
 class cActionLoadStructuredSystematicsGroup : public cAction
 {
 private:
@@ -287,6 +391,8 @@ void RegisterSaveLoadActions(cActionLibrary* action_lib)
   action_lib->Register<cActionLoadHostGenotypeList>("LoadHostGenotypeList");
   action_lib->Register<cActionLoadPopulation>("LoadPopulation");
   action_lib->Register<cActionSavePopulation>("SavePopulation");
+  action_lib->Register<cActionLoadGermlines>("LoadGermlines");
+  action_lib->Register<cActionSaveGermlines>("SaveGermlines");
   action_lib->Register<cActionLoadStructuredSystematicsGroup>("LoadStructuredSystematicsGroup");
   action_lib->Register<cActionSaveStructuredSystematicsGroup>("SaveStructuredSystematicsGroup");
   action_lib->Register<cActionSaveFlameData>("SaveFlameData");

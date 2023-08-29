@@ -31,6 +31,11 @@ Apto::String Avida::Version::Banner()
   Apto::String banner("Avida ");
   banner += Avida::Version::String();
   banner += "\n";
+  #ifndef NDEBUG
+  banner += "debug build\n";
+  #else
+  banner += "release build\n";
+  #endif
   banner += "--------------------------------------------------------------------------------\n";
   banner += "by Charles Ofria\n";
   
