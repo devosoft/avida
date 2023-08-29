@@ -37,6 +37,7 @@
 #include "cReactionResult.h" //@JJB**
 #include "cTaskState.h" //@JJB**
 
+#include <cassert>
 #include <cmath>
 
 
@@ -677,6 +678,7 @@ void cDeme::UpdateStats()
  are all messed up.
  */
 void cDeme::ReplaceGermline(const cGermline& germline) {
+  assert(germline.Size());
   _germline = germline;
 }
 

@@ -47,6 +47,7 @@
 #include "cEventList.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cfloat>
 #include <numeric>
 #include <cmath>
@@ -2152,6 +2153,13 @@ void cStats::PrintDemeOrgGermlineSequestration(const cString& filename)
     }
     for (int k=0; k<react_count.GetSize(); ++k){
       df->Write(react_count[k], "reaction");
+    }
+
+    if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 1) {
+      // @MAM for DEMES_USE_GERMLINE 1, germ are tucked away
+      // and not living among the deme population
+      assert(numGerm == 0);
+      numGerm = deme.GetGermline().Size();
     }
     df->Write(numGerm, "numGerm");
     df->Write(numPresent, "numPresent");
