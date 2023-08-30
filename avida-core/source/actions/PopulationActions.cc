@@ -3900,6 +3900,25 @@ public:
 };
 
 
+class cActionReplicateDeme : public cAction
+{
+private:
+  int m_id;
+public:
+  cActionReplicateDeme(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_id(0) {
+    cString largs(args);
+    if (largs.GetSize()) m_id = largs.PopWord().AsInt();
+  }
+
+  static const cString GetDescription() { return "Arguments: <int src_id>"; }
+
+  void Process(cAvidaContext& ctx) {
+    cDeme& deme = m_world->GetPopulation().GetDeme(m_id);
+    m_world->GetPopulation().ReplicateDeme(deme, ctx);
+  }
+};
+
+
 class cActionNewTrial : public cAction
 {
 private:
@@ -5757,6 +5776,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDivideDemes>("DivideDemes");
   action_lib->Register<cActionResetDemes>("ResetDemes");
   action_lib->Register<cActionCopyDeme>("CopyDeme");
+  action_lib->Register<cActionReplicateDeme>("ReplicateDeme");
   action_lib->Register<cActionMixPopulation>("MixPopulation");
 	
   action_lib->Register<cActionDecayPoints>("DecayPoints");
