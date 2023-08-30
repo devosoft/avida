@@ -36,6 +36,7 @@
 #include "cWorld.h"
 
 #include <cassert>
+#include <cstdio>
 #include <iostream>
 
 
@@ -234,23 +235,15 @@ class cActionLoadGermlines : public cAction
 {
 private:
   cString m_filename;
+  bool m_verbose;
 
 public:
   cActionLoadGermlines(cWorld* world, const cString& args, Feedback& feedback)
-    : cAction(world, args), m_filename("")
+    : cAction(world, args), m_filename(""), m_verbose(false)
   {
-    cArgSchema schema(':','=');
-
-    // String Entries
-    schema.AddEntry("filename", 0, "detailgermlines");
-
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
-
-    if (argc) {
-      m_filename = argc->GetString(0);
-    }
-
-    delete argc;
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_verbose = largs.PopWord().AsInt();
   }
 
   static const cString GetDescription() { return "Arguments: [string filename='detailgermlines']"; }
@@ -262,19 +255,49 @@ public:
       ctx.Driver().Feedback()
     );
     assert(input_file.WasOpened());
+    if (m_verbose) printf(
+      "LoadGermlines input file %s has %d lines.\n",
+      (const char*)m_filename,
+      input_file.GetNumLines()
+    );
 
     for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
       auto file_props = input_file.GetLineAsDict(line_id);
       const int deme_id = Apto::StrAs(file_props->Get("deme_id"));
-      const auto genome_sequence = Apto::StrAs(file_props->Get("sequence"));
+      const auto genome_sequence = file_props->Get("sequence");
+      if (m_verbose) printf(
+        "LoadGermlines adding sequence %s to deme %d germline...\n",
+        (const char*)genome_sequence,
+        deme_id
+      );
 
       HashPropertyMap seq_props;
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       cHardwareManager::SetupPropertyMap(seq_props, (const char*)is.GetInstSetName());
+      if (m_verbose) printf(
+        "LoadGermlines hardware type is %d and instruction set is %s.\n",
+        is.GetHardwareType(),
+        (const char*)is.GetInstSetName()
+      );
+
       Genome genome(is.GetHardwareType(), seq_props, GeneticRepresentationPtr(new InstructionSequence((const char*)genome_sequence)));
+      if (m_verbose) printf(
+        "Loaded Genome string representation is `%s`.\n",
+        (const char*)genome.AsString()
+      );
 
       auto& germline = m_world->GetPopulation().GetDeme(deme_id).GetGermline();
+      if (m_verbose) printf(
+        "LoadGermlines deme %d germline size before add was %d.\n",
+        deme_id,
+        germline.Size()
+      );
       germline.Add(genome);
+      if (m_verbose) printf(
+        "LoadGermlines deme %d germline size after add is %d.\n",
+        deme_id,
+        germline.Size()
+      );
     }
   }
 };
