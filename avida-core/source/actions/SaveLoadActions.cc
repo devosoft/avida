@@ -264,7 +264,7 @@ public:
     for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
       auto file_props = input_file.GetLineAsDict(line_id);
       const int deme_id = Apto::StrAs(file_props->Get("deme_id"));
-      const auto genome_sequence = Apto::StrAs(file_props->Get("sequence"));
+      const auto genome_sequence = file_props->Get("sequence");
       if (m_verbose) printf(
         "LoadGermlines adding sequence %s to deme %d germline...\n",
         (const char*)genome_sequence,
