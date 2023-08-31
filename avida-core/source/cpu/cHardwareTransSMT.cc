@@ -41,6 +41,7 @@
 #include "AvidaTools.h"
 
 #include <algorithm>
+#include <cstdio>
 #include <iomanip>
 
 using namespace std;
@@ -1085,8 +1086,9 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
   // so, enforce min genome size by growing up to min genome size if need be
   if (min_genome_size && injected_code.GetSize() < min_genome_size) {
     num_mut = std::max(num_mut, min_genome_size - injected_code.GetSize());
-    ctx.Driver().Feedback().Warning(
-      "Grew genome of size %d back to min genome size %d with %d inserts.",
+    // ctx.Driver().Feedback().Warning(
+    printf("warning: "
+      "Grew genome of size %d back to min genome size %d with %d inserts.\n",
       injected_code.GetSize(), min_genome_size, num_mut
     );
   }
@@ -1113,8 +1115,9 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
 
   if (max_genome_size && injected_code.GetSize() > max_genome_size) {
     num_mut = std::max(num_mut, injected_code.GetSize() - max_genome_size);
-    ctx.Driver().Feedback().Warning(
-      "Shrank genome of size %d back to max genome size %d with %d deletes.",
+    // ctx.Driver().Feedback().Warning(
+    printf("warning: "
+      "Shrank genome of size %d back to max genome size %d with %d deletes.\n",
       injected_code.GetSize(), max_genome_size, num_mut
     );
   }
