@@ -6720,14 +6720,22 @@ public:
     if (source.transmission_type == rhs.source.transmission_type) {
       return id_num > rhs.id_num;
     } else {
-      return source.transmission_type == Systematics::TransmissionType::DIVISION || source.transmission_type == Systematics::TransmissionType::UNKNOWN;
+      return (
+        source.transmission_type == Systematics::TransmissionType::DUPLICATION
+        || source.transmission_type == Systematics::TransmissionType::DIVISION
+        || source.transmission_type == Systematics::TransmissionType::UNKNOWN
+      );
     }
   }
   inline bool operator>(const sTmpGenotype& rhs) const {
     if (source.transmission_type == rhs.source.transmission_type) {
       return id_num < rhs.id_num;
     } else {
-      return source.transmission_type != Systematics::TransmissionType::DIVISION && source.transmission_type != Systematics::TransmissionType::UNKNOWN;
+      return (
+        source.transmission_type != Systematics::TransmissionType::DUPLICATION
+        && source.transmission_type != Systematics::TransmissionType::DIVISION
+        && source.transmission_type != Systematics::TransmissionType::UNKNOWN
+      );
     }
   }
   inline bool operator<=(const sTmpGenotype& rhs) const {
