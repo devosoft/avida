@@ -71,7 +71,7 @@ namespace Avida {
 
           Apto::String transmissionStr = sourceString.Substring(0, pos);
           Apto::String externalStr = sourceString.Substring(
-            pos+1, sourceString.GetSize() - pos
+            pos+1, sourceString.GetSize() - pos - 1
           );
 
           // Map string to TransmissionType
