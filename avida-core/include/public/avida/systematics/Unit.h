@@ -25,6 +25,8 @@
 #ifndef AvidaSystematicsUnit_h
 #define AvidaSystematicsUnit_h
 
+#include <iostream>
+
 #include "apto/platform.h"
 #include "avida/core/Types.h"
 #include "avida/systematics/Types.h"
@@ -53,6 +55,39 @@ namespace Avida {
       LIB_EXPORT inline Source() : transmission_type(UNKNOWN), external(false), unused(0) { ; }
       LIB_EXPORT inline Source(TransmissionType t, const Apto::String& a, bool e = false)
         : transmission_type(t), external(e), unused(0), arguments(a) { ; }
+
+      LIB_EXPORT inline Source(const Apto::String& sourceString, const Apto::String& a)
+      : transmission_type(UNKNOWN), external(false), unused(0), arguments(a)
+      {
+          const int pos = sourceString.Find(':');
+          if (pos == -1) {
+            std::cerr
+              << "incorrectly formatted Source string: "
+              << sourceString
+              << std::endl;
+              // fall back to default initialization
+              return;
+          }
+
+          Apto::String transmissionStr = sourceString.Substring(0, pos);
+          Apto::String externalStr = sourceString.Substring(
+            pos+1, sourceString.GetSize() - pos - 1
+          );
+
+          // Map string to TransmissionType
+          if (transmissionStr == "div")
+              transmission_type = DIVISION;
+          else if (transmissionStr == "dup")
+              transmission_type = DUPLICATION;
+          else if (transmissionStr == "horz")
+              transmission_type = HORIZONTAL;
+          else if (transmissionStr == "vert")
+              transmission_type = VERTICAL;
+
+          // Map string to external
+          external = (externalStr == "ext");
+
+      }
       
       LIB_EXPORT Apto::String AsString() const;
     };
