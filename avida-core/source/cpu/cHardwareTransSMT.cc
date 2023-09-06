@@ -1085,12 +1085,22 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
   // (somehow) parasites shrink despite del and implicit muts being disabled
   // so, enforce min genome size by growing up to min genome size if need be
   if (min_genome_size && injected_code.GetSize() < min_genome_size) {
-    num_mut = std::max(num_mut, min_genome_size - injected_code.GetSize());
-    // ctx.Driver().Feedback().Warning(
-    printf("warning: "
-      "Grew genome of size %d back to min genome size %d with %d inserts.\n",
-      injected_code.GetSize(), min_genome_size, num_mut
-    );
+    if (m_world->GetConfig().GENOME_SIZE_RECOVERY.Get() == 1) {
+      num_mut = std::max(num_mut, min_genome_size - injected_code.GetSize());
+      // ctx.Driver().Feedback().Warning(
+      printf("warning: "
+        "Grew genome of size %d back to min genome size %d with %d inserts.\n",
+        injected_code.GetSize(), min_genome_size, num_mut
+      );
+    } else if (m_world->GetConfig().GENOME_SIZE_RECOVERY.Get() == 2) {
+      printf("warning: "
+        "Sterilized too-small genome of size %d by setting insts to Nop-X.\n",
+        injected_code.GetSize()
+      );
+      for (int site = 0; site < injected_code.GetSize(); ++site) {
+        injected_code[site] = m_inst_set->GetInst("Nop-X");
+      }
+    }
   }
 
   // If would make creature to big, insert up to max_genome_size
@@ -1114,12 +1124,22 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
                                             m_organism->GetInjectDelProb());
 
   if (max_genome_size && injected_code.GetSize() > max_genome_size) {
-    num_mut = std::max(num_mut, injected_code.GetSize() - max_genome_size);
-    // ctx.Driver().Feedback().Warning(
-    printf("warning: "
-      "Shrank genome of size %d back to max genome size %d with %d deletes.\n",
-      injected_code.GetSize(), max_genome_size, num_mut
-    );
+    if (m_world->GetConfig().GENOME_SIZE_RECOVERY.Get() == 1) {
+      num_mut = std::max(num_mut, injected_code.GetSize() - max_genome_size);
+      // ctx.Driver().Feedback().Warning(
+      printf("warning: "
+        "Shrank genome of size %d back to max genome size %d with %d deletes.\n",
+        injected_code.GetSize(), max_genome_size, num_mut
+      );
+    } else if (m_world->GetConfig().GENOME_SIZE_RECOVERY.Get() == 2) {
+      printf("warning: "
+        "Sterilized too-large genome of size %d by setting insts to Nop-X.\n",
+        injected_code.GetSize()
+      );
+      for (int site = 0; site < injected_code.GetSize(); ++site) {
+        injected_code[site] = m_inst_set->GetInst("Nop-X");
+      }
+    }
   }
 
   // If would make creature too small, delete down to min_genome_size

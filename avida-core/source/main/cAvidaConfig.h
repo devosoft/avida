@@ -393,6 +393,7 @@ public:
   CONFIG_ADD_VAR(MIN_EXE_LINES, double, 0.5, "Code fraction that must be executed before divide");
   CONFIG_ADD_VAR(MIN_GENOME_SIZE, int, 0, "Minimum number of instructions allowed in a genome. 0 = OFF");
   CONFIG_ADD_VAR(MAX_GENOME_SIZE, int, 0, "Maximum number of instructions allowed in a genome. 0 = OFF");
+  CONFIG_ADD_VAR(GENOME_SIZE_RECOVERY, int, 0, "How should genomes that arise outside the too-small or too-large size bounds be corrected? 0: do nothing, 1: use standard indel mutations to put within size bounds, 2: sterilize by replaceing all insts with Nop-X.");
   CONFIG_ADD_VAR(MIN_CYCLES, int, 0, "Min number of CPU cycles (age) required before reproduction.");
   CONFIG_ADD_VAR(REQUIRE_ALLOCATE, int, 1, "(Original CPU Only) Require allocate before divide?");
   CONFIG_ADD_VAR(REQUIRED_TASK, int, -1, "Task ID required for successful divide");
