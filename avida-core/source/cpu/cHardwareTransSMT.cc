@@ -1693,6 +1693,15 @@ bool cHardwareTransSMT::Inst_ThreadKill(cAvidaContext&)
 // into the complement template found in a neighboring organism.
 bool cHardwareTransSMT::Inst_Inject(cAvidaContext& ctx)
 {
+  const bool is_nonparasite = !(
+    ThreadGetOwner()->UnitSource().transmission_type == Systematics::HORIZONTAL
+    || ThreadGetOwner()->UnitSource().transmission_type == Systematics::VERTICAL
+  );
+  if (
+    m_world->GetConfig().TRANSSMT_DISABLE_NONPARASITE_INJECT.Get()
+    && is_nonparasite
+  ) return true;  // do nothing, successfully
+
   ReadLabel(MAX_MEMSPACE_LABEL);
   
   if(ThreadGetOwner()->UnitSource().transmission_type == Systematics::HORIZONTAL)
