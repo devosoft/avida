@@ -6834,6 +6834,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         + tmp.props->Get("id")
       );
     }
+
     
     // Process gestation time offsets
     if (!load_rebirth) {
@@ -7077,6 +7078,28 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       // Setup the child's mutation rates.  Since this organism is being injected
       // and has no parent, we should always take the rate from the environment.
       new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
+
+      // handle parasite
+      const bool is_parasite = (
+        tmp.source.transmission_type == Systematics::TransmissionType::VERTICAL
+        || tmp.source.transmission_type == Systematics::TransmissionType::HORIZONTAL
+      );
+      if (is_parasite) {
+        if (!cell_array[cell_id].IsOccupied()) {
+          std::cerr << "Loaded parasite before or without host!" << std::endl;
+          std::abort();
+        }
+
+        ConstInstructionSequencePtr seq;
+        seq.DynamicCastFrom(mg.Representation());
+
+        InjectParasite(
+          static_cast<const char*>(tmp.source.arguments), // cString label,
+          *seq, // const InstructionSequence& injected_code,
+          cell_id // int cell_id
+        );
+        continue;
+      }
       
       // Activate the organism in the population...
       bool org_survived = false;
