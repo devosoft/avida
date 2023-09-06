@@ -1100,6 +1100,14 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
       for (int site = 0; site < injected_code.GetSize(); ++site) {
         injected_code[site] = m_inst_set->GetInst("Nop-X");
       }
+    } else if (m_world->GetConfig().GENOME_SIZE_RECOVERY.Get() == 3) {
+      printf("warning: "
+        "Sterilized too-small genome of size %d by setting insts to Nop-A.\n",
+        injected_code.GetSize()
+      );
+      for (int site = 0; site < injected_code.GetSize(); ++site) {
+        injected_code[site] = m_inst_set->GetInst("Nop-A");
+      }
     }
   }
 
@@ -1138,6 +1146,14 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
       );
       for (int site = 0; site < injected_code.GetSize(); ++site) {
         injected_code[site] = m_inst_set->GetInst("Nop-X");
+      }
+    } else if (m_world->GetConfig().GENOME_SIZE_RECOVERY.Get() == 3) {
+      printf("warning: "
+        "Sterilized too-large genome of size %d by setting insts to Nop-A.\n",
+        injected_code.GetSize()
+      );
+      for (int site = 0; site < injected_code.GetSize(); ++site) {
+        injected_code[site] = m_inst_set->GetInst("Nop-A");
       }
     }
   }
