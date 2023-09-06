@@ -26,6 +26,7 @@
 #include "avida/core/InstructionSequence.h"
 #include "avida/core/Properties.h"
 #include "avida/output/File.h"
+#include "avida/systematics/Unit.h"
 
 #include "avida/private/systematics/GenotypeArbiter.h"
 
@@ -204,8 +205,19 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, vo
 , m_prop_map(NULL)
 {
   Apto::Map<Apto::String, Apto::String>& props = *(*static_cast<Apto::SmartPtr<Apto::Map<Apto::String, Apto::String> >*>(prop_p));
-  
-  m_src.transmission_type = DIVISION;
+
+  m_src.transmission_type = Systematics::Source(
+    props.Get("src"), props.Get("src_args")
+  ).transmission_type;
+  // @MAM looks like there was an assumption that transmissin_type
+  // was DIVISION (it was hardcoded)
+  // added support for DUPLICATION but check transmission's i.e., not parasite
+  // because it might break whatever assumptions are hardcoded elsewhere
+  assert (
+    m_src.transmission_type == DIVISION
+    || m_src.transmission_type == DUPLICATION
+    || m_src.transmission_type == UNKNOWN
+  );
   m_src.external = true;
   m_src.arguments = props.Get("src_args");
   if (m_src.arguments == "(none)") m_src.arguments = "";
