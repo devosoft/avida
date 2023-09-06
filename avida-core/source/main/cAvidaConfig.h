@@ -461,6 +461,7 @@ public:
   CONFIG_ADD_VAR(HOST_USE_GENOTYPE_FILE, int, 0, "Host Genotypes are loaded from a file rather than replicated from parent -- see LoadHostGenotypeList");
   
   CONFIG_ADD_VAR(FULL_VERTICAL_TRANS, double, 0.0, "Determines if offspring of infected host is automatically infected. 0 for no, 1 for yes. If you want to keep parent infected as well, you need to set DIVIDE_METHOD to 2.");
+  CONFIG_ADD_VAR(TRANSSMT_DISABLE_NONPARASITE_INJECT, double, 0.0, "Should inject instruction be a no-op for non-parasites? Prevents host-generated pseudo-parasites. 0 for no, 1 for yes.");
 
 
   // -------- CPU Archetecture
