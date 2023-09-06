@@ -216,6 +216,7 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, vo
   assert (
     m_src.transmission_type == DIVISION
     || m_src.transmission_type == DUPLICATION
+    || m_src.transmission_type == UNKNOWN
   );
   m_src.external = true;
   m_src.arguments = props.Get("src_args");
