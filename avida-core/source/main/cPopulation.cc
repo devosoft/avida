@@ -1246,7 +1246,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
   
   
   // Attempt actual parasite injection
-  // LZ - use parasige_genotype_list for the GenRepPtr instead IF Config says to
+  // LZ - use parasite_genotype_list for the GenRepPtr instead IF Config says to
   // e.g., use predefined genotypes to hold the frequency constant, or "replay" parasite
   // from one run into another.
   GeneticRepresentationPtr tmpParasiteGenome;
