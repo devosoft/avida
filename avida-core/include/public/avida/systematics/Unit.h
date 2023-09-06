@@ -83,6 +83,8 @@ namespace Avida {
               transmission_type = HORIZONTAL;
           else if (transmissionStr == "vert")
               transmission_type = VERTICAL;
+          else if (transmissionStr == "unknown")
+              transmission_type = UNKNOWN;
 
           // Map string to external
           external = (externalStr == "ext");
