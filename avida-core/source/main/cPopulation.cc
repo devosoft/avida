@@ -6717,26 +6717,36 @@ public:
   
   inline sTmpGenotype() : id_num(-1), props(NULL) { ; }
   inline bool operator<(const sTmpGenotype& rhs) const {
-    if (source.transmission_type == rhs.source.transmission_type) {
-      return id_num > rhs.id_num;
-    } else {
-      return (
-        source.transmission_type == Systematics::TransmissionType::DUPLICATION
-        || source.transmission_type == Systematics::TransmissionType::DIVISION
-        || source.transmission_type == Systematics::TransmissionType::UNKNOWN
-      );
-    }
+    const bool is_parasite = (
+      source.transmission_type
+      == Systematics::TransmissionType::HORIZONTAL
+      || source.transmission_type
+      == Systematics::TransmissionType::VERTICAL
+    );
+    const bool rhs_is_parasite = (
+      rhs.source.transmission_type
+      == Systematics::TransmissionType::HORIZONTAL
+      || rhs.source.transmission_type
+      == Systematics::TransmissionType::VERTICAL
+    );
+    if (is_parasite == rhs_is_parasite) return id_num > rhs.id_num;
+    else return !is_parasite;
   }
   inline bool operator>(const sTmpGenotype& rhs) const {
-    if (source.transmission_type == rhs.source.transmission_type) {
-      return id_num < rhs.id_num;
-    } else {
-      return (
-        source.transmission_type != Systematics::TransmissionType::DUPLICATION
-        && source.transmission_type != Systematics::TransmissionType::DIVISION
-        && source.transmission_type != Systematics::TransmissionType::UNKNOWN
-      );
-    }
+    const bool is_parasite = (
+      source.transmission_type
+      == Systematics::TransmissionType::HORIZONTAL
+      || source.transmission_type
+      == Systematics::TransmissionType::VERTICAL
+    );
+    const bool rhs_is_parasite = (
+      rhs.source.transmission_type
+      == Systematics::TransmissionType::HORIZONTAL
+      || rhs.source.transmission_type
+      == Systematics::TransmissionType::VERTICAL
+    );
+    if (is_parasite == rhs_is_parasite) return id_num < rhs.id_num;
+    else return is_parasite;
   }
   inline bool operator<=(const sTmpGenotype& rhs) const {
     return !(*this > rhs);
