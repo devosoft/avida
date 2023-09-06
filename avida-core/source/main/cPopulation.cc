@@ -7080,10 +7080,6 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
 
       // handle parasite
-      const bool is_parasite = (
-        tmp.source.transmission_type == Systematics::TransmissionType::VERTICAL
-        || tmp.source.transmission_type == Systematics::TransmissionType::HORIZONTAL
-      );
       if (is_parasite) {
         if (!cell_array[cell_id].IsOccupied()) {
           std::cerr << "Loaded parasite before or without host!" << std::endl;
