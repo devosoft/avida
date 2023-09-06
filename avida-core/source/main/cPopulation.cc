@@ -6711,33 +6711,27 @@ public:
   
   inline sTmpGenotype() : id_num(-1), props(NULL) { ; }
   inline bool operator<(const sTmpGenotype& rhs) const {
+    namespace Sys = Systematics;
     const bool is_parasite = (
-      source.transmission_type
-      == Systematics::TransmissionType::HORIZONTAL
-      || source.transmission_type
-      == Systematics::TransmissionType::VERTICAL
+      source.transmission_type == Sys::TransmissionType::HORIZONTAL
+      || source.transmission_type == Sys::TransmissionType::VERTICAL
     );
     const bool rhs_is_parasite = (
-      rhs.source.transmission_type
-      == Systematics::TransmissionType::HORIZONTAL
-      || rhs.source.transmission_type
-      == Systematics::TransmissionType::VERTICAL
+      rhs.source.transmission_type == Sys::TransmissionType::HORIZONTAL
+      || rhs.source.transmission_type == Sys::TransmissionType::VERTICAL
     );
     if (is_parasite == rhs_is_parasite) return id_num > rhs.id_num;
     else return !is_parasite;
   }
   inline bool operator>(const sTmpGenotype& rhs) const {
+    namespace Sys = Systematics;
     const bool is_parasite = (
-      source.transmission_type
-      == Systematics::TransmissionType::HORIZONTAL
-      || source.transmission_type
-      == Systematics::TransmissionType::VERTICAL
+      source.transmission_type == Sys::TransmissionType::HORIZONTAL
+      || source.transmission_type == Sys::TransmissionType::VERTICAL
     );
     const bool rhs_is_parasite = (
-      rhs.source.transmission_type
-      == Systematics::TransmissionType::HORIZONTAL
-      || rhs.source.transmission_type
-      == Systematics::TransmissionType::VERTICAL
+      rhs.source.transmission_type == Sys::TransmissionType::HORIZONTAL
+      || rhs.source.transmission_type == Sys::TransmissionType::VERTICAL
     );
     if (is_parasite == rhs_is_parasite) return id_num < rhs.id_num;
     else return is_parasite;
