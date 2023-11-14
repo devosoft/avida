@@ -333,6 +333,20 @@ int cDeme::GetNumOrgsWithOpinion() const
   return count;
 }
 
+int cDeme::GetNumParasites() const
+{
+  const int demeSize = GetSize();
+  int count = 0;
+
+  for (int pos = 0; pos < demeSize; ++pos)
+  {
+    const cPopulationCell &cell = GetCell(pos);
+    if (cell.IsOccupied()) count += cell.GetOrganism()->GetNumParasites();
+  }
+
+  return count;
+}
+
 void cDeme::ProcessPreUpdate()
 {
   deme_resource_count.SetSpatialUpdate(m_world->GetStats().GetUpdate());

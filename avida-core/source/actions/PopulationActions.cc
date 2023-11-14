@@ -5169,6 +5169,88 @@ public:
 
 
 /*
+ Kill deme(s) with the highest parasite load
+
+ Parameters:
+ - The percent of living organisms to kill (default: 0)
+ */
+
+class cActionKillDemesHighestParasiteLoad : public cAction
+{
+private:
+  double m_killprob;
+public:
+  cActionKillDemesHighestParasiteLoad(cWorld *world, const cString &args, Feedback &) : cAction(world, args), m_killprob(0.01)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
+
+    assert(m_killprob >= 0);
+  }
+
+  static const cString GetDescription() { return "Arguments: [int prob=1]"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+
+    int target_cell;
+    cPopulation& pop = m_world->GetPopulation();
+
+    long cells_scanned = 0;
+    long orgs_killed = 0;
+    long cells_empty = 0;
+
+    const int num_demes = pop.GetNumDemes();
+    const int kill_quota = ctx.GetRandom().GetRandBinomial(
+      num_demes,
+      m_killprob
+    );
+    if (kill_quota == 0) return;
+
+    double kill_thresh = 1.0;
+    int init_countdown = kill_quota;
+    int d;
+    int _num_eligible = 0;
+    for (int d = 0; d < pop.GetNumDemes(); d++) {
+      cDeme &deme = pop.GetDeme(d);
+      if (deme.IsTreatableNow() && not deme.IsEmpty()) {
+      {
+        _num_eligible++;
+        if (init_countdown > 0) {
+          kill_thresh = std::min(
+            kill_thresh,
+            deme.GetParasiteLoad()
+          );
+          init_countdown--;
+        } else {
+          kill_thresh = std::max(
+            deme.GetParasiteLoad(), kill_thresh
+          );
+        }
+      } // End if deme is treatable
+    } //End iterating through all demes
+
+    // go through and kill cells
+    int _num_killed = 0;
+    for (int d = 0; d < pop.GetNumDemes(); d++)
+    {
+      cDeme &deme = pop.GetDeme(d);
+      if (
+          deme.IsTreatableNow() && not deme.IsEmpty() && (deme.GetParasiteLoad() >= kill_thresh))
+      {
+        _num_killed += 1;
+        deme.KillAll(ctx);
+      } // End if deme is eligible
+    } //End iterating through all demes
+    }
+
+    const auto _expected_killed = std::min(_num_eligible, kill_quota);
+    assert(_num_killed == _expected_killed);
+} // End Process()
+};
+
+
+/*
  Set the ages at which treatable demes can be treated
  
  Parameters:
@@ -5834,6 +5916,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillWithinRadiusBelowResourceThreshold>("KillWithinRadiusBelowResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusMeanBelowResourceThreshold>("KillWithinRadiusMeanBelowResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
+  action_lib->Register<cActionKillDemesHighestParasiteLoad>("KillDemesHighestParasiteLoad");
   action_lib->Register<cActionKillMeanBelowThresholdPaintable>("KillMeanBelowThresholdPaintable");
 	
   action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");

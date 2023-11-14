@@ -182,6 +182,11 @@ public:
 
   double GetDensity() const { return static_cast<double>(cur_org_count) / static_cast<double>(GetSize()); }
   int GetNumOrgsWithOpinion() const;
+
+  int GetNumParasites() const;
+  double GetParasiteLoad() const {
+    return static_cast<double>(GetNumParasites()) / GetOrgCount();
+  }
 	
   void IncOrgCount() { cur_org_count++; }
   void DecOrgCount() { cur_org_count--; }
