@@ -5188,7 +5188,7 @@ public:
     assert(m_killprob >= 0);
   }
 
-  static const cString GetDescription() { return "Arguments: [int prob=1]"; }
+  static const cString GetDescription() { return "Arguments: [double killprob=0.01]"; }
 
   void Process(cAvidaContext& ctx)
   {
