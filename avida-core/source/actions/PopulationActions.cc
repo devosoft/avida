@@ -54,6 +54,7 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <limits>
 #include <numeric>
 #include <set>
 
@@ -5179,16 +5180,18 @@ class cActionKillDemesHighestParasiteLoad : public cAction
 {
 private:
   double m_killprob;
+  int m_killmax;
 public:
-  cActionKillDemesHighestParasiteLoad(cWorld *world, const cString &args, Feedback &) : cAction(world, args), m_killprob(0.01)
+  cActionKillDemesHighestParasiteLoad(cWorld *world, const cString &args, Feedback &) : cAction(world, args), m_killprob(0.01), m_killmax(std::numeric_limits<int>::max())
   {
     cString largs(args);
     if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_killmax = largs.PopWord().AsInt();
 
     assert(m_killprob >= 0);
   }
 
-  static const cString GetDescription() { return "Arguments: [double killprob=0.01]"; }
+  static const cString GetDescription() { return "Arguments: [double killprob=0.01] [int killmax = intmax]"; }
 
   void Process(cAvidaContext& ctx)
   {
@@ -5201,10 +5204,11 @@ public:
     long cells_empty = 0;
 
     const int num_demes = pop.GetNumDemes();
-    const int kill_quota = ctx.GetRandom().GetRandBinomial(
+    const int binomial_draw = ctx.GetRandom().GetRandBinomial(
       num_demes,
       m_killprob
     );
+    const int kill_quota = std::min(binomial_draw, m_killmax);
     if (kill_quota == 0) return;
 
     double kill_thresh = 1.0;
