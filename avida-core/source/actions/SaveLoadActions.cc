@@ -197,13 +197,15 @@ public:
 
     // String Entries
     schema.AddEntry("filename", 0, "detailgermlines");
-    schema.AddEntry("birthcounts", 1, false);
+    schema.AddEntry("birthcounts", 0, 0, 1, 0);
 
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
 
     if (argc) {
+      // String Entries
       m_filename = argc->GetString(0);
-      m_birthcounts = argc->GetInt(1);
+      // Integer Entries
+      m_birthcounts = argc->GetInt(0);
     }
 
     delete argc;
