@@ -1,0 +1,12 @@
+#filetype germline_data
+#format deme_id hw_type inst_set sequence deme_birth_count 
+# Mode 1 Germline Save
+# Tue Nov 14 22:24:30 2023
+#  1: Deme ID
+#  2: Hardware Type ID
+#  3: Inst Set Name
+#  4: Genome Sequence
+#  5: Deme Birth Count
+
+0 2 transsmt ycdBCiEdimFjfCDaknmsAjemEEcgccgssmhEEcsdseDcAcBcggclEEcDEgcvrsAmlzessjhcdcggkhamtmciEEvjDdhjidzoAyndvmEdbgznjDmcjohohooayaxdyalbcekzebjcogEtjgjacblDvubADnslyyocgsAcjCbobffhmvnnAdbDfkmxcagBFfndytqhutjdzfdjsnflfoqCwcvhsjcvbmlsqcjrgyiDivvnFhrArcsmifbClvluDqmCBbtiDhiEfACcarpEczijdljujACbfzuDEFyaqqekizDosbbzjgmpczypqvcrGxab 0 
+1 2 transsmt ycdBCiEdimFjfCDaknmsAjemEEcgccgssmhEEcsdseDcAcBcggclEEcDEgcvrsAmlzessjhcdcggkhamtmciEEvjDdhjidzoAyndvmEdbgznjDmcjohohooayaxdyalbcekzebjcogEtjgjacblDvubADnslyyocgsAcjCbobffhmvnnAdbDfkmxcagBFfndytqhutjdzfdjsnflfoqCwcvhsjcvbmlsqcjrgyiDivvnFhrArcsmifbClvluDqmCBbtiDhiEfACcarpEczijdljujACbfzuDEFyaqqekizDosbbzjgmpczypqvcrGxab 0 

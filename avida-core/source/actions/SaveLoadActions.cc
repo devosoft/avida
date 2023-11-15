@@ -187,20 +187,23 @@ class cActionSaveGermlines : public cAction
 {
 private:
   cString m_filename;
+  bool m_birthcounts;
 
 public:
   cActionSaveGermlines(cWorld* world, const cString& args, Feedback& feedback)
-    : cAction(world, args), m_filename("")
+    : cAction(world, args), m_filename(""), m_birthcounts(false)
   {
     cArgSchema schema(':','=');
 
     // String Entries
     schema.AddEntry("filename", 0, "detailgermlines");
+    schema.AddEntry("birthcounts", 0, false);
 
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
 
     if (argc) {
       m_filename = argc->GetString(0);
+      m_birthcounts = argc->GetInt(1);
     }
 
     delete argc;
@@ -223,6 +226,11 @@ public:
         const auto& genome = germline.GetLatest();
         df->Write(i, "Deme ID", "deme_id");
         genome.LegacySave(Apto::GetInternalPtr(df));
+        if (m_birthcounts) {
+          df->Write(
+            deme.GetBirthCount(), "Deme Birth Count", "deme_birth_count"
+          );
+        }
         df->Endl();
       }
 
@@ -297,6 +305,56 @@ public:
         "LoadGermlines deme %d germline size after add is %d.\n",
         deme_id,
         germline.Size()
+      );
+    }
+  }
+};
+
+class cActionLoadBirthCounts : public cAction
+{
+private:
+  cString m_filename;
+  bool m_verbose;
+
+public:
+  cActionLoadBirthCounts(cWorld* world, const cString& args, Feedback& feedback)
+    : cAction(world, args), m_filename(""), m_verbose(false)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_verbose = largs.PopWord().AsInt();
+  }
+
+  static const cString GetDescription() { return "Arguments: [string filename='detailgermlines']"; }
+
+  void Process(cAvidaContext& ctx) {
+    cInitFile input_file(
+      m_filename,
+      m_world->GetWorkingDir(),
+      ctx.Driver().Feedback()
+    );
+    assert(input_file.WasOpened());
+    if (m_verbose) printf(
+      "LoadBirthCounts input file %s has %d lines.\n",
+      (const char*)m_filename,
+      input_file.GetNumLines()
+    );
+
+    for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
+      auto file_props = input_file.GetLineAsDict(line_id);
+      const int deme_id = Apto::StrAs(file_props->Get("deme_id"));
+      const int deme_birth_count = Apto::StrAs(file_props->Get("deme_birth_count"));
+      if (m_verbose)
+        printf(
+          "LoadBirthCounts deme %d has %d births.\n", deme_id, deme_birth_count
+        );
+
+      auto& deme = m_world->GetPopulation().GetDeme(deme_id);
+      deme.SetBirthCount(deme_birth_count);
+      printf(
+        "LoadBirthCounts set deme %d birth counts to %d.\n",
+        deme_id,
+        deme.GetBirthCount()
       );
     }
   }
@@ -416,6 +474,7 @@ void RegisterSaveLoadActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSavePopulation>("SavePopulation");
   action_lib->Register<cActionLoadGermlines>("LoadGermlines");
   action_lib->Register<cActionSaveGermlines>("SaveGermlines");
+  action_lib->Register<cActionLoadBirthCounts>("LoadBirthCounts");
   action_lib->Register<cActionLoadStructuredSystematicsGroup>("LoadStructuredSystematicsGroup");
   action_lib->Register<cActionSaveStructuredSystematicsGroup>("SaveStructuredSystematicsGroup");
   action_lib->Register<cActionSaveFlameData>("SaveFlameData");

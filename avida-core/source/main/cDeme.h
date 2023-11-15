@@ -176,6 +176,7 @@ public:
   int GetBirthCount() const { return cur_birth_count; }
   int GetLastBirthCount() const { return last_birth_count; }
   void IncBirthCount() { cur_birth_count++; birth_count_perslot++;}
+  void SetBirthCount(const int count) { cur_birth_count = count; }
 
   int GetOrgCount() const { return cur_org_count; }
   int GetLastOrgCount() const { return last_org_count; }
