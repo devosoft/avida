@@ -1203,15 +1203,38 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
   // @TODO - activate parasite target selection should account for hardware type
   cOrganism* target_organism = NULL;
   // If there's any migration turned on ... try this first
-  if(m_world->GetConfig().NUM_DEMES.Get() > 0 && m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get() > 0.0 && m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 4 && m_world->GetRandom().P(m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get())){
+  if(
+    m_world->GetConfig().NUM_DEMES.Get() > 0
+    && m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get() > 0.0
+    && m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 4
+    && m_world->GetRandom().P(m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get())
+  ){
     cDeme& deme = GetDeme(m_world->GetMigrationMatrix().GetProbabilisticDemeID(host_cell.GetDemeID(), m_world->GetRandom(),true));
-    
+    const int infection_mode = m_world->GetConfig().DEMES_PARASITE_MIGRATION_TARGET_SELECTION_METHOD.Get();
+    if (infection_mode == 0) {
     // Implementation #1 - Picks randomly of ALL cells in to-deme and then finds if the one it chose was occupied
     // -- Not ensured to infect an individual
     cPopulationCell& rand_cell = deme.GetCell(m_world->GetRandom().GetInt(deme.GetSize()));
     if(rand_cell.IsOccupied()){
       target_organism = rand_cell.GetOrganism();
-    }    
+    }
+    } else if (infection_mode == 1) {
+    // Implementation #2 - Picks randomly, guaranteeing an infection
+    const int num_occupied_cells = deme.GetOrgCount();
+    int which_cell = m_world->GetRandom().GetInt(num_occupied_cells);
+    for (int i = 0; i < deme.GetSize(); i++) {
+      if (deme.GetCell(i).IsOccupied()) {
+        if (which_cell == 0) {
+          target_organism = deme.GetCell(i).GetOrganism();
+          break;
+        }
+        which_cell--;
+      }
+    }
+    } else {
+      std::cout << "bad demes parasite migration infection mode " << infection_mode << std::endl;
+      std::abort();
+    }
   }
   else{
     // Else there was no migration ... Resort to the default BIRTH_METHOD
@@ -6705,9 +6728,9 @@ public:
   Apto::Array<bool> parent_teacher;
   Apto::Array<int> parent_ft;
 
-  Systematics::Source source{Systematics::TransmissionType::UNKNOWN, "", true};
+  Systematics::Source source = Systematics::Source(Systematics::TransmissionType::UNKNOWN, "", true);
   Systematics::GroupPtr bg;
-  
+
   
   inline sTmpGenotype() : id_num(-1), props(NULL) { ; }
   inline bool operator<(const sTmpGenotype& rhs) const {

@@ -1,0 +1,14 @@
+#filetype germline_data
+#format deme_id hw_type inst_set sequence deme_birth_count deme_parasite_memory_score
+# Mode 1 Germline Save
+# Tue Aug 29 01:14:50 2023
+#  1: Deme ID
+#  2: Hardware Type ID
+#  3: Inst Set Name
+#  4: Genome Sequence
+#  5: Deme Birth Count
+#  6: Deme Parasite Memory Score
+
+0 2 transsmt ycdBCiEdimFjfCDaknmsAjempczypqvcrGxab 42 24.8
+1 2 transsmt ycdBCiEdimFjfCDaknmsAjemEEcgccgssmhEEcsdseDcAcBcggclEEcDEgcvrsAmlzessjhcdcggkhamtmciEEvjDdhjidzoAyndvmEdbgznjDmcjohohooayaxdyalbcekzebjcogEtjgjacblDvubADnslyyocgsAcjCbobffhmvnnAdbDfkmxcagBFfndytqhutjdzfdjsnflfoqCwcvhsjcvbmlsqcjrgyiDivvnFhrArcsmifbClvluDqmCBbtiDhiEfACcarpEczijdljujACbfzuDEFyaqqekizDosbbzjgmpczypqvcrGxab 33 24.8
+1 2 transsmt ycdBCiEdimFjfCDaknmsAjemEEcgccgssmhEEcsdseDcAcBcggclEEcDEgcvrsAmlzessjhcdcggkhamtmciEEvjDdhjidzoAyndvmEdbgznjDmcjohohooayaxdyalbcekzebjcogEtjgjacblDvubADnslyyocgsAcjCbobffhmvnnAdbDfkmxcagBFfndytqhutjdzfdjsnflfoqCwcvhsjcvbmlsqcjrgyiDivvnFhrArcsmifbClvluDqmCBbtiDhiEfACcarpEczijdljujACbfzuDEFyaqqekizDosbbzjgmpczypqvcrGxab 33 24.8

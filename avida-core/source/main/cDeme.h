@@ -70,6 +70,7 @@ private:
   int birth_count_perslot;
   int _age; //!< Age of this deme, in updates.
   int generation; //!< Generation of this deme
+  double parasite_memory_score;
   double total_org_energy; //! amount of energy in organisms in this deme
   int time_used; //!< number of cpu cycles this deme has used
   int gestation_time; // Time used during last generation
@@ -176,13 +177,28 @@ public:
   int GetBirthCount() const { return cur_birth_count; }
   int GetLastBirthCount() const { return last_birth_count; }
   void IncBirthCount() { cur_birth_count++; birth_count_perslot++;}
+  void SetBirthCount(const int count) { cur_birth_count = count; }
 
   int GetOrgCount() const { return cur_org_count; }
   int GetLastOrgCount() const { return last_org_count; }
 
   double GetDensity() const { return static_cast<double>(cur_org_count) / static_cast<double>(GetSize()); }
   int GetNumOrgsWithOpinion() const;
-	
+
+  int GetNumParasites() const;
+  double GetParasiteLoad() const {
+    return static_cast<double>(GetNumParasites()) / GetOrgCount();
+  }
+
+  void UpdateParasiteMemoryScore(const double decay) {
+    parasite_memory_score += GetParasiteLoad();
+    parasite_memory_score *= decay;
+  }
+  double GetParasiteMemoryScore() const { return parasite_memory_score; }
+  void SetParasiteMemoryScore(const double score) {
+    parasite_memory_score = score;
+  }
+
   void IncOrgCount() { cur_org_count++; }
   void DecOrgCount() { cur_org_count--; }
 
