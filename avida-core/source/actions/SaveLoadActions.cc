@@ -197,7 +197,7 @@ public:
 
     // String Entries
     schema.AddEntry("filename", 0, "detailgermlines");
-    schema.AddEntry("birthcounts", 0, false);
+    schema.AddEntry("birthcounts", 1, false);
 
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
 
