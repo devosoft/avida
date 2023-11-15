@@ -1187,6 +1187,47 @@ public:
   }
 };
 
+class cActionClearParasites : public cAction
+{
+private:
+  int m_cell_start;
+  int m_cell_end;
+
+public:
+  cActionClearParasites(cWorld *world, const cString &args, Feedback &) : cAction(world, args), m_cell_start(0), m_cell_end(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize())
+      m_cell_start = largs.PopWord().AsInt();
+    if (largs.GetSize())
+      m_cell_end = largs.PopWord().AsInt();
+
+    if (m_cell_end == -1)
+      m_cell_end = m_cell_start + 1;
+  }
+
+  static const cString GetDescription() { return "Arguments: [int cell_start=0] [int cell_end=-1]"; }
+
+  void Process(cAvidaContext &ctx)
+  {
+    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end)
+    {
+      ctx.Driver().Feedback().Warning("ClearParasites has invalid range!");
+    }
+    else
+    {
+      cUserFeedback feedback;
+      const cInstSet &is = m_world->GetHardwareManager().GetDefaultInstSet();
+      for (int i = m_cell_start; i < m_cell_end; i++)
+      {
+        auto &cell = m_world->GetPopulation().GetCell(i);
+        if (cell.IsOccupied()) cell.GetOrganism()->ClearParasites();
+      }
+      m_world->GetPopulation().SetSyncEvents(true);
+    }
+  }
+};
+
 /*                                                                                                 
  Applies a fixed population bottleneck to the current population.                                  
  Parameters:                                                                                       
@@ -3970,6 +4011,38 @@ public:
   }
 };
 
+
+class cActionUpdateDemeParasiteMemoryScores : public cAction
+{
+private:
+  double m_decay_rate;
+  bool m_verbose;
+
+public:
+  cActionUpdateDemeParasiteMemoryScores(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_decay_rate(0.99), m_verbose(false)
+  {
+    cString largs(args);
+    m_decay_rate = largs.PopWord().AsDouble();
+    m_verbose = largs.PopWord().AsInt();
+  }
+
+  static const cString GetDescription() { return "Arguments: <double decay_rate>"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    auto& pop = m_world->GetPopulation();
+    const int numDemes = pop.GetNumDemes();
+    for (int deme_id = 0; deme_id < numDemes; deme_id++)
+    {
+      auto &deme = pop.GetDeme(deme_id);
+      deme.UpdateParasiteMemoryScore(m_decay_rate);
+      if (m_verbose) std::cout << deme.GetParasiteMemoryScore() << " ";
+    }
+    if (m_verbose) std::cout << std::endl;
+  }
+};
+
+
 class cActionCompeteOrganisms : public cAction
 {
 private:
@@ -5826,6 +5899,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillInstLimit>("KillInstLimit");
   action_lib->Register<cActionKillInstPair>("KillInstPair");
   action_lib->Register<cActionKillProb>("KillProb");
+  action_lib->Register<cActionClearParasites>("ClearParasites");
   action_lib->Register<cActionApplyBottleneck>("ApplyBottleneck");
   action_lib->Register<cActionKillDominantGenotype>("KillDominantGenotype");
   action_lib->Register<cActionProbKillSequence>("KillProbSequence");
@@ -5859,6 +5933,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionMixPopulation>("MixPopulation");
 	
   action_lib->Register<cActionDecayPoints>("DecayPoints");
+  action_lib->Register<cActionUpdateDemeParasiteMemoryScores>("UpdateDemeParasiteMemoryScores");
   
   action_lib->Register<cActionFlash>("Flash");
   
