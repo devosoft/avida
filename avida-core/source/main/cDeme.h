@@ -195,6 +195,9 @@ public:
     parasite_memory_score *= decay;
   }
   double GetParasiteMemoryScore() const { return parasite_memory_score; }
+  void SetParasiteMemoryScore(const double score) {
+    parasite_memory_score = score;
+  }
 
   void IncOrgCount() { cur_org_count++; }
   void DecOrgCount() { cur_org_count--; }
