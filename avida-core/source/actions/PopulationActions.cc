@@ -5318,6 +5318,79 @@ public:
 
 
 /*
+ Replicate deme(s) with the highest parasite load
+ */
+class cActionReplicateDemesHighestBirthCount : public cAction
+{
+private:
+  double m_replprob;
+  int m_replmax;
+public:
+  cActionReplicateDemesHighestBirthCount(cWorld *world, const cString &args, Feedback &) : cAction(world, args), m_replprob(0.01), m_replmax(std::numeric_limits<int>::max())
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_replprob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_replmax = largs.PopWord().AsInt();
+
+    assert(m_replprob >= 0);
+  }
+
+  static const cString GetDescription() { return "Arguments: [double replprob=0.01] [int replmax = intmax]"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    cPopulation& pop = m_world->GetPopulation();
+    const int num_demes = pop.GetNumDemes();
+    int num_eligible = 0;
+    for (int d = 0; d < num_demes; d++)
+    {
+      cDeme &deme = pop.GetDeme(d);
+      num_eligible += (not deme.IsEmpty());
+    }
+
+    const int binomial_draw = ctx.GetRandom().GetRandBinomial(
+        num_eligible,
+        m_replprob
+    );
+    const int repl_quota = std::min(binomial_draw, m_replmax);
+    if (repl_quota == 0) return;
+
+    for (int i = 0; i < repl_quota; ++i) {
+      int most_births = 0;
+      int num_with_most_births = 0;
+      for (int d = 0; d < num_demes; d++)
+      {
+        cDeme &deme = pop.GetDeme(d);
+        if (deme.IsEmpty()) continue;
+        const int num_births = deme.GetBirthCount();
+        if (num_births > most_births) {
+          most_births = num_births;
+          num_with_most_births = 1;
+        } else if (num_births == most_births) {
+          ++num_with_most_births;
+        }
+      }
+      int birth_index = ctx.GetRandom().GetInt(
+        0, num_with_most_births - 1
+      );
+      for (int d = 0; d < num_demes; d++) {
+        cDeme &deme = pop.GetDeme(d);
+        if (deme.IsEmpty()) continue;
+        if (deme.GetBirthCount() == most_births) {
+          if (birth_index == 0) {
+            m_world->GetPopulation().ReplicateDeme(deme, ctx);
+            break;
+          } else {
+            --birth_index;
+          }
+        }
+      }
+    }
+  } // End Process()
+};
+
+
+/*
  Set the ages at which treatable demes can be treated
  
  Parameters:
@@ -5987,6 +6060,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
   action_lib->Register<cActionKillDemePercent>("KillDemePercent");
   action_lib->Register<cActionKillDemesHighestParasiteLoad>("KillDemesHighestParasiteLoad");
+  action_lib->Register<cActionReplicateDemesHighestBirthCount>("ReplicateDemesHighestBirthCount");
   action_lib->Register<cActionKillMeanBelowThresholdPaintable>("KillMeanBelowThresholdPaintable");
 	
   action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
