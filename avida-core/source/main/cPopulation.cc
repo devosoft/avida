@@ -6705,9 +6705,9 @@ public:
   Apto::Array<bool> parent_teacher;
   Apto::Array<int> parent_ft;
 
-  Systematics::Source source{Systematics::TransmissionType::UNKNOWN, "", true};
+  Systematics::Source source = Systematics::Source(Systematics::TransmissionType::UNKNOWN, "", true);
   Systematics::GroupPtr bg;
-  
+
   
   inline sTmpGenotype() : id_num(-1), props(NULL) { ; }
   inline bool operator<(const sTmpGenotype& rhs) const {
