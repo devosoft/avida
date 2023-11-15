@@ -5195,61 +5195,54 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-
-    int target_cell;
     cPopulation& pop = m_world->GetPopulation();
-
-    long cells_scanned = 0;
-    long orgs_killed = 0;
-    long cells_empty = 0;
-
     const int num_demes = pop.GetNumDemes();
+    std::vector<double> parasite_loads(num_demes);
+    int num_eligible = 0;
+
+    const int deme_size = m_world->GetConfig().WORLD_X.Get() * (m_world->GetConfig().WORLD_Y.Get() / num_demes);
+    const double smudge_delta = 0.09 / deme_size;
+    int smudge_index = ctx.GetRandom().GetInt(0, num_demes - 1);
+    for (int d = 0; d < num_demes; d++)
+    {
+      cDeme &deme = pop.GetDeme(d);
+      if (not deme.IsEmpty())
+      {
+        num_eligible++;
+        const auto parasite_load = deme.GetParasiteLoad();
+        if (parasite_load == 0.0) continue;
+        // need to guarantee that parasite_loads are distinct to set threshold
+        parasite_loads[d] = parasite_load + smudge_delta * smudge_index;
+        ++smudge_index;
+        if (smudge_index >= num_demes) smudge_index -= num_demes;
+      }
+    }
+
     const int binomial_draw = ctx.GetRandom().GetRandBinomial(
-      num_demes,
-      m_killprob
+        num_eligible,
+        m_killprob
     );
     const int kill_quota = std::min(binomial_draw, m_killmax);
     if (kill_quota == 0) return;
+    std::cout << "kill quota " << kill_quota << std::endl;
 
-    double kill_thresh = 1.0;
-    int init_countdown = kill_quota;
-    int d;
-    int _num_eligible = 0;
-    for (int d = 0; d < pop.GetNumDemes(); d++) {
-      cDeme &deme = pop.GetDeme(d);
-      if (deme.IsTreatableNow() && not deme.IsEmpty()) {
-      {
-        _num_eligible++;
-        if (init_countdown > 0) {
-          kill_thresh = std::min(
-            kill_thresh,
-            deme.GetParasiteLoad()
-          );
-          init_countdown--;
-        } else {
-          kill_thresh = std::max(
-            deme.GetParasiteLoad(), kill_thresh
-          );
-        }
-      } // End if deme is treatable
-    } //End iterating through all demes
-
-    // go through and kill cells
-    int _num_killed = 0;
-    for (int d = 0; d < pop.GetNumDemes(); d++)
+    std::vector<double> top_n(kill_quota);
+    const auto partial_sort_end = std::partial_sort_copy(
+      parasite_loads.begin(), parasite_loads.end(),
+      top_n.begin(), top_n.end(),
+      std::greater<int>()
+    );
+    const auto kill_thresh = *std::prev(partial_sort_end);
+    std::cout << "kill thresh " << kill_thresh << std::endl;
+    for (int d = 0; d < num_demes; d++)
     {
-      cDeme &deme = pop.GetDeme(d);
-      if (
-          deme.IsTreatableNow() && not deme.IsEmpty() && (deme.GetParasiteLoad() >= kill_thresh))
+      if (parasite_loads[d] and parasite_loads[d] >= kill_thresh)
       {
-        _num_killed += 1;
+        std::cout << "bump" << std::endl;
+        cDeme &deme = pop.GetDeme(d);
         deme.KillAll(ctx);
-      } // End if deme is eligible
-    } //End iterating through all demes
+      }
     }
-
-    const auto _expected_killed = std::min(_num_eligible, kill_quota);
-    assert(_num_killed == _expected_killed);
 } // End Process()
 };
 
