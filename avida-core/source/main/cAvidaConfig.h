@@ -509,6 +509,8 @@ public:
   CONFIG_ADD_VAR(DEMES_MIGRATION_RATE, double, 0.0, "Probability of an offspring being born in a different deme.");
   CONFIG_ADD_VAR(DEMES_PARASITE_MIGRATION_RATE, double, 0.0, "Probability of a parasite migrating to a different deme. Note: only works with DEMES_MIGRATION_METHOD 4.");
   CONFIG_ADD_VAR(DEMES_MIGRATION_METHOD, int, 0, "Which demes can an offspring land in when it migrates?\n0 = Any other deme\n1 = Eight neighboring demes\n2 = Two adjacent demes in list\n3 = Proportional based on the number of points\n4 = Use the weight matrix specified in MIGRATION_FILE");
+  CONFIG_ADD_VAR(DEMES_PARASITE_MIGRATION_TARGET_SELECTION_METHOD, int, 0, "How should a target cell be chosen in the migrated-to deme?\n0 = Select a cell randomly, if it is not occupied infection fails\n1 = Select an occupied cell randomly");
+  CONFIG_ADD_VAR(DEMES_PARASITE_MIGRATION_MEMORY_SCORE_PROTECTIVE_THRESHOLD, double, 1.0, "Above what parasite memory score should hosts be protected from incoming parasite migration?");
   CONFIG_ADD_VAR(DEMES_NUM_X, int, 0, "Simulated number of demes in X dimension. Used only for migration. ");
   CONFIG_ADD_VAR(DEMES_PARTITION_INTERVAL, int, 0, "Restrict deme replication to within partitions of DEMES_PARTITION_INTERVAL consecutive deme ids. No restriction if 0. Partition size cannot be smaller than two. Does not affect migration.");
   CONFIG_ADD_VAR(DEMES_SEED_METHOD, int, 0, "Deme seeding method.\n0 = Maintain old consistency\n1 = New method using genotypes");

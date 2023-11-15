@@ -54,6 +54,7 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <limits>
 #include <numeric>
 #include <set>
 
@@ -1188,6 +1189,47 @@ public:
       cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
       if (cell.IsOccupied() == false) continue;
       if (ctx.GetRandom().P(m_killprob))  m_world->GetPopulation().KillOrganism(cell, ctx); 
+    }
+  }
+};
+
+class cActionClearParasites : public cAction
+{
+private:
+  int m_cell_start;
+  int m_cell_end;
+
+public:
+  cActionClearParasites(cWorld *world, const cString &args, Feedback &) : cAction(world, args), m_cell_start(0), m_cell_end(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize())
+      m_cell_start = largs.PopWord().AsInt();
+    if (largs.GetSize())
+      m_cell_end = largs.PopWord().AsInt();
+
+    if (m_cell_end == -1)
+      m_cell_end = m_cell_start + 1;
+  }
+
+  static const cString GetDescription() { return "Arguments: [int cell_start=0] [int cell_end=-1]"; }
+
+  void Process(cAvidaContext &ctx)
+  {
+    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end)
+    {
+      ctx.Driver().Feedback().Warning("ClearParasites has invalid range!");
+    }
+    else
+    {
+      cUserFeedback feedback;
+      const cInstSet &is = m_world->GetHardwareManager().GetDefaultInstSet();
+      for (int i = m_cell_start; i < m_cell_end; i++)
+      {
+        auto &cell = m_world->GetPopulation().GetCell(i);
+        if (cell.IsOccupied()) cell.GetOrganism()->ClearParasites();
+      }
+      m_world->GetPopulation().SetSyncEvents(true);
     }
   }
 };
@@ -3975,6 +4017,38 @@ public:
   }
 };
 
+
+class cActionUpdateDemeParasiteMemoryScores : public cAction
+{
+private:
+  double m_decay_rate;
+  bool m_verbose;
+
+public:
+  cActionUpdateDemeParasiteMemoryScores(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_decay_rate(0.99), m_verbose(false)
+  {
+    cString largs(args);
+    m_decay_rate = largs.PopWord().AsDouble();
+    m_verbose = largs.PopWord().AsInt();
+  }
+
+  static const cString GetDescription() { return "Arguments: <double decay_rate>"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    auto& pop = m_world->GetPopulation();
+    const int numDemes = pop.GetNumDemes();
+    for (int deme_id = 0; deme_id < numDemes; deme_id++)
+    {
+      auto &deme = pop.GetDeme(deme_id);
+      deme.UpdateParasiteMemoryScore(m_decay_rate);
+      if (m_verbose) std::cout << deme.GetParasiteMemoryScore() << " ";
+    }
+    if (m_verbose) std::cout << std::endl;
+  }
+};
+
+
 class cActionCompeteOrganisms : public cAction
 {
 private:
@@ -5184,6 +5258,154 @@ public:
 
 
 /*
+ Kill deme(s) with the highest parasite load
+
+ Parameters:
+ - The percent of living organisms to kill (default: 0)
+ */
+
+class cActionKillDemesHighestParasiteLoad : public cAction
+{
+private:
+  double m_killprob;
+  int m_killmax;
+public:
+  cActionKillDemesHighestParasiteLoad(cWorld *world, const cString &args, Feedback &) : cAction(world, args), m_killprob(0.01), m_killmax(std::numeric_limits<int>::max())
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_killmax = largs.PopWord().AsInt();
+
+    assert(m_killprob >= 0);
+  }
+
+  static const cString GetDescription() { return "Arguments: [double killprob=0.01] [int killmax = intmax]"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    cPopulation& pop = m_world->GetPopulation();
+    const int num_demes = pop.GetNumDemes();
+    std::vector<double> parasite_loads(num_demes);
+    int num_eligible = 0;
+
+    const int deme_size = m_world->GetConfig().WORLD_X.Get() * (m_world->GetConfig().WORLD_Y.Get() / num_demes);
+    const double smudge_delta = 0.09 / deme_size;
+    int smudge_index = ctx.GetRandom().GetInt(0, num_demes - 1);
+    for (int d = 0; d < num_demes; d++)
+    {
+      cDeme &deme = pop.GetDeme(d);
+      if (not deme.IsEmpty())
+      {
+        num_eligible++;
+        const auto parasite_load = deme.GetParasiteLoad();
+        if (parasite_load == 0.0) continue;
+        // need to guarantee that parasite_loads are distinct to set threshold
+        parasite_loads[d] = parasite_load + smudge_delta * smudge_index;
+        ++smudge_index;
+        if (smudge_index >= num_demes) smudge_index -= num_demes;
+      }
+    }
+
+    const int binomial_draw = ctx.GetRandom().GetRandBinomial(
+        num_eligible,
+        m_killprob
+    );
+    const int kill_quota = std::min(binomial_draw, m_killmax);
+    if (kill_quota == 0) return;
+
+    std::vector<double> top_n(kill_quota);
+    const auto partial_sort_end = std::partial_sort_copy(
+      parasite_loads.begin(), parasite_loads.end(),
+      top_n.begin(), top_n.end(),
+      std::greater<int>()
+    );
+    const auto kill_thresh = *std::prev(partial_sort_end);
+    for (int d = 0; d < num_demes; d++)
+    {
+      if (parasite_loads[d] and parasite_loads[d] >= kill_thresh)
+      {
+        cDeme &deme = pop.GetDeme(d);
+        deme.KillAll(ctx);
+      }
+    }
+} // End Process()
+};
+
+
+/*
+ Replicate deme(s) with the highest parasite load
+ */
+class cActionReplicateDemesHighestBirthCount : public cAction
+{
+private:
+  double m_replprob;
+  int m_replmax;
+public:
+  cActionReplicateDemesHighestBirthCount(cWorld *world, const cString &args, Feedback &) : cAction(world, args), m_replprob(0.01), m_replmax(std::numeric_limits<int>::max())
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_replprob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_replmax = largs.PopWord().AsInt();
+
+    assert(m_replprob >= 0);
+  }
+
+  static const cString GetDescription() { return "Arguments: [double replprob=0.01] [int replmax = intmax]"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    cPopulation& pop = m_world->GetPopulation();
+    const int num_demes = pop.GetNumDemes();
+    int num_eligible = 0;
+    for (int d = 0; d < num_demes; d++)
+    {
+      cDeme &deme = pop.GetDeme(d);
+      num_eligible += (not deme.IsEmpty());
+    }
+
+    const int binomial_draw = ctx.GetRandom().GetRandBinomial(
+        num_eligible,
+        m_replprob
+    );
+    const int repl_quota = std::min(binomial_draw, m_replmax);
+    if (repl_quota == 0) return;
+
+    for (int i = 0; i < repl_quota; ++i) {
+      int most_births = 0;
+      int num_with_most_births = 0;
+      for (int d = 0; d < num_demes; d++)
+      {
+        cDeme &deme = pop.GetDeme(d);
+        if (deme.IsEmpty()) continue;
+        const int num_births = deme.GetBirthCount();
+        if (num_births > most_births) {
+          most_births = num_births;
+          num_with_most_births = 1;
+        } else if (num_births == most_births) {
+          ++num_with_most_births;
+        }
+      }
+      int birth_index = ctx.GetRandom().GetInt(
+        0, num_with_most_births - 1
+      );
+      for (int d = 0; d < num_demes; d++) {
+        cDeme &deme = pop.GetDeme(d);
+        if (deme.IsEmpty()) continue;
+        if (deme.GetBirthCount() == most_births) {
+          if (birth_index == 0) {
+            m_world->GetPopulation().ReplicateDeme(deme, ctx);
+            break;
+          } else {
+            --birth_index;
+          }
+        }
+      }
+    }
+  } // End Process()
+};
+
+
+/*
  Set the ages at which treatable demes can be treated
  
  Parameters:
@@ -5762,6 +5984,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillInstLimit>("KillInstLimit");
   action_lib->Register<cActionKillInstPair>("KillInstPair");
   action_lib->Register<cActionKillProb>("KillProb");
+  action_lib->Register<cActionClearParasites>("ClearParasites");
   action_lib->Register<cActionApplyBottleneck>("ApplyBottleneck");
   action_lib->Register<cActionKillDominantGenotype>("KillDominantGenotype");
   action_lib->Register<cActionProbKillSequence>("KillProbSequence");
@@ -5795,6 +6018,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionMixPopulation>("MixPopulation");
 	
   action_lib->Register<cActionDecayPoints>("DecayPoints");
+  action_lib->Register<cActionUpdateDemeParasiteMemoryScores>("UpdateDemeParasiteMemoryScores");
   
   action_lib->Register<cActionFlash>("Flash");
   
@@ -5851,6 +6075,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
   action_lib->Register<cActionKillDemePercent>("KillDemePercent");
   action_lib->Register<cActionSetDemeTreatmentAges>("SetDemeTreatmentAges");
+  action_lib->Register<cActionKillDemesHighestParasiteLoad>("KillDemesHighestParasiteLoad");
+  action_lib->Register<cActionReplicateDemesHighestBirthCount>("ReplicateDemesHighestBirthCount");
   action_lib->Register<cActionKillMeanBelowThresholdPaintable>("KillMeanBelowThresholdPaintable");
 	
   action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
