@@ -5297,7 +5297,6 @@ public:
     );
     const int kill_quota = std::min(binomial_draw, m_killmax);
     if (kill_quota == 0) return;
-    std::cout << "kill quota " << kill_quota << std::endl;
 
     std::vector<double> top_n(kill_quota);
     const auto partial_sort_end = std::partial_sort_copy(
@@ -5306,12 +5305,10 @@ public:
       std::greater<int>()
     );
     const auto kill_thresh = *std::prev(partial_sort_end);
-    std::cout << "kill thresh " << kill_thresh << std::endl;
     for (int d = 0; d < num_demes; d++)
     {
       if (parasite_loads[d] and parasite_loads[d] >= kill_thresh)
       {
-        std::cout << "bump" << std::endl;
         cDeme &deme = pop.GetDeme(d);
         deme.KillAll(ctx);
       }
