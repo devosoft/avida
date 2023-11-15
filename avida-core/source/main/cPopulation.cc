@@ -1210,7 +1210,6 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
     && m_world->GetRandom().P(m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get())
   ){
     cDeme& deme = GetDeme(m_world->GetMigrationMatrix().GetProbabilisticDemeID(host_cell.GetDemeID(), m_world->GetRandom(),true));
-    deme.
     const int infection_mode = m_world->GetConfig().DEMES_PARASITE_MIGRATION_TARGET_SELECTION_METHOD.Get();
     if (infection_mode == 0) {
     // Implementation #1 - Picks randomly of ALL cells in to-deme and then finds if the one it chose was occupied
