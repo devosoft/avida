@@ -860,22 +860,22 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   }
   
   if (single_reaction != 0) {
-    bool toFail = true;
+    int toFail = single_reaction;
     Apto::Array<int> reactionCounts = m_phenotype.GetCurReactionCount();
-    for (int i=0; i<reactionCounts.GetSize(); i++) {
-      if (reactionCounts[i] > 0) toFail = false;
+    for (int i=0; i<reactionCounts.GetSize() && toFail; i++) {
+      if (reactionCounts[i] > 0) --toFail;
     }
     
     if (toFail) {
       const Apto::Array<int>& stolenReactions = m_phenotype.GetStolenReactionCount();
-      for (int i = 0; i < stolenReactions.GetSize(); i++)
+      for (int i = 0; i < stolenReactions.GetSize() && toFail; i++)
       {
-        if (stolenReactions[i] > 0) toFail = false;
+        if (stolenReactions[i] > 0) --toFail;
       }
     }
     
     if (toFail) {
-      Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, cStringUtil::Stringf("Lacks any reaction required for divide"));
+      Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, cStringUtil::Stringf("Lacks sufficient reactions required for divide"));
       return false; //  (divide fails)
     }
   }
