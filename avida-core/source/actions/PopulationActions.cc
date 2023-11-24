@@ -5295,9 +5295,9 @@ public:
     );
     const int binomial_draw = ctx.GetRandom().GetRandBinomial(
       num_eligible,
-      m_killmax
+      m_killprob
     );
-    const int kill_quota = std::min(num_eligible, binomial_draw);
+    const int kill_quota = std::min(m_killmax, binomial_draw);
     if (kill_quota != binomial_draw) {
       std::cout << "warning: capped kill quota at " << kill_quota << " from " << binomial_draw << " binomial sample with " << num_eligible << " eligible and kill prob " << m_killprob << std::endl;
     }
