@@ -5291,7 +5291,7 @@ public:
 
     const int num_eligible = std::count_if(
       std::begin(deme_indices), std::end(deme_indices),
-      [&pop](const int d) { return not pop.GetDeme(d).IsEmpty(); }
+      [&](const int d) { return not pop.GetDeme(d).IsEmpty(); }
     );
     const int binomial_draw = ctx.GetRandom().GetRandBinomial(
       num_eligible,
@@ -5306,14 +5306,14 @@ public:
     std::transform(
       std::begin(deme_indices), std::end(deme_indices),
       std::begin(parasite_loads),
-      [&pop](const int d) { return pop.GetDeme(d).GetParasiteLoad(); }
+      [&](const int d) { return pop.GetDeme(d).GetParasiteLoad(); }
     );
 
     std::partial_sort(
       std::begin(deme_indices),
       std::next(std::begin(deme_indices), kill_quota),
       std::end(deme_indices),
-      [&parasite_loads](const int d1, const int d2) {
+      [&](const int d1, const int d2) {
         return parasite_loads[d1] > parasite_loads[d2];
       }
     );
@@ -5321,7 +5321,7 @@ public:
     std::for_each(
       std::begin(deme_indices),
       std::next(std::begin(deme_indices), kill_quota),
-      [&pop, &ctx](const int d) { pop.GetDeme(d).KillAll(ctx); }
+      [&](const int d) { pop.GetDeme(d).KillAll(ctx); }
     );
 
 } // End Process()
