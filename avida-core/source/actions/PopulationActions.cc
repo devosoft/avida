@@ -5287,15 +5287,12 @@ public:
       std::cout << "warning: capped kill quota at " << kill_quota << " from " << binomial_draw << " binomial sample with " << num_eligible << " eligible and kill prob " << m_killprob << std::endl;
     }
 
-    const std::vector<double> parasite_loads = [&](){
-      std::vector<double> res(num_demes);
-      std::transform(
-        std::begin(deme_indices), std::end(deme_indices),
-        std::begin(res),
-        [&pop](const int d) { return pop.GetDeme(d).GetParasiteLoad(); }
-      );
-      return res;
-    }();
+    std::vector<double> parasite_loads(num_demes);
+    std::transform(
+      std::begin(deme_indices), std::end(deme_indices),
+      std::begin(parasite_loads),
+      [&pop](const int d) { return pop.GetDeme(d).GetParasiteLoad(); }
+    );
 
     std::partial_sort(
       std::begin(deme_indices),
