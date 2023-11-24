@@ -1,0 +1,25 @@
+# Avida tasks data
+# Thu Jul  6 10:39:35 2023
+# First column gives the current update, next columns give the number
+# of Parasites that have the particular task
+#  1: Update
+#  2: Not
+#  3: Nand
+#  4: And
+#  5: OrNot
+#  6: Or
+#  7: AndNot
+#  8: Nor
+#  9: Xor
+# 10: Equals
+
+0 0 0 0 0 0 0 0 0 0 
+100 0 0 0 0 0 0 0 0 0 
+200 0 0 0 0 0 0 0 0 0 
+300 0 0 0 0 0 0 0 0 0 
+400 0 0 0 0 0 0 0 0 0 
+500 0 0 0 0 0 0 0 0 0 
+600 0 0 0 0 0 0 0 0 0 
+700 48 0 0 0 0 0 0 0 0 
+800 52 0 0 0 0 0 0 0 0 
+900 8 0 0 0 0 0 0 0 0 
