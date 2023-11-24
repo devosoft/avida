@@ -64,6 +64,7 @@
 
 #include <cmath>
 #include <cerrno>
+#include <cstdlib>
 #include <map>
 #include <algorithm>
 
@@ -1071,6 +1072,25 @@ public:
                  m_world->GetStats().SumGeneration().Average());
     }
     ctx.Driver().Feedback().Notify(m_args);
+  }
+};
+
+class cActionShell : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionShell(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
+
+  static const cString GetDescription() { return "Arguments: <cString message>"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    const int res = std::system(m_args);
+    std::stringstream ss;
+    ss << "Command `" << m_args << "` gave result " << res;
+
+    ctx.Driver().Feedback().Notify(ss.str().c_str());
   }
 };
 
@@ -5662,6 +5682,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintParasiteDepthHistogram>("PrintParasiteDepthHistogram");
   action_lib->Register<cActionPrintHostDepthHistogram>("PrintHostDepthHistogram");
   action_lib->Register<cActionEcho>("Echo");
+  action_lib->Register<cActionShell>("Shell");
   action_lib->Register<cActionPrintGenotypeAbundanceHistogram>("PrintGenotypeAbundanceHistogram");
   //  action_lib->Register<cActionPrintSpeciesAbundanceHistogram>("PrintSpeciesAbundanceHistogram");
   //  action_lib->Register<cActionPrintLineageTotals>("PrintLineageTotals");

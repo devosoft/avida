@@ -20,6 +20,8 @@
  */
 
 #include "cHardwareTransSMT.h"
+#include "avida/core/Feedback.h"
+#include "avida/core/WorldDriver.h"
 #include "avida/systematics/Unit.h"
 
 #include "cAvidaContext.h"
@@ -38,6 +40,8 @@
 
 #include "AvidaTools.h"
 
+#include <algorithm>
+#include <cstdio>
 #include <iomanip>
 
 using namespace std;
@@ -1064,9 +1068,52 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
   // Insert Mutations (per site)
   num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
                                             m_organism->GetInjectInsProb());
-  // If would make creature to big, insert up to MAX_GENOME_LENGTH
-  if( num_mut + injected_code.GetSize() > MAX_GENOME_LENGTH )
-    num_mut = MAX_GENOME_LENGTH - injected_code.GetSize();
+
+  // use strongest restrictions
+  const int min_genome_size = std::max(
+    // don't need to account for unset cfg (i.e., 0) due to max
+    m_world->GetConfig().MIN_GENOME_SIZE.Get(),
+    MIN_GENOME_LENGTH  // hardcoded implementation limit
+  );
+  const int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get()
+    // MAX_GENOME_LENGTH is hardcoded implementation limit
+    ? std::min(m_world->GetConfig().MAX_GENOME_SIZE.Get(), MAX_GENOME_LENGTH)
+    : MAX_GENOME_LENGTH
+  ;
+
+  // @MAM
+  // (somehow) parasites shrink despite del and implicit muts being disabled
+  // so, enforce min genome size by growing up to min genome size if need be
+  if (min_genome_size && injected_code.GetSize() < min_genome_size) {
+    if (m_world->GetConfig().GENOME_SIZE_RECOVERY.Get() == 1) {
+      num_mut = std::max(num_mut, min_genome_size - injected_code.GetSize());
+      // ctx.Driver().Feedback().Warning(
+      printf("warning: "
+        "Grew genome of size %d back to min genome size %d with %d inserts.\n",
+        injected_code.GetSize(), min_genome_size, num_mut
+      );
+    } else if (m_world->GetConfig().GENOME_SIZE_RECOVERY.Get() == 2) {
+      printf("warning: "
+        "Sterilized too-small genome of size %d by setting insts to Nop-X.\n",
+        injected_code.GetSize()
+      );
+      for (int site = 0; site < injected_code.GetSize(); ++site) {
+        injected_code[site] = m_inst_set->GetInst("Nop-X");
+      }
+    } else if (m_world->GetConfig().GENOME_SIZE_RECOVERY.Get() == 3) {
+      printf("warning: "
+        "Sterilized too-small genome of size %d by setting insts to Nop-A.\n",
+        injected_code.GetSize()
+      );
+      for (int site = 0; site < injected_code.GetSize(); ++site) {
+        injected_code[site] = m_inst_set->GetInst("Nop-A");
+      }
+    }
+  }
+
+  // If would make creature to big, insert up to max_genome_size
+  if( num_mut + injected_code.GetSize() > max_genome_size )
+    num_mut = max_genome_size - injected_code.GetSize();
   // If we have lines to insert...
   if( num_mut > 0 ){
     // Build a list of the sites where mutations occured
@@ -1083,9 +1130,37 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
   // Delete Mutations (per site)
   num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
                                             m_organism->GetInjectDelProb());
-  // If would make creature too small, delete down to MIN_GENOME_LENGTH
-  if (injected_code.GetSize() - num_mut < MIN_GENOME_LENGTH) {
-    num_mut = injected_code.GetSize() - MIN_GENOME_LENGTH;
+
+  if (max_genome_size && injected_code.GetSize() > max_genome_size) {
+    if (m_world->GetConfig().GENOME_SIZE_RECOVERY.Get() == 1) {
+      num_mut = std::max(num_mut, injected_code.GetSize() - max_genome_size);
+      // ctx.Driver().Feedback().Warning(
+      printf("warning: "
+        "Shrank genome of size %d back to max genome size %d with %d deletes.\n",
+        injected_code.GetSize(), max_genome_size, num_mut
+      );
+    } else if (m_world->GetConfig().GENOME_SIZE_RECOVERY.Get() == 2) {
+      printf("warning: "
+        "Sterilized too-large genome of size %d by setting insts to Nop-X.\n",
+        injected_code.GetSize()
+      );
+      for (int site = 0; site < injected_code.GetSize(); ++site) {
+        injected_code[site] = m_inst_set->GetInst("Nop-X");
+      }
+    } else if (m_world->GetConfig().GENOME_SIZE_RECOVERY.Get() == 3) {
+      printf("warning: "
+        "Sterilized too-large genome of size %d by setting insts to Nop-A.\n",
+        injected_code.GetSize()
+      );
+      for (int site = 0; site < injected_code.GetSize(); ++site) {
+        injected_code[site] = m_inst_set->GetInst("Nop-A");
+      }
+    }
+  }
+
+  // If would make creature too small, delete down to min_genome_size
+  if (injected_code.GetSize() - num_mut < min_genome_size) {
+    num_mut = injected_code.GetSize() - min_genome_size;
   }
   
   // If we have lines to delete...
@@ -1094,8 +1169,6 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
     injected_code.Remove(site);
   }
 	
-  int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
-  int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
   cCPUMemory& memory = GetMemory();
   
   // Parent Substitution Mutations (per site)
@@ -1656,6 +1729,15 @@ bool cHardwareTransSMT::Inst_ThreadKill(cAvidaContext&)
 // into the complement template found in a neighboring organism.
 bool cHardwareTransSMT::Inst_Inject(cAvidaContext& ctx)
 {
+  const bool is_nonparasite = !(
+    ThreadGetOwner()->UnitSource().transmission_type == Systematics::HORIZONTAL
+    || ThreadGetOwner()->UnitSource().transmission_type == Systematics::VERTICAL
+  );
+  if (
+    m_world->GetConfig().TRANSSMT_DISABLE_NONPARASITE_INJECT.Get()
+    && is_nonparasite
+  ) return true;  // do nothing, successfully
+
   ReadLabel(MAX_MEMSPACE_LABEL);
   
   if(ThreadGetOwner()->UnitSource().transmission_type == Systematics::HORIZONTAL)

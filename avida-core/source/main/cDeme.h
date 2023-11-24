@@ -193,7 +193,7 @@ public:
   }
 
   void UpdateParasiteMemoryScore(const double decay) {
-    parasite_memory_score += GetParasiteLoad();
+    parasite_memory_score += static_cast<double>(GetNumParasites()) / GetSize();
     parasite_memory_score *= decay;
   }
   double GetParasiteMemoryScore() const { return parasite_memory_score; }

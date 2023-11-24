@@ -1281,7 +1281,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
 
   
   // Attempt actual parasite injection
-  // LZ - use parasige_genotype_list for the GenRepPtr instead IF Config says to
+  // LZ - use parasite_genotype_list for the GenRepPtr instead IF Config says to
   // e.g., use predefined genotypes to hold the frequency constant, or "replay" parasite
   // from one run into another.
   GeneticRepresentationPtr tmpParasiteGenome;
@@ -6853,8 +6853,21 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     assert(tmp.props->Has("src") && tmp.props->Has("src_args"));
     tmp.source = Systematics::Source(
       tmp.props->Get("src"),
-      (const char*)filename
+      tmp.props->Get("src_args")
     );
+    const bool is_parasite = (
+      tmp.source.transmission_type == Systematics::TransmissionType::VERTICAL
+      || tmp.source.transmission_type == Systematics::TransmissionType::HORIZONTAL
+    );
+    if (is_parasite) {
+      tmp.source.external = true;
+      tmp.source.arguments = (
+        tmp.props->Get("src_args")
+        + ":"
+        + tmp.props->Get("id")
+      );
+    }
+
     
     // Process gestation time offsets
     if (!load_rebirth) {
@@ -6962,6 +6975,12 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
   
   bool some_missing = false;
   for (int i = genotypes.GetSize() - 1; i >= 0; i--) {
+    const bool is_parasite = (
+      genotypes[i].source.transmission_type == Systematics::TransmissionType::VERTICAL
+      || genotypes[i].source.transmission_type == Systematics::TransmissionType::HORIZONTAL
+    );
+    if (is_parasite) continue;
+
     // Fix Parent IDs
     cString nparentstr;
     int pcount = 0;
@@ -7009,6 +7028,27 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         lineage_label = tmp.lineage_labels[cell_i] + lineage_offset;
       }
       
+      // handle parasite
+      const bool is_parasite = (
+        tmp.source.transmission_type == Systematics::TransmissionType::VERTICAL
+        || tmp.source.transmission_type == Systematics::TransmissionType::HORIZONTAL
+      );
+      if (is_parasite) {
+        if (!cell_array[cell_id].IsOccupied()) {
+          std::cerr << "Loaded parasite before or without host!" << std::endl;
+          std::abort();
+        }
+
+        const InstructionSequence seq(
+          static_cast<const char*>(tmp.props->Get("sequence"))
+        );
+        InjectParasite(
+          static_cast<const char*>(tmp.source.arguments), // cString label,
+          seq, // const InstructionSequence& injected_code,
+          cell_id // int cell_id
+        );
+        continue;
+      }
       assert(tmp.bg->Properties().Has("genome"));
       Genome mg(tmp.bg->Properties().Get("genome"));
       cOrganism* new_organism = new cOrganism(m_world, ctx, mg, -1, tmp.source);
@@ -7073,10 +7113,6 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
 
       // handle parasite
-      const bool is_parasite = (
-        tmp.source.transmission_type == Systematics::TransmissionType::VERTICAL
-        || tmp.source.transmission_type == Systematics::TransmissionType::HORIZONTAL
-      );
       if (is_parasite) {
         if (!cell_array[cell_id].IsOccupied()) {
           std::cerr << "Loaded parasite before or without host!" << std::endl;

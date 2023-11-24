@@ -393,6 +393,7 @@ public:
   CONFIG_ADD_VAR(MIN_EXE_LINES, double, 0.5, "Code fraction that must be executed before divide");
   CONFIG_ADD_VAR(MIN_GENOME_SIZE, int, 0, "Minimum number of instructions allowed in a genome. 0 = OFF");
   CONFIG_ADD_VAR(MAX_GENOME_SIZE, int, 0, "Maximum number of instructions allowed in a genome. 0 = OFF");
+  CONFIG_ADD_VAR(GENOME_SIZE_RECOVERY, int, 0, "How should genomes that arise outside the too-small or too-large size bounds be corrected? 0: do nothing, 1: use standard indel mutations to put within size bounds, 2: sterilize by replaceing all insts with Nop-X, 3: sterilize by replaceing all insts with Nop-A.");
   CONFIG_ADD_VAR(MIN_CYCLES, int, 0, "Min number of CPU cycles (age) required before reproduction.");
   CONFIG_ADD_VAR(REQUIRE_ALLOCATE, int, 1, "(Original CPU Only) Require allocate before divide?");
   CONFIG_ADD_VAR(REQUIRED_TASK, int, -1, "Task ID required for successful divide");
@@ -462,6 +463,7 @@ public:
   CONFIG_ADD_VAR(HOST_USE_GENOTYPE_FILE, int, 0, "Host Genotypes are loaded from a file rather than replicated from parent -- see LoadHostGenotypeList");
   
   CONFIG_ADD_VAR(FULL_VERTICAL_TRANS, double, 0.0, "Determines if offspring of infected host is automatically infected. 0 for no, 1 for yes. If you want to keep parent infected as well, you need to set DIVIDE_METHOD to 2.");
+  CONFIG_ADD_VAR(TRANSSMT_DISABLE_NONPARASITE_INJECT, double, 0.0, "Should inject instruction be a no-op for non-parasites? Prevents host-generated pseudo-parasites. 0 for no, 1 for yes.");
 
 
   // -------- CPU Archetecture

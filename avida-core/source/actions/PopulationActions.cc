@@ -859,8 +859,6 @@ public:
  Parameters:
  filename (string):
  The filename of the genotype to load.
- cell ID (integer) default: 0
- The grid-point into which the organism should be placed.
  merit (double) default: -1
  The initial merit of the organism. If set to -1, this is ignored.
  lineage label (integer) default: 0
@@ -5191,23 +5189,27 @@ public:
  
  Parameters:
  - The percent of living organisms to kill (default: 0)
+ - The targeted deme to kill (default: -1, targets all demes)
  */
 
 class cActionKillDemePercent : public cAction
 {
 private:
   double m_pctkills;
+  int m_target_demeid;
 public:
-  cActionKillDemePercent(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_pctkills(0)
+  cActionKillDemePercent(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_pctkills(0), m_target_demeid(-1)
   {
     cString largs(args);
     if (largs.GetSize()) m_pctkills = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_target_demeid = largs.PopWord().AsInt();
     
     assert(m_pctkills >= 0);
     assert(m_pctkills <= 1);
+    assert(m_target_demeid >= -1);
   }
   
-  static const cString GetDescription() { return "Arguments: [double pctkills=0.0]"; }
+  static const cString GetDescription() { return "Arguments: [double pctkills=0.0] [int target_demeid=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -5217,8 +5219,13 @@ public:
     long cells_scanned = 0;
     long orgs_killed = 0;
     long cells_empty = 0;
-    
-    for (int d = 0; d < pop.GetNumDemes(); d++) {
+
+    const int start = (m_target_demeid == -1) ? 0 : m_target_demeid;
+    assert(start < pop.GetNumDemes());
+    const int stop = (
+      (m_target_demeid == -1) ? pop.GetNumDemes() : m_target_demeid + 1
+    );
+    for (int d = start; d < stop; d++) {
       
       cDeme &deme = pop.GetDeme(d);
       
@@ -6133,6 +6140,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillWithinRadiusMeanBelowResourceThreshold>("KillWithinRadiusMeanBelowResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
   action_lib->Register<cActionKillDemePercent>("KillDemePercent");
+  action_lib->Register<cActionSetDemeTreatmentAges>("SetDemeTreatmentAges");
   action_lib->Register<cActionKillDemesHighestParasiteLoad>("KillDemesHighestParasiteLoad");
   action_lib->Register<cActionReplicateDemesHighestBirthCount>("ReplicateDemesHighestBirthCount");
   action_lib->Register<cActionKillMeanBelowThresholdPaintable>("KillMeanBelowThresholdPaintable");

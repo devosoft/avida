@@ -1,6 +1,5 @@
 # Avida count data
-# Mon Jun  5 21:56:08 2023
-# Fri May 12 21:02:23 2023
+# Tue Sep  5 22:24:39 2023
 #  1: update
 #  2: number of insts executed this update
 #  3: number of organisms
@@ -18,4 +17,6 @@
 # 15: number of multi-threaded organisms
 # 16: number of modified organisms
 
-0 30 1 2 1 0 0 0 1 0 1 1 1 1 0 0 
+25 30 1 1 1 0 0 0 0 0 0 1 1 1 0 0 
+50 30 1 1 1 0 0 0 0 0 0 1 1 1 0 0 
+75 30 1 1 1 0 0 0 0 0 0 1 1 1 0 0 
