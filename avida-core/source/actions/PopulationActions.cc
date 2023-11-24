@@ -57,6 +57,7 @@
 #include <limits>
 #include <numeric>
 #include <set>
+#include <vector>
 
 #include "stdlib.h"
 
@@ -5285,49 +5286,47 @@ public:
   {
     cPopulation& pop = m_world->GetPopulation();
     const int num_demes = pop.GetNumDemes();
-    std::vector<double> parasite_loads(num_demes);
-    int num_eligible = 0;
+    std::vector<int> deme_indices(num_demes);
+    std::iota(std::begin(deme_indices), std::end(deme_indices), 0);
 
-    const int deme_size = m_world->GetConfig().WORLD_X.Get() * (m_world->GetConfig().WORLD_Y.Get() / num_demes);
-    const double smudge_delta = 0.09 / deme_size;
-    int smudge_index = ctx.GetRandom().GetInt(0, num_demes - 1);
-    for (int d = 0; d < num_demes; d++)
-    {
-      cDeme &deme = pop.GetDeme(d);
-      if (not deme.IsEmpty())
-      {
-        num_eligible++;
-        const auto parasite_load = deme.GetParasiteLoad();
-        if (parasite_load == 0.0) continue;
-        // need to guarantee that parasite_loads are distinct to set threshold
-        parasite_loads[d] = parasite_load + smudge_delta * smudge_index;
-        ++smudge_index;
-        if (smudge_index >= num_demes) smudge_index -= num_demes;
-      }
-    }
-
+    const int num_eligible = std::count_if(
+      std::begin(deme_indices), std::end(deme_indices),
+      [&pop](const int d) { return not pop.GetDeme(d).IsEmpty(); }
+    );
     const int binomial_draw = ctx.GetRandom().GetRandBinomial(
-        num_eligible,
-        m_killprob
+      num_eligible,
+      m_killmax
     );
-    const int kill_quota = std::min(binomial_draw, m_killmax);
-    if (kill_quota == 0) return;
-
-    std::vector<double> top_n(kill_quota);
-    const auto partial_sort_end = std::partial_sort_copy(
-      parasite_loads.begin(), parasite_loads.end(),
-      top_n.begin(), top_n.end(),
-      std::greater<int>()
-    );
-    const auto kill_thresh = *std::prev(partial_sort_end);
-    for (int d = 0; d < num_demes; d++)
-    {
-      if (parasite_loads[d] and parasite_loads[d] >= kill_thresh)
-      {
-        cDeme &deme = pop.GetDeme(d);
-        deme.KillAll(ctx);
-      }
+    const int kill_quota = std::min(num_eligible, binomial_draw);
+    if (kill_quota != binomial_draw) {
+      std::cout << "warning: capped kill quota at " << kill_quota << " from " << binomial_draw << " binomial sample with " << num_eligible << " eligible and kill prob " << m_killprob << std::endl;
     }
+
+    const std::vector<double> parasite_loads = [&](){
+      std::vector<double> res(num_demes);
+      std::transform(
+        std::begin(deme_indices), std::end(deme_indices),
+        std::begin(res),
+        [&pop](const int d) { return pop.GetDeme(d).GetParasiteLoad(); }
+      );
+      return res;
+    }();
+
+    std::partial_sort(
+      std::begin(deme_indices),
+      std::next(std::begin(deme_indices), kill_quota),
+      std::end(deme_indices),
+      [&parasite_loads](const int d1, const int d2) {
+        return parasite_loads[d1] > parasite_loads[d2];
+      }
+    );
+
+    std::for_each(
+      std::begin(deme_indices),
+      std::next(std::begin(deme_indices), kill_quota),
+      [&pop, &ctx](const int d) { pop.GetDeme(d).KillAll(ctx); }
+    );
+
 } // End Process()
 };
 
