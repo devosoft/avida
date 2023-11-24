@@ -5274,9 +5274,14 @@ public:
     std::vector<int> deme_indices(num_demes);
     std::iota(std::begin(deme_indices), std::end(deme_indices), 0);
 
+    struct HasAny {
+      cPopulation& pop;
+      HasAny(cPopulation& pop) : pop(pop) {}
+      bool operator()(const int d){ return not pop.GetDeme(d).IsEmpty(); }
+    };
     const int num_eligible = std::count_if(
       std::begin(deme_indices), std::end(deme_indices),
-      [&](const int d) { return not pop.GetDeme(d).IsEmpty(); }
+      HasAny(pop)
     );
     const int binomial_draw = ctx.GetRandom().GetRandBinomial(
       num_eligible,
@@ -5287,26 +5292,42 @@ public:
       std::cout << "warning: capped kill quota at " << kill_quota << " from " << binomial_draw << " binomial sample with " << num_eligible << " eligible and kill prob " << m_killprob << std::endl;
     }
 
+    struct GetParasiteLoad {
+      cPopulation& pop;
+      GetParasiteLoad(cPopulation& pop) : pop(pop) {}
+      double operator()(const int d){ return pop.GetDeme(d).GetParasiteLoad(); }
+    };
     std::vector<double> parasite_loads(num_demes);
     std::transform(
       std::begin(deme_indices), std::end(deme_indices),
       std::begin(parasite_loads),
-      [&](const int d) { return pop.GetDeme(d).GetParasiteLoad(); }
+      GetParasiteLoad(pop)
     );
 
-    std::partial_sort(
-      std::begin(deme_indices),
-      std::next(std::begin(deme_indices), kill_quota),
-      std::end(deme_indices),
-      [&](const int d1, const int d2) {
-        return parasite_loads[d1] > parasite_loads[d2];
+    struct Comp {
+      std::vector<double>& loads;
+      Comp(std::vector<double> &loads) : loads(loads) {}
+      bool operator()(const int d1, const int d2) {
+        return loads[d1] > loads[d2];
       }
+    };
+    std::partial_sort(
+        std::begin(deme_indices),
+        std::next(std::begin(deme_indices), kill_quota),
+        std::end(deme_indices),
+        Comp(parasite_loads)
     );
 
+    struct DoKill {
+      cPopulation& pop;
+      cAvidaContext& ctx;
+      DoKill(cPopulation& pop, cAvidaContext& ctx) : pop(pop), ctx(ctx) {}
+      void operator()(const int d) { pop.GetDeme(d).KillAll(ctx); }
+    };
     std::for_each(
       std::begin(deme_indices),
       std::next(std::begin(deme_indices), kill_quota),
-      [&](const int d) { pop.GetDeme(d).KillAll(ctx); }
+      DoKill(pop, ctx)
     );
 
 } // End Process()
