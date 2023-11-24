@@ -5389,12 +5389,31 @@ public:
 
   static const cString GetDescription() { return "Arguments: [double replprob=0.01] [int replmax = intmax]"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext &ctx)
+  {
+    const int part_size = m_world->GetConfig().DEMES_PARTITION_INTERVAL.Get();
+    const int num_demes = m_world->GetPopulation().GetNumDemes();
+    if (part_size)
+    {
+      for (int i = 0; i < num_demes; i += part_size)
+      {
+        const int begin = i;
+        const int end = std::min(i + part_size, num_demes);
+        ProcessPartition(begin, end, ctx);
+      }
+    }
+    else
+    {
+      ProcessPartition(0, num_demes, ctx);
+    }
+  }
+
+  void ProcessPartition(const int begin, const int end, cAvidaContext &ctx)
   {
     cPopulation& pop = m_world->GetPopulation();
-    const int num_demes = pop.GetNumDemes();
+    const int num_demes = end - begin;
     std::vector<int> deme_indices(num_demes);
-    std::iota(std::begin(deme_indices), std::end(deme_indices), 0);
+    std::iota(std::begin(deme_indices), std::end(deme_indices), begin);
 
     const int binomial_draw = ctx.GetRandom().GetRandBinomial(
       num_demes,
@@ -5421,17 +5440,19 @@ public:
 
     struct Comp {
       std::vector<double> &births;
-      Comp(std::vector<double> &births) : births(births) {}
+      const int begin;
+      Comp(std::vector<double> &births, const int begin)
+      : births(births), begin(begin) {}
       bool operator()(const int d1, const int d2)
       {
-        return births[d1] > births[d2];
+        return births[d1 - begin] > births[d2 - begin];
       }
     };
     std::partial_sort(
         std::begin(deme_indices),
         std::next(std::begin(deme_indices), repl_quota),
         std::end(deme_indices),
-        Comp(birth_counts)
+        Comp(birth_counts, begin)
     );
 
     struct DoRepl {
