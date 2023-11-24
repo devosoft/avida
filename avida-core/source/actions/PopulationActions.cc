@@ -5373,51 +5373,59 @@ public:
   {
     cPopulation& pop = m_world->GetPopulation();
     const int num_demes = pop.GetNumDemes();
-    int num_eligible = 0;
-    for (int d = 0; d < num_demes; d++)
-    {
-      cDeme &deme = pop.GetDeme(d);
-      num_eligible += (not deme.IsEmpty());
-    }
+    std::vector<int> deme_indices(num_demes);
+    std::iota(std::begin(deme_indices), std::end(deme_indices), 0);
 
     const int binomial_draw = ctx.GetRandom().GetRandBinomial(
-        num_eligible,
-        m_replprob
+      num_demes,
+      m_replprob
     );
     const int repl_quota = std::min(binomial_draw, m_replmax);
     if (repl_quota == 0) return;
 
-    for (int i = 0; i < repl_quota; ++i) {
-      int most_births = 0;
-      int num_with_most_births = 0;
-      for (int d = 0; d < num_demes; d++)
-      {
-        cDeme &deme = pop.GetDeme(d);
-        if (deme.IsEmpty()) continue;
-        const int num_births = deme.GetBirthCount();
-        if (num_births > most_births) {
-          most_births = num_births;
-          num_with_most_births = 1;
-        } else if (num_births == most_births) {
-          ++num_with_most_births;
-        }
-      }
-      int birth_index = ctx.GetRandom().GetInt(
-        0, num_with_most_births - 1
-      );
-      for (int d = 0; d < num_demes; d++) {
-        cDeme &deme = pop.GetDeme(d);
-        if (deme.IsEmpty()) continue;
-        if (deme.GetBirthCount() == most_births) {
-          if (birth_index == 0) {
-            m_world->GetPopulation().ReplicateDeme(deme, ctx);
-            break;
-          } else {
-            --birth_index;
-          }
-        }
-      }
+    if (repl_quota != binomial_draw) {
+      std::cout << "warning: capped repl quota at " << repl_quota << " from " << binomial_draw << " binomial sample with " << num_demes << " eligible and repl prob " << m_replprob << std::endl;
     }
+
+    struct GetBirthCount {
+      cPopulation &pop;
+      GetBirthCount(cPopulation &pop) : pop(pop) {}
+      double operator()(const int d) { return pop.GetDeme(d).GetBirthCount(); }
+    };
+    std::vector<double> birth_counts(num_demes);
+    std::transform(
+        std::begin(deme_indices), std::end(deme_indices),
+        std::begin(birth_counts),
+        GetBirthCount(pop)
+    );
+
+    struct Comp {
+      std::vector<double> &births;
+      Comp(std::vector<double> &births) : births(births) {}
+      bool operator()(const int d1, const int d2)
+      {
+        return births[d1] > births[d2];
+      }
+    };
+    std::partial_sort(
+        std::begin(deme_indices),
+        std::next(std::begin(deme_indices), repl_quota),
+        std::end(deme_indices),
+        Comp(birth_counts)
+    );
+
+    struct DoRepl {
+      cPopulation &pop;
+      cAvidaContext &ctx;
+      DoRepl(cPopulation &pop, cAvidaContext &ctx) : pop(pop), ctx(ctx) {}
+      void operator()(const int d) { pop.ReplicateDeme(pop.GetDeme(d), ctx); }
+    };
+    std::for_each(
+        std::begin(deme_indices),
+        std::next(std::begin(deme_indices), repl_quota),
+        DoRepl(pop, ctx)
+    );
+
   } // End Process()
 };
 
