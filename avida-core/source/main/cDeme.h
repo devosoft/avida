@@ -187,7 +187,9 @@ public:
 
   int GetNumParasites() const;
   double GetParasiteLoad() const {
-    return static_cast<double>(GetNumParasites()) / GetOrgCount();
+    const auto org_count = GetOrgCount();
+    if (org_count == 0) return 0.0;
+    else return static_cast<double>(GetNumParasites()) / GetOrgCount();
   }
 
   void UpdateParasiteMemoryScore(const double decay) {

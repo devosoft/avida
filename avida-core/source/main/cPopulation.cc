@@ -1211,6 +1211,12 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
   ){
     cDeme& deme = GetDeme(m_world->GetMigrationMatrix().GetProbabilisticDemeID(host_cell.GetDemeID(), m_world->GetRandom(),true));
     const int infection_mode = m_world->GetConfig().DEMES_PARASITE_MIGRATION_TARGET_SELECTION_METHOD.Get();
+    const auto immune_thresh = m_world->GetConfig().DEMES_PARASITE_MIGRATION_MEMORY_SCORE_PROTECTIVE_THRESHOLD.Get();
+    if (
+      immune_thresh != 0.0
+      && deme.GetParasiteMemoryScore() >= immune_thresh
+    ) return false;
+
     if (infection_mode == 0) {
     // Implementation #1 - Picks randomly of ALL cells in to-deme and then finds if the one it chose was occupied
     // -- Not ensured to infect an individual
