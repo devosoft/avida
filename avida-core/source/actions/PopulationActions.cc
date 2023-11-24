@@ -5275,12 +5275,30 @@ public:
 
   static const cString GetDescription() { return "Arguments: [double killprob=0.01] [int killmax = intmax]"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext& ctx) {
+    const int part_size = m_world->GetConfig().DEMES_PARTITION_INTERVAL.Get();
+    const int num_demes = m_world->GetPopulation().GetNumDemes();
+    if (part_size) {
+      for (int i = 0; i < num_demes; i+= part_size) {
+        const int begin = i;
+        const int end = std::min(i + part_size, num_demes);
+        ProcessPartition(begin, end, ctx);
+      }
+    } else {
+      ProcessPartition(0, num_demes, ctx);
+    }
+  }
+
+  void ProcessPartition(const int begin, const int end, cAvidaContext& ctx)
   {
     cPopulation& pop = m_world->GetPopulation();
-    const int num_demes = pop.GetNumDemes();
+    const int num_demes = end - begin;
     std::vector<int> deme_indices(num_demes);
-    std::iota(std::begin(deme_indices), std::end(deme_indices), 0);
+    std::iota(
+      std::begin(deme_indices),
+      std::end(deme_indices),
+      begin
+    );
 
     struct HasAny {
       cPopulation& pop;
@@ -5314,16 +5332,18 @@ public:
 
     struct Comp {
       std::vector<double>& loads;
-      Comp(std::vector<double> &loads) : loads(loads) {}
+      const int begin;
+      Comp(std::vector<double> &loads, const int begin)
+      : loads(loads), begin(begin) {}
       bool operator()(const int d1, const int d2) {
-        return loads[d1] > loads[d2];
+        return loads[d1 - begin] > loads[d2 - begin];
       }
     };
     std::partial_sort(
         std::begin(deme_indices),
         std::next(std::begin(deme_indices), kill_quota),
         std::end(deme_indices),
-        Comp(parasite_loads)
+        Comp(parasite_loads, begin)
     );
 
     struct DoKill {
