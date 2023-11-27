@@ -5363,7 +5363,7 @@ public:
 
 
 /*
- Replicate deme(s) with the highest parasite load
+ Replicate deme(s) with the highest birth count
  */
 class cActionReplicateDemesHighestBirthCount : public cAction
 {
