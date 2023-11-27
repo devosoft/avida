@@ -57,6 +57,7 @@
 #include <limits>
 #include <numeric>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "stdlib.h"
@@ -5472,6 +5473,114 @@ public:
 
 
 /*
+ * Replicate deme(s) with the highest fecundity
+ * (cell count with ties broken by birth count)
+ */
+class cActionReplicateDemesHighestFecundity : public cAction
+{
+private:
+  double m_replprob;
+  int m_replmax;
+public:
+  cActionReplicateDemesHighestFecundity(cWorld *world, const cString &args, Feedback &) : cAction(world, args), m_replprob(0.01), m_replmax(std::numeric_limits<int>::max())
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_replprob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_replmax = largs.PopWord().AsInt();
+
+    assert(m_replprob >= 0);
+  }
+
+  static const cString GetDescription() { return "Arguments: [double replprob=0.01] [int replmax = intmax]"; }
+
+  void Process(cAvidaContext &ctx)
+  {
+    const int part_size = m_world->GetConfig().DEMES_PARTITION_INTERVAL.Get();
+    const int num_demes = m_world->GetPopulation().GetNumDemes();
+    if (part_size)
+    {
+      for (int i = 0; i < num_demes; i += part_size)
+      {
+        const int begin = i;
+        const int end = std::min(i + part_size, num_demes);
+        ProcessPartition(begin, end, ctx);
+      }
+    }
+    else
+    {
+      ProcessPartition(0, num_demes, ctx);
+    }
+  }
+
+  void ProcessPartition(const int begin, const int end, cAvidaContext &ctx)
+  {
+    cPopulation& pop = m_world->GetPopulation();
+    const int num_demes = end - begin;
+    std::vector<int> deme_indices(num_demes);
+    std::iota(std::begin(deme_indices), std::end(deme_indices), begin);
+
+    const int binomial_draw = ctx.GetRandom().GetRandBinomial(
+      num_demes,
+      m_replprob
+    );
+    const int repl_quota = std::min(binomial_draw, m_replmax);
+    if (repl_quota == 0) return;
+
+    if (repl_quota != binomial_draw) {
+      std::cout << "warning: capped repl quota at " << repl_quota << " from " << binomial_draw << " binomial sample with " << num_demes << " eligible and repl prob " << m_replprob << std::endl;
+    }
+
+    using fecundity_t = std::pair<int, int>;
+    struct GetFecundity {
+      cPopulation &pop;
+      GetFecundity(cPopulation &pop) : pop(pop) {}
+      fecundity_t operator()(const int d) {
+        return fecundity_t(
+          pop.GetDeme(d).GetOrgCount(), pop.GetDeme(d).GetBirthCount()
+        );
+      }
+    };
+    std::vector<fecundity_t> fecundities(num_demes);
+    std::transform(
+        std::begin(deme_indices), std::end(deme_indices),
+        std::begin(fecundities),
+        GetFecundity(pop)
+    );
+
+    struct Comp {
+      std::vector<fecundity_t> &fecundities;
+      const int begin;
+      Comp(std::vector<fecundity_t> &fecundities, const int begin)
+      : fecundities(fecundities), begin(begin) {}
+      bool operator()(const int d1, const int d2)
+      {
+        return fecundities[d1 - begin] > fecundities[d2 - begin];
+      }
+    };
+    std::partial_sort(
+        std::begin(deme_indices),
+        std::next(std::begin(deme_indices), repl_quota),
+        std::end(deme_indices),
+        Comp(fecundities, begin)
+    );
+
+    struct DoRepl {
+      cPopulation &pop;
+      cAvidaContext &ctx;
+      DoRepl(cPopulation &pop, cAvidaContext &ctx) : pop(pop), ctx(ctx) {}
+      void operator()(const int d) { pop.ReplicateDeme(pop.GetDeme(d), ctx); }
+    };
+    std::for_each(
+        std::begin(deme_indices),
+        std::next(std::begin(deme_indices), repl_quota),
+        DoRepl(pop, ctx)
+    );
+
+  } // End Process()
+};
+
+
+/*
  Set the ages at which treatable demes can be treated
  
  Parameters:
@@ -6143,6 +6252,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetDemeTreatmentAges>("SetDemeTreatmentAges");
   action_lib->Register<cActionKillDemesHighestParasiteLoad>("KillDemesHighestParasiteLoad");
   action_lib->Register<cActionReplicateDemesHighestBirthCount>("ReplicateDemesHighestBirthCount");
+  action_lib->Register<cActionReplicateDemesHighestFecundity>("ReplicateDemesHighestFecundity");
   action_lib->Register<cActionKillMeanBelowThresholdPaintable>("KillMeanBelowThresholdPaintable");
 	
   action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
