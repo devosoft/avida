@@ -5480,18 +5480,27 @@ class cActionReplicateDemesHighestFecundity : public cAction
 {
 private:
   double m_replprob;
+  bool m_requirefull;
   int m_replmax;
 public:
-  cActionReplicateDemesHighestFecundity(cWorld *world, const cString &args, Feedback &) : cAction(world, args), m_replprob(0.01), m_replmax(std::numeric_limits<int>::max())
+  cActionReplicateDemesHighestFecundity(
+    cWorld *world,
+    const cString &args,
+    Feedback &
+  ) : cAction(world, args)
+  , m_replprob(0.01)
+  , m_requirefull(false)
+  , m_replmax(std::numeric_limits<int>::max())
   {
     cString largs(args);
     if (largs.GetSize()) m_replprob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_requirefull = largs.PopWord().AsInt();
     if (largs.GetSize()) m_replmax = largs.PopWord().AsInt();
 
     assert(m_replprob >= 0);
   }
 
-  static const cString GetDescription() { return "Arguments: [double replprob=0.01] [int replmax = intmax]"; }
+  static const cString GetDescription() { return "Arguments: [double replprob=0.01] [bool requirefull = false] [int replmax = intmax]"; }
 
   void Process(cAvidaContext &ctx)
   {
@@ -5519,8 +5528,23 @@ public:
     std::vector<int> deme_indices(num_demes);
     std::iota(std::begin(deme_indices), std::end(deme_indices), begin);
 
+    struct IsEligible {
+      cPopulation &pop;
+      const bool requirefull;
+      IsEligible(cPopulation &pop, const bool requirefull)
+      : pop(pop), requirefull(requirefull) {}
+      bool operator()(const int d) {
+        auto& deme = pop.GetDeme(d);
+        return (deme.GetOrgCount() == deme.GetSize()) or not requirefull;
+      }
+    };
+    const int num_eligible = std::count_if(
+      std::begin(deme_indices), std::end(deme_indices),
+      IsEligible(pop, m_requirefull)
+    );
+
     const int binomial_draw = ctx.GetRandom().GetRandBinomial(
-      num_demes,
+      num_eligible,
       m_replprob
     );
     const int repl_quota = std::min(binomial_draw, m_replmax);
