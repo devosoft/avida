@@ -351,7 +351,10 @@ int cDeme::GetNumParasites() const
 }
 
 void cDeme::UpdateParasiteMemoryScore(const double decay) {
-  if (GetSize() == 0) return;
+  if (GetSize() == 0) {
+    SetParasiteMemoryScore(0.0);
+    return;
+  }
   const double inc = static_cast<double>(GetNumParasites()) / GetSize();
   SetParasiteMemoryScore(GetParasiteMemoryScore() * decay + inc);
 }
