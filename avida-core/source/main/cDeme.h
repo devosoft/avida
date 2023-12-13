@@ -192,14 +192,9 @@ public:
     else return static_cast<double>(GetNumParasites()) / GetOrgCount();
   }
 
-  void UpdateParasiteMemoryScore(const double decay) {
-    parasite_memory_score += static_cast<double>(GetNumParasites()) / GetSize();
-    parasite_memory_score *= decay;
-  }
+  void UpdateParasiteMemoryScore(const double decay);
   double GetParasiteMemoryScore() const { return parasite_memory_score; }
-  void SetParasiteMemoryScore(const double score) {
-    parasite_memory_score = score;
-  }
+  void SetParasiteMemoryScore(const double score);
 
   void IncOrgCount() { cur_org_count++; }
   void DecOrgCount() { cur_org_count--; }

@@ -350,6 +350,22 @@ int cDeme::GetNumParasites() const
   return count;
 }
 
+void cDeme::UpdateParasiteMemoryScore(const double decay) {
+  if (GetSize() == 0) return;
+  const double inc = static_cast<double>(GetNumParasites()) / GetSize();
+  SetParasiteMemoryScore(GetParasiteMemoryScore() * decay + inc);
+}
+
+void cDeme::SetParasiteMemoryScore(const double score) {
+  if (!std::isfinite(score)) {
+    cerr << "ERROR: SetParasiteMemoryScore() called with " << score
+      << "current score is " << GetParasiteMemoryScore()
+      << std::endl;
+    exit(1);
+  }
+  parasite_memory_score = score;
+}
+
 void cDeme::ProcessPreUpdate()
 {
   deme_resource_count.SetSpatialUpdate(m_world->GetStats().GetUpdate());
