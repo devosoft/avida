@@ -64,6 +64,7 @@ jobs:
         uses: docker/build-push-action@v1
         with:
           push: true
+          tags: "latest"
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           repository: devosoft/avida
