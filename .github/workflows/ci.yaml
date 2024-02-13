@@ -52,3 +52,20 @@ jobs:
     - name: Run tests
       run: |
         ./run_tests
+
+  docker-build:
+    name: Docker Image Build
+    runs-on: ubuntu-22.04
+    needs: tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and Push to GitHub Container Registry
+        uses: docker/build-push-action@v1
+        with:
+          push: true
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          repository: devosoft/avida
+          registry: ghcr.io
+          add_git_labels: true
