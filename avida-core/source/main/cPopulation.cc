@@ -705,6 +705,10 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   // Loop through choosing the later placement of each offspring in the population.
   bool parent_alive = true;  // Will the parent live through this process?
   
+  if (m_world->GetConfig().DEATH_PROB_PARENT.Get() && ctx.GetRandom().P(m_world->GetConfig().DEATH_PROB_PARENT.Get())) {
+    parent_alive = false;
+  }
+
   for (int i = 0; i < offspring_array.GetSize(); i++) {
     target_cells[i] = PositionOffspring(parent_cell, ctx, m_world->GetConfig().ALLOW_PARENT.Get()).GetID(); 
     // Catch the corner case where birth method = 3 and there are 
