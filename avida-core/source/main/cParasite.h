@@ -43,6 +43,7 @@ private:
   
   cPhenotype m_phenotype;
   double virulence;
+  int m_seq_size;
   
   
 public:
@@ -59,6 +60,8 @@ public:
   cPhenotype& GetPhenotype() { return m_phenotype; }
   double GetVirulence() { return virulence; }
   void SetVirulence(double v) { virulence = v; }
+  void SetSeqSize(int seq_size) { m_seq_size = seq_size; }
+  int GetSeqSize() { return m_seq_size; }
 
 private:
   cParasite(); // @not_implemented
