@@ -252,7 +252,7 @@ protected:
 
 class cActionSetRandomSeed : public cAction {
 public:
-  /*! Constructor; parse out the number of replications.
+  /*! Constructor; parse out the seed.
 	 */
   cActionSetRandomSeed(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
     cString largs(args);
