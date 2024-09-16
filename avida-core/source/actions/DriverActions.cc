@@ -252,7 +252,7 @@ protected:
 
 class cActionSetRandomSeed : public cAction {
 public:
-  /*! Constructor; parse out the number of replications.
+  /*! Constructor; parse out the seed.
 	 */
   cActionSetRandomSeed(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
     cString largs(args);
@@ -273,7 +273,11 @@ public:
 
     // When resetting the random seed, the timeslicer also needs to be rebuilt, since it may use the RNG
     // Resizing the cell grid triggers the reconstruction of the timeslicer, so...
-    m_world->GetPopulation().ResizeCellGrid(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get());
+    // @MAM 2024-09 - Removed this line when copying code from
+    // Avida::Viewer::Driver::SetRandomSeed
+    // because it was causing populations in Bhaskar's experiments to freeze.
+    // I'm not sure why it was here in the first place....
+    // m_world->GetPopulation().ResizeCellGrid(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get());
   }
 
 protected:
