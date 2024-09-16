@@ -250,6 +250,36 @@ protected:
 };
 
 
+class cActionSetRandomSeed : public cAction {
+public:
+  /*! Constructor; parse out the number of replications.
+	 */
+  cActionSetRandomSeed(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
+    cString largs(args);
+    if (largs.GetSize()) {
+      m_random_seed = largs.PopWord().AsInt();
+    } else {
+      m_world->GetDriver().Feedback().Error("SetRandomSeed event requires an integer seed.");
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
+    }
+	}
+
+  static const cString GetDescription() { return "Arguments: <int rng seed>"; }
+
+  void Process(cAvidaContext& ctx) {
+    // copied from void Avida::Viewer::Driver::SetRandomSeed
+    m_world->GetConfig().RANDOM_SEED.Set(m_random_seed);
+    m_world->GetRandom().ResetSeed(m_random_seed);
+
+    // When resetting the random seed, the timeslicer also needs to be rebuilt, since it may use the RNG
+    // Resizing the cell grid triggers the reconstruction of the timeslicer, so...
+    m_world->GetPopulation().ResizeCellGrid(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get());
+  }
+
+protected:
+  int m_random_seed; //!< Number of deme resources after which Avida should exit.
+};
+
 
 void RegisterDriverActions(cActionLibrary* action_lib)
 {
@@ -261,4 +291,5 @@ void RegisterDriverActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionExitDemeReplications>("ExitDemeReplications");
   action_lib->Register<cActionExitDemeResources>("ExitDemeResources");
   action_lib->Register<cActionPause>("Pause");
+  action_lib->Register<cActionSetRandomSeed>("SetRandomSeed");
 }
