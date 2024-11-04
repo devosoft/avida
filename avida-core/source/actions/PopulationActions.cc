@@ -137,7 +137,36 @@ public:
   }
 };
 
+/*
+ Replaces all population members with end-to-end duplicated versions of
+ themselves.
 
+ */
+class cActionInjectWholeGenomeDuplications : public cAction
+{
+
+public:
+  cActionInjectWholeGenomeDuplications(cWorld* world, const cString& args, Feedback&) : cAction(world, args){}
+
+  static const cString GetDescription() { return "No arguments"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
+    {
+      if (!m_world->GetPopulation().GetCell(i).IsOccupied()) continue;
+
+      auto genome_str =m_world->GetPopulation().GetCell(i).GetOrganism()->GetGenome().AsString();
+      auto seq_str = m_world->GetPopulation().GetCell(i).GetOrganism()->GetGenome().AsString();
+      seq_str.Pop(',');
+      seq_str.Pop(',');
+      genome_str += seq_str;
+
+      const Genome genome(genome_str);
+      m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "whole-genome duplication", true), ctx, i);
+    }
+  }
+};
 /*
  Injects a randomly generated genome into the population.
  
