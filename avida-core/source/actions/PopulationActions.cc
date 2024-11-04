@@ -6133,6 +6133,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionInject>("Inject");
   action_lib->Register<cActionInjectRandom>("InjectRandom");
+  action_lib->Register<cActionInjectWholeGenomeDuplications>("InjectWholeGenomeDuplications");
   action_lib->Register<cActionInjectAllRandomRepro>("InjectAllRandomRepro");
   action_lib->Register<cActionInjectAll>("InjectAll");
   action_lib->Register<cActionInjectRange>("InjectRange");
