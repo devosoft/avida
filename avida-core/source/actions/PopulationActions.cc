@@ -156,7 +156,7 @@ public:
     {
       if (!m_world->GetPopulation().GetCell(i).IsOccupied()) continue;
 
-      auto genome_str =m_world->GetPopulation().GetCell(i).GetOrganism()->GetGenome().AsString();
+      auto genome_str = m_world->GetPopulation().GetCell(i).GetOrganism()->GetGenome().AsString();
       auto seq_str = m_world->GetPopulation().GetCell(i).GetOrganism()->GetGenome().AsString();
       seq_str.Pop(',');
       seq_str.Pop(',');
