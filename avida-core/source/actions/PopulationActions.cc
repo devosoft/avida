@@ -160,13 +160,55 @@ public:
       auto seq_str = m_world->GetPopulation().GetCell(i).GetOrganism()->GetGenome().AsString();
       seq_str.Pop(',');
       seq_str.Pop(',');
+      std::cout << "genome_str: " << genome_str << std::endl;
+      std::cout << "seq_str: " << seq_str << std::endl;
       genome_str += seq_str;
+      std::cout << "genome_str cat: " << genome_str << std::endl;
 
       const Genome genome(genome_str);
       m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "whole-genome duplication", true), ctx, i);
     }
   }
 };
+
+/*
+ Replaces all population members with end-to-end duplicated versions of
+ themselves, with duplicated content being replaced with nop-c instructions.
+
+ */
+class cActionInjectWholeGenomeDuplicationsNopCPrepend : public cAction
+{
+
+public:
+  cActionInjectWholeGenomeDuplicationsNopCPrepend(cWorld* world, const cString& args, Feedback&) : cAction(world, args){}
+
+  static const cString GetDescription() { return "No arguments"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
+    {
+      if (!m_world->GetPopulation().GetCell(i).IsOccupied()) continue;
+
+      auto genome_str = m_world->GetPopulation().GetCell(i).GetOrganism()->GetGenome().AsString();
+      auto seq_str = m_world->GetPopulation().GetCell(i).GetOrganism()->GetGenome().AsString();
+      seq_str.Pop(',');
+      seq_str.Pop(',');
+      genome_str = genome_str.Substring(
+        0, genome_str.GetSize() - seq_str.GetSize()
+      );
+      for (int j = 0; j < seq_str.GetSize(); j++) {
+        genome_str += "c";
+      }
+
+      genome_str += seq_str;
+
+      const Genome genome(genome_str);
+      m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "whole-genome duplication nopc prepend", true), ctx, i);
+    }
+  }
+};
+
 /*
  Injects a randomly generated genome into the population.
  
@@ -6163,6 +6205,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInject>("Inject");
   action_lib->Register<cActionInjectRandom>("InjectRandom");
   action_lib->Register<cActionInjectWholeGenomeDuplications>("InjectWholeGenomeDuplications");
+  action_lib->Register<cActionInjectWholeGenomeDuplicationsNopCPrepend>("InjectWholeGenomeDuplicationsNopCPrepend");
   action_lib->Register<cActionInjectAllRandomRepro>("InjectAllRandomRepro");
   action_lib->Register<cActionInjectAll>("InjectAll");
   action_lib->Register<cActionInjectRange>("InjectRange");
