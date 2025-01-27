@@ -1,0 +1,46 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Mon Jan 27 12:41:25 2025
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+23 div:int (none) 17 1 1 19 0 0 0 8 19 -1 2 0 heads_default cutycesvabrucavccec 3303 28 0 
+1 div:ext (none) (none) 60 95 19 16 65 0.246154 0 -1 -1 0 0 heads_default rucavcccccutycasvab 0,1,3,4,5,56,57,58,59,60,63,64,65,117,118,119,120,123,178,179,180,181,182,239,240,241,242,299,302,358,3358,3360,3361,3363,3419,3420,3421,3423,3424,3476,3479,3480,3481,3482,3483,3485,3486,3536,3537,3538,3539,3540,3541,3542,3543,3544,3545,3596,3597,3598 64,64,64,64,64,33,64,64,33,32,32,32,33,64,64,33,64,33,64,64,64,33,32,64,33,32,33,64,33,64,64,64,64,32,64,64,32,32,64,64,64,64,33,33,64,64,64,64,32,64,64,64,33,64,64,64,64,64,64,32 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+24 div:int (none) 1 1 1 20 0 0 0 8 19 -1 1 0 heads_default rucavcccccutycagsvab 3599 42 0 
+25 div:int (none) 19 1 1 18 0 0 0 9 19 -1 3 0 heads_default utycesvabruavccccc 3299 11 0 
+2 div:int (none) 1 1 1 19 0 0 0 3 7 -1 1 0 heads_default rucavcccccutycasvar 3422 380 0 
+26 div:int (none) 1 1 1 19 0 0 0 8 20 -1 1 0 heads_default rucavcccccutycashab 3304 33 0 
+4 div:int (none) 1 5 8 19 16 64 0.25 5 11 -1 1 0 heads_default rucavcdcccutycasvab 61,121,122,183,243 33,33,32,32,33 0,0,0,0,0 
+27 div:int (none) 12 1 1 18 0 0 0 9 20 -1 2 0 heads_default ruavccmccutycasvab 3240 33 0 
+5 div:int (none) 1 1 1 19 0 0 0 5 11 -1 1 0 heads_default rucavcccccutycasiab 62 264 0 
+7 div:int (none) 1 6 7 19 16 64 0.25 5 12 -1 1 0 heads_default rucavcfcccutycasvab 176,177,237,238,297,298 63,63,63,63,63,63 0,0,0,0,0,0 
+8 div:int (none) 1 1 1 19 0 0 0 6 14 -1 1 0 heads_default rukavcccccutycasvab 3484 165 0 
+9 div:int (none) 6 1 1 19 0 0 0 6 15 -1 2 0 heads_default butrcasvabrucavcccc 3478 84 0 
+12 div:int (none) 1 1 1 18 16 62 0.258065 7 16 -1 1 0 heads_default ruavcccccutycasvab 3300 32 0 
+13 div:int (none) 1 1 1 20 0 0 0 7 16 -1 1 0 heads_default rucavcccccuztycasvab 3477 132 0 
+14 div:int (none) 1 1 1 19 0 0 0 7 17 -1 1 0 heads_default rucavcccccutyccsvab 3418 132 0 
+16 div:int (none) 1 2 2 19 16 65 0.246154 7 17 -1 1 0 heads_default rucavccccnutycasvab 3241,3301 33,32 0,0 
+17 div:int (none) 1 1 1 19 8 43 0.186047 7 17 -1 1 0 heads_default rucavcccccutycesvab 3362 32 0 
+19 div:int (none) 12 1 1 18 9 43 0.209302 8 18 -1 2 0 heads_default ruavcccccutycesvab 3359 32 0 
+21 div:int (none) 1 1 1 19 0 0 0 8 18 -1 1 0 heads_default rutavcccccutycasvab 3364 66 0 
+22 div:int (none) 1 1 1 19 0 0 0 8 19 -1 1 0 heads_default rucvvcccccutycasvab 2 49 0 
+6 div:int (none) 1 0 1 19 8 61 0.131148 5 12 17 1 0 heads_default rucavccccbutrcasvab 

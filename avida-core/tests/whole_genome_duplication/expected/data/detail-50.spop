@@ -1,0 +1,293 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Sun Nov  3 20:35:15 2024
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+713 div:int (none) 638 1 1 20 0 0 0 22 49 -1 2 0 heads_default cutycjsvabrucavcccvc 174 24 0 
+529 div:int (none) 148 1 1 20 9 55 0.163636 20 45 -1 3 0 heads_default rucavcdcuccutygasvab 181 65 0 
+667 div:int (none) 480 1 1 22 0 0 0 21 48 -1 2 0 heads_default aarecavccwcccutycasvab 245 76 0 
+736 div:int (none) 1 1 1 20 0 0 0 21 50 -1 1 0 heads_default rubcavcccccutycasvab 421 33 0 
+414 div:int (none) 106 1 1 19 0 0 0 18 41 -1 2 0 heads_default rucavcczccxtycasvab 539 297 0 
+368 div:int (none) 1 1 1 19 0 0 0 17 40 -1 1 0 heads_default rucavcccccutycbsvab 839 297 0 
+759 div:int (none) 27 1 1 19 0 0 0 24 50 -1 3 0 heads_default ruavccmccutywcasvab 2814 11 0 
+1 div:ext (none) (none) 231 1152 19 16 65 0.246154 0 -1 -1 0 0 heads_default rucavcccccutycasvab 6,9,13,15,47,48,54,55,62,63,65,70,71,72,73,74,75,107,108,109,114,122,126,127,128,131,132,134,135,182,184,186,192,193,194,195,243,244,303,304,309,312,362,364,368,371,372,422,423,428,429,433,481,482,494,538,540,542,597,599,600,601,603,659,660,661,715,716,718,719,720,721,722,775,776,777,778,779,780,781,782,783,833,834,835,836,838,841,842,843,894,895,896,897,899,900,901,902,905,953,954,955,958,959,960,961,1014,1018,1019,2752,2810,2811,2833,2834,2872,2873,2891,2892,2893,2894,2930,2932,2933,2951,2952,2953,2989,2991,2992,3006,3011,3012,3014,3015,3048,3049,3050,3051,3052,3053,3054,3055,3056,3070,3072,3110,3112,3113,3114,3115,3116,3127,3128,3130,3132,3134,3135,3170,3171,3172,3173,3176,3186,3187,3188,3189,3190,3191,3193,3227,3230,3231,3248,3252,3253,3284,3286,3290,3292,3293,3305,3306,3310,3311,3345,3347,3352,3363,3365,3366,3367,3409,3411,3412,3413,3419,3420,3422,3423,3424,3425,3426,3429,3435,3436,3471,3472,3476,3481,3482,3483,3484,3490,3492,3493,3494,3495,3531,3533,3535,3536,3542,3546,3547,3552,3555,3591,3594,3595,3596,3597 32,64,64,64,64,32,33,32,64,64,33,64,32,64,64,64,64,33,32,33,32,33,64,33,64,64,64,64,64,64,33,32,64,32,32,33,64,33,64,33,64,33,32,0,64,33,64,64,33,64,64,64,32,32,33,32,33,32,33,33,64,64,33,64,33,64,32,64,32,32,33,32,64,64,33,33,64,33,33,64,32,33,33,32,64,32,64,32,33,64,32,64,33,32,32,32,33,64,64,33,32,32,32,33,32,33,33,33,33,32,64,64,33,33,33,64,64,32,32,33,33,33,64,33,32,32,64,32,32,64,33,32,32,33,33,32,33,64,64,33,32,64,64,32,32,32,33,32,33,32,33,33,32,33,32,64,64,33,32,33,32,33,32,33,64,33,32,32,33,33,33,32,32,33,64,33,32,64,32,32,64,33,33,32,32,64,33,64,64,64,33,64,64,32,64,64,64,64,64,64,64,32,32,32,33,32,33,32,64,64,32,33,33,33,33,33,64,64,64,33,32,64,64,64,32,64,64,33,64,64,33 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+760 div:int (none) 62 1 1 19 0 0 0 23 50 -1 2 0 heads_default ruczvcccdcutycasvab 11 33 0 
+47 div:int (none) 1 20 73 19 16 65 0.246154 10 23 -1 1 0 heads_default rucavccbccutycasvab 46,50,3167,3228,3289,3348,3405,3406,3407,3464,3467,3468,3525,3527,3528,3530,3586,3587,3588,3589 32,64,33,33,32,64,33,33,64,64,32,64,64,32,33,64,33,32,32,33 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+714 div:int (none) 7 1 1 19 0 0 0 22 49 -1 2 0 heads_default rucavcncccutycasvab 232 33 0 
+737 div:int (none) 51 1 1 20 0 0 0 22 50 -1 2 0 heads_default ajucavcccccutycasvab 240 33 0 
+507 div:int (none) 459 1 1 18 0 0 0 20 45 -1 3 0 heads_default utywasvabruavccccc 713 119 0 
+599 div:int (none) 524 1 1 16 0 0 0 22 47 -1 5 0 heads_default utcosvabruavcccc 2643 49 0 
+576 div:int (none) 1 1 1 19 0 0 0 20 46 -1 1 0 heads_default rucwvcccccutycasvab 2931 164 0 
+438 div:int (none) 12 1 1 18 0 0 0 19 42 -1 2 0 heads_default ruavcccccrtycasvab 3120 264 0 
+530 div:int (none) 134 1 1 19 0 0 0 21 45 -1 4 0 heads_default ruxvccqmccutycasvab 3237 203 0 
+691 div:int (none) 16 1 1 19 0 0 0 21 49 -1 2 0 heads_default rucavccccnuyycasvab 3244 66 0 
+622 div:int (none) 47 1 2 18 15 61 0.245902 21 47 -1 2 0 heads_default rucavccbcutycasvab 3532 32 0 
+669 div:int (none) 411 1 1 20 0 0 0 22 48 -1 2 0 heads_default rucavccptccutycasvab 57 65 0 
+623 div:int (none) 7 1 1 19 0 0 0 21 47 -1 2 0 heads_default rbcavcfcccutycasvab 172 98 0 
+439 div:int (none) 360 1 1 19 0 0 0 19 42 -1 3 0 heads_default rucdvcmcccutdcasvab 366 264 0 
+531 div:int (none) 455 1 1 20 0 0 0 20 45 -1 2 0 heads_default ruwahvcccccutycasvab 957 165 0 
+232 div:int (none) 1 7 18 20 17 68 0.25 15 35 -1 1 0 heads_default rucavccjcccutycasvab 2773,2826,2832,2887,2948,2949,3069 66,33,65,32,66,65,65 0,0,0,0,0,0,0 
+577 div:int (none) 1 1 1 20 9 67 0.134328 20 46 -1 1 0 heads_default rucavcccccutyocasvab 2871 65 0 
+692 div:int (none) 363 1 1 19 0 0 0 22 49 -1 4 0 heads_default rpuavcccdcutucasvab 3136 60 0 
+715 div:int (none) 1 1 1 19 0 0 0 21 49 -1 1 0 heads_default ruaavcccccutycasvab 3349 33 0 
+508 div:int (none) 386 1 3 19 16 65 0.246154 20 45 -1 2 0 heads_default rucavcccpfutycasvab 3356 64 0 
+462 div:int (none) 47 3 5 20 17 69 0.246377 19 43 -1 2 0 heads_default rucavcccbccutycasvab 3408,3469,3529 33,32,66 0,0,0 
+761 div:int (none) 255 1 1 19 0 0 0 23 50 -1 3 0 heads_default rmucavctccetycasvab 3414 33 0 
+141 div:int (none) 1 2 12 19 16 65 0.246154 14 31 -1 1 0 heads_default rucavcccuwutycasvab 178,238 33,33 0,0 
+601 div:int (none) 1 1 2 19 16 65 0.246154 21 47 -1 1 0 heads_default rucavccccuutycasvab 183 64 0 
+739 div:int (none) 121 1 1 21 0 0 0 22 50 -1 2 0 heads_default ruacavccccchutycasvab 190 33 0 
+762 div:int (none) 7 1 1 20 0 0 0 23 50 -1 2 0 heads_default rucavcfcccutyceasvab 347 10 0 
+716 div:int (none) 609 1 1 21 0 0 0 22 49 -1 3 0 heads_default cutyicasvabarucavcccc 418 18 0 
+394 div:int (none) 1 5 10 20 17 69 0.246377 17 41 -1 1 0 heads_default crucavcccccutycasvab 723,784,844,845,906 33,32,33,32,33 0,0,0,0,0 
+647 div:int (none) 28 1 1 19 0 0 0 20 48 -1 2 0 heads_default rucavccccutycasqvab 786 73 0 
+624 div:int (none) 1 1 2 18 16 59 0.271186 21 47 -1 1 0 heads_default rucavcccccutycsvab 893 32 0 
+670 div:int (none) 1 1 1 20 0 0 0 21 48 -1 1 0 heads_default rucavcpccccutycasvab 903 66 0 
+532 div:int (none) 168 2 2 17 15 57 0.263158 21 45 -1 4 0 heads_default ruavczccutycasvab 2763,2823 33,56 0,0 
+509 div:int (none) 1 1 1 18 0 0 0 19 45 -1 1 0 heads_default rucavcccccutycasvb 2994 198 0 
+4 div:int (none) 1 24 143 19 16 64 0.25 5 11 -1 1 0 heads_default rucavcdcccutycasvab 0,2,3,61,185,246,306,307,308,367,657,3007,3008,3067,3068,3126,3185,3480,3538,3539,3541,3543,3598,3599 63,33,32,63,32,33,33,32,33,63,32,32,33,33,32,33,63,63,33,32,63,63,33,32 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+280 div:int (none) 1 1 1 19 8 55 0.145455 15 37 -1 1 0 heads_default rucavcccccutyrasvab 301 164 0 
+27 div:int (none) 12 50 145 18 16 61 0.262295 9 20 -1 2 0 heads_default ruavccmccutycasvab 2583,2633,2635,2638,2644,2690,2693,2694,2695,2696,2697,2698,2703,2704,2751,2754,2755,2756,2757,2758,2759,2812,2815,2818,2874,2875,2876,2877,2880,2934,2935,2936,2937,2940,2995,2996,2997,2998,2999,3000,3001,3058,3059,3060,3061,3117,3118,3122,3178,3239 33,33,60,60,32,60,32,33,60,60,60,60,32,33,32,60,60,60,60,60,60,32,33,60,32,32,32,33,60,33,33,60,32,60,32,33,32,33,60,60,33,60,60,32,32,60,60,33,33,32 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+372 div:int (none) 168 1 4 18 16 61 0.262295 19 40 -1 4 0 heads_default ruavccdccutycasvab 2884 60 0 
+763 div:int (none) 1 1 1 19 0 0 0 22 50 -1 1 0 heads_default rucavcccccutycssvab 3129 10 0 
+740 div:int (none) 1 1 1 20 0 0 0 22 50 -1 1 0 heads_default rucavccxcccutycasvab 3133 33 0 
+556 div:int (none) 1 1 3 19 16 65 0.246154 19 46 -1 1 0 heads_default rucavccccjutycasvab 3307 64 0 
+349 div:int (none) 1 1 1 19 0 0 0 17 40 -1 1 0 heads_default ruckvcccccutycasvab 3350 363 0 
+717 div:int (none) 62 1 1 19 0 0 0 23 49 -1 2 0 heads_default rucavcccdhutycasvab 3487 33 0 
+695 div:int (none) 100 1 1 20 9 48 0.1875 21 49 -1 2 0 heads_default rucagvcccccutycmsvab 8 32 0 
+28 div:int (none) 1 44 140 18 15 61 0.245902 9 21 -1 1 0 heads_default rucavccccutycasvab 53,116,426,427,485,487,544,545,546,547,605,607,608,609,662,663,664,666,667,668,669,670,725,726,727,728,730,785,787,788,789,846,848,2929,2990,3109,3174,3232,3233,3234,3250,3294,3308,3309 60,33,60,33,32,33,32,33,32,60,32,33,32,32,60,60,33,32,60,60,60,32,33,32,60,32,33,33,60,32,33,33,33,33,32,33,60,33,32,32,60,33,32,60 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+511 div:int (none) 4 2 3 20 17 68 0.25 20 45 -1 2 0 heads_default rucalvcdcccutycasvab 68,69 32,66 0,0 
+51 div:int (none) 1 1 16 20 17 69 0.246377 10 24 -1 1 0 heads_default arucavcccccutycasvab 300 32 0 
+718 div:int (none) 7 1 1 19 0 0 0 22 49 -1 2 0 heads_default rucavcfcccutycasvar 592 33 0 
+327 div:int (none) 1 2 4 18 0 0 0 17 39 -1 1 0 heads_default rcavcccccutycasvab 724,840 258,194 0,0 
+649 div:int (none) 27 2 2 18 16 61 0.262295 23 48 -1 3 0 heads_default ruavccmcoutycasvab 2641,2701 60,60 0,0 
+603 div:int (none) 27 1 1 18 9 51 0.176471 22 47 -1 3 0 heads_default ruavccmccutdcasvab 2879 65 0 
+534 div:int (none) 1 1 2 19 16 64 0.25 20 45 -1 1 0 heads_default rucavccclcutycasvab 3073 63 0 
+741 div:int (none) 363 1 1 19 0 0 0 23 50 -1 4 0 heads_default rpuavjccdcutycasvab 3137 33 0 
+764 div:int (none) 363 1 1 20 0 0 0 23 50 -1 4 0 heads_default rpuavcccdcutycgasvab 3256 11 0 
+626 div:int (none) 1 1 1 19 0 0 0 21 47 -1 1 0 heads_default rucavcccccutycasvlb 3353 99 0 
+765 div:int (none) 1 1 1 20 0 0 0 22 50 -1 1 0 heads_default rucavcccccutycaslvab 12 33 0 
+121 div:int (none) 1 9 32 20 17 69 0.246377 13 29 -1 1 0 heads_default rucavccccchutycasvab 66,129,187,188,189,247,250,305,311 65,33,33,32,32,65,32,32,32 0,0,0,0,0,0,0,0,0 
+489 div:int (none) 81 1 1 17 0 0 0 20 44 -1 3 0 heads_default rucavcdccuycasvab 179 198 0 
+673 div:int (none) 12 1 1 18 0 0 0 22 48 -1 2 0 heads_default ruavcccccutjcaslab 593 61 0 
+627 div:int (none) 28 1 1 18 0 0 0 20 47 -1 2 0 heads_default rucavccccutyuasvab 729 91 0 
+696 div:int (none) 430 1 1 21 0 0 0 21 49 -1 2 0 heads_default rucavccclccutycasvhab 2772 66 0 
+650 div:int (none) 404 1 1 19 9 43 0.209302 21 48 -1 3 0 heads_default ruavccccnutycaqsvab 3004 32 0 
+466 div:int (none) 16 1 1 19 0 0 0 19 43 -1 2 0 heads_default pucavccccnutycasvab 3062 221 0 
+719 div:int (none) 650 1 1 19 0 0 0 22 49 -1 4 0 heads_default utycaqsvabruavccccn 3063 19 0 
+420 div:int (none) 16 1 1 19 0 0 0 18 42 -1 2 0 heads_default rucavycccnutycasvab 3123 264 0 
+558 div:int (none) 84 4 4 19 16 64 0.25 20 46 -1 3 0 heads_default rucavcgckmutycasvab 3243,3303,3304,3364 32,32,33,63 0,0,0,0 
+742 div:int (none) 1 1 1 19 0 0 0 22 50 -1 1 0 heads_default rucavcccccutycasvyb 3415 33 0 
+374 div:int (none) 47 1 1 19 8 49 0.163265 18 40 -1 2 0 heads_default rucavccbccutyyasvab 3593 164 0 
+651 div:int (none) 4 2 2 20 17 87 0.195402 21 48 -1 2 0 heads_default rucavcdcccutmycasvab 5,3544 32,33 0,0 
+7 div:int (none) 1 95 367 19 16 64 0.25 5 12 -1 1 0 heads_default rucavcfcccutycasvab 44,49,51,105,106,111,112,115,165,166,167,169,170,171,173,175,176,225,226,227,228,229,230,231,233,234,235,237,284,286,287,288,290,291,292,293,294,295,345,346,348,352,353,354,357,358,406,407,409,411,412,413,414,415,419,466,467,468,469,470,471,473,474,525,526,527,528,529,530,531,532,534,537,585,586,587,588,589,590,594,646,647,648,651,652,707,708,710,711,712,769,770,771,772,831 33,63,32,32,32,32,63,33,33,33,32,63,33,63,63,63,33,33,32,32,63,63,63,33,63,63,63,63,33,32,33,32,63,63,63,63,63,63,32,32,32,63,32,63,33,32,32,32,32,32,33,63,33,63,33,32,63,33,33,63,32,33,63,33,63,63,63,32,63,32,32,63,32,33,63,63,32,33,63,63,32,32,63,33,33,63,33,32,32,32,33,33,63,32,33 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+490 div:int (none) 100 1 1 20 0 0 0 19 44 -1 2 0 heads_default rucagvcccccutycasvkb 130 231 0 
+743 div:int (none) 653 1 1 19 0 0 0 23 50 -1 4 0 heads_default utycmasvabrucavcdcc 236 14 0 
+766 div:int (none) 7 1 1 20 0 0 0 22 50 -1 2 0 heads_default rucavcfcchcutycasvab 477 33 0 
+720 div:int (none) 28 1 1 17 0 0 0 21 49 -1 2 0 heads_default rucavccccutyasvab 483 33 0 
+674 div:int (none) 7 1 1 19 0 0 0 22 48 -1 2 0 heads_default mucavcfcccutycasvab 591 99 0 
+168 div:int (none) 27 10 25 17 15 58 0.258621 15 32 -1 3 0 heads_default ruavccccutycasvab 2705,2761,2762,2764,2822,2824,2825,2885,2944,2945 33,57,32,32,32,57,33,57,32,33 0,0,0,0,0,0,0,0,0,0 
+582 div:int (none) 27 1 1 18 0 0 0 22 46 -1 3 0 heads_default ruavccmccutycasvyb 2817 132 0 
+536 div:int (none) 1 1 2 20 17 69 0.246377 20 45 -1 1 0 heads_default ruucavcccccutycasvab 3194 33 0 
+100 div:int (none) 1 2 15 20 17 69 0.246377 12 28 -1 1 0 heads_default rucagvcccccutycasvab 7,67 65,66 0,0 
+514 div:int (none) 1 4 4 19 16 64 0.25 20 45 -1 1 0 heads_default rucavczcccutycasvab 373,374,375,434 63,63,33,63 0,0,0,0 
+698 div:int (none) 111 1 1 20 0 0 0 22 49 -1 3 0 heads_default rucavcdcpbcutycasvab 611 66 0 
+629 div:int (none) 1 1 1 20 0 0 0 21 47 -1 1 0 heads_default ruicavcccccutycasvab 774 99 0 
+560 div:int (none) 27 1 1 18 0 0 0 22 46 -1 3 0 heads_default ruavccmccutyaasvab 2642 165 0 
+675 div:int (none) 603 1 1 18 0 0 0 23 48 -1 4 0 heads_default utdcasvabcuavccmcc 2820 39 0 
+744 div:int (none) 16 1 1 19 0 0 0 22 50 -1 2 0 heads_default rucavvcccnutycasvab 3235 33 0 
+583 div:int (none) 1 1 1 18 0 0 0 20 46 -1 1 0 heads_default rcavcccccutycbsvab 3410 132 0 
+767 div:int (none) 127 1 1 18 0 0 0 24 50 -1 3 0 heads_default ruavxclccutycasvab 3418 33 0 
+652 div:int (none) 1 1 1 20 0 0 0 21 48 -1 1 0 heads_default rucavccacccufycasvab 3432 99 0 
+537 div:int (none) 1 1 1 19 0 0 0 20 45 -1 1 0 heads_default tucavcccccutycasvab 3553 165 0 
+469 div:int (none) 47 3 5 20 17 69 0.246377 20 43 -1 2 0 heads_default krucavccbccutycasvab 45,3466,3526 32,33,32 0,0,0 
+699 div:int (none) 1 1 1 19 0 0 0 22 49 -1 1 0 heads_default rucavccsccutycasvab 123 64 0 
+745 div:int (none) 1 1 1 19 0 0 0 22 50 -1 1 0 heads_default rucavccdccutycasvab 133 33 0 
+193 div:int (none) 7 3 17 19 16 64 0.25 15 34 -1 2 0 heads_default rucavcfccfutycasvab 289,349,351 33,32,33 0,0,0 
+653 div:int (none) 81 1 1 19 8 50 0.16 22 48 -1 3 0 heads_default rucavcdccutycmasvab 296 32 0 
+331 div:int (none) 111 1 1 19 0 0 0 18 39 -1 3 0 heads_default rucavcdcbcuyycasvab 431 363 0 
+584 div:int (none) 515 1 1 19 0 0 0 20 46 -1 2 0 heads_default cutyhasvabrucavcccc 541 68 0 
+768 div:int (none) 111 1 1 18 0 0 0 23 50 -1 3 0 heads_default rucavcdcbcutycasva 612 33 0 
+722 div:int (none) 624 1 1 18 0 0 0 22 49 -1 2 0 heads_default brucavcccccutycsva 952 33 0 
+676 div:int (none) 27 1 1 19 0 0 0 23 48 -1 3 0 heads_default rutavccmccutycasvab 2816 99 0 
+538 div:int (none) 168 2 2 18 16 62 0.258065 21 45 -1 4 0 heads_default rkuavccccutycasvab 2882,2941 61,61 0,0 
+607 div:int (none) 28 1 1 18 0 0 0 21 47 -1 2 0 heads_default recavccccutycasvab 3249 84 0 
+377 div:int (none) 1 1 9 19 16 64 0.25 18 40 -1 1 0 heads_default rucavcccpcutycasvab 3354 33 0 
+354 div:int (none) 1 3 7 20 17 68 0.25 18 40 -1 1 0 heads_default rucavccccvcutycasvab 3416,3475,3534 65,32,0 0,0,0 
+148 div:int (none) 4 2 11 20 16 66 0.242424 14 31 -1 2 0 heads_default rucavcdcuccutycasvab 1,60 33,32 0,0 
+493 div:int (none) 1 1 1 19 0 0 0 20 44 -1 1 0 heads_default rucavcccccutycasvaw 14 198 0 
+677 div:int (none) 573 1 1 18 0 0 0 22 48 -1 4 0 heads_default utscasvabrucavcdcc 120 23 0 
+378 div:int (none) 308 1 1 19 0 0 0 18 40 -1 3 0 heads_default rcavcfecccutycasvab 168 303 0 
+309 div:int (none) 4 4 11 20 17 68 0.25 17 38 -1 2 0 heads_default rucayvclcccutycasvab 549,606,665,671 32,32,33,32 0,0,0,0 
+746 div:int (none) 28 1 1 19 0 0 0 21 50 -1 2 0 heads_default rucavccccutycafsvab 610 17 0 
+769 div:int (none) 382 1 1 19 0 0 0 23 50 -1 3 0 heads_default ruavccccqcutycasvan 832 6 0 
+608 div:int (none) 168 1 1 17 0 0 0 22 47 -1 4 0 heads_default ruavccccutycasvae 2821 99 0 
+332 div:int (none) 27 1 1 19 0 0 0 19 39 -1 3 0 heads_default iuavccmcckutycasvab 2939 329 0 
+700 div:int (none) 16 1 1 19 0 0 0 21 49 -1 2 0 heads_default rucavccccwutycasvab 3181 66 0 
+470 div:int (none) 28 4 5 18 15 60 0.25 20 43 -1 2 0 heads_default rucavccvcutycasvab 3236,3295,3296,3355 32,33,32,33 0,0,0,0 
+654 div:int (none) 1 1 1 19 0 0 0 21 48 -1 1 0 heads_default kucavcccccutycasvab 3251 97 0 
+723 div:int (none) 1 1 1 20 0 0 0 22 49 -1 1 0 heads_default rvucavcccccutycasvab 3254 66 0 
+724 div:int (none) 7 1 1 20 0 0 0 23 49 -1 2 0 heads_default hrucavcfcccutycasvab 52 33 0 
+609 div:int (none) 51 1 1 21 9 68 0.132353 21 47 -1 2 0 heads_default arucavcccccutyicasvab 359 32 0 
+655 div:int (none) 1 1 1 18 0 0 0 20 48 -1 1 0 heads_default rucavcccccutcasvjb 363 81 0 
+632 div:int (none) 28 1 1 19 0 0 0 20 48 -1 2 0 heads_default rukcavccccutycasvab 365 99 0 
+540 div:int (none) 1 2 2 20 17 87 0.195402 19 45 -1 1 0 heads_default rucavcccccutycascvab 598,658 65,66 0,0 
+494 div:int (none) 7 1 1 18 0 0 0 20 44 -1 2 0 heads_default rucavcfcccutycavab 649 198 0 
+747 div:int (none) 1 1 1 20 0 0 0 22 50 -1 1 0 heads_default rucavcccgccutycasvab 3192 33 0 
+701 div:int (none) 1 1 1 19 0 0 0 21 49 -1 1 0 heads_default rucavcccckutycasvab 3288 64 0 
+770 div:int (none) 62 1 1 19 0 0 0 23 50 -1 2 0 heads_default rucavcccdcutycasvag 3316 33 0 
+265 div:int (none) 28 3 11 18 15 60 0.25 16 36 -1 2 0 heads_default rucavccxcutycasvab 58,3477,3537 33,33,32 0,0,0 
+633 div:int (none) 148 1 1 21 0 0 0 21 48 -1 3 0 heads_default rucavcdcuccutycbasvab 119 99 0 
+81 div:int (none) 4 7 37 18 15 60 0.25 12 27 -1 2 0 heads_default rucavcdccutycasvab 180,299,355,356,416,417,478 59,59,33,32,33,33,32 0,0,0,0,0,0,0 
+679 div:int (none) 7 1 1 19 0 0 0 22 48 -1 2 0 heads_default rucaycfcccutycasvab 285 96 0 
+771 div:int (none) 7 1 1 19 0 0 0 23 50 -1 2 0 heads_default rucaccfcccutycasvab 405 33 0 
+12 div:int (none) 1 5 47 18 16 62 0.258065 7 16 -1 1 0 heads_default ruavcccccutycasvab 472,533,3002,3229,3291 33,32,61,33,33 0,0,0,0,0 
+564 div:int (none) 1 2 4 18 0 0 0 20 46 -1 1 0 heads_default ucavcccccutycasvab 602,837 170,33 0,0 
+173 div:int (none) 1 22 50 19 16 64 0.25 14 32 -1 1 0 heads_default rucavclcccutycasvab 2647,2649,2650,2706,2707,2708,2709,2710,2711,2765,2766,2767,2768,2769,2770,2827,2828,2829,2886,2888,2946,2947 63,33,33,63,33,33,32,33,33,33,32,32,32,32,32,32,63,32,33,63,63,63 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+610 div:int (none) 1 2 2 20 17 67 0.253731 21 47 -1 1 0 heads_default rucavcgcmccutycasvab 3075,3076 65,33 0,0 
+725 div:int (none) 16 1 1 19 0 0 0 21 49 -1 2 0 heads_default rucavccccnutycawvab 3180 66 0 
+656 div:int (none) 47 2 2 18 15 61 0.245902 22 48 -1 2 0 heads_default rucavcbccutycasvab 3285,3346 33,32 0,0 
+127 div:int (none) 12 4 15 18 16 61 0.262295 13 30 -1 2 0 heads_default ruavcclccutycasvab 3299,3300,3478,3479 33,32,32,60 0,0,0,0 
+495 div:int (none) 1 1 1 19 0 0 0 19 44 -1 1 0 heads_default rucavcccccutycasvac 3470 198 0 
+381 div:int (none) 7 1 1 19 0 0 0 18 41 -1 2 0 heads_default rucavcfccvutycasvab 297 297 0 
+749 div:int (none) 566 1 1 18 0 0 0 24 50 -1 4 0 heads_default ruavcymccutycagvab 2692 33 0 
+726 div:int (none) 27 1 1 18 0 0 0 24 49 -1 3 0 heads_default ruavccmclutycasvab 2702 33 0 
+404 div:int (none) 16 2 7 18 16 62 0.258065 18 41 -1 2 0 heads_default ruavccccnutycasvab 2943,3003 33,32 0,0 
+634 div:int (none) 1 1 1 19 0 0 0 21 48 -1 1 0 heads_default rucavccccnutycbsvab 3010 99 0 
+565 div:int (none) 472 2 2 37 34 136 0.25 20 46 -1 10 0 heads_default aaaaaaaaaaaaaaaaaarucavccwccutycasvab 3359,3361 132,131 0,0 
+772 div:int (none) 1 1 1 18 0 0 0 22 50 -1 1 0 heads_default rucavcccccutyasvab 3473 0 0 
+519 div:int (none) 279 1 1 19 0 0 0 20 45 -1 2 0 heads_default cutrcasvabrucavcccc 3554 72 0 
+382 div:int (none) 12 3 4 19 17 65 0.261538 18 41 -1 2 0 heads_default ruavccccqcutycasvab 653,714,773 64,64,6 0,0,0 
+566 div:int (none) 27 1 2 18 16 61 0.262295 22 46 -1 3 0 heads_default ruavcymccutycasvab 2753 32 0 
+773 div:int (none) 1 1 1 19 0 0 0 22 50 -1 1 0 heads_default rucavcccccutycacvab 2813 33 0 
+681 div:int (none) 597 1 1 19 0 0 0 22 48 -1 2 0 heads_default cutyeasvabrucavcccc 2993 39 0 
+612 div:int (none) 544 2 2 17 15 57 0.263158 21 47 -1 3 0 heads_default ruavclccutycasvab 3064,3124 33,56 0,0 
+267 div:int (none) 225 1 1 20 0 0 0 16 36 -1 2 0 heads_default utycarsvabrucavcfccc 3125 232 0 
+727 div:int (none) 1 1 1 19 0 0 0 21 49 -1 1 0 heads_default rlcavcccccutycasvab 3351 33 0 
+750 div:int (none) 84 1 1 18 0 0 0 22 50 -1 3 0 heads_default rucavcgckcuycasvab 3362 33 0 
+543 div:int (none) 477 1 1 19 0 0 0 21 45 -1 5 0 heads_default cutdcasvabrpuavcccd 3434 92 0 
+704 div:int (none) 47 1 1 20 0 0 0 22 49 -1 2 0 heads_default rmucavccbccutycasvab 3590 66 0 
+590 div:int (none) 4 1 1 19 0 0 0 21 46 -1 2 0 heads_default rucavcdcccutycasyab 59 132 0 
+774 div:int (none) 7 1 1 19 0 0 0 22 50 -1 2 0 heads_default rucavcfcccutycasuab 410 33 0 
+360 div:int (none) 4 2 3 19 16 64 0.25 18 40 -1 2 0 heads_default rucavcmcccutycasvab 425,486 32,32 0,0 
+383 div:int (none) 28 2 7 17 14 57 0.245614 17 41 -1 2 0 heads_default rucavcccutycasvab 543,604 56,33 0,0 
+314 div:int (none) 1 1 2 19 0 0 0 16 38 -1 1 0 heads_default rucavcccccucycasvab 717 264 0 
+544 div:int (none) 173 2 2 18 16 61 0.262295 20 45 -1 2 0 heads_default ruavclcccutycasvab 3005,3065 60,60 0,0 
+705 div:int (none) 232 1 1 20 0 0 0 21 49 -1 2 0 heads_default rucacccjcccutycasvab 3009 65 0 
+84 div:int (none) 58 8 46 19 16 63 0.253968 11 27 -1 2 0 heads_default rucavcgckcutycasvab 3184,3240,3241,3245,3301,3360,3421,3540 62,33,32,62,62,62,32,62 0,0,0,0,0,0,0,0 
+429 div:int (none) 150 2 2 17 0 0 0 19 42 -1 3 0 heads_default ruavcccdcutycasab 3313,3373 264,132 0,0 
+751 div:int (none) 469 1 1 20 0 0 0 23 50 -1 3 0 heads_default kmucavccbccutycasvab 3584 33 0 
+62 div:int (none) 1 17 58 19 16 64 0.25 11 25 -1 1 0 heads_default rucavcccdcutycasvab 10,3315,3368,3369,3370,3371,3372,3374,3376,3428,3430,3431,3488,3489,3491,3548,3550 32,32,63,32,63,63,63,63,63,63,33,32,63,33,32,63,32 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+706 div:int (none) 1 1 1 19 0 0 0 21 49 -1 1 0 heads_default rucavcccccatycasvab 16 66 0 
+752 div:int (none) 688 1 1 19 0 0 0 23 50 -1 3 0 heads_default cutpcasvabrhcavcfcc 103 10 0 
+361 div:int (none) 199 1 1 19 0 0 0 18 40 -1 3 0 heads_default rucavcdcclutycasvam 242 297 0 
+591 div:int (none) 4 1 1 19 0 0 0 22 46 -1 2 0 heads_default rucavcdcccutycasrab 298 132 0 
+775 div:int (none) 7 1 1 19 0 0 0 23 50 -1 2 0 heads_default ricavcfcccutycasvab 408 0 0 
+729 div:int (none) 1 1 1 19 0 0 0 22 49 -1 1 0 heads_default mucavcccccutycasvab 898 33 0 
+16 div:int (none) 1 16 110 19 16 65 0.246154 7 17 -1 1 0 heads_default rucavccccnutycasvab 2580,2581,2639,2640,2699,2700,2760,2819,2883,2942,3121,3175,3182,3183,3242,3246 33,32,33,32,64,64,64,33,64,64,64,32,64,64,64,64 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+430 div:int (none) 1 7 8 20 17 68 0.25 18 42 -1 1 0 heads_default rucavccclccutycasvab 2712,2771,2830,2831,2889,2890,2950 33,32,32,65,33,65,66 0,0,0,0,0,0,0 
+660 div:int (none) 577 1 1 20 0 0 0 21 48 -1 2 0 heads_default utyocasvabrucavccccc 2870 53 0 
+614 div:int (none) 538 1 1 17 0 0 0 22 47 -1 5 0 heads_default rkuvccccutycasvab 2881 99 0 
+545 div:int (none) 1 1 1 19 0 0 0 20 45 -1 1 0 heads_default rucdvcccccutycasvab 3433 150 0 
+637 div:int (none) 47 1 1 19 0 0 0 22 48 -1 2 0 heads_default rucaqccbccutycasvab 3465 97 0 
+638 div:int (none) 1 1 1 19 8 43 0.186047 21 48 -1 1 0 heads_default rucavcccccutycjsvab 113 32 0 
+132 div:int (none) 1 5 23 19 16 64 0.25 13 30 -1 1 0 heads_default rucavcccocutycasvab 360,361,420,479,480 32,33,33,63,63 0,0,0,0,0 
+707 div:int (none) 534 1 1 20 0 0 0 22 49 -1 2 0 heads_default rucavccclncutycasvab 2954 66 0 
+753 div:int (none) 1 1 1 19 0 0 0 22 50 -1 1 0 heads_default rqcavcccccutycasvab 3247 34 0 
+684 div:int (none) 604 1 1 20 0 0 0 22 48 -1 2 0 heads_default utycuasvabrucavccncc 3551 62 0 
+431 div:int (none) 374 1 1 19 0 0 0 19 42 -1 3 0 heads_default cutyyasvabrucavccbc 3592 143 0 
+731 div:int (none) 47 1 1 19 0 0 0 22 50 -1 2 0 heads_default rucavccbccutycasgab 110 33 0 
+685 div:int (none) 7 1 1 19 0 0 0 21 48 -1 2 0 heads_default ruccvcfcccutycasvab 118 63 0 
+570 div:int (none) 81 1 1 17 0 0 0 21 46 -1 3 0 heads_default rucvcdccutycasvab 241 132 0 
+455 div:int (none) 1 1 2 20 17 69 0.246377 19 43 -1 1 0 heads_default rucahvcccccutycasvab 956 65 0 
+754 div:int (none) 1 1 1 18 0 0 0 22 50 -1 1 0 heads_default rucavcccccuycasvab 3013 33 0 
+616 div:int (none) 557 1 1 19 0 0 0 21 47 -1 2 0 heads_default cutjcsvabrucatxcccc 3066 48 0 
+708 div:int (none) 534 1 1 19 0 0 0 22 49 -1 2 0 heads_default rucavjcclcutycasvab 3074 66 0 
+593 div:int (none) 16 1 2 20 15 68 0.220588 20 46 -1 2 0 heads_default rucavccccnutycasvwab 3119 66 0 
+363 div:int (none) 150 4 7 19 17 65 0.261538 18 40 -1 3 0 heads_default rpuavcccdcutycasvab 3195,3196,3255,3314 32,32,64,64 0,0,0,0 
+639 div:int (none) 1 1 1 19 0 0 0 21 48 -1 1 0 heads_default rucavcccccqtycasvab 3302 89 0 
+386 div:int (none) 1 1 5 19 16 65 0.246154 18 41 -1 1 0 heads_default rucavccccfutycasvab 3474 64 0 
+732 div:int (none) 7 1 1 19 0 0 0 23 50 -1 2 0 heads_default rucafcfcccutycasvab 177 33 0 
+111 div:int (none) 4 28 59 19 16 64 0.25 13 29 -1 2 0 heads_default rucavcdcbcutycasvab 191,249,251,252,253,254,255,310,313,314,315,369,370,376,430,488,490,491,492,493,548,550,551,552,553,554,613,672 63,63,63,32,63,63,0,32,33,32,32,33,33,33,32,32,32,32,33,32,33,63,32,32,33,63,32,63 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+525 div:int (none) 121 1 1 19 0 0 0 20 45 -1 2 0 heads_default rucaccccchutycasvab 248 192 0 
+594 div:int (none) 7 1 1 20 0 0 0 21 47 -1 2 0 heads_default rucavcfcccutycaasvab 350 132 0 
+571 div:int (none) 7 2 4 18 16 61 0.262295 20 46 -1 2 0 heads_default ruavcfcccutycasvab 475,476 33,32 0,0 
+709 div:int (none) 27 1 1 19 0 0 0 23 49 -1 3 0 heads_default ruavccmccutycasovab 3057 66 0 
+134 div:int (none) 27 8 22 19 17 65 0.261538 14 30 -1 3 0 heads_default ruavccqmccutycasvab 3177,3179,3238,3297,3298,3357,3358,3417 64,64,64,4,64,4,64,64 0,0,0,0,0,0,0,0 
+640 div:int (none) 62 1 1 19 0 0 0 21 48 -1 2 0 heads_default ruhavcccdcutycasvab 3312 99 0 
+686 div:int (none) 62 1 1 19 0 0 0 22 48 -1 2 0 heads_default rucavcccdcudycasvab 3375 55 0 
+755 div:int (none) 695 1 1 20 0 0 0 22 50 -1 3 0 heads_default cutycmsvabrucagvcccc 3549 8 0 
+663 div:int (none) 47 1 1 19 0 0 0 22 48 -1 2 0 heads_default rucavccbccutycasvaf 3585 99 0 
+365 div:int (none) 1 4 6 19 16 65 0.246154 18 40 -1 1 0 heads_default rucavccccoutycasvab 4,3485,3486,3545 33,33,32,32 0,0,0,0 
+411 div:int (none) 1 2 4 19 16 64 0.25 19 41 -1 1 0 heads_default rucavccpccutycasvab 56,117 32,0 0,0 
+756 div:int (none) 572 1 1 24 0 0 0 22 50 -1 3 0 heads_default aaaarucavccwcccutycasvab 64 33 0 
+664 div:int (none) 81 1 1 19 0 0 0 22 48 -1 3 0 heads_default rucavcdccutycasavab 121 66 0 
+572 div:int (none) 480 1 1 22 19 76 0.25 20 46 -1 2 0 heads_default aarucavccwcccutycasvab 125 32 0 
+319 div:int (none) 280 1 1 19 0 0 0 16 39 -1 2 0 heads_default cutyrasvabrucavcccc 302 164 0 
+733 div:int (none) 360 1 1 18 0 0 0 22 50 -1 3 0 heads_default rucvcmcccutycasvab 484 33 0 
+595 div:int (none) 7 1 1 20 17 87 0.195402 21 47 -1 2 0 heads_default rucavcfcccutlycasvab 650 65 0 
+710 div:int (none) 595 1 1 21 0 0 0 22 49 -1 3 0 heads_default rucavcfcccutlyvcasvab 709 38 0 
+503 div:int (none) 27 1 1 18 0 0 0 21 44 -1 3 0 heads_default ruavccmccutycasoab 2938 198 0 
+641 div:int (none) 47 1 1 18 0 0 0 22 48 -1 2 0 heads_default ucavccbccutycasvab 3287 115 0 
+549 div:int (none) 1 1 1 18 0 0 0 21 46 -1 1 0 heads_default rczvcccccutycasvab 3427 128 0 
+688 div:int (none) 7 1 1 19 8 51 0.156863 22 48 -1 2 0 heads_default rucavcfcccutpcasvab 104 32 0 
+481 div:int (none) 1 1 2 18 0 0 0 19 44 -1 1 0 heads_default rucavcccccutycavab 124 132 0 
+573 div:int (none) 81 1 1 18 8 56 0.142857 21 46 -1 3 0 heads_default rucavcdccutscasvab 239 32 0 
+366 div:int (none) 111 1 1 19 0 0 0 18 40 -1 3 0 heads_default rucavjdcbcutycasvab 432 330 0 
+757 div:int (none) 309 1 1 20 0 0 0 22 50 -1 3 0 heads_default rucqyvclcccutycasvab 489 35 0 
+734 div:int (none) 646 1 1 18 0 0 0 22 50 -1 4 0 heads_default brucavcfccsutycsva 535 39 0 
+458 div:int (none) 7 2 3 19 16 63 0.253968 20 43 -1 2 0 heads_default rucavcfcxcutycasvab 596,656 62,62 0,0 
+711 div:int (none) 455 1 1 20 0 0 0 22 49 -1 2 0 heads_default rucahvcccccuhycasvab 1015 66 0 
+642 div:int (none) 1 2 2 19 16 64 0.25 21 48 -1 1 0 heads_default rucavcccucutycasvab 3071,3131 32,33 0,0 
+504 div:int (none) 28 1 1 18 0 0 0 20 45 -1 2 0 heads_default ruhavccccutycasvab 3111 198 0 
+527 div:int (none) 1 2 4 20 17 68 0.25 19 45 -1 1 0 heads_default rucavccccjcutycasvab 3168,3169 33,32 0,0 
+758 div:int (none) 28 1 1 18 0 0 0 21 50 -1 2 0 heads_default rucavclccutycasvab 424 33 0 
+413 div:int (none) 7 2 4 19 16 64 0.25 18 41 -1 2 0 heads_default rucavcfccsutycasvab 536,595 63,63 0,0 
+459 div:int (none) 12 1 1 18 9 52 0.173077 19 43 -1 2 0 heads_default ruavcccccutywasvab 654 131 0 
+643 div:int (none) 1 1 1 19 0 0 0 21 48 -1 1 0 heads_default rucavcccccktycasvab 892 99 0 
+666 div:int (none) 1 2 2 19 17 66 0.257576 21 48 -1 1 0 heads_default ruzavcccccutycasvab 2630,2691 33,32 0,0 
+712 div:int (none) 27 1 1 17 0 0 0 24 49 -1 3 0 heads_default ruavccmcutycasvab 2878 56 0 
+604 div:int (none) 1 0 1 20 9 57 0.157895 21 47 50 1 0 heads_default rucavcccccutycuasvab 
+472 div:int (none) 402 0 2 35 32 128 0.25 19 43 50 9 0 heads_default aaaaaaaaaaaaaaaarucavccwccutycasvab 
+255 div:int (none) 28 0 7 19 16 65 0.246154 16 36 50 2 0 heads_default rmucavccccutycasvab 
+557 div:int (none) 1 0 1 18 8 43 0.186047 20 46 50 1 0 heads_default rucavcccccutjcsvab 
+646 div:int (none) 413 0 1 18 16 58 0.275862 21 48 50 3 0 heads_default rucavcfccsutycsvab 
+524 div:int (none) 168 0 1 17 8 39 0.205128 21 45 50 4 0 heads_default ruavccccutycosvab 
+279 div:int (none) 1 0 4 19 8 61 0.131148 16 37 50 1 0 heads_default rucavcccccutrcasvab 
+480 div:int (none) 1 0 1 20 17 68 0.25 19 44 49 1 0 heads_default rucavccwcccutycasvab 
+477 div:int (none) 363 0 1 19 9 52 0.173077 20 44 48 4 0 heads_default rpuavcccdcutdcasvab 
+597 div:int (none) 1 0 1 19 8 49 0.163265 21 47 48 1 0 heads_default rucavcccccutyeasvab 
+515 div:int (none) 1 0 1 19 8 55 0.145455 19 45 48 1 0 heads_default rucavcccccutyhasvab 
+150 div:int (none) 62 0 8 18 16 61 0.262295 14 31 47 2 0 heads_default ruavcccdcutycasvab 
+402 div:int (none) 325 0 1 33 30 120 0.25 18 41 46 8 0 heads_default aaaaaaaaaaaaaarucavccwccutycasvab 
+308 div:int (none) 7 0 1 20 17 68 0.25 17 38 44 2 0 heads_default rucavcfecccutycasvab 
+325 div:int (none) 209 0 1 31 28 112 0.25 17 39 43 7 0 heads_default aaaaaaaaaaaarucavccwccutycasvab 
+106 div:int (none) 1 0 4 19 16 64 0.25 12 28 42 1 0 heads_default rucavcczccutycasvab 
+209 div:int (none) 128 0 2 29 26 104 0.25 15 34 41 6 0 heads_default aaaaaaaaaarucavccwccutycasvab 
+199 div:int (none) 4 0 3 19 16 64 0.25 15 34 40 2 0 heads_default rucavcdcclutycasvab 
+225 div:int (none) 1 0 1 20 9 46 0.195652 15 35 37 1 0 heads_default rucavcfcccutycarsvab 
+42 div:int (none) 30 0 3 21 18 72 0.25 10 22 37 2 0 heads_default aarucavccwccutycasvab 
+128 div:int (none) 93 0 2 27 24 96 0.25 13 30 37 5 0 heads_default aaaaaaaarucavccwccutycasvab 
+60 div:int (none) 42 0 4 23 20 80 0.25 11 25 32 3 0 heads_default aaaarucavccwccutycasvab 
+58 div:int (none) 1 0 2 19 16 64 0.25 10 24 30 1 0 heads_default rucavcgcccutycasvab 
+93 div:int (none) 60 0 2 25 22 88 0.25 12 27 30 4 0 heads_default aaaaaarucavccwccutycasvab 
+30 div:int (none) 1 0 1 19 16 64 0.25 9 21 29 1 0 heads_default rucavccwccutycasvab 

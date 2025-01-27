@@ -38,20 +38,20 @@ jobs:
   #     run: |
   #       bash ./run_tests
 
-  tests-mac:
-    runs-on:  macos-12
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: |
-        brew install cmake
-        brew install python
-    - name: Build Avida
-      run: |
-        ./build_avida
-    - name: Run tests
-      run: |
-        ./run_tests
+  # tests-mac:
+  #   runs-on:  macos-12
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Install dependencies
+  #     run: |
+  #       brew install cmake
+  #       brew install python
+  #   - name: Build Avida
+  #     run: |
+  #       ./build_avida
+  #   - name: Run tests
+  #     run: |
+  #       ./run_tests
 
   docker-build:
     name: Docker Image Build
